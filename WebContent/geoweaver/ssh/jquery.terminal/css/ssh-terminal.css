@@ -1,0 +1,74 @@
+form {
+    margin: 10px;
+}
+body .shell {
+    width: 400px;
+    height: 200px;
+}
+.shell .typed-cursor, .shell .cursor {
+    background: transparent;
+}
+.shell > .status-bar .title {
+    cursor: move;
+}
+/*
+ * fix to shell.js to center title to free space
+ */
+.shell.windows .status-bar .title {
+    right: 106px;
+}
+@supports (--css: variables) {
+    .shell.ubuntu .terminal {
+        --background: #300924;
+    }
+    .shell.osx .content.terminal {
+        --background: #222;
+    }
+    .shell.light .content.terminal {
+        --background: white;
+        --color: black;
+    }
+    /*
+    * windows and custom are the last ones so
+    * they don't get overwritten by light
+    */
+    .shell.windows .content.terminal {
+        --background: black;
+        --color: white;
+        --animation: terminal-underline;
+    }   
+    .shell.custom .content.terminal {
+        --background: #292929;
+        --color: #aaa;
+    }
+}
+/*
+ * overwrite shell.js style because shell.js   
+ * selectors are stronger then terminal ones
+ */
+.cmd span.cursor {
+    animation: none;
+    width: auto;
+    background-color: var(--background, #000);
+}
+.shell terminal.content,
+.shell.osx.dark .content,
+.shell.ubuntu .content {
+    background-color: var(--background, #222) !important;
+}
+.shell .terminal.content {
+    font-size: 12px;
+}
+.cmd {
+    background-color: inherit;
+}
+@supports (--css: variables) {
+    .shell .terminal.content {
+        font-size: calc(var(--size, 1) * 12px);
+    }
+}
+/* fix for Firefox */
+.terminal > .resizer, .terminal > .font .resizer {
+    visibility: visible;
+    pointer-events: none;
+}

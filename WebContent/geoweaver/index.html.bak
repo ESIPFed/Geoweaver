@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+	<head>
+	
+		<title>Geoweaver - NSF CyberConnector</title>
+		
+		<link rel="icon" href="../favicon.ico"/>
+		
+		<script src="../js/jquery-1.11.3.min.js"></script>
+		
+		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		
+		<script src="../js/bootstrap.min.js"></script>
+		<!------ Include the above in your HEAD tag ---------->
+		
+		<link href="../css/font-awesome.css" rel="stylesheet">
+		
+		<link href="../geoweaver/css/workspace.css" rel="stylesheet">
+		
+		<link href="../geoweaver/css/sidemenu.css" rel="stylesheet">
+		
+	</head>
+	
+	<body>
+	
+		<div class="main">
+		
+			<div class="row" style="height:100%; margin: 0; padding: 0;">
+			
+				<div class="col col-md-9" id="workspace" style="height:100%; margin: 0;padding: 0;">
+				
+				</div>
+			
+				<div class="col col-md-3" id="sidemenu" style="height:100%; margin: 0;padding: 0;">
+					
+					<div class="nav-side-menu" >
+			
+					    <div style="color: yellow;" class="brand" id="menuheader" >Geoweaver v0.8.1</div>
+					
+					    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+					  
+					    <div class="menu-list">
+					  
+					            <ul id="menu-content" class="menu-content collapse out">
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-dashboard fa-lg"></i> Overview
+					                  </a>
+					                </li>
+					
+					                <li  data-toggle="collapse" data-target="#hosts" class="collapsed active">
+					                  <a href="javascript:void(0)"><i class="fa fa-gift fa-lg"></i> Hosts <span class="arrow"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="hosts">
+					                    <li class="active"><a href="javascript:void(0)">Host1</a></li>
+					                    <li><a href="javascript:void(0)">Host2</a></li>
+					                    <li><a href="javascript:void(0)">Host3</a></li>
+					                </ul>
+					                
+					                <li data-toggle="collapse" data-target="#new" class="collapsed">
+					                  <a href="javascript:void(0)"><i class="fa fa-car fa-lg"></i> Process <span class="arrow"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="new">
+					                  <li><a href="javascript:void(0)">Process 1</a></li>
+					                  <li><a href="javascript:void(0)">Process 2</a></li>
+					                  <li><a href="javascript:void(0)">Process 3</a></li>
+					                </ul>
+					
+					
+					                <li data-toggle="collapse" data-target="#service" class="collapsed">
+					                  <a href="javascript:void(0)"><i class="fa fa-globe fa-lg"></i> Workflows <span class="arrow"></span></a>
+					                </li>  
+					                <ul class="sub-menu collapse" id="service">
+					                  <li><a href="javascript:void(0)">Workflow 1</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 2</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 3</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 4</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 5</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 6</a></li>
+					                  <li><a href="javascript:void(0)">Workflow 7</a></li>
+					                </ul>
+									
+					
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-user fa-lg"></i> Share
+					                  </a>
+					                </li>
+					
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-users fa-lg"></i> About
+					                  </a>
+					                </li>
+					            </ul>
+					            
+					     </div>
+					     
+					</div>
+					
+				</div>
+				
+				
+			
+			</div>
+		
+		</div>
+		
+	    <script src="../geoweaver/js/d3.min.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workspace.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>
+	    
+	</body>
+
+</html>

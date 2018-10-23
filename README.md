@@ -10,6 +10,8 @@ Geoweaver is a web system to allow users to easily compose and execute full-stac
 
 [August Report](docs/ESIP-Geoweaver-Report-1.docx)
 
+[September Report](docs/ESIP-Geoweaver-Report-2.docx)
+
 # Installation
 
 ## Prerequisite
@@ -28,7 +30,7 @@ coming soon
 
 coming soon
 
-### Support or Contact
+### Personnel
 
 Center for Spatial Information Science and Systems
 

@@ -1,0 +1,18 @@
+/**
+
+ created by Ziheng Sun to render the CyberConnector portal
+
+**/
+
+.navbar {
+    position: relative;
+    min-height: 50px;
+    margin-bottom: 0px;
+    border: 1px solid transparent;
+}
+
+.page-header {
+    background: transparent url("../images/bg_highlight.jpg") no-repeat scroll 0 0/cover;
+    padding-bottom: 2.4rem;
+    margin: 0 0 0 0;
+}

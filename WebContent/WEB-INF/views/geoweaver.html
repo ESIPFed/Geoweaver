@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+	<head>
+	
+		<title>Geoweaver - NSF CyberConnector</title>
+		
+		<link rel="icon" href="../favicon.ico" />
+		
+		<script src="../js/jquery-1.11.3.min.js"></script>
+		
+		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+		
+		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
+    
+    	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" />
+		
+		<link href="../css/font-awesome.css" rel="stylesheet" />
+		
+		<link href="../geoweaver/css/workspace.css" rel="stylesheet" />
+		
+		<link href="../geoweaver/css/sidemenu.css" rel="stylesheet" />
+		
+		<link rel="stylesheet" href="../geoweaver/codemirror/lib/codemirror.css" />
+		
+		<script type="text/javascript" src="../geoweaver/codemirror/lib/codemirror.js"></script>
+		
+		<script type="text/javascript" src="../geoweaver/codemirror/mode/shell/shell.js"></script>
+		
+		<script type="text/javascript" src="../geoweaver/codemirror/addon/display/placeholder.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
+    
+    	<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+		
+	</head>
+	
+	<body>
+	
+		<div class="main">
+		
+			<div class="row" style="height:100%; margin: 0; padding: 0;">
+			
+				<div id="toolbox">
+			      
+			      <input type="file" id="hidden-file-upload"/>
+			      
+			      <i id="upload-input" title="upload graph" class="btn fa fa-upload" style="height: 30px; width: 30px;font-size:30px;color:gray" alt="upload graph" />
+			      
+			      <i id="download-input" title="download graph" class="btn fa fa-download" style="height: 30px; width: 30px;font-size:30px;color:gray" alt="download graph" /> 
+			      
+			      <i id="execute-workflow" title="execute workflow" class="btn fa fa-play" style="height: 30px; width: 30px;font-size:30px;color:gray" alt="execute workflow"></i> 
+			      
+			      <i id="geoweaver-tutorial" title="tutorial" class="btn fa fa-info" style="height: 30px; width: 30px;font-size:30px;color:gray" alt="geoweaver tutorial"></i> 
+			      
+			      <i id="delete-graph" title="delete graph" class="btn fa fa-trash" style="height: 30px; width: 30px;font-size:30px;color:gray"  alt="delete graph" /> 
+			      
+			    </div>
+			
+				<div class="col col-md-9" id="workspace" style="height:100%; margin: 0;padding: 0;">
+				
+				</div>
+			
+				<div class="col col-md-3" id="sidemenu" style="height:100%; margin: 0;padding: 0;">
+					
+					<div class="nav-side-menu" >
+			
+					    <div style="color: yellow;" class="brand" id="menuheader" >Geoweaver v0.8.1</div>
+					
+					    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+					  	
+					    <div class="menu-list">
+					  
+					            <ul id="menu-content" class="menu-content collapse out">
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-dashboard fa-lg"></i> Overview
+					                  </a>
+					                </li>
+					
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-gift fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span data-toggle="collapse" data-target="#hosts" class="arrow collapsed active"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="hosts">
+					                    
+					                </ul>
+					                
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-car fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="processs">
+					                  
+					                </ul>
+					
+					
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-globe fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <i class="fa fa-plus" id="newworkflow"></i> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
+					                </li>  
+					                <ul class="sub-menu collapse" id="workflows">
+					                  
+					                </ul>
+									
+					
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-share fa-lg"></i> Share
+					                  </a>
+					                </li>
+					
+					                <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-info fa-lg"></i> About
+					                  </a>
+					                </li>
+					            </ul>
+					            
+					     </div>
+					     
+					</div>
+					
+				</div>
+				
+				
+			
+			</div>
+		
+		</div>
+		
+	    <script src="../geoweaver/js/d3.min.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workspace.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.host.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.process.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workflow.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.menu.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>
+	    
+	</body>
+
+</html>

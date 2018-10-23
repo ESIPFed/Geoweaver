@@ -1,0 +1,32 @@
+input.textbox { 
+    background-color: #000; 
+    font-family: FreeMono, monospace;
+    color: #aaa;
+    border: solid 1px #333; 
+    outline: none; 
+    padding: 0px 0px; 
+} 
+
+.textbox:hover { 
+    background-color: #222; 
+}
+
+.textbox:focus { 
+    background-color: #333; 
+}
+
+.button {
+    font-family: FreeMono, monospace;	
+    border: 1px solid #333;
+    background: #3a3;
+}
+
+.error {
+	font-weight: bold;
+	color: #e33;
+}
+
+.message {
+	font-weight: bold;
+	color: #3a3;
+}

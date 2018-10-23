@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html>
+
+<head lang="en" xmlns:th="http://www.thymeleaf.org" >
+    
+    <meta charset="UTF-8"></meta>
+    
+    <title>Geoweaver-SSH-Web</title>
+    
+    
+    <script src="../geoweaver/ssh/sockjs.js"  th:src="@{../geoweaver/ssh/sockjs.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.23.2/js/jquery.terminal.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.23.2/css/jquery.terminal.min.css" rel="stylesheet"/> -->
+    <script src="../geoweaver/ssh/jquery.terminal/js/jquery.terminal.min.js"></script>
+	<link href="../geoweaver/ssh/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet"/>
+	<script src="../geoweaver/ssh/jquery.terminal/js/unix_formatting.js"></script>
+    <!-- <script src="jquery.min.js"></script>
+    
+    <script src="jquery.terminal/js/jquery.mousewheel-min.js"></script>
+    <script src="jquery.terminal/js/jquery.terminal-min.js"></script>
+    <link href="jquery.terminal/css/jquery.terminal.css" rel="stylesheet"/> -->
+    <style>
+        body {
+            background-color: #000000;
+        }
+
+        #title {
+            color: yellow;
+        }
+        
+        #content.terminal {
+        	
+	        font-size: calc(var(--size, 1) * 15px) !important;
+	        
+	        --background: #222 !important;
+	        
+	        --color: white !important;
+	        
+	        font-family: monospace, courier, fixed, swiss, sans-serif !important;
+	        
+	        font-variant-ligatures: none !important;
+	        
+	        font-weight:400 !important;
+	        
+	        line-height: 18px !important;
+	        
+	        white-space: nowrap !important;
+	        
+	    }
+	    
+    </style>
+</head>
+
+<body>
+
+<h1 id="title">Geoweaver Web-based SSH</h1>
+
+<div id="content"></div>
+
+<form name="logout" action="geoweaver-ssh-login" method="GET" style="display:none;">
+	<!-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"></input> -->
+</form>
+
+<script th:inline="javascript">
+
+      /*<![CDATA[*/
+    
+    var shell;
+    var sshConnected = false;
+    var passwordPhase = false;
+    var user = [[${username}]], 
+    	host = [[${host}]], 
+    	port = [[${port}]], 
+    	token = [[${token}]];
+    var ws;
+    var last_prompt = null;
+    var password_cout = 0;
+	/* var host = window.location.hostname;
+	var port = window.location.port;
+	var pcol = window.location.protocol; */
+	var root = getContextURLPath();
+	var key = '${key}';
+	var username = '<sec:authentication property="principal" />';
+	//alert('ID:' + key + ',USERNAME:' + username);
+    var special = {
+      black:   "\x1b[1;30m",
+      red:     "\x1b[1;31m",
+      green:   "\x1b[1;32m",
+      yellow:  "\x1b[1;33m",
+      blue:    "\x1b[1;34m",
+      magenta: "\x1b[1;35m",
+      cyan:    "\x1b[1;36m",
+      white:   "\x1b[1;37m",
+      reset:   "\x1b[0m",
+      ready:   "]0;", 
+      prompt:  "$"
+    };
+    	  
+    function ws_onopen(e) {
+      
+      //shell.echo(special.white + "connected" + special.reset);
+      shell.echo("connected");
+      // link the SSH session established with spring security logon to the websocket session...
+      send(token);
+      shell.resume();
+    }
+    
+    function send(data) {
+    	
+        shell.pause();
+        
+        if(ws != null){
+      	
+        	ws.send(data);
+        
+        } else {
+        
+        	shell.error('not connected!');
+        
+        }
+    }
+
+    function ws_onclose(e) {
+    	
+        try{
+        
+        	shell.echo(special.white + "disconnected" + special.reset);
+            
+        	shell.destroy();
+            
+        	shell.purge();
+            
+        }catch(e){
+        	
+        	console.error(e);
+        }
+        
+    	document.forms['logout'].submit();
+    }
+
+    function ws_onerror(e) {
+    	
+        shell.echo(special.red + e + special.reset);
+        
+        shell.resume();
+      
+    }
+
+    function ws_onmessage(e) {
+      
+      try {
+    	
+        if(e.data.indexOf(special.prompt) == -1 && e.data.indexOf(special.ready) == -1) {
+            
+        	shell.echo(e.data);
+        	
+        }
+        
+        //if (e.data.indexOf(special.ready) != -1) {
+        
+        //	shell.resume();
+		
+        //}
+        
+      } catch(err) {
+      
+    	shell.error("** Invalid server response : " + e.data); 
+        
+    	if(last_prompt) {
+        
+    		shell.set_prompt(last_prompt);
+        
+    	}
+    	
+      }
+      
+      shell.resume();
+      
+    }
+
+	function getContextURLPath() {
+        var rootUrl = location.protocol;
+        rootUrl = rootUrl+"//"+location.host;
+        var path = location.pathname;
+        var tempStr = path.split('/');
+        rootUrl = rootUrl+"/"+tempStr[1];
+        return rootUrl;
+    }
+
+    $(document).ready(function ($) {
+		
+        ws = new SockJS("http://" + location.host + "/CyberConnector/web/shell");
+        
+        ws.onopen = function(e) { ws_onopen(e) };
+        
+        ws.onclose = function(e) { ws_onclose(e) };
+        
+        ws.onmessage = function(e) { ws_onmessage(e) };
+        
+        ws.onerror = function(e) { ws_onerror(e) };
+		
+        shell = $('#content').terminal(function (command, term) {
+        		
+        		send(command);
+        		
+            }, {
+            	
+                prompt: '['+user+'@'+host+': ~]# ',
+                
+                name: 'Geoweaver SSH on Web',
+                
+                scrollOnEcho: true,
+                
+                greetings: "SSH on Web started. Type 'exit' to quit. \nThis system is funded by National Science Foundation (https://nsf.gov)."
+                
+            }
+            
+        );
+		
+    });
+      
+    /*]]>*/
+    </script> 
+    
+</body>
+
+</html>

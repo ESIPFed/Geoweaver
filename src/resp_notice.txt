@@ -1,0 +1,19 @@
+
+Dear User,
+
+	Thank you for using CyberConnector online virtual product query interface. This mail is to inform that your order has been processed and the result is listed in the following.
+#################################################
+	OrderId: [orderid]
+	Result: [result] 
+#################################################
+	The result is usually a URL of a file. Copy the link, paste it into some browser address field and press enter. It will let you download a file to your local computer. The file is the final result for most cases. Basically, our system can handle all kinds of appropriate requests. If there is no URL, or the URL responses with a 404 not found code, or any other problem about the results, please feel free to contact Dr. Ziheng Sun. The email is zsun@gmu.edu and phone is 703-993-6124 (9:00am to 5:00pm on weekdays). 
+	
+	We very appreciate your usage of our product system. This is a system developed for a research project in pursuing for a science application level Cyberinfrastructure system. It is part of innovation in geoinformatics. If you are interested in discussing some related scientific topics or specific technical issues about the product, we are always ready to communicate with you on any of them.
+	 
+Best wishes,
+
+   CyberConnector Team
+   http://www3.csiss.gmu.edu/CyberConnector
+   ++++++++++++++++++++
+   CyberConnenctor is a NSF EarthCube funded project whose principle investigator is Prof. Liping Di from Center for Spatial Information Science and Systems, George Mason University. Visit our website for more details.
+
