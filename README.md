@@ -8,7 +8,6 @@ Geoweaver is a web system to allow users to easily compose and execute full-stac
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
 
-··
 2) boosting higher utilization ratio of the existing cyberinfrastructures by separating scientists from
 tedious technical details;
 
