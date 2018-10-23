@@ -43,7 +43,7 @@ coming soon
 
 # Demonstration
 
-coming soon
+![Geoweaver user interface](/geoweaver-ui.png)
 
 ### Personnel
 
