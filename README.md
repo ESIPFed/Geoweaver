@@ -33,6 +33,12 @@ Landsat image time series.
 
 coming soon
 
+## Dependencies
+
+d3.js
+
+graph-creator
+
 ## Quick Install
 
 coming soon
