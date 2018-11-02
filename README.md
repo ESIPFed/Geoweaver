@@ -27,6 +27,8 @@ Landsat image time series.
 
 [September Report](docs/ESIP-Geoweaver-Report-2.docx)
 
+[October Report](docs/ESIP-Geoweaver-Report-3.docx)
+
 # Installation
 
 ## Prerequisite
