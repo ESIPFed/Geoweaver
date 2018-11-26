@@ -105,7 +105,7 @@ Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into 
 
 ![LSTM-Crop concept](/docs/lstm.png)
 
-![Geoweaver user interface](/geoweaver-ui.png)
+![Geoweaver user interface]()
 
 # Documentation
 
