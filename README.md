@@ -37,7 +37,9 @@ Maven 3.5+ (for building from source)
 
 To use Geoweaver, download and copy the war to the webapps directory of Tomcat. Start Tomcat. Enter the following URL into browser address bar to open Geoweaver:
 
-`http://your-ip:your-port/Geoweaver/web/geoweaver`
+`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+
+Replace the `Geoweaver-<version>` with the real name of your download Geoweaver package. For example, `Geoweaver-0.6.6`.
 
 ### Cloud VM Template
 
@@ -67,30 +69,39 @@ Geoweaver supports Bash Shell scripts as processes. You can write bash command l
 
 ### Create A Workflow
 
+Geoweaver can link the processes together to form a workflow.
 
+![Create a workflow](docs/createworkflow.gif)
 
 ### Run Workflow
 
+Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.
+
+![Run a workflow](docs/runworkflow.gif)
 
 ### Browse Provenance
 
+Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.
 
+![Check provenance](docs/checkprovenance.gif)
 
 ### Retrieve and Display Results
 
+Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).
 
+![Get result](docs/getresult.gif)
 
-### Export workflows
+### I/O workflows
 
+The workflows can be exported and move around and imported back.
 
-### Upload workflows
-
-
-
-
-
+![Export workflow](docs/exportworkflow.gif)
 
 # Demonstration
+
+A live demo site is available in George Mason University: [I am a link, hit me](http://cube.csiss.gmu.edu/CyberConnector/web/geoweaver).
+
+Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps.  
 
 ![Geoweaver user interface](/geoweaver-ui.png)
 
