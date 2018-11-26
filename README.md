@@ -29,7 +29,7 @@ JDK 1.8+
 
 Tomcat 8.0+
 
-MySQL 5.5+ (run the gw.sql to initialize the database)
+MySQL 5.5+ (run the gw.sql to initialize the database. Recommanded command: `mysql -u root -p < gw.sql`)
 
 Maven 3.5+ (for building from source)
 
