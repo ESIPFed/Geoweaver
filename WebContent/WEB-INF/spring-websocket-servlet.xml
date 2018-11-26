@@ -7,10 +7,18 @@
         http://www.springframework.org/schema/websocket
         http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 		
-        <bean id="websocket" class="edu.gmu.csiss.earthcube.cyberconnector.ssh.ShellSocket"/>
+        <bean id="shellsocket" class="edu.gmu.csiss.earthcube.cyberconnector.ssh.ShellSocket"/>
+        
+        <bean id="tasksocket" class="edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket"/>
 		
         <websocket:handlers>
-            <websocket:mapping path="/shell" handler="websocket"/>
+            
+            <websocket:mapping path="/shell" handler="shellsocket"/>
+            
+            <websocket:mapping path="/task" handler="tasksocket"/>
+            
             <websocket:sockjs/>
+            
         </websocket:handlers>
+        
 </beans>

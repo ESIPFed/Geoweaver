@@ -19,18 +19,92 @@ public class WorkerManager {
 	private static List<Worker> workerlist;
 	
 	static{
-		//startup a list of workers
-		workerlist = new ArrayList();
+		
+		WorkerManager.init();
+		
 	}
 	
+	private static void init() {
+		
+		//startup a list of workers
+		workerlist = new ArrayList();
+		
+		for(int i=0;i<SysDir.worknumber;i++) {
+			
+			System.out.println("worker manager created a worker ");
+			
+			Worker w = new Worker();
+			
+			w.start();
+			
+			workerlist.add(w);
+			
+		}
+		
+	}
+	
+	public static Worker getNextAvailableWorker() {
+		
+		Worker w = null;
+		
+		for(int i=0;i<SysDir.worknumber;i++) {
+			
+			if(!((Worker)workerlist.get(i)).isStatus()) {
+				
+				w = workerlist.get(i);
+				
+				break;
+				
+			}
+			
+		}
+		
+		return w;
+		
+	}
+	
+	/**
+	 * Get the number of current working workers
+	 * @return
+	 */
 	public static int getCurrentWorkerNumber(){
-		return workerlist.size();
+		
+		int num = 0;
+		
+		for(int i=0;i<SysDir.worknumber;i++) {
+			
+			if(((Worker)workerlist.get(i)).isStatus()) {
+				
+				num++;
+				
+			}
+			
+		}
+		
+		return num;
+		
+	}
+	
+	/**
+	 * only used for maven test
+	 * @throws InterruptedException 
+	 */
+	public static void waitJoin() throws InterruptedException {
+		
+		for(int i=0;i<SysDir.worknumber;i++) {
+			
+			workerlist.get(i).join();
+			
+		}
+		
 	}
 	
 	public static Worker createANewWorker(Task t){
-		Worker w = new Worker(t);
-		w.start();
-		workerlist.add(w);
+		//add the task to a empty worker
+		Worker w = getNextAvailableWorker();
+		w.setTask(t);
+//		w.start();
+//		workerlist.add(w);
 		return w;
 	}
 
@@ -41,14 +115,33 @@ public class WorkerManager {
 	 */
 	public static int getNumberOfAvailableWorkers(){
 		
-		return (SysDir.worknumber-workerlist.size());
+		int num = 0;
+		
+		for(int i=0;i<SysDir.worknumber;i++) {
+			
+			if(!workerlist.get(i).isStatus()) {
+				
+				num++;
+				
+			}
+			
+		}
+		return num;
+//		return (SysDir.worknumber-workerlist.size());
 	}
 	/**
-	 * 
+	 * notify manager that it is available now
 	 * @param w
 	 */
 	public static void notifyWorkerManager(Worker w){
-		workerlist.remove(w);
+		
+		//check the waiting list to start running new task
+		
+//		TaskManager.notifyWaitinglist();
+		
+		TaskManager.done(w.getTask());
+		
+//		workerlist.remove(w);
 	}
 	
 	public static final void main(String[] args){

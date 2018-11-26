@@ -28,6 +28,10 @@ import javax.xml.soap.SOAPException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -60,6 +64,31 @@ public class BaseTool {
 		return isnull;
 	}
 	
+	public static String array2String(String[] arr, String splitter) {
+		
+		if (arr.length > 0) {
+			
+		    StringBuilder nameBuilder = new StringBuilder();
+
+		    for (String n : arr) {
+		        nameBuilder.append(n).append(splitter);
+		        // can also do the following
+		        // nameBuilder.append("'").append(n.replace("'", "''")).append("',");
+		    }
+
+//		    nameBuilder.deleteCharAt(nameBuilder.length() - 1);
+
+		    return nameBuilder.toString();
+		    
+		} else {
+		    
+			return "";
+			
+		}
+		
+		
+	}
+	
 	public static String long2Date(long time) {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -67,6 +96,28 @@ public class BaseTool {
 		return sdf.format(time);
 		
 	}
+	
+
+	public static String toJSONString(Object value) {
+		String json = null;
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+
+		try {
+			json = ow.writeValueAsString(value);
+
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return json;
+	}
+
 	/**
 	 * Write string to file
 	 * @param content
@@ -498,7 +549,7 @@ public class BaseTool {
      * @return
      * DATETIME
      */
-    public String getCurrentMySQLDatetime(){
+    public static String getCurrentMySQLDatetime(){
     	java.util.Date dt = new java.util.Date();
     	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	String currentTime = sdf.format(dt);

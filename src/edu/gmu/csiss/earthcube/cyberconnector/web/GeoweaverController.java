@@ -1,6 +1,12 @@
 package edu.gmu.csiss.earthcube.cyberconnector.web;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import javax.annotation.PreDestroy;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -8,19 +14,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
+import edu.gmu.csiss.earthcube.cyberconnector.ssh.FileTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.HostTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.ProcessTool;
+import edu.gmu.csiss.earthcube.cyberconnector.ssh.RSAEncryptTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSession;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionImpl;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionManager;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.WorkflowTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
 /**
  * 
@@ -119,7 +129,92 @@ public class GeoweaverController {
 			
 		}catch(Exception e) {
 			
-//			e.printStackTrace();
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/key", method = RequestMethod.POST)
+    public @ResponseBody String getpublickey(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			resp = RSAEncryptTool.getPublicKey(session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/log", method = RequestMethod.POST)
+    public @ResponseBody String one_history(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			String hid = request.getParameter("id");
+			
+			if(type.equals("process")) {
+				
+				resp = ProcessTool.one_history(hid);
+				
+			}else if(type.equals("workflow")) {
+				
+				resp = WorkflowTool.one_history(hid);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/logs", method = RequestMethod.POST)
+    public @ResponseBody String all_history(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			String id = request.getParameter("id");
+			
+			if(type.equals("process")) {
+				
+				resp = ProcessTool.all_history(id);
+				
+			}else if(type.equals("workflow")) {
+				
+				resp = WorkflowTool.all_history(id);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
 			
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
 			
@@ -164,29 +259,6 @@ public class GeoweaverController {
 		
 	}
 	
-	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
-    public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request){
-		
-		String resp = null;
-		
-		try {
-			
-			String type = request.getParameter("type");
-			
-			
-			
-		}catch(Exception e) {
-			
-			e.printStackTrace();
-			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
-	
 	@RequestMapping(value = "/checkLiveSession", method = RequestMethod.POST)
     public @ResponseBody String checklivesession(ModelMap model, WebRequest request){
 		
@@ -211,9 +283,40 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
+    public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			String id = request.getParameter("id");
+			
+			String mode = request.getParameter("mode");
+			
+			String[] hosts = request.getParameterValues("hosts[]");
+			
+			String[] encrypted_password = request.getParameterValues("passwords[]");
+			
+			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
+			
+			resp = WorkflowTool.execute(id, mode, hosts, passwords, null);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/executeProcess", method = RequestMethod.POST)
-    public @ResponseBody String executeProcess(ModelMap model, WebRequest request){
+    public @ResponseBody String executeProcess(ModelMap model, WebRequest request, HttpSession session){
 		
 		String resp = null;
 		
@@ -223,10 +326,135 @@ public class GeoweaverController {
 			
 			String hid = request.getParameter("hostId");
 			
-			String password = request.getParameter("pswd");
+			String encrypted_password = request.getParameter("pswd");
 			
+			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
+			resp = ProcessTool.execute(pid, hid, password, null);
 			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/edit", method = RequestMethod.POST)
+    public @ResponseBody String edit(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			if(type.equals("host")) {
+				
+//				String hostname = request.getParameter("hostname");
+//				
+//				String hostip = request.getParameter("hostip");
+//				
+//				String hostport = request.getParameter("hostport");
+//				
+//				String username = request.getParameter("username");
+//				
+//				String hostid = HostTool.update(hostname, hostip, hostport, username, null);
+//				
+//				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
+				
+			}else if(type.equals("process")) {
+				
+				String lang = request.getParameter("lang");
+				
+				String code = request.getParameter("code");
+				
+				String name = request.getParameter("name");
+				
+				String desc = request.getParameter("desc");
+				
+				String id = request.getParameter("id");
+				
+				ProcessTool.update(id, name, lang, code, desc);
+				
+				resp = "{\"id\" : \"" + id + "\"}";
+				
+			}else if(type.equals("workflow")) {
+				
+				String wid = request.getParameter("id");
+				
+				String nodes = request.getParameter("nodes");
+				
+				String edges = request.getParameter("edges");
+				
+				WorkflowTool.update(wid, nodes, edges);
+				
+				resp = "{\"id\" : \"" + wid + "\"}";
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/file/{file_name}", method = RequestMethod.GET)
+	public void getFile(@PathVariable("file_name") String fileName, HttpServletResponse response) {
+		
+	    try {
+	    
+	    	// get your file as InputStream
+	    	String fileloc = SysDir.geoweaver_file_path + fileName;
+	      
+	    	File my_file = new File(fileloc);
+	      
+	    	InputStream is = new FileInputStream(my_file);
+	      
+	    	// copy it to response's OutputStream
+	      
+	    	org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+	      
+	    	response.flushBuffer();
+	    	
+	    } catch (Exception ex) {
+	      
+	    	logger.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
+	    	
+	    	throw new RuntimeException("IOError writing file to output stream");
+	    	
+	    }
+
+	}
+	
+	@RequestMapping(value = "/retrieve", method = RequestMethod.POST)
+    public @ResponseBody String retrieve(ModelMap model, WebRequest request, HttpSession session){
+		
+		//retrieve file from remote to geoweaver
+		
+		String resp = null;
+		
+		try {
+			
+			String hid = request.getParameter("hostid");
+			
+			String encrypted = request.getParameter("pswd");
+			
+			String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+			
+			String filepath = request.getParameter("filepath");
+			
+			resp = FileTool.scp_download(hid, password, filepath);
 			
 		}catch(Exception e) {
 			
@@ -261,7 +489,7 @@ public class GeoweaverController {
 				
 				String hostid = HostTool.add(hostname, hostip, hostport, username, null);
 				
-				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
+				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\" }";
 				
 			}else if(type.equals("process")) {
 				
@@ -275,13 +503,19 @@ public class GeoweaverController {
 				
 				String pid = ProcessTool.add(name, lang, code, desc);
 				
-				resp = "{\"id\" : \"" + pid + "\"}";
+				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\"}";
 				
 			}else if(type.equals("workflow")) {
 				
-				WorkflowTool.add();
+				String name = request.getParameter("name");
 				
-				resp = "";
+				String nodes = request.getParameter("nodes");
+				
+				String edges = request.getParameter("edges");
+				
+				String wid = WorkflowTool.add(name, nodes, edges);
+				
+				resp = "{\"id\" : \"" + wid + "\", \"name\":\"" + name + "\"}";
 				
 			}
 			
@@ -397,7 +631,7 @@ public class GeoweaverController {
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token);
+            	boolean success = sshSession.login(host, port, username, password, token, false);
             	
             	logger.info("SSH login: {}={}", username, success);
                         
@@ -458,13 +692,13 @@ public class GeoweaverController {
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token);
+            	boolean success = sshSession.login(host, port, username, password, token, false);
             	
             	logger.info("SSH login: {}={}", username, success);
                         
                 logger.info("adding SSH session for {}", username);
                 
-                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
+//                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
                 sshSessionManager.sessionsByToken.put(token, sshSession);
         		

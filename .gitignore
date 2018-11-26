@@ -1,4 +1,5 @@
 /target/
+/test/
 .idea/
 /cyberconnector-portal/src/main/webapp/images/psd
 *.iml

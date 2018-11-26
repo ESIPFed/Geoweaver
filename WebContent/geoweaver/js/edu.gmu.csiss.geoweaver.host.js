@@ -197,13 +197,45 @@ edu.gmu.csiss.geoweaver.host = {
 			
 		},
 		
+		refreshHostList: function(){
+			
+			$.ajax({
+        		
+        		url: "list",
+        		
+        		method: "POST",
+        		
+        		data: "type=host"
+        		
+        	}).done(function(msg){
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		$(".hostselector").find('option').remove().end();
+        		
+        		for(var i=0;i<msg.length;i++){
+        			
+        			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+        			
+        		}
+        		
+        	}).fail(function(jxr, status){
+				
+				console.error("fail to list host");
+				
+			});
+			
+		},
+		
 		addMenuItem: function(one){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li id=\"host-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'host')\">" + 
+			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li id=\"host-" + one.id + 
+					
+				"\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'host')\">" + 
     				
 				one.name + "</a> <i class=\"fa fa-external-link-square subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.host.openssh('"+
             				
-				one.id+"')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
             				
 				one.id+"','host')\"></i> </li>");
 			
@@ -221,21 +253,38 @@ edu.gmu.csiss.geoweaver.host = {
 			
 		},
 		
-		validateIP: function(value){
+//		validateIP: function(value){
+//			
+//			var ip = "^(?:(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)\.){3}(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)$";
+//			
+//            return value.match(ip);
+//			
+//		},
+		
+		validateIP: function(ipaddress) {  
 			
-			var ip = "^(?:(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)\.){3}" +
-            "(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)$";
+			var valid = false;
+		  
+			if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+		  
+				valid =  true  
+		  
+			}else{
+				
+				alert("You have entered an invalid IP address!")  
+				
+			}  
 			
-            return value.match(ip);
-			
-		},
+			return valid;
+		  
+		},  
 		
 		precheck: function(){
 			
 			var valid = false;
 			
-			if($("#hostname")&&$("#hostip")&&$("#hostport")&&$("#username")
-					&&this.validateIP($("#hostip"))&&$.isNumeric($("#hostport"))){
+			if($("#hostname").val()&&$("#hostip").val()&&$("#hostport").val()&&$("#username").val()
+					&&this.validateIP($("#hostip").val())&&$.isNumeric($("#hostport").val())){
 				
 				valid = true;
 				
@@ -245,7 +294,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 		},
 		
-		add: function(){
+		add: function(callback){
 			
 			if(this.precheck()){
 				
@@ -270,6 +319,8 @@ edu.gmu.csiss.geoweaver.host = {
 		    		msg = $.parseJSON(msg);
 		    		
 		    		edu.gmu.csiss.geoweaver.host.addMenuItem(msg);
+		    		
+		    		callback();
 		    		
 		    	}).fail(function(jqXHR, textStatus){
 		    		
@@ -328,10 +379,12 @@ edu.gmu.csiss.geoweaver.host = {
 	                
 	                action: function(dialogItself){
 	                	
-	                	edu.gmu.csiss.geoweaver.host.add();
+	                	edu.gmu.csiss.geoweaver.host.add(function(){
+	                		
+		                    dialogItself.close();
+		                    
+	                	});
 	                	
-	                    dialogItself.close();
-	                    
 	                }
 	            
 	            },{

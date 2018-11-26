@@ -1,5 +1,8 @@
 package edu.gmu.csiss.earthcube.cyberconnector.user;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -380,7 +383,7 @@ public class UserTool {
 		
 		Message msg = null;
 		
-		String sql = "select count(*) as total from users where name = '" + user.getName() + "' and pswd = '" + user.getPassword() + "';";
+		String sql = "select count(*) as total from users where name = '" + user.getName() + "' and pswd = '" + UserTool.get_SHA_512_SecurePassword(user.getPassword(), user.getName()) + "';";
 		
 		logger.debug(sql);
 		
@@ -461,6 +464,30 @@ public class UserTool {
 		return msg;
 		
 	}
+	/**
+	 * add on 10/31/2018
+	 * @param passwordToHash
+	 * @param salt
+	 * @return
+	 */
+	public static String get_SHA_512_SecurePassword(String passwordToHash, String salt){
+		String generatedPassword = null;
+	   try {
+	         MessageDigest md = MessageDigest.getInstance("SHA-512");
+	         md.update(salt.getBytes(StandardCharsets.UTF_8));
+	         byte[] bytes = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8));
+	         StringBuilder sb = new StringBuilder();
+	         for(int i=0; i< bytes.length ;i++){
+	            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+	         }
+	         generatedPassword = sb.toString();
+       } 
+       catch (NoSuchAlgorithmException e){
+    	   
+         e.printStackTrace();
+       }
+	    return generatedPassword;
+	}
 	
 	public static Message registerNewUser(User user){
 		
@@ -534,7 +561,7 @@ public class UserTool {
 		else { 
 			
 			String sql = "INSERT INTO users (name,  pswd, address, fullname, sex, type,  last_login_time,  last_operate_time,  status,  token, email,  phone, department,  institute,  last_ip) VALUES ( '"
-					+ user.getName() +"','" + user.getPassword() + "','" + user.getAddress() + "','" + user.getFullname() + "','" + user.getSex() + "','" + user.getType() + "','" + tool.getCurrentMySQLDatetime() + "','" 
+					+ user.getName() +"','" + UserTool.get_SHA_512_SecurePassword(user.getPassword(), user.getName()) + "','" + user.getAddress() + "','" + user.getFullname() + "','" + user.getSex() + "','" + user.getType() + "','" + tool.getCurrentMySQLDatetime() + "','" 
 					+ tool.getCurrentMySQLDatetime() + "','" + user.getStatus() + "','" + user.getToken() + "','" 
 					+ user.getEmail() + "','" + user.getPhone() + "','" +user.getDepartment() + "','" + user.getInstitute() + "','"
 					+ user.getLast_ip() +"' );";
@@ -722,9 +749,6 @@ public class UserTool {
 		
 	}
 	
-	
-	
-	
 	/**
 	 * Update the information of existing user
 	 * @param user
@@ -733,8 +757,8 @@ public class UserTool {
 	public static Message resetPassword(User user){
 		
 		Message msg = new Message("database", "user_edit", "success", true);
-						
-		String sql = "update users set pswd='"+ user.getPassword() + "' where name = '" + user.getName() + "' ; ";
+		
+		String sql = "update users set pswd='"+ UserTool.get_SHA_512_SecurePassword(user.getPassword(), user.getName()) + "' where name = '" + user.getName() + "' ; ";
 		
 		logger.debug(sql);
 		

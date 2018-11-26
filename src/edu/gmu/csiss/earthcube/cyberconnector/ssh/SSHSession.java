@@ -29,10 +29,13 @@ import java.io.OutputStream;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.socket.WebSocketSession;
 
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+
 public interface SSHSession {
 
 	/**
-	 * 
+	 * login with user name and password
 	 * @param host
 	 * @param port
 	 * @param username
@@ -42,15 +45,37 @@ public interface SSHSession {
 	 * @return
 	 * @throws AuthenticationException
 	 */
-    boolean login(String host, String port, String username, String password, String token) throws AuthenticationException;
+    public boolean login(String host, String port, String username, String password, String token, boolean isShell) throws AuthenticationException;
+    
+    public boolean login(String hostid, String password, String token, boolean isShell);
 
-    boolean logout();
+    public boolean logout();
+    
+    public Session getSSHJSession();
+    
+    public SSHClient getSsh();
 
-    BufferedReader getSSHInput();
+	public void setSSHJSession(Session session);
+	
+	public String getHistory_process();
 
-    OutputStream getSSHOutput();
+	public void setHistory_process(String history_process);
 
-    void setWebSocketSession(WebSocketSession session);
+	public String getHistory_id();
+
+	public void setHistory_id(String history_id);
+
+	public BufferedReader getSSHInput();
+
+	public OutputStream getSSHOutput();
+    
+	public void setWebSocketSession(WebSocketSession session);
+	
+	public void runBash(String script, String processid, boolean isjoin);
+	
+	public void runMultipleBashes(String[] script, String processid);
+	
+	public void saveHistory(String logs);
     
     public String getUsername() ;
 

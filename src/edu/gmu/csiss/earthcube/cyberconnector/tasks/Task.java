@@ -27,4 +27,6 @@ public abstract class Task extends Observable{
 	 * If the execution fails
 	 */
 	public abstract void failureCallback(Exception e);
+	
+	public abstract String getName();
 }

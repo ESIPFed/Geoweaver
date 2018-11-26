@@ -35,46 +35,46 @@ public class HostTool {
 			    	String column_name = rsmd.getMetaData().getColumnName(i);
 
 			        if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.ARRAY){
-			         obj.put(column_name, rsmd.getArray(column_name));
+			        	obj.put(column_name, rsmd.getArray(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BIGINT){
-			         obj.put(column_name, rsmd.getInt(column_name));
+			        	obj.put(column_name, rsmd.getInt(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BOOLEAN){
-			         obj.put(column_name, rsmd.getBoolean(column_name));
+			        	obj.put(column_name, rsmd.getBoolean(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BLOB){
-			         obj.put(column_name, rsmd.getBlob(column_name));
+			        	obj.put(column_name, rsmd.getBlob(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.DOUBLE){
-			         obj.put(column_name, rsmd.getDouble(column_name)); 
+			        	obj.put(column_name, rsmd.getDouble(column_name)); 
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.FLOAT){
-			         obj.put(column_name, rsmd.getFloat(column_name));
+			        	obj.put(column_name, rsmd.getFloat(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.INTEGER){
-			         obj.put(column_name, rsmd.getInt(column_name));
+			        	obj.put(column_name, rsmd.getInt(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.NVARCHAR){
-			         obj.put(column_name, rsmd.getNString(column_name));
+			        	obj.put(column_name, rsmd.getNString(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.VARCHAR){
-			         obj.put(column_name, rsmd.getString(column_name));
+			        	obj.put(column_name, rsmd.getString(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.TINYINT){
-			         obj.put(column_name, rsmd.getInt(column_name));
+			        	obj.put(column_name, rsmd.getInt(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.SMALLINT){
-			         obj.put(column_name, rsmd.getInt(column_name));
+			        	obj.put(column_name, rsmd.getInt(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.DATE){
-			         obj.put(column_name, rsmd.getDate(column_name));
+			        	obj.put(column_name, rsmd.getDate(column_name));
 			        }
 			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.TIMESTAMP){
-			        obj.put(column_name, rsmd.getTimestamp(column_name));   
+			        	obj.put(column_name, rsmd.getTimestamp(column_name));   
 			        }
 			        else{
-			         obj.put(column_name, rsmd.getObject(column_name));
+			        	obj.put(column_name, rsmd.getObject(column_name));
 			        }
 			      }
 
@@ -97,6 +97,37 @@ public class HostTool {
 		
 		return detail;
 		
+	}
+	
+	public static String[] getHostDetailsById(String id) {
+		
+		StringBuffer sql = new StringBuffer("select * from hosts where id = '").append(id).append("'; ");
+		
+		String[] hostdetails = new String[4] ;
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			if(rs.next()) {
+				
+				hostdetails[0] = rs.getString("name");
+				
+				hostdetails[1] = rs.getString("ip");
+				
+				hostdetails[2] = rs.getString("port");
+				
+				hostdetails[3] = rs.getString("user");
+				
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return hostdetails;
 	}
 	
 	/**

@@ -44,7 +44,7 @@ edu.gmu.csiss.geoweaver.menu = {
 //			
 			dialog.getModalContent().css('height', '100%');
 //			
-			dialog.getModalBody().css('height', '75%');
+			dialog.getModalBody().css('height', '85%');
 			
 			dialog.getModalBody().children()[0].style.height =  '100%';
 			
@@ -95,16 +95,19 @@ edu.gmu.csiss.geoweaver.menu = {
 					
 					if(val!=null&&val!="null"&&val!=""){
 						
-						if(i=="code"){
-							
-							val = edu.gmu.csiss.geoweaver.menu.unescape(val);
-							
+//						if(i=="code"){
+//							
+//							val = edu.gmu.csiss.geoweaver.menu.unescape(val);
+//							
+//						}
+						
+						if(typeof val =='object')
+						{
+						  val = JSON.stringify(val);
 						}
 						
-
-						content += "    <dt class=\"col col-md-5\">"+i+"</dt>"+
-							"    <dd class=\"col col-md-5\">"+val+"</dd>";
-						
+						content += "    <dt class=\"col col-md-3\">"+i+"</dt>"+
+						"    <dd class=\"col col-md-7\">"+val+"</dd>";
 					}
 
 				});

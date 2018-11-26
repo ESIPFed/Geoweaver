@@ -57,7 +57,9 @@ public class Granule {
         String id = this.name.replaceAll("/", "_");
         p.setName(id);
         p.setId(id);
-        p.setDesc(gRequest.collection_desc);
+        p.setTitle(this.name);
+        p.setDesc("From collection: " + gRequest.collection_desc);
+
         p.setBegintime(this.time_start);
         p.setEndtime(this.time_end);
         p.setWest(gRequest.west);

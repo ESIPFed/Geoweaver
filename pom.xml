@@ -232,8 +232,8 @@
         <url>http://csiss.gmu.edu</url>
     </organization>
     <scm>
-        <developerConnection>Ziheng Sun, Liping Di, Juozas Gaigalas</developerConnection>
-        <url>http://csiss.gmu.edu</url>
+        <developerConnection>Ziheng Sun</developerConnection>
+        <url>http://zihengsun.wordpress.com</url>
     </scm>
     <ciManagement>
         <system>ESIPLab</system>

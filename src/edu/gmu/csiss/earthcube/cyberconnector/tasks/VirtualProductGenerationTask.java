@@ -20,6 +20,8 @@ public class VirtualProductGenerationTask extends Task {
 
 	BaseTool tool = new BaseTool();
 	Logger logger = Logger.getLogger(this.getClass());
+	
+	
 	/**
 	 * Construction function
 	 * @param oid
@@ -189,6 +191,12 @@ public class VirtualProductGenerationTask extends Task {
 		//notify the task list observer
 		setChanged();
 		notifyObservers(this);
+	}
+
+	@Override
+	public String getName() {
+		
+		return oid;
 	}
 
 }
