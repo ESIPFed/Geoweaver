@@ -63,7 +63,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 ### Add A Server
 
-Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled.
+Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
 
 ![Add a host](docs/addhost.gif)
 
@@ -134,6 +134,8 @@ This project is impossible without the support of several fantastic open source 
 [graph-creator](https://github.com/cjrd/directed-graph-creator) - MIT License
 
 [bootstrap](https://github.com/twbs/bootstrap) - MIT License
+
+[CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
 
 ## License
 
