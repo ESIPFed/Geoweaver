@@ -39,7 +39,7 @@ To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the 
 
 `http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
 
-Replace the `Geoweaver-<version>` with the real name of your download Geoweaver package. For example, `Geoweaver-0.6.6`.
+Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.6`.
 
 ### Cloud VM Template
 
