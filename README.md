@@ -29,13 +29,19 @@ JDK 1.8+
 
 Tomcat 8.0+
 
+MySQL 5.5+ (run the gw.sql to initialize the database)
+
 Maven 3.5+ (for building from source)
 
 ## Quick Install
 
 ### Tomcat War
 
-To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. Enter the following URL into browser address bar to open Geoweaver:
+To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. 
+
+After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). Fill the fields with correct values. (**Note: the database must be initiated first.**)
+
+Then enter the following URL into browser address bar to open Geoweaver:
 
 `http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
 
