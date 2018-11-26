@@ -19,6 +19,61 @@ quality of the result maps;
 5) proof the effectiveness of operationally using large-scale distributed LSTM network in classifying
 Landsat image time series.
 
+# Installation
+
+## Prerequisite
+
+Ubuntu 16.04+
+
+JDK 1.8+
+
+Tomcat 8.0+
+
+Maven 3.5+ (for building from source)
+
+## Quick Install
+
+### Tomcat War
+
+To use Geoweaver, download and copy the war to the webapps directory of Tomcat. Start Tomcat. Enter the following URL into browser address bar to open Geoweaver:
+
+`http://your-ip:your-port/Geoweaver/web/geoweaver`
+
+### Cloud VM Template
+
+We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go here to download the template.
+
+### Docker
+
+We published a Docker image in DockerHub for docker users. 
+
+## Build from source
+
+Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`.
+
+## Usage
+
+### Link A Server
+
+
+
+### Create A Process
+
+
+### Create A Workflow
+
+
+### Run Workflow
+
+
+### Retrieve and Display Results
+
+
+
+# Demonstration
+
+![Geoweaver user interface](/geoweaver-ui.png)
+
 # Documentation
 
 [Project Proposal](docs/geoweaver-proposal-revised-v4.pdf)
@@ -29,29 +84,15 @@ Landsat image time series.
 
 [October Report](docs/ESIP-Geoweaver-Report-3.docx)
 
-# Installation
+## Open Source Libraries
 
-## Prerequisite
+This project is impossible without the support of several fantastic open source libraries.
 
-coming soon
+[d3.js](https://github.com/d3/d3) - BSD 3-Clause
 
-## Dependencies
+[graph-creator](https://github.com/cjrd/directed-graph-creator) - MIT License
 
-d3.js
-
-graph-creator
-
-## Quick Install
-
-coming soon
-
-## Build from source
-
-coming soon
-
-# Demonstration
-
-![Geoweaver user interface](/geoweaver-ui.png)
+[bootstrap](https://github.com/twbs/bootstrap) - MIT License
 
 ### Personnel
 
