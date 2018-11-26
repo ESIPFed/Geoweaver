@@ -53,20 +53,40 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 ## Usage
 
-### Link A Server
+### Add A Server
 
+Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled.
 
+![Add a host](docs/addhost.gif)
 
 ### Create A Process
 
+Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
+
+![Add a process](docs/addprocess.gif)
 
 ### Create A Workflow
+
 
 
 ### Run Workflow
 
 
+### Browse Provenance
+
+
+
 ### Retrieve and Display Results
+
+
+
+### Export workflows
+
+
+### Upload workflows
+
+
+
 
 
 
