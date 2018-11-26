@@ -35,7 +35,7 @@ Maven 3.5+ (for building from source)
 
 ### Tomcat War
 
-To use Geoweaver, download and copy the war to the webapps directory of Tomcat. Start Tomcat. Enter the following URL into browser address bar to open Geoweaver:
+To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. Enter the following URL into browser address bar to open Geoweaver:
 
 `http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
 
@@ -69,7 +69,7 @@ Geoweaver supports Bash Shell scripts as processes. You can write bash command l
 
 ### Create A Workflow
 
-Geoweaver can link the processes together to form a workflow.
+Geoweaver can link the processes together to form a workflow. To connect two processes, press `shift` key while dragging from one process to another.
 
 ![Create a workflow](docs/createworkflow.gif)
 
@@ -103,6 +103,8 @@ A live demo site is available in George Mason University: [I am a link, hit me](
 
 Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps.  
 
+![LSTM-Crop concept](/docs/lstm.png)
+
 ![Geoweaver user interface](/geoweaver-ui.png)
 
 # Documentation
@@ -125,9 +127,13 @@ This project is impossible without the support of several fantastic open source 
 
 [bootstrap](https://github.com/twbs/bootstrap) - MIT License
 
+## License
+
+MIT
+
 ### Personnel
 
-Ziheng Sun, zsun@gmu.edu
+Ziheng Sun, zsun@gmu.edu (Principal Investigator)
 
 Liping Di, ldi@gmu.edu
 
