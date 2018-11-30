@@ -143,5 +143,5 @@ MIT
 
 ### Author
 
-(developer list)[authors.md]
+[developer list](authors.md)
 
