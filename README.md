@@ -2,7 +2,7 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a web system to allow users to easily compose and execute full-stack Long Short Term Memory (LSTM) Recurrent Neural Network (RNN) workflows in web browsers by taking advantage of the online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries.
+Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. 
 
 # Project Goals
 
@@ -107,7 +107,7 @@ The workflows can be exported and move around and imported back.
 
 A live demo site is available in George Mason University: [I am a link, hit me](http://cube.csiss.gmu.edu/CyberConnector/web/geoweaver).
 
-Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps.  
+Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and web-based workflow system. 
 
 ![LSTM-Crop concept](/docs/lstm.png)
 
@@ -141,13 +141,7 @@ This project is impossible without the support of several fantastic open source 
 
 MIT
 
-### Personnel
+### Author
 
-Ziheng Sun, zsun@gmu.edu (Principal Investigator)
-
-Liping Di, ldi@gmu.edu
-
-Center for Spatial Information Science and Systems
-
-George Mason University
+(developer list)[authors.md]
 
