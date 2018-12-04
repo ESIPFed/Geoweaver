@@ -4,6 +4,7 @@
 /cyberconnector-portal/src/main/webapp/images/psd
 *.iml
 
+*.class
 
 **/.DS_Store
 

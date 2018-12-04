@@ -53,7 +53,17 @@ We provide a ready-to-use cloud template for you to install on mainstream cloud 
 
 ### Docker
 
-We published a Docker image in DockerHub for docker users. 
+We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. 
+
+First, you need clone this repo to your machine `git clone https://github.com/ESIPFed/Geoweaver.git`. 
+
+Then, enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](releases) and save it in the created `target` folder. (Warning: make sure the version number in docker-compose.yml is the same with the one you downloaded. If they are different, update the docker-compose.yml.)
+
+Finally, run `docker-compose up -d`. After the command is finished, Geoweaver should be up and running. The address is the same:
+
+`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+
+If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
 ## Build from source
 
