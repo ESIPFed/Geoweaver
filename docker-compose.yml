@@ -2,9 +2,9 @@ db:
   image: mysql:5.5
   environment:
     MYSQL_ROOT_PASSWORD: aA123456789
-#    MYSQL_DATABASE: cyberconnector
-#    MYSQL_USER: example_db_user
-#    MYSQL_PASSWORD: example_db_pass
+#   MYSQL_DATABASE: cyberconnector
+#   MYSQL_USER: example_db_user
+#   MYSQL_PASSWORD: example_db_pass
   ports:
     - "3306:3306"
   volumes:
@@ -13,7 +13,7 @@ db:
 web:
   image: tomcat:8.5-jre8
   # Environment variables do not appear to be getting loaded the first time Tomcat starts!
-  environment:
+#  environment:
 #    JDBC_URL: jdbc:mysql://db:3306/cyberconnector?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
 #    JDBC_USER: example_db_user
 #    JDBC_PASS: example_db_pass
