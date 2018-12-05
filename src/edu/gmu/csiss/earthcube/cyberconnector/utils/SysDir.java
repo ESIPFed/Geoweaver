@@ -57,6 +57,8 @@ public class SysDir {
 	public static String database_driver = null;
 
 	public static String database_url = null;
+	
+	public static String database_docker_url = null;
 
 	public static String database_user = null;
 
@@ -142,6 +144,7 @@ public class SysDir {
 
 			database_url = p.getProperty("database_url");
 
+			database_docker_url = p.getProperty("database_docker_url");
 
 			// SECRET PROPERTIES
 

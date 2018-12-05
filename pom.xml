@@ -7,8 +7,8 @@
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
     <properties>
-        <org.springframework-version>[4.3.17,)</org.springframework-version>
-        <org.springsecurity-version>5.0.8.RELEASE</org.springsecurity-version>
+        <org.springframework-version>4.3.19.RELEASE</org.springframework-version>
+        <org.springsecurity-version>4.2.9.RELEASE</org.springsecurity-version>
     </properties>
     <build>
         <sourceDirectory>src</sourceDirectory>

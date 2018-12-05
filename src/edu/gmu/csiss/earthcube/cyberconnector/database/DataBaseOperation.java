@@ -34,10 +34,42 @@ public class DataBaseOperation {
 	private  static Connection q_conn, e_conn,u_conn;
 	
 	static{
+		
 		driver = SysDir.database_driver;
 		database_url = SysDir.database_url;
 		user = SysDir.database_user;
 		password = SysDir.database_password;
+		
+		//check if docker 
+		
+		try {
+			
+			Class.forName(driver);	
+			
+			Connection conn = DriverManager.getConnection(database_url, user, password);
+			
+			if(conn.isClosed()) {
+				
+				database_url = SysDir.database_docker_url;
+				
+				logger.warn("the normal database is closed. Switch to docker version.");
+				
+			}else {
+				
+				conn.close();
+				
+			}
+			
+		} catch(Exception e) {   
+			
+//			e.printStackTrace();
+			
+			database_url = SysDir.database_docker_url;
+			
+			logger.warn("the normal database has error. Switch to docker version.");
+			
+		} 
+		
 //		try {
 //			Properties p = new Properties();			
 //			FileInputStream ferr = new FileInputStream(BaseTool.getClassPath() + File.separator +"database.properties");
