@@ -63,6 +63,8 @@ Finally, run `docker-compose up -d`. After the command is finished, Geoweaver sh
 
 `http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
 
+Notice: Make sure the local services like mysql and tomcat are better shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`.
+
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
 ## Build from source
