@@ -33,6 +33,10 @@ MySQL 5.5+ (run the gw.sql to initialize the database. Recommanded command: `mys
 
 Maven 3.5+ (for building from source)
 
+Docker 18.09.1+ (for install via docker)
+
+Docker-compose 1.23.1+ (for install via docker)
+
 ## Quick Install
 
 ### Tomcat War
