@@ -29,6 +29,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSession;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionImpl;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionManager;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.WorkflowTool;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
@@ -437,6 +438,49 @@ public class GeoweaverController {
 
 	}
 	
+	/**
+	 * upload file to remote host
+	 * @param model
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody String upload(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			String rel_filepath = request.getParameter("filepath");
+			
+			String rel_url = "../"+SysDir.upload_file_path+"/";
+			
+			String filename = rel_filepath.substring(rel_url.length());
+			
+			String filepath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+			
+			String hid = request.getParameter("hid");
+			
+			String encrypted = request.getParameter("encrypted");
+			
+			String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+			
+			resp = FileTool.scp_upload(hid, password, filepath);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	
 	@RequestMapping(value = "/retrieve", method = RequestMethod.POST)
     public @ResponseBody String retrieve(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -617,7 +661,9 @@ public class GeoweaverController {
         	
         	String username = request.getParameter("username");
         	
-        	String password = request.getParameter("password");
+        	String encrypted = request.getParameter("password");
+        	
+        	String password = RSAEncryptTool.getPassword(encrypted, session.getId());
         	
         	String token = request.getParameter("token");
         	

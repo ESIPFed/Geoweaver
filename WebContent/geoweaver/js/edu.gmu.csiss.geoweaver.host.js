@@ -100,15 +100,15 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				//open the login page
 				
-				msg = $.parseJSON(msg);
+				hostmsg = $.parseJSON(msg);
 
 				var cont = "<div class=\"row\">";
 				
-				cont += "<div class=\"col col-md-5\">IP</div><div class=\"col col-md-5\">" + msg.ip + "</div>";
+				cont += "<div class=\"col col-md-5\">IP</div><div class=\"col col-md-5\">" + hostmsg.ip + "</div>";
 				
-				cont += "<div class=\"col col-md-5\">Port</div><div class=\"col col-md-5\">" + msg.port + "</div>";
+				cont += "<div class=\"col col-md-5\">Port</div><div class=\"col col-md-5\">" + hostmsg.port + "</div>";
 				
-				cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + msg.user + "</div>";
+				cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + hostmsg.user + "</div>";
 				
 				cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
 								
@@ -134,48 +134,72 @@ edu.gmu.csiss.geoweaver.host = {
 		                	
 		                    dialog.enableButtons(false);
 		                	
-		                	var req = "host=" + msg.ip + 
-		                		
-		                		"&port=" + msg.port + 
-		                		
-		                		"&username=" + msg.user + 
-		                		
-		                		"&password=" + $("#inputpswd").val();
-		                	
 		                	$.ajax({
 		                		
-		                		url: "geoweaver-ssh-login-inbox",
+		                		url: "key",
 		                		
-		                		method: "POST",
+		                		type: "POST",
 		                		
-		                		data: req
+		                		data: ""
 		                		
 		                	}).done(function(msg){
 		                		
+		                		//encrypt the password using the received rsa key
+		                		
 		                		msg = $.parseJSON(msg);
 		                		
-		                		if(msg.token!=null){
-		                			
-			                		//open a dialog to show the SSH command line interface
-
-			                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
-		                			
-		                		}else{
-		                			
-		                			alert("Fail to open SSH session");
-		                			
-		                		}
-			                	dialog.close();
+		                		var encrypt = new JSEncrypt();
 		                		
-		                	}).fail(function(status){
+		                        encrypt.setPublicKey(msg.rsa_public);
+		                        
+		                        var encrypted = encrypt.encrypt(edu.gmu.csiss.geoweaver.fileupload.password);
+		                        
+		                        var req = "host=" + hostmsg.ip + 
 		                		
-		                		alert("Fail to open SSH session" + status);
+		                		"&port=" + hostmsg.port + 
 		                		
-		                		$button.stopSpin();
+		                		"&username=" + hostmsg.user + 
 		                		
-		                		dialog.enableButtons(true);
-		                		
+		                		"&password=" + encrypted; //this is not right, the password should not be sent
+		                	
+			                	$.ajax({
+			                		
+			                		url: "geoweaver-ssh-login-inbox",
+			                		
+			                		method: "POST",
+			                		
+			                		data: req
+			                		
+			                	}).done(function(msg){
+			                		
+			                		msg = $.parseJSON(msg);
+			                		
+			                		if(msg.token!=null){
+			                			
+				                		//open a dialog to show the SSH command line interface
+	
+				                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
+			                			
+			                		}else{
+			                			
+			                			alert("Fail to open SSH session");
+			                			
+			                		}
+				                	dialog.close();
+			                		
+			                	}).fail(function(status){
+			                		
+			                		alert("Fail to open SSH session" + status);
+			                		
+			                		$button.stopSpin();
+			                		
+			                		dialog.enableButtons(true);
+			                		
+			                	});
+			                	
+		                        
 		                	});
+		                	
 		                	
 		                	
 		                }
@@ -235,7 +259,9 @@ edu.gmu.csiss.geoweaver.host = {
     				
 				one.name + "</a> <i class=\"fa fa-external-link-square subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.host.openssh('"+
             				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i><i class=\"fa fa-upload subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.fileupload.uploadfile('"+
+            				
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
             				
 				one.id+"','host')\"></i> </li>");
 			

@@ -192,7 +192,7 @@
 
     $(document).ready(function ($) {
 		
-        ws = new SockJS("http://" + location.host + "/CyberConnector/web/shell");
+        ws = new SockJS("shell");
         
         ws.onopen = function(e) { ws_onopen(e) };
         

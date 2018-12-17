@@ -172,7 +172,7 @@ edu.gmu.csiss.geoweaver.ssh = {
 				
 				onshown: function(){
 					
-					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("http://" + location.host + "/CyberConnector/web/shell");
+					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("/shell");
 			        
 					edu.gmu.csiss.geoweaver.ssh.output_div_id = "log_box_id";
 			        

@@ -56,21 +56,21 @@ public class FileUploadServlet extends HttpServlet {
         
         tempPath = BaseTool.getCyberConnectorRootPath() + tempPath;
         
-        File uploadfolder = new File(filePath);
-        
-        File tempfolder = new File(tempPath);
-        
-        if(!uploadfolder.exists()) {
-        	
-        	uploadfolder.mkdirs();
-        	
-        }
-        
-        if(!tempfolder.exists()) {
-        	
-        	tempfolder.mkdirs();
-        	
-        }
+//        File uploadfolder = new File(filePath);
+//        
+//        File tempfolder = new File(tempPath);
+//        
+//        if(!uploadfolder.exists()) {
+//        	
+//        	uploadfolder.mkdirs();
+//        	
+//        }
+//        
+//        if(!tempfolder.exists()) {
+//        	
+//        	tempfolder.mkdirs();
+//        	
+//        }
         
     }
     
@@ -92,26 +92,28 @@ public class FileUploadServlet extends HttpServlet {
             //initialize the prefix url
             if(prefix_url==null){
             	
-                prefix_url = SysDir.PREFIXURL+"/CyberConnector/"+relativePath+"/";
+//            	SysDir.PREFIXURL = req.getProtocol() + "://" + req.getServerName() + ":" + req.getServerPort();
+            	
+                prefix_url = "../"+relativePath+"/";
                 
             }
             
-            pw.println("<!DOCTYPE html>");
-            pw.println("<html>");
-            String head = "<head>" + 
-		        "<title>File Uploading Response</title>" + 
-		        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" + 
-		        "<script type=\"text/javascript\" src=\"js/TaskGridTool.js\"></script>"+
-		        "</head>";
-            pw.println(head);
-            pw.println("<body>");
+//            pw.println("<!DOCTYPE html>");
+//            pw.println("<html>");
+//            String head = "<head>" + 
+//		        "<title>File Uploading Response</title>" + 
+//		        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" + 
+//		        "<script type=\"text/javascript\" src=\"js/TaskGridTool.js\"></script>"+
+//		        "</head>";
+//            pw.println(head);
+//            pw.println("<body>");
             
             DiskFileItemFactory diskFactory = new DiskFileItemFactory();
             // threshold  4M 
             //extend to 2GB - updated by ziheng - 7/5/2018
             diskFactory.setSizeThreshold(maxvol * 1024);
             // repository 
-            logger.fatal("Temp file path: " + tempPath);
+            logger.info("Temp file path: " + tempPath);
             File newrepo = new File(tempPath);
             diskFactory.setRepository(newrepo);
                                  
@@ -132,10 +134,10 @@ public class FileUploadServlet extends HttpServlet {
                 }
             }// end while()
             //add some buttons for further process
-            pw.println("<input type=\"button\" id=\"bt\" value=\"load\" onclick=\"load();\">");
-            pw.println("<input type=\"button\" id=\"close\" value=\"close window\" onclick=\"window.close();\">");
-            pw.println("</body>");
-            pw.println("</html>");
+//            pw.println("<input type=\"button\" id=\"bt\" value=\"load\" onclick=\"load();\">");
+//            pw.println("<input type=\"button\" id=\"close\" value=\"close window\" onclick=\"window.close();\">");
+//            pw.println("</body>");
+//            pw.println("</html>");
         }catch(Exception e){
             e.printStackTrace();
             pw.println("ERR:"+e.getClass().getName()+":"+e.getLocalizedMessage());
@@ -175,7 +177,7 @@ public class FileUploadServlet extends HttpServlet {
     {
         String filename = item.getName();       
         
-        System.out.println( filename);
+        logger.info( filename);
         
         int index = filename.lastIndexOf("\\");
         
@@ -193,13 +195,14 @@ public class FileUploadServlet extends HttpServlet {
         
         item.write(uploadFile);
         
-        logger.fatal("prefix url : " + prefix_url);
+        logger.info("prefix url : " + prefix_url);
         
-        logger.fatal("file name : " + filename);
+        logger.info("file name : " + filename);
         
-        pw.println("<a id=\"filelink\" href=\""+prefix_url+filename+"\" >Link</a> to the uploaded file : "+filename);
+//        pw.println("<a id=\"filelink\" href=\""+prefix_url+filename+"\" >Link</a> to the uploaded file : "+filename);
+        pw.print("{ \"url\": \"" + prefix_url + filename + "\" }");
         
-        System.out.println( fileSize + "\r\n");
+        logger.info( fileSize + "\r\n");
     } 
     
     /**
@@ -218,6 +221,8 @@ public class FileUploadServlet extends HttpServlet {
     	PrintWriter pw = response.getWriter();
     	
     	pw.println("wrong way");
+    	
+    	pw.flush();
     	
     }
 
