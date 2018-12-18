@@ -145,7 +145,6 @@ edu.gmu.csiss.geoweaver.host = {
 		                	}).done(function(msg){
 		                		
 		                		//encrypt the password using the received rsa key
-		                		
 		                		msg = $.parseJSON(msg);
 		                		
 		                		var encrypt = new JSEncrypt();
@@ -160,13 +159,6 @@ edu.gmu.csiss.geoweaver.host = {
 		                        		username: hostmsg.user,
 		                        		password: encrypted
 		                        }
-//		                        "host=" + hostmsg.ip + 
-//		                		
-//		                		"&port=" + hostmsg.port + 
-//		                		
-//		                		"&username=" + hostmsg.user + 
-//		                		
-//		                		"&password=" + encrypted; //this is not right, the password should not be sent
 		                	
 			                	$.ajax({
 			                		
