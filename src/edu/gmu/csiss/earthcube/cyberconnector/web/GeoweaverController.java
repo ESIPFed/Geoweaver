@@ -29,6 +29,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSession;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionImpl;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSessionManager;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.WorkflowTool;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
@@ -437,6 +438,49 @@ public class GeoweaverController {
 
 	}
 	
+	/**
+	 * upload file to remote host
+	 * @param model
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public @ResponseBody String upload(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			String rel_filepath = request.getParameter("filepath");
+			
+			String rel_url = "../"+SysDir.upload_file_path+"/";
+			
+			String filename = rel_filepath.substring(rel_url.length());
+			
+			String filepath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+			
+			String hid = request.getParameter("hid");
+			
+			String encrypted = request.getParameter("encrypted");
+			
+			String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+			
+			resp = FileTool.scp_upload(hid, password, filepath);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	
 	@RequestMapping(value = "/retrieve", method = RequestMethod.POST)
     public @ResponseBody String retrieve(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -617,21 +661,23 @@ public class GeoweaverController {
         	
         	String username = request.getParameter("username");
         	
-        	String password = request.getParameter("password");
+        	String encrypted = request.getParameter("password");
+        	
+        	String password = RSAEncryptTool.getPassword(encrypted, session.getId());
         	
         	String token = request.getParameter("token");
         	
-        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
+//        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
+//        		
+////        		token = sshSessionManager.sessionsByToken.get(token).getToken();
+//        		
+//        	}else {
         		
-        		token = sshSessionManager.sessionsByToken.get(token).getToken();
-        		
-        	}else {
-        		
-        		token = new RandomString(16).nextString();
+        		token = new RandomString(16).nextString(); //token must be assigned by server in case somebody else hijacks it
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token, false);
+            	boolean success = sshSession.login(host, port, username, password, token, true);
             	
             	logger.info("SSH login: {}={}", username, success);
                         
@@ -639,9 +685,9 @@ public class GeoweaverController {
                 
 //                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sessionsByToken.put(token, sshSession);
+                sshSessionManager.sessionsByToken.put(token, sshSession); //disposable token, can only be used for once
         		
-        	}
+//        	}
         	
 //            model.addAttribute("host", host);
 //            
@@ -684,7 +730,7 @@ public class GeoweaverController {
         	
         	if(sshSessionManager.sessionsByToken.get(host+"-"+username)!=null) {
         		
-        		token = sshSessionManager.sessionsByToken.get(host+"-"+username).getToken();
+//        		token = sshSessionManager.sessionsByToken.get(host+"-"+username).getToken();
         		
         	}else {
         		
@@ -692,7 +738,7 @@ public class GeoweaverController {
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token, false);
+            	boolean success = sshSession.login(host, port, username, password, token, true);
             	
             	logger.info("SSH login: {}={}", username, success);
                         

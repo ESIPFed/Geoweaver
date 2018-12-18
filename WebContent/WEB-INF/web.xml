@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
-  <display-name>CyberConnector Portal</display-name>
+  <display-name>Geoweaver</display-name>
   <servlet>
     <servlet-name>GetInputDetailsServlet</servlet-name>
     <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.GetInputDetailsServlet</servlet-class>
@@ -83,6 +83,7 @@
     <servlet-name>spring-webmvc</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet-mapping>
     <servlet-name>spring-webmvc</servlet-name>
@@ -112,6 +113,7 @@
       <param-name>forceEncoding</param-name>
       <param-value>true</param-value>
     </init-param>
+    <async-supported>true</async-supported> 
   </filter>
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>

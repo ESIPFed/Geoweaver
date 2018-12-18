@@ -39,25 +39,9 @@ Docker-compose 1.23.1+ (for install via docker)
 
 ## Quick Install
 
-### Tomcat War
-
-To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. 
-
-After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). Fill the fields with correct values. (**Note: the database must be initiated first.**)
-
-Then enter the following URL into browser address bar to open Geoweaver:
-
-`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
-
-Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.6`.
-
-### Cloud VM Template
-
-We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go here to download the template.
-
 ### Docker
 
-We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. 
+We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.
 
 First, you need clone this repo to your machine `git clone https://github.com/ESIPFed/Geoweaver.git`. 
 
@@ -71,9 +55,25 @@ Notice: Make sure the local services like mysql and tomcat are better shut down 
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
+### Tomcat War
+
+To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. 
+
+After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). Fill the fields with correct values. (**Note: the database must be initiated first.**)
+
+Then enter the following URL into browser address bar to open Geoweaver:
+
+`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+
+Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.8`.
+
+### Cloud VM Template
+
+We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go [here](http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2) to download the template. The username and password of the instance would be `csiss` and `password` respectively. To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
+
 ## Build from source
 
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`.
+Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
 
 ## Usage
 
@@ -152,6 +152,8 @@ This project is impossible without the support of several fantastic open source 
 [bootstrap](https://github.com/twbs/bootstrap) - MIT License
 
 [CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
+
+[JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
 
 ## License
 

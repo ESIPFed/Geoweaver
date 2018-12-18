@@ -58,18 +58,10 @@ public class ShellSocket implements WebSocketHandler {
             	sshSession.setWebSocketSession(session);
                 
             	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
+            	
+            	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
                 
             }else {
-            	
-            	// impossible code
-            	
-//            	if(sshSession!=null) {
-//            		
-//            		sshSession.logout();
-//            		
-//            		GeoweaverController.sshSessionManager.sessionsByWebsocketID.remove(session.getId());
-//            		
-//            	}
             	
             	session.sendMessage(new TextMessage("No SSH connection is active"));
             	
@@ -91,18 +83,22 @@ public class ShellSocket implements WebSocketHandler {
 //			
 //		    cmd.getOutputStream().flush();
             
-        }
-        
-        // if we receive a valid logout command, then close the websocket session.
-        // the system will logout and tidy itself up...
-        
-        if (logoutCommands.contains(messageText.trim().toLowerCase())) {
+            // if we receive a valid logout command, then close the websocket session.
+            // the system will logout and tidy itself up...
             
-        	log.info("valid logout command received: {}", messageText);
-        	
-        	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
-        	
+            if (logoutCommands.contains(messageText.trim().toLowerCase())) {
+                
+            	log.info("valid logout command received: {}", messageText);
+            	
+            	sshSession.logout();
+            	
+            	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
+            	
+            }
+            
         }
+        
+        
     }
 
     @Override

@@ -124,7 +124,7 @@ public class SSHSessionOutput implements Runnable {
                 	
                 }
                 
-                System.out.println("thread output >> " + line);
+//                System.out.println("thread output >> " + line);
                 
                 logs.append(line).append("\n");
                 
@@ -138,7 +138,7 @@ public class SSHSessionOutput implements Runnable {
                 		
                 	}
                 	
-                    log.info("message out {}:{}", out.getId(), line);
+//                    log.info("message out {}:{}", out.getId(), line);
                     
                     out.sendMessage(new TextMessage(line));
                     
