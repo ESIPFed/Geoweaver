@@ -303,7 +303,8 @@ public class SSHSessionImpl implements SSHSession {
             
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
-            sender = new SSHSessionOutput(input, token);
+//            sender = new SSHSessionOutput(input, token);
+            sender = new SSHCmdSessionOutput(input, token);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread

@@ -37,13 +37,13 @@ public class SSHSessionOutput implements Runnable {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final BufferedReader in;
+    protected final BufferedReader in;
     
-    private WebSocketSession out; // log&shell websocket
+    protected WebSocketSession out; // log&shell websocket
     
-    private String token; // session token
+    protected String token; // session token
     
-    private boolean run = true;
+    protected boolean run = true;
     
     public SSHSessionOutput(BufferedReader in, String token) {
         log.info("created");
@@ -80,72 +80,74 @@ public class SSHSessionOutput implements Runnable {
             	
                 String line = in.readLine();
                 
-                linenumber++;
+//                out.sendMessage(new TextMessage(line));
                 
-                //when detected the command is finished, end this process
-                if(BaseTool.isNull(line)) {
-                	
-                	//if ten consective output lines are null, break this loop
-                	
-                	if(startrecorder==-1) 
-                		startrecorder = linenumber;
-                	else
-                		nullnumber++;
-                	
-                	if(nullnumber==10) {
-                		
-                		if((startrecorder+nullnumber)==linenumber) {
-                			
-                			System.out.println("null output lines exceed 100. Disconnected.");
-                			
-                			GeoweaverController.sshSessionManager.closeByToken(token);
-                		
-                			break;
-                			
-                		}else {
-                			
-                			startrecorder = -1;
-                			
-                			nullnumber = 0;
-                			
-                		}
-                		
-                	}
-                	
-                }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-                	
-                	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
-                	
-                	session.saveHistory(logs.toString());
-                	
-                	GeoweaverController.sshSessionManager.closeByToken(token);
-                	
-                	break;
-                	
-                }
-                
-//                System.out.println("thread output >> " + line);
-                
-                logs.append(line).append("\n");
+//                linenumber++;
+//                
+//                //when detected the command is finished, end this process
+//                if(BaseTool.isNull(line)) {
+//                	
+//                	//if ten consective output lines are null, break this loop
+//                	
+//                	if(startrecorder==-1) 
+//                		startrecorder = linenumber;
+//                	else
+//                		nullnumber++;
+//                	
+//                	if(nullnumber==10) {
+//                		
+//                		if((startrecorder+nullnumber)==linenumber) {
+//                			
+//                			System.out.println("null output lines exceed 100. Disconnected.");
+//                			
+//                			GeoweaverController.sshSessionManager.closeByToken(token);
+//                		
+//                			break;
+//                			
+//                		}else {
+//                			
+//                			startrecorder = -1;
+//                			
+//                			nullnumber = 0;
+//                			
+//                		}
+//                		
+//                	}
+//                	
+//                }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
+//                	
+//                	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
+//                	
+//                	session.saveHistory(logs.toString());
+//                	
+//                	GeoweaverController.sshSessionManager.closeByToken(token);
+//                	
+//                	break;
+//                	
+//                }
+//                
+////                System.out.println("thread output >> " + line);
+//                
+//                logs.append(line).append("\n");
                 
                 if(!BaseTool.isNull(out)) {
-                	
-                	if(prelog.toString()!=null) {
-                		
-                		line = prelog.toString() + line;
-                		
-                		prelog = new StringBuffer();
-                		
-                	}
+//                	
+//                	if(prelog.toString()!=null) {
+//                		
+//                		line = prelog.toString() + line;
+//                		
+//                		prelog = new StringBuffer();
+//                		
+//                	}
                 	
 //                    log.info("message out {}:{}", out.getId(), line);
                     
                     out.sendMessage(new TextMessage(line));
                     
-                }else {
-                	
-                	prelog.append(line).append("\n");
-                	
+//                }else {
+//                	
+//                	prelog.append(line).append("\n");
+//                	
                 }
                 
             } catch (Exception e) {

@@ -318,7 +318,7 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(pid).append("\";");
+		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(pid).append("\"  ORDER BY begin_time DESC;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
