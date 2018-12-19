@@ -132,7 +132,7 @@ public class SysDir {
 			
 			covali_file_path = p.getProperty("covali_file_path");
 			
-			geoweaver_file_path = p.getProperty("geoweaver_file_path");
+//			geoweaver_file_path = p.getProperty("geoweaver_file_path");
 			
 			upload_file_path = p.getProperty("upload_file_path");
 			

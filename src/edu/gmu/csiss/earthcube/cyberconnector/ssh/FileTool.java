@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
@@ -84,7 +85,7 @@ public class FileTool {
 			
 			String filename = new RandomString(9).nextString();
 			
-			String fileloc = SysDir.geoweaver_file_path + filename;
+			String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
 			
 			log.info("download " + file_path + " to " + fileloc);
 			

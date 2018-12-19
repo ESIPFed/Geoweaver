@@ -69,7 +69,7 @@ If you don't have docker or docker-compose installed, these documents will help.
 
 ### Tomcat War
 
-* Download [the latest release war](https://github.com/ESIPFed/Geoweaver/releases) and copy it to the webapps directory of Tomcat. Start Tomcat. 
+* Download [the latest release war](https://github.com/ESIPFed/Geoweaver/releases) and copy it to the webapps directory of Tomcat (e.g. /usr/local/tomcat). Start Tomcat. 
 
 > wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
 
@@ -81,11 +81,11 @@ If you don't have docker or docker-compose installed, these documents will help.
 
 > vi /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
 
-(database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
+Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
 
-Fill the fields with correct values. 
+(**Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.**)
 
-(**Note: the database must be initiated by the SQL file under the folder Geoweaver/db first.**)
+> mysql -u root -p < docker/db/gw.sql
 
 * Enter the following URL into browser address bar to open Geoweaver:
 

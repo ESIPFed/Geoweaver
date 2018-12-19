@@ -416,7 +416,7 @@ public class GeoweaverController {
 	    try {
 	    
 	    	// get your file as InputStream
-	    	String fileloc = SysDir.geoweaver_file_path + fileName;
+	    	String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + fileName;
 	      
 	    	File my_file = new File(fileloc);
 	      
