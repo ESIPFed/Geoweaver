@@ -50,7 +50,6 @@ We use `docker-compose` to establish the containers for Geoweaver. As the Docker
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder. (Warning: make sure the version number in docker-compose.yml is the same with the one you downloaded. If they are different, update the docker-compose.yml.)
 
 > cd Geoweaver & mkdir target & cd target
-
 > wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
@@ -59,11 +58,11 @@ We use `docker-compose` to establish the containers for Geoweaver. As the Docker
 
 The address is:
 
-> http://your-ip:your-port/Geoweaver-<version>/web/geoweaver
+> http://your-ip:your-port/Geoweaver/web/geoweaver
 
-Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.8`.
+Replace the `your-ip`, `your-port` with the real name of your tomcat. For example, `localhost:8080`.
 
-Notice: Make sure the local services like mysql and tomcat are better shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
+Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
@@ -71,7 +70,13 @@ If you don't have docker or docker-compose installed, these documents will help.
 
 * Download [the latest release war](https://github.com/ESIPFed/Geoweaver/releases) and copy it to the webapps directory of Tomcat. Start Tomcat. 
 
+> wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
+> cp Geoweaver.war /usr/local/tomcat/webapps/
+> /usr/local/tomcat/bin/startup.sh
+
 * After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` 
+
+> vi /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
 
 (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
 
@@ -81,7 +86,7 @@ Fill the fields with correct values.
 
 * Enter the following URL into browser address bar to open Geoweaver:
 
-> http://your-ip:your-port/Geoweaver-<version>/web/geoweaver
+> http://your-ip:your-port/Geoweaver/web/geoweaver
 
 ### Cloud VM Template
 
