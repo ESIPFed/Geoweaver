@@ -14,10 +14,9 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
 
 	
     public SSHCmdSessionOutput(BufferedReader in, String token) {
-//        log.info("created");
-//        this.in = in;
-//        this.token = token;
+    	
     	super(in, token);
+    	
     }
     
     public void stop() {

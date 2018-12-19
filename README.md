@@ -45,21 +45,21 @@ We use `docker-compose` to establish the containers for Geoweaver. As the Docker
 
 * Clone this repo to your machine 
 
-`git clone https://github.com/ESIPFed/Geoweaver.git`. 
+> git clone https://github.com/ESIPFed/Geoweaver.git
 
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder. (Warning: make sure the version number in docker-compose.yml is the same with the one you downloaded. If they are different, update the docker-compose.yml.)
 
-`mkdir target & cd target`
+> cd Geoweaver & mkdir target & cd target
 
-`wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war`
+> wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
 
-`cd Geoweaver & docker-compose up -d`
+> cd .. & docker-compose up -d
 
 The address is:
 
-`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+> http://your-ip:your-port/Geoweaver-<version>/web/geoweaver
 
 Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.8`.
 
@@ -81,7 +81,7 @@ Fill the fields with correct values.
 
 * Enter the following URL into browser address bar to open Geoweaver:
 
-`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+> http://your-ip:your-port/Geoweaver-<version>/web/geoweaver
 
 ### Cloud VM Template
 

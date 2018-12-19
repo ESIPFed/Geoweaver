@@ -22,6 +22,6 @@ web:
   ports:
    - "8080:8080"
   volumes:
-   - ./target/Geoweaver-0.6.7.war:/usr/local/tomcat/webapps/Geoweaver-0.6.7.war
+   - ./target/Geoweaver.war:/usr/local/tomcat/webapps/Geoweaver.war
   links:
     - db
