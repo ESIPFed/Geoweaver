@@ -49,13 +49,13 @@ We use `docker-compose` to establish the containers for Geoweaver. As the Docker
 
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder. (Warning: make sure the version number in docker-compose.yml is the same with the one you downloaded. If they are different, update the docker-compose.yml.)
 
-> cd Geoweaver & mkdir target & cd target
+> cd Geoweaver && mkdir target && cd target
 
 > wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
 
-> cd .. & docker-compose up -d
+> cd .. && docker-compose up -d
 
 The address is:
 
