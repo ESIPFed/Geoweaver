@@ -23,8 +23,6 @@ Landsat image time series.
 
 ## Prerequisite
 
-Ubuntu 16.04+
-
 JDK 1.8+
 
 Tomcat 8.0+
