@@ -9,6 +9,8 @@
     <properties>
         <org.springframework-version>4.3.19.RELEASE</org.springframework-version>
         <org.springsecurity-version>4.2.9.RELEASE</org.springsecurity-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <build>
         <sourceDirectory>src</sourceDirectory>
