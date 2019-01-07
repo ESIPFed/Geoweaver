@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.socket.WebSocketSession;
 
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
+import edu.gmu.csiss.earthcube.cyberconnector.workers.Worker;
 import edu.gmu.csiss.earthcube.cyberconnector.workers.WorkerManager;
 
 /**
@@ -40,6 +41,16 @@ public class TaskManager {
 		notifyWaitinglist();
 //		t.initialize();
 	}
+	
+	public static void runDirectly(Task t) throws InterruptedException {
+		
+		Worker w = WorkerManager.getMustWorker();
+		
+		w.setTask(t);
+		
+		w.join(7*24*60*60*1000); // 7 days maximum
+		
+	}
 	/**
 	 * Execute a task
 	 * @param t
@@ -66,7 +77,7 @@ public class TaskManager {
 		
 		for(int i=0;i<waitinglist.size();i++) {
 			
-			if(historyid.equals(((GeoweaverWorkflowTask)waitinglist.get(i)).getHistory_id())) {
+			if(historyid.equals((waitinglist.get(i)).getHistory_id())) {
 				
 				t = waitinglist.get(i);
 				
@@ -80,7 +91,7 @@ public class TaskManager {
 			
 			for(int i=0;i<runninglist.size();i++) {
 				
-				if(historyid.equals(((GeoweaverWorkflowTask)runninglist.get(i)).getHistory_id())) {
+				if(historyid.equals((runninglist.get(i)).getHistory_id())) {
 					
 					t = runninglist.get(i);
 					
@@ -107,9 +118,7 @@ public class TaskManager {
 		
 		Task t = searchByHistoryId(historyid);
 		
-		GeoweaverWorkflowTask gt = (GeoweaverWorkflowTask) t;
-		
-		gt.startMonitor(session);
+		t.startMonitor(session);
 		
 	}
 	

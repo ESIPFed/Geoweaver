@@ -48,10 +48,20 @@ edu.gmu.csiss.geoweaver.monitor = {
 //		        if(e.data.indexOf(edu.gmu.csiss.geoweaver.ssh.special.prompt) == -1 && 
 //		        		
 //		        		e.data.indexOf(edu.gmu.csiss.geoweaver.ssh.special.ready) == -1) {
-		            
-		        	var statuslist = $.parseJSON(e.data);
+				
+		        	var returnmsg = $.parseJSON(e.data);
 		        	
-		        	edu.gmu.csiss.geoweaver.workspace.updateStatus(statuslist);
+		        	console.log(returnmsg);
+		        	
+		        	if(returnmsg.builtin){
+		        		
+		        		edu.gmu.csiss.geoweaver.process.callback(returnmsg);
+		        		
+		        	}else{
+		        		
+		        		edu.gmu.csiss.geoweaver.workspace.updateStatus(returnmsg);
+		        		
+		        	}
 		        	
 //		        }else{
 //		        	
@@ -88,7 +98,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 				edu.gmu.csiss.geoweaver.workspace.currentmode = 2;
 
-				edu.gmu.csiss.geoweaver.monitor.ws = new SockJS("http://" + location.host + "/CyberConnector/web/task");
+				edu.gmu.csiss.geoweaver.monitor.ws = new SockJS("task");
 		        
 				edu.gmu.csiss.geoweaver.monitor.historyid = historyid;
 		        

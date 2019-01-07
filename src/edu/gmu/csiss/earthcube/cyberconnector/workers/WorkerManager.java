@@ -43,6 +43,21 @@ public class WorkerManager {
 		
 	}
 	
+	/**
+	 * This worker might exceed the worker number limit, use with caution
+	 * @return
+	 */
+	public static Worker getMustWorker() {
+		
+		Worker	w = new Worker(true);
+		
+		w.start();
+			
+		workerlist.add(w);
+		
+		return w;
+	}
+	
 	public static Worker getNextAvailableWorker() {
 		
 		Worker w = null;

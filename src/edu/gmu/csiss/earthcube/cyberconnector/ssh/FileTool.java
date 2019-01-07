@@ -65,9 +65,8 @@ public class FileTool {
 		return resp;
 		
 	}
-
 	
-	public static String scp_download(String hid, String password, String file_path) {
+	public static void scp_download(String hid, String password, String file_path, String dest_path) {
 		
 		String resp = null;
 		
@@ -83,21 +82,13 @@ public class FileTool {
 			
 			session.login(hid, password, null, false);
 			
-			String filename = new RandomString(9).nextString();
+			log.info("download " + file_path + " to " + dest_path);
 			
-			String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
-			
-			log.info("download " + file_path + " to " + fileloc);
-			
-			session.getSsh().newSCPFileTransfer().download(file_path, fileloc);
+			session.getSsh().newSCPFileTransfer().download(file_path, dest_path);
 			
 //			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
 			
 //			session.runBash(code, id, false); 
-			
-			String file_url = null;
-			
-			resp = "{\"filename\": \"" + filename + "\", \"ret\": \"success\"}";
 			
 		} catch (Exception e) {
 			
@@ -106,9 +97,22 @@ public class FileTool {
 			throw new RuntimeException(e.getLocalizedMessage());
 			
 		}  finally {
-			
+		   
 		}
-        		
+		
+	}
+
+	
+	public static String scp_download(String hid, String password, String file_path) {
+		
+		String filename = new RandomString(9).nextString();
+		
+		String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+		
+		scp_download(hid, password, file_path, fileloc);
+		
+		String resp = "{\"filename\": \"" + filename + "\", \"ret\": \"success\"}";
+				
 		return resp;
 		
 	}

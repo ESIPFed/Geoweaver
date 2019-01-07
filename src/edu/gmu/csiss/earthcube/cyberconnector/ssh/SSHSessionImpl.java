@@ -78,6 +78,8 @@ public class SSHSessionImpl implements SSHSession {
     
     private String           port;
     
+    private boolean			 isShell;
+    
     /**********************************************/
     /** section of the geoweaver history records **/
     /**********************************************/
@@ -141,6 +143,11 @@ public class SSHSessionImpl implements SSHSession {
 		return port;
 	}
 	
+	public boolean isShell() {
+		
+		return isShell;
+	}
+	
 	public boolean login(String hostid, String password, String token, boolean isShell) {
 		
 		this.hostid = hostid;
@@ -172,21 +179,20 @@ public class SSHSessionImpl implements SSHSession {
             session = ssh.startSession();
             log.info("allocating PTY");
             session.allocateDefaultPTY(); 
-            
             this.username = username;
             this.token = token;
+            this.isShell = isShell;
             
             if(isShell) {
             	//shell
             	log.info("starting shell");
                 shell = session.startShell(); //if shell is null, it is in command mode.
                 log.info("SSH session established");
-                
                 input = new BufferedReader(new InputStreamReader(shell.getInputStream()));
                 output = shell.getOutputStream();
                 sender = new SSHSessionOutput(input, token);
                 //moved here on 10/29/2018
-                //all SSH sessions must have a output thread
+                //all SSH shell sessions must have a output thread
                 thread = new Thread(sender);
                 thread.setName("SSH output thread");
                 log.info("starting sending thread");
@@ -250,22 +256,38 @@ public class SSHSessionImpl implements SSHSession {
 	public void saveHistory(String logs) {
 		
     	this.history_end_time = BaseTool.getCurrentMySQLDatetime();
+
+		this.history_output = logs;
     	
-    	this.history_output = logs;
+    	if(BaseTool.isNull(logs)) {
+    		
+    		StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host) values (\"");
+        	
+        	sql.append(this.history_id).append("\",\"");
+        	
+        	sql.append(this.history_process).append("\",\"");
+        	
+        	sql.append(this.history_begin_time).append("\", ?, ?, \"");
+        	
+        	sql.append(this.hostid).append("\" )");
+        	
+        	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
+    		
+    	}else {
+    		
+    		StringBuffer sql = new StringBuffer("update history set end_time = \"");
+    		
+    		sql.append(this.history_end_time);
+    		
+    		sql.append("\", output = ? where id = \"");
+        	
+        	sql.append(this.history_id).append("\";");
+        	
+        	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
+    		
+    	}
     	
-    	StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, end_time, input, output, host) values (\"");
     	
-    	sql.append(this.history_id).append("\",\"");
-    	
-    	sql.append(this.history_process).append("\",\"");
-    	
-    	sql.append(this.history_begin_time).append("\",\"");
-    	
-    	sql.append(this.history_end_time).append("\",?, ?, \"");
-    	
-    	sql.append(this.hostid).append("\" )");
-    	
-    	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
     	
 	}
 
@@ -284,13 +306,15 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
+    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"; ";
+    		
     		String cmdline = "echo \"" + script.replaceAll("\r\n", "\n").replaceAll("\"", "\\\\\"") + "\" > geoweaver-" + token + ".sh; ";
     		
     		cmdline += "chmod +x geoweaver-" + token + ".sh; ";
     		
-    		cmdline += "./geoweaver-" + token + ".sh; ";
+    		cmdline += "./geoweaver-" + token + ".sh;";
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"; ";
+    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
 			
     		log.info(cmdline);
     		
@@ -311,7 +335,7 @@ public class SSHSessionImpl implements SSHSession {
             
             thread = new Thread(sender);
             
-            thread.setName("SSH output thread");
+            thread.setName("SSH Command output thread");
             
             log.info("starting sending thread");
             

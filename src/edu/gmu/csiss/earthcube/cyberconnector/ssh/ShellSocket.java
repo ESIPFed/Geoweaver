@@ -24,7 +24,7 @@ public class ShellSocket implements WebSocketHandler {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
     
-    private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "exit"});
+    private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "exit", "quit"});
     
     static Map<String, WebSocketSession> peers =new HashMap();
     
@@ -59,7 +59,7 @@ public class ShellSocket implements WebSocketHandler {
                 
             	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
             	
-            	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
+//            	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
                 
             }else {
             	
@@ -121,7 +121,7 @@ public class ShellSocket implements WebSocketHandler {
         if(GeoweaverController.sshSessionManager!=null) {
         	
         	SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
-            if (sshSession != null) {
+            if (sshSession != null && sshSession.isShell()) { //only close when it is shell
                 sshSession.logout();
             }
             GeoweaverController.sshSessionManager.sessionsByWebsocketID.remove(session.getId());

@@ -57,7 +57,7 @@
 <body>
 
 <h1 id="title">Geoweaver Web-based SSH</h1>
-<p>This SSH is simply a console for simple commands. It doesn't support complicated interactive commands like vi, vim, nano, top, etc. Type ctrl+C to exit a frozen interface.</p>
+<p style="color: white;">This SSH is simply a console for simple commands. It doesn't support complicated interactive commands like vi, vim, nano, top, etc. Type Ctrl+D and Ctrl+C to interrupt running or hanging programs.</p>
 
 <div id="content"></div>
 
@@ -231,8 +231,41 @@
                 exit: true,
                 clear: true,
                 wrap: true,
-                greetings: "SSH on Web started. Type 'exit' to quit. \n"
-                
+                greetings: "SSH on Web started. Type 'logout' to quit. \n",
+           		
+                keymap: {
+                  
+               	  "CTRL+D": function(e, original){
+                       
+                       console.log("ctrl+d is presesed");
+                       
+                       send("\u0003");
+                       
+                       original();
+                       
+                  },
+                  
+                  "CTRL+C": function(e, original){
+                    
+                    console.log("ctrl+c is presesed");
+                    
+                    send("\u0003");
+                    
+                    original();
+                    
+                  },
+                  
+                  "CTRL+ALT+C": function(e, original){
+                      
+                      console.log("ctrl+alt+c is presesed");
+                      
+                      send("\u0003");
+                      
+                      original();
+                      
+                  }
+                  
+                }
             }
             
         );

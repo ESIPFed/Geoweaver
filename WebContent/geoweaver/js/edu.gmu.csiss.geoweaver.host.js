@@ -41,9 +41,7 @@ edu.gmu.csiss.geoweaver.host = {
 	            
 	            message: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>",
 				
-//				message: "<iframe src=\"geoweaver-ssh\" style=\"height:100%;width:100%;\"></iframe>",
-	            
-	            size: 'size-large',
+	            size: BootstrapDialog.SIZE_WIDE,
 	            
 	            onhide: function(dialogRef){
 	                

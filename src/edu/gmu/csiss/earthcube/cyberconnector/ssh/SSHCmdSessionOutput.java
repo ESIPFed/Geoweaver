@@ -40,6 +40,10 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     	
     	int nullnumber = 0;
     	
+    	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
+    	
+    	session.saveHistory(null); //initiate the history record
+    	
         while (run) {
         	
             try {
@@ -64,10 +68,8 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 		
                 		if((startrecorder+nullnumber)==linenumber) {
                 			
-                			System.out.println("null output lines exceed 100. Disconnected.");
+                			System.out.println("null output lines exceed 10. Disconnected.");
                 			
-                			GeoweaverController.sshSessionManager.closeByToken(token);
-                		
                 			break;
                 			
                 		}else {
@@ -82,17 +84,13 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 	
                 }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
                 	
-                	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
-                	
-                	session.saveHistory(logs.toString());
-                	
-                	GeoweaverController.sshSessionManager.closeByToken(token);
+                	session.saveHistory(logs.toString()); //complete the record
                 	
                 	break;
                 	
                 }
                 
-//                System.out.println("thread output >> " + line);
+                log.info("command thread output >> " + line);
                 
                 logs.append(line).append("\n");
                 
@@ -120,11 +118,13 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
             	
                 e.printStackTrace();
                 
-                GeoweaverController.sshSessionManager.closeByToken(token);
+                session.saveHistory(logs.toString()); //write the failed record
                 
             }
             
         }
+        
+        GeoweaverController.sshSessionManager.closeByToken(token);
         
         log.info("SSH session output thread ended");
 

@@ -173,6 +173,10 @@ edu.gmu.csiss.geoweaver.result = {
 		                			
 		                		}
 		                		
+		                		$button.stopSpin();
+		                		
+		        				dialogItself.enableButtons(true);
+		                		
 		                	}).fail(function(jqXHR, textStatus, errorThrown){
 	                        	
 	                        	alert("fail to retrieve the file " + errorThrown);
@@ -261,6 +265,10 @@ edu.gmu.csiss.geoweaver.result = {
 		                			edu.gmu.csiss.geoweaver.result.preview(msg.filename);
 		                			
 		                		}
+		                		
+		                		$button.stopSpin();
+		                		
+		        				dialogItself.enableButtons(true);
 		                		
 		                	}).fail(function(jqXHR, textStatus, errorThrown){
 	                        	

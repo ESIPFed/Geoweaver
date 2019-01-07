@@ -73,6 +73,8 @@ edu.gmu.csiss.geoweaver.workflow = {
 							
 							console.log("the workflow is added");
 							
+							edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
+							
 							if(createandrun){
 								
 								edu.gmu.csiss.geoweaver.workflow.run(msg.id);

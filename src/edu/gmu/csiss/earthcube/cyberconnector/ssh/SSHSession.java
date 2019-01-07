@@ -54,6 +54,8 @@ public interface SSHSession {
     public Session getSSHJSession();
     
     public SSHClient getSsh();
+    
+    public boolean isShell();
 
 	public void setSSHJSession(Session session);
 	
@@ -76,7 +78,7 @@ public interface SSHSession {
 	public void runMultipleBashes(String[] script, String processid);
 	
 	public void saveHistory(String logs);
-    
+	
     public String getUsername() ;
 
 	public String getToken();

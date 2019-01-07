@@ -134,6 +134,8 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		monitor = socketsession;
 		
+		WorkflowTool.token2ws.put(token, socketsession.getId());
+		
 	}
 	
 	/**
@@ -181,9 +183,12 @@ public class GeoweaverWorkflowTask extends Task {
 	public void stopMonitor() {
 		
 		try {
+			log.info("close the websocket session from server side");
 			
 			if(!BaseTool.isNull(monitor))
 				monitor.close();
+			
+			WorkflowTool.token2ws.remove(token);
 			
 		} catch (IOException e) {
 			
@@ -270,44 +275,61 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				//get code of the process
 				
-				String code = ProcessTool.getCodeById(processTypeId);
+//				String code = ProcessTool.getCodeById(processTypeId);
+//				
+//				log.info("Ready to run process : " + processTypeId);
+//				
+//				log.info(code);
+//				
+//				//establish SSH session and generate a token for it
+//				
+//				if(token == null) {
+//					
+//					token = new RandomString(12).nextString();
+//					
+//				}
+//				
+//				//If the mode is one, reuse the same SSHSession object for all processes. 
+//				//If the mode is different, create new SSHSession object for each process
+//				//see if SSHJ allows this operation
+//				
+//				String historyid = null;
+//				
+//				try {
+//					
+//					SSHSession session = new SSHSessionImpl();
+//					
+//					//get host ip, port, user name and password
+//					
+////					String[] hostdetails = HostTool.getHostDetailsById(hid);
+////					
+////					session.login(hostdetails[1], hostdetails[2], hostdetails[3], password, token, false);
+//					
+//					session.login(hid, password, token, false);
+//					
+//					GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//					
+//					session.runBash(code, nextid, true);  //every task only has no more than one active SSH session at a time
+//					
+//					historyid = session.getHistory_id();
+//					
+//					stat = STATUS.DONE;
+//					
+//				}catch(Exception e) {
+//					
+//					stat = STATUS.FAILED;
+//					
+//				}
 				
-				System.out.println("Ready to run process : " + processTypeId);
-				
-				System.out.println(code);
-				
-				//establish SSH session and generate a token for it
-				
-				if(token == null) {
-					
-					token = new RandomString(12).nextString();
-					
-				}
-				
-				//If the mode is one, reuse the same SSHSession object for all processes. 
-				//If the mode is different, create new SSHSession object for each process
-				//see if SSHJ allows this operation
-				
-				String historyid = null;
-				
+				String member_historyid = null;
 				
 				try {
 					
-					SSHSession session = new SSHSessionImpl();
+					String resp = ProcessTool.execute(processTypeId, hid, password, token, true);
 					
-					//get host ip, port, user name and password
+					JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
 					
-//					String[] hostdetails = HostTool.getHostDetailsById(hid);
-//					
-//					session.login(hostdetails[1], hostdetails[2], hostdetails[3], password, token, false);
-					
-					session.login(hid, password, token, false);
-					
-					GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
-					
-					session.runBash(code, nextid, true);  //every task only has no more than one active SSH session at a time
-					
-					historyid = session.getHistory_id();
+					member_historyid = (String)respobj.get("history_id");
 					
 					stat = STATUS.DONE;
 					
@@ -315,11 +337,12 @@ public class GeoweaverWorkflowTask extends Task {
 					
 					stat = STATUS.FAILED;
 					
+					e.printStackTrace();
 				}
 				
 				this.history_input += nextid + ";";
 				
-				this.history_output += historyid + ";";
+				this.history_output += member_historyid + ";";
 				
 //				pid2hid.put(nextid, historyid); //save the mapping between process id and history id
 				

@@ -210,7 +210,11 @@ public class BaseTool {
 		
 		String classpath = getClassPath();
 		
-		String rootpath = classpath.substring(0, classpath.indexOf("WEB-INF")) + "/";
+		String rootpath = null;
+		
+		if(classpath.indexOf("WEB-INF")!=-1)
+			
+			rootpath = classpath.substring(0, classpath.indexOf("WEB-INF")) + "/";
 		
 		return rootpath;
 	}

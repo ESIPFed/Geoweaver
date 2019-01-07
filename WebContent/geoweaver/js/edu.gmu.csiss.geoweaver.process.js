@@ -10,11 +10,21 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		editor: null,
 		
+		builtin_processes: [
+			
+			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
+			
+			{"operation":"DownloadData", "params":[{"name":"file_url", "min_occurs": 1, "max_occurs": 1}]}
+		
+		],
+		
 		precheck: function(){
 			
 			var valid = false;
 			
-			if($("#processname").val()&&this.editor.getValue()){
+			if($("#processname").val()){
+					
+//					&&this.editor.getValue()){
 				
 				valid = true;
 				
@@ -24,30 +34,115 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
+		showShell: function(code){
+			
+			$("#codearea").append('<textarea id="codeeditor" placeholder="Code goes here..."></textarea>');
+			
+        	//initiate the code editor
+			
+			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
+        		
+        		lineNumbers: true
+        		
+        	});
+			
+			if(code!=null){
+				
+            	edu.gmu.csiss.geoweaver.process.editor.setValue(edu.gmu.csiss.geoweaver.process.unescape(code));
+            	
+			}else {
+			
+				edu.gmu.csiss.geoweaver.process.editor.setValue("#!/bin/bash\n#write your bash script\n");
+				
+			}
+        	
+		},
+		
+		showBuiltinProcess: function(code){
+			
+			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label">Select a process: </label>'+
+	       '     <div class="col-sm-8"> <select class="form-control" id="builtin_processes">';
+			
+			for(var i=0;i<edu.gmu.csiss.geoweaver.process.builtin_processes.length;i++){
+				
+				cont += '    		<option value="'+edu.gmu.csiss.geoweaver.process.builtin_processes[i].operation +
+					'">'+edu.gmu.csiss.geoweaver.process.builtin_processes[i].operation + '</option>';
+				
+			}
+			
+		   	cont += '  		</select></div>';
+		   	
+		   	for(var i=0;i<edu.gmu.csiss.geoweaver.process.builtin_processes[0].params.length;i++){
+				
+				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label">Parameter <u>'+
+				edu.gmu.csiss.geoweaver.process.builtin_processes[0].params[i].name+'</u>: </label>'+
+				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
+				edu.gmu.csiss.geoweaver.process.builtin_processes[0].params[i].name+'"></input>';
+				cont += '</div>';
+				
+			}
+			
+			$("#codearea").append(cont);
+			
+			if(code!=null){
+				
+				code = $.parseJSON(code);
+				
+				$("#builtin_processes").val(code.operation);
+				
+				for(var i=0;i<code.params.length;i++){
+					
+					$("#param_" + code.params[i].name).val(code.params[i].value);
+					
+				}
+				
+			}
+			
+		},
+		
+		getCode: function(){
+			
+			var code = null;
+			
+			if($("#processcategory").val()=="shell"){
+				
+				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
+				
+			}else if($("#processcategory").val()=="builtin"){
+				
+				var params = [];
+				
+				$(".parameter").each(function(){
+					
+					var newparam = {
+							
+							name: $(this).attr('id').split("param_")[1],
+							
+							value: $(this).val()
+							
+					}
+					
+					params.push(newparam);
+					
+				});
+				
+				code = {
+						
+						"operation" : $("#builtin_processes").val(),
+						
+						"params": params
+						
+				}
+				
+			}
+			
+			return code;
+			
+		},
+		
 		newDialog: function(){
 			
-			var content = '<form>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Your Process Type </label>'+
-		       '     <div class="col-sm-8">'+
-		       '		<select class="form-control" id="processcategory">'+
-			   '    		<option>Shell</option>'+
-			   /*'    		<option>Python</option>'+
-			   '    		<option>R</option>'+
-			   '    		<option>Matlab</option>'+*/
-			   '  		</select>'+
-		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="processname" class="col-sm-4 col-form-label control-label">Process Name </label>'+
-		       '     <div class="col-sm-8">'+
-		       '		<input class="form-control" id="processname"></input>'+
-		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required" >'+
-		       '	 <textarea  id="codeeditor" placeholder="Code goes here..."></textarea>'+
-		       '   </div>'+
-		       ' </form>';
+			var content = edu.gmu.csiss.geoweaver.process.getProcessDialogTemplate();
 			
 			var dialog = new BootstrapDialog.show({
 				
@@ -59,17 +154,27 @@ edu.gmu.csiss.geoweaver.process = {
 	            
 	            cssClass: 'dialog-vertical-center',
 	            
+	            size: BootstrapDialog.SIZE_WIDE,
+	            
 	            onshown: function(){
 	            	
-	            	//initiate the code editor
+	            	edu.gmu.csiss.geoweaver.process.showShell();
 	            	
-	            	edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
+	            	$("#processcategory").on('change', function() {
 	            		
-	            		lineNumbers: true
+	            		$("#codearea").empty();
+	            		
+	            		if( this.value == "shell"){
+	            			
+	    	            	edu.gmu.csiss.geoweaver.process.showShell();
+	            			  
+	            		}else if(this.value == "builtin"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess();
+	            			  
+	            		}
 	            		
 	            	});
-	            	
-	            	edu.gmu.csiss.geoweaver.process.editor.setValue("#!/bin/bash\n#write your bash script\n");
 	            	
 	            },
 	            
@@ -111,7 +216,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 			});
 			
-			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
+//			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
 			
 		},
 		
@@ -278,6 +383,36 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
+		getProcessDialogTemplate: function(){
+			
+			var content = '<form>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Your Process Type </label>'+
+		       '     <div class="col-sm-8">'+
+		       '		<select class="form-control" id="processcategory">'+
+			   '    		<option value="shell">Shell</option>'+
+			   '    		<option value="builtin">Built-In Process</option>'+
+			   /*'    		<option value="python">Python</option>'+
+			   '    		<option value="r">R</option>'+
+			   '    		<option value="matlab">Matlab</option>'+*/
+			   '  		</select>'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="processname" class="col-sm-4 col-form-label control-label">Process Name </label>'+
+		       '     <div class="col-sm-8">'+
+		       '		<input class="form-control" id="processname"></input>'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required" id="codearea">'+
+		       
+		       '   </div>'+
+		       ' </form>';
+			
+			return content;
+			
+		},
+		
 		edit: function(pid){
 			
 			$.ajax({
@@ -292,28 +427,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = '<form>'+
-			       '   <div class="form-group row required">'+
-			       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Your Process Type </label>'+
-			       '     <div class="col-sm-8">'+
-			       '		<select class="form-control" id="processcategory">'+
-				   '    		<option>Shell</option>'+
-				   /*'    		<option>Python</option>'+
-				   '    		<option>R</option>'+
-				   '    		<option>Matlab</option>'+*/
-				   '  		</select>'+
-			       '     </div>'+
-			       '   </div>'+
-			       '   <div class="form-group row required">'+
-			       '     <label for="processname" class="col-sm-4 col-form-label control-label">Process Name </label>'+
-			       '     <div class="col-sm-8">'+
-			       '		<input class="form-control" id="processname" ></input>'+
-			       '     </div>'+
-			       '   </div>'+
-			       '   <div class="form-group row required" >'+
-			       '	 <textarea  id="codeeditor" placeholder="Code goes here..." ></textarea>'+
-			       '   </div>'+
-			       ' </form>';
+				var content = edu.gmu.csiss.geoweaver.process.getProcessDialogTemplate();
 				
 				var dialog = new BootstrapDialog.show({
 					
@@ -321,23 +435,59 @@ edu.gmu.csiss.geoweaver.process = {
 					
 					closable: false,
 					
+					size: BootstrapDialog.SIZE_WIDE,
+					
 		            message: content,
 		            
 		            cssClass: 'dialog-vertical-center',
 		            
 		            onshown: function(){
 		            	
-		            	//initiate the code editor
+		            	var old_name = msg.name;
 		            	
-		            	edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
-		            		
-		            		lineNumbers: true
-		            		
-		            	});
+		            	var old_lang = msg.description;
+		            	
+		            	var old_code = msg.code;
+		            	
+		            	$("#processcategory").val(old_lang);
 		            	
 		            	$("#processname").val(msg.name);
+
+		            	$("#codearea").empty();
+	            		
+	            		if( old_lang == "shell"){
+	            			
+	    	            	edu.gmu.csiss.geoweaver.process.showShell(old_code);
+	            			  
+	            		}else if(old_lang == "builtin"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code);
+	            			  
+	            		}
 		            	
-		            	edu.gmu.csiss.geoweaver.process.editor.setValue(edu.gmu.csiss.geoweaver.process.unescape(msg.code));
+		            	$("#processcategory").on('change', function() {
+		            		
+		            		$("#codearea").empty();
+		            		
+		            		var old_code_new = null;
+		            		
+		            		if(this.value == old_lang){
+		            			
+		            			old_code_new = old_code;
+		            			
+		            		}
+		            		
+		            		if( this.value == "shell"){
+		            			
+		    	            	edu.gmu.csiss.geoweaver.process.showShell(old_code_new);
+		            			  
+		            		}else if(this.value == "builtin"){
+		            			
+		            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code_new);
+		            			
+		            		}
+		            		
+		            	});
 		            	
 		            },
 		            
@@ -367,7 +517,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				});
 				
-				edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
+//				edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
 				
 			}).fail(function(jxr, status){
 				
@@ -394,7 +544,7 @@ edu.gmu.csiss.geoweaver.process = {
 	        	
 				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.runProcess('"+
 	        	
-				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>");
+				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>");
 			
 		},
 		
@@ -427,13 +577,27 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			if(this.precheck()){
 				
-				var req = "type=process&lang="+$("#processcategory").val() + 
-				
-					"&name=" + $("#processname").val() + 
+				var req =  { 
+						
+						type: "process", lang: $("#processcategory").val(),
+						
+						desc: $("#processcategory").val(), //use the description column to store the process type
 					
-					"&id=" + pid +
-	    			
-		    		"&code=" + edu.gmu.csiss.geoweaver.process.editor.getValue();
+						name: $("#processname").val(), 
+						
+						id: pid,
+		    			
+						code: edu.gmu.csiss.geoweaver.process.getCode()
+						
+					};
+				
+//				"type=process&lang="+$("#processcategory").val() + 
+//				
+//					"&name=" + $("#processname").val() + 
+//					
+//					"&id=" + pid +
+//	    			
+//		    		"&code=" + edu.gmu.csiss.geoweaver.process.editor.getValue();
 		    	
 		    	$.ajax({
 		    		
@@ -466,13 +630,26 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			if(this.precheck()){
 				
-				var req = "type=process&lang="+$("#processcategory").val() +
+//				var req = "type=process&lang="+$("#processcategory").val() +
+//					
+//					"&desc=" + $("#processcategory").val() + //use the description column to store the process type
+//				
+//					"&name=" + $("#processname").val() + 
+//	    			
+////		    		"&code=" + edu.gmu.csiss.geoweaver.process.editor.getValue();
+//					"&code=" + edu.gmu.csiss.geoweaver.process.getCode()
 					
-					"&desc=" + $("#processcategory").val() + //use the description column to store the process type
+				var req = { 
+					
+					type: "process", lang: $("#processcategory").val(),
+					
+					desc: $("#processcategory").val(), //use the description column to store the process type
 				
-					"&name=" + $("#processname").val() + 
+					name: $("#processname").val(), 
 	    			
-		    		"&code=" + edu.gmu.csiss.geoweaver.process.editor.getValue();
+					code: edu.gmu.csiss.geoweaver.process.getCode()
+					
+				};
 		    	
 		    	$.ajax({
 		    		
@@ -517,9 +694,30 @@ edu.gmu.csiss.geoweaver.process = {
 		},
 		
 		/**
+		 * after the server side is done, this callback is called on each builtin process
+		 */
+		callback: function(msg){
+			
+			var oper = msg.operation;
+			
+			if(oper == "ShowResultMap"){
+				
+				//show the map
+				edu.gmu.csiss.geoweaver.result.preview(msg.filename);
+				
+			}else if(oper == "DownloadData"){
+				
+				//download the map
+				edu.gmu.csiss.geoweaver.result.download(msg.filename);
+				
+			}
+			
+		},
+		
+		/**
 		 * Execute one process
 		 */
-		executeProcess: function(pid, hid){
+		executeProcess: function(pid, hid, desc){
 			
 			var content = '<form>'+
 			   '   <div class="form-group row required">'+
@@ -602,6 +800,12 @@ edu.gmu.csiss.geoweaver.process = {
 		        					
 		        					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg);
 		        					
+		        					if(desc == "builtin"){
+		        						
+		        						edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+		        						
+		        					}
+		        					
 		        				}else if(msg.ret == "fail"){
 		        					
 		        					alert("Fail to execute the process.");
@@ -668,7 +872,7 @@ edu.gmu.csiss.geoweaver.process = {
 //			
 //		},
 		
-		runProcess: function(pid, pname){
+		runProcess: function(pid, pname, desc){
 			
 			//select a host
 			
@@ -730,7 +934,7 @@ edu.gmu.csiss.geoweaver.process = {
 	                	
 	                	console.log("selected host: " + hostid);
 	                	
-	                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid);
+	                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
 	                	
 	                    dialogItself.close();
 	                    

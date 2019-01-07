@@ -27,6 +27,8 @@ import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
  */
 public class WorkflowTool {
 	
+	public static Map<String, String> token2ws = new HashMap();
+	
 	public static String list(String owner){
 		
 		StringBuffer json = new StringBuffer("[");
@@ -325,7 +327,7 @@ public class WorkflowTool {
 		
 		try {
 			
-			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask(id);
+			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask(token);
 			
 			if(BaseTool.isNull(token)) {
 				

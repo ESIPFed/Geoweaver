@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>CyberConnector</groupId>
     <artifactId>Geoweaver</artifactId>
-    <version>0.6.8</version>
+    <version>0.6.9</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
@@ -102,6 +102,16 @@
             <groupId>org.dom4j</groupId>
             <artifactId>com.springsource.org.dom4j</artifactId>
             <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.12</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

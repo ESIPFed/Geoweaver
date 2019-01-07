@@ -1,9 +1,13 @@
 package edu.gmu.csiss.earthcube.cyberconnector.web;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
@@ -331,7 +335,7 @@ public class GeoweaverController {
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.execute(pid, hid, password, null);
+			resp = ProcessTool.execute(pid, hid, password, null, false);
 			
 		}catch(Exception e) {
 			
@@ -372,13 +376,45 @@ public class GeoweaverController {
 				
 				String lang = request.getParameter("lang");
 				
-				String code = request.getParameter("code");
-				
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
 				
 				String id = request.getParameter("id");
+				
+				String code = null;
+				
+				if(lang.equals("shell")) {
+					
+					code = request.getParameter("code");
+					
+				}else if(lang.equals("builtin")) {
+					
+					String operation = request.getParameter("code[operation]");
+					
+					code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
+					
+					List params = new ArrayList();
+					
+					int i=0;
+					
+					while(request.getParameter("code[params]["+i+"][name]")!=null) {
+						
+						if(i!=0) {
+							
+							code += ", ";
+							
+						}
+						
+						code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
+						
+						i++;
+						
+					}
+					
+					code += "] }";
+					
+				}
 				
 				ProcessTool.update(id, name, lang, code, desc);
 				
@@ -538,12 +574,44 @@ public class GeoweaverController {
 			}else if(type.equals("process")) {
 				
 				String lang = request.getParameter("lang");
-				
-				String code = request.getParameter("code");
-				
+
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
+				
+				String code = null;
+				
+				if(lang.equals("shell")) {
+					
+					code = request.getParameter("code");
+					
+				}else if(lang.equals("builtin")) {
+					
+					String operation = request.getParameter("code[operation]");
+					
+					code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
+					
+					List params = new ArrayList();
+					
+					int i=0;
+					
+					while(request.getParameter("code[params]["+i+"][name]")!=null) {
+						
+						if(i!=0) {
+							
+							code += ", ";
+							
+						}
+						
+						code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
+						
+						i++;
+						
+					}
+					
+					code += "] }";
+					
+				}
 				
 				String pid = ProcessTool.add(name, lang, code, desc);
 				

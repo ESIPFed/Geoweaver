@@ -126,7 +126,7 @@ public class SSHSessionOutput implements Runnable {
 //                	
 //                }
 //                
-////                System.out.println("thread output >> " + line);
+                log.info("shell thread output >> " + line);
 //                
 //                logs.append(line).append("\n");
                 
