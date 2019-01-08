@@ -714,152 +714,212 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		/**
-		 * Execute one process
-		 */
-		executeProcess: function(pid, hid, desc){
+		executeCallback: function(encrypt, req, dialogItself, button){
 			
-			var content = '<form>'+
-			   '   <div class="form-group row required">'+
-		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
-		       '     <div class="col-sm-8">'+
-		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">'+
-		       '     </div>'+
-		       '   </div>';
+			req.pswd = encrypt;
 			
-			BootstrapDialog.show({
+    		$.ajax({
 				
-				title: "Host Password",
+				url: "executeProcess",
 				
-				closable: false,
+				type: "POST",
 				
-				message: content,
+				data: req
 				
-				buttons: [{
+			}).done(function(msg){
+				
+				msg = $.parseJSON(msg);
+				
+				if(msg.ret == "success"){
 					
-	            	label: 'Confirm',
-	                
-	                action: function(dialogItself){
-	                	
-	                	var $button = this;
-	                	
-	                	$button.spin();
-	                	
-	                	dialogItself.enableButtons(false);
-	                	
-	                	//Two-step encryption is applied here. 
-	                	//First, get public key from server.
-	                	//Second, encrypt the password and sent the encypted string to server. 
-	                	$.ajax({
-	                		
-	                		url: "key",
-	                		
-	                		type: "POST",
-	                		
-	                		data: ""
-	                		
-	                	}).done(function(msg){
-	                		
-	                		//encrypt the password using the received rsa key
-	                		
-	                		msg = $.parseJSON(msg);
-	                		
-	                		var encrypt = new JSEncrypt();
-	                		
-	                        encrypt.setPublicKey(msg.rsa_public);
-	                        
-	                        var encrypted = encrypt.encrypt($('#inputpswd').val());
-	                        
-	                        var req = {
-	                        		
-	                        		processId: pid,
-	                        		
-	                        		hostId: hid,
-	                        		
-	                        		pswd: encrypted
-	                        		
-	                        }
-	                		
-	                		$.ajax({
-		        				
-		        				url: "executeProcess",
-		        				
-		        				type: "POST",
-		        				
-		        				data: req
-		        				
-		        			}).done(function(msg){
-		        				
-		        				msg = $.parseJSON(msg);
-		        				
-		        				if(msg.ret == "success"){
-		        					
-		        					console.log("the process is under execution.");
-		        					
-		        					console.log("history id: " + msg.history_id);
-		        					
-		        					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg);
-		        					
-		        					if(desc == "builtin"){
-		        						
-		        						edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
-		        						
-		        					}
-		        					
-		        				}else if(msg.ret == "fail"){
-		        					
-		        					alert("Fail to execute the process.");
-		        					
-		        					console.error("fail to execute the process " + msg.reason);
-		        					
-		        				}
-		        				
-	        					dialogItself.close();
-		        				
-		        			}).fail(function(jxr, status){
-		        				
-		        				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
-		        				
-		        				$("#inputpswd").val("");
-		        				
-		        				$button.stopSpin();
-		                		
-		        				dialogItself.enableButtons(true);
-		                		
-		        				console.error("fail to execute the process " + pid);
-		        				
-		        			});
-	                		
-	                	}).fail(function(jxr, status){
-	                		
-	                	});
-	                	
-	                	
-	        			
-	                }
+					console.log("the process is under execution.");
 					
-				},{
+					console.log("history id: " + msg.history_id);
 					
-	            	label: 'Cancel',
-	                
-	                action: function(dialogItself){
-	                	
-	                    dialogItself.close();
-	                    
-	                }
+					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg);
 					
-				}]
+					if(req.desc == "builtin"){
+						
+						edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+						
+					}
+					
+				}else if(msg.ret == "fail"){
+					
+					alert("Fail to execute the process.");
+					
+					console.error("fail to execute the process " + msg.reason);
+					
+				}
+				
+				if(dialogItself) dialogItself.close();
+				
+			}).fail(function(jxr, status){
+				
+				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
+				
+				if($("#inputpswd").length) $("#inputpswd").val("");
+				
+				if(button) button.stopSpin();
+	    		
+				if(dialogItself) dialogItself.enableButtons(true);
+	    		
+				console.error("fail to execute the process " + req.processId);
 				
 			});
 			
 		},
 		
-//		hostcallback: function(live, ){
+		/**
+		 * Execute one process
+		 */
+		executeProcess: function(pid, hid, desc){
+			
+            var req = {
+		    		
+		    		processId: pid,
+		    		
+		    		hostId: hid,
+		    		
+		    		desc: desc
+		    		
+		    }
+			
+			edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
+			
+//			var content = '<form>'+
+//			   '   <div class="form-group row required">'+
+//		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
+//		       '     <div class="col-sm-8">'+
+//		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">'+
+//		       '     </div>'+
+//		       '   </div>';
 //			
-//			
-//			
-//		},
-//		
+//			BootstrapDialog.show({
+//				
+//				title: "Host Password",
+//				
+//				closable: false,
+//				
+//				message: content,
+//				
+//				buttons: [{
+//					
+//	            	label: 'Confirm',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                	var $button = this;
+//	                	
+//	                	$button.spin();
+//	                	
+//	                	dialogItself.enableButtons(false);
+//	                	
+//	                	//Two-step encryption is applied here. 
+//	                	//First, get public key from server.
+//	                	//Second, encrypt the password and sent the encypted string to server. 
+//	                	$.ajax({
+//	                		
+//	                		url: "key",
+//	                		
+//	                		type: "POST",
+//	                		
+//	                		data: ""
+//	                		
+//	                	}).done(function(msg){
+//	                		
+//	                		//encrypt the password using the received rsa key
+//	                		
+//	                		msg = $.parseJSON(msg);
+//	                		
+//	                		var encrypt = new JSEncrypt();
+//	                		
+//	                        encrypt.setPublicKey(msg.rsa_public);
+//	                        
+//	                        var encrypted = encrypt.encrypt($('#inputpswd').val());
+//	                        
+//	                        var req = {
+//	                        		
+//	                        		processId: pid,
+//	                        		
+//	                        		hostId: hid,
+//	                        		
+//	                        		pswd: encrypted
+//	                        		
+//	                        }
+//	                		
+//	                		$.ajax({
+//		        				
+//		        				url: "executeProcess",
+//		        				
+//		        				type: "POST",
+//		        				
+//		        				data: req
+//		        				
+//		        			}).done(function(msg){
+//		        				
+//		        				msg = $.parseJSON(msg);
+//		        				
+//		        				if(msg.ret == "success"){
+//		        					
+//		        					console.log("the process is under execution.");
+//		        					
+//		        					console.log("history id: " + msg.history_id);
+//		        					
+//		        					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg);
+//		        					
+//		        					if(desc == "builtin"){
+//		        						
+//		        						edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+//		        						
+//		        					}
+//		        					
+//		        				}else if(msg.ret == "fail"){
+//		        					
+//		        					alert("Fail to execute the process.");
+//		        					
+//		        					console.error("fail to execute the process " + msg.reason);
+//		        					
+//		        				}
+//		        				
+//	        					dialogItself.close();
+//		        				
+//		        			}).fail(function(jxr, status){
+//		        				
+//		        				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
+//		        				
+//		        				$("#inputpswd").val("");
+//		        				
+//		        				$button.stopSpin();
+//		                		
+//		        				dialogItself.enableButtons(true);
+//		                		
+//		        				console.error("fail to execute the process " + pid);
+//		        				
+//		        			});
+//	                		
+//	                	}).fail(function(jxr, status){
+//	                		
+//	                	});
+//	                	
+//	                }
+//					
+//				},{
+//					
+//	            	label: 'Cancel',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                    dialogItself.close();
+//	                    
+//	                }
+//					
+//				}]
+//				
+//			});
+			
+		},
+		
 //		checkhost: function(){
 //			
 //			var id = $(this).attr("id");

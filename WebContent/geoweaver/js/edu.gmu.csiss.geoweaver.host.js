@@ -1,6 +1,398 @@
-
-
+/**
+ * 
+ * author: Ziheng Sun
+ * 
+ */
 edu.gmu.csiss.geoweaver.host = {
+		
+		cred_cache: [{"h":"xxxx", "s": "yyyyy"}],
+		
+		setCache: function(hid, s){
+			
+			var is = false;
+			
+			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+				
+				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+					
+					edu.gmu.csiss.geoweaver.host.cred_cache[i].s = s;
+					
+					is = true;
+					
+					break;
+					
+				}
+				
+			}
+			
+			if(!is){
+				
+				edu.gmu.csiss.geoweaver.host.cred_cache.push({"h": hid, "s": s});
+				
+			}
+			
+		},
+		
+		findCache: function(hid){
+			
+			var s = null;
+			
+			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+				
+				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+					
+					s = edu.gmu.csiss.geoweaver.host.cred_cache[i].s;
+					
+					break;
+					
+				}
+				
+			}
+			
+			return s;
+			
+		},
+		
+		encrypt: function(hid, pstext, req, dialog, button, business_callback){
+			
+			//Two-step encryption is applied here. 
+        	//First, get public key from server.
+        	//Second, encrypt the password and sent the encypted string to server. 
+        	$.ajax({
+        		
+        		url: "key",
+        		
+        		type: "POST",
+        		
+        		data: ""
+        		
+        	}).done(function(msg){
+        		
+        		//encrypt the password using the received rsa key
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		var encrypt = new JSEncrypt();
+        		
+                encrypt.setPublicKey(msg.rsa_public);
+                
+                var encrypted = encrypt.encrypt(pstext);
+                
+//                msg.pswd = encrypted;
+                
+                business_callback(encrypted, req, dialog, button);
+        		
+        	}).fail(function(jxr, status){
+        		
+        	});
+			
+		},
+		
+		
+		enter_password: function(hid, req, business_callback){
+			
+			var content = '<form>'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
+		       '     <div class="col-sm-8">'+
+		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">'+
+		       '     </div>'+
+		       '     <div class="col-sm-12 form-check">'+
+		       '		<input type="checkbox" class="form-check-input" id="remember">'+
+		       '		<label class="form-check-label" for="remember">Remember password</label>'+
+		       '     </div>'+
+		       '   </div>';
+			
+			BootstrapDialog.show({
+				
+				title: "Host Password",
+				
+				closable: false,
+				
+				message: content,
+				
+				buttons: [{
+					
+	            	label: 'Confirm',
+	                
+	                action: function(dialogItself){
+	                	
+	                	var $button = this;
+	                	
+	                	$button.spin();
+	                	
+	                	dialogItself.enableButtons(false);
+	                	
+	                	if(document.getElementById('remember').checked) {
+	                	    
+	                		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
+	                		
+	                	}
+	                	
+	                	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
+	                	
+	                }
+					
+				},{
+					
+	            	label: 'Cancel',
+	                
+	                action: function(dialogItself){
+	                	
+	                    dialogItself.close();
+	                    
+	                }
+					
+				}]
+				
+			});
+			
+			
+		},
+		
+		start_auth_single: function(hid, req, business_callback){
+			
+			var s = edu.gmu.csiss.geoweaver.host.findCache(hid);
+			
+			if(s==null){
+				
+				edu.gmu.csiss.geoweaver.host.enter_password(hid, req, business_callback);
+				
+			}else{
+				
+				edu.gmu.csiss.geoweaver.host.encrypt(hid, s, req, null, null, business_callback);
+				
+			}
+			
+		},
+		
+		encrypt_m : function(hosts, pswds, req, dialogItself, button, business_callback){
+			
+			//Two-step encryption is applied here. 
+         	//First, get public key from server.
+         	//Second, encrypt the password and sent the encypted string to server. 
+         	$.ajax({
+         		
+         		url: "key",
+         		
+         		type: "POST",
+         		
+         		data: ""
+         		
+         	}).done(function(msg){
+         		
+         		//encrypt the password using the received rsa key
+         		
+         		msg = $.parseJSON(msg);
+         		
+         		var encrypt = new JSEncrypt();
+         		
+                encrypt.setPublicKey(msg.rsa_public);
+                
+                var encrypt_passwds = [];
+                
+                for(var i=0; i<hosts.length; i++){
+
+                    var encrypted = encrypt.encrypt(pswds[i]);//$('#inputpswd_' + i).val());
+                    
+                    encrypt_passwds.push(encrypted);
+                	
+                }
+                
+                var ids = edu.gmu.csiss.geoweaver.host.turnHosts2Ids(hosts);
+                
+                req.hosts = ids;
+                
+                req.passwords = encrypt_passwds;
+                
+                business_callback(req, dialogItself, button);
+                
+         	}).fail(function(jxr, status){
+         		 
+         		console.error("fail to execute workflow");
+         		
+         	});
+			
+		},
+		
+		enter_pswd_m : function(newhosts, hosts, req, business_callback){
+			
+			var content = '<form>';
+			
+			for(var i=0;i<newhosts.length;i++){
+				
+				content += '   <div class="form-group row required">'+
+			       '     <label for="host password" class="col-sm-4 col-form-label control-label">Host '+newhosts[i].name+' Password: </label>'+
+			       '     <div class="col-sm-8">'+
+			       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd_'+i+'\" required=\"true\" placeholder=\"Password\">'+
+			       '     </div>'+
+			       '   </div>';
+			}
+			
+			content += '     <div class="form-group row form-check">'+
+		       '		<input type="checkbox" class="form-check-input" id="remember">'+
+		       '		<label class="form-check-label" for="remember">Remember password</label>'+
+		       '     </div>';
+			
+			content += "</form>";
+			
+			BootstrapDialog.show({
+				
+				title: "Host Password",
+				
+				closable: false,
+				
+				message: content,
+				
+				buttons: [{
+					
+	         	label: 'Confirm',
+	             
+	             action: function(dialogItself){
+	             	
+	             	var $button = this;
+	             	
+	             	$button.spin();
+	             	
+	             	dialogItself.enableButtons(false);
+	             	
+	             	var shortpasswds = [];
+	             	
+	             	for(var i=0;i<newhosts.length;i++){
+	             		
+	             		shortpasswds.push($("#inputpswd_" + i).val());
+	             		
+	             		if(document.getElementById('remember').checked) {
+	             			
+	             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
+	             			
+	             		}
+	             		
+	             	}
+	             	
+	             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
+	             	
+	             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+	             	
+	             }
+					
+				},{
+					
+					label: 'Cancel',
+	             
+			        action: function(dialogItself){
+			         	
+			             dialogItself.close();
+			             
+			        }
+					
+				}]
+				
+			});
+			
+		},
+		
+		start_auth_multiple: function(hosts, req, business_callback){
+			
+			var newhosts = this.shrinkList(hosts);
+			
+			if(newhosts.length>0){
+				
+				edu.gmu.csiss.geoweaver.host.enter_pswd_m(newhosts, hosts, req, business_callback);
+				
+			}else{
+				
+				var passwds = edu.gmu.csiss.geoweaver.host.extendList([], newhosts, hosts);
+				
+				edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, null, null, business_callback);
+			}
+			
+			
+			
+		},
+		
+		turnHosts2Ids: function(hosts){
+			
+			var ids = [];
+			
+			for(var i=0; i<hosts.length; i++){
+				
+				ids.push(hosts[i].id);
+				
+			}
+			
+			return ids;
+			
+		},
+		
+		/**
+		 * Extend the list to original size
+		 */
+		extendList: function(shortpasswds, newhosts, hosts){
+			
+			var fullpasswdslist = [];
+			
+			for(var i=0;i<hosts.length;i++){
+				
+				var passwd = null;
+				
+				for(var j=0;j<newhosts.length;j++){
+					
+					if(newhosts[j].id==hosts[i].id){
+						
+						passwd = shortpasswds[j];
+						
+						break;
+						
+					}
+					
+				}
+				
+				if(passwd!=null)
+				
+					fullpasswdslist.push(passwd);
+				
+				else
+					
+					fullpasswdslist.push(edu.gmu.csiss.geoweaver.host.findCache(hosts[i].id));
+				
+			}
+			
+			return fullpasswdslist;
+			
+		},
+		
+		shrinkList: function(hosts){
+			
+			var newhosts = [];
+			
+			for(var i=0;i<hosts.length;i++){
+				
+				var exist = false;
+				
+				for(var j=0;j<newhosts.length;j++){
+					
+					if(hosts[i].id==newhosts[j].id){
+						
+						exist = true;
+						
+						break;
+						
+					}
+					
+				}
+				
+				if(!exist && edu.gmu.csiss.geoweaver.host.findCache(hosts[i].id)==null){ //the p is not cached
+					
+					newhosts.push(hosts[i]);
+					
+				}
+				
+			}
+			
+			return newhosts;
+			
+		},
 		
 
 		closeSSH: function(token){
@@ -257,7 +649,9 @@ edu.gmu.csiss.geoweaver.host = {
             				
 				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i><i class=\"fa fa-upload subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.fileupload.uploadfile('"+
             				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-sitemap subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.filebrowser.start('"+
+            				
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
             				
 				one.id+"','host')\"></i> </li>");
 			

@@ -49,7 +49,7 @@ We use `docker-compose` to establish the containers for Geoweaver. As the Docker
 
 > cd Geoweaver && mkdir target && cd target
 
-> wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
+> wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.9/Geoweaver-0.6.9.war -O Geoweaver.war
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
 
@@ -64,6 +64,10 @@ Replace the `your-ip`, `your-port` with the real domain of your tomcat. For exam
 Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
+
+To stop Geoweaver, type:
+
+> docker stop $(docker ps -aq)
 
 ### Tomcat War
 
@@ -91,9 +95,22 @@ Fill the fields with correct values. (database url, default: jdbc:mysql://localh
 
 > http://your-ip:your-port/Geoweaver/web/geoweaver
 
+To stop Geoweaver, use:
+
+> /usr/local/tomcat/bin/shutdown.sh
+
 ### Cloud VM Template
 
-We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go [here](http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2) to download the template (3.1 Gigabytes). The username and password of the instance would be `csiss` and `password` respectively. To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
+We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go [here](http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2) to download the template (3.1 Gigabytes). The username and password of the instance would be `csiss` and `password` respectively. 
+
+To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
+
+> cd /home/csiss/Geoweaver
+> docker-compose up -d
+
+To stop Geoweaver, use:
+
+> docker stop $(docker ps -aq)
 
 ## Build from source
 
@@ -150,8 +167,6 @@ A live demo site is available in George Mason University: [I am a link, hit me](
 Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and web-based workflow system. 
 
 ![LSTM-Crop concept](/docs/lstm.png)
-
-![Geoweaver user interface]()
 
 # Documentation
 

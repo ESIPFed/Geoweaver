@@ -50,6 +50,8 @@ public class TaskManager {
 		
 		w.join(7*24*60*60*1000); // 7 days maximum
 		
+		WorkerManager.removeMustWorker(w);
+		
 	}
 	/**
 	 * Execute a task

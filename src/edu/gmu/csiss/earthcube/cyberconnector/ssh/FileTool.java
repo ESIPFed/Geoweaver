@@ -66,6 +66,40 @@ public class FileTool {
 		
 	}
 	
+	public static void sftp_browser(String hid, String password, String file_path) {
+		
+		String resp = null;
+		
+		try {
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			//establish SSH session and generate a token for it
+			
+			SSHSession session = new SSHSessionImpl();
+			
+			session.login(hid, password, null, false);
+			
+			session.getSsh().newSFTPClient().ls(file_path);
+			
+//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
+			
+//			session.runBash(code, id, false); 
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+		   
+		}
+		
+	}
+	
 	public static void scp_download(String hid, String password, String file_path, String dest_path) {
 		
 		String resp = null;

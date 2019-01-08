@@ -58,6 +58,12 @@ public class WorkerManager {
 		return w;
 	}
 	
+	public static void removeMustWorker(Worker w) {
+		
+		workerlist.remove(w);
+		
+	}
+	
 	public static Worker getNextAvailableWorker() {
 		
 		Worker w = null;
