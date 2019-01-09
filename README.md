@@ -105,8 +105,7 @@ We provide a ready-to-use cloud template for you to install on mainstream cloud 
 
 To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
 
-> cd /home/csiss/Geoweaver
-> docker-compose up -d
+> cd /home/csiss/Geoweaver && docker-compose up -d
 
 To stop Geoweaver, use:
 

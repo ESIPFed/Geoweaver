@@ -475,7 +475,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg); //use the same method as the single process
 					
 					if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow!=null
-							&&edu.gmu.csiss.geoweaver.workflow.loaded_workflow==req.wid){
+							&&edu.gmu.csiss.geoweaver.workflow.loaded_workflow==req.id){
 						
     					edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id);
     					
