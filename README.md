@@ -42,24 +42,24 @@ Docker-compose 1.23.1+ (for install via docker)
 We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.
 
 * Clone this repo to your machine 
-```
+```shell
 git clone https://github.com/ESIPFed/Geoweaver.git
 ```
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder.
-```
+```shell
 cd Geoweaver && mkdir target && cd target
 wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.9/Geoweaver-0.6.9.war -O Geoweaver.war
 ```
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
 
-```
+```shell
 cd .. && docker-compose up -d
 ```
 
 The address is:
 
-```
+```html
 http://your-ip:your-port/Geoweaver/web/geoweaver
 ```
 
@@ -70,7 +70,7 @@ Notice: Make sure the local services like mysql and tomcat are shut down before 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
 To stop Geoweaver, type:
-```
+```shell
 docker stop $(docker ps -aq)
 ```
 
@@ -79,7 +79,7 @@ docker stop $(docker ps -aq)
 * Download [the latest release war](https://github.com/ESIPFed/Geoweaver/releases) and copy it to the webapps directory of Tomcat (e.g. /usr/local/tomcat). Start Tomcat. 
 
 
-```
+```shell
 wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
 
 cp Geoweaver.war /usr/local/tomcat/webapps/
@@ -89,7 +89,7 @@ cp Geoweaver.war /usr/local/tomcat/webapps/
 ```
 
 * After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` 
-```
+```shell
 nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
 
 nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
@@ -99,17 +99,17 @@ Fill the fields with correct values. (database url, default: jdbc:mysql://localh
 
 (**Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.**)
 
-```
+```shell
 mysql -u root -p < docker/db/gw.sql
 ```
 
 * Enter the following URL into browser address bar to open Geoweaver:
-```
+```html
 http://your-ip:your-port/Geoweaver/web/geoweaver
 ```
 
 To stop Geoweaver, use:
-```
+```shell
 /usr/local/tomcat/bin/shutdown.sh
 ```
 
@@ -119,13 +119,13 @@ We provide a ready-to-use cloud template for you to install on mainstream cloud 
 
 To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
 
-```
+```shell
 cd /home/csiss/Geoweaver && docker-compose up -d
 ```
 
 To stop Geoweaver, use:
 
-```
+```shell
 docker stop $(docker ps -aq)
 ```
 
