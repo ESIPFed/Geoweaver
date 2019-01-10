@@ -80,18 +80,17 @@ docker stop $(docker ps -aq)
 
 
 ```shell
+
 wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
-
 cp Geoweaver.war /usr/local/tomcat/webapps/
-
 /usr/local/tomcat/bin/startup.sh
 
 ```
 
 * After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` 
+
 ```shell
 nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
-
 nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
 ```
 
