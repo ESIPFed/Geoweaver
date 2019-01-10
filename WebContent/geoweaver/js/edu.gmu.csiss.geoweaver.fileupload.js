@@ -107,6 +107,8 @@ edu.gmu.csiss.geoweaver.fileupload = {
 				
 				title: "File Uploader",
 				
+				closable: false,
+				
 				message: "<div class=\"row\" style=\"margin: 5px;\"> "+
 			    "    <div class=\"col-md-12 col-sm-12\"> "+
 			    "      <!-- Our markup, the important part here! --> "+

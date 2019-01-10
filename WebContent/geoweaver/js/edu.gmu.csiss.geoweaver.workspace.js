@@ -769,8 +769,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	      })
 	    	      .call(thisGraph.drag);
 	    	    
-	    	    console.log("update circile once");
-	
+//	    	    console.log("update circile once");	
 	    	    newGs.append("circle")
 	    	      .attr("r", String(consts.nodeRadius))
 	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; }); //add color
