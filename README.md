@@ -132,6 +132,16 @@ docker stop $(docker ps -aq)
 
 Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
 
+# Demo
+
+A live demo site is available in George Mason University: [I am a link, hit me](http://129.174.131.229/geoweaver).
+
+Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
+
+![Result Demo](/docs/demo.png)
+
+![LSTM-Crop concept](/docs/lstm.png)
+
 ## Usage
 
 ### Add A Server
@@ -176,13 +186,7 @@ The workflows can be exported and move around and imported back.
 
 ![Export workflow](docs/exportworkflow.gif)
 
-# Demonstration
 
-A live demo site is available in George Mason University: [I am a link, hit me](http://cube.csiss.gmu.edu/CyberConnector/web/geoweaver).
-
-Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and web-based workflow system. 
-
-![LSTM-Crop concept](/docs/lstm.png)
 
 # Documentation
 
