@@ -1,6 +1,7 @@
 /target/
 /test/
 .idea/
+/nulltemp/
 /cyberconnector-portal/src/main/webapp/images/psd
 *.iml
 
