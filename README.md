@@ -15,18 +15,18 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
     + [Cloud VM Template](#cloud-vm-template)
   * [Build from source](#build-from-source)
 - [Demo](#demo)
-  * [Usage](#usage)
-    + [Add A Server](#add-a-server)
-    + [Create A Process](#create-a-process)
-    + [Create A Workflow](#create-a-workflow)
-    + [Run Workflow](#run-workflow)
-    + [Browse Provenance](#browse-provenance)
-    + [Retrieve and Display Results](#retrieve-and-display-results)
-    + [I/O workflows](#i-o-workflows)
+- [Usage](#usage)
+  * [Add A Server](#add-a-server)
+  * [Create A Process](#create-a-process)
+  * [Create A Workflow](#create-a-workflow)
+  * [Run Workflow](#run-workflow)
+  * [Browse Provenance](#browse-provenance)
+  * [Retrieve and Display Results](#retrieve-and-display-results)
+  * [I/O workflows](#i-o-workflows)
 - [Documentation](#documentation)
-  * [Open Source Libraries](#open-source-libraries)
-  * [License](#license)
-    + [Author](#author)
+- [Dependencies](#dependencies)
+- [License](#license)
+- [Author](#author)
 
 
 # Project Goals
@@ -167,51 +167,49 @@ Here is a use case of Geoweaver, using deep neural network like LSTM RNN and Seg
 
 ![LSTM-Crop concept](/docs/lstm.png)
 
-## Usage
+# Usage
 
-### Add A Server
+## Add A Server
 
 Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
 
 ![Add a host](docs/addhost.gif)
 
-### Create A Process
+## Create A Process
 
 Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
 
 ![Add a process](docs/addprocess.gif)
 
-### Create A Workflow
+## Create A Workflow
 
 Geoweaver can link the processes together to form a workflow. To connect two processes, press `shift` key while dragging from one process to another.
 
 ![Create a workflow](docs/createworkflow.gif)
 
-### Run Workflow
+## Run Workflow
 
 Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.
 
 ![Run a workflow](docs/runworkflow.gif)
 
-### Browse Provenance
+## Browse Provenance
 
 Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.
 
 ![Check provenance](docs/checkprovenance.gif)
 
-### Retrieve and Display Results
+## Retrieve and Display Results
 
 Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).
 
 ![Get result](docs/getresult.gif)
 
-### I/O workflows
+## I/O workflows
 
 The workflows can be exported and move around and imported back.
 
 ![Export workflow](docs/exportworkflow.gif)
-
-
 
 # Documentation
 
@@ -225,7 +223,7 @@ The workflows can be exported and move around and imported back.
 
 [November Report](docs/ESIP-Geoweaver-Report-4.docx)
 
-## Open Source Libraries
+# Dependencies
 
 This project is impossible without the support of several fantastic open source libraries.
 
@@ -239,11 +237,11 @@ This project is impossible without the support of several fantastic open source 
 
 [JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
 
-## License
+# License
 
 MIT
 
-### Author
+# Author
 
 [developer list](authors.md)
 
