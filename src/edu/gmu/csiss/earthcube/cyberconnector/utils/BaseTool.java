@@ -210,7 +210,7 @@ public class BaseTool {
 		
 		String classpath = getClassPath();
 		
-		String rootpath = null;
+		String rootpath = classpath;
 		
 		if(classpath.indexOf("WEB-INF")!=-1)
 			

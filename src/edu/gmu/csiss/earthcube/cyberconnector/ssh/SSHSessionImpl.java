@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import net.schmizz.sshj.SSHClient;
@@ -44,6 +46,7 @@ import org.springframework.web.socket.WebSocketSession;
 import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
 /**
  * Geoweaver SSH session wrapper
@@ -250,44 +253,69 @@ public class SSHSessionImpl implements SSHSession {
         log.info("session finalized");
     }
     
-    
-    
     @Override
 	public void saveHistory(String logs) {
 		
-    	this.history_end_time = BaseTool.getCurrentMySQLDatetime();
-
-		this.history_output = logs;
-    	
-    	if(BaseTool.isNull(logs)) {
+    	try {
     		
-    		StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host) values (\"");
-        	
-        	sql.append(this.history_id).append("\",\"");
-        	
-        	sql.append(this.history_process).append("\",\"");
-        	
-        	sql.append(this.history_begin_time).append("\", ?, ?, \"");
-        	
-        	sql.append(this.hostid).append("\" )");
-        	
-        	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
+    		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
     		
-    	}else {
+    		//the log is more than 65500 characters, write it into a log file
+    		if(logs.length()>65500) {
+    			
+    			String logfile = SysDir.upload_file_path + "/" + this.history_id + ".log";
+    			
+    			BaseTool.writeString2File(logs, BaseTool.getCyberConnectorRootPath() + logfile);
+    			
+    			this.history_output = "logfile";
+    			
+    		}else {
+    			
+    			this.history_output = logs;
+    			
+    		}
     		
-    		StringBuffer sql = new StringBuffer("update history set end_time = \"");
+    		StringBuffer sql = new StringBuffer("select id from history where id = \"").append(this.history_id).append("\"; ");
     		
-    		sql.append(this.history_end_time);
+    		ResultSet rs = DataBaseOperation.query(sql.toString());
     		
-    		sql.append("\", output = ? where id = \"");
-        	
-        	sql.append(this.history_id).append("\";");
-        	
-        	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
-    		
-    	}
-    	
-    	
+			if(!rs.next()) {
+				
+				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host) values (\"");
+				
+				sql.append(this.history_id).append("\",\"");
+				
+				sql.append(this.history_process).append("\",\"");
+				
+				sql.append(this.history_begin_time).append("\", ?, ?, \"");
+				
+				sql.append(this.hostid).append("\" )");
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
+				
+			}else {
+				
+				sql = new StringBuffer("update history set end_time = \"");
+				
+				sql.append(this.history_end_time);
+				
+				sql.append("\", output = ? where id = \"");
+				
+				sql.append(this.history_id).append("\";");
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
+				
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+			
+		}
     	
 	}
 

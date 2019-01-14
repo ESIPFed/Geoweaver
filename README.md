@@ -4,6 +4,31 @@
 
 Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. 
 
+##### Table of Contents
+
+- [Project Goals](#project-goals)
+- [Installation](#installation)
+  * [Prerequisite](#prerequisite)
+  * [Quick Install](#quick-install)
+    + [Docker](#docker)
+    + [Tomcat War](#tomcat-war)
+    + [Cloud VM Template](#cloud-vm-template)
+  * [Build from source](#build-from-source)
+- [Demo](#demo)
+  * [Usage](#usage)
+    + [Add A Server](#add-a-server)
+    + [Create A Process](#create-a-process)
+    + [Create A Workflow](#create-a-workflow)
+    + [Run Workflow](#run-workflow)
+    + [Browse Provenance](#browse-provenance)
+    + [Retrieve and Display Results](#retrieve-and-display-results)
+    + [I/O workflows](#i-o-workflows)
+- [Documentation](#documentation)
+  * [Open Source Libraries](#open-source-libraries)
+  * [License](#license)
+    + [Author](#author)
+
+
 # Project Goals
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
@@ -48,7 +73,7 @@ git clone https://github.com/ESIPFed/Geoweaver.git
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder.
 ```shell
 cd Geoweaver && mkdir target && cd target
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.9/Geoweaver-0.6.9.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.10/Geoweaver-0.6.10.war -O Geoweaver.war
 ```
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
@@ -81,7 +106,7 @@ docker stop $(docker ps -aq)
 
 ```shell
 
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.10/Geoweaver-0.6.10.war -O Geoweaver.war
 cp Geoweaver.war /usr/local/tomcat/webapps/
 /usr/local/tomcat/bin/startup.sh
 
@@ -132,6 +157,16 @@ docker stop $(docker ps -aq)
 
 Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
 
+# Demo
+
+A live demo site is available in George Mason University: [I am a link, hit me](http://129.174.131.229/geoweaver).
+
+Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
+
+![Result Demo](/docs/demo.png)
+
+![LSTM-Crop concept](/docs/lstm.png)
+
 ## Usage
 
 ### Add A Server
@@ -176,13 +211,7 @@ The workflows can be exported and move around and imported back.
 
 ![Export workflow](docs/exportworkflow.gif)
 
-# Demonstration
 
-A live demo site is available in George Mason University: [I am a link, hit me](http://cube.csiss.gmu.edu/CyberConnector/web/geoweaver).
-
-Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and web-based workflow system. 
-
-![LSTM-Crop concept](/docs/lstm.png)
 
 # Documentation
 

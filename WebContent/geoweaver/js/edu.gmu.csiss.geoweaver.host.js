@@ -88,7 +88,6 @@ edu.gmu.csiss.geoweaver.host = {
 			
 		},
 		
-		
 		enter_password: function(hid, req, business_callback){
 			
 			var content = '<form>'+

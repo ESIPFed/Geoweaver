@@ -17,6 +17,13 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
+/**
+ * 
+ * Task for builtin processes
+ * 
+ * @author JensenSun
+ *
+ */
 public class GeoweaverProcessTask  extends Task {
 	
 	String 	   name;
@@ -138,7 +145,11 @@ public class GeoweaverProcessTask  extends Task {
 				
 				logger.info("get result file path : " + filepath);
 				
-				String filename = new RandomString(8).nextString();
+//				String filename = new RandomString(8).nextString();
+				
+				String filename = new File(filepath).getName();
+				
+//				String dest = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
 				
 				File folder = new File(BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path);
 				

@@ -288,6 +288,106 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+	
+	@RequestMapping(value = "/closefilebrowser", method = RequestMethod.POST)
+	public @ResponseBody String closefileBrowser(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			FileTool.close_browser(session.getId());
+			
+			resp = "{ \"ret\": \"success\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/openfilebrowser", method = RequestMethod.POST)
+	public @ResponseBody String fileBrowser(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String hid = request.getParameter("hid");
+			
+			String encrypted = request.getParameter("pswd");
+			
+			String init_path = request.getParameter("init_path");
+			
+			if(!BaseTool.isNull(encrypted)) {
+				
+				String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+				
+				resp = FileTool.open_sftp_browser(hid, password, init_path, session.getId());
+				
+			}else {
+				
+				resp = FileTool.continue_browser(session.getId(), init_path);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/retrievefile", method = RequestMethod.POST)
+	public @ResponseBody String fileGetter(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String filepath = request.getParameter("filepath");
+			
+			resp = FileTool.scp_download(filepath,session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/updatefile", method = RequestMethod.POST)
+	public @ResponseBody String fileEditor(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String filepath = request.getParameter("filepath");
+			
+			String content = request.getParameter("content");
+			
+			resp = FileTool.scp_fileeditor(filepath, content, session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
 
 	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
     public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){

@@ -290,6 +290,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 			}).fail(function(jxr, status){
 				
+				console.error(status);
 				
 			});
 			
@@ -308,6 +309,16 @@ edu.gmu.csiss.geoweaver.process = {
 			}).done(function(msg){
 				
 				msg = $.parseJSON(msg);
+				
+				var output = msg.output;
+				
+				if(msg.output=="logfile"){
+					
+					output = "<div class=\"spinner-border\" role=\"status\"> "+
+					"	  <span class=\"sr-only\">Loading...</span> "+
+					"	</div>";
+					
+				}
 				
 				var content = "<div class=\"form-group row\"> "+
 				"	    <dt class=\"col col-md-3\">Log Id</dt>"+
@@ -331,14 +342,37 @@ edu.gmu.csiss.geoweaver.process = {
 				"	  </div>"+
 				"<div class=\"form-group row\"> "+
 				"	    <dt class=\"col col-md-3\">Output</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.output+"</dd>"+
+				"	    <dd class=\"col col-md-7 word-wrap\" id=\"log-output\">"+output+"</dd>"+
 				"	  </div>";
 				
 				BootstrapDialog.show({
 					
 					title: "Process Log",
 					
+					size: BootstrapDialog.SIZE_WIDE,
+					
 					message: content,
+					
+					onshown: function(){
+						
+						if(msg.output=="logfile"){
+							
+							$.get("../temp/" + msg.id + ".log" ).success(function(data){
+								
+								if(data!=null)
+									$("#log-output").text(data);
+								else
+									$("#log-output").text("missing log");
+								
+							}).error(function(){
+								
+								$("#log-output").text("missing log");
+								
+							});
+							
+						}
+						
+					},
 					
 					buttons: [{
 						

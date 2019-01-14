@@ -10,17 +10,15 @@ edu.gmu.csiss.geoweaver.result = {
 			
 			BootstrapDialog.closeAll();
 			
-			$('.imagepreview').attr('src', "file/" + filename);
+			$('.imagepreview').attr('src', "../temp/" + filename);
 			
 			$('#resultmodal').modal('show');
 			
 		},
 		
-		download: function(filename){
+		download_path: function(filepath, filename){
 			
-//			window.open("file/" + filename, '_blank');
-			
-			var url = "file/" + filename;
+			var url = filepath;
 			
 			var element = document.createElement('a');
 			
@@ -35,6 +33,15 @@ edu.gmu.csiss.geoweaver.result = {
 			element.click();
 
 			document.body.removeChild(element);
+		},
+		
+		download: function(filename){
+			
+//			window.open("file/" + filename, '_blank');
+			
+			var url = "../temp/" + filename;
+			
+			edu.gmu.csiss.geoweaver.result.download_path(url, filename);
 			
 		},
 		
