@@ -1,9 +1,13 @@
 package edu.gmu.csiss.earthcube.cyberconnector.web;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
@@ -284,6 +288,106 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+	
+	@RequestMapping(value = "/closefilebrowser", method = RequestMethod.POST)
+	public @ResponseBody String closefileBrowser(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			FileTool.close_browser(session.getId());
+			
+			resp = "{ \"ret\": \"success\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/openfilebrowser", method = RequestMethod.POST)
+	public @ResponseBody String fileBrowser(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String hid = request.getParameter("hid");
+			
+			String encrypted = request.getParameter("pswd");
+			
+			String init_path = request.getParameter("init_path");
+			
+			if(!BaseTool.isNull(encrypted)) {
+				
+				String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+				
+				resp = FileTool.open_sftp_browser(hid, password, init_path, session.getId());
+				
+			}else {
+				
+				resp = FileTool.continue_browser(session.getId(), init_path);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/retrievefile", method = RequestMethod.POST)
+	public @ResponseBody String fileGetter(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String filepath = request.getParameter("filepath");
+			
+			resp = FileTool.scp_download(filepath,session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/updatefile", method = RequestMethod.POST)
+	public @ResponseBody String fileEditor(ModelMap model, WebRequest request, HttpSession session) {
+		
+		String resp = null;
+		
+		try {
+			
+			String filepath = request.getParameter("filepath");
+			
+			String content = request.getParameter("content");
+			
+			resp = FileTool.scp_fileeditor(filepath, content, session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
 
 	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
     public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){
@@ -331,7 +435,7 @@ public class GeoweaverController {
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.execute(pid, hid, password, null);
+			resp = ProcessTool.execute(pid, hid, password, null, false);
 			
 		}catch(Exception e) {
 			
@@ -372,13 +476,45 @@ public class GeoweaverController {
 				
 				String lang = request.getParameter("lang");
 				
-				String code = request.getParameter("code");
-				
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
 				
 				String id = request.getParameter("id");
+				
+				String code = null;
+				
+				if(lang.equals("shell")) {
+					
+					code = request.getParameter("code");
+					
+				}else if(lang.equals("builtin")) {
+					
+					String operation = request.getParameter("code[operation]");
+					
+					code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
+					
+					List params = new ArrayList();
+					
+					int i=0;
+					
+					while(request.getParameter("code[params]["+i+"][name]")!=null) {
+						
+						if(i!=0) {
+							
+							code += ", ";
+							
+						}
+						
+						code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
+						
+						i++;
+						
+					}
+					
+					code += "] }";
+					
+				}
 				
 				ProcessTool.update(id, name, lang, code, desc);
 				
@@ -416,7 +552,7 @@ public class GeoweaverController {
 	    try {
 	    
 	    	// get your file as InputStream
-	    	String fileloc = SysDir.geoweaver_file_path + fileName;
+	    	String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + fileName;
 	      
 	    	File my_file = new File(fileloc);
 	      
@@ -538,12 +674,44 @@ public class GeoweaverController {
 			}else if(type.equals("process")) {
 				
 				String lang = request.getParameter("lang");
-				
-				String code = request.getParameter("code");
-				
+
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
+				
+				String code = null;
+				
+				if(lang.equals("shell")) {
+					
+					code = request.getParameter("code");
+					
+				}else if(lang.equals("builtin")) {
+					
+					String operation = request.getParameter("code[operation]");
+					
+					code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
+					
+					List params = new ArrayList();
+					
+					int i=0;
+					
+					while(request.getParameter("code[params]["+i+"][name]")!=null) {
+						
+						if(i!=0) {
+							
+							code += ", ";
+							
+						}
+						
+						code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
+						
+						i++;
+						
+					}
+					
+					code += "] }";
+					
+				}
 				
 				String pid = ProcessTool.add(name, lang, code, desc);
 				
@@ -667,17 +835,17 @@ public class GeoweaverController {
         	
         	String token = request.getParameter("token");
         	
-        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
+//        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
+//        		
+////        		token = sshSessionManager.sessionsByToken.get(token).getToken();
+//        		
+//        	}else {
         		
-        		token = sshSessionManager.sessionsByToken.get(token).getToken();
-        		
-        	}else {
-        		
-        		token = new RandomString(16).nextString();
+        		token = new RandomString(16).nextString(); //token must be assigned by server in case somebody else hijacks it
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token, false);
+            	boolean success = sshSession.login(host, port, username, password, token, true);
             	
             	logger.info("SSH login: {}={}", username, success);
                         
@@ -685,9 +853,9 @@ public class GeoweaverController {
                 
 //                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sessionsByToken.put(token, sshSession);
+                sshSessionManager.sessionsByToken.put(token, sshSession); //disposable token, can only be used for once
         		
-        	}
+//        	}
         	
 //            model.addAttribute("host", host);
 //            
@@ -730,7 +898,7 @@ public class GeoweaverController {
         	
         	if(sshSessionManager.sessionsByToken.get(host+"-"+username)!=null) {
         		
-        		token = sshSessionManager.sessionsByToken.get(host+"-"+username).getToken();
+//        		token = sshSessionManager.sessionsByToken.get(host+"-"+username).getToken();
         		
         	}else {
         		
@@ -738,7 +906,7 @@ public class GeoweaverController {
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
-            	boolean success = sshSession.login(host, port, username, password, token, false);
+            	boolean success = sshSession.login(host, port, username, password, token, true);
             	
             	logger.info("SSH login: {}={}", username, success);
                         

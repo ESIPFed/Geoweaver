@@ -23,8 +23,6 @@ Landsat image time series.
 
 ## Prerequisite
 
-Ubuntu 16.04+
-
 JDK 1.8+
 
 Tomcat 8.0+
@@ -39,41 +37,100 @@ Docker-compose 1.23.1+ (for install via docker)
 
 ## Quick Install
 
-### Tomcat War
-
-To use Geoweaver, [download](https://github.com/ESIPFed/Geoweaver/releases) the latest release war and copy it to the webapps directory of Tomcat. Start Tomcat. 
-
-After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). Fill the fields with correct values. (**Note: the database must be initiated first.**)
-
-Then enter the following URL into browser address bar to open Geoweaver:
-
-`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
-
-Replace the `your-ip`, `your-port`, `Geoweaver-<version>` with the real name of your tomcat and downloaded Geoweaver package. For example, `localhost:8080`, `Geoweaver-0.6.6`.
-
-### Cloud VM Template
-
-We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go here to download the template.
-
 ### Docker
 
-We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. 
+We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.
 
-First, you need clone this repo to your machine `git clone https://github.com/ESIPFed/Geoweaver.git`. 
+* Clone this repo to your machine 
+```shell
+git clone https://github.com/ESIPFed/Geoweaver.git
+```
+* Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder.
+```shell
+cd Geoweaver && mkdir target && cd target
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.9/Geoweaver-0.6.9.war -O Geoweaver.war
+```
 
-Then, enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder. (Warning: make sure the version number in docker-compose.yml is the same with the one you downloaded. If they are different, update the docker-compose.yml.)
+* Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
 
-Finally, run `docker-compose up -d`. After the command is finished, Geoweaver should be up and running. The address is the same:
+```shell
+cd .. && docker-compose up -d
+```
 
-`http://your-ip:your-port/Geoweaver-<version>/web/geoweaver`
+The address is:
 
-Notice: Make sure the local services like mysql and tomcat are better shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`.
+```html
+http://your-ip:your-port/Geoweaver/web/geoweaver
+```
+
+Replace the `your-ip`, `your-port` with the real domain of your tomcat. For example, `localhost:8080`.
+
+Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
+To stop Geoweaver, type:
+```shell
+docker stop $(docker ps -aq)
+```
+
+### Tomcat War
+
+* Download [the latest release war](https://github.com/ESIPFed/Geoweaver/releases) and copy it to the webapps directory of Tomcat (e.g. /usr/local/tomcat). Start Tomcat. 
+
+
+```shell
+
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.8/Geoweaver-0.6.8.war -O Geoweaver.war
+cp Geoweaver.war /usr/local/tomcat/webapps/
+/usr/local/tomcat/bin/startup.sh
+
+```
+
+* After the tomcat is fully started, configure the database connection. The configuration files are `WEB-INF/classes/config.properties` 
+
+```shell
+nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
+nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
+```
+
+Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
+
+(**Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.**)
+
+```shell
+mysql -u root -p < docker/db/gw.sql
+```
+
+* Enter the following URL into browser address bar to open Geoweaver:
+```html
+http://your-ip:your-port/Geoweaver/web/geoweaver
+```
+
+To stop Geoweaver, use:
+```shell
+/usr/local/tomcat/bin/shutdown.sh
+```
+
+### Cloud VM Template
+
+We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go [here](http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2) to download the template (3.1 Gigabytes). The username and password of the instance would be `csiss` and `password` respectively. 
+
+To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. 
+
+```shell
+cd /home/csiss/Geoweaver && docker-compose up -d
+```
+
+To stop Geoweaver, use:
+
+```shell
+docker stop $(docker ps -aq)
+```
+
 ## Build from source
 
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`.
+Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
 
 ## Usage
 
@@ -127,8 +184,6 @@ Here is a use case of Geoweaver, using LSTM RNN to classify landsat images into 
 
 ![LSTM-Crop concept](/docs/lstm.png)
 
-![Geoweaver user interface]()
-
 # Documentation
 
 [Project Proposal](docs/geoweaver-proposal-revised-v4.pdf)
@@ -152,6 +207,8 @@ This project is impossible without the support of several fantastic open source 
 [bootstrap](https://github.com/twbs/bootstrap) - MIT License
 
 [CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
+
+[JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
 
 ## License
 

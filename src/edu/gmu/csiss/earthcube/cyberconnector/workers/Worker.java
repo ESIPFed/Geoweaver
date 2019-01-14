@@ -19,7 +19,18 @@ public class Worker extends Thread{
 	
 	private boolean status; //true: working; false: idle
 	
+	private boolean is_temp;
+	
+	
 	public Worker() {
+		
+		this(false);
+		
+	}
+	
+	public Worker(boolean temporary) {
+		
+		is_temp = temporary;
 		
 		name = new RandomString(5).nextString();
 		
@@ -91,9 +102,8 @@ public class Worker extends Thread{
 					
 				}
 		        
-		        if (Thread.interrupted()) {
-		        	System.out.println("thread " + name + " interrupted");
-//		            return;
+		        if (Thread.interrupted() || is_temp) {
+		        	System.out.println("thread " + name + " interrupted or the worker is temporary");
 		        	running = false;
 		        }
 		        

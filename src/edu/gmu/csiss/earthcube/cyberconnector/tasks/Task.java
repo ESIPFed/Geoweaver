@@ -2,6 +2,8 @@ package edu.gmu.csiss.earthcube.cyberconnector.tasks;
 
 import java.util.Observable;
 
+import org.springframework.web.socket.WebSocketSession;
+
 /**
  *Class Task.java
  *@author ziheng
@@ -29,4 +31,9 @@ public abstract class Task extends Observable{
 	public abstract void failureCallback(Exception e);
 	
 	public abstract String getName();
+	
+	public abstract String getHistory_id();
+	
+	public abstract void startMonitor(WebSocketSession session);
+	
 }

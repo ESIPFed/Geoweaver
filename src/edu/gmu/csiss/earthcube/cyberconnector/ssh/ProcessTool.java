@@ -5,12 +5,20 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.WebSocketSession;
 
 import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
+import edu.gmu.csiss.earthcube.cyberconnector.tasks.GeoweaverProcessTask;
+import edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskManager;
+import edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket;
 import edu.gmu.csiss.earthcube.cyberconnector.user.User;
 import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.Message;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
@@ -25,7 +33,7 @@ public class ProcessTool {
 		
 		StringBuffer json = new StringBuffer("[");
 		
-		StringBuffer sql = new StringBuffer("select id, name from process_type;");
+		StringBuffer sql = new StringBuffer("select id, name, description from process_type;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
@@ -37,6 +45,10 @@ public class ProcessTool {
 			
 			String name = rs.getString("name");
 			
+			String desc = rs.getString("description");
+			
+			if(BaseTool.isNull(desc)) desc = "shell";
+			
 			if(!StringUtils.isNumeric(id)) {
 				
 				if(num!=0) {
@@ -45,7 +57,9 @@ public class ProcessTool {
 					
 				}
 				
-				json.append("{\"id\": \"").append(id).append("\", \"name\": \"").append(name).append("\"}");
+				json.append("{\"id\": \"").append(id).append("\", \"name\": \"")
+					
+					.append(name).append("\", \"desc\":\"").append(desc).append("\"}");
 
 				num++;
 				
@@ -79,7 +93,11 @@ public class ProcessTool {
 				
 				resp.append("\"code\":\"").append(escape(rs.getString("code"))).append("\", ");
 				
-				resp.append("\"description\":\"").append(rs.getString("description")).append("\" }");
+				String lang = "shell";
+				if(!BaseTool.isNull(rs.getString("description")))
+					lang = rs.getString("description");
+				
+				resp.append("\"description\":\"").append(lang).append("\" }");
 				
 			}
 			
@@ -102,7 +120,11 @@ public class ProcessTool {
 	 */
 	public static String escape(String code) {
 		
-		String resp = code.replaceAll("\"", "\\\\\"").replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+		String resp = null;
+		
+		if(!BaseTool.isNull(code))
+		
+			resp = code.replaceAll("\"", "\\\\\"").replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
 		
 		logger.info(resp);
 		
@@ -124,7 +146,7 @@ public class ProcessTool {
 		
 		StringBuffer sql = new StringBuffer("update process_type set name = \"").append(name)
 				
-				.append("\", code = ?, description = \"").append("\" where id = \"").append(id).append("\";");
+				.append("\", code = ?, description = \"").append(lang).append("\" where id = \"").append(id).append("\";");
 		
 		logger.info(sql.toString());
 		
@@ -195,24 +217,49 @@ public class ProcessTool {
 		
 	}
 	
-	
-	
 	/**
-	 * Execute one process on a host
-	 * @param id
-	 * process Id
-	 * @param hid
-	 * host Id
-	 * @param pswd
-	 * password
+	 * get category of the process,e.g. shell, python, R, java, geoweaver-builtin, etc. 
+	 * @param pid
 	 * @return
 	 */
-	public static String execute(String id, String hid, String pswd, String token) {
+	public static String getTypeById(String pid) {
 		
+		StringBuffer sql = new StringBuffer("select description from process_type where id = '").append(pid).append("';");
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		String desc = null;
+		
+		try {
+			
+			if(rs.next()) {
+				
+				desc = rs.getString("description");
+				
+			}
+			
+			DataBaseOperation.closeConnection();
+			
+			if(BaseTool.isNull(desc)) desc = "shell"; //default shell
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return desc;
+		
+		
+	}
+	
+	public static String executeShell(String id, String hid, String pswd, String token, boolean isjoin) {
+		
+
 		String resp = null;
 		
 		try {
-
+			
 			//get code of the process
 			
 			String code = getCodeById(id);
@@ -237,7 +284,7 @@ public class ProcessTool {
 			
 			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
-			session.runBash(code, id, false); 
+			session.runBash(code, id, isjoin); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -263,6 +310,128 @@ public class ProcessTool {
 			
 		}
         		
+		return resp;
+		
+	}
+	
+	public static String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+		
+
+		String resp = null;
+		
+		try {
+			
+			//get code of the process
+			
+			String code = getCodeById(id);
+			
+			logger.debug(code);
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			//establish SSH session and generate a token for it
+			
+			if(token == null) {
+				
+				token = new RandomString(12).nextString();
+				
+			}
+			
+//			SSHSession session = new SSHSessionImpl();
+//			
+//			session.login(hid, pswd, token, false);
+//			
+//			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//			
+//			session.runBash(code, id, isjoin); 
+			
+//			String historyid = session.getHistory_id();
+			
+			GeoweaverProcessTask t = new GeoweaverProcessTask(token);
+			
+			t.initialize(id, hid, pswd, token, isjoin);
+			
+			// find active websocket for this builtin process when it is running as a member process in a workflow
+			// If this builtin process is running solo, the TaskSocket will take care of the problem.
+			
+			WebSocketSession ws = TaskSocket.findSessionById(WorkflowTool.token2ws.get(token));
+			
+			if(!BaseTool.isNull(ws)) t.startMonitor(ws);
+			
+			if(isjoin) {
+			
+				TaskManager.runDirectly(t);
+				
+			}else {
+			
+				TaskManager.addANewTask(t);
+				
+			}
+			
+			String historyid = t.getHistory_id();
+			
+			resp = "{\"history_id\": \""+historyid+
+					
+					"\", \"token\": \""+token+
+					
+					"\", \"ret\": \"success\"}";
+			
+//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
+			
+			//register the input/output into the database
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+        		
+		return resp;
+		
+	}
+	
+	
+	
+	/**
+	 * Execute one process on a host
+	 * @param id
+	 * process Id
+	 * @param hid
+	 * host Id
+	 * @param pswd
+	 * password
+	 * @return
+	 */
+	public static String execute(String id, String hid, String pswd, String token, boolean isjoin) {
+		
+		String category = getTypeById(id);
+		
+		logger.info("this process is : " + category);
+		
+		String resp = null;
+		
+		if("shell".equals(category)) {
+			
+			resp = executeShell(id, hid, pswd, token, isjoin);
+			
+		}else if("builtin".equals(category)) {
+			
+			resp = executeBuiltInProcess(id, hid, pswd, token, isjoin);
+			
+		}else {
+			
+			throw new RuntimeException("This category of process is not supported");
+			
+		}
+
 		return resp;
 		
 	}
@@ -318,7 +487,7 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(pid).append("\";");
+		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(pid).append("\"  ORDER BY begin_time DESC;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		

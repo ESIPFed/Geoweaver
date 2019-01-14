@@ -27,13 +27,15 @@ import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
  */
 public class WorkflowTool {
 	
+	public static Map<String, String> token2ws = new HashMap();
+	
 	public static String list(String owner){
 		
 		StringBuffer json = new StringBuffer("[");
 		
 		try {
 			
-			ResultSet rs = DataBaseOperation.query("select * from abstract_model where length(identifier) < 30; ");
+			ResultSet rs = DataBaseOperation.query("select * from abstract_model where length(identifier) < 30 ; ");
 			
 			int num = 0;
 			
@@ -325,7 +327,7 @@ public class WorkflowTool {
 		
 		try {
 			
-			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask(id);
+			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask(token);
 			
 			if(BaseTool.isNull(token)) {
 				
@@ -413,7 +415,7 @@ public class WorkflowTool {
 
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(workflow_id).append("\";");
+		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(workflow_id).append("\"  ORDER BY begin_time DESC;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		

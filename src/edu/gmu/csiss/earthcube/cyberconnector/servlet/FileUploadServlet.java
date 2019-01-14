@@ -118,8 +118,8 @@ public class FileUploadServlet extends HttpServlet {
             diskFactory.setRepository(newrepo);
                                  
             ServletFileUpload upload = new ServletFileUpload(diskFactory);
-            // 100M
-            upload.setSizeMax(maxvol * 1024 * 1024);
+            // 2000M
+//            upload.setSizeMax(maxvol * 1024 * 1024);
             // HTTP
             List fileItems = upload.parseRequest(req);
             Iterator iter = fileItems.iterator();

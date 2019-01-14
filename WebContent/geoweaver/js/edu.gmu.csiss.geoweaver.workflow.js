@@ -73,6 +73,8 @@ edu.gmu.csiss.geoweaver.workflow = {
 							
 							console.log("the workflow is added");
 							
+							edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
+							
 							if(createandrun){
 								
 								edu.gmu.csiss.geoweaver.workflow.run(msg.id);
@@ -447,80 +449,79 @@ edu.gmu.csiss.geoweaver.workflow = {
 		
 	},
 	
-	/**
-	 * Extend the list to original size
-	 */
-	extendList: function(shortpasswds, newhosts, hosts){
+	
+	execute_callback: function(req, dialogItself, button){
 		
-		var fullpasswdslist = [];
-		
-		for(var i=0;i<hosts.length;i++){
-			
-			var passwd = null;
-			
-			for(var j=0;j<newhosts.length;j++){
+ 		$.ajax({
 				
-				if(newhosts[j].id==hosts[i].id){
+				url: "executeWorkflow",
+				
+				type: "POST",
+				
+				data: req
+				
+		}).done(function(msg){
+			
+			try{
+				
+				msg = $.parseJSON(msg);
+				
+				if(msg.ret == "success"){
 					
-					passwd = shortpasswds[j];
+					console.log("the workflow is under execution.");
 					
-					break;
+					console.log("history id: " + msg.history_id);
+					
+					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg); //use the same method as the single process
+					
+					if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow!=null
+							&&edu.gmu.csiss.geoweaver.workflow.loaded_workflow==req.id){
+						
+    					edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id);
+    					
+					}
+					
+				}else if(msg.ret == "fail"){
+					
+					alert("Fail to execute the workflow.");
+					
+					console.error("fail to execute the workflow " + msg.reason);
+					
+				}else{
+					
+					console.log("other situation: " + msg);
 					
 				}
 				
-			}
-			
-			fullpasswdslist.push(passwd);
-			
-		}
-		
-		return fullpasswdslist;
-		
-	},
-	
-	shrinkList: function(hosts){
-		
-		var newhosts = [];
-		
-		for(var i=0;i<hosts.length;i++){
-			
-			var exist = false;
-			
-			for(var j=0;j<newhosts.length;j++){
+				if(dialogItself) dialogItself.close();
 				
-				if(hosts[i].id==newhosts[j].id){
-					
-					exist = true;
-					
-					break;
-					
-				}
+			}catch(e){
+				
+				if(button) button.stopSpin();
+        		
+				if(dialogItself) dialogItself.enableButtons(true);
+				
+				alert("fail to execute the workflow " + req.wid + ": " + e);
 				
 			}
 			
-			if(!exist){
-				
-				newhosts.push(hosts[i]);
-				
-			}
+		}).fail(function(jxr, status){
 			
-		}
-		
-		return newhosts;
-		
-	},
-	
-	turnHosts2Ids: function(hosts){
-		
-		var ids = [];
-		
-		for(var i=0; i<hosts.length; i++){
+			alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
 			
-			ids.push(hosts[i].id);
+//			for(var i=0;i<newhosts.length;i++){
+//
+//				$("#inputpswd_" + i).val("");
+//				
+//			}
 			
-		}
-		
-		return ids;
+			if(button) button.stopSpin();
+    		
+			if(dialogItself) dialogItself.enableButtons(true);
+    		
+			console.error("fail to execute the process " + req.wid);
+			
+		});
 		
 	},
 	
@@ -529,182 +530,15 @@ edu.gmu.csiss.geoweaver.workflow = {
 	 */
 	execute: function(wid, mode, hosts){
 		
-		////////////////////////// workflow execution
+		var req = {
+ 				
+ 				id: wid, // workflow id
+ 				
+ 				mode: mode
+ 				
+ 		};
 		
-		var newhosts = this.shrinkList(hosts);
-		
-		var content = '<form>';
-		
-		for(var i=0;i<newhosts.length;i++){
-			
-			content += '   <div class="form-group row required">'+
-		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Host '+newhosts[i].name+' Password: </label>'+
-		       '     <div class="col-sm-8">'+
-		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd_'+i+'\" placeholder=\"Password\">'+
-		       '     </div>'+
-		       '   </div>';
-		}
-		
-		content += "</form>";
-		
-		BootstrapDialog.show({
-			
-			title: "Host Password",
-			
-			closable: false,
-			
-			message: content,
-			
-			buttons: [{
-				
-         	label: 'Confirm',
-             
-             action: function(dialogItself){
-             	
-             	var $button = this;
-             	
-             	$button.spin();
-             	
-             	dialogItself.enableButtons(false);
-             	
-             	//Two-step encryption is applied here. 
-             	//First, get public key from server.
-             	//Second, encrypt the password and sent the encypted string to server. 
-             	$.ajax({
-             		
-             		url: "key",
-             		
-             		type: "POST",
-             		
-             		data: ""
-             		
-             	}).done(function(msg){
-             		
-             		//encrypt the password using the received rsa key
-             		
-             		msg = $.parseJSON(msg);
-             		
-             		var encrypt = new JSEncrypt();
-             		
-                    encrypt.setPublicKey(msg.rsa_public);
-                    
-                    var shortpasswds = [];
-                    
-                    for(var i=0; i<newhosts.length; i++){
-
-                        var encrypted = encrypt.encrypt($('#inputpswd_' + i).val());
-                        
-                        shortpasswds.push(encrypted);
-                    	
-                    }
-                    
-                    var passwds = edu.gmu.csiss.geoweaver.workflow.extendList(shortpasswds, newhosts, hosts);
-                    
-                    var ids = edu.gmu.csiss.geoweaver.workflow.turnHosts2Ids(hosts);
-                    
-                    var req = {
-             				
-             				id: wid, // workflow id
-             				
-             				mode: mode,
-             				
-             				hosts: ids, // host allocation
-             				
-             				passwords: passwds
-             				
-             		};
-                    
-             		$.ajax({
-	        				
-	        				url: "executeWorkflow",
-	        				
-	        				type: "POST",
-	        				
-	        				data: req
-	        				
-	        			}).done(function(msg){
-	        				
-	        				try{
-	        					
-	        					msg = $.parseJSON(msg);
-		        				
-		        				if(msg.ret == "success"){
-		        					
-		        					console.log("the workflow is under execution.");
-		        					
-		        					console.log("history id: " + msg.history_id);
-		        					
-		        					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg); //use the same method as the single process
-		        					
-		        					if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow!=null
-		        							&&edu.gmu.csiss.geoweaver.workflow.loaded_workflow==wid){
-		        						
-			        					edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id);
-			        					
-		        					}
-		        					
-		        				}else if(msg.ret == "fail"){
-		        					
-		        					alert("Fail to execute the workflow.");
-		        					
-		        					console.error("fail to execute the workflow " + msg.reason);
-		        					
-		        				}else{
-		        					
-		        					console.log("other situation: " + msg);
-		        					
-		        				}
-		        				
-		        				dialogItself.close();
-	        					
-	        				}catch(e){
-	        					
-	        					$button.stopSpin();
-		                		
-		        				dialogItself.enableButtons(true);
-		        				
-		        				alert("fail to execute the workflow " + wid + ": " + e);
-		        				
-	        				}
-	        				
-	        			}).fail(function(jxr, status){
-	        				
-	        				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
-	        				
-	        				for(var i=0;i<newhosts.length;i++){
-
-		        				$("#inputpswd_" + i).val("");
-	        					
-	        				}
-	        				
-	        				$button.stopSpin();
-	                		
-	        				dialogItself.enableButtons(true);
-	                		
-	        				console.error("fail to execute the process " + wid);
-	        				
-	        			});
-             		
-             	}).fail(function(jxr, status){
-             		 
-             		 console.error("fail to execute workflow");
-             	});
-             	
-             }
-				
-			},{
-				
-				label: 'Cancel',
-             
-		        action: function(dialogItself){
-		         	
-		             dialogItself.close();
-		             
-		        }
-				
-			}]
-			
-		});
+		edu.gmu.csiss.geoweaver.host.start_auth_multiple(hosts, req, edu.gmu.csiss.geoweaver.workflow.execute_callback);
 		
 	},
 	

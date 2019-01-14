@@ -3,6 +3,7 @@ package edu.gmu.csiss.earthcube.cyberconnector.tasks;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.web.socket.WebSocketSession;
 
 import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseBroker;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
@@ -197,6 +198,18 @@ public class VirtualProductGenerationTask extends Task {
 	public String getName() {
 		
 		return oid;
+	}
+
+	@Override
+	public String getHistory_id() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void startMonitor(WebSocketSession session) {
+		
+		
 	}
 
 }

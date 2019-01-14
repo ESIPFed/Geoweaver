@@ -57,6 +57,7 @@
 <body>
 
 <h1 id="title">Geoweaver Web-based SSH</h1>
+<p style="color: white;">This SSH is simply a console for simple commands. It doesn't support complicated interactive commands like vi, vim, nano, top, etc. Type Ctrl+D and Ctrl+C to interrupt running or hanging programs.</p>
 
 <div id="content"></div>
 
@@ -102,9 +103,10 @@
     function ws_onopen(e) {
       
       //shell.echo(special.white + "connected" + special.reset);
-      shell.echo("connected");
+      shell.echo("socket connected");
       // link the SSH session established with spring security logon to the websocket session...
       send(token);
+      send("\n");
       shell.resume();
     }
     
@@ -153,15 +155,30 @@
       
       try {
     	
-        if(e.data.indexOf(special.prompt) == -1 && e.data.indexOf(special.ready) == -1) {
-            
-        	shell.echo(e.data);
+        //if(e.data.indexOf(special.prompt) == -1 && e.data.indexOf(special.ready) == -1) {
         	
-        }
+        	console.log(e.data);
+        	
+        	var match = /\r|\n/.exec(e.data);
+        	
+        	if(!match && e.data.indexOf("@")!=-1 && e.data.indexOf(special.prompt)){
+        		
+        		var last_prompt = e.data.split("$ ")[0] + "$ ";
+
+            	shell.set_prompt(last_prompt);
+				
+            	shell.resume();
+            	
+        	}else{
+				
+            	shell.echo(e.data);
+        		
+        	}
+        	
+        //}
         
         //if (e.data.indexOf(special.ready) != -1) {
         
-        //	shell.resume();
 		
         //}
         
@@ -177,7 +194,7 @@
     	
       }
       
-      shell.resume();
+      //shell.resume();
       
     }
 
@@ -209,13 +226,46 @@
             }, {
             	
                 prompt: '['+user+'@'+host+': ~]# ',
-                
                 name: 'Geoweaver SSH on Web',
-                
                 scrollOnEcho: true,
-                
-                greetings: "SSH on Web started. Type 'exit' to quit. \nThis system is funded by National Science Foundation (https://nsf.gov)."
-                
+                exit: true,
+                clear: true,
+                wrap: true,
+                greetings: "SSH on Web started. Type 'logout' to quit. \n",
+           		
+                keymap: {
+                  
+               	  "CTRL+D": function(e, original){
+                       
+                       console.log("ctrl+d is presesed");
+                       
+                       send("\u0003");
+                       
+                       original();
+                       
+                  },
+                  
+                  "CTRL+C": function(e, original){
+                    
+                    console.log("ctrl+c is presesed");
+                    
+                    send("\u0003");
+                    
+                    original();
+                    
+                  },
+                  
+                  "CTRL+ALT+C": function(e, original){
+                      
+                      console.log("ctrl+alt+c is presesed");
+                      
+                      send("\u0003");
+                      
+                      original();
+                      
+                  }
+                  
+                }
             }
             
         );

@@ -1,7 +1,9 @@
 package edu.gmu.csiss.earthcube.cyberconnector.tasks;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +19,28 @@ public class TaskSocket  implements WebSocketHandler {
 	
 	private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "exit"});
 	
+	private static Map<String, WebSocketSession> peers =new HashMap();
+	
 	@Override
-	public void afterConnectionClosed(WebSocketSession arg0, CloseStatus arg1) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus arg1) throws Exception {
 		
-		
+		peers.remove(session.getId());
 		
 	}
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession arg0) throws Exception {
+	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		
-		
+		peers.put(session.getId(), session);
 		
 	}
+	
+	public static WebSocketSession findSessionById(String sessionid) {
+        if (peers.containsKey(sessionid)) {
+            return peers.get(sessionid);
+        }
+        return null;
+    }
 
 	@Override
 	public void handleMessage(WebSocketSession socketsession, WebSocketMessage<?> message) throws Exception {

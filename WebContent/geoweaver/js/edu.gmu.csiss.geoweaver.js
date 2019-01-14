@@ -11,14 +11,14 @@ edu = {
 			csiss: {
 				geoweaver:{
 
-					desc: "a web system to allow users to easily compose and execute full-stack Long " +
-							"Short Term Memory (LSTM) Recurrent Neural Network (RNN) workflows in web browsers " +
-							"by taking advantage of the online spatial data facilities, high-performance " +
+					desc: "a web system to allow users to easily compose and execute full-stack " +
+							"deep learning workflows in web browsers " +
+							"by taking advantage of the distributed online spatial data facilities, high-performance " +
 							"computation platforms, and open-source deep learning libraries. ",
 							
-					sponsor: "ESIPLab incubator project and NSF EarthCube CyberWay project",
+					sponsor: "ESIPLab incubator project",
 					
-					version: "0.8.1",
+					version: "0.6.10",
 					
 					author: "Ziheng Sun",
 					

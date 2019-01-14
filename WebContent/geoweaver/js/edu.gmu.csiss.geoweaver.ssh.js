@@ -168,11 +168,11 @@ edu.gmu.csiss.geoweaver.ssh = {
 				
 				message: "<div id=\"log_box_id\">",
 				
-				closable: false,
+				closable: true,
 				
 				onshown: function(){
 					
-					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("/shell");
+					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("shell");
 			        
 					edu.gmu.csiss.geoweaver.ssh.output_div_id = "log_box_id";
 			        
@@ -186,6 +186,11 @@ edu.gmu.csiss.geoweaver.ssh = {
 			        
 					edu.gmu.csiss.geoweaver.ssh.ws.onerror = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onerror(e) };
 			        
+				},
+
+				onclose: function(){
+					
+					//do nothing - the websocket session should be closed
 				},
 				
 				buttons: [
