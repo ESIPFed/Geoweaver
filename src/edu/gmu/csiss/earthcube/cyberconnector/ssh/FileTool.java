@@ -117,7 +117,7 @@ public class FileTool {
     			
     		}
     		
-    		json.append("{\"name\": \"").append(r.getName()).append("\", ");
+    		json.append("{\"name\": \"").append(r.getName().trim()).append("\", ");
     		json.append("\"atime\": \"").append(r.getAttributes().getAtime()).append("\", ");
     		json.append("\"mtime\": \"").append(r.getAttributes().getMtime()).append("\", ");
     		json.append("\"size\": \"").append(r.getAttributes().getSize()).append("\", ");

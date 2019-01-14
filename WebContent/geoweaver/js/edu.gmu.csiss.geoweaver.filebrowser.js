@@ -228,6 +228,22 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			
 		},
 		
+		s2Date: function(seconds){
+			
+			var m = new Date(Number(seconds)*1000);
+			
+			var dateString =
+			    m.getUTCFullYear() + "/" +
+			    ("0" + (m.getUTCMonth()+1)).slice(-2) + "/" +
+			    ("0" + m.getUTCDate()).slice(-2) + " " +
+			    ("0" + m.getUTCHours()).slice(-2) + ":" +
+			    ("0" + m.getUTCMinutes()).slice(-2) + ":" +
+			    ("0" + m.getUTCSeconds()).slice(-2);
+			
+			return dateString;
+			
+		},
+		
 		updateBrowser: function(msg){
 			
 			edu.gmu.csiss.geoweaver.filebrowser.current_path = msg.current;
@@ -262,7 +278,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 					
 				}
 				
-				cont +=  '    <td>'+msg.array[i].mtime+'</td>'+
+				cont +=  '    <td>'+edu.gmu.csiss.geoweaver.filebrowser.s2Date(msg.array[i].mtime)+'</td>'+
 				  '    <td>'+msg.array[i].size+'</td>'+
 				  '    <td>'+msg.array[i].mode+'</td>'+
 				  '  </tr>';
