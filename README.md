@@ -167,6 +167,11 @@ Here is a use case of Geoweaver, using deep neural network like LSTM RNN and Seg
 
 ![LSTM-Crop concept](/docs/lstm.png)
 
+Animation demo:
+
+![AnimationDemo](/docs/geoweaver-demo.gif)
+
+
 # Usage
 
 ## Add A Server

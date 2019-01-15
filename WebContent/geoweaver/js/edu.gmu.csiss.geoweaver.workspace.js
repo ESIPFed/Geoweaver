@@ -351,7 +351,16 @@ edu.gmu.csiss.geoweaver.workspace = {
     	            
     	            this.deleteGraph(true);
     	            
-    	            this.nodes = jsonObj.nodes;
+    	            var newNodes = jsonObj.nodes;
+    	            
+    	            //remove the old color status - load a brand new workflow
+    	            newNodes.forEach(function(e, i){
+    	            	
+    	            	newNodes[i].color = ""; 
+    	            	
+    	            });
+    	            
+    	            this.nodes = newNodes;
     	            
     	            this.setIdCt(jsonObj.nodes.length + 1);
     	            
