@@ -234,6 +234,8 @@ public class FileTool {
 			
 //			token2ftpclient.get(sessionid).get(filepath, dest);
 			
+			log.info("Writing local file " + local + " into remote file : " + filepath);
+			
 			token2ftpclient.get(sessionid).put(local, filepath);
 			
 			resp = "{\"ret\": \"success\"}";
