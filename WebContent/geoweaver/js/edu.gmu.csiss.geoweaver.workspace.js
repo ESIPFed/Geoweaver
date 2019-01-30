@@ -228,8 +228,11 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    });
     	    
     	    d3.select("#upload-input").on("click", function(){
-    	      document.getElementById("hidden-file-upload").click();
+    	    
+    	    	document.getElementById("hidden-file-upload").click();
+    	    
     	    });
+    	    
     	    d3.select("#hidden-file-upload").on("change", function(){
     	      if (window.File && window.FileReader && window.FileList && window.Blob) {
     	        var uploadFile = this.files[0];
@@ -405,6 +408,13 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	        nwords = words.length;
 	    	    var el = gEl.append("text")
 	    	          .attr("text-anchor","middle")
+	    	          .attr("font-size", function(d) {
+	    	              var len = title.substring(0, 50 / 3).length;
+	    	              var size = 50/3;
+	    	              size *= 10 / len;
+	    	              size += 1;
+	    	              return Math.round(size)+'px';
+	    	          })
 	    	          .attr("dy", "-" + (nwords-1)*7.5);
 	
 	    	    for (var i = 0; i < words.length; i++) {
@@ -781,6 +791,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 //	    	    console.log("update circile once");	
 	    	    newGs.append("circle")
 	    	      .attr("r", String(consts.nodeRadius))
+//	    	      .attr("r", function(d) { return d.r; })
 	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; }); //add color
 	
 	    	    newGs.each(function(d){
@@ -998,6 +1009,9 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  var svg = d3.select("#workspace").append("svg")
 	    	        .attr("width", width)
 	    	        .attr("height", height);
+	    	  
+	    	  var format = d3.format(",d");
+	    	  
 	    	  this.theGraph = new edu.gmu.csiss.geoweaver.workspace.GraphCreator(svg, nodes, edges);
 	    	  
 	    	  this.theGraph.updateGraph();

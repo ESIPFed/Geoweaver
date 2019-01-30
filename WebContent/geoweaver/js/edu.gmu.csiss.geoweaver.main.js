@@ -16,6 +16,8 @@ edu.gmu.csiss.geoweaver.main = {
 		
 		edu.gmu.csiss.geoweaver.workspace.init();
 		
+		edu.gmu.csiss.geoweaver.toolbar.init();
+		
 		edu.gmu.csiss.geoweaver.menu.init();
 		
 	}

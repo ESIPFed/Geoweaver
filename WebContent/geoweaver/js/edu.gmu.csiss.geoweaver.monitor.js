@@ -10,6 +10,8 @@ edu.gmu.csiss.geoweaver.monitor = {
 		
 		ws: null,
 		
+		current_name: null, //current workflow or process name
+		
 		historyid: null,
 		
 		send: function (data) {
@@ -38,6 +40,8 @@ edu.gmu.csiss.geoweaver.monitor = {
 			edu.gmu.csiss.geoweaver.workspace.currentmode = 1;
 			
 			console.log("this workflow monitor websocket has been closed");
+			
+			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
 			
 		},
 		
@@ -83,6 +87,31 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			console.error("error in monitoring workflow " + e );
 			
+			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+			
+		},
+		
+		openWorkspaceIndicator: function(){
+			
+			$("#current_workflow_name").html("Current workflow : " + edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+			
+			$("#workspace_status_indicator").removeClass("invisible");
+			
+			$("#workspace_status_indicator").addClass("visible");
+			
+			console.log("workspace indicator is opened");
+		},
+		
+		closeWorkspaceIndicator: function(){
+			
+			$("#current_workflow_name").html("");
+			
+			$("#workspace_status_indicator").removeClass("visible");
+			
+			$("#workspace_status_indicator").addClass("invisible");
+			
+			console.log("workspace indicator is closed");
+			
 		},
 		
 		/**
@@ -97,6 +126,8 @@ edu.gmu.csiss.geoweaver.monitor = {
 //			if(edu.gmu.csiss.geoweaver.workspace.currentmode == edu.gmu.csiss.geoweaver.workspace.MONITOR){
 			
 				edu.gmu.csiss.geoweaver.workspace.currentmode = 2;
+				
+				edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
 
 				edu.gmu.csiss.geoweaver.monitor.ws = new SockJS("task");
 		        

@@ -564,21 +564,47 @@ edu.gmu.csiss.geoweaver.process = {
 		/**
 		 * add a new item under the process menu
 		 */
-		addMenuItem: function(one){
+		addMenuItem: function(one, folder){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process")).append("<li id=\"process-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'process')\">" + 
+			var menuItem = "<li class=\"process\" id=\"process-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'process')\">" + 
     		
-				one.name + "</a><i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.history('"+
-	        	
-				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"edu.gmu.csiss.geoweaver.workspace.theGraph.addProcess('"+
-	        	
-				one.id+"','"+one.name+"')\"></i><i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
-	        	
-				one.id+"','process')\"></i><i class=\"fa fa-edit subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.edit('"+
-	        	
-				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.runProcess('"+
-	        	
-				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>");
+			one.name + "</a><i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.history('"+
+        	
+			one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"edu.gmu.csiss.geoweaver.workspace.theGraph.addProcess('"+
+        	
+			one.id+"','"+one.name+"')\"></i><i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
+        	
+			one.id+"','process')\"></i><i class=\"fa fa-edit subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.edit('"+
+        	
+			one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.runProcess('"+
+        	
+			one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>";
+			
+			if(folder!=null){
+				
+				var folder_ul = $("#process_folder_" + folder + "_target");
+				
+				if(!folder_ul.length){
+					
+					$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process"))
+						.append("<li class=\"folder\" id=\"process_folder_"+ folder +"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
+					    " <a href=\"javascript:void(0)\"> "+ folder +" </a>"+
+					    " </li>"+
+					    " <ul class=\"sub-menu collapse\" id=\"process_folder_"+ folder +"_target\"></ul>");
+					
+					folder_ul = $("#process_folder_" + folder + "_target");
+					
+				}
+				
+				folder_ul.append(menuItem)
+				
+			}else{
+				
+				$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process")).append(menuItem);
+				
+			}
+			
+			
 			
 		},
 		
@@ -597,7 +623,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				this.addMenuItem(msg[i]);
+				this.addMenuItem(msg[i], "public");
 				
 				//this.addWorkspace(msg[i]);
 				

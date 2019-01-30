@@ -45,6 +45,8 @@ body{
     display: none;
 }
 
+
+
 #download-input{
     margin: 0 0.5em;
 }
@@ -96,3 +98,8 @@ path.link.hidden{
 path.link.selected {
     stroke: rgb(229, 172, 247);
 }
+
+.black-background {
+	background-color:#000000;
+}
+.white {color:#ffffff;}

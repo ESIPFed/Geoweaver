@@ -716,7 +716,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 	
 	addMenuItem: function(one){
 		
-		$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("workflow")).append("<li id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'workflow')\">" + 
+		$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'workflow')\">" + 
 	    		
 				one.name + "</a> <i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.history('"+
 	        	

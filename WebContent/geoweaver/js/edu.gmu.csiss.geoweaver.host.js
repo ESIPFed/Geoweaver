@@ -640,7 +640,7 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		addMenuItem: function(one){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li id=\"host-" + one.id + 
+			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li class=\"host\" id=\"host-" + one.id + 
 					
 				"\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'host')\">" + 
     				
