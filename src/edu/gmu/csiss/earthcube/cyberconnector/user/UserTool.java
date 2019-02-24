@@ -24,6 +24,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.products.Product;
 import edu.gmu.csiss.earthcube.cyberconnector.services.Service;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.Message;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
 /**
 *Class UserTool.java
@@ -629,10 +630,14 @@ public class UserTool {
 		
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		
-		t.setExpireDate(timestamp.getTime()+5*60*1000);
+		int mins = 30;
 		
-		String emailContent = "Please click the following link to reset password of your CyberConnector account. To ensure your account safety, do NOT share or let other people get this email. The link will be expired in 5 minutes.";
-		emailContent += "\nhttp://localhost:8081/CyberConnector/web/user_setpassword?token=" + t.getToken();
+		t.setExpireDate(timestamp.getTime()+ mins*60*1000);
+		
+		String emailContent = "Please click the following link to reset password of your CyberConnector account. To ensure your account safety, do NOT share or let other people get this email. The link will be expired in "+mins+" minutes.";
+		emailContent += "\n" + SysDir.PREFIXURL +"/CyberConnector/web/user_setpassword?token=" + t.getToken();
+		
+		logger.info(emailContent);
 		
 		BaseTool tool = new BaseTool();
 		

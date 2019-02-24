@@ -879,6 +879,8 @@ edu.gmu.csiss.geoweaver.workspace = {
 		        		
 		        		newnodes.push(node);
 		        		
+		        		edu.gmu.csiss.geoweaver.monitor.updateProgress(id, flag);
+		        		
 		        	}
 					
 					edu.gmu.csiss.geoweaver.workspace.theGraph.nodes = newnodes;

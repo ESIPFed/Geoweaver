@@ -24,7 +24,13 @@
 		<link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" />
     
     	<link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" />
-		
+    	
+    	<link rel="stylesheet" href="../geoweaver/css/prism.css" />
+    	
+        <link rel="stylesheet" href="../geoweaver/css/notebook.css" />
+        
+        <link rel="stylesheet" href="../geoweaver/css/nbpreview.css" />
+        
 		<script type="text/javascript" src="../geoweaver/js/FileSaver.min.js"></script>
 		
 		<script type="text/javascript" src="../geoweaver/js/jsencrypt.min.js"></script>
@@ -53,9 +59,10 @@
     
     	<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
     	
+    	
 	</head>
 	
-	<body>
+	<body style="cursor: auto;">
 	
 		<div class="main">
 		
@@ -67,10 +74,10 @@
 					
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-search"><i class="fa fa-search"  alt="search"></i></button>
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-add"><i class="fa fa-plus" alt="create"></i></button>
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-history"><i class="fa fa-list" alt="List the recent execution history"></i></button>
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-history"><i class="fa fa-history" alt="List the recent execution history"></i></button>
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-monitor"><i class="fa fa-film" alt="monitor"></i></button>
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-stats"><i class="fa fa-bar-chart" alt="statistics"></i></button>
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-diff"><i class="fa fa-calculator" alt="difference"></i></button>
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-settings"><i class="fa fa-cog" alt="settings"></i></button>
+						<!-- <button class="btn btn-default toolbar-btn black-background white" id="toolbar-diff"><i class="fa fa-calculator" alt="difference"></i></button> -->
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-print"><i class="fa fa-print" alt="print"></i></button>
 						
 					</div>
@@ -78,7 +85,7 @@
 				</div>
 				
 				<div id="toolbox">
-					
+				  
 			      <input type="file" id="hidden-file-upload"/>
 			      
 			      <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" style="color:gray" alt="upload graph" />
@@ -107,16 +114,31 @@
 						
 						<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
 						
-						<div id="log-window" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; " ></div>
+						<div id="log-window" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
 					
 					</div>
 			
 					<!-- status indicator right bottom -->
 					
-					<div id="workspace_status_indicator" class="invisible" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:101;">
-			    	  <span id="current_workflow_name">Current Workflow: </span>
-				      <i class="fa fa-spinner fa-spin" id="running_spinner" style="font-size:30px;color:red"></i>
+					<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:101;">
+			    	  <span id="current_workflow_name" class="invisible">Current Workflow: </span>
+				      <i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
 				    
+				    </div>
+				    
+				    <!-- progress right bottom, above the status indicator -->
+					
+					<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:101; overflow-y: scroll;">
+						<!-- <div id="bar-1">
+							Task1
+							<div class="progress">
+							  <div class="progress-bar progress-bar-striped active" role="progressbar"
+							  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+							    40%
+							  </div>
+							</div>
+						</div> -->
+				    	
 				    </div>
 				
 				</div>
@@ -201,7 +223,12 @@
 		
 		</div>
 		
-	    <script src="../geoweaver/js/d3.min.js"></script>
+		<script src="../geoweaver/js/es5-shim.min.js"></script>
+        <script src="../geoweaver/js/marked.min.js"></script>
+        <script src="../geoweaver/js/ansi_up.min.js"></script>
+        <script src="../geoweaver/js/prism.min.js"></script>
+		<script src="../geoweaver/js/notebook.js" ></script>
+    	<script src="../geoweaver/js/d3.min.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.tutorial.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.about.js"></script>
@@ -214,6 +241,8 @@
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.process.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workflow.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.monitor.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.search.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.settings.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.toolbar.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.menu.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>

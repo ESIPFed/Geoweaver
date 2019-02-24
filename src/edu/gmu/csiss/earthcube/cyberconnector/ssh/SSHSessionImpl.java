@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.security.PublicKey;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.util.Calendar;
 
 import net.schmizz.sshj.SSHClient;
@@ -314,6 +315,123 @@ public class SSHSessionImpl implements SSHSession {
 		}finally {
 			
 			DataBaseOperation.closeConnection();
+			
+		}
+    	
+	}
+    
+    public static String unaccent(String src) {
+		return Normalizer
+				.normalize(src, Normalizer.Form.NFD)
+				.replaceAll("[^\\p{ASCII}]", "");
+	}
+    
+    public static String escapeJupter(String json) {
+    	
+    	json = json.replaceAll("\r\n", "\n")
+				.replaceAll("\'", "\\\"")
+//				.replaceAll("`", ".")
+//				.replaceAll("()", ".")
+//				.replaceAll(")", "\\\\)")
+				.replaceAll("\"", "\\\"");
+    	
+    	return json;
+    	
+    }
+    
+    @Override
+	public void runJupyter(String notebookjson, String processid, boolean isjoin) {
+    	
+		this.history_id = new RandomString(12).nextString();
+		
+		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
+		
+		this.history_begin_time = BaseTool.getCurrentMySQLDatetime();
+		
+		this.history_input = notebookjson;
+    	
+    	try {
+    		
+    		log.info("starting command");
+    		
+    		notebookjson = escapeJupter(notebookjson);
+    		
+//    		String[] lines = notebookjson.split("\\\\n");
+//    		
+//    		String cmdline = "echo '' > jupyter-"  + history_id + ".ipynb; ";
+//    		
+//    		for(String line: lines) {
+//    			
+//    			cmdline += "echo '"+line+"' >> jupyter-"  + history_id + ".ipynb; ";
+//    			
+//    		}
+    		
+    		String cmdline = "echo '" + notebookjson + 
+    				"' > jupyter-" + history_id + ".ipynb; ";
+    		
+//    		String cmdline = "echo \"test\" > jupyter-" + history_id + ".ipynb; ";
+    		
+    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
+    		
+    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
+    		
+//    		cmdline += "./geoweaver-" + token + ".sh;";
+    		
+//    		cmdline += "cat ./jupyter-"+token+".ipynb | while read line\r\n" + 
+//    				"do\r\n" + 
+//    				"  echo \"$line\"\r\n" + 
+//    				"done; "; // read the content of the result ipynb
+    		
+//    		cmdline += "rm ./jupyter-" + token + ".ipynb; "; // remove the script finally, leave no trace behind
+    		
+			
+    		log.info(cmdline);
+    		
+    		Command cmd = session.exec(cmdline);
+//            con.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
+//            cmd.join(5, TimeUnit.SECONDS);
+//            con.writer().print("\n** exit status: " + cmd.getExitStatus());
+    		
+            log.info("SSH command session established");
+            
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            
+//            sender = new SSHSessionOutput(input, token);
+            sender = new SSHCmdSessionOutput(input, token);
+            
+            //moved here on 10/29/2018
+            //all SSH sessions must have a output thread
+            
+            thread = new Thread(sender);
+            
+            thread.setName("SSH Command output thread");
+            
+            log.info("starting sending thread");
+            
+            thread.start();
+            
+            log.info("returning to the client..");
+            
+            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        
+//	        cmd = "./geoweaver-" + token + ".sh";
+//	        		
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        	
+//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//	        output.flush();
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
 			
 		}
     	

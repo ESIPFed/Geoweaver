@@ -7,6 +7,14 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy"}],
 		
+		clearCache: function(){
+			
+			this.cred_cache = [];
+			
+			alert("Cache cleared.");
+			
+		},
+		
 		setCache: function(hid, s){
 			
 			var is = false;
