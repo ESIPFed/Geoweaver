@@ -1,4 +1,4 @@
-body{
+/* body{
     margin: 0;
     padding: 0;
     overflow:hidden;
@@ -8,7 +8,7 @@ p{
      text-align: center; 
      overflow: overlay;
      position: relative;
-}
+} */
 
 body{
     /*-webkit-touch-callout: none;
@@ -17,7 +17,10 @@ body{
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;*/
-    background-color: rgb(248, 248, 248)
+    background-color: rgb(248, 248, 248);
+    overflow:hidden;
+    margin: 0;
+    padding: 0;
 }
 
 #toolbox{
@@ -44,6 +47,8 @@ body{
 #hidden-file-upload{
     display: none;
 }
+
+
 
 #download-input{
     margin: 0 0.5em;
@@ -96,3 +101,8 @@ path.link.hidden{
 path.link.selected {
     stroke: rgb(229, 172, 247);
 }
+
+.black-background {
+	background-color:#000000;
+}
+.white {color:#ffffff;}

@@ -10,6 +10,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		editor: null,
 		
+		jupytercode: null,
+		
 		builtin_processes: [
 			
 			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
@@ -17,6 +19,62 @@ edu.gmu.csiss.geoweaver.process = {
 			{"operation":"DownloadData", "params":[{"name":"file_url", "min_occurs": 1, "max_occurs": 1}]}
 		
 		],
+		
+		connection_cache: [{"p":"xxxx", "h": "yyyyy"}],
+		
+		clearCache: function(){
+			
+			this.connection_cache = [];
+			
+		},
+		
+		setCache: function(pid, hid){
+			
+			var is = false;
+			
+			for(var i=0;i<this.connection_cache.length;i++){
+				
+				if(this.connection_cache[i].p == pid){
+					
+					this.connection_cache[i].h = hid;
+					
+					is = true;
+					
+					break;
+					
+				}
+				
+			}
+			
+			if(!is){
+				
+				this.connection_cache.push({"p": pid, "h": hid});
+				
+			}
+			
+			
+		},
+		
+
+		findCache: function(pid){
+			
+			var h = null;
+			
+			for(var i=0;i<this.connection_cache.length;i++){
+				
+				if(this.connection_cache[i].p == pid){
+					
+					h = this.connection_cache[i].h;
+					
+					break;
+					
+				}
+				
+			}
+			
+			return h;
+			
+		},
 		
 		precheck: function(){
 			
@@ -42,7 +100,8 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
         		
-        		lineNumbers: true
+        		lineNumbers: true,
+        		lineWrapping: true
         		
         	});
 			
@@ -58,10 +117,102 @@ edu.gmu.csiss.geoweaver.process = {
         	
 		},
 		
+		load_jupyter: function(){
+			
+			var root = {};
+			
+			var $file_input = document.querySelector("input#load_jupyter");
+			var $url_input = document.querySelector("button#load_jupyter_url");
+			var $holder = document.querySelector("#jupyter_area");
+
+		    var render_notebook = function (ipynb) {
+		    	edu.gmu.csiss.geoweaver.process.jupytercode = JSON.stringify(ipynb);
+		        var notebook = root.notebook = nb.parse(ipynb);
+		        while ($holder.hasChildNodes()) {
+		            $holder.removeChild($holder.lastChild);
+		        }
+		        $holder.appendChild(notebook.render());
+		        Prism.highlightAll();
+		    };
+
+		    var load_file = function (file) {
+		        var reader = new FileReader();
+		        reader.onload = function (e) {
+		        	edu.gmu.csiss.geoweaver.process.jupytercode = this.result;
+		            var parsed = JSON.parse(this.result);
+		            render_notebook(parsed);
+		        };
+		        reader.readAsText(file);
+		    };
+
+		    $file_input.onchange = function (e) {
+		        load_file(this.files[0]);
+		    };
+		    
+		    $url_input.onclick = function(){
+		    	var url = $("#jupyter_url").val();
+		    	$.ajax({
+		    		dataType: "json",
+	    		  	url: url
+		    	}).success(function(data){
+		    		render_notebook(data);
+		    	});
+		    };
+
+		    document.getElementById("controls").addEventListener('dragover', function (e) {
+		        e.stopPropagation();
+		        e.preventDefault();
+		        e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a 
+//		        root.document.body.style.opacity = 0.5;
+		    }, false);
+
+		    document.getElementById("controls").addEventListener('dragleave', function (e) {
+//		        root.document.body.style.opacity = 1;
+		    }, false);
+
+		    document.getElementById("controls").addEventListener('drop', function (e) {
+		        e.stopPropagation();
+		        e.preventDefault();
+		        load_file(e.dataTransfer.files[0]);
+//		        $file_input.style.display = "none";
+//		        root.document.body.style.opacity = 1;
+		    }, false);
+
+			
+		},
+		
+		showJupyter: function(code){
+			
+			var cont = '<div class="row"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div><div class="row"><div class="col col-md-6"><div id="controls"> '+
+                '<div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />'+
+				'</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3"> '+
+		        '  <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> '+
+		        '  <div class="input-group-append"> '+
+		        '    <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button> '+
+		        '  </div> '+
+		        '</div></div></div> <div id="jupyter_area"></div>';
+			
+			$("#codearea").append(cont);
+			
+			this.load_jupyter();
+			
+			if(code!=null && typeof code != 'undefined'){
+				
+				if(typeof code != 'object'){
+					code = $.parseJSON(code);
+				}
+				var notebook = nb.parse(code);
+				var rendered = notebook.render();
+				$("#jupyter_area").append(rendered);
+				
+			}
+			
+		},
+		
 		showBuiltinProcess: function(code){
 			
 			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label">Select a process: </label>'+
-	       '     <div class="col-sm-8"> <select class="form-control" id="builtin_processes">';
+			'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes">';
 			
 			for(var i=0;i<edu.gmu.csiss.geoweaver.process.builtin_processes.length;i++){
 				
@@ -134,6 +285,10 @@ edu.gmu.csiss.geoweaver.process = {
 						
 				}
 				
+			}else if($("#processcategory").val()=="jupyter"){
+				
+				code = edu.gmu.csiss.geoweaver.process.jupytercode;
+				
 			}
 			
 			return code;
@@ -148,7 +303,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				title: "Add new process",
 				
-				closable: false,
+//				closable: false,
 				
 	            message: content,
 	            
@@ -172,6 +327,10 @@ edu.gmu.csiss.geoweaver.process = {
 	            			
 	            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess();
 	            			  
+	            		}else if(this.value == "jupyter"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showJupyter(edu.gmu.csiss.geoweaver.process.jupytercode);
+	            			
 	            		}
 	            		
 	            	});
@@ -186,7 +345,7 @@ edu.gmu.csiss.geoweaver.process = {
 	                	
 	                	edu.gmu.csiss.geoweaver.process.add(false);
 	                	
-	                    dialogItself.close();
+	                    dialogItself.close(); //after the process is added successfully
 	                    
 	                }
 	        
@@ -217,6 +376,79 @@ edu.gmu.csiss.geoweaver.process = {
 			});
 			
 //			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
+			
+		},
+		
+		recent: function(num){
+
+			$.ajax({
+				
+				url: "recent",
+				
+				method: "POST",
+				
+				data: "type=process&number=" + num
+				
+			}).done(function(msg){
+				
+				if(!msg.length){
+					
+					alert("no history found");
+					
+					return;
+					
+				}
+				
+				msg = $.parseJSON(msg);
+				
+				var content = "<table class=\"table\"> "+
+				"  <thead> "+
+				"    <tr> "+
+				"      <th scope=\"col\">Process</th> "+
+				"      <th scope=\"col\">Begin Time</th> "+
+				"      <th scope=\"col\">Action</th> "+
+				"    </tr> "+
+				"  </thead> "+
+				"  <tbody> ";
+
+				
+				for(var i=0;i<msg.length;i++){
+					
+					content += "    <tr> "+
+						"      <td>"+msg[i].name+"</td> "+
+						"      <td>"+msg[i].begin_time+"</td> "+
+						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+						"    </tr>";
+					
+				}
+				
+				content += "</tbody>";
+				
+				BootstrapDialog.show({
+					
+					title: "History",
+					
+					message: content,
+					
+					buttons: [{
+						
+						label: "Close",
+						
+						action: function(dialog){
+							
+							dialog.close();
+							
+						}
+						
+					}]
+					
+				});
+				
+			}).fail(function(jxr, status){
+				
+				console.error(status);
+				
+			});
 			
 		},
 		
@@ -338,7 +570,7 @@ edu.gmu.csiss.geoweaver.process = {
 				"	  </div>"+
 				"<div class=\"form-group row\"> "+
 				"	    <dt class=\"col col-md-3\">Input</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.input+"</dd>"+
+				"	    <dd class=\"col col-md-7 word-wrap\">"+msg.input+"</dd>"+
 				"	  </div>"+
 				"<div class=\"form-group row\"> "+
 				"	    <dt class=\"col col-md-3\">Output</dt>"+
@@ -421,20 +653,22 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			var content = '<form>'+
 		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Your Process Type </label>'+
-		       '     <div class="col-sm-8">'+
+		       '     <label for="processcategory" class="col-sm-2 col-form-label control-label">Language</label>'+
+		       '     <div class="col-sm-4">'+
 		       '		<select class="form-control" id="processcategory">'+
 			   '    		<option value="shell">Shell</option>'+
 			   '    		<option value="builtin">Built-In Process</option>'+
+			   '    		<option value="jupyter">Jupyter Notebook</option>'+
+			   '    		<option value="python">Python</option>'+
 			   /*'    		<option value="python">Python</option>'+
 			   '    		<option value="r">R</option>'+
 			   '    		<option value="matlab">Matlab</option>'+*/
 			   '  		</select>'+
 		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="processname" class="col-sm-4 col-form-label control-label">Process Name </label>'+
-		       '     <div class="col-sm-8">'+
+//		       '   </div>'+
+//		       '   <div class="form-group row required">'+
+		       '     <label for="processname" class="col-sm-2 col-form-label control-label">Name</label>'+
+		       '     <div class="col-sm-4">'+
 		       '		<input class="form-control" id="processname"></input>'+
 		       '     </div>'+
 		       '   </div>'+
@@ -467,7 +701,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 					title: "Edit process",
 					
-					closable: false,
+//					closable: false,
 					
 					size: BootstrapDialog.SIZE_WIDE,
 					
@@ -496,7 +730,11 @@ edu.gmu.csiss.geoweaver.process = {
 	            		}else if(old_lang == "builtin"){
 	            			
 	            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code);
-	            			  
+	            			
+	            		}else if(old_lang == "jupyter"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code);
+	            			
 	            		}
 		            	
 		            	$("#processcategory").on('change', function() {
@@ -519,6 +757,10 @@ edu.gmu.csiss.geoweaver.process = {
 		            			
 		            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code_new);
 		            			
+		            		}else if(this.value == "jupyter"){
+		            			
+		            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code_new);
+		            			
 		            		}
 		            		
 		            	});
@@ -533,7 +775,7 @@ edu.gmu.csiss.geoweaver.process = {
 		                	
 		                	edu.gmu.csiss.geoweaver.process.update(msg.id);
 		                	
-		                    dialogItself.close();
+//		                    dialogItself.close(); //after changes are made, the dialog should not go away.
 		                    
 		                }
 		        
@@ -564,21 +806,47 @@ edu.gmu.csiss.geoweaver.process = {
 		/**
 		 * add a new item under the process menu
 		 */
-		addMenuItem: function(one){
+		addMenuItem: function(one, folder){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process")).append("<li id=\"process-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'process')\">" + 
+			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'process')\">" + 
     		
-				one.name + "</a><i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.history('"+
-	        	
-				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"edu.gmu.csiss.geoweaver.workspace.theGraph.addProcess('"+
-	        	
-				one.id+"','"+one.name+"')\"></i><i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
-	        	
-				one.id+"','process')\"></i><i class=\"fa fa-edit subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.edit('"+
-	        	
-				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.runProcess('"+
-	        	
-				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>");
+			one.name + "</a><i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.history('"+
+        	
+			one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"edu.gmu.csiss.geoweaver.workspace.theGraph.addProcess('"+
+        	
+			one.id+"','"+one.name+"')\"></i><i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
+        	
+			one.id+"','process')\"></i><i class=\"fa fa-edit subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.edit('"+
+        	
+			one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.process.runProcess('"+
+        	
+			one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>";
+			
+			if(folder!=null){
+				
+				var folder_ul = $("#process_folder_" + folder + "_target");
+				
+				if(!folder_ul.length){
+					
+					$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process"))
+						.append("<li class=\"folder\" id=\"process_folder_"+ folder +"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
+					    " <a href=\"javascript:void(0)\"> "+ folder +" </a>"+
+					    " </li>"+
+					    " <ul class=\"sub-menu collapse\" id=\"process_folder_"+ folder +"_target\"></ul>");
+					
+					folder_ul = $("#process_folder_" + folder + "_target");
+					
+				}
+				
+				folder_ul.append(menuItem)
+				
+			}else{
+				
+				$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("process")).append(menuItem);
+				
+			}
+			
+			
 			
 		},
 		
@@ -597,7 +865,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				this.addMenuItem(msg[i]);
+				this.addMenuItem(msg[i], msg[i].desc);
 				
 				//this.addWorkspace(msg[i]);
 				
@@ -623,7 +891,7 @@ edu.gmu.csiss.geoweaver.process = {
 		    			
 						code: edu.gmu.csiss.geoweaver.process.getCode()
 						
-					};
+				};
 				
 //				"type=process&lang="+$("#processcategory").val() + 
 //				
@@ -664,15 +932,6 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			if(this.precheck()){
 				
-//				var req = "type=process&lang="+$("#processcategory").val() +
-//					
-//					"&desc=" + $("#processcategory").val() + //use the description column to store the process type
-//				
-//					"&name=" + $("#processname").val() + 
-//	    			
-////		    		"&code=" + edu.gmu.csiss.geoweaver.process.editor.getValue();
-//					"&code=" + edu.gmu.csiss.geoweaver.process.getCode()
-					
 				var req = { 
 					
 					type: "process", lang: $("#processcategory").val(),
@@ -697,7 +956,7 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
-		    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg);
+		    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, req.desc);
 		    		
 		    		if(run)
 		    				
@@ -970,83 +1229,106 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			//select a host
 			
-			var content = '<form>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run Process '+pname+' on: </label>'+
-		       '     <div class="col-sm-8">'+
-		       '		<select class="form-control" id="hostselector" >'+
-		       '  		</select>'+
-		       '     </div>'+
-		       '   </div>'+
-		       '</form>';
+			var h = this.findCache(pid);
 			
-			BootstrapDialog.show({
+			if(h==null){
 				
-				title: "Select a host",
+
+				var content = '<form>'+
+			       '   <div class="form-group row required">'+
+			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run Process '+pname+' on: </label>'+
+			       '     <div class="col-sm-8">'+
+			       '		<select class="form-control" id="hostselector" >'+
+			       '  		</select>'+
+			       '     <div class="col-sm-12 form-check">'+
+			       '		<input type="checkbox" class="form-check-input" id="remember">'+
+			       '		<label class="form-check-label" for="remember">Remember this process-host connection</label>'+
+			       '     </div>'+
+			       '     </div>'+
+			       '   </div>'+
+			       '</form>';
 				
-				closable: false,
-				
-	            message: content,
-	            
-	            onshown: function(){
-	            	
-	            	$.ajax({
-	            		
-	            		url: "list",
-	            		
-	            		method: "POST",
-	            		
-	            		data: "type=host"
-	            		
-	            	}).done(function(msg){
-	            		
-	            		msg = $.parseJSON(msg);
-	            		
-	            		$("#hostselector").find('option').remove().end();
-	            		
-	            		for(var i=0;i<msg.length;i++){
-	            			
-	            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-	            			
-	            		}
-	            		
-	            	}).fail(function(jxr, status){
-	    				
-	    				console.error("fail to list host");
-	    				
-	    			});
-	            	
-	            },
-	            
-	            buttons: [{
+				BootstrapDialog.show({
+					
+					title: "Select a host",
+					
+					closable: false,
+					
+		            message: content,
 		            
-	            	label: 'Execute',
-	                
-	                action: function(dialogItself){
-	                	
-	                	var hostid = $("#hostselector").children(":selected").attr("id");
-	                	
-	                	console.log("selected host: " + hostid);
-	                	
-	                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
-	                	
-	                    dialogItself.close();
-	                    
-	                }
-	        
-	            },{
+		            onshown: function(){
+		            	
+		            	$.ajax({
+		            		
+		            		url: "list",
+		            		
+		            		method: "POST",
+		            		
+		            		data: "type=host"
+		            		
+		            	}).done(function(msg){
+		            		
+		            		msg = $.parseJSON(msg);
+		            		
+		            		$("#hostselector").find('option').remove().end();
+		            		
+		            		for(var i=0;i<msg.length;i++){
+		            			
+		            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+		            			
+		            		}
+		            		
+		            	}).fail(function(jxr, status){
+		    				
+		    				console.error("fail to list host");
+		    				
+		    			});
+		            	
+		            },
 		            
-	            	label: 'Cancel',
-	                
-	                action: function(dialogItself){
-	                	
-	                    dialogItself.close();
-	                    
-	                }
-	        
-	            }]
-	            
-			});
+		            buttons: [{
+			            
+		            	label: 'Execute',
+		                
+		                action: function(dialogItself){
+		                	
+		                	var hostid = $("#hostselector").children(":selected").attr("id");
+		                	
+		                	console.log("selected host: " + hostid);
+		                	
+		                	//remember the process-host connection
+		                	if(document.getElementById('remember').checked) {
+		                	    
+		                		edu.gmu.csiss.geoweaver.process.setCache(pid, hostid); //remember s
+		                		
+		                	}
+		                	
+		                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
+		                	
+		                    dialogItself.close();
+		                    
+		                }
+		        
+		            },{
+			            
+		            	label: 'Cancel',
+		                
+		                action: function(dialogItself){
+		                	
+		                    dialogItself.close();
+		                    
+		                }
+		        
+		            }]
+		            
+				});
+				
+			}else{
+				
+				edu.gmu.csiss.geoweaver.process.executeProcess(pid, h, desc);
+				
+			}
+			
 			
 		}
 		

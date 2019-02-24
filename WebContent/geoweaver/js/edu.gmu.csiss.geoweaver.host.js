@@ -7,6 +7,14 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy"}],
 		
+		clearCache: function(){
+			
+			this.cred_cache = [];
+			
+			alert("Cache cleared.");
+			
+		},
+		
 		setCache: function(hid, s){
 			
 			var is = false;
@@ -640,7 +648,7 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		addMenuItem: function(one){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li id=\"host-" + one.id + 
+			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li class=\"host\" id=\"host-" + one.id + 
 					
 				"\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'host')\">" + 
     				

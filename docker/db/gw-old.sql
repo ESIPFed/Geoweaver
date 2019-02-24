@@ -3,7 +3,7 @@
 -- Server version:               5.5.60 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2019-02-23 23:44:26
+-- Date/time:                    2018-11-26 14:24:22
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS `history` (
   `process` varchar(50) NOT NULL,
   `begin_time` datetime NOT NULL,
   `end_time` datetime DEFAULT NULL,
-  `input` longtext,
-  `output` longtext,
+  `input` text,
+  `output` text,
   `host` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -155,7 +155,7 @@ DROP TABLE IF EXISTS `process_type`;
 CREATE TABLE IF NOT EXISTS `process_type` (
   `id` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `code` longtext NOT NULL,
+  `code` text NOT NULL,
   `description` text,
   `inputs` text,
   `inputs_datatypes` varchar(200) DEFAULT NULL,

@@ -311,32 +311,32 @@ edu.gmu.csiss.geoweaver.workflow = {
 		       '   <div class=\"panel-body\"><div class="form-group row required">'+
 		       '     <label for="hostselector" class="col-md-4 col-form-label control-label">Mode: </label>'+
 		       '     <div class="col-md-8">'+
-		       '		<div class="col-md-6"> '+
-			   '            <input type="radio" '+
-			   '                   name="modeswitch" value="different" checked /> '+
-			   '	        <label>Multiple host</label> '+
-			   '        </div> '+
 			   '        <div class="col-md-6"> '+
 			   '            <input type="radio" '+
-			   '                   name="modeswitch" value="one" /> '+
+			   '                   name="modeswitch" value="one"  checked/> '+
 			   '            <label>One host</label> '+
 			   '        </div>'+
+		       '		<div class="col-md-6"> '+
+			   '            <input type="radio" '+
+			   '                   name="modeswitch" value="different" /> '+
+			   '	        <label>Multiple host</label> '+
+			   '        </div> '+
 		       '     </div>'+
 		       '   </div></div>';
 			
 			content += "<div class=\"panel-body\" id=\"selectarea\">";
 			
-			for(var i=0;i<nodes.length;i++){
-				
-				content += '   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-			       '     <div class="col-sm-8">'+
-			       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
-			       '  		</select>'+
-			       '     </div>'+
-			       '   </div>';
-				
-			}
+//			for(var i=0;i<nodes.length;i++){
+//				
+//				content += '   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+//			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+//			       '     <div class="col-sm-8">'+
+//			       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+//			       '  		</select>'+
+//			       '     </div>'+
+//			       '   </div>';
+//				
+//			}
 			
 			content += "</div>";
 			
@@ -352,6 +352,14 @@ edu.gmu.csiss.geoweaver.workflow = {
 				onshown: function(){
 					
 					edu.gmu.csiss.geoweaver.host.refreshHostList();
+					
+					$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
+						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+						       '     <div class="col-sm-8">'+
+						       '		<select class="form-control hostselector" id="hostforworkflow">'+
+						       '  		</select>'+
+						       '     </div>'+
+						       '   </div>');
 					
 					$("input[name='modeswitch']").change(function(e){
 						
@@ -386,7 +394,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 					    }
 					    
 					    edu.gmu.csiss.geoweaver.host.refreshHostList();
-
+					    
 					});
 					
 				},
@@ -539,6 +547,79 @@ edu.gmu.csiss.geoweaver.workflow = {
  		};
 		
 		edu.gmu.csiss.geoweaver.host.start_auth_multiple(hosts, req, edu.gmu.csiss.geoweaver.workflow.execute_callback);
+		
+	},
+	
+	recent: function(number){
+
+		$.ajax({
+			
+			url: "recent",
+			
+			method: "POST",
+			
+			data: "type=workflow&number=" + number
+			
+		}).done(function(msg){
+
+			if(!msg.length){
+				
+				alert("no history found");
+				
+				return;
+				
+			}
+			
+			msg = $.parseJSON(msg);
+			
+			var content = "<table class=\"table\"> "+
+			"  <thead> "+
+			"    <tr> "+
+			"      <th scope=\"col\">Workflow</th> "+
+			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">Action</th> "+
+			"    </tr> "+
+			"  </thead> "+
+			"  <tbody> ";
+
+			
+			for(var i=0;i<msg.length;i++){
+				
+				content += "    <tr> "+
+					"      <td>"+msg[i].name+"</td> "+
+					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+					"    </tr>";
+				
+			}
+			
+			content += "</tbody>";
+			
+			BootstrapDialog.show({
+				
+				title: "History",
+				
+				message: content,
+				
+				buttons: [{
+					
+					label: "Close",
+					
+					action: function(dialog){
+						
+						dialog.close();
+						
+					}
+					
+				}]
+				
+			});
+			
+		}).fail(function(jxr, status){
+			
+			console.error(status);
+			
+		});
 		
 	},
 	
@@ -716,7 +797,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 	
 	addMenuItem: function(one){
 		
-		$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("workflow")).append("<li id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'workflow')\">" + 
+		$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'workflow')\">" + 
 	    		
 				one.name + "</a> <i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.history('"+
 	        	
@@ -724,9 +805,14 @@ edu.gmu.csiss.geoweaver.workflow = {
 	        	
 				one.id+"')\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
 	        	
-				one.id+"','workflow')\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.run('"+
-	        	
-				one.id+"','"+one.name+"')\" data-toggle=\"tooltip\" title=\"Run Workflow\"></i> </li>");
+				one.id+"','workflow')\"></i>"+
+				
+				//removed on 1/31/2019 - it is not allowed to run from the tree.
+//				" <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.run('"+
+//	        	
+//				one.id+"','"+one.name+"')\" data-toggle=\"tooltip\" title=\"Run Workflow\"></i> "+
+				
+				"</li>");
 		
 	},
 	

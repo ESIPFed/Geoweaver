@@ -75,6 +75,8 @@ public interface SSHSession {
 	
 	public void runBash(String script, String processid, boolean isjoin);
 	
+	public void runJupyter(String script, String processid, boolean isjoin);
+	
 	public void runMultipleBashes(String[] script, String processid);
 	
 	public void saveHistory(String logs);

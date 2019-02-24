@@ -21,6 +21,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.Message;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -91,13 +92,42 @@ public class ProcessTool {
 				
 				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
 				
-				resp.append("\"code\":\"").append(escape(rs.getString("code"))).append("\", ");
 				
 				String lang = "shell";
 				if(!BaseTool.isNull(rs.getString("description")))
 					lang = rs.getString("description");
 				
-				resp.append("\"description\":\"").append(lang).append("\" }");
+				resp.append("\"description\":\"").append(lang).append("\", ");
+				
+				String code = rs.getString("code");
+
+				if(lang.equals("jupyter")) {
+					
+//					String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+//					
+//					String filename = code;
+//					
+//					String filepath = folderpath + filename;
+//					
+//					code = BaseTool.readStringFromFile(filepath);
+//					
+////					code = escape(code);
+//					
+//					System.out.println(code);
+					
+					resp.append("\"code\":").append(code).append(" ");
+					
+				}else {
+					
+					code = escape(code);
+					
+					resp.append("\"code\":\"").append(code).append("\" ");
+					
+				}
+				
+				
+				
+				resp.append(" }");
 				
 			}
 			
@@ -112,6 +142,12 @@ public class ProcessTool {
 		return resp.toString();
 		
 	}
+	
+	public static String escape_jupyter(String code) {		
+		
+		return null;
+		
+	}
 
 	/**
 	 * Escape the code text
@@ -124,7 +160,7 @@ public class ProcessTool {
 		
 		if(!BaseTool.isNull(code))
 		
-			resp = code.replaceAll("\"", "\\\\\"").replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+			resp = code.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"").replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
 		
 		logger.info(resp);
 		
@@ -153,8 +189,23 @@ public class ProcessTool {
 		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
 		
 	}
-	
-	public static String add(String name, String lang, String code, String description) {
+	/**
+	 * add the process to the local file
+	 * @param name
+	 * @param lang
+	 * @param code
+	 * @param desc
+	 * @return
+	 */
+	public static String add_local(String name, String lang, String code, String desc) {
+		
+		String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+		
+		String filename = "jupyter-code-" + new RandomString(7).nextString();
+		
+		String filepath = folderpath + filename;
+		
+		BaseTool.writeString2File(code, filepath);
 		
 		String newid = new RandomString(6).nextString();
 		
@@ -164,11 +215,64 @@ public class ProcessTool {
 		
 		sql.append(name).append("', ?, '");
 		
-		sql.append(description).append("'); ");
+		sql.append(desc).append("'); ");
+		
+		logger.info(sql.toString());
+		
+		DataBaseOperation.preexecute(sql.toString(), new String[] {filename});
+		
+		return newid;
+		
+	}
+	
+	/**
+	 * add code to database
+	 * @param name
+	 * @param lang
+	 * @param code
+	 * @param description
+	 * @return
+	 */
+	public static String add_database(String name, String lang, String code, String desc) {
+
+		String newid = new RandomString(6).nextString();
+		
+		StringBuffer sql = new StringBuffer("insert into process_type (id, name, code, description) values ('");
+		
+		sql.append(newid).append("', '");
+		
+		sql.append(name).append("', ?, '");
+		
+		sql.append(desc).append("'); ");
 		
 		logger.info(sql.toString());
 		
 		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+		
+		return newid;
+		
+	}
+	/**
+	 * Add process
+	 * @param name
+	 * @param lang
+	 * @param code
+	 * @param desc
+	 * @return
+	 */
+	public static String add(String name, String lang, String code, String desc) {
+		
+		String newid = null;
+		
+//		if(lang.equals("jupyter")) {
+//			
+//			newid = ProcessTool.add_database(name, lang, code, desc); //jupyter still goes to the database
+//			
+//		}else {
+			
+			newid = ProcessTool.add_database(name, lang, code, desc);
+			
+//		}
 		
 		return newid;
 		
@@ -252,7 +356,15 @@ public class ProcessTool {
 		
 		
 	}
-	
+	/**
+	 * Execute shell scripts
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param token
+	 * @param isjoin
+	 * @return
+	 */
 	public static String executeShell(String id, String hid, String pswd, String token, boolean isjoin) {
 		
 
@@ -314,9 +426,82 @@ public class ProcessTool {
 		
 	}
 	
+	/**
+	 * Execute jupyter process
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param token
+	 * @param isjoin
+	 * @return
+	 */
+	public static String executeJupyterProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+		
+		String resp = null;
+		
+		try {
+			
+			//get code of the process
+			
+			String code = getCodeById(id);
+			
+			System.out.println(code);
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			//establish SSH session and generate a token for it
+			
+			if(token == null) {
+				
+				token = new RandomString(12).nextString();
+				
+			}
+			
+			SSHSession session = new SSHSessionImpl();
+			
+			session.login(hid, pswd, token, false);
+			
+			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+			
+			session.runJupyter(code, id, isjoin); 
+			
+			String historyid = session.getHistory_id();
+			
+			resp = "{\"history_id\": \""+historyid+
+					
+					"\", \"token\": \""+token+
+					
+					"\", \"ret\": \"success\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	/**
+	 * Execute builtin process
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param token
+	 * @param isjoin
+	 * @return
+	 */
 	public static String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
 		
-
 		String resp = null;
 		
 		try {
@@ -426,7 +611,11 @@ public class ProcessTool {
 			
 			resp = executeBuiltInProcess(id, hid, pswd, token, isjoin);
 			
-		}else {
+		}else if("jupyter".equals(category)){
+			
+			resp = executeJupyterProcess(id, hid, pswd, token, isjoin);
+			
+		}else{
 			
 			throw new RuntimeException("This category of process is not supported");
 			
@@ -436,6 +625,55 @@ public class ProcessTool {
 		
 	}
 
+	public static String recent(int limit) {
+		
+		StringBuffer resp = new StringBuffer();
+		
+		StringBuffer sql = new StringBuffer("select * from history, process_type where process_type.id = history.process ORDER BY begin_time DESC limit ").append(limit).append(";");
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
+				
+				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
+				
+				num++;
+				
+			}
+			
+			resp.append("]");
+			
+			if(num==0)
+				
+				resp = new StringBuffer();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
+	}
 	
 	/**
 	 * get all details of one history
@@ -446,7 +684,7 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-		StringBuffer sql = new StringBuffer("select * from history where id = \"").append(hid).append("\";");
+		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = \"").append(hid).append("\" and history.process=process_type.id;");
 		
 		try {
 			
@@ -454,9 +692,11 @@ public class ProcessTool {
 			
 			if(rs.next()) {
 				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				resp.append("{ \"id\": \"").append(rs.getString("history.id")).append("\", ");
 				
 				resp.append("\"process\": \"").append(rs.getString("process")).append("\", ");
+				
+				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
 				
 				resp.append("\"begin_time\":\"").append(rs.getString("begin_time")).append("\", ");
 				
@@ -507,7 +747,11 @@ public class ProcessTool {
 				
 				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
 				
-				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time"));
+				
+				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
+				
+				resp.append("\"}");
 				
 				num++;
 				
@@ -529,40 +773,7 @@ public class ProcessTool {
 		
 	}
 	
-	public static void main(String[] args) {
-		
-//		String code = "#!/bin/sh\r\n" + 
-//				"echo \"test geoweaver process running\"\r\n" + 
-//				"echo \"Good\"\r\n";
-//		
-//		ProcessTool.escape(code);
-		
-		User user = new User();
-		
-		user.setName("szh");
-		
-		user.setPassword("111");
-		
-		Message msg = UserTool.login(user);
-		
-		System.out.println(msg.getInformation());
-		
-//		
-//		ProcessTool.unescape(code);
-		
-//		String code = "#!/bin/sh\r\n" + 
-//				"echo \"test geoweaver process running\"\r\n" + 
-//				"echo \"Good\"\r\n";
-		
-//		ProcessTool.add("test21", "shell", code, null);
-		
-//		System.out.println(ProcessTool.detail("di1xlf"));
-		
-//		System.out.println(ProcessTool.execute("degrzr", "kps1gf", "Chuntian18$", null));
-		
-		
-		
-	}
+	
 	
 	
 }

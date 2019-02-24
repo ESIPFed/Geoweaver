@@ -54,7 +54,8 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    	
 	    	content = content.replace(/\n/g,'<br/>')
 	    	
-	    	$("#"+this.output_div_id).append("<p style=\"text-align: left; \">"+content+"</p>"); //show all the ssh output
+//	    	$("#"+this.output_div_id).append("<p style=\"text-align: left; \">"+content+"</p>"); //show all the ssh output
+	    	this.addlog(content);
 	    	
 	    },
 	    
@@ -62,11 +63,16 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    	
 	    	content = content.replace(/\n/g,'<br/>')
 	    	
-	    	$("#"+this.output_div_id).append("<p style=\"color:red;text-align: left; \">"+content+"</p>"); //show all the ssh output
+//	    	$("#"+this.output_div_id).append("<p style=\"color:red;text-align: left; \">"+content+"</p>"); //show all the ssh output
+	    	
+	    	this.addlog(content);
 	    	
 	    },
 	    	  
 	    ws_onopen: function (e) {
+	    	
+	      //open the indicator
+//	      edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
 	      
 	      //shell.echo(special.white + "connected" + special.reset);
 	      this.echo("connected");
@@ -91,9 +97,11 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    ws_onclose: function (e) {
 	    	
 	        try{
-	        
+
+//	        	edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+	        	
 	        	this.echo("disconnected");
-	            
+	        	
 //	        	this.destroy();
 //	            
 //	        	this.purge();
@@ -159,18 +167,27 @@ edu.gmu.csiss.geoweaver.ssh = {
 //	        rootUrl = rootUrl+"/"+tempStr[1];
 //	        return rootUrl;
 //	    },
+	    
+	    addlog: function(content){
+	    	var dt = new Date();
+	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+	    	$("#log-window").append("<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">" + time + "</span> " + content + "</p>");
+	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 300);
+	    },
 
 		openLog: function(token){
 			
-			BootstrapDialog.show({
-				
-				title: "SSH log",
-				
-				message: "<div id=\"log_box_id\">",
-				
-				closable: true,
-				
-				onshown: function(){
+			$("#log-window").slideToggle(true);
+			
+//			BootstrapDialog.show({
+//				
+//				title: "SSH log",
+//				
+//				message: "<div id=\"log_box_id\">",
+//				
+//				closable: true,
+//				
+//				onshown: function(){
 					
 					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("shell");
 			        
@@ -186,54 +203,54 @@ edu.gmu.csiss.geoweaver.ssh = {
 			        
 					edu.gmu.csiss.geoweaver.ssh.ws.onerror = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onerror(e) };
 			        
-				},
-
-				onclose: function(){
-					
-					//do nothing - the websocket session should be closed
-				},
-				
-				buttons: [
-					// NO Turn Back! is the symbol of web-based system
-//					{
+//				},
+//
+//				onclose: function(){
 //					
-//					label: "Interrupt",
+//					//do nothing - the websocket session should be closed
+//				},
+//				
+//				buttons: [
+//					// NO Turn Back! is the symbol of web-based system
+////					{
+////					
+////					label: "Interrupt",
+////					
+////					action: function(dialog){
+////						
+////						//send the message to shut down the SSH session and stop the process
+////						
+////						edu.gmu.csiss.geoweaver.ssh.ws.send("exit");
+////						
+//////						dialog.close();
+////						
+////					}
+////					
+////				},
+//				
+//				{
+//					
+//					label: "Run in background",
 //					
 //					action: function(dialog){
 //						
-//						//send the message to shut down the SSH session and stop the process
-//						
-//						edu.gmu.csiss.geoweaver.ssh.ws.send("exit");
-//						
-////						dialog.close();
+//						dialog.close();
 //						
 //					}
 //					
-//				},
-				
-				{
-					
-					label: "Run in background",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				},{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
-				
-			});
+//				},{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
+//						
+//						dialog.close();
+//						
+//					}
+//					
+//				}]
+//				
+//			});
 			
 	        
 			

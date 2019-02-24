@@ -484,6 +484,56 @@ public class WorkflowTool {
 		return json.toString();
 		
 	}
+	
+	public static String recent(int limit) {
+		
+		StringBuffer resp = new StringBuffer();
+		
+		StringBuffer sql = new StringBuffer("select * from history, abstract_model where abstract_model.identifier = history.process ORDER BY begin_time DESC limit ").append(limit).append(";");
+
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
+				
+				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
+				
+				num++;
+				
+			}
+			
+			resp.append("]");
+			
+			if(num==0)
+				
+				resp = new StringBuffer();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
+	}
 
 	public static String one_history(String hid) {
 

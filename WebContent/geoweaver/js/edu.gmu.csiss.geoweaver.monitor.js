@@ -10,6 +10,8 @@ edu.gmu.csiss.geoweaver.monitor = {
 		
 		ws: null,
 		
+		current_name: null, //current workflow or process name
+		
 		historyid: null,
 		
 		send: function (data) {
@@ -38,6 +40,10 @@ edu.gmu.csiss.geoweaver.monitor = {
 			edu.gmu.csiss.geoweaver.workspace.currentmode = 1;
 			
 			console.log("this workflow monitor websocket has been closed");
+			
+			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+			
+			edu.gmu.csiss.geoweaver.monitor.closeProgressIndicator();
 			
 		},
 		
@@ -83,6 +89,102 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			console.error("error in monitoring workflow " + e );
 			
+			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+			
+			edu.gmu.csiss.geoweaver.monitor.closeProgressIndicator();
+			
+		},
+		
+		clearProgressIndicator: function(){
+			
+			$("#workspace_progress_indicator").empty(); //empty the progress bar
+			
+		},
+		
+		openProgressIndicator: function(){
+			
+			$("#workspace_progress_indicator").removeClass("invisible");
+			
+			$("#workspace_progress_indicator").addClass("visible");
+			
+		},
+		
+		closeProgressIndicator: function(){
+			
+			$("#workspace_progress_indicator").removeClass("visible");
+			
+			$("#workspace_progress_indicator").addClass("invisible");
+			
+		},
+		
+		updateProgress: function(id, flag){
+			
+			var percent = 0;
+			
+			var barcolor = "";
+			
+			if(flag=="RUNNING"){
+	    		  
+	    		  percent = 30
+	    		  barcolor = "progress-bar-success progress-bar-striped active";
+	    		  
+	    	}else if(flag=="DONE"){
+	    		  
+	    		  percent = 100;
+	    		  barcolor = "progress-bar-success progress-bar-striped";
+	    		  
+	    	}else if(flag=="FAILED"){
+	    		  
+	    		  percent = 100;
+	    		  barcolor = "progress-bar-danger progress-bar-striped";
+	    		  
+	    	}
+			
+			if(!$("#progress-" + id).length){
+				
+				$("#workspace_progress_indicator").append("<div id=\"progress-"+id+"\">	</div>");
+				
+			}
+			
+			$("#progress-" + id).html("		Task "+ id +" "+
+					"		<div class=\"progress\"> "+
+					"		  <div class=\"progress-bar "+barcolor+"\" role=\"progressbar\" "+
+					"		  aria-valuenow=\""+percent+"\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width:"+percent+"%\"> "+
+					"		    "+percent+"% "+
+					"		  </div> "+
+					"		</div> ");
+			
+		},
+		
+		openWorkspaceIndicator: function(){
+			
+			$("#current_workflow_name").html("Current workflow : " + edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+			
+			$("#current_workflow_name").removeClass("invisible");
+			
+			$("#current_workflow_name").addClass("visible");
+			
+			$("#running_spinner").removeClass("invisible");
+			
+			$("#running_spinner").addClass("visible");
+			
+			console.log("workspace indicator is opened");
+		},
+		
+		closeWorkspaceIndicator: function(){
+			
+			$("#current_workflow_name").html("");
+			
+			$("#current_workflow_name").removeClass("visible");
+			
+			$("#current_workflow_name").addClass("invisible");
+			
+			$("#running_spinner").removeClass("visible");
+			
+			$("#running_spinner").addClass("invisible");
+			
+			console.log("workspace indicator is closed");
+			
 		},
 		
 		/**
@@ -97,6 +199,10 @@ edu.gmu.csiss.geoweaver.monitor = {
 //			if(edu.gmu.csiss.geoweaver.workspace.currentmode == edu.gmu.csiss.geoweaver.workspace.MONITOR){
 			
 				edu.gmu.csiss.geoweaver.workspace.currentmode = 2;
+				
+				edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
+				
+				edu.gmu.csiss.geoweaver.monitor.openProgressIndicator();
 
 				edu.gmu.csiss.geoweaver.monitor.ws = new SockJS("task");
 		        

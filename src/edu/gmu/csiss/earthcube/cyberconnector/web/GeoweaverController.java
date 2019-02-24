@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
+import edu.gmu.csiss.earthcube.cyberconnector.search.GWSearchTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.FileTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.HostTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ssh.ProcessTool;
@@ -107,6 +108,29 @@ public class GeoweaverController {
 		
 	}
 	
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+    public @ResponseBody String search(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+					
+			String keywords = request.getParameter("keywords");
+			
+			resp = GWSearchTool.search(keywords, type);
+			
+		}catch(Exception e) {
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
     public @ResponseBody String detail(ModelMap model, WebRequest request){
 		
@@ -150,6 +174,39 @@ public class GeoweaverController {
 		try {
 			
 			resp = RSAEncryptTool.getPublicKey(session.getId());
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/recent", method = RequestMethod.POST)
+    public @ResponseBody String recent_history(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			int number = Integer.parseInt(request.getParameter("number"));
+			
+			if(type.equals("process")) {
+				
+				resp = ProcessTool.recent(number);
+				
+			}else if(type.equals("workflow")) {
+				
+				resp = WorkflowTool.recent(number);
+				
+			}
 			
 		}catch(Exception e) {
 			
@@ -514,6 +571,14 @@ public class GeoweaverController {
 					
 					code += "] }";
 					
+				}else if(lang.equals("jupyter")) {
+					
+					code = request.getParameter("code");
+					
+				}else {
+					
+					code = request.getParameter("code");
+					
 				}
 				
 				ProcessTool.update(id, name, lang, code, desc);
@@ -710,6 +775,14 @@ public class GeoweaverController {
 					}
 					
 					code += "] }";
+					
+				}else if(lang.equals("jupyter")) {
+					
+					code = request.getParameter("code");
+					
+				}else {
+					
+					code = request.getParameter("code");
 					
 				}
 				

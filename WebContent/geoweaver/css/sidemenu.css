@@ -86,10 +86,43 @@
 .nav-side-menu li .sub-menu li:hover {
   background-color: #020203;
 }
-.nav-side-menu ul .sub-menu li:before,
+/*.nav-side-menu ul .sub-menu li:before,
 .nav-side-menu li .sub-menu li:before {
   font-family: FontAwesome;
   content: "\f105";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}*/
+
+li.host:before {
+  font-family: FontAwesome;
+  content: "\f146";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+.process:before {
+  font-family: FontAwesome;
+  content: "\f1c9";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+.workflow:before {
+  font-family: FontAwesome;
+  content: "\f2dd";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+.folder:before {
+  font-family: FontAwesome;
+  content: "\f07b";
   display: inline-block;
   padding-left: 10px;
   padding-right: 10px;
