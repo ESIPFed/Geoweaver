@@ -11,7 +11,6 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			this.cred_cache = [];
 			
-			alert("Cache cleared.");
 			
 		},
 		

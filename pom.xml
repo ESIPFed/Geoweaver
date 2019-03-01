@@ -83,13 +83,19 @@
             <scope>system</scope>
             <systemPath>${basedir}/WebContent/WEB-INF/lib/net.opengis.wms-v_1_3_0-2.6.2-SNAPSHOT.jar</systemPath>
         </dependency>
-        <dependency>
+        <!-- deprecated, changed to commons-text -->
+        <!-- <dependency>
             <groupId>commons-lang3</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
             <scope>system</scope>
             <systemPath>${basedir}/WebContent/WEB-INF/lib/commons-lang3-3.7.jar</systemPath>
-        </dependency>
+        </dependency> -->
+        <dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.6</version>
+		</dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
@@ -237,11 +243,6 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
         </dependency>
     </dependencies>
     <organization>
