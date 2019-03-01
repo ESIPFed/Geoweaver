@@ -9,6 +9,62 @@
 edu.gmu.csiss.geoweaver.workflow = {
 		
 	loaded_workflow: null,
+	
+	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
+	
+	clearCache: function(){
+		
+		this.connection_cache = [];
+		
+	},
+	
+	setCache: function(wid, phs){
+		
+		var is = false;
+		
+		for(var i=0;i<this.connection_cache.length;i++){
+			
+			if(this.connection_cache[i].w == wid){
+				
+				this.connection_cache[i].phs = phs;
+				
+				is = true;
+				
+				break;
+				
+			}
+			
+		}
+		
+		if(!is){
+			
+			this.connection_cache.push({"w": wid, "phs": phs});
+			
+		}
+		
+		
+	},
+	
+
+	findCache: function(wid){
+		
+		var phs = null;
+		
+		for(var i=0;i<this.connection_cache.length;i++){
+			
+			if(this.connection_cache[i].w == wid){
+				
+				phs = this.connection_cache[i].phs;
+				
+				break;
+				
+			}
+			
+		}
+		
+		return phs;
+		
+	},
 		
 	newDialog: function(createandrun){
 		
@@ -281,179 +337,201 @@ edu.gmu.csiss.geoweaver.workflow = {
 	 */
 	run: function(id, name){
 		
-		//get all the nodes in the workflow
+		var phs = this.findCache(id);
 		
-		//first, get the workflow details
-		
-		//second, choose host for each process
-		
-		//third, send the process-host pairs to backend
-		
-		//fourth, start the monitoring mode to get real-time status
-		
-		//fifth, trigger rendering module to pop up the results
-		
-		$.ajax({
+		if(phs==null){
 			
-			url: "detail",
+			//get all the nodes in the workflow
 			
-			method: "POST",
+			//first, get the workflow details
 			
-			data: "type=workflow&id=" + id
+			//second, choose host for each process
 			
-		}).done(function(msg){
+			//third, send the process-host pairs to backend
 			
-			msg = $.parseJSON(msg);
+			//fourth, start the monitoring mode to get real-time status
 			
-			var nodes = msg.nodes;
+			//fifth, trigger rendering module to pop up the results
 			
-			var content = '<form>'+
-		       '   <div class=\"panel-body\"><div class="form-group row required">'+
-		       '     <label for="hostselector" class="col-md-4 col-form-label control-label">Mode: </label>'+
-		       '     <div class="col-md-8">'+
-			   '        <div class="col-md-6"> '+
-			   '            <input type="radio" '+
-			   '                   name="modeswitch" value="one"  checked/> '+
-			   '            <label>One host</label> '+
-			   '        </div>'+
-		       '		<div class="col-md-6"> '+
-			   '            <input type="radio" '+
-			   '                   name="modeswitch" value="different" /> '+
-			   '	        <label>Multiple host</label> '+
-			   '        </div> '+
-		       '     </div>'+
-		       '   </div></div>';
-			
-			content += "<div class=\"panel-body\" id=\"selectarea\">";
-			
-//			for(var i=0;i<nodes.length;i++){
-//				
-//				content += '   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-//			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-//			       '     <div class="col-sm-8">'+
-//			       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
-//			       '  		</select>'+
-//			       '     </div>'+
-//			       '   </div>';
-//				
-//			}
-			
-			content += "</div>";
-			
-			content+= '</form>';
-		       
-			
-			BootstrapDialog.show({
+			$.ajax({
 				
-				title: "Select host",
+				url: "detail",
 				
-				message: content,
+				method: "POST",
 				
-				onshown: function(){
+				data: "type=workflow&id=" + id
+				
+			}).done(function(msg){
+				
+				msg = $.parseJSON(msg);
+				
+				var nodes = msg.nodes;
+				
+				var content = '<form>'+
+			       '   <div class=\"panel-body\"><div class="form-group row required">'+
+			       '     <label for="hostselector" class="col-md-4 col-form-label control-label">Mode: </label>'+
+			       '     <div class="col-md-8">'+
+				   '        <div class="col-md-6"> '+
+				   '            <input type="radio" '+
+				   '                   name="modeswitch" value="one"  checked/> '+
+				   '            <label>One host</label> '+
+				   '        </div>'+
+			       '		<div class="col-md-6"> '+
+				   '            <input type="radio" '+
+				   '                   name="modeswitch" value="different" /> '+
+				   '	        <label>Multiple host</label> '+
+				   '        </div> '+
+			       '     </div>'+
+			       '   </div></div>';
+				
+				content += "<div class=\"panel-body\" id=\"selectarea\">";
+				
+//				for(var i=0;i<nodes.length;i++){
+//					
+//					content += '   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+//				       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+//				       '     <div class="col-sm-8">'+
+//				       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+//				       '  		</select>'+
+//				       '     </div>'+
+//				       '   </div>';
+//					
+//				}
+				
+				content += "</div>";
+				
+				content += '<div class="col-sm-12 form-check">'+
+			       '		<input type="checkbox" class="form-check-input" id="remember">'+
+			       '		<label class="form-check-label" for="remember">Remember this workflow-host connection</label>'+
+			       '     </div>';
+				
+				content+= '</form>';
+			       
+				
+				BootstrapDialog.show({
 					
-					edu.gmu.csiss.geoweaver.host.refreshHostList();
+					title: "Select host",
 					
-					$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
-						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-						       '     <div class="col-sm-8">'+
-						       '		<select class="form-control hostselector" id="hostforworkflow">'+
-						       '  		</select>'+
-						       '     </div>'+
-						       '   </div>');
+					message: content,
 					
-					$("input[name='modeswitch']").change(function(e){
+					onshown: function(){
 						
-				    	$("#selectarea").empty();
+						edu.gmu.csiss.geoweaver.host.refreshHostList();
 						
-					    if($(this).val() == 'one') {
-					    
-					    	//only show one host selector
-					    	
-					    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-						       '     <div class="col-sm-8">'+
-						       '		<select class="form-control hostselector" id="hostforworkflow">'+
-						       '  		</select>'+
-						       '     </div>'+
-						       '   </div>');
-					    
-					    } else {
-					    
-					    	for(var i=0;i<nodes.length;i++){
-								
-					    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+						$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
+							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
 							       '     <div class="col-sm-8">'+
-							       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+							       '		<select class="form-control hostselector" id="hostforworkflow">'+
 							       '  		</select>'+
 							       '     </div>'+
 							       '   </div>');
+						
+						$("input[name='modeswitch']").change(function(e){
+							
+					    	$("#selectarea").empty();
+							
+						    if($(this).val() == 'one') {
+						    
+						    	//only show one host selector
+						    	
+						    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+							       '     <div class="col-sm-8">'+
+							       '		<select class="form-control hostselector" id="hostforworkflow">'+
+							       '  		</select>'+
+							       '     </div>'+
+							       '   </div>');
+						    
+						    } else {
+						    
+						    	for(var i=0;i<nodes.length;i++){
+									
+						    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+								       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+								       '     <div class="col-sm-8">'+
+								       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+								       '  		</select>'+
+								       '     </div>'+
+								       '   </div>');
+									
+								}
+						    
+						    }
+						    
+						    edu.gmu.csiss.geoweaver.host.refreshHostList();
+						    
+						});
+						
+					},
+					
+					buttons: [{
+						
+						label: "Run",
+						
+						action: function(dialog){
+							
+							var hosts = [];
+							
+							var mode;
+							
+							if($('input[name=modeswitch]:checked').val()=="one"){
 								
-							}
-					    
-					    }
-					    
-					    edu.gmu.csiss.geoweaver.host.refreshHostList();
-					    
-					});
-					
-				},
-				
-				buttons: [{
-					
-					label: "Run",
-					
-					action: function(dialog){
-						
-						var hosts = [];
-						
-						var mode;
-						
-						if($('input[name=modeswitch]:checked').val()=="one"){
-							
-							//all on one
-							
-							mode = "one";
-							
-							var thehost = $("#hostforworkflow").val();
-							
-							hosts.push({
-								"name":thehost, 
-								"id": $("#hostforworkflow").find('option:selected').attr('id')
-							});
-							
-						}else{
-							
-							//multiple
-							
-							mode = "different";
-							
-							for(var i=0;i<nodes.length;i++){
+								//all on one
+								
+								mode = "one";
+								
+								var thehost = $("#hostforworkflow").val();
 								
 								hosts.push({
-									"name":$("#hostforprocess_"+i).val(), 
-									"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
+									"name":thehost, 
+									"id": $("#hostforworkflow").find('option:selected').attr('id')
 								});
 								
+							}else{
+								
+								//multiple
+								
+								mode = "different";
+								
+								for(var i=0;i<nodes.length;i++){
+									
+									hosts.push({
+										"name":$("#hostforprocess_"+i).val(), 
+										"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
+									});
+									
+								}
+								
 							}
+							
+							//remember the process-host connection
+		                	if(document.getElementById('remember').checked) {
+		                	    
+		                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
+		                		
+		                	}
+							
+							edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
+							
+							dialog.close();
 							
 						}
 						
-						edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
-						
-						dialog.close();
-						
-					}
+					}]
 					
-				}]
+				});
+				
+			}).fail(function(jxr, status){
+				
+				alert("fail to get workflow details");
 				
 			});
+
+		}else{
 			
-		}).fail(function(jxr, status){
+			edu.gmu.csiss.geoweaver.workflow.execute(id, phs.mode, phs.hosts);
 			
-			alert("fail to get workflow details");
-			
-		});
+		}
 		
 	},
 	

@@ -125,8 +125,6 @@ public class ProcessTool {
 					
 				}
 				
-				
-				
 				resp.append(" }");
 				
 			}

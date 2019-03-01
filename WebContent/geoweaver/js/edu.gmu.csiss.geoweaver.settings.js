@@ -14,6 +14,10 @@ edu.gmu.csiss.geoweaver.settings = {
 				
 				edu.gmu.csiss.geoweaver.process.clearCache();
 				
+				edu.gmu.csiss.geoweaver.workflow.clearCache();
+				
+				alert("Cache cleared.");
+				
 			}
 			
 		},
@@ -23,6 +27,8 @@ edu.gmu.csiss.geoweaver.settings = {
 			if(confirm("Do you want to clear the remembered passwords?")){
 				
 				edu.gmu.csiss.geoweaver.host.clearCache();
+
+				alert("Cache cleared.");
 				
 			}
 			
@@ -33,6 +39,33 @@ edu.gmu.csiss.geoweaver.settings = {
 			if(confirm("Do you want to clear the remembered mappings between processes/workflows and hosts?")){
 				
 				edu.gmu.csiss.geoweaver.process.clearCache();
+				
+				edu.gmu.csiss.geoweaver.workflow.clearCache();
+
+				alert("Cache cleared.");
+				
+			}
+			
+		},
+		
+		clearProcessConnections: function(){
+			
+			if(confirm("Do you want to clear the remembered mappings between processes and hosts?")){
+				
+				edu.gmu.csiss.geoweaver.process.clearCache();
+
+				alert("Cache cleared.");
+			}
+			
+		},
+		
+		clearWorkflowConnections: function(){
+			
+			if(confirm("Do you want to clear the remembered mappings between workflows and hosts?")){
+				
+				edu.gmu.csiss.geoweaver.workflow.clearCache();
+				
+				alert("Cache cleared.");
 				
 			}
 			
@@ -48,9 +81,17 @@ edu.gmu.csiss.geoweaver.settings = {
 					
 					var content = "<div class=\"list-group\"> "+
 					"    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
-		            "        Clear Connections between Process/Workflow and Hosts Only "+
+		            "        Clear Connection between Process and Host "+
 		            "        <span class=\"pull-right\"> "+
-		            "            <span class=\"btn btn-xs btn-default\" onclick=\"edu.gmu.csiss.geoweaver.settings.clearConnections();\"> "+
+		            "            <span class=\"btn btn-xs btn-default\" onclick=\"edu.gmu.csiss.geoweaver.settings.clearProcessConnections();\"> "+
+		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
+		            "            </span> "+
+		            "        </span> "+
+		            "    </a> "+
+		            "    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
+		            "        Clear Connection between Workflow and Host "+
+		            "        <span class=\"pull-right\"> "+
+		            "            <span class=\"btn btn-xs btn-default\" onclick=\"edu.gmu.csiss.geoweaver.settings.clearWorkflowConnections();\"> "+
 		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
 		            "            </span> "+
 		            "        </span> "+

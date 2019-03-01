@@ -24,21 +24,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Normalizer;
-import java.util.Calendar;
 
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.connection.channel.direct.Session.Command;
-import net.schmizz.sshj.connection.channel.direct.Session.Shell;
-import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -48,6 +41,11 @@ import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.connection.channel.direct.Session.Command;
+import net.schmizz.sshj.connection.channel.direct.Session.Shell;
+import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
  * Geoweaver SSH session wrapper
@@ -55,9 +53,9 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
  *
  */
 public class SSHSessionImpl implements SSHSession {
-
+	
     protected final Logger   log = LoggerFactory.getLogger(getClass());
-
+    
     private SSHClient        ssh;
     
     private String 			 hostid;
@@ -328,12 +326,16 @@ public class SSHSessionImpl implements SSHSession {
     
     public static String escapeJupter(String json) {
     	
-    	json = json.replaceAll("\r\n", "\n")
-				.replaceAll("\'", "\\\"")
-//				.replaceAll("`", ".")
-//				.replaceAll("()", ".")
-//				.replaceAll(")", "\\\\)")
-				.replaceAll("\"", "\\\"");
+//    	json = json.replaceAll("\r\n", "\n");
+//    	
+//    	json = json.replaceAll("\\", "\\\\\\")
+////				.replaceAll("\'", "\\\\\\\'")
+////				.replaceAll("`", ".")
+////				.replaceAll("()", ".")
+////				.replaceAll(")", "\\\\)")
+//				.replaceAll("\"", "\\\\\\\"");
+    	
+    	json  = StringEscapeUtils.escapeJava(json);
     	
     	return json;
     	
@@ -366,8 +368,8 @@ public class SSHSessionImpl implements SSHSession {
 //    			
 //    		}
     		
-    		String cmdline = "echo '" + notebookjson + 
-    				"' > jupyter-" + history_id + ".ipynb; ";
+    		String cmdline = "echo \"" + notebookjson + 
+    				"\" > jupyter-" + history_id + ".ipynb; ";
     		
 //    		String cmdline = "echo \"test\" > jupyter-" + history_id + ".ipynb; ";
     		
