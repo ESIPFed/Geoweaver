@@ -342,6 +342,111 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
+	public void runPython(String python, String processid, boolean isjoin) {
+    	
+		this.history_id = new RandomString(12).nextString();
+		
+		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
+		
+		this.history_begin_time = BaseTool.getCurrentMySQLDatetime();
+		
+		this.history_input = python;
+    	
+    	try {
+    		
+    		log.info("starting command: " + python);
+    		
+    		python = escapeJupter(python);
+    		
+//    		log.info("escaped command: " + python);
+    		
+//    		python = python.replaceAll("\\\n", ".");
+//    		python = python.replace("\\n", "\\\\n");
+    		
+    		log.info("\n command: " + python);
+    		
+//    		String[] lines = notebookjson.split("\\\\n");
+//    		
+//    		String cmdline = "echo '' > jupyter-"  + history_id + ".ipynb; ";
+//    		
+//    		for(String line: lines) {
+//    			
+//    			cmdline += "echo '"+line+"' >> jupyter-"  + history_id + ".ipynb; ";
+//    			
+//    		}
+    		
+    		String cmdline = "printf \"" + python + 
+    				"\" > python-" + history_id + ".py; ";
+    		
+//    		String cmdline = "echo \"test\" > jupyter-" + history_id + ".ipynb; ";
+    		
+    		cmdline += "chmod +x python-" + history_id + ".py;";
+    		
+    		cmdline += "python python-" + history_id + ".py;";
+    		
+    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
+    		
+    		cmdline += "rm python-" + history_id + ".py;";
+    		
+//    		cmdline += "cat ./jupyter-"+token+".ipynb | while read line\r\n" + 
+//    				"do\r\n" + 
+//    				"  echo \"$line\"\r\n" + 
+//    				"done; "; // read the content of the result ipynb
+    		
+//    		cmdline += "rm ./jupyter-" + token + ".ipynb; "; // remove the script finally, leave no trace behind
+    		
+    		log.info(cmdline);
+    		
+    		Command cmd = session.exec(cmdline);
+//            con.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
+//            cmd.join(5, TimeUnit.SECONDS);
+//            con.writer().print("\n** exit status: " + cmd.getExitStatus());
+    		
+            log.info("SSH command session established");
+            
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            
+            sender = new SSHCmdSessionOutput(input, token);
+            
+            //moved here on 10/29/2018
+            //all SSH sessions must have a output thread
+            
+            thread = new Thread(sender);
+            
+            thread.setName("SSH Command output thread");
+            
+            log.info("starting sending thread");
+            
+            thread.start();
+            
+            log.info("returning to the client..");
+            
+            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        
+//	        cmd = "./geoweaver-" + token + ".sh";
+//	        		
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        	
+//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//	        output.flush();
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+    	
+	}
+    
+    @Override
 	public void runJupyter(String notebookjson, String processid, boolean isjoin) {
     	
 		this.history_id = new RandomString(12).nextString();

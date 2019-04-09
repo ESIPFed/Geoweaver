@@ -181,6 +181,31 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
+		showPython: function(code){
+			
+			$("#codearea").append('<textarea id="codeeditor" placeholder="Code goes here..."></textarea>');
+			
+        	//initiate the code editor
+			
+			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
+        		
+        		lineNumbers: true,
+        		lineWrapping: true
+        		
+        	});
+			
+			if(code!=null){
+				
+            	edu.gmu.csiss.geoweaver.process.editor.setValue(edu.gmu.csiss.geoweaver.process.unescape(code));
+            	
+			}else {
+			
+				edu.gmu.csiss.geoweaver.process.editor.setValue("# Write first python in Geoweaver");
+				
+			}
+			
+		},
+		
 		showJupyter: function(code){
 			
 			var cont = '<div class="row"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div><div class="row"><div class="col col-md-6"><div id="controls"> '+
@@ -289,6 +314,9 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				code = edu.gmu.csiss.geoweaver.process.jupytercode;
 				
+			}else if($("#processcategory").val()=="python"){
+				
+				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
 			}
 			
 			return code;
@@ -330,6 +358,10 @@ edu.gmu.csiss.geoweaver.process = {
 	            		}else if(this.value == "jupyter"){
 	            			
 	            			edu.gmu.csiss.geoweaver.process.showJupyter(edu.gmu.csiss.geoweaver.process.jupytercode);
+	            			
+	            		}else if(this.value == "python"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showPython();
 	            			
 	            		}
 	            		
@@ -735,6 +767,10 @@ edu.gmu.csiss.geoweaver.process = {
 	            			
 	            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code);
 	            			
+	            		}else if(old_lang == "python"){
+	            			
+	            			edu.gmu.csiss.geoweaver.process.showPython(old_code);
+	            			
 	            		}
 		            	
 		            	$("#processcategory").on('change', function() {
@@ -760,6 +796,10 @@ edu.gmu.csiss.geoweaver.process = {
 		            		}else if(this.value == "jupyter"){
 		            			
 		            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code_new);
+		            			
+		            		}else if(this.value == "python"){
+		            			
+		            			edu.gmu.csiss.geoweaver.process.showPython(old_code_new);
 		            			
 		            		}
 		            		
@@ -1233,7 +1273,6 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			if(h==null){
 				
-
 				var content = '<form>'+
 			       '   <div class="form-group row required">'+
 			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run Process '+pname+' on: </label>'+
