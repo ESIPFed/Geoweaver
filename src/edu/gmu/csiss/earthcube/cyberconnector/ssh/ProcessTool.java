@@ -590,7 +590,7 @@ public class ProcessTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public static String executePythonProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+	public static String executePythonProcess(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
 
 		String resp = null;
 		
@@ -600,7 +600,7 @@ public class ProcessTool {
 			
 			String code = getCodeById(id);
 			
-			System.out.println(code);
+			logger.info(code);
 			
 			//get host ip, port, user name and password
 			
@@ -620,7 +620,7 @@ public class ProcessTool {
 			
 			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
-			session.runPython(code, id, isjoin); 
+			session.runPython(code, id, isjoin, bin, pyenv); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -656,7 +656,7 @@ public class ProcessTool {
 	 * password
 	 * @return
 	 */
-	public static String execute(String id, String hid, String pswd, String token, boolean isjoin) {
+	public static String execute(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
 		
 		String category = getTypeById(id);
 		
@@ -678,7 +678,7 @@ public class ProcessTool {
 			
 		}else if("python".equals(category)) {
 			
-			resp = executePythonProcess(id, hid, pswd, token, isjoin);
+			resp = executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv);
 			
 		}else{
 			

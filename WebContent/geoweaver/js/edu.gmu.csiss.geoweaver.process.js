@@ -1047,11 +1047,9 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		executeCallback: function(encrypt, req, dialogItself, button){
+		sendExecuteRequest: function(req, dialog, button){
 			
-			req.pswd = encrypt;
-			
-    		$.ajax({
+			$.ajax({
 				
 				url: "executeProcess",
 				
@@ -1085,7 +1083,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				}
 				
-				if(dialogItself) dialogItself.close();
+				if(dialog) dialog.close();
 				
 			}).fail(function(jxr, status){
 				
@@ -1095,11 +1093,19 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				if(button) button.stopSpin();
 	    		
-				if(dialogItself) dialogItself.enableButtons(true);
+				if(dialog) dialog.enableButtons(true);
 	    		
 				console.error("fail to execute the process " + req.processId);
 				
 			});
+			
+		},
+		
+		executeCallback: function(encrypt, req, dialogItself, button){
+			
+			req.pswd = encrypt;
+			
+			edu.gmu.csiss.geoweaver.process.sendExecuteRequest(req, dialogItself, button);
 			
 		},
 		
@@ -1117,139 +1123,159 @@ edu.gmu.csiss.geoweaver.process = {
 		    		desc: desc
 		    		
 		    }
-			
-			edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
-			
-//			var content = '<form>'+
-//			   '   <div class="form-group row required">'+
-//		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
-//		       '     <div class="col-sm-8">'+
-//		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">'+
-//		       '     </div>'+
-//		       '   </div>';
-//			
-//			BootstrapDialog.show({
-//				
-//				title: "Host Password",
-//				
-//				closable: false,
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//	            	label: 'Confirm',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                	var $button = this;
-//	                	
-//	                	$button.spin();
-//	                	
-//	                	dialogItself.enableButtons(false);
-//	                	
-//	                	//Two-step encryption is applied here. 
-//	                	//First, get public key from server.
-//	                	//Second, encrypt the password and sent the encypted string to server. 
-//	                	$.ajax({
-//	                		
-//	                		url: "key",
-//	                		
-//	                		type: "POST",
-//	                		
-//	                		data: ""
-//	                		
-//	                	}).done(function(msg){
-//	                		
-//	                		//encrypt the password using the received rsa key
-//	                		
-//	                		msg = $.parseJSON(msg);
-//	                		
-//	                		var encrypt = new JSEncrypt();
-//	                		
-//	                        encrypt.setPublicKey(msg.rsa_public);
-//	                        
-//	                        var encrypted = encrypt.encrypt($('#inputpswd').val());
-//	                        
-//	                        var req = {
-//	                        		
-//	                        		processId: pid,
-//	                        		
-//	                        		hostId: hid,
-//	                        		
-//	                        		pswd: encrypted
-//	                        		
-//	                        }
-//	                		
-//	                		$.ajax({
-//		        				
-//		        				url: "executeProcess",
-//		        				
-//		        				type: "POST",
-//		        				
-//		        				data: req
-//		        				
-//		        			}).done(function(msg){
-//		        				
-//		        				msg = $.parseJSON(msg);
-//		        				
-//		        				if(msg.ret == "success"){
-//		        					
-//		        					console.log("the process is under execution.");
-//		        					
-//		        					console.log("history id: " + msg.history_id);
-//		        					
-//		        					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg);
-//		        					
-//		        					if(desc == "builtin"){
-//		        						
-//		        						edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
-//		        						
-//		        					}
-//		        					
-//		        				}else if(msg.ret == "fail"){
-//		        					
-//		        					alert("Fail to execute the process.");
-//		        					
-//		        					console.error("fail to execute the process " + msg.reason);
-//		        					
-//		        				}
-//		        				
-//	        					dialogItself.close();
-//		        				
-//		        			}).fail(function(jxr, status){
-//		        				
-//		        				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
-//		        				
-//		        				$("#inputpswd").val("");
-//		        				
-//		        				$button.stopSpin();
-//		                		
-//		        				dialogItself.enableButtons(true);
-//		                		
-//		        				console.error("fail to execute the process " + pid);
-//		        				
-//		        			});
-//	                		
-//	                	}).fail(function(jxr, status){
-//	                		
-//	                	});
-//	                	
-//	                }
-//					
-//				},{
-//					
-//	            	label: 'Cancel',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                    dialogItself.close();
-//	                    
-//	                }
-//					
-//				}]
-//				
-//			});
+            
+            if(req.desc == "python" || req.desc == "jupyter"){
+            	
+            	//check if there is cached environment for this host
+            	
+            	var cached_env = edu.gmu.csiss.geoweaver.host.findEnvCache(hid);
+            	
+            	if(cached_env!=null){
+            		
+            		req.env = cached_env;
+            		
+            	}else{
+
+                	// retrive the environment list of a host
+                	$.ajax({
+                		
+                		url: "env",
+                		
+                		method: "POST",
+                		
+                		data: "hid=" + hid
+                		
+                	}).done(function(msg){
+                		
+                		msg = $.parseJSON(msg);
+                		
+                		var envselector = "<div class=\"form-group\">"+
+                			"<label for=\"env-select\">Select Environment:</label>"+
+                			"<select id=\"env-select\" class=\"form-control\"> "+
+                			"	<option value=\"default\">Default</option>"+
+                			"	<option value=\"new\">New</option>";
+    						
+                		for(var i=0;i<msg.length;i+=1){
+                			
+                			envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
+                			
+                		}
+                		
+                		envselector += "</select>";
+                		
+                		BootstrapDialog.show({
+            				
+            				title: "Set " + req.desc + " environment",
+            				
+            				message: "<form> "+
+        					"    <div class=\"row\"> "+
+        						envselector +
+        					"    </div>"+
+        					"	<div class=\"form-group row\"> "+
+        					"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+        					"    <div class=\"col-sm-8\"> "+
+        					"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+        					"    </div> "+
+        					"  	</div>"+
+        					"	<div class=\"form-group row\"> "+
+        					"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+        					"    <div class=\"col-sm-8\"> "+
+        					"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+        					"    </div> "+
+        					"  	</div></form>"+
+        					"	<div class=\"form-group col-sm-10\">"+
+        				    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
+        				    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+        				    "   </div>",
+        					
+        					onshown: function(){
+        						
+        						$("#env-select").change(function(e){
+        							
+        							if($(this).val() == 'default'){
+        								
+        								$("#bin").prop('disabled', true);
+        								
+        								$("#env").prop('disabled', true);
+        								
+        							}else{
+        								
+        								$("#bin").prop('disabled', false);
+        								
+        								$("#env").prop('disabled', false);
+        								
+        								if($(this).val() != 'new'){
+        									
+        									var envid = $(this).val();
+        									
+        									$("#bin").val();
+        									
+        									$("#env").val();
+        									
+        								}
+        								
+        							}
+        							
+        						})
+        						
+        					},
+            				
+            				buttons: [{
+            					
+            	            	label: 'Confirm',
+            	                
+            	                action: function(dialog){
+            	                	
+            	                	if($(this).val() == 'default'){
+            	                		
+            	                		req.env = { bin: "default", pyenv: "default" };
+            	                		
+            	                	}else{
+            	                		
+            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val() };
+            	                		
+            	                	}
+            	                	
+            	                	if($("#remember").prop('checked')){
+            	                		
+            	                		edu.gmu.csiss.geoweaver.host.setEnvCache(hid, req.env);
+            	                		
+            	                	}
+            	                	
+            	                	edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
+            	                	
+            	                	dialog.close();
+            	                	
+            	                }
+            					
+            				},{
+            					
+            					label: 'Cancel',
+            					
+            					action: function(dialog){
+            						
+            						dialog.close();
+            						
+            					}
+            					
+            				}]
+            			});
+                		
+                	}).fail(function(jxr, status){
+        				
+        				console.error("fail to get the environment on this host");
+        				
+        			});
+        			
+            		
+            	}
+            	
+    			
+    		}else{
+    			
+    			edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
+    			
+    		}
 			
 		},
 		

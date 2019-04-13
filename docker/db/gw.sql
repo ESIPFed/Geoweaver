@@ -3,7 +3,7 @@
 -- Server version:               5.5.60 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2019-02-23 23:44:26
+-- Date/time:                    2019-04-12 12:39:55
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -92,6 +92,21 @@ CREATE TABLE IF NOT EXISTS `datasets` (
   KEY `dataType` (`dataType`),
   KEY `featureType` (`featureType`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This tables store the metadata of individual dataset.';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cyberconnector.environment
+DROP TABLE IF EXISTS `environment`;
+CREATE TABLE IF NOT EXISTS `environment` (
+  `id` varchar(50) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `type` varchar(50) NOT NULL,
+  `bin` tinytext NOT NULL,
+  `pyenv` varchar(50) DEFAULT NULL,
+  `host` varchar(50) NOT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='The running environment on a host, for example, python environment. ';
 
 -- Data exporting was unselected.
 

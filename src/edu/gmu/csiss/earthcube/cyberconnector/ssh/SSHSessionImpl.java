@@ -342,7 +342,7 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void runPython(String python, String processid, boolean isjoin) {
+	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv) {
     	
 		this.history_id = new RandomString(12).nextString();
 		
@@ -365,42 +365,29 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("\n command: " + python);
     		
-//    		String[] lines = notebookjson.split("\\\\n");
-//    		
-//    		String cmdline = "echo '' > jupyter-"  + history_id + ".ipynb; ";
-//    		
-//    		for(String line: lines) {
-//    			
-//    			cmdline += "echo '"+line+"' >> jupyter-"  + history_id + ".ipynb; ";
-//    			
-//    		}
-    		
-    		String cmdline = "printf \"" + python + 
-    				"\" > python-" + history_id + ".py; ";
-    		
-//    		String cmdline = "echo \"test\" > jupyter-" + history_id + ".ipynb; ";
+    		String cmdline = "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		
     		cmdline += "chmod +x python-" + history_id + ".py;";
     		
-    		cmdline += "python python-" + history_id + ".py;";
+    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
+
+    			cmdline += "python python-" + history_id + ".py;";
+    			
+    		}else {
+    			
+    			cmdline += "source activate " + pyenv + "; ";
+    			
+    			cmdline += bin + " python-" + history_id + ".py;";
+    			
+    		}
     		
     		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
     		
     		cmdline += "rm python-" + history_id + ".py;";
     		
-//    		cmdline += "cat ./jupyter-"+token+".ipynb | while read line\r\n" + 
-//    				"do\r\n" + 
-//    				"  echo \"$line\"\r\n" + 
-//    				"done; "; // read the content of the result ipynb
-    		
-//    		cmdline += "rm ./jupyter-" + token + ".ipynb; "; // remove the script finally, leave no trace behind
-    		
     		log.info(cmdline);
     		
     		Command cmd = session.exec(cmdline);
-//            con.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
-//            cmd.join(5, TimeUnit.SECONDS);
-//            con.writer().print("\n** exit status: " + cmd.getExitStatus());
     		
             log.info("SSH command session established");
             

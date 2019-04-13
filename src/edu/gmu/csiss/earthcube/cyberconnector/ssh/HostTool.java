@@ -226,12 +226,57 @@ public class HostTool {
 		return "done";
 		
 	}
-	
-	public static void main(String[] args) throws SQLException {
+
+	/**
+	 * Get environments by host
+	 * @param hid
+	 * @return
+	 */
+	public static String getEnvironments(String hid) {
 		
+		StringBuffer resp = new StringBuffer();
 		
-		System.out.println(HostTool.list(""));;
+		try {
+			
+			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hid).append("\";");
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				resp.append("{ \"id\": \"").append(rs.getString("id"));
+				
+				resp.append("\", \"name\": \"").append(rs.getString("name"));
+				
+				resp.append("\", \"type\": \"").append(rs.getString("type"));
+				
+				resp.append("\", \"bin\": \"").append(rs.getString("bin"));
+				
+				resp.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
+				
+			}
+			
+			resp.append("]");
+			
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			
+		}
 		
+		return resp.toString();
 	}
 	
+	
+
 }
