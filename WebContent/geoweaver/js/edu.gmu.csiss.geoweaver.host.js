@@ -5,12 +5,37 @@
  */
 edu.gmu.csiss.geoweaver.host = {
 		
-		cred_cache: [{"h":"xxxx", "s": "yyyyy"}],
+		cred_cache: [{"h":"xxxx", "s": "yyyyy", "env": {"bin":"python3", "pyenv": "cdl"}}],
 		
 		clearCache: function(){
 			
 			this.cred_cache = [];
 			
+		},
+		
+		setEnvCache: function(hid, env){
+			
+			var is = false;
+			
+			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+				
+				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+					
+					edu.gmu.csiss.geoweaver.host.cred_cache[i].env = env;
+					
+					is = true;
+					
+					break;
+					
+				}
+				
+			}
+			
+			if(!is){
+				
+				edu.gmu.csiss.geoweaver.host.cred_cache.push({"h": hid, "env": env});
+				
+			}
 			
 		},
 		
@@ -37,6 +62,26 @@ edu.gmu.csiss.geoweaver.host = {
 				edu.gmu.csiss.geoweaver.host.cred_cache.push({"h": hid, "s": s});
 				
 			}
+			
+		},
+		
+		findEnvCache: function(hid){
+			
+			var env = null;
+			
+			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+				
+				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+					
+					env = edu.gmu.csiss.geoweaver.host.cred_cache[i].env;
+					
+					break;
+					
+				}
+				
+			}
+			
+			return env;
 			
 		},
 		

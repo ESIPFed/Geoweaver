@@ -581,7 +581,70 @@ public class ProcessTool {
 		
 	}
 	
-	
+	/**
+	 * Execute Python process
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param token
+	 * @param isjoin
+	 * @return
+	 */
+	public static String executePythonProcess(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
+
+		String resp = null;
+		
+		try {
+			
+			//get code of the process
+			
+			String code = getCodeById(id);
+			
+			logger.info(code);
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			//establish SSH session and generate a token for it
+			
+			if(token == null) {
+				
+				token = new RandomString(12).nextString();
+				
+			}
+			
+			SSHSession session = new SSHSessionImpl();
+			
+			session.login(hid, pswd, token, false);
+			
+			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+			
+			session.runPython(code, id, isjoin, bin, pyenv); 
+			
+			String historyid = session.getHistory_id();
+			
+			resp = "{\"history_id\": \""+historyid+
+					
+					"\", \"token\": \""+token+
+					
+					"\", \"ret\": \"success\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	/**
 	 * Execute one process on a host
@@ -593,7 +656,7 @@ public class ProcessTool {
 	 * password
 	 * @return
 	 */
-	public static String execute(String id, String hid, String pswd, String token, boolean isjoin) {
+	public static String execute(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
 		
 		String category = getTypeById(id);
 		
@@ -612,6 +675,10 @@ public class ProcessTool {
 		}else if("jupyter".equals(category)){
 			
 			resp = executeJupyterProcess(id, hid, pswd, token, isjoin);
+			
+		}else if("python".equals(category)) {
+			
+			resp = executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv);
 			
 		}else{
 			

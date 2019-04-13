@@ -286,6 +286,28 @@ public class GeoweaverController {
 		
 	}
 	
+	@RequestMapping(value = "/env", method = RequestMethod.POST)
+    public @ResponseBody String env(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String hid = request.getParameter("hid");
+			resp = HostTool.getEnvironments(hid);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
     public @ResponseBody String list(ModelMap model, WebRequest request){
 		
@@ -490,9 +512,13 @@ public class GeoweaverController {
 			
 			String encrypted_password = request.getParameter("pswd");
 			
+			String bin = request.getParameter("env[bin]");
+			
+			String pyenv = request.getParameter("env[pyenv]");
+			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.execute(pid, hid, password, null, false);
+			resp = ProcessTool.execute(pid, hid, password, null, false, bin, pyenv);
 			
 		}catch(Exception e) {
 			
