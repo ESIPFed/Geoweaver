@@ -142,11 +142,10 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		enter_password: function(hid, req, business_callback){
 			
-			var content = '<form>'+
-			   '   <div class="form-group row required">'+
+			var content = '   <div class="form-group row required">'+
 		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
 		       '     <div class="col-sm-8">'+
-		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">'+
+		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\" >'+
 		       '     </div>'+
 		       '     <div class="col-sm-12 form-check">'+
 		       '		<input type="checkbox" class="form-check-input" id="remember">'+
@@ -162,9 +161,23 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				message: content,
 				
+				onshown: function(dialog){
+					
+					$("#inputpswd").on('keypress',function(e) {
+					    if(e.which == 13) {
+					    	
+					    	$("#pswd-confirm-btn").click();
+					    	
+					    }
+					}); 
+					
+				},
+				
 				buttons: [{
 					
 	            	label: 'Confirm',
+	            	
+	            	id: 'pswd-confirm-btn',
 	                
 	                action: function(dialogItself){
 	                	
@@ -268,11 +281,11 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		enter_pswd_m : function(newhosts, hosts, req, business_callback){
 			
-			var content = '<form>';
+			var content = '';
 			
 			for(var i=0;i<newhosts.length;i++){
 				
-				content += '   <div class="form-group row required">'+
+				content += '<div class="form-group row required">'+
 			       '     <label for="host password" class="col-sm-4 col-form-label control-label">Host '+newhosts[i].name+' Password: </label>'+
 			       '     <div class="col-sm-8">'+
 			       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd_'+i+'\" required=\"true\" placeholder=\"Password\">'+
@@ -280,12 +293,11 @@ edu.gmu.csiss.geoweaver.host = {
 			       '   </div>';
 			}
 			
-			content += '     <div class="form-group row form-check">'+
+			content += '     <div class="form-group form-check">'+
 		       '		<input type="checkbox" class="form-check-input" id="remember">'+
 		       '		<label class="form-check-label" for="remember">Remember password</label>'+
 		       '     </div>';
 			
-			content += "</form>";
 			
 			BootstrapDialog.show({
 				
