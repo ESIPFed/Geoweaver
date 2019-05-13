@@ -435,7 +435,11 @@ public class WorkflowTool {
 				
 				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
 				
-				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\", ");
+				
+				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"output\": \"").append(rs.getString("output")).append("\"}");
 				
 				num++;
 				

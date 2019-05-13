@@ -655,6 +655,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			"    <tr> "+
 			"      <th scope=\"col\">Workflow</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
 			"  </thead> "+
@@ -663,9 +664,22 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			for(var i=0;i<msg.length;i++){
 				
+				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+				
+				if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+					
+					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+					
+				}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+					
+					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+					
+				}
+				
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					status_col+
 					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";
 				
@@ -728,6 +742,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			"    <tr> "+
 			"      <th scope=\"col\">Execution Id</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
 			"  </thead> "+
@@ -736,9 +751,22 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			for(var i=0;i<msg.length;i++){
 				
+				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+				
+				if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+					
+					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+					
+				}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+					
+					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+					
+				}
+				
 				content += "    <tr> "+
 					"      <td>"+msg[i].id+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					status_col+
 					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";
 				

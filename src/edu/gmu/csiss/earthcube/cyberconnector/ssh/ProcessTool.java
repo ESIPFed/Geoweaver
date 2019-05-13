@@ -816,6 +816,8 @@ public class ProcessTool {
 				
 				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
 				
+				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
+				
 				resp.append("\"}");
 				
 				num++;
