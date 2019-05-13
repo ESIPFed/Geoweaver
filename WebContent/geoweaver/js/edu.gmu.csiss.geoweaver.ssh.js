@@ -172,7 +172,7 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    	var dt = new Date();
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 	    	$("#log-window").append("<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">" + time + "</span> " + content + "</p>");
-	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 300);
+//	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
 	    },
 
 		openLog: function(token){
