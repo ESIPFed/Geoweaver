@@ -262,23 +262,55 @@ public class ProcessTool {
 	 */
 	public static String add_database(String name, String type, String code, String filepath, String hid) {
 		
-		String newid = new RandomString(6).nextString();
+		String newid = null;
 		
-		StringBuffer sql = new StringBuffer("insert into process_type (id, name, code, description, inputs, inputs_datatypes) values ('");
-		
-		sql.append(newid).append("', '");
-		
-		sql.append(name).append("', ?, '");
-		
-		sql.append(type).append("', '");
-		
-		sql.append(filepath).append("', '");
-		
-		sql.append(hid).append("'); ");
-		
-		logger.info(sql.toString());
-		
-		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+		try {
+			
+			//check if the file is already in the database. If yes, should replace the process content only instead of inserting a new row.
+			StringBuffer sql = new StringBuffer("select * from process_type where inputs = \"")
+					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+				sql = new StringBuffer("update process_type set code = ? where inputs = \"")
+					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+				
+				logger.info(sql.toString());
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+				
+			}else {
+				
+				newid = new RandomString(6).nextString();
+				
+				sql = new StringBuffer("insert into process_type (id, name, code, description, inputs, inputs_datatypes) values ('");
+				
+				sql.append(newid).append("', '");
+				
+				sql.append(name).append("', ?, '");
+				
+				sql.append(type).append("', '");
+				
+				sql.append(filepath).append("', '");
+				
+				sql.append(hid).append("'); ");
+				
+				logger.info(sql.toString());
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+		}
 		
 		return newid;
 		
