@@ -18,6 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -335,6 +337,18 @@ public class BaseTool {
 		String[] fieldurianddir = downloadURI(url, folderuri, folderpath);
     	
 		return fieldurianddir[0];
+		
+	}
+	
+	public static String reducePath(String path) {
+		
+		if(path.indexOf("..")!=-1) {
+			
+			Path filepath = Paths.get(path);
+		    path = filepath.normalize().toString().replaceAll("\\\\", "/");
+		}
+		
+		return path;
 		
 	}
 	

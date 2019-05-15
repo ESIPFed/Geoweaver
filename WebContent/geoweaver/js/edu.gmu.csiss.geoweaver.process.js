@@ -1028,7 +1028,7 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		if(run)
 		    				
-		    			edu.gmu.csiss.geoweaver.process.run(msg.id);
+		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, type);
 		    				
 		    		
 		    	}).fail(function(jqXHR, textStatus){

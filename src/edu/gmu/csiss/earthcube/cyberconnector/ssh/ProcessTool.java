@@ -250,6 +250,40 @@ public class ProcessTool {
 		return newid;
 		
 	}
+	
+	/**
+	 * Add local file into database with fixed file location and server id
+	 * @param name
+	 * @param type
+	 * @param code
+	 * @param filepath
+	 * @param hid
+	 * @return
+	 */
+	public static String add_database(String name, String type, String code, String filepath, String hid) {
+		
+		String newid = new RandomString(6).nextString();
+		
+		StringBuffer sql = new StringBuffer("insert into process_type (id, name, code, description, inputs, inputs_datatypes) values ('");
+		
+		sql.append(newid).append("', '");
+		
+		sql.append(name).append("', ?, '");
+		
+		sql.append(type).append("', '");
+		
+		sql.append(filepath).append("', '");
+		
+		sql.append(hid).append("'); ");
+		
+		logger.info(sql.toString());
+		
+		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+		
+		return newid;
+		
+	}
+	
 	/**
 	 * Add process
 	 * @param name
@@ -275,6 +309,7 @@ public class ProcessTool {
 		return newid;
 		
 	}
+	
 	
 	public static String del(String id) {
 		
@@ -354,6 +389,71 @@ public class ProcessTool {
 		
 		
 	}
+	
+//	public static String executeLocal(String hid, String filepath, String type) {
+//		
+//		String resp = null;
+//		
+//		if("python".equals(type)) {
+//			
+//			
+//			
+//		}else if("shell".equals(type)) {
+//			
+//			executeShell(hid, filepath);
+//			
+//		}
+//		
+//		return resp;
+//		
+//	}
+//	
+//	/**
+//	 * Execute local shell script
+//	 * @param hid
+//	 * @param filepath
+//	 * @return
+//	 */
+//	public static String executeShell(String hid, String filepath, String pswd, String token) {
+//		
+//		String resp = null;
+//		
+//		try {
+//			
+//			if(token == null) {
+//				
+//				token = new RandomString(12).nextString();
+//				
+//			}
+//			
+//			SSHSession session = new SSHSessionImpl();
+//			
+//			session.login(hid, pswd, token, false);
+//			
+//			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//			
+////			session.runBash(code, id, isjoin); 
+//			
+//			
+//			String historyid = session.getHistory_id();
+//			
+//			resp = "{\"history_id\": \""+historyid+
+//					
+//					"\", \"token\": \""+token+
+//					
+//					"\", \"ret\": \"success\"}";
+//			
+//			
+//		}catch(Exception e) {
+//			
+//			e.printStackTrace();
+//			
+//		}
+//		
+//		return resp;
+//		
+//	}
+	
 	/**
 	 * Execute shell scripts
 	 * @param id

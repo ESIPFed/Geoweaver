@@ -499,6 +499,46 @@ public class GeoweaverController {
 		
 	}
 	
+	/**
+	 * Add local file as a new process
+	 * @param model
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/addLocalFile", method = RequestMethod.POST)
+    public @ResponseBody String addLocalFile(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			String filepath = request.getParameter("filepath");
+			
+			String hid = request.getParameter("hid"); 
+			
+			String type = request.getParameter("type");
+			
+			String content = request.getParameter("content");
+			
+			String name = request.getParameter("name");
+			
+			String pid = ProcessTool.add_database(name, type, content, filepath, hid);
+			
+			resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"desc\" : \""+ type +"\" }";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
 	@RequestMapping(value = "/executeProcess", method = RequestMethod.POST)
     public @ResponseBody String executeProcess(ModelMap model, WebRequest request, HttpSession session){
 		
