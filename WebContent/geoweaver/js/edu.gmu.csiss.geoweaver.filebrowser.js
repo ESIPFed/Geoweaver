@@ -169,6 +169,9 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				                		
 				                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
 				                		
+				                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
+				                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
+				                		
 				                	});
 				                	
 			                	}else{
