@@ -1210,7 +1210,14 @@ edu.gmu.csiss.geoweaver.process = {
         					"    <div class=\"col-sm-8\"> "+
         					"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
         					"    </div> "+
-        					"  	</div></form>"+
+        					"  	</div>"+
+        					"	<div class=\"form-group row\"> "+
+        					"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+        					"    <div class=\"col-sm-8\"> "+
+        					"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+        					"    </div> "+
+        					"  	</div>"+
+        					"</form>"+
         					"	<div class=\"form-group col-sm-10\">"+
         				    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
         				    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
@@ -1226,11 +1233,15 @@ edu.gmu.csiss.geoweaver.process = {
         								
         								$("#env").prop('disabled', true);
         								
+        								$("#basedir").prop('disabled', true);
+        								
         							}else{
         								
         								$("#bin").prop('disabled', false);
         								
         								$("#env").prop('disabled', false);
+        								
+        								$("#basedir").prop('disabled', false);
         								
         								if($(this).val() != 'new'){
         									
@@ -1239,6 +1250,8 @@ edu.gmu.csiss.geoweaver.process = {
         									$("#bin").val();
         									
         									$("#env").val();
+        									
+        									$("#basedir").val();
         									
         								}
         								
@@ -1256,11 +1269,11 @@ edu.gmu.csiss.geoweaver.process = {
             	                	
             	                	if($(this).val() == 'default'){
             	                		
-            	                		req.env = { bin: "default", pyenv: "default" };
+            	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
             	                		
             	                	}else{
             	                		
-            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val() };
+            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
             	                		
             	                	}
             	                	

@@ -24,7 +24,7 @@ public class ShellSocket implements WebSocketHandler {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
     
-    private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "exit", "quit"});
+    private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});
     
     static Map<String, WebSocketSession> peers =new HashMap();
     

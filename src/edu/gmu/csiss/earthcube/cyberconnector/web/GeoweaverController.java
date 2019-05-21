@@ -556,9 +556,11 @@ public class GeoweaverController {
 			
 			String pyenv = request.getParameter("env[pyenv]");
 			
+			String basedir = request.getParameter("env[basedir]");
+			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.execute(pid, hid, password, null, false, bin, pyenv);
+			resp = ProcessTool.execute(pid, hid, password, null, false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			
