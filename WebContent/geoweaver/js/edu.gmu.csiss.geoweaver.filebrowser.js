@@ -8,11 +8,13 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		
 		current_path: null,
 		
+		current_hid: null,
+		
 		editor: null,
 		
+		edit_file: 0,
+		
 		openFileEditor: function(file_name){
-			
-			BootstrapDialog.closeAll();
 			
 			$.ajax({
 				
@@ -27,6 +29,10 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				msg = $.parseJSON(msg);
 				
 				if(msg.ret == "success"){
+					
+					edu.gmu.csiss.geoweaver.filebrowser.edit_file = 1;
+
+					BootstrapDialog.closeAll();
 					
 					BootstrapDialog.show({
 						
@@ -46,11 +52,17 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			            	
 							edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
 				        		
-				        		lineNumbers: true
-				        		
+				        		lineNumbers: true,
+				        		lineWrapping: true
 				        	});
 							
 							var url_path = msg.path;
+							
+							//prevent it loading from cache
+							$.ajaxSetup ({
+							    // Disable caching of AJAX responses
+							    cache: false
+							});
 							
 							$.get( "../" + url_path, function( data ) {
 								
@@ -58,6 +70,11 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 								
 								$("#loading_btn").hide();
 								
+							});
+							
+							$.ajaxSetup ({
+							    // Enable caching of AJAX responses
+							    cache: true
 							});
 							
 			            },
@@ -98,6 +115,77 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			            
 			            },{
 			            	
+			                label: 'Run',
+			                
+			                action: function(dialog) {
+			                	
+			                	var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+			        			
+			        			var suffix = file_name.match(patt1);
+			                	
+			                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
+			                		
+			                		//step 1: add the file as a new process
+			                		
+			                		//step 2: pop-up the run dialog of the process
+			                		
+			                		var type = "shell";
+			                		
+			                		if("py"==suffix[1]){
+			                			
+			                			type = "python";
+			                			
+			                		}
+			                		
+				                	var req = {
+				                			
+				                			name: file_name,
+				                			
+				                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
+				                			
+				                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
+				                			
+				                			type: type,
+				                			
+				                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
+				                			
+				                	};
+				                	
+				                	$.ajax({
+				                		
+				                		url: "addLocalFile",
+				                		
+				                		method: "POST",
+				                		
+				                		data: req
+				                		
+				                	}).done(function(msg){
+				                		
+				                		msg = $.parseJSON(msg);
+				                		
+				                		var pid = msg.id;
+				                		
+				                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
+				                		
+				                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
+				                		
+				                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
+				                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
+				                		
+				                	});
+				                	
+			                	}else{
+			                		
+			                		alert("Only Python and Shell script can run!");
+			                		
+			                	}
+			                	
+			                	dialog.close();
+			                
+			                }
+			            
+			            },{
+			            	
 			                label: 'Close',
 			                
 			                action: function(dialog) {
@@ -121,6 +209,9 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			            }]
 						
 					});
+					
+
+					
 					
 				}else{
 					
@@ -289,6 +380,62 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			
 		},
 		
+		sortTable: function (n) {
+			
+			  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+			  table = document.getElementById("directory_table");
+			  switching = true;
+			  // Set the sorting direction to ascending:
+			  dir = "asc";
+			  /* Make a loop that will continue until
+			  no switching has been done: */
+			  while (switching) {
+			    // Start by saying: no switching is done:
+			    switching = false;
+			    rows = table.rows;
+			    /* Loop through all table rows (except the
+			    first, which contains table headers): */
+			    for (i = 1; i < (rows.length - 1); i++) {
+			      // Start by saying there should be no switching:
+			      shouldSwitch = false;
+			      /* Get the two elements you want to compare,
+			      one from current row and one from the next: */
+			      x = rows[i].getElementsByTagName("TD")[n];
+			      y = rows[i + 1].getElementsByTagName("TD")[n];
+			      /* Check if the two rows should switch place,
+			      based on the direction, asc or desc: */
+			      if (dir == "asc") {
+			        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+			          // If so, mark as a switch and break the loop:
+			          shouldSwitch = true;
+			          break;
+			        }
+			      } else if (dir == "desc") {
+			        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+			          // If so, mark as a switch and break the loop:
+			          shouldSwitch = true;
+			          break;
+			        }
+			      }
+			    }
+			    if (shouldSwitch) {
+			      /* If a switch has been marked, make the switch
+			      and mark that a switch has been done: */
+			      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+			      switching = true;
+			      // Each time a switch is done, increase this count by 1:
+			      switchcount ++;
+			    } else {
+			      /* If no switching has been done AND the direction is "asc",
+			      set the direction to "desc" and run the while loop again. */
+			      if (switchcount == 0 && dir == "asc") {
+			        dir = "desc";
+			        switching = true;
+			      }
+			    }
+			  }
+		},
+		
 		showFolderBrowserDialog: function(msg){
 			
 			var cont = '<div class=\"row\"  style="padding:10px;">';
@@ -296,10 +443,10 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			cont += '<table class="table table-sm table-dark col-md-12" id="directory_table"> '+
 				'  <thead> '+
 				'    <tr> '+
-				'      <th class="col-md-5 word-wrap">Name</th> '+
-				'      <th>Last Modified</th> '+
-				'      <th>Size</th> '+
-				'      <th>Mode</th> '+
+				'      <th class="col-md-5 word-wrap"  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(0)" >Name</th> '+
+				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(1)" >Last Modified</th> '+
+				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(2)" >Size</th> '+
+				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(3)" >Mode</th> '+
 				'    </tr> '+
 				'  </thead> '+
 				'  <tbody>'+ 
@@ -313,21 +460,22 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 	            
 	            size: BootstrapDialog.SIZE_WIDE,
 	            
-	            closable: false,
+	            closable: true,
 	            
 	            onshown: function(){
 	            	
 	            	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
 	            	
+	            	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
+	            	
 	            },
 	            
-	            buttons: [{
+	            onhide: function(){
 	            	
-	                label: 'Close',
-	                
-	                action: function(dialog) {
-	                	
-	                	$.ajax({
+	            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+	            		
+	            		//only close connection when the file editor is not present
+	            		$.ajax({
 	                		
 	                		url: "closefilebrowser",
 	                		
@@ -338,6 +486,16 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 	                		console.log(msg);
 	                		
 	                	});
+	                	
+	            	}
+	            	
+	            },
+	            
+	            buttons: [{
+	            	
+	                label: 'Close',
+	                
+	                action: function(dialog) {
 	                	
 	                	dialog.close();
 	                
@@ -392,6 +550,14 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		start: function(hid){
 			
 			var req = { hid: hid, init_path: "/home/"}
+			
+			if(this.current_hid == hid){
+				
+				req.init_path = this.current_path;
+				
+			}
+			
+			this.current_hid = hid;
 			
 			edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.filebrowser.connect_folder);
 			

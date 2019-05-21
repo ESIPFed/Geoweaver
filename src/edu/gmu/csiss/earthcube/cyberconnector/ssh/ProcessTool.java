@@ -250,6 +250,72 @@ public class ProcessTool {
 		return newid;
 		
 	}
+	
+	/**
+	 * Add local file into database with fixed file location and server id
+	 * @param name
+	 * @param type
+	 * @param code
+	 * @param filepath
+	 * @param hid
+	 * @return
+	 */
+	public static String add_database(String name, String type, String code, String filepath, String hid) {
+		
+		String newid = null;
+		
+		try {
+			
+			//check if the file is already in the database. If yes, should replace the process content only instead of inserting a new row.
+			StringBuffer sql = new StringBuffer("select * from process_type where inputs = \"")
+					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+				sql = new StringBuffer("update process_type set code = ? where inputs = \"")
+					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+				
+				logger.info(sql.toString());
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+				
+			}else {
+				
+				newid = new RandomString(6).nextString();
+				
+				sql = new StringBuffer("insert into process_type (id, name, code, description, inputs, inputs_datatypes) values ('");
+				
+				sql.append(newid).append("', '");
+				
+				sql.append(name).append("', ?, '");
+				
+				sql.append(type).append("', '");
+				
+				sql.append(filepath).append("', '");
+				
+				sql.append(hid).append("'); ");
+				
+				logger.info(sql.toString());
+				
+				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+		}
+		
+		return newid;
+		
+	}
+	
 	/**
 	 * Add process
 	 * @param name
@@ -275,6 +341,7 @@ public class ProcessTool {
 		return newid;
 		
 	}
+	
 	
 	public static String del(String id) {
 		
@@ -354,6 +421,71 @@ public class ProcessTool {
 		
 		
 	}
+	
+//	public static String executeLocal(String hid, String filepath, String type) {
+//		
+//		String resp = null;
+//		
+//		if("python".equals(type)) {
+//			
+//			
+//			
+//		}else if("shell".equals(type)) {
+//			
+//			executeShell(hid, filepath);
+//			
+//		}
+//		
+//		return resp;
+//		
+//	}
+//	
+//	/**
+//	 * Execute local shell script
+//	 * @param hid
+//	 * @param filepath
+//	 * @return
+//	 */
+//	public static String executeShell(String hid, String filepath, String pswd, String token) {
+//		
+//		String resp = null;
+//		
+//		try {
+//			
+//			if(token == null) {
+//				
+//				token = new RandomString(12).nextString();
+//				
+//			}
+//			
+//			SSHSession session = new SSHSessionImpl();
+//			
+//			session.login(hid, pswd, token, false);
+//			
+//			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//			
+////			session.runBash(code, id, isjoin); 
+//			
+//			
+//			String historyid = session.getHistory_id();
+//			
+//			resp = "{\"history_id\": \""+historyid+
+//					
+//					"\", \"token\": \""+token+
+//					
+//					"\", \"ret\": \"success\"}";
+//			
+//			
+//		}catch(Exception e) {
+//			
+//			e.printStackTrace();
+//			
+//		}
+//		
+//		return resp;
+//		
+//	}
+	
 	/**
 	 * Execute shell scripts
 	 * @param id
@@ -433,7 +565,8 @@ public class ProcessTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public static String executeJupyterProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+	public static String executeJupyterProcess(String id, String hid, String pswd, String token, 
+			boolean isjoin, String bin, String pyenv, String basedir) {
 		
 		String resp = null;
 		
@@ -463,7 +596,7 @@ public class ProcessTool {
 			
 			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
-			session.runJupyter(code, id, isjoin); 
+			session.runJupyter(code, id, isjoin, bin, pyenv, basedir); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -590,7 +723,8 @@ public class ProcessTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public static String executePythonProcess(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
+	public static String executePythonProcess(String id, String hid, String pswd, 
+			String token, boolean isjoin, String bin, String pyenv, String basedir) {
 
 		String resp = null;
 		
@@ -620,7 +754,7 @@ public class ProcessTool {
 			
 			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
-			session.runPython(code, id, isjoin, bin, pyenv); 
+			session.runPython(code, id, isjoin, bin, pyenv, basedir); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -656,7 +790,7 @@ public class ProcessTool {
 	 * password
 	 * @return
 	 */
-	public static String execute(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv) {
+	public static String execute(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv, String basedir) {
 		
 		String category = getTypeById(id);
 		
@@ -674,11 +808,11 @@ public class ProcessTool {
 			
 		}else if("jupyter".equals(category)){
 			
-			resp = executeJupyterProcess(id, hid, pswd, token, isjoin);
+			resp = executeJupyterProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
 			
 		}else if("python".equals(category)) {
 			
-			resp = executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv);
+			resp = executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
 			
 		}else{
 			

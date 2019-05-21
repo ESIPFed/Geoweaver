@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -13,6 +14,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
+import net.schmizz.sshj.xfer.FilePermission;
 
 public class FileTool {
 	
@@ -226,19 +228,39 @@ public class FileTool {
 		
 		try {
 			
-			String filename = new File(filepath).getName();
+//			filepath = BaseTool.reducePath(filepath);
 			
-			String local = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+			Set<FilePermission> perms = token2ftpclient.get(sessionid).perms(filepath);
 			
-			BaseTool.writeString2File(content, local);
+			int permmask = FilePermission.toMask(perms);
 			
-//			token2ftpclient.get(sessionid).get(filepath, dest);
+			boolean w = FilePermission.USR_W.isIn(permmask) || FilePermission.OTH_W.isIn(permmask) || FilePermission.GRP_W.isIn(permmask);
 			
-			log.info("Writing local file " + local + " into remote file : " + filepath);
+			if(w) {
+				
+				String filename = new File(filepath).getName();
+				
+				String local = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename + new RandomString(3).nextString();
+				
+				BaseTool.writeString2File(content, local);
+				
+//				token2ftpclient.get(sessionid).get(filepath, dest);
+				
+				log.info("Writing local file " + local + " into remote file : " + filepath);
+				
+				token2ftpclient.get(sessionid).put(local, filepath);
+				
+				new File(local).delete();
+				
+				resp = "{\"ret\": \"success\"}";
+				
+			}else {
+				
+				resp = "{\"ret\": \"failure\", \"reason\": \"you don't have write permission. Use chmod +x in command line to grant write/execute permission.\"}";
+				
+			}
 			
-			token2ftpclient.get(sessionid).put(local, filepath);
 			
-			resp = "{\"ret\": \"success\"}";
 			
 		}catch(Exception e) {
 			
@@ -320,12 +342,16 @@ public class FileTool {
 			
 		}  finally {
 		   
+			
+			
 		}
 		
 	}
 
 	
 	public static String scp_download(String hid, String password, String file_path) {
+		
+//		file_path = BaseTool.reducePath(file_path);
 		
 		String filename = new RandomString(9).nextString();
 		

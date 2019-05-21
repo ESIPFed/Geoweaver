@@ -18,7 +18,7 @@ edu = {
 							
 					sponsor: "ESIPLab incubator project",
 					
-					version: "0.6.12",
+					version: "0.7.0",
 					
 					author: "Ziheng Sun",
 					

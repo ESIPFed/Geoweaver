@@ -75,9 +75,9 @@ public interface SSHSession {
 	
 	public void runBash(String script, String processid, boolean isjoin);
 	
-	public void runJupyter(String script, String processid, boolean isjoin);
+	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir);
 	
-	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv);
+	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv, String basedir);
 	
 	public void runMultipleBashes(String[] script, String processid);
 	

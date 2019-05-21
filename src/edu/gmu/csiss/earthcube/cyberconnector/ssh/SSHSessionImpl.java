@@ -342,7 +342,7 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv) {
+	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir) {
     	
 		this.history_id = new RandomString(12).nextString();
 		
@@ -365,7 +365,15 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("\n command: " + python);
     		
-    		String cmdline = "printf \"" + python + "\" > python-" + history_id + ".py; ";
+    		String cmdline = "";
+    		
+    		if(!BaseTool.isNull(basedir)||"default".equals(basedir)) {
+    			
+    			cmdline += "cd \"" + basedir + "\"; ";
+    			
+    		}
+    		
+    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		
     		cmdline += "chmod +x python-" + history_id + ".py;";
     		
@@ -434,7 +442,7 @@ public class SSHSessionImpl implements SSHSession {
 	}
     
     @Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin) {
+	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir) {
     	
 		this.history_id = new RandomString(12).nextString();
 		
@@ -448,24 +456,27 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
+    		String cmdline = "";
+    		
+    		if(!BaseTool.isNull(basedir)||"default".equals(basedir)) {
+    			
+    			cmdline += "cd \"" + basedir + "\"; ";
+    			
+    		}
+    		
     		notebookjson = escapeJupter(notebookjson);
     		
-//    		String[] lines = notebookjson.split("\\\\n");
-//    		
-//    		String cmdline = "echo '' > jupyter-"  + history_id + ".ipynb; ";
-//    		
-//    		for(String line: lines) {
-//    			
-//    			cmdline += "echo '"+line+"' >> jupyter-"  + history_id + ".ipynb; ";
-//    			
-//    		}
+    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
     		
-    		String cmdline = "echo \"" + notebookjson + 
-    				"\" > jupyter-" + history_id + ".ipynb; ";
-    		
-//    		String cmdline = "echo \"test\" > jupyter-" + history_id + ".ipynb; ";
+    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
+    			
+    			cmdline += "source activate " + pyenv + "; ";
+    			
+    		}
     		
     		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
+    		
+    		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
     		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
     		
@@ -475,8 +486,6 @@ public class SSHSessionImpl implements SSHSession {
 //    				"do\r\n" + 
 //    				"  echo \"$line\"\r\n" + 
 //    				"done; "; // read the content of the result ipynb
-    		
-//    		cmdline += "rm ./jupyter-" + token + ".ipynb; "; // remove the script finally, leave no trace behind
     		
 			
     		log.info(cmdline);

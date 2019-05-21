@@ -3,7 +3,7 @@
 -- Server version:               5.5.60 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2019-04-12 12:39:55
+-- Date/time:                    2019-05-20 15:11:51
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,13 +11,11 @@
 /*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
 -- Dumping database structure for cyberconnector
-DROP DATABASE IF EXISTS `cyberconnector`;
 CREATE DATABASE IF NOT EXISTS `cyberconnector` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `cyberconnector`;
 
 
 -- Dumping structure for table cyberconnector.abstract_model
-DROP TABLE IF EXISTS `abstract_model`;
 CREATE TABLE IF NOT EXISTS `abstract_model` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(50) NOT NULL,
@@ -42,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `abstract_model` (
 
 
 -- Dumping structure for table cyberconnector.association
-DROP TABLE IF EXISTS `association`;
 CREATE TABLE IF NOT EXISTS `association` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `process_type_id` int(10) NOT NULL,
@@ -57,7 +54,6 @@ CREATE TABLE IF NOT EXISTS `association` (
 
 
 -- Dumping structure for table cyberconnector.datasets
-DROP TABLE IF EXISTS `datasets`;
 CREATE TABLE IF NOT EXISTS `datasets` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(48) NOT NULL DEFAULT '',
@@ -97,7 +93,6 @@ CREATE TABLE IF NOT EXISTS `datasets` (
 
 
 -- Dumping structure for table cyberconnector.environment
-DROP TABLE IF EXISTS `environment`;
 CREATE TABLE IF NOT EXISTS `environment` (
   `id` varchar(50) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
@@ -105,6 +100,8 @@ CREATE TABLE IF NOT EXISTS `environment` (
   `bin` tinytext NOT NULL,
   `pyenv` varchar(50) DEFAULT NULL,
   `host` varchar(50) NOT NULL,
+  `basedir` tinytext,
+  `settings` tinytext,
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='The running environment on a host, for example, python environment. ';
 
@@ -112,7 +109,6 @@ CREATE TABLE IF NOT EXISTS `environment` (
 
 
 -- Dumping structure for table cyberconnector.history
-DROP TABLE IF EXISTS `history`;
 CREATE TABLE IF NOT EXISTS `history` (
   `id` varchar(20) NOT NULL,
   `process` varchar(50) NOT NULL,
@@ -127,7 +123,6 @@ CREATE TABLE IF NOT EXISTS `history` (
 
 
 -- Dumping structure for table cyberconnector.hosts
-DROP TABLE IF EXISTS `hosts`;
 CREATE TABLE IF NOT EXISTS `hosts` (
   `id` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -141,7 +136,6 @@ CREATE TABLE IF NOT EXISTS `hosts` (
 
 
 -- Dumping structure for table cyberconnector.orders
-DROP TABLE IF EXISTS `orders`;
 CREATE TABLE IF NOT EXISTS `orders` (
   `orderid` varchar(50) NOT NULL,
   `product` varchar(50) NOT NULL,
@@ -166,7 +160,6 @@ CREATE TABLE IF NOT EXISTS `orders` (
 
 
 -- Dumping structure for table cyberconnector.process_type
-DROP TABLE IF EXISTS `process_type`;
 CREATE TABLE IF NOT EXISTS `process_type` (
   `id` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -183,7 +176,6 @@ CREATE TABLE IF NOT EXISTS `process_type` (
 
 
 -- Dumping structure for table cyberconnector.products
-DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
   `identifier` varchar(50) NOT NULL DEFAULT '',
   `abbreviation` varchar(50) DEFAULT NULL,
@@ -217,7 +209,6 @@ CREATE TABLE IF NOT EXISTS `products` (
 
 
 -- Dumping structure for table cyberconnector.requirements
-DROP TABLE IF EXISTS `requirements`;
 CREATE TABLE IF NOT EXISTS `requirements` (
   `productid` varchar(50) NOT NULL,
   `format` varchar(50) NOT NULL,
@@ -230,7 +221,6 @@ CREATE TABLE IF NOT EXISTS `requirements` (
 
 
 -- Dumping structure for table cyberconnector.service
-DROP TABLE IF EXISTS `service`;
 CREATE TABLE IF NOT EXISTS `service` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `id` varchar(48) NOT NULL,
@@ -261,7 +251,6 @@ CREATE TABLE IF NOT EXISTS `service` (
 
 
 -- Dumping structure for table cyberconnector.users
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `uid` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
