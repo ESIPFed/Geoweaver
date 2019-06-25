@@ -790,7 +790,8 @@ public class ProcessTool {
 	 * password
 	 * @return
 	 */
-	public static String execute(String id, String hid, String pswd, String token, boolean isjoin, String bin, String pyenv, String basedir) {
+	public static String execute(String id, String hid, String pswd, String token, 
+			boolean isjoin, String bin, String pyenv, String basedir) {
 		
 		String category = getTypeById(id);
 		

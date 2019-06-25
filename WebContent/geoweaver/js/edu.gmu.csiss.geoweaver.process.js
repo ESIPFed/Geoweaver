@@ -612,30 +612,48 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				}
 				
-				var content = "<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Log Id</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.id+"</dd>"+
-				"	  </div>"+
+				var content = "<div class=\"form-group row\">"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"row\">"+
+				"	    	<dt class=\"col col-md-3\">Log Id</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.id+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">Process Id</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.process+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>"+
+				"<div class=\"form-group row\">"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">Begin Time</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">End Time</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>"+
 				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Process Id</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.process+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Begin Time</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">End Time</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Input</dt>"+
-				"	    <dd class=\"col col-md-7 word-wrap\">"+msg.input+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Output</dt>"+
-				"	    <dd class=\"col col-md-7 word-wrap\" id=\"log-output\">"+output+"</dd>"+
-				"	  </div>";
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-12\">Input</dt>"+
+				"	    	<dd class=\"col col-md-12 word-wrap\">"+msg.input+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-12\">Output</dt>"+
+				"	    	<dd class=\"col col-md-12 word-wrap\" id=\"log-output\">"+output+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>";
 				
 				BootstrapDialog.show({
 					

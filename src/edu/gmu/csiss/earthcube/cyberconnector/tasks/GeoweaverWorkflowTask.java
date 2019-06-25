@@ -325,7 +325,7 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				try {
 					
-					String resp = ProcessTool.execute(processTypeId, hid, password, token, true, null, null); //need update the null to be python environment
+					String resp = ProcessTool.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
 					
 					JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
 					
