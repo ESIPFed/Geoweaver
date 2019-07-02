@@ -81,7 +81,7 @@ public interface SSHSession {
 	
 	public void runMultipleBashes(String[] script, String processid);
 	
-	public void saveHistory(String logs);
+	public void saveHistory(String logs, String status);
 	
     public String getUsername() ;
 

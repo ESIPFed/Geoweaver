@@ -537,13 +537,17 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				for(var i=0;i<msg.length;i++){
 					
-					var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+					var status_col = null;
 					
-					if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+					if(msg[i].status == "Running"){
+						
+						status_col = "      <td><span class=\"label label-warning\">Running <i class=\"fa fa-circle-o-notch fa-spin\"></i></span></td> "; //<div class=\"spinner-border spinner-border-sm\"></div>
+						
+					}else if(msg[i].status == "Done"){
 						
 						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
 						
-					}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+					}else if(msg[i].status == "Failed"){
 						
 						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
 						
@@ -1020,7 +1024,9 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				var req = { 
 					
-					type: "process", lang: $("#processcategory").val(),
+					type: "process", 
+					
+					lang: $("#processcategory").val(),
 					
 					desc: $("#processcategory").val(), //use the description column to store the process type
 				
@@ -1042,11 +1048,13 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
+		    		msg.desc = req.desc;
+		    		
 		    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, req.desc);
 		    		
 		    		if(run)
 		    				
-		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, type);
+		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, $("#processcategory").val());
 		    				
 		    		
 		    	}).fail(function(jqXHR, textStatus){

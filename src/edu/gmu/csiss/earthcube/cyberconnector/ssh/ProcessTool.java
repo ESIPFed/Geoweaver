@@ -92,9 +92,10 @@ public class ProcessTool {
 				
 				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
 				
-				
 				String lang = "shell";
+				
 				if(!BaseTool.isNull(rs.getString("description")))
+				
 					lang = rs.getString("description");
 				
 				resp.append("\"description\":\"").append(lang).append("\", ");
@@ -158,9 +159,12 @@ public class ProcessTool {
 		
 		if(!BaseTool.isNull(code))
 		
-			resp = code.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"").replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+			resp = code.replaceAll("\\\\", "\\\\\\\\")
+					.replaceAll("\"", "\\\\\"")
+					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
+					.replaceAll("	", "\\\\t");
 		
-		logger.info(resp);
+//		logger.info(resp);
 		
 		return resp;
 		
@@ -780,6 +784,63 @@ public class ProcessTool {
 		
 	}
 	
+	public static String stop(String id, String hisid) {
+		
+		String resp = null;
+		
+		try {
+			
+			SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(hisid);
+			
+			session.getSSHJSession().close();
+			
+			//establish SSH session and generate a token for it
+//			
+//			if(token == null) {
+//				
+//				token = new RandomString(12).nextString();
+//				
+//			}
+//			
+//			SSHSession session = new SSHSessionImpl();
+//			
+//			session.login(hid, pswd, token, false);
+//			
+//			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//			
+//			String code = "#!/bin/bash\n" + 
+//					"kill -9 " + hid;
+//			
+//			session.runBash(code, id, isjoin); 
+//			
+//			String historyid = session.getHistory_id();
+//			
+//			resp = "{\"history_id\": \""+historyid+
+//					
+//					"\", \"token\": \""+token+
+//					
+//					"\", \"ret\": \"success\"}";
+			
+//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
+			
+			//register the input/output into the database
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+//			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+        		
+		return resp;
+		
+	}
+	
 	/**
 	 * Execute one process on a host
 	 * @param id
@@ -904,7 +965,11 @@ public class ProcessTool {
 				
 				resp.append("\"input\":\"").append(escape(rs.getString("input"))).append("\", ");
 				
-				resp.append("\"output\":\"").append(escape(rs.getString("output"))).append("\" }");
+				resp.append("\"output\":\"").append(escape(rs.getString("output"))).append("\", ");
+				
+				resp.append("\"host\":\"").append(escape(rs.getString("host"))).append("\", ");
+				
+				resp.append("\"status\":\"").append(rs.getString("indicator")).append("\" }");
 				
 			}
 			
@@ -952,6 +1017,10 @@ public class ProcessTool {
 				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
 				
 				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
+				
+				resp.append("\", \"status\": \"").append(escape(rs.getString("indicator")));
+				
+				resp.append("\", \"host\": \"").append(escape(rs.getString("host")));
 				
 				resp.append("\"}");
 				
