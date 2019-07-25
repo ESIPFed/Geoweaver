@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 
 public class HostTool {
@@ -228,21 +229,70 @@ public class HostTool {
 	}
 
 	/**
-	 * Get environments by host
-	 * @param hid
+	 * Add environment to database
+	 * @param historyid
+	 * @param bin
+	 * @param env
+	 * @param basedir
 	 * @return
 	 */
-	public static String getEnvironments(String hid) {
+	public static String addEnv(String historyid, String hostid, String type, String bin, String env, String basedir, String settings) {
 		
-		StringBuffer resp = new StringBuffer();
+		String resp = null;
 		
 		try {
 			
-			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hid).append("\";");
+			String enviroment = getEnvironmentByBEB(hostid, bin, env, basedir);
+			
+			if(BaseTool.isNull(enviroment)) {
+				
+				StringBuffer sql = new StringBuffer("insert into environment (id, name, type, bin, penv, host, basedir, settings) values ('");
+				
+				sql.append(historyid).append("', '");
+				
+				sql.append(historyid).append("', '");
+				
+				sql.append(type).append("', '");
+				
+				sql.append(bin).append("', '");
+				
+				sql.append(env).append("', '");
+
+				sql.append(hostid).append("', '");
+				
+				sql.append(basedir).append("', '");
+				
+				sql.append(settings).append("' ); ");
+				
+				logger.info(sql);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	public static String getEnvironmentByBEB(String hostid, String bin, String env, String basedir) {
+
+		String resp = null;
+		
+		try {
+			
+			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hostid)
+					.append(" and bin = \"").append(bin).append("\" and pyenv = \"")
+					.append(env).append("\" and basedir = \"").append(basedir).append("\";");
 			
 			ResultSet rs = DataBaseOperation.query(sql.toString());
 			
-			resp.append("[");
+			StringBuffer envstr = new StringBuffer();
+			
+			envstr.append("[");
 			
 			int num = 0;
 			
@@ -250,23 +300,25 @@ public class HostTool {
 				
 				if(num!=0) {
 					
-					resp.append(", ");
+					envstr.append(", ");
 					
 				}
 				
-				resp.append("{ \"id\": \"").append(rs.getString("id"));
+				envstr.append("{ \"id\": \"").append(rs.getString("id"));
 				
-				resp.append("\", \"name\": \"").append(rs.getString("name"));
+				envstr.append("\", \"name\": \"").append(rs.getString("name"));
 				
-				resp.append("\", \"type\": \"").append(rs.getString("type"));
+				envstr.append("\", \"type\": \"").append(rs.getString("type"));
 				
-				resp.append("\", \"bin\": \"").append(rs.getString("bin"));
+				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
 				
-				resp.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
+				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
 				
 			}
 			
-			resp.append("]");
+			envstr.append("]");
+			
+			resp = envstr.toString();
 			
 		} catch (SQLException e) {
 
@@ -274,7 +326,62 @@ public class HostTool {
 			
 		}
 		
-		return resp.toString();
+		return resp;
+		
+	}
+	
+	/**
+	 * Get environments by host
+	 * @param hid
+	 * @return
+	 */
+	public static String getEnvironments(String hid) {
+		
+		String resp = null;
+		
+		try {
+			
+			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hid).append("\";");
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			StringBuffer envstr = new StringBuffer();
+			
+			envstr.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					envstr.append(", ");
+					
+				}
+				
+				envstr.append("{ \"id\": \"").append(rs.getString("id"));
+				
+				envstr.append("\", \"name\": \"").append(rs.getString("name"));
+				
+				envstr.append("\", \"type\": \"").append(rs.getString("type"));
+				
+				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
+				
+				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
+				
+			}
+			
+			envstr.append("]");
+			
+			resp = envstr.toString();
+			
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			
+		}
+		
+		return resp;
 	}
 	
 	

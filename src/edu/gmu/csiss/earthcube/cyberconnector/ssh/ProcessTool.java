@@ -762,6 +762,8 @@ public class ProcessTool {
 			
 			String historyid = session.getHistory_id();
 			
+			
+			
 			resp = "{\"history_id\": \""+historyid+
 					
 					"\", \"token\": \""+token+
