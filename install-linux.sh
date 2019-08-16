@@ -19,17 +19,25 @@ mkdir install
 
 cd install
 
-echo -e "Download OpenJDK"
+if [ -f install/openjdk-12.0.2_linux-x64_bin.tar.gz ];then
+	echo "++++++++++++++++found openjdk-12.0.2_linux-x64_bin.tar.gz "
+else
+	echo -e "Download OpenJDK"
 
-wget https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_linux-x64_bin.tar.gz 
+	wget https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_linux-x64_bin.tar.gz 
 
-tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
+	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
+fi
 
-echo "Download Tomcat"
+if [ -f install/apache-tomcat-9.0.22.tar.gz ];then
+	echo "++++++++++++++++found apache-tomcat-9.0.22.tar.gzz "
+else
+	echo "Download Tomcat"
 
-wget http://mirrors.ibiblio.org/apache/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+	wget http://mirrors.ibiblio.org/apache/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
 
-tar -zxvf apache-tomcat-9.0.22.tar.gz
+	tar -zxvf apache-tomcat-9.0.22.tar.gz
+fi
 
 echo "change the default jdk to the downloaded jdk"
 
