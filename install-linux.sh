@@ -7,12 +7,6 @@
 # date: 08/15/2019
 #
 
-#HostIP=$1 #e.g. 129.174.166.194
-
-#HostName=$2 #e.g. cube.csiss.gmu.edu (for HostIP:8083)
-
-#CSW_HOME=../../../CSW/current/
-
 echo "Create install folder and enter it"
 
 mkdir install
@@ -65,4 +59,10 @@ echo "modify the Geoweaver configuration"
 
 
 
-echo "Geoweaver is successfully installed1 Please visit in browser http://localhost:8080/Geoweaver to find it out!"
+echo "Geoweaver is successfully installed!"
+
+echo "********************************************************************"
+
+echo "Please visit in browser http://localhost:8080/Geoweaver to use Geoweaver!"
+
+echo "********************************************************************"
