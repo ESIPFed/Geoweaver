@@ -41,7 +41,7 @@ fi
 
 echo "change the default jdk to the downloaded jdk"
 
-sed '109 a JAVA_HOME=../../jdk-12.0.2/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
+sed '109 a JAVA_HOME='$PWD'/jdk-12.0.2/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
 
 mv apache-tomcat-9.0.22/bin/catalina2.sh apache-tomcat-9.0.22/bin/catalina.sh
 
@@ -57,7 +57,7 @@ chmod 755 apache-tomcat-9.0.22/bin/catalina.sh
 
 chmod 755 apache-tomcat-9.0.22/bin/startup.sh
 
-nohup ./apache-tomcat-9.0.22/bin/startup.sh &
+./apache-tomcat-9.0.22/bin/startup.sh
 
 sleep 3
 
