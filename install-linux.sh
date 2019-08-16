@@ -33,7 +33,7 @@ tar -zxvf apache-tomcat-9.0.22.tar.gz
 
 echo "change the default jdk to the downloaded jdk"
 
-sed '109 a JAVA_HOME=../../openjdk-12.0.2_linux-x64_bin/' apache-tomcat-9.0.22/bin/catalina.sh
+sed '109 a JAVA_HOME=../../openjdk-12.0.2_linux-x64_bin/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina.sh
 
 echo "download Geoweaver into Apache Tomcat Webapp Folder"
 
