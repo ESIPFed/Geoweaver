@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>CyberConnector</groupId>
     <artifactId>Geoweaver</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.2</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
