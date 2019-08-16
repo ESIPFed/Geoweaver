@@ -19,7 +19,7 @@ mkdir install
 
 cd install
 
-if [ -f install/openjdk-12.0.2_linux-x64_bin.tar.gz ];then
+if [ -f openjdk-12.0.2_linux-x64_bin.tar.gz ];then
 	echo "++++++++++++++++found openjdk-12.0.2_linux-x64_bin.tar.gz "
 else
 	echo -e "Download OpenJDK"
@@ -29,7 +29,7 @@ else
 	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
 fi
 
-if [ -f install/apache-tomcat-9.0.22.tar.gz ];then
+if [ -f apache-tomcat-9.0.22.tar.gz ];then
 	echo "++++++++++++++++found apache-tomcat-9.0.22.tar.gzz "
 else
 	echo "Download Tomcat"
