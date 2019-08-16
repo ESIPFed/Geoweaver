@@ -55,7 +55,9 @@ echo "start the tomcat.."
 
 chmod 755 apache-tomcat-9.0.22/bin/catalina.sh
 
-apache-tomcat-9.0.22/bin/startup.sh
+chmod 755 apache-tomcat-9.0.22/bin/startup.sh
+
+./apache-tomcat-9.0.22/bin/startup.sh
 
 sleep 3
 
