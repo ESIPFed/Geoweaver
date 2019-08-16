@@ -9,7 +9,7 @@ db:
   ports:
     - "3306:3306"
   volumes:
-   - ./docker/db:/docker-entrypoint-initdb.d
+   - ./db:/docker-entrypoint-initdb.d
 
 web:
   image: tomcat:8.5-jre8

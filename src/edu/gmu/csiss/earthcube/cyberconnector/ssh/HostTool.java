@@ -118,7 +118,7 @@ public class HostTool {
 				
 				hostdetails[2] = rs.getString("port");
 				
-				hostdetails[3] = rs.getString("user");
+				hostdetails[3] = rs.getString("username");
 				
 			}
 			
@@ -192,7 +192,7 @@ public class HostTool {
 		
 		String newhostid = new RandomString(6).nextString();
 		
-		StringBuffer sql = new StringBuffer("insert into hosts (id, name, ip, port, user, owner) values ('")
+		StringBuffer sql = new StringBuffer("insert into hosts (id, name, ip, port, username, owner) values ('")
 				
 				.append(newhostid).append("', '")
 				

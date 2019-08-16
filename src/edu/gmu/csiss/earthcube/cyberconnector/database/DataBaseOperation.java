@@ -50,9 +50,9 @@ public class DataBaseOperation {
 			
 			if(conn.isClosed()) {
 				
-				database_url = SysDir.database_docker_url;
+//				database_url = SysDir.database_docker_url;
 				
-				logger.warn("the normal database is closed. Switch to docker version.");
+				logger.error("the normal database is closed. Switch to docker version.");
 				
 			}else {
 				
@@ -62,9 +62,9 @@ public class DataBaseOperation {
 			
 		} catch(Exception e) {   
 			
-//			e.printStackTrace();
+			e.printStackTrace();
 			
-			database_url = SysDir.database_docker_url;
+//			database_url = SysDir.database_docker_url;
 			
 			logger.warn("the normal database has error. Switch to docker version.");
 			
