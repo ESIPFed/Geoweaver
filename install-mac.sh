@@ -1,10 +1,10 @@
 #!/bin/bash
 # 
-# Installation script for Geoweaver on Mac OS
-# Tested on Mac OS Sienna
+# Installation script for Geoweaver on Mac Servers
+# Tested on Mac OS
 #
 # author: Ziheng Sun
-# date: 08/15/2019
+# date: 08/20/2019
 #
 
 echo "Create install folder and enter it"
@@ -18,9 +18,9 @@ if [ -f openjdk-12.0.2_linux-x64_bin.tar.gz ];then
 else
 	echo -e "Download OpenJDK"
 
-	wget https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_linux-x64_bin.tar.gz 
+	wget https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_osx-x64_bin.tar.gz
 
-	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
+	tar -zxvf openjdk-12.0.2_osx-x64_bin.tar.gz
 fi
 
 if [ -f apache-tomcat-9.0.22.tar.gz ];then
@@ -28,10 +28,12 @@ if [ -f apache-tomcat-9.0.22.tar.gz ];then
 else
 	echo "Download Tomcat"
 
-	wget http://mirrors.ibiblio.org/apache/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+	wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
 
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
+
+
 
 echo "change the default jdk to the downloaded jdk"
 
@@ -45,6 +47,10 @@ wget https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war
 
 mv Geoweaver.war apache-tomcat-9.0.22/webapps/
 
+echo "Move database in place"
+
+cp ../db/geoweaver* ~/
+
 echo "start the tomcat.."
 
 chmod 755 apache-tomcat-9.0.22/bin/catalina.sh
@@ -57,7 +63,7 @@ sleep 3
 
 echo "modify the Geoweaver configuration"
 
-
+# there is no need to do this
 
 echo "Geoweaver is successfully installed!"
 

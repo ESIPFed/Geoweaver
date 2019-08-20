@@ -28,7 +28,7 @@ if [ -f apache-tomcat-9.0.22.tar.gz ];then
 else
 	echo "Download Tomcat"
 
-	wget http://mirrors.ibiblio.org/apache/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+	wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
 
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
