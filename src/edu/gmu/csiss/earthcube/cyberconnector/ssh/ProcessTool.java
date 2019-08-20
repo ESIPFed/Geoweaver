@@ -78,7 +78,7 @@ public class ProcessTool {
 	
 	public static String detail(String id) {
 		
-		StringBuffer sql = new StringBuffer("select * from process_type where id = \"").append(id).append("\";");
+		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
 		
 		StringBuffer resp = new StringBuffer();
 		
@@ -182,9 +182,9 @@ public class ProcessTool {
 	
 	public static void update(String id, String name, String lang, String code, String description) {
 		
-		StringBuffer sql = new StringBuffer("update process_type set name = \"").append(name)
+		StringBuffer sql = new StringBuffer("update process_type set name = '").append(name)
 				
-				.append("\", code = ?, description = \"").append(lang).append("\" where id = \"").append(id).append("\";");
+				.append("', code = ?, description = '").append(lang).append("' where id = '").append(id).append("';");
 		
 		logger.info(sql.toString());
 		
@@ -271,15 +271,15 @@ public class ProcessTool {
 		try {
 			
 			//check if the file is already in the database. If yes, should replace the process content only instead of inserting a new row.
-			StringBuffer sql = new StringBuffer("select * from process_type where inputs = \"")
-					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+			StringBuffer sql = new StringBuffer("select * from process_type where inputs = '")
+					.append(filepath).append("' and inputs_datatypes = '").append(hid).append("'; ");
 			
 			ResultSet rs = DataBaseOperation.query(sql.toString());
 			
 			if(rs.next()) {
 				
-				sql = new StringBuffer("update process_type set code = ? where inputs = \"")
-					.append(filepath).append("\" and inputs_datatypes = \"").append(hid).append("\"; ");
+				sql = new StringBuffer("update process_type set code = ? where inputs = '")
+					.append(filepath).append("' and inputs_datatypes = '").append(hid).append("'; ");
 				
 				logger.info(sql.toString());
 				
@@ -947,7 +947,7 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = \"").append(hid).append("\" and history.process=process_type.id;");
+		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = '").append(hid).append("' and history.process=process_type.id;");
 		
 		try {
 			
@@ -994,7 +994,7 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(pid).append("\"  ORDER BY begin_time DESC;");
+		StringBuffer sql = new StringBuffer("select * from history where process = '").append(pid).append("'  ORDER BY begin_time DESC;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		

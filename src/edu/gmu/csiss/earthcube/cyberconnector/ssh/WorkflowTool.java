@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +29,8 @@ import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
 public class WorkflowTool {
 	
 	public static Map<String, String> token2ws = new HashMap();
+	
+	private static Logger logger = Logger.getLogger(WorkflowTool.class);
 	
 	public static String list(String owner){
 		
@@ -77,7 +80,7 @@ public class WorkflowTool {
 		
 		Workflow w = null;
 
-		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = \"").append(id).append("\";");
+		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = '").append(id).append("';");
 		
 		StringBuffer resp = new StringBuffer();
 		
@@ -91,7 +94,7 @@ public class WorkflowTool {
 				
 				w.setName(rs.getString("name"));
 				
-				w.setId(rs.getString("id"));
+				w.setId(rs.getString("identifier"));
 				
 				w.setNodes(rs.getString("process_connection"));
 				
@@ -117,7 +120,7 @@ public class WorkflowTool {
 
 	public static String detail(String id) {
 		
-		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = \"").append(id).append("\";");
+		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = '").append(id).append("';");
 		
 		StringBuffer resp = new StringBuffer();
 		
@@ -367,9 +370,9 @@ public class WorkflowTool {
 	 */
 	public static void update(String wid, String nodes, String edges) {
 		
-		StringBuffer sql = new StringBuffer("update abstract_model set process_connection = ?, param_connection = ? where identifier = \"");
+		StringBuffer sql = new StringBuffer("update abstract_model set process_connection = ?, param_connection = ? where identifier = '");
 		
-		sql.append(wid).append("\"; ");
+		sql.append(wid).append("'; ");
 		
 		DataBaseOperation.preexecute(sql.toString(), new String[] {nodes, edges});
 		
@@ -381,13 +384,15 @@ public class WorkflowTool {
 		
 		String newid = new RandomString(20).nextString();
 		
-		StringBuffer sql = new StringBuffer("insert into abstract_model (identifier, name, namespace, process_connection, param_connection) values (\"");
+		logger.info("name: " + name + "\nnodes: " + nodes + "\nedges: " + edges);
 		
-		sql.append(newid).append("\", \"");
+		StringBuffer sql = new StringBuffer("insert into abstract_model (identifier, name, namespace, process_connection, param_connection) values ('");
 		
-		sql.append(name).append("\", \"http://geoweaver.csiss.gmu.edu/workflow/");
+		sql.append(newid).append("', '");
 		
-		sql.append(name).append("\", ?, ? )");
+		sql.append(name).append("', 'http://geoweaver.csiss.gmu.edu/workflow/");
+		
+		sql.append(name).append("', ?, ? )");
 		
 		DataBaseOperation.preexecute(sql.toString(), new String[] {nodes, edges});
 		
@@ -415,7 +420,7 @@ public class WorkflowTool {
 
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = \"").append(workflow_id).append("\"  ORDER BY begin_time DESC;");
+		StringBuffer sql = new StringBuffer("select * from history where process = '").append(workflow_id).append("'  ORDER BY begin_time DESC;");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
@@ -511,7 +516,7 @@ public class WorkflowTool {
 					
 				}
 				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", "); //history id
 				
 				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
 				
@@ -543,7 +548,7 @@ public class WorkflowTool {
 
 		StringBuffer resp = new StringBuffer();
 		
-		StringBuffer sql = new StringBuffer("select * from history where id = \"").append(hid).append("\";");
+		StringBuffer sql = new StringBuffer("select * from history where id = '").append(hid).append("';");
 		
 		try {
 			

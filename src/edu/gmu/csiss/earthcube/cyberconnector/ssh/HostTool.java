@@ -33,7 +33,7 @@ public class HostTool {
 			      
 			      for (int i=1; i<numColumns+1; i++) {
 			      
-			    	String column_name = rsmd.getMetaData().getColumnName(i);
+			    	String column_name = rsmd.getMetaData().getColumnName(i).toLowerCase();
 
 			        if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.ARRAY){
 			        	obj.put(column_name, rsmd.getArray(column_name));
@@ -284,9 +284,9 @@ public class HostTool {
 		
 		try {
 			
-			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hostid)
-					.append(" and bin = \"").append(bin).append("\" and pyenv = \"")
-					.append(env).append("\" and basedir = \"").append(basedir).append("\";");
+			StringBuffer sql = new StringBuffer("select * from environment where host = '").append(hostid)
+					.append("' and bin = '").append(bin).append("' and pyenv = '")
+					.append(env).append("' and basedir = '").append(basedir).append("';");
 			
 			ResultSet rs = DataBaseOperation.query(sql.toString());
 			
@@ -341,7 +341,7 @@ public class HostTool {
 		
 		try {
 			
-			StringBuffer sql = new StringBuffer("select * from environment where host = \"").append(hid).append("\";");
+			StringBuffer sql = new StringBuffer("select * from environment where host = '").append(hid).append("';");
 			
 			ResultSet rs = DataBaseOperation.query(sql.toString());
 			

@@ -33,6 +33,8 @@ else
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
 
+
+
 echo "change the default jdk to the downloaded jdk"
 
 sed '109 a JAVA_HOME='$PWD'/jdk-12.0.2/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
@@ -44,6 +46,10 @@ echo "download Geoweaver into Apache Tomcat Webapp Folder"
 wget https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war
 
 mv Geoweaver.war apache-tomcat-9.0.22/webapps/
+
+echo "Move database in place"
+
+cp ../db/geoweaver* ~/
 
 echo "start the tomcat.."
 
@@ -57,7 +63,7 @@ sleep 3
 
 echo "modify the Geoweaver configuration"
 
-
+# there is no need to do this
 
 echo "Geoweaver is successfully installed!"
 

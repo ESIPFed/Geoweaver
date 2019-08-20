@@ -561,8 +561,8 @@ public class UserTool {
 		
 		else { 
 			
-			String sql = "INSERT INTO users (name,  pswd, address, fullname, sex, type,  last_login_time,  last_operate_time,  status,  token, email,  phone, department,  institute,  last_ip) VALUES ( '"
-					+ user.getName() +"','" + UserTool.get_SHA_512_SecurePassword(user.getPassword(), user.getName()) + "','" + user.getAddress() + "','" + user.getFullname() + "','" + user.getSex() + "','" + user.getType() + "','" + tool.getCurrentMySQLDatetime() + "','" 
+			String sql = "INSERT INTO users (id, name,  pswd, address, fullname, sex, type,  last_login_time,  last_operate_time,  status,  token, email,  phone, department,  institute,  last_ip) VALUES ( '"
+					+ user.getId() + "','" + user.getName() +"','" + UserTool.get_SHA_512_SecurePassword(user.getPassword(), user.getName()) + "','" + user.getAddress() + "','" + user.getFullname() + "','" + user.getSex() + "','" + user.getType() + "','" + tool.getCurrentMySQLDatetime() + "','" 
 					+ tool.getCurrentMySQLDatetime() + "','" + user.getStatus() + "','" + user.getToken() + "','" 
 					+ user.getEmail() + "','" + user.getPhone() + "','" +user.getDepartment() + "','" + user.getInstitute() + "','"
 					+ user.getLast_ip() +"' );";

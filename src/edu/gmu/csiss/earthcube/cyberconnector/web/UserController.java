@@ -38,6 +38,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.tools.PlaceOrderTool;
 import edu.gmu.csiss.earthcube.cyberconnector.user.User;
 import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.Message;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 
 
 /**
@@ -526,6 +527,8 @@ public class UserController {
         logger.debug(" Name entered "+ user.getName()+ "\n" );
         
         logger.debug(" Password entered " + user.getPassword() + "\n");
+        
+        user.setId(RandomString.get(10));
         
         Message msg = UserTool.registerNewUser(user);
         

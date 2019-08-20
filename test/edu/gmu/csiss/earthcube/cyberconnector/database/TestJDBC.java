@@ -3,6 +3,7 @@ package edu.gmu.csiss.earthcube.cyberconnector.database;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -45,7 +46,7 @@ public class TestJDBC {
 
 		    // JDBC driver name and database URL
 		    String JDBC_DRIVER = "org.h2.Driver";
-		    String DB_URL = "jdbc:h2:~/geoweaver;MODE=MySQL";
+		    String DB_URL = "jdbc:h2:D:\\data\\geoweaver\\geoweaver;MODE=MySQL";
 
 		    //  Database credentials
 		    String USER = "geoweaver";
@@ -64,10 +65,9 @@ public class TestJDBC {
 //	            System.out.println("Initiate Geoweaver file..");
 //	            RunScript.execute(conn, new FileReader("D:\\work\\GitHub\\Geoweaver\\docker\\db\\gw-h2.sql"));
 	            
-	            
 	            //STEP 4: Execute a query
 //	            System.out.println("Creating statement...");
-	            stmt = conn.createStatement();
+//	            stmt = conn.createStatement();
 ////	            String sql =  "CREATE TABLE   REGISTRATION " + 
 ////	                    "(id INTEGER not NULL, " + 
 ////	                    " first VARCHAR(255), " +  
@@ -76,20 +76,39 @@ public class TestJDBC {
 ////	                    " PRIMARY KEY ( id ))";  
 ////                stmt.executeUpdate(sql);
 ////                System.out.println("Created table in given database..."); 
-//
+	            
+//	            String sql = "select id, name, description from process_type;";
+//	            ResultSet rs = stmt.executeQuery(sql);
 //	            
-	            String sql = "Select * from HOSTS";
-	            ResultSet rs = stmt.executeQuery(sql);
-
-	            //STEP 5: Extract data from result set
-	            while(rs.next()){
-	                //Retrieve by column name
-	                String address  = rs.getString("name");
-	                String city  = rs.getString("ip");
-
-	                //Display values
-	                System.out.println("name: " + address + ", ip: " + city);
-	            }
+//	            //STEP 5: Extract data from result set
+//	            while(rs.next()){
+//	                //Retrieve by column name
+//	                String address  = rs.getString("name");
+//	                String city  = rs.getString("id");
+//	                
+//	                //Display values
+//	                System.out.println("name: " + address + ", id: " + city);
+//	            }
+	            
+//	            String sql = "insert into abstract_model (identifier, name, namespace, process_connection, param_connection) values ('sfoznislf1zj7320gq4p', 'TestAnother', 'http://geoweaver.csiss.gmu.edu/workflow/TestAnother', ?, ? )";
+//	            
+//				PreparedStatement statement= conn.prepareStatement   (sql );
+//				
+//				statement.setString(1,"test process connection");
+//				
+//				statement.setString(2,"test param connection");
+//				
+//				statement.executeUpdate();
+				
+	            //remove ID column from abstract_model
+	            
+	            String sql  = "alter table abstract_model drop column ID;";
+	            
+	            stmt = conn.createStatement();
+	            
+	            stmt.execute(sql);
+				
+	            
 	            //To start h2 web console uncomment next line:
 	            //org.h2.tools.Server.startWebServer(conn);
 	            //STEP 6: Clean-up environment

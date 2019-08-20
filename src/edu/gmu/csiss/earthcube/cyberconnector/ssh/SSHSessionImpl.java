@@ -274,35 +274,35 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		StringBuffer sql = new StringBuffer("select id from history where id = \"").append(this.history_id).append("\"; ");
+    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
     		
     		ResultSet rs = DataBaseOperation.query(sql.toString());
     		
 			if(!rs.next()) {
 				
-				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values (\"");
+				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
 				
-				sql.append(this.history_id).append("\",\"");
+				sql.append(this.history_id).append("','");
 				
-				sql.append(this.history_process).append("\",\"");
+				sql.append(this.history_process).append("','");
 				
-				sql.append(this.history_begin_time).append("\", ?, ?, \"");
+				sql.append(this.history_begin_time).append("', ?, ?, '");
 				
-				sql.append(this.hostid).append("\", \"");
+				sql.append(this.hostid).append("', '");
 				
-				sql.append(status).append("\" )");
+				sql.append(status).append("' )");
 				
 				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
 				
 			}else {
 				
-				sql = new StringBuffer("update history set end_time = \"");
+				sql = new StringBuffer("update history set end_time = '");
 				
 				sql.append(this.history_end_time);
 				
-				sql.append("\", output = ?, indicator = \"").append(status).append("\" where id = \"");
+				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
 				
-				sql.append(this.history_id).append("\";");
+				sql.append(this.history_id).append("';");
 				
 				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
 				
