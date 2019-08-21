@@ -13,7 +13,7 @@ mkdir install
 
 cd install
 
-if [ -f openjdk-12.0.2_linux-x64_bin.tar.gz ];then
+if [ -f openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz ];then
 	echo "++++++++++++++++found openjdk-12.0.2_linux-x64_bin.tar.gz "
 else
 	echo -e "Download OpenJDK"
