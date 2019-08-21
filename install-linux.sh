@@ -18,9 +18,9 @@ if [ -f openjdk-12.0.2_linux-x64_bin.tar.gz ];then
 else
 	echo -e "Download OpenJDK"
 
-	wget https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_linux-x64_bin.tar.gz 
+	curl https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
 
-	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
+	tar -zxvf openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
 fi
 
 if [ -f apache-tomcat-9.0.22.tar.gz ];then
@@ -28,7 +28,7 @@ if [ -f apache-tomcat-9.0.22.tar.gz ];then
 else
 	echo "Download Tomcat"
 
-	wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+	curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
 
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
@@ -37,7 +37,7 @@ fi
 
 echo "change the default jdk to the downloaded jdk"
 
-sed '109 a JAVA_HOME='$PWD'/jdk-12.0.2/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
+sed '109 a JAVA_HOME='$PWD'/java-se-8u40-ri/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
 
 mv apache-tomcat-9.0.22/bin/catalina2.sh apache-tomcat-9.0.22/bin/catalina.sh
 

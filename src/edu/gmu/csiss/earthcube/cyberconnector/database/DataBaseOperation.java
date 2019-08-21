@@ -10,9 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.sql.Statement;
-import java.util.Properties;
-
 import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
