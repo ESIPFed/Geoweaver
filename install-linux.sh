@@ -18,7 +18,7 @@ if [ -f openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz ];then
 else
 	echo -e "Download OpenJDK"
 
-	curl https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
+	wget https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
 
 	tar -zxvf openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
 fi
@@ -28,7 +28,7 @@ if [ -f apache-tomcat-9.0.22.tar.gz ];then
 else
 	echo "Download Tomcat"
 
-	curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
+	wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22.tar.gz
 
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
