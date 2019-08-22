@@ -92,7 +92,7 @@ public class GWSearchTool {
 		
 		try {
 		
-			StringBuffer sql = new StringBuffer("select * from hosts where name like \"%").append(keywords).append("%\"; ");
+			StringBuffer sql = new StringBuffer("select * from hosts where name like '%").append(keywords).append("%'; ");
 			
 			logger.debug(sql);
 			
@@ -132,7 +132,7 @@ public class GWSearchTool {
 
 		try {
 		
-			StringBuffer sql = new StringBuffer("select * from process_type where name like \"%").append(keywords).append("%\"; ");
+			StringBuffer sql = new StringBuffer("select * from process_type where name like '%").append(keywords).append("%'; ");
 			
 			logger.debug(sql);
 			
@@ -172,7 +172,7 @@ public class GWSearchTool {
 
 		try {
 		
-			StringBuffer sql = new StringBuffer("select * from abstract_model where name like \"%").append(keywords).append("%\"; ");
+			StringBuffer sql = new StringBuffer("select * from abstract_model where name like '%").append(keywords).append("%'; ");
 			
 			logger.debug(sql);
 			

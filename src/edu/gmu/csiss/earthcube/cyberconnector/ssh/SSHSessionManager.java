@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class SSHSessionManager {
 
-    protected final Logger          log = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     
     // TODO consider alternative implementation
     /**

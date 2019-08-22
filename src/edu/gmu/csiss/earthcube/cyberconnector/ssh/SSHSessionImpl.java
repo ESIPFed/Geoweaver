@@ -253,7 +253,7 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void saveHistory(String logs) {
+	public void saveHistory(String logs, String status) {
 		
     	try {
     		
@@ -274,33 +274,35 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		StringBuffer sql = new StringBuffer("select id from history where id = \"").append(this.history_id).append("\"; ");
+    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
     		
     		ResultSet rs = DataBaseOperation.query(sql.toString());
     		
 			if(!rs.next()) {
 				
-				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host) values (\"");
+				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
 				
-				sql.append(this.history_id).append("\",\"");
+				sql.append(this.history_id).append("','");
 				
-				sql.append(this.history_process).append("\",\"");
+				sql.append(this.history_process).append("','");
 				
-				sql.append(this.history_begin_time).append("\", ?, ?, \"");
+				sql.append(this.history_begin_time).append("', ?, ?, '");
 				
-				sql.append(this.hostid).append("\" )");
+				sql.append(this.hostid).append("', '");
+				
+				sql.append(status).append("' )");
 				
 				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
 				
 			}else {
 				
-				sql = new StringBuffer("update history set end_time = \"");
+				sql = new StringBuffer("update history set end_time = '");
 				
 				sql.append(this.history_end_time);
 				
-				sql.append("\", output = ? where id = \"");
+				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
 				
-				sql.append(this.history_id).append("\";");
+				sql.append(this.history_id).append("';");
 				
 				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
 				
@@ -389,7 +391,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
+    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		cmdline += "rm python-" + history_id + ".py;";
     		
@@ -478,7 +480,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\";";
+    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
 //    		cmdline += "./geoweaver-" + token + ".sh;";
     		
@@ -555,15 +557,17 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"; ";
+    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
-    		String cmdline = "echo \"" + script.replaceAll("\r\n", "\n").replaceAll("\"", "\\\\\"") + "\" > geoweaver-" + token + ".sh; ";
+    		String cmdline = "echo \"" 
+    				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
+    				+ "\" > geoweaver-" + token + ".sh; ";
     		
     		cmdline += "chmod +x geoweaver-" + token + ".sh; ";
     		
     		cmdline += "./geoweaver-" + token + ".sh;";
     		
-    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
+//    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
 			
     		log.info(cmdline);
     		

@@ -1,27 +1,15 @@
 package edu.gmu.csiss.earthcube.cyberconnector.web;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import edu.gmu.csiss.earthcube.cyberconnector.search.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.type.TypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -29,7 +17,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,24 +24,21 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
-import edu.gmu.csiss.earthcube.cyberconnector.ncwms.ncWMSTool;
 import edu.gmu.csiss.earthcube.cyberconnector.order.Order;
 import edu.gmu.csiss.earthcube.cyberconnector.order.OrderTool;
 import edu.gmu.csiss.earthcube.cyberconnector.products.DeleteProductTool;
 import edu.gmu.csiss.earthcube.cyberconnector.products.LikeProductTool;
 import edu.gmu.csiss.earthcube.cyberconnector.products.Product;
 import edu.gmu.csiss.earthcube.cyberconnector.products.RetrieveProductTool;
+import edu.gmu.csiss.earthcube.cyberconnector.search.SearchRequest;
 import edu.gmu.csiss.earthcube.cyberconnector.services.QueryServiceTool;
 import edu.gmu.csiss.earthcube.cyberconnector.services.RegisterServiceTool;
 import edu.gmu.csiss.earthcube.cyberconnector.services.Service;
-import edu.gmu.csiss.earthcube.cyberconnector.tools.LocalFileTool;
 import edu.gmu.csiss.earthcube.cyberconnector.tools.PlaceOrderTool;
 import edu.gmu.csiss.earthcube.cyberconnector.user.User;
 import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
-import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.Message;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
-import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 
 
 /**
@@ -543,6 +527,8 @@ public class UserController {
         logger.debug(" Name entered "+ user.getName()+ "\n" );
         
         logger.debug(" Password entered " + user.getPassword() + "\n");
+        
+        user.setId(RandomString.get(10));
         
         Message msg = UserTool.registerNewUser(user);
         

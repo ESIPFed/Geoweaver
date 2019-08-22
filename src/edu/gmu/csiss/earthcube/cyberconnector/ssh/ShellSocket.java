@@ -103,7 +103,7 @@ public class ShellSocket implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("websocket connection established");
+        log.debug("websocket connection established");
         peers.put(session.getId(), session);
     }
     
@@ -116,7 +116,7 @@ public class ShellSocket implements WebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info("websocket connection closed: {}", status.getReason());
+        log.debug("websocket connection closed: {}", status.getReason());
         //close SSH session
         if(GeoweaverController.sshSessionManager!=null) {
         	

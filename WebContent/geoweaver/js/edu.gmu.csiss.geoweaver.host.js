@@ -561,7 +561,7 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				cont += "<div class=\"col col-md-5\">Port</div><div class=\"col col-md-5\">" + hostmsg.port + "</div>";
 				
-				cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + hostmsg.user + "</div>";
+				cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + hostmsg.username + "</div>";
 				
 				cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" id=\"passwd\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
 								
@@ -609,7 +609,7 @@ edu.gmu.csiss.geoweaver.host = {
 		                        var req = {
 		                        		host: hostmsg.ip,
 		                        		port: hostmsg.port,
-		                        		username: hostmsg.user,
+		                        		username: hostmsg.username,
 		                        		password: encrypted
 		                        }
 		                	

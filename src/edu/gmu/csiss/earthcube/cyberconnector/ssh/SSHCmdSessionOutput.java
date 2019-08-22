@@ -42,7 +42,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     	
     	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
     	
-    	session.saveHistory("started"); //initiate the history record
+    	session.saveHistory("Running", "Running"); //initiate the history record
     	
         while (run) {
         	
@@ -70,6 +70,8 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 			
                 			System.out.println("null output lines exceed 10. Disconnected.");
                 			
+                			session.saveHistory(logs.toString(), "Done");
+                			
                 			break;
                 			
                 		}else {
@@ -85,6 +87,8 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
                 	
 //                	session.saveHistory(logs.toString()); //complete the record
+                	
+                	session.saveHistory(logs.toString(), "Done");
                 	
                 	break;
                 	
@@ -104,8 +108,6 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 		
                 	}
                 	
-//                    log.info("message out {}:{}", out.getId(), line);
-                    
                     out.sendMessage(new TextMessage(line));
                     
                 }else {
@@ -118,9 +120,11 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
             	
                 e.printStackTrace();
                 
+                session.saveHistory(logs.toString(), "Failed");
+                
             }finally {
             	
-                session.saveHistory(logs.toString()); //write the failed record
+//                session.saveHistory(logs.toString()); //write the failed record
                 
             }
             

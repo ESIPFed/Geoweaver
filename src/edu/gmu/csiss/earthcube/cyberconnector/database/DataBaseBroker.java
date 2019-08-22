@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
+import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 
 /**
  *Class DataBaseBroker.java
@@ -42,7 +43,8 @@ public class DataBaseBroker {
 	}
 	
 	public static void addNewDataSet(String oid, String name,  String producturl){
-		StringBuffer sql = new StringBuffer("insert into datasets (identifier, name, dataURL) values ('");
+		StringBuffer sql = new StringBuffer("insert into datasets (tid, identifier, name, dataURL) values ('");
+		sql.append(RandomString.get(10)).append("','");
 		sql.append(oid).append("','");
 		sql.append(name).append("','");
 		sql.append(producturl).append("');");

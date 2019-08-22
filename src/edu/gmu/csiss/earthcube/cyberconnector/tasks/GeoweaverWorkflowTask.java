@@ -110,17 +110,17 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
     	
-    	StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, end_time, input, output, host) values (\"");
+    	StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, end_time, input, output, host) values ('");
     	
-    	sql.append(this.history_id).append("\",\"");
+    	sql.append(this.history_id).append("','");
     	
-    	sql.append(this.history_process).append("\",\"");
+    	sql.append(this.history_process).append("','");
     	
-    	sql.append(this.history_begin_time).append("\",\"");
+    	sql.append(this.history_begin_time).append("','");
     	
-    	sql.append(this.history_end_time).append("\",?, ?,\"");
+    	sql.append(this.history_end_time).append("',?, ?,'");
     	
-    	sql.append(BaseTool.array2String(hosts, ";")).append("\" )");
+    	sql.append(BaseTool.array2String(hosts, ";")).append("' )");
     	
     	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
 		
@@ -325,7 +325,7 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				try {
 					
-					String resp = ProcessTool.execute(processTypeId, hid, password, token, true, null, null); //need update the null to be python environment
+					String resp = ProcessTool.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
 					
 					JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
 					

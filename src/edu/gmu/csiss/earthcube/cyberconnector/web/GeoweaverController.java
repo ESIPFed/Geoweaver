@@ -539,6 +539,41 @@ public class GeoweaverController {
 		
 	}
 	
+	@RequestMapping(value = "/stopProcess", method = RequestMethod.POST)
+    public @ResponseBody String stopProcess(ModelMap model, WebRequest request, HttpSession session){
+		
+		String resp = null;
+		
+		try {
+			
+			String pid = request.getParameter("processId");
+			
+			String hisid = request.getParameter("historyId");
+			
+//			String encrypted_password = request.getParameter("pswd");
+//			
+//			String bin = request.getParameter("env[bin]");
+//			
+//			String pyenv = request.getParameter("env[pyenv]");
+//			
+//			String basedir = request.getParameter("env[basedir]");
+			
+//			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
+			
+			resp = ProcessTool.stop(pid, hisid);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
 	@RequestMapping(value = "/executeProcess", method = RequestMethod.POST)
     public @ResponseBody String executeProcess(ModelMap model, WebRequest request, HttpSession session){
 		

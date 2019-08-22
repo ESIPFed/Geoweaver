@@ -537,13 +537,17 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				for(var i=0;i<msg.length;i++){
 					
-					var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+					var status_col = null;
 					
-					if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+					if(msg[i].status == "Running"){
+						
+						status_col = "      <td><span class=\"label label-warning\">Running <i class=\"fa fa-circle-o-notch fa-spin\"></i></span></td> "; //<div class=\"spinner-border spinner-border-sm\"></div>
+						
+					}else if(msg[i].status == "Done"){
 						
 						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
 						
-					}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+					}else if(msg[i].status == "Failed"){
 						
 						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
 						
@@ -612,30 +616,48 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				}
 				
-				var content = "<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Log Id</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.id+"</dd>"+
-				"	  </div>"+
+				var content = "<div class=\"form-group row\">"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"row\">"+
+				"	    	<dt class=\"col col-md-3\">Log Id</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.id+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">Process Id</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.process+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>"+
+				"<div class=\"form-group row\">"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">Begin Time</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-3\">End Time</dt>"+
+				"	    	<dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>"+
 				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Process Id</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.process+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Begin Time</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">End Time</dt>"+
-				"	    <dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Input</dt>"+
-				"	    <dd class=\"col col-md-7 word-wrap\">"+msg.input+"</dd>"+
-				"	  </div>"+
-				"<div class=\"form-group row\"> "+
-				"	    <dt class=\"col col-md-3\">Output</dt>"+
-				"	    <dd class=\"col col-md-7 word-wrap\" id=\"log-output\">"+output+"</dd>"+
-				"	  </div>";
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-12\">Input</dt>"+
+				"	    	<dd class=\"col col-md-12 word-wrap\">"+msg.input+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"	<div class=\"col col-md-6\"> "+
+				"		<div class=\"form-group row\">"+
+				"	    	<dt class=\"col col-md-12\">Output</dt>"+
+				"	    	<dd class=\"col col-md-12 word-wrap\" id=\"log-output\">"+output+"</dd>"+
+				"		</div>"+
+				"	</div>"+
+				"</div>";
 				
 				BootstrapDialog.show({
 					
@@ -1002,7 +1024,9 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				var req = { 
 					
-					type: "process", lang: $("#processcategory").val(),
+					type: "process", 
+					
+					lang: $("#processcategory").val(),
 					
 					desc: $("#processcategory").val(), //use the description column to store the process type
 				
@@ -1024,11 +1048,13 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
+		    		msg.desc = req.desc;
+		    		
 		    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, req.desc);
 		    		
 		    		if(run)
 		    				
-		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, type);
+		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, $("#processcategory").val());
 		    				
 		    		
 		    	}).fail(function(jqXHR, textStatus){
