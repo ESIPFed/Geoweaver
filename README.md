@@ -52,7 +52,9 @@ Landsat image time series.
 
 # Installation
 
-## Prerequisite
+## Dependencies
+
+If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.
 
 Java 1.8+ (OpenJDK 8 or higher)
 
@@ -66,7 +68,9 @@ Apache Maven 3.5+ (optional for building from source)
 
 ## Quick Install
 
-### Linux (Ubuntu, CentOS, RedHat, OpenBSD, etc)
+### Linux
+
+This way works for most linux releases, e.g., Ubuntu, CentOS, RedHat, OpenBSD, etc.
 
 * Step 1: clone the github repo
 
