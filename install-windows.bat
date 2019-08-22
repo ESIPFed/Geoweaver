@@ -16,21 +16,27 @@ mkdir install
 
 cd install
 
-if EXIST "openjdk-12.0.2_linux-x64_bin.tar.gz" (
-	echo ++++++++++++++++ found openjdk-12.0.2_linux-x64_bin.tar.gz
+echo current directory is %CD%
+
+if EXIST "openjdk-12.0.2_windows-x64_bin_1.zip" (
+
+	echo ++++++++++++++++ found openjdk-12.0.2_windows-x64_bin.zip
+	
 ) else (
 	
 	echo -e Download OpenJDK
 	
-	curl https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_windows-x64_bin.zip
+	curl https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_windows-x64_bin.zip -o openjdk-12.0.2_windows-x64_bin.zip
 
 rem	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
+
+	echo "Expand-Archive" %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\
 	
-	Call :UnZipFile "." "openjdk-12.0.2_linux-x64_bin.tar.gz"
+	powershell -Command "Expand-Archive %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\ "
 
 )
 
-if EXIST "apache-tomcat-9.0.22.tar.gz" (
+if EXIST "apache-tomcat-9.0.22-windows-x64_1.zip" (
 	
 	echo ++++++++++++++++ found apache-tomcat-9.0.22.tar.gz
 	
@@ -38,17 +44,17 @@ if EXIST "apache-tomcat-9.0.22.tar.gz" (
 	
 	echo "Download Tomcat"
 
-	curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22-windows-x64.zip
+	curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22-windows-x64.zip -o apache-tomcat-9.0.22-windows-x64.zip
 
 	rem tar -zxvf apache-tomcat-9.0.24-windows-x64.zip
 	
-	Call :UnZipFile "." "apache-tomcat-9.0.24-windows-x64.zip"
+	powershell -Command "Expand-Archive %CD%\apache-tomcat-9.0.22-windows-x64.zip %CD%\ "
 	
 )
 
 echo change the default jdk to the downloaded jdk
 
-echo current directory is %CD%
+
 
 for /f "tokens=*" %%a in (apache-tomcat-9.0.22/bin/catalina.bat) do (
 	
@@ -76,7 +82,7 @@ rem echo JAVA_HOME='$PWD'/jdk-12.0.2/ 109 >> apache-tomcat-9.0.22/bin/catalina.s
 
 echo download Geoweaver into Apache Tomcat Webapp Folder
 
-curl https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war
+curl https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war -o Geoweaver.war
 
 mv Geoweaver.war apache-tomcat-9.0.22/webapps/
 
