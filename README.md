@@ -12,6 +12,10 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
 - [Installation](#installation)
   * [Prerequisite](#prerequisite)
   * [Quick Install](#quick-install)
+    + [Linux](#linux)
+    + [Mac](#mac)
+    + [Windows](#windows)
+  * [Developer Install](#developer-install)
     + [Docker](#docker)
     + [Tomcat War](#tomcat-war)
     + [Cloud VM Template](#cloud-vm-template)
@@ -43,18 +47,18 @@ tedious technical details;
 4) enabling the tracking of provenance by recording the execution logs in structured tables to evaluate the
 quality of the result maps;
 
-5) proof the effectiveness of operationally using large-scale distributed LSTM network in classifying
+5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
 Landsat image time series.
 
 # Installation
 
-## Prerequisite
+## Dependencies
+
+If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.
 
 Java 1.8+ (OpenJDK 8 or higher)
 
-Tomcat 8.0+
-
-MySQL 5.5+ (run the gw.sql to initialize the database. Recommanded command: `mysql -u root -p < gw.sql`)
+Tomcat 8.0+ 
 
 Apache Maven 3.5+ (optional for building from source)
 
@@ -63,6 +67,71 @@ Apache Maven 3.5+ (optional for building from source)
 ![Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
 
 ## Quick Install
+
+### Linux
+
+This way works for most linux releases, e.g., Ubuntu, CentOS, RedHat, OpenBSD, etc.
+
+* Step 1: clone the github repo
+
+```shell
+git clone https://github.com/ESIPFed/Geoweaver.git
+```
+
+* Step 2: enter the folder and start the install
+
+```shell
+cd Geoweaver
+chmod 755 install-linux.sh
+./install-linux.sh
+```
+
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
+
+* Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
+
+### Mac
+
+* Step 1: clone the github repo
+
+```shell
+git clone https://github.com/ESIPFed/Geoweaver.git
+```
+
+* Step 2: enter the folder and start the install
+
+```shell
+cd Geoweaver
+chmod 755 install-mac.sh
+./install-mac.sh
+```
+
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+
+* Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
+
+### Windows
+
+* Step 1: clone the github repo
+
+```shell
+git clone https://github.com/ESIPFed/Geoweaver.git
+```
+
+* Step 2: enter the folder and start the install
+
+```shell
+cd Geoweaver
+./install-windows.bat
+```
+
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+
+* Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
+
+## Developer Install
+
+This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
 ### Docker
 
