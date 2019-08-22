@@ -131,6 +131,8 @@ cd Geoweaver
 
 ## Developer Install
 
+This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
+
 ### Docker
 
 We use `docker-compose` to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.
