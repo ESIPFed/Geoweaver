@@ -82,7 +82,7 @@ chmod 755 install-linux.sh
 ./install-linux.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://your-ip:your-port/Geoweaver/web/geoweaver in browser to open it. 
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -102,7 +102,7 @@ chmod 755 install-mac.sh
 ./install-mac.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://your-ip:your-port/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -121,7 +121,7 @@ cd Geoweaver
 ./install-windows.bat
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://your-ip:your-port/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
 
