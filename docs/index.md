@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/ESIPFed/Geoweaver.svg?branch=master)](https://travis-ci.org/ESIPFed/Geoweaver) [![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/covarege-100%25-success.svg)](https://codecov.io/)
 
-# Welcome to [Geoweaver](https://esipfed.github.io/Geoweaver/)
+# [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
 2018 ESIP Lab Incubator Project
 
@@ -8,34 +8,34 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
 
 ##### Table of Contents
 
-- [Project Goals](#project-goals)
-- [Installation](#installation)
-  * [Dependencies](#dependencies)
-  * [Quick Install](#quick-install)
+- [1. Project Goals](#project-goals)
+- [2. Installation](#installation)
+  * [2.1 Dependencies](#dependencies)
+  * [2.2 Quick Install](#quick-install)
     + [Linux](#linux)
     + [Mac](#mac)
     + [Windows](#windows)
-  * [Developer Install](#developer-install)
+  * [2.3 Developer Install](#developer-install)
     + [Docker](#docker)
     + [Tomcat War](#tomcat-war)
     + [Cloud VM Template](#cloud-vm-template)
-  * [Build from source](#build-from-source)
-- [Demo](#demo)
-- [Usage](#usage)
-  * [Add A Server](#add-a-server)
-  * [Create A Process](#create-a-process)
-  * [Create A Workflow](#create-a-workflow)
-  * [Run Workflow](#run-workflow)
-  * [Browse Provenance](#browse-provenance)
-  * [Retrieve and Display Results](#retrieve-and-display-results)
-  * [I/O workflows](#i-o-workflows)
-- [Documentation](#documentation)
-- [Dependencies](#dependencies)
-- [License](#license)
-- [Author](#author)
+  * [2.4 Build from source](#build-from-source)
+- [3. Demo](#demo)
+- [4. Usage](#usage)
+  * [4.1 Add A Server](#add-a-server)
+  * [4.2 Create A Process](#create-a-process)
+  * [4.3 Create A Workflow](#create-a-workflow)
+  * [4.4 Run Workflow](#run-workflow)
+  * [4.5 Browse Provenance](#browse-provenance)
+  * [4.6 Retrieve and Display Results](#retrieve-and-display-results)
+  * [4.7 I/O workflows](#i-o-workflows)
+- [5. Documentation](#documentation)
+- [6. Dependencies](#dependencies)
+- [7. License](#license)
+- [8. Author](#author)
 
 
-# Project Goals
+# 1. Project Goals
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
 
@@ -50,9 +50,9 @@ quality of the result maps;
 5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
 Landsat image time series.
 
-# Installation
+# 2. Installation
 
-## Dependencies
+## 2.1 Dependencies
 
 If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.
 
@@ -62,11 +62,11 @@ Tomcat 8.0+
 
 Apache Maven 3.5+ (optional for building from source)
 
-![Docker](https://docs.docker.com/install/) 18.09.1+ (for install via docker)
+[Docker](https://docs.docker.com/install/) 18.09.1+ (for install via docker)
 
-![Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
+[Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
 
-## Quick Install
+## 2.2 Quick Install
 
 ### Linux
 
@@ -129,7 +129,7 @@ cd Geoweaver
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
 
-## Developer Install
+## 2.3 Developer Install
 
 This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
@@ -236,84 +236,84 @@ To stop Geoweaver, use:
 docker stop $(docker ps -aq)
 ```
 
-## Build from source
+## 2.4 Build from source
 
 Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
 
-# Demo
+# 3. Demo
 
 A live demo site is available in George Mason University: [I am a link, hit me](http://129.174.131.229/Geoweaver).
 
 Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
 
-![Result Demo](/docs/demo.png)
+![Result Demo](demo.png)
 
-![LSTM-Crop concept](/docs/lstm.png)
+![LSTM-Crop concept](lstm.png)
 
 Animation demo:
 
-![AnimationDemo](/docs/geoweaver-demo.gif)
+![AnimationDemo](geoweaver-demo.gif)
 
 
-# Usage
+# 4. Usage
 
-## Add A Server
+## 4.1 Add A Server
 
 Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
 
-![Add a host](docs/addhost.gif)
+![Add a host](addhost.gif)
 
-## Create A Process
+## 4.2 Create A Process
 
 Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
 
-![Add a process](docs/addprocess.gif)
+![Add a process](addprocess.gif)
 
-## Create A Workflow
+## 4.3 Create A Workflow
 
 Geoweaver can link the processes together to form a workflow. To connect two processes, press `shift` key while dragging from one process to another.
 
-![Create a workflow](docs/createworkflow.gif)
+![Create a workflow](createworkflow.gif)
 
-## Run Workflow
+## 4.4 Run Workflow
 
 Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.
 
-![Run a workflow](docs/runworkflow.gif)
+![Run a workflow](runworkflow.gif)
 
-## Browse Provenance
+## 4.5 Browse Provenance
 
 Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.
 
-![Check provenance](docs/checkprovenance.gif)
+![Check provenance](checkprovenance.gif)
 
-## Retrieve and Display Results
+## 4.6 Retrieve and Display Results
 
 Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).
 
-![Get result](docs/getresult.gif)
+![Get result](getresult.gif)
 
-## I/O workflows
+## 4.7 I/O workflows
 
 The workflows can be exported and move around and imported back.
 
-![Export workflow](docs/exportworkflow.gif)
+![Export workflow](exportworkflow.gif)
 
-# Documentation
+# 5. Documentation
 
-[Project Proposal](docs/geoweaver-proposal-revised-v4.pdf)
+[Project Proposal](geoweaver-proposal-revised-v4.pdf)
 
-[August Report](docs/ESIP-Geoweaver-Report-1.docx)
+[August Report](ESIP-Geoweaver-Report-1.docx)
 
-[September Report](docs/ESIP-Geoweaver-Report-2.docx)
+[September Report](ESIP-Geoweaver-Report-2.docx)
 
-[October Report](docs/ESIP-Geoweaver-Report-3.docx)
+[October Report](ESIP-Geoweaver-Report-3.docx)
 
-[November Report](docs/ESIP-Geoweaver-Report-4.docx)
+[November Report](ESIP-Geoweaver-Report-4.docx)
 
-[December Report](docs/ESIP-Geoweaver-Report-5.docx)
+[December Report](ESIP-Geoweaver-Report-5.docx)
 
-# Dependencies
+# 6. Dependencies
 
 This project is impossible without the support of several fantastic open source libraries.
 
@@ -327,11 +327,11 @@ This project is impossible without the support of several fantastic open source 
 
 [JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
 
-# License
+# 7. License
 
 MIT
 
-# Author
+# 8. Author
 
-[developer list](authors.md)
+[developer list](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 
