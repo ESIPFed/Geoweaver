@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Home - Geoweaver</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Geoweaver</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#geoweaver">Geoweaver</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#table-of-contents">Table of Contents</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#1-project-goals">1. Project Goals</a></li>
+    
+
+    <li class="toctree-l2"><a href="#2-installation">2. Installation</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#21-dependencies">2.1 Dependencies</a></li>
+        
+            <li><a class="toctree-l3" href="#22-quick-install">2.2 Quick Install</a></li>
+        
+            <li><a class="toctree-l3" href="#23-developer-install">2.3 Developer Install</a></li>
+        
+            <li><a class="toctree-l3" href="#24-build-from-source">2.4 Build from source</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#3-demo">3. Demo</a></li>
+    
+
+    <li class="toctree-l2"><a href="#4-usage">4. Usage</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#41-add-a-server">4.1 Add A Server</a></li>
+        
+            <li><a class="toctree-l3" href="#42-create-a-process">4.2 Create A Process</a></li>
+        
+            <li><a class="toctree-l3" href="#43-create-a-workflow">4.3 Create A Workflow</a></li>
+        
+            <li><a class="toctree-l3" href="#44-run-workflow">4.4 Run Workflow</a></li>
+        
+            <li><a class="toctree-l3" href="#45-browse-provenance">4.5 Browse Provenance</a></li>
+        
+            <li><a class="toctree-l3" href="#46-retrieve-and-display-results">4.6 Retrieve and Display Results</a></li>
+        
+            <li><a class="toctree-l3" href="#47-io-workflows">4.7 I/O workflows</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#5-documentation">5. Documentation</a></li>
+    
+
+    <li class="toctree-l2"><a href="#6-dependencies">6. Dependencies</a></li>
+    
+
+    <li class="toctree-l2"><a href="#7-license">7. License</a></li>
+    
+
+    <li class="toctree-l2"><a href="#8-author">8. Author</a></li>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Geoweaver</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a href="https://travis-ci.org/ESIPFed/Geoweaver"><img alt="Build Status" src="https://travis-ci.org/ESIPFed/Geoweaver.svg?branch=master" /></a> <a href="https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/issues"><img alt="Issues" src="https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg" /></a> <a href="https://codecov.io/"><img alt="Coverage" src="https://img.shields.io/badge/covarege-100%25-success.svg" /></a></p>
+<h1 id="geoweaver"><a href="https://esipfed.github.io/Geoweaver/">Geoweaver</a></h1>
+<p>2018 ESIP Lab Incubator Project</p>
+<p>Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It is a perfect alternative to SSH client (e.g., Putty), FTP client, and scientific workflow software. </p>
+<h5 id="table-of-contents">Table of Contents</h5>
+<ul>
+<li><a href="#project-goals">1. Project Goals</a></li>
+<li><a href="#installation">2. Installation</a></li>
+<li><a href="#dependencies">2.1 Dependencies</a></li>
+<li><a href="#quick-install">2.2 Quick Install</a><ul>
+<li><a href="#linux">Linux</a></li>
+<li><a href="#mac">Mac</a></li>
+<li><a href="#windows">Windows</a></li>
+</ul>
+</li>
+<li><a href="#developer-install">2.3 Developer Install</a><ul>
+<li><a href="#docker">Docker</a></li>
+<li><a href="#tomcat-war">Tomcat War</a></li>
+<li><a href="#cloud-vm-template">Cloud VM Template</a></li>
+</ul>
+</li>
+<li><a href="#build-from-source">2.4 Build from source</a></li>
+<li><a href="#demo">3. Demo</a></li>
+<li><a href="#usage">4. Usage</a></li>
+<li><a href="#add-a-server">4.1 Add A Server</a></li>
+<li><a href="#create-a-process">4.2 Create A Process</a></li>
+<li><a href="#create-a-workflow">4.3 Create A Workflow</a></li>
+<li><a href="#run-workflow">4.4 Run Workflow</a></li>
+<li><a href="#browse-provenance">4.5 Browse Provenance</a></li>
+<li><a href="#retrieve-and-display-results">4.6 Retrieve and Display Results</a></li>
+<li><a href="#i-o-workflows">4.7 I/O workflows</a></li>
+<li><a href="#documentation">5. Documentation</a></li>
+<li><a href="#dependencies">6. Dependencies</a></li>
+<li><a href="#license">7. License</a></li>
+<li><a href="#author">8. Author</a></li>
+</ul>
+<h1 id="1-project-goals">1. Project Goals</h1>
+<p>1) turning large-scale distributed deep network into manageable modernized workflows;</p>
+<p>2) boosting higher utilization ratio of the existing cyberinfrastructures by separating scientists from
+tedious technical details;</p>
+<p>3) enhancing the frequency and accuracy of classified land cover land use maps for agricultural purposes;</p>
+<p>4) enabling the tracking of provenance by recording the execution logs in structured tables to evaluate the
+quality of the result maps;</p>
+<p>5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
+Landsat image time series.</p>
+<h1 id="2-installation">2. Installation</h1>
+<h2 id="21-dependencies">2.1 Dependencies</h2>
+<p>If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.</p>
+<p>Java 1.8+ (OpenJDK 8 or higher)</p>
+<p>Tomcat 8.0+ </p>
+<p>Apache Maven 3.5+ (optional for building from source)</p>
+<p><a href="https://docs.docker.com/install/">Docker</a> 18.09.1+ (for install via docker)</p>
+<p><a href="https://docs.docker.com/compose/install/">Docker-compose</a> 1.23.1+ (for install via docker)</p>
+<h2 id="22-quick-install">2.2 Quick Install</h2>
+<h3 id="linux">Linux</h3>
+<p>This way works for most linux releases, e.g., Ubuntu, CentOS, RedHat, OpenBSD, etc.</p>
+<ul>
+<li>Step 1: clone the github repo</li>
+</ul>
+<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
+</code></pre>
+
+<ul>
+<li>Step 2: enter the folder and start the install</li>
+</ul>
+<pre><code class="shell">cd Geoweaver
+chmod 755 install-linux.sh
+./install-linux.sh
+</code></pre>
+
+<ul>
+<li>
+<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. </p>
+</li>
+<li>
+<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
+</li>
+</ul>
+<h3 id="mac">Mac</h3>
+<ul>
+<li>Step 1: clone the github repo</li>
+</ul>
+<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
+</code></pre>
+
+<ul>
+<li>Step 2: enter the folder and start the install</li>
+</ul>
+<pre><code class="shell">cd Geoweaver
+chmod 755 install-mac.sh
+./install-mac.sh
+</code></pre>
+
+<ul>
+<li>
+<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.</p>
+</li>
+<li>
+<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
+</li>
+</ul>
+<h3 id="windows">Windows</h3>
+<ul>
+<li>Step 1: clone the github repo</li>
+</ul>
+<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
+</code></pre>
+
+<ul>
+<li>Step 2: enter the folder and start the install</li>
+</ul>
+<pre><code class="shell">cd Geoweaver
+./install-windows.bat
+</code></pre>
+
+<ul>
+<li>
+<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.</p>
+</li>
+<li>
+<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.bat</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.bat</code></p>
+</li>
+</ul>
+<h2 id="23-developer-install">2.3 Developer Install</h2>
+<p>This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. </p>
+<h3 id="docker">Docker</h3>
+<p>We use <code>docker-compose</code> to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.</p>
+<h4 id="install">Install</h4>
+<ul>
+<li>Clone this repo to your machine </li>
+</ul>
+<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
+</code></pre>
+
+<ul>
+<li>Enter the repo and create a new folder <code>target</code>. Download a Geoweaver war package from the <a href="https://github.com/ESIPFed/Geoweaver/releases">release page</a> and save it in the created <code>target</code> folder.</li>
+</ul>
+<pre><code class="shell">cd Geoweaver &amp;&amp; mkdir target &amp;&amp; cd target
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.0/Geoweaver-0.7.0.war -O Geoweaver.war
+</code></pre>
+
+<ul>
+<li>Run docker to start rolling. After the command is finished, Geoweaver should be up and running. </li>
+</ul>
+<pre><code class="shell">cd .. &amp;&amp; docker-compose up -d
+</code></pre>
+
+<p>The address is:</p>
+<pre><code class="html">http://your-ip:your-port/Geoweaver/web/geoweaver
+</code></pre>
+
+<p>Replace the <code>your-ip</code>, <code>your-port</code> with the real domain of your tomcat. For example, <code>localhost:8080</code>.</p>
+<p>Notice: Make sure the local services like mysql and tomcat are shut down before starting <code>docker-compose</code>. Otherwise there might be port conflict error on <code>3306</code> and <code>8080</code>. Or you can change the port to some other free ports in the docker-compose.yml.</p>
+<p>If you don't have docker or docker-compose installed, these documents will help. <a href="https://docs.docker.com/install">docker</a> <a href="https://docs.docker.com/compose/install/">docker-compose</a></p>
+<h4 id="shutdown">Shutdown</h4>
+<p>To stop Geoweaver, type:</p>
+<pre><code class="shell">docker stop $(docker ps -aq)
+</code></pre>
+
+<h3 id="tomcat-war">Tomcat War</h3>
+<h4 id="install_1">Install</h4>
+<ul>
+<li>Download <a href="https://github.com/ESIPFed/Geoweaver/releases">the latest release war</a> and copy it to the webapps directory of Tomcat (e.g. /usr/local/tomcat). Start Tomcat. </li>
+</ul>
+<pre><code class="shell">
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.10/Geoweaver-0.6.10.war -O Geoweaver.war
+cp Geoweaver.war /usr/local/tomcat/webapps/
+/usr/local/tomcat/bin/startup.sh
+
+</code></pre>
+
+<ul>
+<li>After the tomcat is fully started, configure the database connection. The configuration files are <code>WEB-INF/classes/config.properties</code> </li>
+</ul>
+<pre><code class="shell">nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
+nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
+</code></pre>
+
+<p>Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and <code>WEB-INF/classes/cc_secret.properties</code> (database username and password: database_user=root database_password=xxxxxxxx). </p>
+<p>(<strong>Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.</strong>)</p>
+<pre><code class="shell">mysql -u root -p &lt; docker/db/gw.sql
+</code></pre>
+
+<ul>
+<li>Enter the following URL into browser address bar to open Geoweaver:</li>
+</ul>
+<pre><code class="html">http://your-ip:your-port/Geoweaver/web/geoweaver
+</code></pre>
+
+<h4 id="shutdown_1">Shutdown</h4>
+<p>To stop Geoweaver, use:</p>
+<pre><code class="shell">/usr/local/tomcat/bin/shutdown.sh
+</code></pre>
+
+<h3 id="cloud-vm-template">Cloud VM Template</h3>
+<h4 id="install_2">Install</h4>
+<p>We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go <a href="http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2">here</a> to download the template (3.1 Gigabytes). The username and password of the instance would be <code>csiss</code> and <code>password</code> respectively. </p>
+<p>To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. </p>
+<pre><code class="shell">cd /home/csiss/Geoweaver &amp;&amp; docker-compose up -d
+</code></pre>
+
+<h4 id="shutdown_2">Shutdown</h4>
+<p>To stop Geoweaver, use:</p>
+<pre><code class="shell">docker stop $(docker ps -aq)
+</code></pre>
+
+<h2 id="24-build-from-source">2.4 Build from source</h2>
+<p>Use maven to build. In the command line go to the root folder and execute <code>mvn install</code>. After a success build, the Geoweaver war package will be under the directory: <code>Geoweaver/target/Geoweaver-&lt;version&gt;.war</code>. </p>
+<h1 id="3-demo">3. Demo</h1>
+<p>A live demo site is available in George Mason University: <a href="http://129.174.131.229/Geoweaver">I am a link, hit me</a>.</p>
+<p>Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. </p>
+<p><img alt="Result Demo" src="demo.png" /></p>
+<p><img alt="LSTM-Crop concept" src="lstm.png" /></p>
+<p>Animation demo:</p>
+<p><img alt="AnimationDemo" src="geoweaver-demo.gif" /></p>
+<h1 id="4-usage">4. Usage</h1>
+<h2 id="41-add-a-server">4.1 Add A Server</h2>
+<p>Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. </p>
+<p><img alt="Add a host" src="addhost.gif" /></p>
+<h2 id="42-create-a-process">4.2 Create A Process</h2>
+<p>Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.</p>
+<p><img alt="Add a process" src="addprocess.gif" /></p>
+<h2 id="43-create-a-workflow">4.3 Create A Workflow</h2>
+<p>Geoweaver can link the processes together to form a workflow. To connect two processes, press <code>shift</code> key while dragging from one process to another.</p>
+<p><img alt="Create a workflow" src="createworkflow.gif" /></p>
+<h2 id="44-run-workflow">4.4 Run Workflow</h2>
+<p>Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.</p>
+<p><img alt="Run a workflow" src="runworkflow.gif" /></p>
+<h2 id="45-browse-provenance">4.5 Browse Provenance</h2>
+<p>Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.</p>
+<p><img alt="Check provenance" src="checkprovenance.gif" /></p>
+<h2 id="46-retrieve-and-display-results">4.6 Retrieve and Display Results</h2>
+<p>Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).</p>
+<p><img alt="Get result" src="getresult.gif" /></p>
+<h2 id="47-io-workflows">4.7 I/O workflows</h2>
+<p>The workflows can be exported and move around and imported back.</p>
+<p><img alt="Export workflow" src="exportworkflow.gif" /></p>
+<h1 id="5-documentation">5. Documentation</h1>
+<p><a href="geoweaver-proposal-revised-v4.pdf">Project Proposal</a></p>
+<p><a href="ESIP-Geoweaver-Report-1.docx">August Report</a></p>
+<p><a href="ESIP-Geoweaver-Report-2.docx">September Report</a></p>
+<p><a href="ESIP-Geoweaver-Report-3.docx">October Report</a></p>
+<p><a href="ESIP-Geoweaver-Report-4.docx">November Report</a></p>
+<p><a href="ESIP-Geoweaver-Report-5.docx">December Report</a></p>
+<h1 id="6-dependencies">6. Dependencies</h1>
+<p>This project is impossible without the support of several fantastic open source libraries.</p>
+<p><a href="https://github.com/d3/d3">d3.js</a> - BSD 3-Clause</p>
+<p><a href="https://github.com/cjrd/directed-graph-creator">graph-creator</a> - MIT License</p>
+<p><a href="https://github.com/twbs/bootstrap">bootstrap</a> - MIT License</p>
+<p><a href="https://github.com/codemirror/CodeMirror">CodeMirror</a> - MIT License</p>
+<p><a href="https://github.com/jcubic/jquery.terminal">JQuery Terminal</a> - MIT License</p>
+<h1 id="7-license">7. License</h1>
+<p>MIT</p>
+<h1 id="8-author">8. Author</h1>
+<p><a href="https://github.com/ESIPFed/Geoweaver/graphs/contributors">developer list</a></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2019-08-23 16:22:20
+-->

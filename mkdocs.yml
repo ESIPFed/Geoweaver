@@ -1,0 +1,6 @@
+
+site_name: Geoweaver
+
+docs_dir: "docs"
+
+theme: readthedocs
