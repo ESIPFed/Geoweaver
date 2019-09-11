@@ -146,7 +146,7 @@ git clone https://github.com/ESIPFed/Geoweaver.git
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder.
 ```shell
 cd Geoweaver && mkdir target && cd target
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.0/Geoweaver-0.7.0.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
 ```
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
@@ -183,7 +183,7 @@ docker stop $(docker ps -aq)
 
 ```shell
 
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.10/Geoweaver-0.6.10.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
 cp Geoweaver.war /usr/local/tomcat/webapps/
 /usr/local/tomcat/bin/startup.sh
 
