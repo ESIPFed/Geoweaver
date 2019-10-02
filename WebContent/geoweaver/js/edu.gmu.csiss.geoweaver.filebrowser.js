@@ -79,6 +79,22 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 							
 			            },
 			            
+			            onhide: function(dialogRef){
+
+		                	$.ajax({
+		                		
+		                		url: "closefilebrowser",
+		                		
+		                		method: "POST"
+		                		
+		                	}).done(function(msg){
+		                		
+		                		console.log(msg);
+		                		
+		                	});
+		                	
+			            },
+			            
 			            buttons: [{
 			            	
 			                label: 'Save',
@@ -189,18 +205,6 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			                label: 'Close',
 			                
 			                action: function(dialog) {
-			                	
-			                	$.ajax({
-			                		
-			                		url: "closefilebrowser",
-			                		
-			                		method: "POST"
-			                		
-			                	}).done(function(msg){
-			                		
-			                		console.log(msg);
-			                		
-			                	});
 			                	
 			                	dialog.close();
 			                

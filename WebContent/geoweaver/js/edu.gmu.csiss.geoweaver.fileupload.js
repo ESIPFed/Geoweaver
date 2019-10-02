@@ -392,8 +392,6 @@ edu.gmu.csiss.geoweaver.fileupload = {
         		
         	});
 			
-			
-			
 		},
 		
 		// Adds an entry to our debug area

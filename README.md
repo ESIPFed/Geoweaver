@@ -265,6 +265,14 @@ Enroll a server to Geoweaver is simple. The server must have SSH server installe
 
 ![Add a host](docs/addhost.gif)
 
+## File Upload
+
+There is a downloading button after the name of the newly registered server. 
+
+## File Browse & Download
+
+
+
 ## Create A Process
 
 Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
