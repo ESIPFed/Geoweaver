@@ -28,6 +28,8 @@ public class FileTool {
 		
 		String resp = null;
 		
+		SSHSession session = new SSHSessionImpl();
+		
 		try {
 			
 			//get host ip, port, user name and password
@@ -35,8 +37,6 @@ public class FileTool {
 //			String[] hostdetails = HostTool.getHostDetailsById(hid);
 			
 			//establish SSH session and generate a token for it
-			
-			SSHSession session = new SSHSessionImpl();
 			
 			session.login(hid, passwd, null, false);
 			
@@ -55,6 +55,8 @@ public class FileTool {
 			//remove the local temporal files
 			
 			localfile.delete();
+			
+			session.getSsh().close();
 			
 //			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
 			

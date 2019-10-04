@@ -88,7 +88,7 @@ chmod 755 install-linux.sh
 ./install-linux.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
+* Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -148,7 +148,7 @@ git clone https://github.com/ESIPFed/Geoweaver.git
 * Enter the repo and create a new folder `target`. Download a Geoweaver war package from the [release page](https://github.com/ESIPFed/Geoweaver/releases) and save it in the created `target` folder.
 ```shell
 cd Geoweaver && mkdir target && cd target
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.0/Geoweaver-0.7.0.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
 ```
 
 * Run docker to start rolling. After the command is finished, Geoweaver should be up and running. 
@@ -185,7 +185,7 @@ docker stop $(docker ps -aq)
 
 ```shell
 
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.6.10/Geoweaver-0.6.10.war -O Geoweaver.war
+wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
 cp Geoweaver.war /usr/local/tomcat/webapps/
 /usr/local/tomcat/bin/startup.sh
 
@@ -244,7 +244,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 # Demo
 
-A live demo site is available in George Mason University: [I am a link, hit me](http://129.174.131.229/Geoweaver).
+A live demo site is available in George Mason University: [I am a link, hit me](https://cloud.csiss.gmu.edu/Geoweaver).
 
 Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
 
@@ -264,6 +264,14 @@ Animation demo:
 Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
 
 ![Add a host](docs/addhost.gif)
+
+## File Upload
+
+There is a downloading button after the name of the newly registered server. 
+
+## File Browse & Download
+
+
 
 ## Create A Process
 
