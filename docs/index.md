@@ -242,7 +242,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 # 3. Demo
 
-A live demo site is available in George Mason University: [I am a link, hit me](http://129.174.131.229/Geoweaver).
+A live demo site is available in George Mason University: [I am a link, hit me](https://cloud.csiss.gmu.edu/Geoweaver).
 
 Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
 
