@@ -232,6 +232,62 @@ edu.gmu.csiss.geoweaver.monitor = {
 				
 			}
 			
+		},
+
+		showDialog: function(){
+
+			BootstrapDialog.show({
+				
+				title: "Running Processes",
+				
+				message: "<div class=\"btn-group\" role=\"group\" >"+
+					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newhost-d\">Host</button>"+
+					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">Process</button>"+
+					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"newworkflow-d\">Workflow</button>"+
+					"</div>",
+					
+				onshown: function(dialogRef){
+					
+					$("#newhost-d").click(function(){
+						
+						edu.gmu.csiss.geoweaver.host.newDialog();
+						
+						dialogRef.close();
+						
+					});
+					
+					$("#newprocess-d").click(function(){
+						
+						edu.gmu.csiss.geoweaver.process.newDialog();
+						
+						dialogRef.close();
+						
+					});
+					
+					$("#newworkflow-d").click(function(){
+						
+						edu.gmu.csiss.geoweaver.workflow.newDialog();
+						
+						dialogRef.close();
+						
+					});
+					
+				},
+				
+				buttons: [{
+					
+					label: "Close",
+					
+					action: function(dialog){
+						
+						dialog.close();
+						
+					}
+					
+				}]
+				
+			});
+
 		}
 		
 }
