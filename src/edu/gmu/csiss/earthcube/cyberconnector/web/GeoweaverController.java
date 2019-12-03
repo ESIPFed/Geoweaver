@@ -253,6 +253,8 @@ public class GeoweaverController {
 		
 	}
 	
+	
+	
 	@RequestMapping(value = "/logs", method = RequestMethod.POST)
     public @ResponseBody String all_history(ModelMap model, WebRequest request){
 		
@@ -264,9 +266,29 @@ public class GeoweaverController {
 			
 			String id = request.getParameter("id");
 			
+			String isactive = request.getParameter("isactive");
+			
 			if(type.equals("process")) {
 				
-				resp = ProcessTool.all_history(id);
+				if(BaseTool.isNull(id)) {
+					
+					if("true".equals(isactive)) {
+						
+						resp = ProcessTool.all_active_process();
+						
+					}else {
+						
+						//return all process running history
+						
+						
+						
+					}
+					
+				}else {
+					
+					resp = ProcessTool.all_history(id);
+					
+				}
 				
 			}else if(type.equals("workflow")) {
 				

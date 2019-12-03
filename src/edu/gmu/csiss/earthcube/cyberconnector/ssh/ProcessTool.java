@@ -30,11 +30,20 @@ public class ProcessTool {
 	
 	static Logger logger = LoggerFactory.getLogger(ProcessTool.class);
 	
+	/**
+	 * Get the list of processes
+	 * @param owner
+	 * @param isactive
+	 * If this is true, only return the processes that are still running.
+	 * @return
+	 * @throws SQLException
+	 */
 	public static String list(String owner) throws SQLException {
 		
 		StringBuffer json = new StringBuffer("[");
 		
-		StringBuffer sql = new StringBuffer("select id, name, description from process_type;");
+		StringBuffer sql = new StringBuffer("select id, name, description from process_type");
+		
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
@@ -977,6 +986,66 @@ public class ProcessTool {
 			
 		} catch (SQLException e) {
 		
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
+	}
+	
+	/**
+	 * Get all active processes
+	 * @return
+	 */
+	public static String all_active_process() {
+		
+		StringBuffer resp = new StringBuffer();
+		
+		StringBuffer sql = new StringBuffer("select * from history where indicator='Running'  ORDER BY begin_time DESC;");
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time"));
+				
+				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
+				
+				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
+				
+				resp.append("\", \"status\": \"").append(escape(rs.getString("indicator")));
+				
+				resp.append("\", \"host\": \"").append(escape(rs.getString("host")));
+				
+				resp.append("\"}");
+				
+				num++;
+				
+			}
+			
+			resp.append("]");
+			
+			if(num==0)
+				
+				resp = new StringBuffer();
+			
+		} catch (SQLException e) {
+			
 			e.printStackTrace();
 			
 		}

@@ -235,42 +235,109 @@ edu.gmu.csiss.geoweaver.monitor = {
 		},
 
 		showDialog: function(){
+			
+			var content = "<div class=\"row\">Running Processes</div>"+
+			
+					"<div id=\"running_process_table\"></div>" +
+					
+					"<div class=\"row\">Running Workflows</div>";
 
 			BootstrapDialog.show({
 				
-				title: "Running Processes",
+				title: "Activity Monitor",
 				
-				message: "<div class=\"btn-group\" role=\"group\" >"+
-					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newhost-d\">Host</button>"+
-					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">Process</button>"+
-					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"newworkflow-d\">Workflow</button>"+
-					"</div>",
+				message: content,
 					
 				onshown: function(dialogRef){
 					
-					$("#newhost-d").click(function(){
+					//get the current executing processes
+					
+					$.ajax({
 						
-						edu.gmu.csiss.geoweaver.host.newDialog();
+						url: "logs",
 						
-						dialogRef.close();
+						method: "POST",
+						
+						data: "type=process&isactive=true"
+						
+					}).done(function(msg){
+						
+						if(!msg.length){
+							
+							alert("no history found");
+							
+							return;
+							
+						}
+						
+						msg = $.parseJSON(msg);
+						
+						var content = "<table class=\"table\"> "+
+						"  <thead> "+
+						"    <tr> "+
+						"      <th scope=\"col\">Process</th> "+
+						"      <th scope=\"col\">Begin Time</th> "+
+						"      <th scope=\"col\">Status</th> "+
+						"      <th scope=\"col\">Action</th> "+
+						"    </tr> "+
+						"  </thead> "+
+						"  <tbody> ";
+
+						
+						for(var i=0;i<msg.length;i++){
+							
+							var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+							
+							if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+								
+								status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+								
+							}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+								
+								status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+								
+							}
+							
+							content += "    <tr> "+
+								"      <td>"+msg[i].name+"</td> "+
+								"      <td>"+msg[i].begin_time+"</td> "+
+								status_col +
+								"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+								"    </tr>";
+							
+						}
+						
+						content += "</tbody>";
+						
+						$("#running_process_table").html(content);
 						
 					});
 					
-					$("#newprocess-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.process.newDialog();
-						
-						dialogRef.close();
-						
-					});
+					//get the current executing workflows
 					
-					$("#newworkflow-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.workflow.newDialog();
-						
-						dialogRef.close();
-						
-					});
+//					$("#newhost-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.host.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//					$("#newprocess-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.process.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//					$("#newworkflow-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.workflow.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
 					
 				},
 				
