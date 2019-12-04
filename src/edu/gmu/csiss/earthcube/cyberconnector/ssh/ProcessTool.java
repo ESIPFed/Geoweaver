@@ -795,7 +795,12 @@ public class ProcessTool {
 		
 	}
 	
-	public static String stop(String id, String hisid) {
+	/**
+	 * For Andrew
+	 * @param hisid
+	 * @return
+	 */
+	public static String stop(String hisid) {
 		
 		String resp = null;
 		

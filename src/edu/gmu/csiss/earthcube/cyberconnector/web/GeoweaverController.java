@@ -253,7 +253,38 @@ public class GeoweaverController {
 		
 	}
 	
-	
+	@RequestMapping(value = "/stop", method = RequestMethod.POST)
+    public @ResponseBody String stop(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			String id = request.getParameter("id");
+			
+			if(type.equals("process")) {
+				
+				ProcessTool.stop( id);
+				
+			}else if(type.equals("workflow")) {
+				
+				WorkflowTool.stop(id);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/logs", method = RequestMethod.POST)
     public @ResponseBody String all_history(ModelMap model, WebRequest request){
@@ -280,7 +311,7 @@ public class GeoweaverController {
 						
 						//return all process running history
 						
-						
+						//zero processes
 						
 					}
 					
@@ -292,7 +323,19 @@ public class GeoweaverController {
 				
 			}else if(type.equals("workflow")) {
 				
-				resp = WorkflowTool.all_history(id);
+				if(BaseTool.isNull(id)) {
+					
+					if("true".equals(isactive)) {
+				
+						resp = WorkflowTool.all_active_process();
+						
+					}
+					
+				}else {
+				
+					resp = WorkflowTool.all_history(id);
+					
+				}
 				
 			}
 			
@@ -582,7 +625,7 @@ public class GeoweaverController {
 			
 //			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.stop(pid, hisid);
+			resp = ProcessTool.stop(hisid);
 			
 		}catch(Exception e) {
 			
