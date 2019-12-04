@@ -110,6 +110,10 @@ edu.gmu.csiss.geoweaver.toolbar = {
 				edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
 				
 			}
+
+			//show the running processes and workflows
+
+			edu.gmu.csiss.geoweaver.monitor.showDialog();
 			
 			this.monitor_switch = !this.monitor_switch;
 			

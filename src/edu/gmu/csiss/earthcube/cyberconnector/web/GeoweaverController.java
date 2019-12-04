@@ -253,8 +253,8 @@ public class GeoweaverController {
 		
 	}
 	
-	@RequestMapping(value = "/logs", method = RequestMethod.POST)
-    public @ResponseBody String all_history(ModelMap model, WebRequest request){
+	@RequestMapping(value = "/stop", method = RequestMethod.POST)
+    public @ResponseBody String stop(ModelMap model, WebRequest request){
 		
 		String resp = null;
 		
@@ -266,11 +266,76 @@ public class GeoweaverController {
 			
 			if(type.equals("process")) {
 				
-				resp = ProcessTool.all_history(id);
+				ProcessTool.stop( id);
 				
 			}else if(type.equals("workflow")) {
 				
-				resp = WorkflowTool.all_history(id);
+				WorkflowTool.stop(id);
+				
+			}
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+	
+	@RequestMapping(value = "/logs", method = RequestMethod.POST)
+    public @ResponseBody String all_history(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String type = request.getParameter("type");
+			
+			String id = request.getParameter("id");
+			
+			String isactive = request.getParameter("isactive");
+			
+			if(type.equals("process")) {
+				
+				if(BaseTool.isNull(id)) {
+					
+					if("true".equals(isactive)) {
+						
+						resp = ProcessTool.all_active_process();
+						
+					}else {
+						
+						//return all process running history
+						
+						//zero processes
+						
+					}
+					
+				}else {
+					
+					resp = ProcessTool.all_history(id);
+					
+				}
+				
+			}else if(type.equals("workflow")) {
+				
+				if(BaseTool.isNull(id)) {
+					
+					if("true".equals(isactive)) {
+				
+						resp = WorkflowTool.all_active_process();
+						
+					}
+					
+				}else {
+				
+					resp = WorkflowTool.all_history(id);
+					
+				}
 				
 			}
 			
@@ -560,7 +625,7 @@ public class GeoweaverController {
 			
 //			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.stop(pid, hisid);
+			resp = ProcessTool.stop(hisid);
 			
 		}catch(Exception e) {
 			

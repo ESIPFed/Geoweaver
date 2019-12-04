@@ -232,6 +232,213 @@ edu.gmu.csiss.geoweaver.monitor = {
 				
 			}
 			
+		},
+
+		showDialog: function(){
+			
+			var content = "<div class=\"row\"><div class=\"col col-md-12\"><h3>Running Processes</h3></div></div>"+
+			
+					"<div id=\"running_process_table\"></div>" +
+					
+					"<div class=\"row\"><div  class=\"col col-md-12\"><h3>Running Workflows</h3></div></div>" +
+					
+					"<div id=\"running_workflow_table\"></div>";
+
+			BootstrapDialog.show({
+				
+				title: "Activity Monitor",
+				
+				message: content,
+					
+				onshown: function(dialogRef){
+					
+					//get the current executing processes
+					
+					$.ajax({
+						
+						url: "logs",
+						
+						method: "POST",
+						
+						data: "type=process&isactive=true"
+						
+					}).done(function(msg){
+						
+						if(!msg.length){
+							
+							$("#running_process_table").html("no running process found");
+							
+							return;
+							
+						}else{
+							
+							msg = $.parseJSON(msg);
+							
+							var content = "<table class=\"table\"> "+
+							"  <thead> "+
+							"    <tr> "+
+							"      <th scope=\"col\">Process</th> "+
+							"      <th scope=\"col\">Begin Time</th> "+
+							"      <th scope=\"col\">Status</th> "+
+							"      <th scope=\"col\">Action</th> "+
+							"    </tr> "+
+							"  </thead> "+
+							"  <tbody> ";
+
+							
+							for(var i=0;i<msg.length;i++){
+								
+								var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+								
+								if(msg[i].status == "Done"){
+									
+									status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+									
+								}else if(msg[i].status == "Failed"){
+									
+									status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+									
+								}else if(msg[i].status == "Running"){
+									
+									status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
+									
+								}else{
+									
+									status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
+									
+								}
+								
+								content += "    <tr> "+
+									"      <td>"+msg[i].id+"</td> "+
+									"      <td>"+msg[i].begin_time+"</td> "+
+									status_col +
+									"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
+									"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a></td> "+
+									"    </tr>";
+								
+							}
+							
+							content += "</tbody>";
+							
+							$("#running_process_table").html(content);
+							
+						}
+						
+						
+					});
+					
+					//get the current executing workflows
+					
+					$.ajax({
+						
+						url: "logs",
+						
+						method: "POST",
+						
+						data: "type=workflow&isactive=true"
+						
+					}).done(function(msg){
+						
+						if(!msg.length){
+							
+							$("#running_workflow_table").html("no running workflow found");
+							
+							return;
+							
+						}
+						
+						msg = $.parseJSON(msg);
+						
+						var content = "<table class=\"table\"> "+
+						"  <thead> "+
+						"    <tr> "+
+						"      <th scope=\"col\">Workflow</th> "+
+						"      <th scope=\"col\">Begin Time</th> "+
+						"      <th scope=\"col\">Status</th> "+
+						"      <th scope=\"col\">Action</th> "+
+						"    </tr> "+
+						"  </thead> "+
+						"  <tbody> ";
+
+						
+						for(var i=0;i<msg.length;i++){
+							
+							var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+							
+							if(msg[i].status == "Done"){
+								
+								status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+								
+							}else if(msg[i].status == "Failed"){
+								
+								status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+								
+							}else if(msg[i].status == "Running"){
+								
+								status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
+								
+							}else{
+								
+								status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
+								
+							}
+							
+							content += "    <tr> "+
+								"      <td>"+msg[i].id+"</td> "+
+								"      <td>"+msg[i].begin_time+"</td> "+
+								status_col +
+								"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
+								"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a></td> "+
+								"    </tr>";
+							
+						}
+						
+						content += "</tbody>";
+						
+						$("#running_workflow_table").html(content);
+						
+					});
+					
+//					$("#newhost-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.host.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//					$("#newprocess-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.process.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//					$("#newworkflow-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.workflow.newDialog();
+//						
+//						dialogRef.close();
+//						
+//					});
+					
+				},
+				
+				buttons: [{
+					
+					label: "Close",
+					
+					action: function(dialog){
+						
+						dialog.close();
+						
+					}
+					
+				}]
+				
+			});
+
 		}
 		
 }

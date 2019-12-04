@@ -592,6 +592,28 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
+		stop: function(history_id, type){
+			
+			console.log("Send stop request to stop the running task");
+			
+			$.ajax({
+				
+				url: "stop",
+				
+				method: "POST",
+				
+				data: "type=" + type + "&id=" + history_id
+				
+			}).done(function(msg){
+				
+				msg = $.parseJSON(msg);
+				
+				console.log("stop process is called");
+				
+			});
+			
+		},
+		
 		getHistoryDetails: function(history_id){
 			
 			$.ajax({

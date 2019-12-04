@@ -133,7 +133,7 @@ cd Geoweaver
 
 ## Developer Install
 
-This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
+This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
 ### Docker
 
@@ -200,7 +200,7 @@ nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
 
 Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
 
-(**Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.**)
+(**Note: the MySQL database must be initiated by the SQL file under the folder Geoweaver/docker/db first. If you are using H2 database, please copy the two files: geoweaver.mv.db and geoweaver.trace.db to your user home directory before you start tomcat. **)
 
 ```shell
 mysql -u root -p < docker/db/gw.sql
@@ -267,11 +267,13 @@ Enroll a server to Geoweaver is simple. The server must have SSH server installe
 
 ## File Upload
 
-There is a downloading button after the name of the newly registered server. 
+There is a uploading button after the name of the newly registered server. Using it people can upload files from local to remote server. 
 
 ## File Browse & Download
 
+There is a browsing&downloading button for each host. People can free browse the files in the host and download it to local (if their credentials are authorized).
 
+![file browser](docs/filebrowser&download.gif)
 
 ## Create A Process
 
