@@ -12,6 +12,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		jupytercode: null,
 		
+		current_pid: null,
+		
 		builtin_processes: [
 			
 			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
@@ -101,9 +103,42 @@ edu.gmu.csiss.geoweaver.process = {
 			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
         		
         		lineNumbers: true,
-        		lineWrapping: true
+        		
+        		lineWrapping: true,
+        		
+        		extraKeys: {
+        			
+	    		    "Ctrl-S": function(instance) { 
+	    		    	
+	    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid);
+	    		    	
+	    		     }
+	    		  }
         		
         	});
+			
+//			var cmds = CodeMirror.commands;
+//			
+//			cmds.saveCode = function(cm){
+//				
+//				console.log("save code is triggered");
+////				edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_id);
+//				
+//			}
+//			
+//			var keyMap = CodeMirror.keyMap;
+//			
+//			keyMap.macSublime = {
+//				    "Cmd-S": "saveCode",
+//			};
+//			
+//			CodeMirror.normalizeKeyMap(keyMap.macSublime);
+//			
+//			keyMap.pcSublime = {
+//				    "Ctrl-S": "saveCode",
+//			};
+//			
+//			CodeMirror.normalizeKeyMap(keyMap.pcSublime);
 			
 			if(code!=null){
 				
@@ -583,7 +618,7 @@ edu.gmu.csiss.geoweaver.process = {
 					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
 				
 				if(msg[i].status == "Running"){
-					content += "		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a>";
+					content += "		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"', 'process')\">Stop</a>";
 				}
 				
 				content += "	   </td> "+
@@ -837,9 +872,9 @@ edu.gmu.csiss.geoweaver.process = {
 		       '		<input class="form-control" id="processname"></input>'+
 		       '     </div>'+
 		       '   </div>'+
-		       '   <div class="form-group row required" id="codearea">'+
+		       '   <div class="form-group row required" id="codearea"></div>'+
 		       
-		       '   </div>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits.</p>'+
 		       ' </form>';
 			
 			return content;
@@ -847,6 +882,8 @@ edu.gmu.csiss.geoweaver.process = {
 		},
 		
 		edit: function(pid){
+			
+			this.current_pid = pid;
 			
 			$.ajax({
 				
@@ -942,7 +979,7 @@ edu.gmu.csiss.geoweaver.process = {
 		            
 		            buttons: [{
 		            
-		            	label: 'Update',
+		            	label: 'Save',
 		                
 		                action: function(dialogItself){
 		                	
@@ -1050,6 +1087,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		update: function(pid){
 			
+			console.log("update process id: " + pid);
+			
 			if(this.precheck()){
 				
 				var req =  { 
@@ -1086,7 +1125,7 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
-		    		alert("Updated!!");
+		    		console.log("Updated!!");
 		    		
 		    	}).fail(function(jqXHR, textStatus){
 		    		
@@ -1102,6 +1141,8 @@ edu.gmu.csiss.geoweaver.process = {
 		},
 		
 		add: function(run){
+			
+			this.current_pid = null;
 			
 			if(this.precheck()){
 				

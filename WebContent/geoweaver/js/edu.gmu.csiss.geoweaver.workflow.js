@@ -756,7 +756,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 				"      <td>"+msg[i].begin_time+"</td> "+
 				status_col +
 				"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
-				"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a></td> "+
+				"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"'), 'workflow'\">Stop</a></td> "+
 				"    </tr>";
 			
 		}

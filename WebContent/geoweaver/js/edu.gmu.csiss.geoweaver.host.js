@@ -533,9 +533,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
 			
-			
 		},
-		
 		
 		openssh: function(hostid){
 			
