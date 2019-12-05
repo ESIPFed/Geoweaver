@@ -829,8 +829,10 @@ public class ProcessTool {
 //			
 //			session.runBash(code, id, isjoin); 
 //			
-//			String historyid = session.getHistory_id();
-//			
+			String historyid = session.getHistory_id();
+			
+			
+//				
 //			resp = "{\"history_id\": \""+historyid+
 //					
 //					"\", \"token\": \""+token+
