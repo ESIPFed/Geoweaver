@@ -29,6 +29,8 @@ public class HistoryTool {
 			
 			e.printStackTrace();
 			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
 		}
 		
 	}

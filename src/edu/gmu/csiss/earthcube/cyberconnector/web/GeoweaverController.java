@@ -266,11 +266,11 @@ public class GeoweaverController {
 			
 			if(type.equals("process")) {
 				
-				ProcessTool.stop( id);
+				resp = ProcessTool.stop( id);
 				
 			}else if(type.equals("workflow")) {
 				
-				WorkflowTool.stop(id);
+				resp = WorkflowTool.stop(id);
 				
 			}
 			

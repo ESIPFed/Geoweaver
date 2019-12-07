@@ -498,7 +498,7 @@ edu.gmu.csiss.geoweaver.process = {
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 						status_col +
-						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> "+
 						"    </tr>";
 					
 				}
@@ -577,7 +577,7 @@ edu.gmu.csiss.geoweaver.process = {
 //			content += "</tbody>";
 			
 
-			var content = "<table class=\"table\"> "+
+			var content = "<table class=\"table\" id=\"history_table\"> "+
 			"  <thead> "+
 			"    <tr> "+
 			"      <th scope=\"col\">Execution Id</th> "+
@@ -615,10 +615,10 @@ edu.gmu.csiss.geoweaver.process = {
 					"      <td>"+msg[i].id+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
 					status_col +
-					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
+					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
 				
 				if(msg[i].status == "Running"){
-					content += "		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"', 'process')\">Stop</a>";
+					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a>";
 				}
 				
 				content += "	   </td> "+
@@ -664,7 +664,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 					title: "History",
 					
-					message: content,
+					message: "<div>" + content + "</div>",
 					
 					buttons: [{
 						
@@ -688,7 +688,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		stop: function(history_id, type){
+		stop: function(history_id){
 			
 			console.log("Send stop request to stop the running task");
 			
@@ -698,13 +698,25 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				method: "POST",
 				
-				data: "type=" + type + "&id=" + history_id
+				data: "type=process&id=" + history_id
 				
 			}).done(function(msg){
 				
 				msg = $.parseJSON(msg);
 				
 				console.log("stop process is called");
+
+				if(msg.ret=="stopped"){
+
+					$("#stopbtn_" + history_id).html("<span class=\"text-success\">Stopped</span>");
+
+					$("#stopbtn_" + history_id).prop("onclick", null).off("click");
+
+				}else{
+
+					alert("Fail to stop.");
+
+				}
 				
 			});
 			
