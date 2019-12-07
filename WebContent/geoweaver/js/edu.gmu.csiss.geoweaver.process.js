@@ -12,6 +12,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		jupytercode: null,
 		
+		current_pid: null,
+		
 		builtin_processes: [
 			
 			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
@@ -101,9 +103,42 @@ edu.gmu.csiss.geoweaver.process = {
 			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
         		
         		lineNumbers: true,
-        		lineWrapping: true
+        		
+        		lineWrapping: true,
+        		
+        		extraKeys: {
+        			
+	    		    "Ctrl-S": function(instance) { 
+	    		    	
+	    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid);
+	    		    	
+	    		     }
+	    		  }
         		
         	});
+			
+//			var cmds = CodeMirror.commands;
+//			
+//			cmds.saveCode = function(cm){
+//				
+//				console.log("save code is triggered");
+////				edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_id);
+//				
+//			}
+//			
+//			var keyMap = CodeMirror.keyMap;
+//			
+//			keyMap.macSublime = {
+//				    "Cmd-S": "saveCode",
+//			};
+//			
+//			CodeMirror.normalizeKeyMap(keyMap.macSublime);
+//			
+//			keyMap.pcSublime = {
+//				    "Ctrl-S": "saveCode",
+//			};
+//			
+//			CodeMirror.normalizeKeyMap(keyMap.pcSublime);
 			
 			if(code!=null){
 				
@@ -463,7 +498,7 @@ edu.gmu.csiss.geoweaver.process = {
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 						status_col +
-						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> "+
 						"    </tr>";
 					
 				}
@@ -497,6 +532,106 @@ edu.gmu.csiss.geoweaver.process = {
 			});
 			
 		},
+		
+		getTable: function(msg){
+			
+//			var content = "<table class=\"table\"> "+
+//			"  <thead> "+
+//			"    <tr> "+
+//			"      <th scope=\"col\">Execution Id</th> "+
+//			"      <th scope=\"col\">Begin Time</th> "+
+//			"      <th scope=\"col\">Status</th> "+
+//			"      <th scope=\"col\">Action</th> "+
+//			"    </tr> "+
+//			"  </thead> "+
+//			"  <tbody> ";
+//
+//			
+//			for(var i=0;i<msg.length;i++){
+//				
+//				var status_col = null;
+//				
+//				if(msg[i].status == "Running"){
+//					
+//					status_col = "      <td><span class=\"label label-warning\">Running <i class=\"fa fa-circle-o-notch fa-spin\"></i></span></td> "; //<div class=\"spinner-border spinner-border-sm\"></div>
+//					
+//				}else if(msg[i].status == "Done"){
+//					
+//					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+//					
+//				}else if(msg[i].status == "Failed"){
+//					
+//					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+//					
+//				}
+//				
+//				content += "    <tr> "+
+//					"      <td>"+msg[i].id+"</td> "+
+//					"      <td>"+msg[i].begin_time+"</td> "+
+//					status_col +
+//					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+//					"    </tr>";
+//				
+//			}
+//			
+//			content += "</tbody>";
+			
+
+			var content = "<table class=\"table\" id=\"history_table\"> "+
+			"  <thead> "+
+			"    <tr> "+
+			"      <th scope=\"col\">Execution Id</th> "+
+			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">Status</th> "+
+			"      <th scope=\"col\">Action</th> "+
+			"    </tr> "+
+			"  </thead> "+
+			"  <tbody> ";
+
+			
+			for(var i=0;i<msg.length;i++){
+				
+				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+				
+				if(msg[i].status == "Done"){
+					
+					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+					
+				}else if(msg[i].status == "Failed"){
+					
+					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+					
+				}else if(msg[i].status == "Running"){
+					
+					status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
+					
+				}else{
+					
+					status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
+					
+				}
+				
+				content += "    <tr> "+
+					"      <td>"+msg[i].id+"</td> "+
+					"      <td>"+msg[i].begin_time+"</td> "+
+					status_col +
+					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
+				
+				if(msg[i].status == "Running"){
+					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a>";
+				}
+				
+				content += "	   </td> "+
+					"    </tr>";
+				
+			}
+			
+			content += "</tbody>";
+			
+			return content;
+			
+		},
+		
 		
 		/**
 		 * list all the history execution of the process
@@ -523,52 +658,13 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = "<table class=\"table\"> "+
-				"  <thead> "+
-				"    <tr> "+
-				"      <th scope=\"col\">Execution Id</th> "+
-				"      <th scope=\"col\">Begin Time</th> "+
-				"      <th scope=\"col\">Status</th> "+
-				"      <th scope=\"col\">Action</th> "+
-				"    </tr> "+
-				"  </thead> "+
-				"  <tbody> ";
-
-				
-				for(var i=0;i<msg.length;i++){
-					
-					var status_col = null;
-					
-					if(msg[i].status == "Running"){
-						
-						status_col = "      <td><span class=\"label label-warning\">Running <i class=\"fa fa-circle-o-notch fa-spin\"></i></span></td> "; //<div class=\"spinner-border spinner-border-sm\"></div>
-						
-					}else if(msg[i].status == "Done"){
-						
-						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-						
-					}else if(msg[i].status == "Failed"){
-						
-						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-						
-					}
-					
-					content += "    <tr> "+
-						"      <td>"+msg[i].id+"</td> "+
-						"      <td>"+msg[i].begin_time+"</td> "+
-						status_col +
-						"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
-						"    </tr>";
-					
-				}
-				
-				content += "</tbody>";
+				var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
 				
 				BootstrapDialog.show({
 					
 					title: "History",
 					
-					message: content,
+					message: "<div>" + content + "</div>",
 					
 					buttons: [{
 						
@@ -592,7 +688,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		stop: function(history_id, type){
+		stop: function(history_id){
 			
 			console.log("Send stop request to stop the running task");
 			
@@ -602,13 +698,25 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				method: "POST",
 				
-				data: "type=" + type + "&id=" + history_id
+				data: "type=process&id=" + history_id
 				
 			}).done(function(msg){
 				
 				msg = $.parseJSON(msg);
 				
 				console.log("stop process is called");
+
+				if(msg.ret=="stopped"){
+
+					$("#stopbtn_" + history_id).html("<span class=\"text-success\">Stopped</span>");
+
+					$("#stopbtn_" + history_id).prop("onclick", null).off("click");
+
+				}else{
+
+					alert("Fail to stop.");
+
+				}
 				
 			});
 			
@@ -776,9 +884,9 @@ edu.gmu.csiss.geoweaver.process = {
 		       '		<input class="form-control" id="processname"></input>'+
 		       '     </div>'+
 		       '   </div>'+
-		       '   <div class="form-group row required" id="codearea">'+
+		       '   <div class="form-group row required" id="codearea"></div>'+
 		       
-		       '   </div>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits.</p>'+
 		       ' </form>';
 			
 			return content;
@@ -786,6 +894,8 @@ edu.gmu.csiss.geoweaver.process = {
 		},
 		
 		edit: function(pid){
+			
+			this.current_pid = pid;
 			
 			$.ajax({
 				
@@ -881,7 +991,7 @@ edu.gmu.csiss.geoweaver.process = {
 		            
 		            buttons: [{
 		            
-		            	label: 'Update',
+		            	label: 'Save',
 		                
 		                action: function(dialogItself){
 		                	
@@ -989,6 +1099,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		update: function(pid){
 			
+			console.log("update process id: " + pid);
+			
 			if(this.precheck()){
 				
 				var req =  { 
@@ -1025,7 +1137,7 @@ edu.gmu.csiss.geoweaver.process = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
-		    		alert("Updated!!");
+		    		console.log("Updated!!");
 		    		
 		    	}).fail(function(jqXHR, textStatus){
 		    		
@@ -1041,6 +1153,8 @@ edu.gmu.csiss.geoweaver.process = {
 		},
 		
 		add: function(run){
+			
+			this.current_pid = null;
 			
 			if(this.precheck()){
 				

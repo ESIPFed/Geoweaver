@@ -16,6 +16,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
 import edu.gmu.csiss.earthcube.cyberconnector.tasks.GeoweaverProcessTask;
 import edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskManager;
 import edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket;
+import edu.gmu.csiss.earthcube.cyberconnector.tools.HistoryTool;
 import edu.gmu.csiss.earthcube.cyberconnector.user.User;
 import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
@@ -808,7 +809,9 @@ public class ProcessTool {
 			
 			SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(hisid);
 			
-			session.getSSHJSession().close();
+			if(!BaseTool.isNull(session))
+				
+				session.getSSHJSession().close();
 			
 			//establish SSH session and generate a token for it
 //			
@@ -829,13 +832,13 @@ public class ProcessTool {
 //			
 //			session.runBash(code, id, isjoin); 
 //			
-//			String historyid = session.getHistory_id();
-//			
-//			resp = "{\"history_id\": \""+historyid+
+			HistoryTool.stop(hisid);
+//				
+			resp = "{\"history_id\": \""+hisid+
 //					
 //					"\", \"token\": \""+token+
 //					
-//					"\", \"ret\": \"success\"}";
+					"\", \"ret\": \"stopped\"}";
 			
 //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
 			
@@ -846,10 +849,6 @@ public class ProcessTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-//			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		

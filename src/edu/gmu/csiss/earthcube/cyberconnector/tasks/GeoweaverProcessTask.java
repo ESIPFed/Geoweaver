@@ -117,7 +117,7 @@ public class GeoweaverProcessTask  extends Task {
 	@Override
 	public void execute() {
 
-		System.out.println(" + + + start Geoweaver Process " + pid );
+		logger.info(" + + + start Geoweaver Process " + pid );
 		
 		try {
 

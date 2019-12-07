@@ -274,51 +274,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 							
 							msg = $.parseJSON(msg);
 							
-							var content = "<table class=\"table\"> "+
-							"  <thead> "+
-							"    <tr> "+
-							"      <th scope=\"col\">Process</th> "+
-							"      <th scope=\"col\">Begin Time</th> "+
-							"      <th scope=\"col\">Status</th> "+
-							"      <th scope=\"col\">Action</th> "+
-							"    </tr> "+
-							"  </thead> "+
-							"  <tbody> ";
-
-							
-							for(var i=0;i<msg.length;i++){
-								
-								var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-								
-								if(msg[i].status == "Done"){
-									
-									status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-									
-								}else if(msg[i].status == "Failed"){
-									
-									status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-									
-								}else if(msg[i].status == "Running"){
-									
-									status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
-									
-								}else{
-									
-									status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
-									
-								}
-								
-								content += "    <tr> "+
-									"      <td>"+msg[i].id+"</td> "+
-									"      <td>"+msg[i].begin_time+"</td> "+
-									status_col +
-									"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
-									"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a></td> "+
-									"    </tr>";
-								
-							}
-							
-							content += "</tbody>";
+							var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
 							
 							$("#running_process_table").html(content);
 							
@@ -349,51 +305,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 						
 						msg = $.parseJSON(msg);
 						
-						var content = "<table class=\"table\"> "+
-						"  <thead> "+
-						"    <tr> "+
-						"      <th scope=\"col\">Workflow</th> "+
-						"      <th scope=\"col\">Begin Time</th> "+
-						"      <th scope=\"col\">Status</th> "+
-						"      <th scope=\"col\">Action</th> "+
-						"    </tr> "+
-						"  </thead> "+
-						"  <tbody> ";
-
-						
-						for(var i=0;i<msg.length;i++){
-							
-							var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-							
-							if(msg[i].status == "Done"){
-								
-								status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-								
-							}else if(msg[i].status == "Failed"){
-								
-								status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-								
-							}else if(msg[i].status == "Running"){
-								
-								status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
-								
-							}else{
-								
-								status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
-								
-							}
-							
-							content += "    <tr> "+
-								"      <td>"+msg[i].id+"</td> "+
-								"      <td>"+msg[i].begin_time+"</td> "+
-								status_col +
-								"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
-								"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"')\">Stop</a></td> "+
-								"    </tr>";
-							
-						}
-						
-						content += "</tbody>";
+						var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
 						
 						$("#running_workflow_table").html(content);
 						
