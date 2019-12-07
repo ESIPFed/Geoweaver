@@ -530,7 +530,7 @@ public class ProcessTool {
 			
 			if(token == null) {
 				
-				token = new RandomString(12).nextString();
+				token = hid; //new RandomString(12).nextString();
 				
 			}
 			
