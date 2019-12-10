@@ -15,6 +15,8 @@ public class HostTool {
 
 	static Logger logger = Logger.getLogger(HostTool.class);
 	
+	
+	
 	public static String detail(String id) {
 		
 		String detail = null;
@@ -244,13 +246,15 @@ public class HostTool {
 			
 			String enviroment = getEnvironmentByBEB(hostid, bin, env, basedir);
 			
-			if(BaseTool.isNull(enviroment)) {
+			logger.info("existing environment " + enviroment);
+			
+			if(enviroment.equals("[]")) {
 				
-				StringBuffer sql = new StringBuffer("insert into environment (id, name, type, bin, penv, host, basedir, settings) values ('");
+				StringBuffer sql = new StringBuffer("insert into environment (id, name, type, bin, pyenv, host, basedir, settings) values ('");
 				
 				sql.append(historyid).append("', '");
 				
-				sql.append(historyid).append("', '");
+				sql.append(bin).append("-").append(env).append("-").append(basedir).append("', '");
 				
 				sql.append(type).append("', '");
 				
@@ -266,6 +270,8 @@ public class HostTool {
 				
 				logger.info(sql);
 				
+				DataBaseOperation.execute(sql.toString());
+				
 			}
 			
 		}catch(Exception e) {
@@ -278,8 +284,58 @@ public class HostTool {
 		
 	}
 	
-	public static String getEnvironmentByBEB(String hostid, String bin, String env, String basedir) {
+	public static void showAllEnvironment() {
+		
 
+		String resp = null;
+		
+		try {
+			
+			StringBuffer sql = new StringBuffer("select * from environment ;");
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			StringBuffer envstr = new StringBuffer();
+			
+			envstr.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					envstr.append(", ");
+					
+				}
+				
+				envstr.append("{ \"id\": \"").append(rs.getString("id"));
+				
+				envstr.append("\", \"name\": \"").append(rs.getString("name"));
+				
+				envstr.append("\", \"type\": \"").append(rs.getString("type"));
+				
+				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
+				
+				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
+				
+			}
+			
+			envstr.append("]");
+			
+			resp = envstr.toString();
+			
+			logger.info(resp);
+			
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+			
+		}
+	}
+	
+	public static String getEnvironmentByBEB(String hostid, String bin, String env, String basedir) {
+		
 		String resp = null;
 		
 		try {
@@ -375,6 +431,8 @@ public class HostTool {
 			
 			resp = envstr.toString();
 			
+			logger.info("the python environment for host: " + hid + " " + resp);
+			
 		} catch (SQLException e) {
 
 			e.printStackTrace();
@@ -384,6 +442,13 @@ public class HostTool {
 		return resp;
 	}
 	
+	public static void main(String[] args) {
+		
+		HostTool.addEnv("test", "test", "test", "test", "test", "test", "test");
+		
+		HostTool.showAllEnvironment();
+		
+	}
 	
 
 }

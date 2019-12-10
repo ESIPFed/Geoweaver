@@ -620,6 +620,10 @@ public class ProcessTool {
 					
 					"\", \"ret\": \"success\"}";
 			
+			//save environment
+			
+			HostTool.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
@@ -744,6 +748,8 @@ public class ProcessTool {
 		
 		try {
 			
+			
+			
 			//get code of the process
 			
 			String code = getCodeById(id);
@@ -772,13 +778,15 @@ public class ProcessTool {
 			
 			String historyid = session.getHistory_id();
 			
-			
-			
 			resp = "{\"history_id\": \""+historyid+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
+			
+			//save environment
+			
+			HostTool.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
@@ -928,6 +936,8 @@ public class ProcessTool {
 				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"status\": \"").append(rs.getString("indicator")).append("\", ");
 				
 				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
 				

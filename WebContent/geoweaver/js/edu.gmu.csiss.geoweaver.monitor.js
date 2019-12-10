@@ -158,17 +158,22 @@ edu.gmu.csiss.geoweaver.monitor = {
 		
 		openWorkspaceIndicator: function(){
 			
-			$("#current_workflow_name").html("Current workflow : " + edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+			if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow != null){
+				
+				$("#current_workflow_name").html("Current workflow : " + edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+				
+				$("#current_workflow_name").removeClass("invisible");
+				
+				$("#current_workflow_name").addClass("visible");
+				
+				$("#running_spinner").removeClass("invisible");
+				
+				$("#running_spinner").addClass("visible");
+				
+				console.log("workspace indicator is opened");
+				
+			}
 			
-			$("#current_workflow_name").removeClass("invisible");
-			
-			$("#current_workflow_name").addClass("visible");
-			
-			$("#running_spinner").removeClass("invisible");
-			
-			$("#running_spinner").addClass("visible");
-			
-			console.log("workspace indicator is opened");
 		},
 		
 		closeWorkspaceIndicator: function(){

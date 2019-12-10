@@ -359,6 +359,7 @@ public class GeoweaverController {
 		try {
 			
 			String hid = request.getParameter("hid");
+			
 			resp = HostTool.getEnvironments(hid);
 			
 		}catch(Exception e) {

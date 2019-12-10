@@ -385,7 +385,9 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}else {
     			
-    			cmdline += "source activate " + pyenv + "; ";
+    			cmdline += "conda init; ";
+    			
+    			cmdline += "conda activate " + pyenv + "; ";
     			
     			cmdline += bin + " python-" + history_id + ".py;";
     			
