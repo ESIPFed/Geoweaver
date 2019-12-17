@@ -401,7 +401,9 @@ public class GeoweaverController {
 			
 			e.printStackTrace();
 			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
+//			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
 		}
 		
@@ -449,6 +451,8 @@ public class GeoweaverController {
 			
 			e.printStackTrace();
 			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
 		}
 		
 		return resp;
@@ -484,6 +488,8 @@ public class GeoweaverController {
 			
 			e.printStackTrace();
 			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
 		}
 		
 		return resp;
@@ -504,6 +510,8 @@ public class GeoweaverController {
 		}catch(Exception e) {
 			
 			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
 			
 		}
 		
@@ -527,6 +535,8 @@ public class GeoweaverController {
 		}catch(Exception e) {
 			
 			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
 			
 		}
 		

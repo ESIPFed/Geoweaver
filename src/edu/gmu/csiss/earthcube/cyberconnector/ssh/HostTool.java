@@ -368,6 +368,8 @@ public class HostTool {
 				
 				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
 				
+				envstr.append("\", \"basedir\": \"").append(rs.getString("basedir"));
+				
 				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
 				
 			}
@@ -423,7 +425,11 @@ public class HostTool {
 				
 				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
 				
+				envstr.append("\", \"basedir\": \"").append(rs.getString("basedir"));
+				
 				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
+				
+				num++;
 				
 			}
 			
