@@ -448,13 +448,7 @@ public class HostTool {
 		return resp;
 	}
 	
-	public static void main(String[] args) {
-		
-		HostTool.addEnv("test", "test", "test", "test", "test", "test", "test");
-		
-		HostTool.showAllEnvironment();
-		
-	}
+	
 	
 
 }

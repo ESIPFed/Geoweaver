@@ -748,8 +748,6 @@ public class ProcessTool {
 		
 		try {
 			
-			
-			
 			//get code of the process
 			
 			String code = getCodeById(id);
