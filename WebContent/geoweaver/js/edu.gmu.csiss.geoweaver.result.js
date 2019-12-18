@@ -10,9 +10,13 @@ edu.gmu.csiss.geoweaver.result = {
 			
 			BootstrapDialog.closeAll();
 			
-			$('.imagepreview').attr('src', "../temp/" + filename);
+//			$('.imagepreview').attr('src', "../temp/" + filename);
+//			
+//			$('#resultmodal').modal('show');
 			
-			$('#resultmodal').modal('show');
+			var viewer = ImageViewer(); //options is optional parameter
+			
+			viewer.show("../temp/" + filename); //second paramter is optional
 			
 		},
 		

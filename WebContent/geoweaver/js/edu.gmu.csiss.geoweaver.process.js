@@ -14,6 +14,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		current_pid: null,
 		
+		envlist: {},
+		
 		builtin_processes: [
 			
 			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
@@ -225,7 +227,17 @@ edu.gmu.csiss.geoweaver.process = {
 			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
         		
         		lineNumbers: true,
-        		lineWrapping: true
+        		
+        		lineWrapping: true,
+        		
+        		extraKeys: {
+        			
+	    		    "Ctrl-S": function(instance) { 
+	    		    	
+	    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid);
+	    		    	
+	    		     }
+        		}
         		
         	});
 			
@@ -366,7 +378,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				title: "Add new process",
 				
-//				closable: false,
+				closable: false,
 				
 	            message: content,
 	            
@@ -478,21 +490,22 @@ edu.gmu.csiss.geoweaver.process = {
 				"    </tr> "+
 				"  </thead> "+
 				"  <tbody> ";
-
 				
 				for(var i=0;i<msg.length;i++){
 					
-					var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+//					var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+//					
+//					if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
+//						
+//						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+//						
+//					}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
+//						
+//						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+//						
+//					}
 					
-					if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
-						
-						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-						
-					}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
-						
-						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-						
-					}
+					var status_col = edu.gmu.csiss.geoweaver.process.getStatusCol(msg[i].id, msg[i].status);
 					
 					content += "    <tr> "+
 						"      <td>"+msg[i].name+"</td> "+
@@ -508,6 +521,8 @@ edu.gmu.csiss.geoweaver.process = {
 				BootstrapDialog.show({
 					
 					title: "History",
+					
+					closable: false,
 					
 					message: content,
 					
@@ -530,6 +545,32 @@ edu.gmu.csiss.geoweaver.process = {
 				console.error(status);
 				
 			});
+			
+		},
+		
+		getStatusCol: function(hid, status){
+			
+			var status_col = "      <td id=\"status_"+hid+"\" ><span class=\"label label-warning\">Pending</span></td> ";
+			
+			if(status == "Done"){
+				
+				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-success\">Done</span></td> ";
+				
+			}else if(status == "Failed"){
+				
+				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-danger\">Failed</span></td> ";
+				
+			}else if(status == "Running"){
+				
+				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-warning\">Running</span></td> ";
+				
+			}else{
+				
+				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
+				
+			}
+			
+			return status_col;
 			
 		},
 		
@@ -591,25 +632,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-				
-				if(msg[i].status == "Done"){
-					
-					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-					
-				}else if(msg[i].status == "Failed"){
-					
-					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-					
-				}else if(msg[i].status == "Running"){
-					
-					status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
-					
-				}else{
-					
-					status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
-					
-				}
+				var status_col = this.getStatusCol(msg[i].id, msg[i].status);
 				
 				content += "    <tr> "+
 					"      <td>"+msg[i].id+"</td> "+
@@ -707,11 +730,15 @@ edu.gmu.csiss.geoweaver.process = {
 				console.log("stop process is called");
 
 				if(msg.ret=="stopped"){
-
+					
 					$("#stopbtn_" + history_id).html("<span class=\"text-success\">Stopped</span>");
-
+					
 					$("#stopbtn_" + history_id).prop("onclick", null).off("click");
-
+					
+//					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
+					
+					$("#status_" + history_id).html("<span class=\"label label-success\">Stopped</span>");
+					
 				}else{
 
 					alert("Fail to stop.");
@@ -915,7 +942,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 					title: "Edit process",
 					
-//					closable: false,
+					closable: false,
 					
 					size: BootstrapDialog.SIZE_WIDE,
 					
@@ -1344,6 +1371,8 @@ edu.gmu.csiss.geoweaver.process = {
                 			"<select id=\"env-select\" class=\"form-control\"> "+
                 			"	<option value=\"default\">Default</option>"+
                 			"	<option value=\"new\">New</option>";
+                		
+                		edu.gmu.csiss.geoweaver.process.envlist = msg;
     						
                 		for(var i=0;i<msg.length;i+=1){
                 			
@@ -1409,11 +1438,24 @@ edu.gmu.csiss.geoweaver.process = {
         									
         									var envid = $(this).val();
         									
-        									$("#bin").val();
-        									
-        									$("#env").val();
-        									
-        									$("#basedir").val();
+        									for(var i=0;i<edu.gmu.csiss.geoweaver.process.envlist.length;i+=1){
+        										
+        										var env = edu.gmu.csiss.geoweaver.process.envlist[i];
+        										
+        										if(env.id == envid){
+        											
+
+                									$("#bin").val(env.bin);
+                									
+                									$("#env").val(env.pyenv);
+                									
+                									$("#basedir").val(env.basedir);
+                									
+                									break;
+        										}
+        										
+        										
+        									}
         									
         								}
         								
