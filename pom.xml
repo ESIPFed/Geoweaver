@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Geoweaver</artifactId>
-    <version>0.7.7</version>
+    <version>0.7.8</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
@@ -54,6 +54,11 @@
 	        <version>4.12</version>
 	        <scope>test</scope>
 	    </dependency>
+	    <dependency>
+		    <groupId>org.kamranzafar</groupId>
+		    <artifactId>jtar</artifactId>
+		    <version>2.3</version>
+		</dependency>
         <dependency>
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>

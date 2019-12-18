@@ -15,6 +15,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.SysDir;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.xfer.FilePermission;
+import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 public class FileTool {
 	
@@ -24,6 +25,79 @@ public class FileTool {
 
 	static Map<String, SFTPClient> token2ftpclient = new HashMap();
 	
+	/**
+	 * Upload a file from local to a specific location on a remote host
+	 * @param hid
+	 * @param passwd
+	 * @param localPath
+	 * @param remoteLoc
+	 * @return
+	 */
+	public static String scp_upload(String hid, String passwd, String localPath, String remoteLoc, boolean removelocal) {
+		
+		String resp = null;
+		
+		SSHSession session = new SSHSessionImpl();
+		
+		try {
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			//establish SSH session and generate a token for it
+			
+			session.login(hid, passwd, null, false);
+			
+			File localfile = new File(localPath);
+			
+			String filename = localfile.getName();
+			
+			String fileloc = remoteLoc + "/" + filename; //upload file to temporary folder
+			
+			log.info("upload " + localPath + " to " + remoteLoc);
+			
+//			session.getSsh().newSCPFileTransfer().download(file_path, fileloc);
+			
+			session.getSsh().newSCPFileTransfer().upload(localPath, remoteLoc);
+			
+			//remove the local temporal files
+			
+			if(removelocal) localfile.delete();
+			
+			session.getSsh().close();
+			
+//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
+			
+//			session.runBash(code, id, false); 
+			
+			String file_url = null;
+			
+			resp = "{\"filename\": \"" + fileloc + "\", \"ret\": \"success\"}";
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			
+			
+		}
+        		
+		return resp;
+		
+	}
+	
+	/**
+	 * Upload a file from local to the home directory of remote host
+	 * @param hid
+	 * @param passwd
+	 * @param localPath
+	 * @return
+	 */
 	public static String scp_upload(String hid, String passwd, String localPath) {
 		
 		String resp = null;
@@ -50,7 +124,9 @@ public class FileTool {
 			
 //			session.getSsh().newSCPFileTransfer().download(file_path, fileloc);
 			
-			session.getSsh().newSCPFileTransfer().upload(localPath, fileloc);
+			SCPFileTransfer transfer = session.getSsh().newSCPFileTransfer();
+			
+			transfer.upload(localPath, fileloc);
 			
 			//remove the local temporal files
 			

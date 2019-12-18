@@ -344,7 +344,7 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir) {
+	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
 		this.history_id = new RandomString(12).nextString();
 		
@@ -375,13 +375,26 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
+    		//new version of execution in which all the python files are copied in the host
     		
-    		cmdline += "chmod +x python-" + history_id + ".py;";
+    		cmdline += "mkdir " + basedir + "/" + token + ";";
+    		
+    		cmdline += "tar -xvf " + token + ".tar -C " + basedir + "/" + token + "/; ";
+    		
+    		cmdline += "cd "+ basedir + "/" + token + "/; ";
+    		
+//    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
+    		
+    		cmdline += "chmod +x *.py;";
+    		
+    		String filename = ProcessTool.getNameById(processid);
+    		
+    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
     		
     		if(BaseTool.isNull(bin)||"default".equals(bin)) {
 
-    			cmdline += "python python-" + history_id + ".py;";
+//    			cmdline += "python python-" + history_id + ".py;";
+    			cmdline += "python " + filename + "; ";
     			
     		}else {
     			
@@ -389,13 +402,13 @@ public class SSHSessionImpl implements SSHSession {
     			
     			cmdline += "source activate " + pyenv + "; "; //for demo only
     			
-    			cmdline += bin + " python-" + history_id + ".py;";
+    			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
     		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
-    		cmdline += "rm python-" + history_id + ".py;";
+    		cmdline += "cd ..; rm -R " + token + "*;";
     		
     		log.info(cmdline);
     		
