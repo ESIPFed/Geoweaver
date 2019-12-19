@@ -1,5 +1,7 @@
 package edu.gmu.csiss.earthcube.cyberconnector.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -24,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.soap.SOAPException;
@@ -40,6 +43,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
+import org.kamranzafar.jtar.TarEntry;
+import org.kamranzafar.jtar.TarOutputStream;
 
 
 /**
@@ -219,6 +224,48 @@ public class BaseTool {
 			rootpath = classpath.substring(0, classpath.indexOf("WEB-INF")) + "/";
 		
 		return rootpath;
+	}
+	
+	/**
+	 * Zip the files into a tar file
+	 * @param files
+	 * @param targetfile
+	 */
+	public static void tar(List<String> files, String targetfile) {
+		
+		try {
+			
+			// Output file stream
+			FileOutputStream dest = new FileOutputStream( targetfile );
+			
+			// Create a TarOutputStream
+			TarOutputStream out = new TarOutputStream( new BufferedOutputStream( dest ) );
+			  
+			// Files to tar
+			for(String fp:files){
+				 File f = new File(fp);
+			     out.putNextEntry(new TarEntry(f, f.getName()));
+			     BufferedInputStream origin = new BufferedInputStream(new FileInputStream( f ));
+			     int count;
+			     byte data[] = new byte[2048];
+			  
+			     while((count = origin.read(data)) != -1) {
+			        out.write(data, 0, count);
+			     }
+			  
+			     out.flush();
+			     origin.close();
+			}
+			  
+			out.close();
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			throw new RuntimeException("Fail to tar the files" + e.getLocalizedMessage());
+			
+		}
+		
 	}
 	
 	/**
