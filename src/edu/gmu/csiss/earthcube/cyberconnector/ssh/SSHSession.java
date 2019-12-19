@@ -73,9 +73,9 @@ public interface SSHSession {
     
 	public void setWebSocketSession(WebSocketSession session);
 	
-	public void runBash(String script, String processid, boolean isjoin);
+	public void runBash(String script, String processid, boolean isjoin, String token);
 	
-	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir);
+	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir, String token);
 	
 	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token);
 	

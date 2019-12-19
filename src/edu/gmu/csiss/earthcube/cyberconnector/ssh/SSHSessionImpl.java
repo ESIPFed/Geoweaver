@@ -56,13 +56,13 @@ public class SSHSessionImpl implements SSHSession {
 	
     protected final Logger   log = LoggerFactory.getLogger(getClass());
     
-    private SSHClient        ssh;
+    private SSHClient        ssh; //SSHJ creates a new client
     
     private String 			 hostid;
     
-    private Session          session; //sshj session
+    private Session          session; //SSHJ client creates SSHJ session
     
-    private Shell            shell;
+    private Shell            shell; //SSHJ session creates SSHJ shell
     
     private String           username;
     
@@ -166,7 +166,7 @@ public class SSHSessionImpl implements SSHSession {
             logout();
             // ssh.authPublickey(System.getProperty("user.name"));
             log.info("new SSHClient");
-            ssh = new SSHClient();
+            ssh = new SSHClient(); //create a new SSH client
             log.info("verify all hosts");
             ssh.addHostKeyVerifier(new HostKeyVerifier() {
                 public boolean verify(String arg0, int arg1, PublicKey arg2) {
@@ -178,7 +178,7 @@ public class SSHSessionImpl implements SSHSession {
             log.info("authenticating: {}", username);
             ssh.authPassword(username, password);
             log.info("starting session");
-            session = ssh.startSession();
+            session = ssh.startSession(); //SSH client creates new SSH session
             log.info("allocating PTY");
             session.allocateDefaultPTY(); 
             this.username = username;
@@ -188,7 +188,7 @@ public class SSHSessionImpl implements SSHSession {
             if(isShell) {
             	//shell
             	log.info("starting shell");
-                shell = session.startShell(); //if shell is null, it is in command mode.
+                shell = session.startShell(); //SSH session creates SSH Shell. if shell is null, it is in command mode.
                 log.info("SSH session established");
                 input = new BufferedReader(new InputStreamReader(shell.getInputStream()));
                 output = shell.getOutputStream();
@@ -346,7 +346,7 @@ public class SSHSessionImpl implements SSHSession {
     @Override
 	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-		this.history_id = new RandomString(12).nextString();
+		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		
@@ -459,9 +459,9 @@ public class SSHSessionImpl implements SSHSession {
 	}
     
     @Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir) {
+	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-		this.history_id = new RandomString(12).nextString();
+		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		
@@ -558,9 +558,9 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-	public void runBash(String script, String processid, boolean isjoin) {
+	public void runBash(String script, String processid, boolean isjoin, String token) {
     	
-		this.history_id = new RandomString(12).nextString();
+		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		

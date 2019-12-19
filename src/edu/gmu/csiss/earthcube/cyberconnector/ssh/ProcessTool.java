@@ -566,7 +566,7 @@ public class ProcessTool {
 			
 			if(token == null) {
 				
-				token = hid; //new RandomString(12).nextString();
+				token = new RandomString(12).nextString();
 				
 			}
 			
@@ -574,11 +574,11 @@ public class ProcessTool {
 			
 			session.login(hid, pswd, token, false);
 			
-			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
-			
-			session.runBash(code, id, isjoin); 
+			session.runBash(code, id, isjoin, token); 
 			
 			String historyid = session.getHistory_id();
+			
+			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
 			resp = "{\"history_id\": \""+historyid+
 					
@@ -646,7 +646,7 @@ public class ProcessTool {
 			
 			GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
 			
-			session.runJupyter(code, id, isjoin, bin, pyenv, basedir); 
+			session.runJupyter(code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			String historyid = session.getHistory_id();
 			

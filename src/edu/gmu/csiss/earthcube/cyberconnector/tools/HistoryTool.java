@@ -1,7 +1,9 @@
 package edu.gmu.csiss.earthcube.cyberconnector.tools;
 
 import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
+import edu.gmu.csiss.earthcube.cyberconnector.ssh.SSHSession;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
+import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
 
 public class HistoryTool {
 	
@@ -12,6 +14,10 @@ public class HistoryTool {
 	public static void stop(String history_id) {
 		
 		try {
+			
+			SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(history_id);
+			
+			session.getSsh().close(); //this line close the shell session and the associated command is stopped
 			
 			String history_end_time = BaseTool.getCurrentMySQLDatetime();
 
