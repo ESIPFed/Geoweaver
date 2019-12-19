@@ -349,7 +349,7 @@ public class WorkflowTool {
 			
 			if(BaseTool.isNull(token)) {
 				
-				token = new RandomString(12).nextString(); //this token will be used to establish websocket session
+				token = task.getHistory_id(); //new RandomString(12).nextString(); //this token will be used to establish websocket session
 				
 			}
 			

@@ -564,6 +564,10 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-warning\">Running</span></td> ";
 				
+			}else if(status == "Stopped"){
+				
+				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-default\">Stopped</span></td> ";
+				
 			}else{
 				
 				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
@@ -737,7 +741,7 @@ edu.gmu.csiss.geoweaver.process = {
 					
 //					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
 					
-					$("#status_" + history_id).html("<span class=\"label label-success\">Stopped</span>");
+					$("#status_" + history_id).html("<span class=\"label label-default\">Stopped</span>");
 					
 				}else{
 
