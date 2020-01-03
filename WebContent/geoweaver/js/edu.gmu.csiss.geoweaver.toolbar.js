@@ -44,54 +44,89 @@ edu.gmu.csiss.geoweaver.toolbar = {
 			
 			//list recent execution history
 			
-			BootstrapDialog.show({
-				
-				title: "Recent History",
-				
-				message: "<div class=\"btn-group\" role=\"group\" >"+
-					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
-					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
-					"</div>",
-					
-				onshown: function(dialogRef){
-					
-					$("#history-process-d").click(function(){
-					
-						edu.gmu.csiss.geoweaver.process.recent(20);
-						
-						dialogRef.close();
-						
-					});
-					
-					$("#history-workflow-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.workflow.recent(20);
-						
-						dialogRef.close();
-						
-					});
-					
-				},
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialogItself){
-						
-						dialogItself.close();
-						
-					}
-					
-				}]
-				
-			});
+	    	const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+	    		title: 'Recent History',
+	    	    width: 300, height: 160,
+	    	    appearanceName: 'yosemite',
+	    	    html:  "<div class=\"btn-group\" role=\"group\" >"+
+				"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
+				"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
+				"</div>"
+	    	});
+	    	
+	    	frame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
+	    	
+	    	frame.setControl({
+	            maximizeButton: 'maximizeButton',
+	            demaximizeButton: 'restoreButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            animation: true,
+	            animationDuration: 200,
+
+	        });
+	    	
+            frame.on('closeButton', 'click', (_frame, evt) => {
+                _frame.closeFrame();
+                
+            });
+            
+            frame.on('#history-process-d', 'click', (_frame, evt) => {
+            	edu.gmu.csiss.geoweaver.process.recent(20);
+            	_frame.closeFrame();
+            });
+            
+            frame.on('#history-workflow-d', 'click', (_frame, evt) => {
+            	edu.gmu.csiss.geoweaver.workflow.recent(20);
+            	_frame.closeFrame();
+            });
+            
+	    	//Show the window
+	    	frame.show();
 			
-			$.ajax({
-				
-				url: ""
-				
-			});
+//			BootstrapDialog.show({
+//				
+//				title: "Recent History",
+//				
+//				message: "<div class=\"btn-group\" role=\"group\" >"+
+//					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
+//					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
+//					"</div>",
+//					
+//				onshown: function(dialogRef){
+//					
+//					$("#history-process-d").click(function(){
+//					
+//						edu.gmu.csiss.geoweaver.process.recent(20);
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//					$("#history-workflow-d").click(function(){
+//						
+//						edu.gmu.csiss.geoweaver.workflow.recent(20);
+//						
+//						dialogRef.close();
+//						
+//					});
+//					
+//				},
+//				
+//				buttons: [{
+//					
+//					label: "Close",
+//					
+//					action: function(dialogItself){
+//						
+//						dialogItself.close();
+//						
+//					}
+//					
+//				}]
+//				
+//			});
+			
 			
 		},
 		

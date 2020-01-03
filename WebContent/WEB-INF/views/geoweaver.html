@@ -11,7 +11,7 @@
 		
 		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
 		
-    	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" />
+    		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" />
 		
 		<link href="../css/font-awesome.css" rel="stylesheet" />
 		
@@ -23,9 +23,9 @@
 		
 		<link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" />
     
-    	<link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" />
+    		<link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" />
     	
-    	<link rel="stylesheet" href="../geoweaver/css/prism.css" />
+    		<link rel="stylesheet" href="../geoweaver/css/prism.css" />
     	
         <link rel="stylesheet" href="../geoweaver/css/notebook.css" />
         
@@ -61,7 +61,9 @@
 		
 		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
     
-    	<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+    		<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+    	
+    		<script type="text/javascript" src="../geoweaver/js/jsframe.js" ></script>
     	
     	
 	</head>
@@ -74,7 +76,7 @@
 			
 				<div id="top_toolbar">
 				
-					<div id="toolbar-left" style="position: absolute; top: 10px; left: 30px; height: 50px; z-index:101;" >
+					<div id="toolbar-left" style="position: absolute; top: 10px; left: 30px; height: 50px; z-index:1;" >
 					
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-search"><i class="fa fa-search"  alt="search"></i></button>
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-add"><i class="fa fa-plus" alt="create"></i></button>
@@ -91,6 +93,8 @@
 				<div id="toolbox">
 				  
 			      <input type="file" id="hidden-file-upload"/>
+			      
+			      <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" style="color:gray" alt="test jsframe graph" />
 			      
 			      <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" style="color:gray" alt="upload graph" />
 			      
@@ -114,7 +118,7 @@
 					
 					<!-- log window right top -->
 					
-					<div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 50px; z-index:101;">
+					<div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 50px; z-index:1;">
 						
 						<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
 						
@@ -124,15 +128,15 @@
 			
 					<!-- status indicator right bottom -->
 					
-					<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:101;">
-			    	  <span id="current_workflow_name" class="invisible">Current Workflow: </span>
-				      <i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
+					<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:1;">
+			    	  		<span id="current_workflow_name" class="invisible">Current Workflow: </span>
+				      	<i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
 				    
 				    </div>
 				    
 				    <!-- progress right bottom, above the status indicator -->
 					
-					<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:101; overflow-y: scroll;">
+					<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
 						<!-- <div id="bar-1">
 							Task1
 							<div class="progress">
