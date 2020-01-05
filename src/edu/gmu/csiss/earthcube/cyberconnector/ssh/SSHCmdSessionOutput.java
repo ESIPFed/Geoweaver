@@ -98,7 +98,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 
                 logs.append(line).append("\n");
                 
-                if(!BaseTool.isNull(out)) {
+                if(!BaseTool.isNull(out) && out.isOpen()) {
                 	
                 	if(prelog.toString()!=null) {
                 		

@@ -457,6 +457,8 @@ public class WorkflowTool {
 				
 				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
 				
+				resp.append("\"status\": \"").append(ProcessTool.escape(rs.getString("indicator"))).append("\", ");
+				
 				resp.append("\"output\": \"").append(rs.getString("output")).append("\"}");
 				
 				num++;
@@ -512,6 +514,8 @@ public class WorkflowTool {
 				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"status\": \"").append(ProcessTool.escape(rs.getString("indicator"))).append("\", ");
 				
 				resp.append("\"output\": \"").append(rs.getString("output")).append("\"}");
 				

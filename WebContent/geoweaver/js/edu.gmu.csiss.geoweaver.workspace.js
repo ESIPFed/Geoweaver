@@ -8,6 +8,84 @@ edu.gmu.csiss.geoweaver.workspace = {
 		
 		currentmode: 1, //1: normal; 2: monitor
 		
+		jsFrame: new JSFrame(),
+		
+		openModalWindow:function() {
+			
+			$("#toolbar-left").css('z-index', 1);
+			
+			$("#test-jsframe").addClass("fa-shower");
+			
+	        const jsFrame = new JSFrame();
+//	        const innerHTML = '<div class="modal-header">' +
+//	            '<h6 class="modal-title">Do want to save ?</h6>' +
+//	            '</div>' +
+//	            '<div class="modal-footer">' +
+//	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
+//	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
+//	            '</div>';
+	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
+
+	        const modalFrame = jsFrame.create({
+	            name: 'my-modal-window',
+	            title: 'Confirmation',
+	            appearanceName: 'yosemite',
+	            left: 0, top: 0, width: 320, height: 150,
+	            style: {
+                    backgroundColor: 'rgb(255,255,255)',
+                    overflow:'auto'
+
+                },
+	            movable: true,
+	            resizable: true,
+	            html: innerHTML
+	        });
+	        modalFrame.setControl({
+                styleDisplay:'inline',
+                maximizeButton: 'zoomButton',
+                demaximizeButton: 'dezoomButton',
+                minimizeButton: 'minimizeButton',
+                deminimizeButton: 'deminimizeButton',
+                hideButton: 'closeButton',
+                animation: true,
+                animationDuration: 150,
+
+            });
+	        //Place window in the center
+	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
+
+
+	        //Handling the button's click event
+	        modalFrame.on('#bt_submit', 'click', (_frame, e) => {
+	            _frame.extra = {
+	                result: 'submitted'
+	            }
+	            _frame.closeFrame();
+	        });
+	        modalFrame.on('#bt_cancel', 'click', (frame, e) => {
+	            //You can also get frame object from JSFrame object.
+	            var _frame = jsFrame.getWindowByName('my-modal-window');
+	            _frame.extra = {
+	                result: 'canceled'
+	            }
+	            _frame.closeFrame();
+	        });
+
+//	        //Open as modal window
+//	        modalFrame.showModal(_frame => {
+//	            //You can get callback when closing the modal window
+//	            jsFrame.showToast({
+//	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
+//	                align: 'center',
+//	                duration: 2000
+//	            });
+//	        });
+	        
+	        modalFrame.show()
+
+
+	    },
+		
 		/**
 		 * Create a new GraphCreator object
 		 * @svg SVG object
@@ -231,6 +309,51 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    
     	    	document.getElementById("hidden-file-upload").click();
     	    
+    	    });
+    	    
+    	    d3.select("#test-jsframe").on('click', function(){
+    	    	
+    	    	edu.gmu.csiss.geoweaver.workspace.openModalWindow();
+    	    	
+//    	    	const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+//    	    		title: 'Test Window',
+//    	    	    left: 120, 
+//    	    	    top: 120, 
+//    	    	    width: 620, 
+//    	    	    height: 560,
+//    	    	    zIndex: 199,
+//    	    	    appearanceName: 'yosemite',
+////    	    	    url: 'geoweaver.html',//URL to display in iframe
+//    	    	    //urlLoaded:Callback function called after loading iframe
+////    	    	    urlLoaded: (frame) => {
+////    	    	      //Called when the url finishes loading
+////    	    	    }
+////    	    	    title: 'Window',
+////    	    	    left: 20, top: 20, width: 320, height: 220,
+////    	    	    movable: true,//Enable to be moved by mouse
+////    	    	    resizable: true,//Enable to be resized by mouse
+////    	    	    html: '<div id="my_element" style="padding:10px;font-size:12px;color:darkgray;">Contents of window</div>'
+//    	    	});
+//    	    	
+//    	    	frame.setControl({
+//    	            maximizeButton: 'maximizeButton',
+//    	            demaximizeButton: 'restoreButton',
+//    	            minimizeButton: 'minimizeButton',
+//    	            deminimizeButton: 'deminimizeButton',
+//    	            animation: true,
+//    	            animationDuration: 200,
+//
+//    	        });
+//    	    	
+//                frame.on('closeButton', 'click', (_frame, evt) => {
+//                	alert("click button is clicked");
+//                    _frame.closeFrame();
+//                    
+//                });
+//                
+//    	    	//Show the window
+//    	    	frame.show();
+    	    	
     	    });
     	    
     	    d3.select("#hidden-file-upload").on("change", function(){

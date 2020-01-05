@@ -89,7 +89,7 @@ edu.gmu.csiss.geoweaver.menu = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = "<dl class=\"row\">";
+				var content = "<div class=\"modal-body\"><dl class=\"row\" style=\"font-size: 12px;\">";
 				
 				jQuery.each(msg, function(i, val) {
 					
@@ -112,36 +112,69 @@ edu.gmu.csiss.geoweaver.menu = {
 
 				});
 				
-				content += "</dl>";
+				content += "</dl></div>";
 				
-				BootstrapDialog.show({
-		            
-					title: 'Details',
-		            
-		            message: content,
-		            
-		            buttons: [{
-		                
-		            	label: 'Ok',
-		                
-		                action: function(dialog) {
-		                	
-		                	dialog.close();
-		                	
-		                }
-		            }, {
-		            	
-		                label: 'Cancel',
-		                
-		                action: function(dialog) {
-		                
-		                	dialog.close();
-		                
-		                }
-		            
-		            }]
-		        
-				});
+				var width = 500; var height = 480;
+				
+				const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			    		title: 'Details',
+			    	    left: 0, 
+			    	    top: 0, 
+			    	    width: width, 
+			    	    height: height,
+			    	    appearanceName: 'yosemite',
+			    	    style: {
+		                    backgroundColor: 'rgb(255,255,255)',
+				    	    fontSize: 12,
+		                    overflow:'auto'
+		                },
+			    	    html: content
+		    	});
+		    	
+				frame.setControl({
+		            styleDisplay:'inline',
+		            maximizeButton: 'zoomButton',
+		            demaximizeButton: 'dezoomButton',
+		            minimizeButton: 'minimizeButton',
+		            deminimizeButton: 'deminimizeButton',
+		            hideButton: 'closeButton',
+		            animation: true,
+		            animationDuration: 150,
+		
+		        });
+		    	
+		    	frame.show();
+		    	
+		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+				
+//				BootstrapDialog.show({
+//		            
+//					title: 'Details',
+//		            
+//		            message: content,
+//		            
+//		            buttons: [{
+//		                
+//		            	label: 'Ok',
+//		                
+//		                action: function(dialog) {
+//		                	
+//		                	dialog.close();
+//		                	
+//		                }
+//		            }, {
+//		            	
+//		                label: 'Cancel',
+//		                
+//		                action: function(dialog) {
+//		                
+//		                	dialog.close();
+//		                
+//		                }
+//		            
+//		            }]
+//		        
+//				});
 				
 			});
 			

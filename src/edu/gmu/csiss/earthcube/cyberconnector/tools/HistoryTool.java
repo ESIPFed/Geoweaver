@@ -17,7 +17,11 @@ public class HistoryTool {
 			
 			SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(history_id);
 			
-			session.getSsh().close(); //this line close the shell session and the associated command is stopped
+			if(session!=null) {
+				
+				session.getSsh().close(); //this line close the shell session and the associated command is stopped
+				
+			}
 			
 			String history_end_time = BaseTool.getCurrentMySQLDatetime();
 

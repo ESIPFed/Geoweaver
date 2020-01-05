@@ -32,187 +32,372 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 					
 					edu.gmu.csiss.geoweaver.filebrowser.edit_file = 1;
 
-					BootstrapDialog.closeAll();
+					var width = 800; var height = 640;
 					
-					BootstrapDialog.show({
+					const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+				    		title: 'File Editor',
+				    	    left: 0, 
+				    	    top: 0, 
+				    	    width: width, 
+				    	    height: height,
+				    	    appearanceName: 'yosemite',
+				    	    style: {
+			                    backgroundColor: 'rgb(255,255,255)',
+					    	    fontSize: 12,
+			                    overflow:'auto'
+			                },
+				    	    html: "<div class=\"modal-body\" style=\"font-size:12px;\" ><div id=\"codearea\" class=\"form-group row required\" ></div>"+
+							"<button id=\"loading_btn\" class=\"btn btn-sm btn-warning\"><span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span> Loading...</button></div>" + 
+							'<div class="modal-footer">' +
+							"	<button type=\"button\" id=\"browser-save\" class=\"btn btn-outline-primary\">Save</button> "+
+							"	<button type=\"button\" id=\"browser-run\" class=\"btn btn-outline-primary\">Run</button> "+
+							'</div>'
+				    	    
+			    	});
+			    	
+					frame.setControl({
+			            styleDisplay:'inline',
+			            maximizeButton: 'zoomButton',
+			            demaximizeButton: 'dezoomButton',
+			            minimizeButton: 'minimizeButton',
+			            deminimizeButton: 'deminimizeButton',
+			            hideButton: 'closeButton',
+			            animation: true,
+			            animationDuration: 150,
+			
+			        });
+			    	
+			    	frame.show();
+			    	
+			    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			    	
+					$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
+	            	
+					edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+		        		
+		        		lineNumbers: true,
+		        		lineWrapping: true
+		        	});
+					
+					var url_path = msg.path;
+					
+					//prevent it loading from cache
+					$.ajaxSetup ({
+					    // Disable caching of AJAX responses
+					    cache: false
+					});
+					
+					$.get( "../" + url_path, function( data ) {
 						
-						title: "File Editor",
+						edu.gmu.csiss.geoweaver.filebrowser.editor.setValue(data);
 						
-						closable: false,
+						$("#loading_btn").hide();
 						
-						size: BootstrapDialog.SIZE_WIDE,
+					});
+					
+					$.ajaxSetup ({
+					    // Enable caching of AJAX responses
+					    cache: true
+					});
+					
+					frame.on('closeButton', 'click', (_frame, evt) => {
 						
-						message: "<div id=\"codearea\" class=\"form-group row required\" ></div>"+
+	                	$.ajax({
+		            		
+		            		url: "closefilebrowser",
+		            		
+		            		method: "POST"
+		            		
+		            	}).done(function(msg){
+		            		
+		            		console.log(msg);
+		            		
+		            	});
+	                	
+		                _frame.closeFrame();
+		                
+		            });
+					
+					$("#browser-save").click(function(){
 						
-						"<button id=\"loading_btn\" class=\"btn btn-sm btn-warning\"><span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span> Loading...</button>",
+						$.ajax({
+	                		
+	                		url: "updatefile",
+	                		
+	                		method: "POST",
+	                		
+	                		data: { filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name, 
+	                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()}
+	                		
+	                	}).done(function(msg){
+	                		
+	                		msg = $.parseJSON(msg);
+	                		
+	                		if(msg.ret == "success"){
+	                			
+		                		console.log("file updated");
+	                			
+		                		alert("Saved!!");
+		                		
+	                		}else{
+	                			
+	                			alert("Failed!!" + msg.reason);
+	                		}
+	                		
+	                	});
+	                	
 						
-						onshown: function(){
-							
-							$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
-			            	
-							edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
-				        		
-				        		lineNumbers: true,
-				        		lineWrapping: true
-				        	});
-							
-							var url_path = msg.path;
-							
-							//prevent it loading from cache
-							$.ajaxSetup ({
-							    // Disable caching of AJAX responses
-							    cache: false
-							});
-							
-							$.get( "../" + url_path, function( data ) {
-								
-								edu.gmu.csiss.geoweaver.filebrowser.editor.setValue(data);
-								
-								$("#loading_btn").hide();
-								
-							});
-							
-							$.ajaxSetup ({
-							    // Enable caching of AJAX responses
-							    cache: true
-							});
-							
-			            },
-			            
-			            onhide: function(dialogRef){
+					});
+					
+					$("#browser-run").click(function(){
 
+	                	var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+	        			
+	        			var suffix = file_name.match(patt1);
+	                	
+	                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
+	                		
+	                		//step 1: add the file as a new process
+	                		
+	                		//step 2: pop-up the run dialog of the process
+	                		
+	                		var type = "shell";
+	                		
+	                		if("py"==suffix[1]){
+	                			
+	                			type = "python";
+	                			
+	                		}
+	                		
+		                	var req = {
+		                			
+		                			name: file_name,
+		                			
+		                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
+		                			
+		                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
+		                			
+		                			type: type,
+		                			
+		                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
+		                			
+		                	};
+		                	
 		                	$.ajax({
 		                		
-		                		url: "closefilebrowser",
+		                		url: "addLocalFile",
 		                		
-		                		method: "POST"
+		                		method: "POST",
+		                		
+		                		data: req
 		                		
 		                	}).done(function(msg){
 		                		
-		                		console.log(msg);
+		                		msg = $.parseJSON(msg);
+		                		
+		                		var pid = msg.id;
+		                		
+		                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
+		                		
+		                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
+		                		
+		                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
+		                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
 		                		
 		                	});
 		                	
-			            },
-			            
-			            buttons: [{
-			            	
-			                label: 'Save',
-			                
-			                action: function(dialog) {
-			                	
-			                	$.ajax({
-			                		
-			                		url: "updatefile",
-			                		
-			                		method: "POST",
-			                		
-			                		data: { filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name, 
-			                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()}
-			                		
-			                	}).done(function(msg){
-			                		
-			                		msg = $.parseJSON(msg);
-			                		
-			                		if(msg.ret == "success"){
-			                			
-				                		console.log("file updated");
-			                			
-				                		alert("Saved!!");
-				                		
-			                		}else{
-			                			
-			                			alert("Failed!!" + msg.reason);
-			                		}
-			                		
-			                	});
-			                	
-			                }
-			            
-			            },{
-			            	
-			                label: 'Run',
-			                
-			                action: function(dialog) {
-			                	
-			                	var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
-			        			
-			        			var suffix = file_name.match(patt1);
-			                	
-			                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
-			                		
-			                		//step 1: add the file as a new process
-			                		
-			                		//step 2: pop-up the run dialog of the process
-			                		
-			                		var type = "shell";
-			                		
-			                		if("py"==suffix[1]){
-			                			
-			                			type = "python";
-			                			
-			                		}
-			                		
-				                	var req = {
-				                			
-				                			name: file_name,
-				                			
-				                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
-				                			
-				                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
-				                			
-				                			type: type,
-				                			
-				                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
-				                			
-				                	};
-				                	
-				                	$.ajax({
-				                		
-				                		url: "addLocalFile",
-				                		
-				                		method: "POST",
-				                		
-				                		data: req
-				                		
-				                	}).done(function(msg){
-				                		
-				                		msg = $.parseJSON(msg);
-				                		
-				                		var pid = msg.id;
-				                		
-				                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
-				                		
-				                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
-				                		
-				                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
-				                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
-				                		
-				                	});
-				                	
-			                	}else{
-			                		
-			                		alert("Only Python and Shell script can run!");
-			                		
-			                	}
-			                	
-			                	dialog.close();
-			                
-			                }
-			            
-			            },{
-			            	
-			                label: 'Close',
-			                
-			                action: function(dialog) {
-			                	
-			                	dialog.close();
-			                
-			                }
-			            
-			            }]
+	                	}else{
+	                		
+	                		alert("Only Python and Shell script can run!");
+	                		
+	                	}
+						
 						
 					});
+					
+					
+					
+//					BootstrapDialog.closeAll();
+//					
+//					BootstrapDialog.show({
+//						
+//						title: "File Editor",
+//						
+//						closable: false,
+//						
+//						size: BootstrapDialog.SIZE_WIDE,
+//						
+//						message: "<div id=\"codearea\" class=\"form-group row required\" ></div>"+
+//						
+//						"<button id=\"loading_btn\" class=\"btn btn-sm btn-warning\"><span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span> Loading...</button>",
+//						
+//						onshown: function(){
+//							
+//							$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
+//			            	
+//							edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+//				        		
+//				        		lineNumbers: true,
+//				        		lineWrapping: true
+//				        	});
+//							
+//							var url_path = msg.path;
+//							
+//							//prevent it loading from cache
+//							$.ajaxSetup ({
+//							    // Disable caching of AJAX responses
+//							    cache: false
+//							});
+//							
+//							$.get( "../" + url_path, function( data ) {
+//								
+//								edu.gmu.csiss.geoweaver.filebrowser.editor.setValue(data);
+//								
+//								$("#loading_btn").hide();
+//								
+//							});
+//							
+//							$.ajaxSetup ({
+//							    // Enable caching of AJAX responses
+//							    cache: true
+//							});
+//							
+//			            },
+//			            
+//			            onhide: function(dialogRef){
+//
+//		                	$.ajax({
+//		                		
+//		                		url: "closefilebrowser",
+//		                		
+//		                		method: "POST"
+//		                		
+//		                	}).done(function(msg){
+//		                		
+//		                		console.log(msg);
+//		                		
+//		                	});
+//		                	
+//			            },
+//			            
+//			            buttons: [{
+//			            	
+//			                label: 'Save',
+//			                
+//			                action: function(dialog) {
+//			                	
+//			                	$.ajax({
+//			                		
+//			                		url: "updatefile",
+//			                		
+//			                		method: "POST",
+//			                		
+//			                		data: { filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name, 
+//			                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()}
+//			                		
+//			                	}).done(function(msg){
+//			                		
+//			                		msg = $.parseJSON(msg);
+//			                		
+//			                		if(msg.ret == "success"){
+//			                			
+//				                		console.log("file updated");
+//			                			
+//				                		alert("Saved!!");
+//				                		
+//			                		}else{
+//			                			
+//			                			alert("Failed!!" + msg.reason);
+//			                		}
+//			                		
+//			                	});
+//			                	
+//			                }
+//			            
+//			            },{
+//			            	
+//			                label: 'Run',
+//			                
+//			                action: function(dialog) {
+//			                	
+//			                	var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+//			        			
+//			        			var suffix = file_name.match(patt1);
+//			                	
+//			                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
+//			                		
+//			                		//step 1: add the file as a new process
+//			                		
+//			                		//step 2: pop-up the run dialog of the process
+//			                		
+//			                		var type = "shell";
+//			                		
+//			                		if("py"==suffix[1]){
+//			                			
+//			                			type = "python";
+//			                			
+//			                		}
+//			                		
+//				                	var req = {
+//				                			
+//				                			name: file_name,
+//				                			
+//				                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
+//				                			
+//				                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
+//				                			
+//				                			type: type,
+//				                			
+//				                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
+//				                			
+//				                	};
+//				                	
+//				                	$.ajax({
+//				                		
+//				                		url: "addLocalFile",
+//				                		
+//				                		method: "POST",
+//				                		
+//				                		data: req
+//				                		
+//				                	}).done(function(msg){
+//				                		
+//				                		msg = $.parseJSON(msg);
+//				                		
+//				                		var pid = msg.id;
+//				                		
+//				                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
+//				                		
+//				                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
+//				                		
+//				                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
+//				                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
+//				                		
+//				                	});
+//				                	
+//			                	}else{
+//			                		
+//			                		alert("Only Python and Shell script can run!");
+//			                		
+//			                	}
+//			                	
+//			                	dialog.close();
+//			                
+//			                }
+//			            
+//			            },{
+//			            	
+//			                label: 'Close',
+//			                
+//			                action: function(dialog) {
+//			                	
+//			                	dialog.close();
+//			                
+//			                }
+//			            
+//			            }]
+//						
+//					});
 					
 
 					
@@ -442,7 +627,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		
 		showFolderBrowserDialog: function(msg){
 			
-			var cont = '<div class=\"row\"  style="padding:10px;">';
+			var cont = '<div class="modal-body" style=\"font-size: 12px;\"><div class=\"row\"  style="padding:10px;">';
 			
 			cont += '<table class="table table-sm table-dark col-md-12" id="directory_table"> '+
 				'  <thead> '+
@@ -454,60 +639,120 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				'    </tr> '+
 				'  </thead> '+
 				'  <tbody>'+ 
-				'  </tbody></table></div>';
+				'  </tbody></table></div></div>';
 			
-			BootstrapDialog.show({
-				
-				title: 'File Browser',
-	            
-	            message: cont,
-	            
-	            size: BootstrapDialog.SIZE_WIDE,
-	            
-	            closable: true,
-	            
-	            onshown: function(){
-	            	
-	            	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
-	            	
-	            	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
-	            	
-	            },
-	            
-	            onhide: function(){
-	            	
-	            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+			var width = 800; var height = 640;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'File Browser',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: cont
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+	    	
+	    	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
+        	
+        	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
+        	
+        	frame.on('closeButton', 'click', (_frame, evt) => {
+        		
+            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+	        		
+	        		//only close connection when the file editor is not present
+	        		$.ajax({
 	            		
-	            		//only close connection when the file editor is not present
-	            		$.ajax({
-	                		
-	                		url: "closefilebrowser",
-	                		
-	                		method: "POST"
-	                		
-	                	}).done(function(msg){
-	                		
-	                		console.log(msg);
-	                		
-	                	});
-	                	
-	            	}
+	            		url: "closefilebrowser",
+	            		
+	            		method: "POST"
+	            		
+	            	}).done(function(msg){
+	            		
+	            		console.log(msg);
+	            		
+	            	});
 	            	
-	            },
-	            
-	            buttons: [{
-	            	
-	                label: 'Close',
-	                
-	                action: function(dialog) {
-	                	
-	                	dialog.close();
-	                
-	                }
-	            
-	            }]
-				
-			});
+	        	}
+            	
+                _frame.closeFrame();
+                
+            });
+			
+//			BootstrapDialog.show({
+//				
+//				title: 'File Browser',
+//	            
+//	            message: cont,
+//	            
+//	            size: BootstrapDialog.SIZE_WIDE,
+//	            
+//	            closable: true,
+//	            
+//	            onshown: function(){
+//	            	
+//	            	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
+//	            	
+//	            	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
+//	            	
+//	            },
+//	            
+//	            onhide: function(){
+//	            	
+//	            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+//	            		
+//	            		//only close connection when the file editor is not present
+//	            		$.ajax({
+//	                		
+//	                		url: "closefilebrowser",
+//	                		
+//	                		method: "POST"
+//	                		
+//	                	}).done(function(msg){
+//	                		
+//	                		console.log(msg);
+//	                		
+//	                	});
+//	                	
+//	            	}
+//	            	
+//	            },
+//	            
+//	            buttons: [{
+//	            	
+//	                label: 'Close',
+//	                
+//	                action: function(dialog) {
+//	                	
+//	                	dialog.close();
+//	                
+//	                }
+//	            
+//	            }]
+//				
+//			});
 			
 		},
 		

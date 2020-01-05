@@ -238,123 +238,202 @@ edu.gmu.csiss.geoweaver.monitor = {
 			}
 			
 		},
+		
+		refresh: function(){
+			
+			//get the current executing processes
+			
+			$.ajax({
+				
+				url: "logs",
+				
+				method: "POST",
+				
+				data: "type=process&isactive=true"
+				
+			}).done(function(msg){
+				
+				if(!msg.length){
+					
+					$("#running_process_table").html("no running process found");
+					
+					return;
+					
+				}else{
+					
+					msg = $.parseJSON(msg);
+					
+					var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
+					
+					$("#running_process_table").html(content);
+					
+				}
+				
+				
+			});
+			
+			//get the current executing workflows
+			
+			$.ajax({
+				
+				url: "logs",
+				
+				method: "POST",
+				
+				data: "type=workflow&isactive=true"
+				
+			}).done(function(msg){
+				
+				if(!msg.length){
+					
+					$("#running_workflow_table").html("no running workflow found");
+					
+					return;
+					
+				}
+				
+				msg = $.parseJSON(msg);
+				
+				var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+				
+				$("#running_workflow_table").html(content);
+				
+			});
+			
+		},
 
 		showDialog: function(){
 			
-			var content = "<div class=\"row\"><div class=\"col col-md-12\"><h3>Running Processes</h3></div></div>"+
+			var content = "<div class=\"modal-body\"><div class=\"row\"><div class=\"col col-md-12\"><h3>Running Processes</h3></div></div>"+
 			
-					"<div id=\"running_process_table\"></div>" +
+					"<div id=\"running_process_table\" style=\"font-size: 12px;\"></div>" +
 					
 					"<div class=\"row\"><div  class=\"col col-md-12\"><h3>Running Workflows</h3></div></div>" +
 					
-					"<div id=\"running_workflow_table\"></div>";
+					"<div id=\"running_workflow_table\" style=\"font-size: 12px;\"></div></div>";
 
-			BootstrapDialog.show({
-				
-				title: "Activity Monitor",
-				
-				message: content,
-					
-				onshown: function(dialogRef){
-					
-					//get the current executing processes
-					
-					$.ajax({
-						
-						url: "logs",
-						
-						method: "POST",
-						
-						data: "type=process&isactive=true"
-						
-					}).done(function(msg){
-						
-						if(!msg.length){
-							
-							$("#running_process_table").html("no running process found");
-							
-							return;
-							
-						}else{
-							
-							msg = $.parseJSON(msg);
-							
-							var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
-							
-							$("#running_process_table").html(content);
-							
-						}
-						
-						
-					});
-					
-					//get the current executing workflows
-					
-					$.ajax({
-						
-						url: "logs",
-						
-						method: "POST",
-						
-						data: "type=workflow&isactive=true"
-						
-					}).done(function(msg){
-						
-						if(!msg.length){
-							
-							$("#running_workflow_table").html("no running workflow found");
-							
-							return;
-							
-						}
-						
-						msg = $.parseJSON(msg);
-						
-						var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
-						
-						$("#running_workflow_table").html(content);
-						
-					});
-					
-//					$("#newhost-d").click(function(){
+			content += '<div class="modal-footer">' +
+				"<button type=\"button\" id=\"refresh-monitor\" class=\"btn btn-outline-primary\">Refresh</button> "+
+				'</div>';
+			
+			var width = 720; var height = 480;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'Activity Monitor',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgba(255,255,255,0.8)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	//Show the window
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+	    	
+	    	edu.gmu.csiss.geoweaver.monitor.refresh();
+	    	
+//			BootstrapDialog.show({
+//				
+//				title: "Activity Monitor",
+//				
+//				message: content,
+//					
+//				onshown: function(dialogRef){
+//					
+//					//get the current executing processes
+//					
+//					$.ajax({
 //						
-//						edu.gmu.csiss.geoweaver.host.newDialog();
+//						url: "logs",
 //						
-//						dialogRef.close();
+//						method: "POST",
+//						
+//						data: "type=process&isactive=true"
+//						
+//					}).done(function(msg){
+//						
+//						if(!msg.length){
+//							
+//							$("#running_process_table").html("no running process found");
+//							
+//							return;
+//							
+//						}else{
+//							
+//							msg = $.parseJSON(msg);
+//							
+//							var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
+//							
+//							$("#running_process_table").html(content);
+//							
+//						}
+//						
 //						
 //					});
 //					
-//					$("#newprocess-d").click(function(){
+//					//get the current executing workflows
+//					
+//					$.ajax({
 //						
-//						edu.gmu.csiss.geoweaver.process.newDialog();
+//						url: "logs",
 //						
-//						dialogRef.close();
+//						method: "POST",
+//						
+//						data: "type=workflow&isactive=true"
+//						
+//					}).done(function(msg){
+//						
+//						if(!msg.length){
+//							
+//							$("#running_workflow_table").html("no running workflow found");
+//							
+//							return;
+//							
+//						}
+//						
+//						msg = $.parseJSON(msg);
+//						
+//						var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+//						
+//						$("#running_workflow_table").html(content);
 //						
 //					});
 //					
-//					$("#newworkflow-d").click(function(){
+//				},
+//				
+//				buttons: [{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
 //						
-//						edu.gmu.csiss.geoweaver.workflow.newDialog();
+//						dialog.close();
 //						
-//						dialogRef.close();
-//						
-//					});
-					
-				},
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
-				
-			});
+//					}
+//					
+//				}]
+//				
+//			});
 
 		}
 		
