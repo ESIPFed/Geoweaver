@@ -485,9 +485,25 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
     		
-    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
+//    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
+//    			
+//    			cmdline += "source activate " + pyenv + "; ";
+//    			
+//    		}
+    		
+    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
+
+//    			cmdline += "python python-" + history_id + ".py;";
     			
-    			cmdline += "source activate " + pyenv + "; ";
+//    			cmdline += "python " + filename + "; ";
+    			
+    		}else {
+    			
+//    			cmdline += "conda init; ";
+    			
+    			cmdline += "source activate " + pyenv + "; "; //for demo only
+    			
+//    			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
@@ -582,7 +598,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "./geoweaver-" + token + ".sh;";
     		
-//    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
+    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
 			
     		log.info(cmdline);
     		

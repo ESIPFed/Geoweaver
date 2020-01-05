@@ -17,22 +17,40 @@ edu.gmu.csiss.geoweaver.workspace = {
 			$("#test-jsframe").addClass("fa-shower");
 			
 	        const jsFrame = new JSFrame();
-	        const innerHTML = '<div class="modal-header">' +
-	            '<h6 class="modal-title">Do want to save ?</h6>' +
-	            '</div>' +
-	            '<div class="modal-footer">' +
-	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
-	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
-	            '</div>';
+//	        const innerHTML = '<div class="modal-header">' +
+//	            '<h6 class="modal-title">Do want to save ?</h6>' +
+//	            '</div>' +
+//	            '<div class="modal-footer">' +
+//	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
+//	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
+//	            '</div>';
+	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
 
 	        const modalFrame = jsFrame.create({
 	            name: 'my-modal-window',
 	            title: 'Confirmation',
+	            appearanceName: 'yosemite',
 	            left: 0, top: 0, width: 320, height: 150,
+	            style: {
+                    backgroundColor: 'rgb(255,255,255)',
+                    overflow:'auto'
+
+                },
 	            movable: true,
 	            resizable: true,
 	            html: innerHTML
 	        });
+	        modalFrame.setControl({
+                styleDisplay:'inline',
+                maximizeButton: 'zoomButton',
+                demaximizeButton: 'dezoomButton',
+                minimizeButton: 'minimizeButton',
+                deminimizeButton: 'deminimizeButton',
+                hideButton: 'closeButton',
+                animation: true,
+                animationDuration: 150,
+
+            });
 	        //Place window in the center
 	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
 
@@ -53,15 +71,17 @@ edu.gmu.csiss.geoweaver.workspace = {
 	            _frame.closeFrame();
 	        });
 
-	        //Open as modal window
-	        modalFrame.showModal(_frame => {
-	            //You can get callback when closing the modal window
-	            jsFrame.showToast({
-	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
-	                align: 'center',
-	                duration: 2000
-	            });
-	        });
+//	        //Open as modal window
+//	        modalFrame.showModal(_frame => {
+//	            //You can get callback when closing the modal window
+//	            jsFrame.showToast({
+//	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
+//	                align: 'center',
+//	                duration: 2000
+//	            });
+//	        });
+	        
+	        modalFrame.show()
 
 
 	    },

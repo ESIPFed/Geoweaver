@@ -44,17 +44,20 @@ edu.gmu.csiss.geoweaver.toolbar = {
 			
 			//list recent execution history
 			
+			var width = 300, height = 180;
+			
 	    	const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
 	    		title: 'Recent History',
-	    	    width: 300, height: 160,
+	    	    width: width, height: height,
 	    	    appearanceName: 'yosemite',
-	    	    html:  "<div class=\"btn-group\" role=\"group\" >"+
+	    	    movable: true,
+	    	    html:  "<div class=\"modal-body\"><div class=\"btn-group\" role=\"group\" >"+
 				"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
 				"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
-				"</div>"
+				"</div></div>"
 	    	});
 	    	
-	    	frame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
+//	    	frame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
 	    	
 	    	frame.setControl({
 	            maximizeButton: 'maximizeButton',
@@ -66,11 +69,6 @@ edu.gmu.csiss.geoweaver.toolbar = {
 
 	        });
 	    	
-            frame.on('closeButton', 'click', (_frame, evt) => {
-                _frame.closeFrame();
-                
-            });
-            
             frame.on('#history-process-d', 'click', (_frame, evt) => {
             	edu.gmu.csiss.geoweaver.process.recent(20);
             	_frame.closeFrame();
@@ -83,6 +81,8 @@ edu.gmu.csiss.geoweaver.toolbar = {
             
 	    	//Show the window
 	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 //			BootstrapDialog.show({
 //				

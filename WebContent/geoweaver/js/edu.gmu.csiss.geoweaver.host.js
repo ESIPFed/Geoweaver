@@ -185,7 +185,9 @@ edu.gmu.csiss.geoweaver.host = {
 	                	
 	                	$button.spin();
 	                	
-	                	dialogItself.enableButtons(false);
+	                	$('#pswd-confirm-btn').prop('disabled', true);
+	                	
+//	                	dialogItself.enableButtons(false);
 	                	
 	                	if(document.getElementById('remember').checked) {
 	                	    
@@ -490,48 +492,76 @@ edu.gmu.csiss.geoweaver.host = {
 
 		showSSHCmd: function(token){
 			
-			var dialog = new BootstrapDialog.show({
-	            
-				title: 'SSH Command Line',
-	            
-	            message: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>",
-				
-	            size: BootstrapDialog.SIZE_WIDE,
-	            
-	            onhide: function(dialogRef){
-	                
-//	            	edu.gmu.csiss.geoweaver.menu.closeSSH(token);
-	                
-	            },
-	            
-	            closable: false,
-	            
-	            buttons: [{
-	            	
-	            	label: 'Create Process',
-	            	
-	            	action: function(dialog){
-	            		
-	            		console.log("not ready yet");
-	            		
-	            	}
-	            	
-	            },{
-	                
-	            	label: 'Close Connection',
-	                
-	                action: function(dialog) {
-	                	
-	                	edu.gmu.csiss.geoweaver.host.closeSSH(token);
-	                	
-	                	dialog.close();
-	                	
-	                }
-	            }]
-	        
-			});
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'SSH Command Line',
+		    	    left: 60, top: 60, width: 600, height: 540,
+		    	    appearanceName: 'yosemite',
+		    	    html: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>"
+		    	});
+		    	
+		    	frame.setControl({
+		            maximizeButton: 'maximizeButton',
+		            demaximizeButton: 'restoreButton',
+		            minimizeButton: 'minimizeButton',
+		            deminimizeButton: 'deminimizeButton',
+		            animation: true,
+		            animationDuration: 200,
+		
+		    });
 			
-			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
+		    frame.on('closeButton', 'click', (_frame, evt) => {
+		    	edu.gmu.csiss.geoweaver.host.closeSSH(token);
+		        _frame.closeFrame();
+		        
+		    });
+    
+	    	//Show the window
+	    	frame.show();
+	    	
+	    	frame.setPosition(window.innerWidth / 4, window.innerHeight / 4, 'CENTER_TOP');
+			
+//			var dialog = new BootstrapDialog.show({
+//	            
+//				title: 'SSH Command Line',
+//	            
+//	            message: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>",
+//				
+//	            size: BootstrapDialog.SIZE_WIDE,
+//	            
+//	            onhide: function(dialogRef){
+//	                
+////	            	edu.gmu.csiss.geoweaver.menu.closeSSH(token);
+//	                
+//	            },
+//	            
+//	            closable: false,
+//	            
+//	            buttons: [{
+//	            	
+//	            	label: 'Create Process',
+//	            	
+//	            	action: function(dialog){
+//	            		
+//	            		console.log("not ready yet");
+//	            		
+//	            	}
+//	            	
+//	            },{
+//	                
+//	            	label: 'Close Connection',
+//	                
+//	                action: function(dialog) {
+//	                	
+//	                	edu.gmu.csiss.geoweaver.host.closeSSH(token);
+//	                	
+//	                	dialog.close();
+//	                	
+//	                }
+//	            }]
+//	        
+//			});
+//			
+//			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
 			
 		},
 		

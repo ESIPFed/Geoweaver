@@ -7,7 +7,7 @@ edu.gmu.csiss.geoweaver.search = {
 		
 		showResults: function(data){
 			
-			var content = "<table class=\"table\">"+
+			var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\">"+
 				"	  <thead>"+
 				"	    <tr>"+
 				"	      <th scope=\"col\">Name</th>"+
@@ -29,27 +29,40 @@ edu.gmu.csiss.geoweaver.search = {
 				
 			}
 			
-			content += "</tbody></table>";
+			content += "</tbody></table></div>";
 			
-			BootstrapDialog.show({
-				
-				title: "Search Results",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialogItself){
-						
-						dialogItself.close();
-						
-					}
-					
-				}]
-				
-			});
+			var width = 800; var height = 500;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'Search Results',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgba(255,255,255,0.8)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 		},
 		
@@ -85,7 +98,7 @@ edu.gmu.csiss.geoweaver.search = {
 		
 		showDialog: function(){
 
-			var content = "<div class=\"row\"><div class=\"md-form active-cyan-2 mb-3 col-md-8\">"+
+			var content = "<div class=\"modal-body\"><div class=\"row\"><div class=\"md-form active-cyan-2 mb-3 col-md-8\">"+
 			"	  <input class=\"form-control\" type=\"text\" placeholder=\"Search\" id=\"keywords\" aria-label=\"Search\">"+
 			"	</div><div class=\"col-md-4\"><select class=\"form-control\" id=\"resource-type-select\"> "+
 			"	  <option selected value=\"all\">All</option> "+
@@ -93,51 +106,50 @@ edu.gmu.csiss.geoweaver.search = {
 			"	  <option value=\"process\">Process</option> "+
 			"	  <option value=\"workflow\">Workflow</option> "+
 			"	</select>"+
-			"	</div></div></div>";
+			"	</div></div></div></div>";
 			
-//			var content = "<div class=\"input-group\">"+
-//			"  <input type=\"text\" class=\"form-control\" placeholder=\"Search\" id=\"keywords\"  aria-label=\"Search\">"+
-//			"  <div class=\"input-group-append\">"+
-//			"    <button class=\"btn btn-outline-secondary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"  id=\"resource-type-select\">All</button>"+
-//			"    <div class=\"dropdown-menu\">"+
-//			"      <a class=\"dropdown-item\" onclick=\"edu.gmu.csiss.geoweaver.search.selectType()\" href=\"javascript:void(0)\">All</a>"+
-//			"      <a class=\"dropdown-item\" onclick=\"edu.gmu.csiss.geoweaver.search.selectType()\" href=\"javascript:void(0)\">Host</a>"+
-//			"      <a class=\"dropdown-item\" onclick=\"edu.gmu.csiss.geoweaver.search.selectType()\" href=\"javascript:void(0)\">Process</a>"+
-//			"      <div role=\"separator\" class=\"dropdown-divider\"></div>"+
-//			"      <a class=\"dropdown-item\" href=\"javascript:void(0)\">Workflow</a>"+
-//			"    </div>"+
-//			"  </div>"+
-//			"</div>";
+			content += '<div class="modal-footer">' +
+				"<button type=\"button\" id=\"search\" class=\"btn btn-outline-primary\">Search</button> "+
+				'</div>';
 			
-			BootstrapDialog.show({
-				
-				title: "Search",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Search",
-					
-					action: function(dialogItself){
-						
-						edu.gmu.csiss.geoweaver.search.send($("#keywords").val(), $("#resource-type-select").val());
-						
-					}
-					
-				},{
-					
-					label: "Close",
-					
-					action: function(dialogItself){
-						
-						dialogItself.close();
-						
-					}
-					
-				}]
-				
-			});
+			var width = 500; var height = 200;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'Search',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgba(255,255,255,0.8)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+	    	
+	    	$("#search").click(function(){
+	    		
+	    		edu.gmu.csiss.geoweaver.search.send($("#keywords").val(), $("#resource-type-select").val());
+	    		
+	    	});
 			
 		}
 		

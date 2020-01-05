@@ -91,13 +91,16 @@ edu.gmu.csiss.geoweaver.workflow = {
 					
 					label: "Confirm",
 					
+					id: "workflow-new-confirm",
+					
 					action: function(dialog){
 						
 						var $button = this;
 	                	
 	                	$button.spin();
 	                	
-	                	dialog.enableButtons(false);
+//	                	dialog.enableButtons(false);
+	                	$("#workflow-new-confirm").prop('disabled', true);
 						
 						//save the new workflow
 						
@@ -650,7 +653,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			msg = $.parseJSON(msg);
 			
-			var content = "<table class=\"table\"> "+
+			var content = "<div class=\"modal-body\" style=\"font-size: 12px;\" ><table class=\"table\"> "+
 			"  <thead> "+
 			"    <tr> "+
 			"      <th scope=\"col\">Workflow</th> "+
@@ -685,27 +688,61 @@ edu.gmu.csiss.geoweaver.workflow = {
 				
 			}
 			
-			content += "</tbody>";
+			content += "</tbody></table></div>";
 			
-			BootstrapDialog.show({
-				
-				title: "History",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
-				
-			});
+			var width = 800; var height = 640;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'History',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+		    	    
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			
+//			BootstrapDialog.show({
+//				
+//				title: "History",
+//				
+//				message: content,
+//				
+//				buttons: [{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
+//						
+//						dialog.close();
+//						
+//					}
+//					
+//				}]
+//				
+//			});
 			
 		}).fail(function(jxr, status){
 			
@@ -717,7 +754,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 	
 	getTable: function(msg){
 		
-		var content = "<table class=\"table\"> "+
+		var content = "<div class=\"modal-body\" style=\"font-size:12px;\" ><table class=\"table\"> "+
 		"  <thead> "+
 		"    <tr> "+
 		"      <th scope=\"col\">Execution Id</th> "+
@@ -745,6 +782,10 @@ edu.gmu.csiss.geoweaver.workflow = {
 				
 				status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
 				
+			}else if(msg[i].status == "Stopped"){
+				
+				status_col = "      <td><span class=\"label label-primary\">Stopped</span></td> ";
+				
 			}else{
 				
 				status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
@@ -755,13 +796,18 @@ edu.gmu.csiss.geoweaver.workflow = {
 				"      <td>"+msg[i].id+"</td> "+
 				"      <td>"+msg[i].begin_time+"</td> "+
 				status_col +
-				"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;"+
-				"		<a href=\"javascript: edu.gmu.csiss.geoweaver.process.stop('"+msg[i].id+"'), 'workflow'\">Stop</a></td> "+
-				"    </tr>";
+				"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
+			
+			if(msg[i].status == "Running"){
+				
+				content += "		<a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.stop('"+msg[i].id+"'), 'workflow'\">Stop</a> ";
+			}
+				
+			content += "   </td> </tr>";
 			
 		}
 		
-		content += "</tbody>";
+		content += "</tbody></table></div>";
 		
 		return content;
 		
@@ -790,6 +836,40 @@ edu.gmu.csiss.geoweaver.workflow = {
 			msg = $.parseJSON(msg);
 			
 			var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+			
+			var width = 600; var height = 360;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'History',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+		    	    
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 //			var content = "<table class=\"table\"> "+
 //			"  <thead> "+
@@ -828,25 +908,25 @@ edu.gmu.csiss.geoweaver.workflow = {
 //			
 //			content += "</tbody>";
 			
-			BootstrapDialog.show({
-				
-				title: "History",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
-				
-			});
+//			BootstrapDialog.show({
+//				
+//				title: "History",
+//				
+//				message: content,
+//				
+//				buttons: [{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
+//						
+//						dialog.close();
+//						
+//					}
+//					
+//				}]
+//				
+//			});
 			
 		}).fail(function(jxr, status){
 			
@@ -908,7 +988,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			msg = $.parseJSON(msg);
 			
-			var content = "<table class=\"table\"> "+
+			var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
 			"  <thead> "+
 			"    <tr> "+
 			"      <th scope=\"col\">Process Id</th> "+
@@ -928,24 +1008,41 @@ edu.gmu.csiss.geoweaver.workflow = {
 				
 			}
 			
-			BootstrapDialog.show({
-				
-				title: "Workflow Log",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-					}
-					
-				}]
-				
-			});
+			content += "</tbody></table></div>";
+			
+			var width = 800; var height = 640;
+			
+			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'History',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+		    	    
+	    	});
+	    	
+			frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 		}).fail(function(){
 			
