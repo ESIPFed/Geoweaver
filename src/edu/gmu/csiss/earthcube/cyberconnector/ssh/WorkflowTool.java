@@ -475,6 +475,10 @@ public class WorkflowTool {
 			
 			e.printStackTrace();
 			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+			
 		}
 		
 		return resp.toString();
@@ -532,6 +536,10 @@ public class WorkflowTool {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
 			
 		}
 		
@@ -611,6 +619,10 @@ public class WorkflowTool {
 			
 			e.printStackTrace();
 			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+			
 		}
 		
 		return resp.toString();
@@ -650,6 +662,10 @@ public class WorkflowTool {
 		} catch (SQLException e) {
 		
 			e.printStackTrace();
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
 			
 		}
 		

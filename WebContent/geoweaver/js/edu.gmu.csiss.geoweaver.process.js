@@ -899,6 +899,14 @@ edu.gmu.csiss.geoweaver.process = {
 				
 			}).done(function(msg){
 				
+				if(msg==""){
+					
+					alert("Cannot find the process history in the database.");
+					
+					return;
+					
+				}
+				
 				msg = $.parseJSON(msg);
 				
 				var output = msg.output;
