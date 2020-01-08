@@ -16,6 +16,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		envlist: {},
 		
+		cmid: null,  //the id used to differentiate the dialogs
+		
 		builtin_processes: [
 			
 			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
@@ -84,7 +86,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			var valid = false;
 			
-			if($("#processname").val()){
+			if($("#processname-"+edu.gmu.csiss.geoweaver.process.cmid).val()){
 					
 //					&&this.editor.getValue()){
 				
@@ -96,13 +98,13 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		showShell: function(code){
+		showShell: function(code, cmid){
 			
-			$("#codearea").append('<textarea id="codeeditor" placeholder="Code goes here..."></textarea>');
+			$("#codearea-"+edu.gmu.csiss.geoweaver.process.cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
 			
         	//initiate the code editor
 			
-			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
+			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
 	        		lineNumbers: true,
 	        		
@@ -122,29 +124,6 @@ edu.gmu.csiss.geoweaver.process = {
 			$(".CodeMirror").css('font-size',"10pt");
 			
 			edu.gmu.csiss.geoweaver.process.editor.setSize(null, 360);
-			
-//			var cmds = CodeMirror.commands;
-//			
-//			cmds.saveCode = function(cm){
-//				
-//				console.log("save code is triggered");
-////				edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_id);
-//				
-//			}
-//			
-//			var keyMap = CodeMirror.keyMap;
-//			
-//			keyMap.macSublime = {
-//				    "Cmd-S": "saveCode",
-//			};
-//			
-//			CodeMirror.normalizeKeyMap(keyMap.macSublime);
-//			
-//			keyMap.pcSublime = {
-//				    "Ctrl-S": "saveCode",
-//			};
-//			
-//			CodeMirror.normalizeKeyMap(keyMap.pcSublime);
 			
 			if(code!=null){
 				
@@ -222,9 +201,11 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		showPython: function(code){
+		showPython: function(code, cmid){
 			
-			$("#codearea").append('<textarea id="codeeditor" placeholder="Code goes here..."></textarea>');
+//			var cmid = Math.floor(Math.random() * 100);
+			
+			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
 			
 				//initiate the code editor
 				
@@ -261,7 +242,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		showJupyter: function(code){
+		showJupyter: function(code, cmid){
 			
 			var cont = '<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>'+
 				'<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> '+
@@ -271,29 +252,27 @@ edu.gmu.csiss.geoweaver.process = {
 		        '  <div class="input-group-append"> '+
 		        '    <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button> '+
 		        '  </div> '+
-		        '</div></div></div> <div id="jupyter_area"></div>';
+		        '</div></div></div> <div id="jupyter_area-'+cmid+'"></div>';
 			
-			$("#codearea").append(cont);
+			$("#codearea-"+cmid).append(cont);
 			
 			this.load_jupyter();
 			
 			if(code!=null && typeof code != 'undefined'){
-				
 				if(typeof code != 'object'){
 					code = $.parseJSON(code);
 				}
 				var notebook = nb.parse(code);
 				var rendered = notebook.render();
-				$("#jupyter_area").append(rendered);
-				
+				$("#jupyter_area-"+cmid).append(rendered);
 			}
 			
 		},
 		
-		showBuiltinProcess: function(code){
+		showBuiltinProcess: function(code, cmid){
 			
 			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-			'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes">';
+			'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-'+cmid+'">';
 			
 			for(var i=0;i<edu.gmu.csiss.geoweaver.process.builtin_processes.length;i++){
 				
@@ -314,13 +293,13 @@ edu.gmu.csiss.geoweaver.process = {
 				
 			}
 			
-			$("#codearea").append(cont);
+			$("#codearea-"+cmid).append(cont);
 			
 			if(code!=null){
 				
 				code = $.parseJSON(code);
 				
-				$("#builtin_processes").val(code.operation);
+				$("#builtin_processes-"+edu.gmu.csiss.geoweaver.process.cmid).val(code.operation);
 				
 				for(var i=0;i<code.params.length;i++){
 					
@@ -336,11 +315,11 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			var code = null;
 			
-			if($("#processcategory").val()=="shell"){
+			if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="shell"){
 				
 				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
 				
-			}else if($("#processcategory").val()=="builtin"){
+			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="builtin"){
 				
 				var params = [];
 				
@@ -366,11 +345,11 @@ edu.gmu.csiss.geoweaver.process = {
 						
 				}
 				
-			}else if($("#processcategory").val()=="jupyter"){
+			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="jupyter"){
 				
 				code = edu.gmu.csiss.geoweaver.process.jupytercode;
 				
-			}else if($("#processcategory").val()=="python"){
+			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="python"){
 				
 				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
 			}
@@ -386,8 +365,8 @@ edu.gmu.csiss.geoweaver.process = {
 				'</div>';
 			
 			content += '<div class="modal-footer">' +
-				"<button type=\"button\" id=\"add-process\" class=\"btn btn-outline-primary\">Add</button> "+
-				"<button type=\"button\" id=\"run-process\" class=\"btn btn-outline-secondary\">Run</button>"+
+				"<button type=\"button\" id=\"add-process-"+edu.gmu.csiss.geoweaver.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+				"<button type=\"button\" id=\"run-process-"+edu.gmu.csiss.geoweaver.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
 				'</div>';
 			
 			var width = 720; var height = 640;
@@ -424,58 +403,50 @@ edu.gmu.csiss.geoweaver.process = {
                 
             });
             
-            frame.on('#history-process-d', 'click', (_frame, evt) => {
-	            	edu.gmu.csiss.geoweaver.process.recent(20);
-	            	_frame.closeFrame();
-            });
-            
-            frame.on('#history-workflow-d', 'click', (_frame, evt) => {
-	            	edu.gmu.csiss.geoweaver.workflow.recent(20);
-	            	_frame.closeFrame();
-            });
-            
 	    	//Show the window
 	    	frame.show();
 	    	
 	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
-	    	edu.gmu.csiss.geoweaver.process.showShell();
+	    	edu.gmu.csiss.geoweaver.process.showShell(null, edu.gmu.csiss.geoweaver.process.cmid);
         	
-        	$("#processcategory").on('change', function() {
+        	$("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).on('change', function() {
         		
-        		$("#codearea").empty();
+        		console.log(this.id);
+        		
+        		$("#codearea-"+edu.gmu.csiss.geoweaver.process.cmid).empty();
         		
         		if( this.value == "shell"){
         			
-        			edu.gmu.csiss.geoweaver.process.showShell();
+        			edu.gmu.csiss.geoweaver.process.showShell(null,edu.gmu.csiss.geoweaver.process.cmid);
         			  
         		}else if(this.value == "builtin"){
         			
-        			edu.gmu.csiss.geoweaver.process.showBuiltinProcess();
+        			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(null,edu.gmu.csiss.geoweaver.process.cmid);
         			  
         		}else if(this.value == "jupyter"){
         			
-        			edu.gmu.csiss.geoweaver.process.showJupyter(edu.gmu.csiss.geoweaver.process.jupytercode);
+        			edu.gmu.csiss.geoweaver.process.showJupyter(null, edu.gmu.csiss.geoweaver.process.jupytercode,edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}else if(this.value == "python"){
         			
-        			edu.gmu.csiss.geoweaver.process.showPython();
+        			edu.gmu.csiss.geoweaver.process.showPython(null, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}
         		
         	});
         	
-        	$("#add-process").click(function(){
+        	$("#add-process-" + edu.gmu.csiss.geoweaver.process.cmid).click(function(){
         		
-        		edu.gmu.csiss.geoweaver.process.add(false);
+        		edu.gmu.csiss.geoweaver.process.add(false,edu.gmu.csiss.geoweaver.process.cmid);
         		
         		frame.close();
         		
         	});
         	
-        	$("#run-process").click(function(){
+        	$("#run-process-" + edu.gmu.csiss.geoweaver.process.cmid).click(function(){
         		
-        		edu.gmu.csiss.geoweaver.process.add(true);
+        		edu.gmu.csiss.geoweaver.process.add(true,edu.gmu.csiss.geoweaver.process.cmid);
         		
         		frame.close();
         		
@@ -1096,11 +1067,13 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		getProcessDialogTemplate: function(){
 			
+			edu.gmu.csiss.geoweaver.process.cmid = Math.floor(Math.random() * 1000);
+			
 			var content = '<div><form>'+
 		       '   <div class="form-group row required">'+
 		       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Language</label>'+
 		       '     <div class="col-sm-4">'+
-		       '			<select class="form-control form-control-sm" id="processcategory">'+
+		       '			<select class="form-control form-control-sm" id="processcategory-'+edu.gmu.csiss.geoweaver.process.cmid+'">'+
 			   '    			<option value="shell">Shell</option>'+
 			   '    			<option value="builtin">Built-In Process</option>'+
 			   '    			<option value="jupyter">Jupyter Notebook</option>'+
@@ -1114,11 +1087,11 @@ edu.gmu.csiss.geoweaver.process = {
 //		       '   <div class="form-group row required">'+
 		       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
 		       '     <div class="col-sm-4">'+
-		       '			<input class="form-control form-control-sm" id="processname"></input>'+
+		       '			<input class="form-control form-control-sm" id="processname-'+edu.gmu.csiss.geoweaver.process.cmid+'"></input>'+
 		       '     </div>'+
 		       '   </div>'+
 		       
-		       '   <div class="form-group row required" id="codearea"></div>'+
+		       '   <div class="form-group row required" id="codearea-'+edu.gmu.csiss.geoweaver.process.cmid+'"></div>'+
 		       
 		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits.</p>'+
 		       ' </form></div>';
@@ -1147,8 +1120,8 @@ edu.gmu.csiss.geoweaver.process = {
 					edu.gmu.csiss.geoweaver.process.getProcessDialogTemplate() + '</div>';
 				
 				content += '<div class="modal-footer">' +
-					"	<button type=\"button\" id=\"edit-save-process\" class=\"btn btn-outline-primary\">Save</button> "+
-					"	<button type=\"button\" id=\"edit-run-process\" class=\"btn btn-outline-secondary\">Run</button>"+
+					"	<button type=\"button\" id=\"edit-save-process-"+edu.gmu.csiss.geoweaver.process.cmid+"\" class=\"btn btn-outline-primary\">Save</button> "+
+					"	<button type=\"button\" id=\"edit-run-process-"+edu.gmu.csiss.geoweaver.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
 					'</div>';
 				
 				var width = 720; var height = 640;
@@ -1185,16 +1158,6 @@ edu.gmu.csiss.geoweaver.process = {
 	                
 	            });
 	            
-	            frame.on('#history-process-d', 'click', (_frame, evt) => {
-		            	edu.gmu.csiss.geoweaver.process.recent(20);
-		            	_frame.closeFrame();
-	            });
-	            
-	            frame.on('#history-workflow-d', 'click', (_frame, evt) => {
-		            	edu.gmu.csiss.geoweaver.workflow.recent(20);
-		            	_frame.closeFrame();
-	            });
-	            
 		    	//Show the window
 		    	frame.show();
 		    	
@@ -1206,33 +1169,33 @@ edu.gmu.csiss.geoweaver.process = {
             	
             	var old_code = msg.code;
             	
-            	$("#processcategory").val(old_lang);
+            	$("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val(old_lang);
             	
-            	$("#processname").val(msg.name);
+            	$("#processname-"+edu.gmu.csiss.geoweaver.process.cmid).val(msg.name);
 
-            	$("#codearea").empty();
+            	$("#codearea-"+edu.gmu.csiss.geoweaver.process.cmid).empty();
         		
         		if( old_lang == "shell"){
         			
-	            	edu.gmu.csiss.geoweaver.process.showShell(old_code);
+	            	edu.gmu.csiss.geoweaver.process.showShell(old_code, edu.gmu.csiss.geoweaver.process.cmid);
         			  
         		}else if(old_lang == "builtin"){
         			
-        			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code);
+        			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}else if(old_lang == "jupyter"){
         			
-        			edu.gmu.csiss.geoweaver.process.showJupyter(old_code);
+        			edu.gmu.csiss.geoweaver.process.showJupyter(old_code, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}else if(old_lang == "python"){
         			
-        			edu.gmu.csiss.geoweaver.process.showPython(old_code);
+        			edu.gmu.csiss.geoweaver.process.showPython(old_code, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}
             	
-            	$("#processcategory").on('change', function() {
+            	$("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).on('change', function() {
             		
-            		$("#codearea").empty();
+            		$("#codearea-"+edu.gmu.csiss.geoweaver.process.cmid).empty();
             		
             		var old_code_new = null;
             		
@@ -1244,31 +1207,31 @@ edu.gmu.csiss.geoweaver.process = {
             		
             		if( this.value == "shell"){
             			
-    	            	edu.gmu.csiss.geoweaver.process.showShell(old_code_new);
+    	            	edu.gmu.csiss.geoweaver.process.showShell(old_code_new, edu.gmu.csiss.geoweaver.process.cmid);
             			  
             		}else if(this.value == "builtin"){
             			
-            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code_new);
+            			edu.gmu.csiss.geoweaver.process.showBuiltinProcess(old_code_new, edu.gmu.csiss.geoweaver.process.cmid);
             			
             		}else if(this.value == "jupyter"){
             			
-            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code_new);
+            			edu.gmu.csiss.geoweaver.process.showJupyter(old_code_new, edu.gmu.csiss.geoweaver.process.cmid);
             			
             		}else if(this.value == "python"){
             			
-            			edu.gmu.csiss.geoweaver.process.showPython(old_code_new);
+            			edu.gmu.csiss.geoweaver.process.showPython(old_code_new, edu.gmu.csiss.geoweaver.process.cmid);
             			
             		}
             		
             	});
             	
-            	$("#edit-save-process").click(function(){
+            	$("#edit-save-process-"+edu.gmu.csiss.geoweaver.process.cmid).click(function(){
             		
-            		edu.gmu.csiss.geoweaver.process.update(msg.id);
+            		edu.gmu.csiss.geoweaver.process.update(msg.id, edu.gmu.csiss.geoweaver.process.cmid);
             		
             	});
             	
-            	$("#edit-run-process").click(function(){
+            	$("#edit-run-process-"+edu.gmu.csiss.geoweaver.process.cmid).click(function(){
             		
             		//not finished yet
             		
@@ -1470,11 +1433,11 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				var req =  { 
 						
-						type: "process", lang: $("#processcategory").val(),
+						type: "process", lang: $("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val(),
 						
-						desc: $("#processcategory").val(), //use the description column to store the process type
+						desc: $("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val(), //use the description column to store the process type
 					
-						name: $("#processname").val(), 
+						name: $("#processname-"+edu.gmu.csiss.geoweaver.process.cmid).val(), 
 						
 						id: pid,
 		    			
@@ -1519,7 +1482,7 @@ edu.gmu.csiss.geoweaver.process = {
 			}
 		},
 		
-		add: function(run){
+		add: function(run, cmid){
 			
 			this.current_pid = null;
 			
@@ -1529,42 +1492,42 @@ edu.gmu.csiss.geoweaver.process = {
 					
 					type: "process", 
 					
-					lang: $("#processcategory").val(),
+					lang: $("#processcategory-"+cmid).val(),
 					
-					desc: $("#processcategory").val(), //use the description column to store the process type
+					desc: $("#processcategory-"+cmid).val(), //use the description column to store the process type
 				
-					name: $("#processname").val(), 
+					name: $("#processname-"+cmid).val(), 
 	    			
 					code: edu.gmu.csiss.geoweaver.process.getCode()
 					
 				};
 		    		
-			    	$.ajax({
-			    		
-			    		url: "add",
-			    		
-			    		method: "POST",
-			    		
-			    		data: req
-			    		
-			    	}).done(function(msg){
-			    		
-			    		msg = $.parseJSON(msg);
-			    		
-			    		msg.desc = req.desc;
-			    		
-			    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, req.desc);
-			    		
-			    		if(run)
-			    				
-			    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, $("#processcategory").val());
-			    				
-			    		
-			    	}).fail(function(jqXHR, textStatus){
-			    		
-			    		alert("Fail to add the process.");
-			    		
-			    	});
+		    	$.ajax({
+		    		
+		    		url: "add",
+		    		
+		    		method: "POST",
+		    		
+		    		data: req
+		    		
+		    	}).done(function(msg){
+		    		
+		    		msg = $.parseJSON(msg);
+		    		
+		    		msg.desc = req.desc;
+		    		
+		    		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, req.desc);
+		    		
+		    		if(run)
+		    				
+		    			edu.gmu.csiss.geoweaver.process.runProcess(msg.id, msg.name, $("#processcategory-"+cmid).val());
+		    				
+		    		
+		    	}).fail(function(jqXHR, textStatus){
+		    		
+		    		alert("Fail to add the process.");
+		    		
+		    	});
 				
 			}else{
 				

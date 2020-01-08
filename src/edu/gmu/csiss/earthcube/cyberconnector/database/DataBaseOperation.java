@@ -36,8 +36,28 @@ public class DataBaseOperation {
 	
 	private static List<Connection> conn_pool = new ArrayList(); //maximum 5 connections
 	
+	static int maximum_connection = 10;
+	
 	static void addNewConnection(Connection newcon) {
 		
+		if(conn_pool.size()>=maximum_connection) {
+			
+			//close the oldest connections
+			
+			try {
+				
+				conn_pool.get(0).close();
+				
+				conn_pool.remove(0);
+				
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			
+			} 
+			
+		}
+			
 		conn_pool.add(newcon);
 		
 	}
@@ -70,13 +90,19 @@ public class DataBaseOperation {
 				}
 				
 			}
+			
+			for(int i=0;i<conn_pool.size(); i++) {
 
-			if(conn_pool.size()!=0) {
-				
-				con = conn_pool.get(0);
+				if(!conn_pool.get(i).isClosed() && !conn_pool.get(i).isReadOnly() ) {
+					
+					con = conn_pool.get(i);
+					
+					break;
+					
+				}
 				
 			}
-			
+
 			if(con == null) {
 				
 				Class.forName(driver);

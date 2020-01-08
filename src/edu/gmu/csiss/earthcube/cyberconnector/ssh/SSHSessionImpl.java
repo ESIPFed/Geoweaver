@@ -257,6 +257,8 @@ public class SSHSessionImpl implements SSHSession {
 		
     	try {
     		
+    		log.info("save history " + status);
+    		
     		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
     		
     		//the log is more than 65500 characters, write it into a log file
