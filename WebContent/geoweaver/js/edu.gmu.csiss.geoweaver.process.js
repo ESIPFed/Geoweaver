@@ -106,20 +106,20 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
-	        		lineNumbers: true,
-	        		
-	        		lineWrapping: true,
-	        		
-	        		extraKeys: {
-	        			
-		    		    "Ctrl-S": function(instance) { 
-		    		    	
-		    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid);
-		    		    	
-		    		     }
-		    		}
-				
-	        	});
+        		lineNumbers: true,
+        		
+        		lineWrapping: true,
+        		
+        		extraKeys: {
+        			
+	    		    "Ctrl-S": function(instance) { 
+	    		    	
+	    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid, cmid);
+	    		    	
+	    		     }
+	    		}
+			
+        	});
 			
 			$(".CodeMirror").css('font-size',"10pt");
 			
@@ -207,24 +207,24 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
 			
-				//initiate the code editor
-				
-				edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor"), {
-	        		
-	        		lineNumbers: true,
-	        		
-	        		lineWrapping: true,
-	        		
-	        		extraKeys: {
-	        			
-		    		    "Ctrl-S": function(instance) { 
-		    		    	
-		    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid);
-		    		    	
-		    		     }
-	        		}
-	        		
-	        	});
+			//initiate the code editor
+			
+			edu.gmu.csiss.geoweaver.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
+        		
+        		lineNumbers: true,
+        		
+        		lineWrapping: true,
+        		
+        		extraKeys: {
+        			
+	    		    "Ctrl-S": function(instance) { 
+	    		    	
+	    		    	edu.gmu.csiss.geoweaver.process.update(edu.gmu.csiss.geoweaver.process.current_pid, cmid);
+	    		    	
+	    		     }
+        		}
+        		
+        	});
 				
 			$(".CodeMirror").css('font-size',"10pt");
 			
@@ -299,7 +299,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				code = $.parseJSON(code);
 				
-				$("#builtin_processes-"+edu.gmu.csiss.geoweaver.process.cmid).val(code.operation);
+				$("#builtin_processes-"+cmid).val(code.operation);
 				
 				for(var i=0;i<code.params.length;i++){
 					
@@ -311,15 +311,15 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		getCode: function(){
+		getCode: function(cmid){
 			
 			var code = null;
 			
-			if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="shell"){
+			if($("#processcategory-"+cmid).val()=="shell"){
 				
 				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
 				
-			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="builtin"){
+			}else if($("#processcategory-"+cmid).val()=="builtin"){
 				
 				var params = [];
 				
@@ -345,13 +345,14 @@ edu.gmu.csiss.geoweaver.process = {
 						
 				}
 				
-			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="jupyter"){
+			}else if($("#processcategory-"+cmid).val()=="jupyter"){
 				
 				code = edu.gmu.csiss.geoweaver.process.jupytercode;
 				
-			}else if($("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val()=="python"){
+			}else if($("#processcategory-"+cmid).val()=="python"){
 				
 				code = edu.gmu.csiss.geoweaver.process.editor.getValue();
+//				code = $("#codeeditor-" + cmid).val();
 			}
 			
 			return code;
@@ -1425,7 +1426,7 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
-		update: function(pid){
+		update: function(pid, cmid){
 			
 			console.log("update process id: " + pid);
 			
@@ -1433,15 +1434,15 @@ edu.gmu.csiss.geoweaver.process = {
 				
 				var req =  { 
 						
-						type: "process", lang: $("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val(),
+						type: "process", lang: $("#processcategory-"+cmid).val(),
 						
-						desc: $("#processcategory-"+edu.gmu.csiss.geoweaver.process.cmid).val(), //use the description column to store the process type
+						desc: $("#processcategory-"+cmid).val(), //use the description column to store the process type
 					
-						name: $("#processname-"+edu.gmu.csiss.geoweaver.process.cmid).val(), 
+						name: $("#processname-"+cmid).val(), 
 						
 						id: pid,
 		    			
-						code: edu.gmu.csiss.geoweaver.process.getCode()
+						code: edu.gmu.csiss.geoweaver.process.getCode(cmid)
 						
 				};
 				
@@ -1498,7 +1499,7 @@ edu.gmu.csiss.geoweaver.process = {
 				
 					name: $("#processname-"+cmid).val(), 
 	    			
-					code: edu.gmu.csiss.geoweaver.process.getCode()
+					code: edu.gmu.csiss.geoweaver.process.getCode(cmid)
 					
 				};
 		    		

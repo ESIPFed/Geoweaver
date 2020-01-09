@@ -62,7 +62,7 @@ public class DataBaseOperation {
 		
 	}
 	
-	static Connection getLiveConnection() {
+	static synchronized Connection getLiveConnection() {
 		
 		Connection con = null;
 		
