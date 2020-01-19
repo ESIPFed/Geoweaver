@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
@@ -30,7 +32,95 @@ public class DataBaseOperation {
 	
 	private final static Logger logger = Logger.getLogger(DataBaseOperation.class);
     
-	private  static Connection q_conn, e_conn,u_conn;
+//	private  static Connection q_conn, e_conn,u_conn;
+	
+	private static List<Connection> conn_pool = new ArrayList(); //maximum 5 connections
+	
+	static int maximum_connection = 10;
+	
+	static void addNewConnection(Connection newcon) {
+		
+		if(conn_pool.size()>=maximum_connection) {
+			
+			//close the oldest connections
+			
+			try {
+				
+				conn_pool.get(0).close();
+				
+				conn_pool.remove(0);
+				
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			
+			} 
+			
+		}
+			
+		conn_pool.add(newcon);
+		
+	}
+	
+	static synchronized Connection getLiveConnection() {
+		
+		Connection con = null;
+		
+		try {
+			
+			for(int i=0;i<conn_pool.size();i++) {
+				
+				if(!conn_pool.get(i).isValid(1)) {
+					
+					try {
+					
+						conn_pool.get(i).close();
+						
+						conn_pool.remove(i);
+						
+						i=0;
+						
+					}catch(Exception e) {
+						
+						e.printStackTrace();
+						
+					}
+					
+					
+				}
+				
+			}
+			
+			for(int i=0;i<conn_pool.size(); i++) {
+
+				if(!conn_pool.get(i).isClosed() && !conn_pool.get(i).isReadOnly() ) {
+					
+					con = conn_pool.get(i);
+					
+					break;
+					
+				}
+				
+			}
+
+			if(con == null) {
+				
+				Class.forName(driver);
+				
+				con = DriverManager.getConnection(database_url, user, password);
+				
+				addNewConnection(con);
+				
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return con;
+	}
 	
 	static{
 		
@@ -55,7 +145,7 @@ public class DataBaseOperation {
 				
 			}else {
 				
-				conn.close();
+				addNewConnection(conn);
 				
 			}
 			
@@ -93,8 +183,10 @@ public class DataBaseOperation {
 	public synchronized static ResultSet query(String sql){		
                                             Statement statement = null;
 		try {
-			Class.forName(driver);	
-			q_conn = DriverManager.getConnection(database_url, user, password);	
+			
+			Connection q_conn = DataBaseOperation.getLiveConnection();
+			
+//			q_conn = DriverManager.getConnection(database_url, user, password);	
 //			if(!conn.isClosed())	
 //				logger.info("Succeeded connecting to the Database!");
 			statement = q_conn.createStatement();
@@ -102,10 +194,6 @@ public class DataBaseOperation {
 			rs = statement.executeQuery(sql);
 			return rs;		
                         
-		} catch(ClassNotFoundException e) {   
-			logger.error("Sorry,can`t find the Driver."+e.getLocalizedMessage());   
-			//e.printStackTrace();   
-                                                                   throw new RuntimeException("Sorry,can`t find the Driver."+e.getClass().getName()+":"+e.getLocalizedMessage());
 		} catch(SQLException e) {   
 			logger.error("The SQL query causes exception."+e.getLocalizedMessage());
                                                                     throw new RuntimeException("The SQL query causes exception."+e.getClass().getName()+":"+e.getLocalizedMessage());
@@ -152,17 +240,14 @@ public class DataBaseOperation {
 	 public synchronized static boolean execute(String sql){
 		 boolean issuccess = false;
 		 try {
-			Class.forName(driver);		
-			e_conn = DriverManager.getConnection(database_url, user, password);		
+			Connection e_conn = DataBaseOperation.getLiveConnection();
+//			Class.forName(driver);		
+//			e_conn = DriverManager.getConnection(database_url, user, password);		
 //			if(!conn.isClosed())		
 //			logger.info("Succeeded connecting to the Database!");	
 			Statement statement = e_conn.createStatement();
 			issuccess = statement.execute(sql);
 			e_conn.close();
-		} catch(ClassNotFoundException e) {   
-			logger.error("Sorry,can`t find the Driver."+e.getLocalizedMessage());   
-			//e.printStackTrace();   
-            throw new RuntimeException("Sorry,can`t find the Driver."+e.getLocalizedMessage());
 		} catch(SQLException e) {   
 			logger.error("The SQL query causes exception."+e.getLocalizedMessage());
             throw new RuntimeException("The SQL query causes exception."+e.getLocalizedMessage());
@@ -172,14 +257,14 @@ public class DataBaseOperation {
             throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
 			//e.printStackTrace();   
 		}  finally{
-			try {
-				if(!e_conn.isClosed()){
-					e_conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
-			}
+//			try {
+//				if(!e_conn.isClosed()){
+//					e_conn.close();
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//				throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
+//			}
 		
 		}
 		
@@ -193,9 +278,11 @@ public class DataBaseOperation {
 		 
 		 try {
 			
-			Class.forName(driver);		
+//			Class.forName(driver);		
+//			
+//			e_conn = DriverManager.getConnection(database_url, user, password);
 			
-			e_conn = DriverManager.getConnection(database_url, user, password);
+			Connection e_conn = DataBaseOperation.getLiveConnection();
 			
 			PreparedStatement statement= e_conn.prepareStatement   (sql );
 			
@@ -209,12 +296,8 @@ public class DataBaseOperation {
 			
 			issuccess = true;
 			
-			e_conn.close();
+//			e_conn.close();
 			
-		} catch(ClassNotFoundException e) {   
-			logger.error("Sorry,can`t find the Driver."+e.getLocalizedMessage());   
-			//e.printStackTrace();   
-            throw new RuntimeException("Sorry,can`t find the Driver."+e.getLocalizedMessage());
 		} catch(SQLException e) {   
 			logger.error("The SQL query causes exception."+e.getLocalizedMessage());
             throw new RuntimeException("The SQL query causes exception."+e.getLocalizedMessage());
@@ -225,14 +308,14 @@ public class DataBaseOperation {
             throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
 			//e.printStackTrace();   
 		}  finally{
-			try {
-				if(!e_conn.isClosed()){
-					e_conn.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
-			}
+//			try {
+//				if(!e_conn.isClosed()){
+//					e_conn.close();
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//				throw new RuntimeException("Exception happens." + e.getLocalizedMessage());
+//			}
 		}
 		return issuccess;
 	 }
@@ -244,17 +327,14 @@ public class DataBaseOperation {
 	 public synchronized static int update(String sql){
 		int rt = -1;
 		try {
-			Class.forName(driver);	
-			u_conn = DriverManager.getConnection(database_url, user, password);	
+			Connection u_conn = DataBaseOperation.getLiveConnection();
+//			Class.forName(driver);	
+//			u_conn = DriverManager.getConnection(database_url, user, password);	
 //			if(!conn.isClosed())	
 //			logger.info("Succeeded connecting to the Database!");	
 			Statement statement = u_conn.createStatement();
 			rt = statement.executeUpdate(sql);
-			u_conn.close();
-		}catch(ClassNotFoundException e) {   
-			logger.error("Sorry,can`t find the Driver."+e.getLocalizedMessage());   
-			//e.printStackTrace();   
-           throw new RuntimeException("Sorry,can`t find the Driver."+e.getLocalizedMessage());
+//			u_conn.close();
 		} catch(SQLException e) {   
 			logger.error("The SQL query causes exception."+e.getLocalizedMessage());
             throw new RuntimeException("The SQL query causes exception."+e.getLocalizedMessage());
@@ -277,8 +357,9 @@ public class DataBaseOperation {
 	 public synchronized static boolean GetColumnFromDatabase(String name, String featureid, String column, String storeimgpath) {
 	    	boolean suc = false;
 	    	try{
-	    		Class.forName(driver);
-                u_conn = DriverManager.getConnection(database_url, user, password);
+	    		Connection u_conn = DataBaseOperation.getLiveConnection();
+//	    		Class.forName(driver);
+//                u_conn = DriverManager.getConnection(database_url, user, password);
                 String sql = "select "+ column +" from igfds.sample where feature_id = '"+featureid + "' and name = '"+name+"'";
                 PreparedStatement stmt = u_conn.prepareStatement(sql);
                 ResultSet resultSet = stmt.executeQuery();
@@ -292,7 +373,7 @@ public class DataBaseOperation {
                     }
                     fos.close();
                 }
-                u_conn.close();
+//                u_conn.close();
                 suc = true;
 	    	}catch(Exception e){
 	    		e.printStackTrace();
@@ -330,8 +411,9 @@ public class DataBaseOperation {
 	    FileInputStream fis = null;
 	    PreparedStatement ps = null;
 	    try {
-	      Class.forName(driver);
-	      u_conn = DriverManager.getConnection(database_url, user, password);	
+//	      Class.forName(driver);
+//	      u_conn = DriverManager.getConnection(database_url, user, password);
+	      Connection u_conn = DataBaseOperation.getLiveConnection();
 		  String INSERT_PICTURE = "update igfds.sample set image_block = ? where name = ? and feature_id = ?";
 
 		  u_conn.setAutoCommit(false);
@@ -369,12 +451,13 @@ public class DataBaseOperation {
 	  * @return
 	  */
 	 public synchronized static boolean injectZipFile2Database(String name, String fid, String zipfilepath){
-		 boolean ret = false;
+		 	boolean ret = false;
 		    FileInputStream fis = null;
 		    PreparedStatement ps = null;
 		    try {
-		      Class.forName(driver);
-		      u_conn = DriverManager.getConnection(database_url, user, password);	
+		      Connection u_conn = DataBaseOperation.getLiveConnection();
+//		      Class.forName(driver);
+//		      u_conn = DriverManager.getConnection(database_url, user, password);	
 			  String INSERT_PICTURE = "update igfds.sample set geometry = ? where name = ? and feature_id = ?";
 		
 			  u_conn.setAutoCommit(false);
@@ -409,13 +492,13 @@ public class DataBaseOperation {
 	  * Close connections
 	  */
      public static void closeConnection(){
-                try {
-                            if(!q_conn.isClosed())
-                                q_conn.close();
-                } catch (SQLException ex) {
-                            java.util.logging.Logger.getLogger(DataBaseOperation.class.getName()).log(Level.SEVERE, null, ex);
-                            throw new RuntimeException("Exception happens. We are unable to close the mysql connections" +ex.getClass().getName()+ ex.getLocalizedMessage());
-                }
+//                try {
+//                            if(!q_conn.isClosed())
+//                                q_conn.close();
+//                } catch (SQLException ex) {
+//                            java.util.logging.Logger.getLogger(DataBaseOperation.class.getName()).log(Level.SEVERE, null, ex);
+//                            throw new RuntimeException("Exception happens. We are unable to close the mysql connections" +ex.getClass().getName()+ ex.getLocalizedMessage());
+//                }
      }
      /**
       * Get the number of records in a table
@@ -428,7 +511,7 @@ public class DataBaseOperation {
                     String querysql = "select count(*) from "+tablename;
                     ResultSet rs = DataBaseOperation.query(querysql);
                     if(rs.next()){
-                            rn = rs.getInt("count(*)");
+                        rn = rs.getInt("count(*)");
                     }
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(DataBaseOperation.class.getName()).log(Level.SEVERE, null, ex);
@@ -448,7 +531,7 @@ public class DataBaseOperation {
                     String querysql = "select count(*) from "+tablename + " where id < '"+ startingrecordid + "';";
                     ResultSet rs = DataBaseOperation.query(querysql);
                     if(rs.next()){
-                            rn = rs.getInt("count(*)");
+                        rn = rs.getInt("count(*)");
                     }
                 } catch (SQLException ex) {
                     java.util.logging.Logger.getLogger(DataBaseOperation.class.getName()).log(Level.SEVERE, null, ex);
