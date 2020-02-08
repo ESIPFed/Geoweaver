@@ -1604,7 +1604,8 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				}
 				
-				if(dialog) dialog.close();
+//				if(dialog) dialog.close();
+				if(dialog) dialog.closeFrame(); //change to jsFrame
 				
 			}).fail(function(jxr, status){
 				
