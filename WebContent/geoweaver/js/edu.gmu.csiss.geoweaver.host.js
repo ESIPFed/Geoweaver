@@ -150,7 +150,11 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			if(this.password_frame != null){
 				
-				this.password_frame.closeFrame();
+				try{
+				
+					this.password_frame.closeFrame();
+					
+				}catch(e){}
 				
 				this.password_frame = null;
 				
@@ -803,8 +807,10 @@ edu.gmu.csiss.geoweaver.host = {
 	                			alert("Fail to open SSH session");
 	                			
 	                		}
+	                		try{
+	                			edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+	                		}catch(e){}
 	                		
-	                		edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
 	                		
 	                	}).fail(function(status){
 	                		
@@ -1168,7 +1174,7 @@ edu.gmu.csiss.geoweaver.host = {
 				
             	edu.gmu.csiss.geoweaver.host.add(function(){
         		
-            		edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();
+            		try{edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();}catch(e){}
 	                
 	        	});
 				
