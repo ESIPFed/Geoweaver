@@ -72,7 +72,8 @@ edu.gmu.csiss.geoweaver.workflow = {
 		
 		if(edu.gmu.csiss.geoweaver.workspace.checkIfWorkflow()){
 			
-			var content = '<form>'+
+			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
+			   '<form>'+
 		       '   <div class="form-group row required">'+
 		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Input Workflow Name : </label>'+
 		       '     <div class="col-sm-8">'+
@@ -81,93 +82,134 @@ edu.gmu.csiss.geoweaver.workflow = {
 		       '   </div>'+
 		       '</form>';
 			
-			BootstrapDialog.show({
-				
-				title: "New workflow",
-				
-				message: content,
-				
-				buttons: [{
-					
-					label: "Confirm",
-					
-					id: "workflow-new-confirm",
-					
-					action: function(dialog){
-						
-						var $button = this;
-	                	
-	                	$button.spin();
-	                	
-//	                	dialog.enableButtons(false);
-	                	$("#workflow-new-confirm").prop('disabled', true);
-						
-						//save the new workflow
-						
-						var workflow = {
-							
-							"name": $("#workflow_name").val(), 
-							
-							"type": "workflow",
-							
-							"nodes": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.nodes), 
-							
-							"edges": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.edges)
-							
-						};
-						
-						$.ajax({
-							
-							url: "add",
-				    		
-				    		method: "POST",
-				    		
-				    		data: workflow
-				    		
-						}).done(function(msg){
-							
-							msg = $.parseJSON(msg);
-							
-							edu.gmu.csiss.geoweaver.workflow.addMenuItem(msg);
-							
-							console.log("the workflow is added");
-							
-							edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
-							
-							if(createandrun){
-								
-								edu.gmu.csiss.geoweaver.workflow.run(msg.id);
-								
-							}
-							
-							dialog.close();
-							
-						}).fail(function(jqXHR, textStatus){
-							
-							console.error("fail to add workflow");
-							
-							$button.stopSpin();
-	                		
-	        				dialogItself.enableButtons(true);
-							
-						});
-						
-					}
-					
-				},{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
-				
-				
-			});
+			var width = 520; var height = 450;
+			
+			edu.gmu.csiss.geoweaver.menu.del_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+	    		title: 'Authorization',
+	    	    left: 0, 
+	    	    top: 0, 
+	    	    width: width, 
+	    	    height: height,
+	    	    appearanceName: 'yosemite',
+	    	    style: {
+                    backgroundColor: 'rgb(255,255,255)',
+		    	    fontSize: 12,
+                    overflow:'auto'
+                },
+	    	    html: content
+	    	});
+	    	
+			edu.gmu.csiss.geoweaver.menu.del_frame.setControl({
+                styleDisplay:'inline',
+                maximizeButton: 'zoomButton',
+                demaximizeButton: 'dezoomButton',
+                minimizeButton: 'minimizeButton',
+                deminimizeButton: 'deminimizeButton',
+                hideButton: 'closeButton',
+                animation: true,
+                animationDuration: 150,
+
+            });
+	    	
+			edu.gmu.csiss.geoweaver.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
+                _frame.closeFrame();
+                
+            });
+            
+	    	//Show the window
+			edu.gmu.csiss.geoweaver.menu.del_frame.show();
+	    	
+			edu.gmu.csiss.geoweaver.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			
+			
+			
+//			BootstrapDialog.show({
+//				
+//				title: "New workflow",
+//				
+//				message: content,
+//				
+//				buttons: [{
+//					
+//					label: "Confirm",
+//					
+//					id: "workflow-new-confirm",
+//					
+//					action: function(dialog){
+//						
+//						var $button = this;
+//	                	
+//	                	$button.spin();
+//	                	
+////	                	dialog.enableButtons(false);
+//	                	$("#workflow-new-confirm").prop('disabled', true);
+//						
+//						//save the new workflow
+//						
+//						var workflow = {
+//							
+//							"name": $("#workflow_name").val(), 
+//							
+//							"type": "workflow",
+//							
+//							"nodes": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.nodes), 
+//							
+//							"edges": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.edges)
+//							
+//						};
+//						
+//						$.ajax({
+//							
+//							url: "add",
+//				    		
+//				    		method: "POST",
+//				    		
+//				    		data: workflow
+//				    		
+//						}).done(function(msg){
+//							
+//							msg = $.parseJSON(msg);
+//							
+//							edu.gmu.csiss.geoweaver.workflow.addMenuItem(msg);
+//							
+//							console.log("the workflow is added");
+//							
+//							edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
+//							
+//							if(createandrun){
+//								
+//								edu.gmu.csiss.geoweaver.workflow.run(msg.id);
+//								
+//							}
+//							
+//							dialog.close();
+//							
+//						}).fail(function(jqXHR, textStatus){
+//							
+//							console.error("fail to add workflow");
+//							
+//							$button.stopSpin();
+//	                		
+//	        				dialogItself.enableButtons(true);
+//							
+//						});
+//						
+//					}
+//					
+//				},{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
+//						
+//						dialog.close();
+//						
+//					}
+//					
+//				}]
+//				
+//				
+//			});
 			
 		}else{
 			
