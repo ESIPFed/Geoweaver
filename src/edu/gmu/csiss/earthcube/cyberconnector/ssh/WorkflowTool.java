@@ -20,6 +20,7 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.RandomString;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.STATUS;
 import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
+import edu.gmu.csiss.earthcube.cyberconnector.ssh.ProcessTool;
 
 /**
  * 
@@ -40,8 +41,75 @@ public class WorkflowTool {
 	public static String stop(String history_id) {
 		
 		//write the code to stop the execution of a workflow
+
+        ProcessTool pt = new ProcessTool();
+
+        StringBuffer pids = new StringBuffer();
 		
+		StringBuffer sql = new StringBuffer("select input, output from history where id = '").append(hid).append("';");
 		
+		try {
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+				pids.append("(");
+				
+				for (String id: rs.getString("output").split(";")) {
+					resp.append("\"").append(id).append("\"").append(", ");
+                }
+				
+				pids.append(")");
+				
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+			
+		}
+		
+		StringBuffer sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
+		
+		try {
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+                String pid = rs.getString("id");
+				
+                String resp = pt.stop(pid);
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}finally {
+			
+			DataBaseOperation.closeConnection();
+			
+		}
+
+        StringBuffer sql = new StringBuffer("update history set end_time = '");
+        
+        sql.append(history_end_time);
+        
+        sql.append("', indicator = 'Stopped' where id = '");
+        
+        sql.append(history_id).append("';");
+        
+        DataBaseOperation.execute(sql.toString());
 		
 		return null;
 		
