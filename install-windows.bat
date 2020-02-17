@@ -18,25 +18,31 @@ cd install
 
 echo current directory is %CD%
 
-if EXIST "openjdk-12.0.2_windows-x64_bin_1.zip" (
+if exist "openjdk-12.0.2_windows-x64_bin.zip" (
 
 	echo ++++++++++++++++ found openjdk-12.0.2_windows-x64_bin.zip
 	
 ) else (
 	
-	echo -e Download OpenJDK
+	echo -e "Download OpenJDK"
 	
-	curl https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_windows-x64_bin.zip -o openjdk-12.0.2_windows-x64_bin.zip
+	curl -L "https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_windows-x64_bin.zip" -o "openjdk-12.0.2_windows-x64_bin.zip"
 
 rem	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
 
-	echo "Expand-Archive" %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\
 	
-	powershell -Command "Expand-Archive %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\ "
 
 )
 
-if EXIST "apache-tomcat-9.0.22-windows-x64_1.zip" (
+if not exist "jdk-12.0.2" (
+
+	echo "Expand-Archive" %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\
+	
+	powershell -Command "Expand-Archive -Path '%CD%\openjdk-12.0.2_windows-x64_bin.zip' -DestinationPath '%CD%\' "
+	
+)
+
+if exist "apache-tomcat-9.0.22-windows-x64.zip" (
 	
 	echo ++++++++++++++++ found apache-tomcat-9.0.22.tar.gz
 	
@@ -44,65 +50,81 @@ if EXIST "apache-tomcat-9.0.22-windows-x64_1.zip" (
 	
 	echo "Download Tomcat"
 
-	curl https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22-windows-x64.zip -o apache-tomcat-9.0.22-windows-x64.zip
+	curl -L "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.22/bin/apache-tomcat-9.0.22-windows-x64.zip" -o "apache-tomcat-9.0.22-windows-x64.zip"
 
+	
+)
+
+if not exist "apache-tomcat-9.0.22" (
+	
 	rem tar -zxvf apache-tomcat-9.0.24-windows-x64.zip
 	
-	powershell -Command "Expand-Archive %CD%\apache-tomcat-9.0.22-windows-x64.zip %CD%\ "
+	powershell -Command "Expand-Archive -Path '%CD%\apache-tomcat-9.0.22-windows-x64.zip' -DestinationPath '%CD%\' "
 	
-)
+	echo "change the default jdk to the downloaded jdk"
 
-echo change the default jdk to the downloaded jdk
+	del "temp.txt"
 
-
-
-for /f "tokens=*" %%a in (apache-tomcat-9.0.22/bin/catalina.bat) do (
-	
-	echo %%a >> temp.txt
-	
-	rem if "%%a" == "" (  ) else ( echo %%a >> temp.txt )
-
-	if "%%a" == "setlocal" (
-	
-		rem echo this is the position should the new line being inserted >> temp.txt
+	for /f "tokens=*" %%a in (apache-tomcat-9.0.22\bin\startup.bat) do (
 		
-		echo set JAVA_HOME=%CD%\jdk-12.0.2\ >> temp.txt
-	
+		rem if "%%a" == "" (  ) else ( echo %%a >> temp.txt )
+
+		if "%%a" == "setlocal" (
+			
+			rem echo this is the position should the new line being inserted >> temp.txt
+			
+			echo set CATALINA_HOME=%CD%\apache-tomcat-9.0.22>> "temp.txt"
+			
+			echo set JAVA_HOME=%CD%\jdk-12.0.2>> "temp.txt"
+			
+			echo set JRE_HOME=%CD%\jdk-12.0.2>> "temp.txt"
+		
+		)
+		
+		echo %%a >> temp.txt
 	)
-	
+
 )
+
 
 rem echo ***New bottom line*** >> temp.txt
 
-echo y|del apache-tomcat-9.0.22/bin/catalina.bat
+rem echo y|del "apache-tomcat-9.0.2F2\bin\catalina.bat"
 
-rename temp.txt apache-tomcat-9.0.22/bin/catalina.bat
+rem rename "temp.txt" "apache-tomcat-9.0.22\bin\catalina.bat"
+
+copy "temp.txt" "apache-tomcat-9.0.22\bin\startup.bat"
 
 rem echo JAVA_HOME='$PWD'/jdk-12.0.2/ 109 >> apache-tomcat-9.0.22/bin/catalina.sh
 
 echo download Geoweaver into Apache Tomcat Webapp Folder
 
-curl https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war -o Geoweaver.war
+del "Geoweaver.war"
 
-mv Geoweaver.war apache-tomcat-9.0.22/webapps/
+curl -L "https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver.war" -o "Geoweaver.war"
+
+copy "Geoweaver.war" "apache-tomcat-9.0.22\webapps\"
+
 
 echo Move database in place
 
-cp ../db/geoweaver* ~/
+copy "..\db\geoweaver.mv.db" "C:%HOMEPATH%\"
+
+copy "..\db\geoweaver.trace.db" "C:%HOMEPATH%\"
 
 echo start the tomcat..
 
-chmod 755 apache-tomcat-9.0.22/bin/catalina.sh
+rem chmod 755 apache-tomcat-9.0.22/bin/catalina.sh
 
-chmod 755 apache-tomcat-9.0.22/bin/startup.sh
+rem chmod 755 apache-tomcat-9.0.22/bin/startup.sh
 
-./apache-tomcat-9.0.22/bin/startup.sh
+apache-tomcat-9.0.22\bin\startup.bat
 
-sleep 3
+SLEEP 3
 
 echo modify the Geoweaver configuration
 
- there is no need to do this
+rem there is no need to do this
 
 echo Geoweaver is successfully installed!
 

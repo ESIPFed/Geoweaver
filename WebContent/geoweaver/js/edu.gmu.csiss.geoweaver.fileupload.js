@@ -14,6 +14,8 @@ edu.gmu.csiss.geoweaver.fileupload = {
 		
 		password: null,
 		
+		password_frame: null,
+		
 		clean: function(){
 			
 			console.log("clean everything");
@@ -44,53 +46,144 @@ edu.gmu.csiss.geoweaver.fileupload = {
 				//open the login page
 				
 				msg = $.parseJSON(msg);
+				
+				if(edu.gmu.csiss.geoweaver.fileupload.password_frame != null){
+					
+					try{
+					
+						edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+						
+					}catch(e){
+						
+						console.error("Fail to close the frame. Probably it is already closed.");
+						
+					}
+					
+					edu.gmu.csiss.geoweaver.fileupload.password_frame = null;
+					
+				}
 
-				var cont = "<div class=\"row\">";
+				var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+						"<div class=\"row\">"+
+						"<div class=\"col col-md-5\">Input Host Password : </div><div class=\"col col-md-5\"><input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>"+
+						"</div></div>";
 				
-				cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
-								
-				cont += "</div>";
+				content += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"pswd-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
 				
-				BootstrapDialog.show({
-		            
-					title: 'Authorization',
-		            
-		            message: cont,
-		            
-		            closable: false,
-		            
-		            buttons: [{
-		                
-		            	label: 'Submit',
-		                
-		                action: function(dialog) {
-		                	
-		                	var $button = this;
-		                	
-		                	$button.spin();
-		                	
-		                	dialog.enableButtons(false);
-		                	
-		                	edu.gmu.csiss.geoweaver.fileupload.password = $('#inputpswd').val()
-		                	
-		                	edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
-		                	
-		                    dialog.close();
-		                	
-		                }
-		            }, {
-		            	
-		                label: 'Cancel',
-		                
-		                action: function(dialog) {
-		                	
-		                	dialog.close();
-		                
-		                }
-		            
-		            }]
-		        
-				});
+				var width = 320; var height = 200;
+				
+				edu.gmu.csiss.geoweaver.fileupload.password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'Authorization',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+		    	});
+		    	
+				edu.gmu.csiss.geoweaver.fileupload.password_frame.setControl({
+	                styleDisplay:'inline',
+	                maximizeButton: 'zoomButton',
+	                demaximizeButton: 'dezoomButton',
+	                minimizeButton: 'minimizeButton',
+	                deminimizeButton: 'deminimizeButton',
+	                hideButton: 'closeButton',
+	                animation: true,
+	                animationDuration: 150,
+
+	            });
+		    	
+				edu.gmu.csiss.geoweaver.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
+	                _frame.closeFrame();
+	                
+	            });
+	            
+		    	//Show the window
+				edu.gmu.csiss.geoweaver.fileupload.password_frame.show();
+		    	
+				edu.gmu.csiss.geoweaver.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+		    	
+		    	$("#pswd-confirm-btn").click(function(){
+		    		
+//		    		var $button = this;
+//                	
+//                	$button.spin();
+                	
+//		    		edu.gmu.csiss.geoweaver.fileupload.password_frame.enableButtons(false);
+		    		
+		    		
+                	
+                	edu.gmu.csiss.geoweaver.fileupload.password = $('#inputpswd').val()
+                	
+                	if(edu.gmu.csiss.geoweaver.fileupload.password == ""){
+                		
+                		alert("Please input correct password.");
+                		
+                		return;
+                		
+                	}
+                	
+                	edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
+                	
+                	edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+		    		
+		    	});
+		    	
+		    	$("#pswd-cancel-btn").click(function(){
+		    		
+		    		edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+		    		
+		    	});
+				
+//				BootstrapDialog.show({
+//		            
+//					title: 'Authorization',
+//		            
+//		            message: cont,
+//		            
+//		            closable: false,
+//		            
+//		            buttons: [{
+//		                
+//		            	label: 'Submit',
+//		                
+//		                action: function(dialog) {
+//		                	
+//		                	var $button = this;
+//		                	
+//		                	$button.spin();
+//		                	
+//		                	dialog.enableButtons(false);
+//		                	
+//		                	edu.gmu.csiss.geoweaver.fileupload.password = $('#inputpswd').val()
+//		                	
+//		                	edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
+//		                	
+//		                    dialog.close();
+//		                	
+//		                }
+//		            }, {
+//		            	
+//		                label: 'Cancel',
+//		                
+//		                action: function(dialog) {
+//		                	
+//		                	dialog.close();
+//		                
+//		                }
+//		            
+//		            }]
+//		        
+//				});
 				
 			});
 			
@@ -103,198 +196,413 @@ edu.gmu.csiss.geoweaver.fileupload = {
 			//click the submit button, the files are first uploaded to Geoweaver host
 			//once received the complete response, send another request to upload the files to remote host
 			
-			edu.gmu.csiss.geoweaver.fileupload.uploader = new BootstrapDialog({
+			if(this.uploader!=null){
 				
-				title: "File Uploader",
+				try{
 				
-				closable: false,
+					this.uploader.closeFrame();
+					
+				}catch(e){
+					
+					console.error("Probably it is already closed.");
+					
+				}
 				
-				message: "<div class=\"row\" style=\"margin: 5px;\"> "+
-			    "    <div class=\"col-md-12 col-sm-12\"> "+
-			    "      <!-- Our markup, the important part here! --> "+
-			    "      <div id=\"drag-and-drop-zone\" class=\"dm-uploader p-5\"> "+
-			    "        <h3 class=\"mb-5 mt-5 text-muted\">Drag &amp; drop files here</h3> "+
+				this.uploader = null;
+				
+			}
 			
-			    "        <div class=\"btn btn-primary btn-block mb-5\"> "+
-			    "            <span>Open the file Browser</span> "+
-			    "            <input type=\"file\" title='Click to add Files' /> "+
-			    "        </div> "+
-			    "      </div><!-- /uploader --> "+
-			    "    </div> "+
-			    "    <div class=\"col-md-12 col-sm-12\"> "+
-			    "      <div class=\"card h-100\"> "+
-			    "        <div class=\"card-header\"> "+
-			    "          File List "+
-			    "        </div> "+
-			    "        <ul class=\"list-unstyled p-2 d-flex flex-column col\" id=\"files\"> "+
-			    "          <li class=\"text-muted text-center empty\">No files uploaded.</li> "+
-			    "        </ul> "+
-			    "      </div> "+
-			    "    </div> "+
-			    "  </div><div class=\"row\" style=\"margin: 5px;\" > "+
-			    "    <div class=\"col-12\"> "+
-			    "       <div class=\"card h-100\"> "+
-			    "        <div class=\"card-header\"> "+
-			    "          Debug Messages "+
-			    "        </div> "+
-			    "       <ul class=\"list-group list-group-flush\" id=\"debug\"> "+
-			    "          <li class=\"list-group-item text-muted empty\">Loading plugin....</li> "+
-			    "        </ul> "+
-			    "      </div> "+
-			    "    </div> "+
-			    "  </div>"+ 
-			    " 	<script type=\"text/html\" id=\"files-template\">"+
-			    "  	<li class=\"media\">"+
-			    "    <div class=\"media-body mb-1\">"+
-			    "      <p class=\"mb-2\">"+
-			    "        <strong>%%filename%%</strong> - Status: <span class=\"text-muted\">Waiting</span>"+
-			    "      </p>"+
-			    "      <div class=\"progress mb-2\">"+
-			    "        <div class=\"progress-bar progress-bar-striped progress-bar-animated bg-primary\""+ 
-			    "          role=\"progressbar\""+
-			    "          style=\"width: 0%\" "+
-			    "          aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\">"+
-			    "        </div>"+
-			    "      </div>"+
-			    "      <hr class=\"mt-1 mb-1\" />"+
-			    "    </div>"+
-			    "  	</li>"+
-			    "	</script>"+
-			    "	<script  type=\"text/html\" id=\"debug-template\">" +
-			    "		<li class=\"list-group-item text-%%color%%\"><strong>%%date%%</strong>: %%message%%</li>" +
-			    "	</script>",
-			    
-			    size: BootstrapDialog.SIZE_WIDE,
-			    
-			    onhide: function(){
-			    	
-			    	edu.gmu.csiss.geoweaver.fileupload.clean();
-			    	
+			var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><div class=\"row\"  style=\"padding:10px;\">"+
+			"<div class=\"row\" style=\"margin: 5px;\"> "+
+		    "    <div class=\"col-md-12 col-sm-12\"> "+
+		    "      <!-- Our markup, the important part here! --> "+
+		    "      <div id=\"drag-and-drop-zone\" class=\"dm-uploader p-5\"> "+
+		    "        <h3 class=\"mb-5 mt-5 text-muted\">Drag &amp; drop files here</h3> "+
+		
+		    "        <div class=\"btn btn-primary btn-block mb-5\"> "+
+		    "            <span>Open the file Browser</span> "+
+		    "            <input type=\"file\" title='Click to add Files' /> "+
+		    "        </div> "+
+		    "      </div><!-- /uploader --> "+
+		    "    </div> "+
+		    "    <div class=\"col-md-12 col-sm-12\"> "+
+		    "      <div class=\"card h-100\"> "+
+		    "        <div class=\"card-header\"> "+
+		    "          File List "+
+		    "        </div> "+
+		    "        <ul class=\"list-unstyled p-2 d-flex flex-column col\" id=\"files\"> "+
+		    "          <li class=\"text-muted text-center empty\">No files uploaded.</li> "+
+		    "        </ul> "+
+		    "      </div> "+
+		    "    </div> "+
+		    "  </div><div class=\"row\" style=\"margin: 5px;\" > "+
+		    "    <div class=\"col-12\"> "+
+		    "       <div class=\"card h-100\"> "+
+		    "        <div class=\"card-header\"> "+
+		    "          Debug Messages "+
+		    "        </div> "+
+		    "       <ul class=\"list-group list-group-flush\" id=\"debug\"> "+
+		    "          <li class=\"list-group-item text-muted empty\">Loading plugin....</li> "+
+		    "        </ul> "+
+		    "      </div> "+
+		    "    </div> "+
+		    "  </div>"+ 
+		    " 	<script type=\"text/html\" id=\"files-template\">"+
+		    "  	<li class=\"media\">"+
+		    "    <div class=\"media-body mb-1\">"+
+		    "      <p class=\"mb-2\">"+
+		    "        <strong>%%filename%%</strong> - Status: <span class=\"text-muted\">Waiting</span>"+
+		    "      </p>"+
+		    "      <div class=\"progress mb-2\">"+
+		    "        <div class=\"progress-bar progress-bar-striped progress-bar-animated bg-primary\""+ 
+		    "          role=\"progressbar\""+
+		    "          style=\"width: 0%\" "+
+		    "          aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\">"+
+		    "        </div>"+
+		    "      </div>"+
+		    "      <hr class=\"mt-1 mb-1\" />"+
+		    "    </div>"+
+		    "  	</li>"+
+		    "	</script>"+
+		    "	<script  type=\"text/html\" id=\"debug-template\">" +
+		    "		<li class=\"list-group-item text-%%color%%\"><strong>%%date%%</strong>: %%message%%</li>" +
+		    "	</script>"+
+		    "</div>";
+			
+			content += '<div class="modal-footer">' +
+			"	<button type=\"button\" id=\"upload-start\" class=\"btn btn-outline-primary\">Start</button> "+
+			"	<button type=\"button\" id=\"upload-stop\" class=\"btn btn-outline-primary\">Stop</button> "+
+			"	<button type=\"button\" id=\"upload-reset\" class=\"btn btn-outline-primary\">Reset</button> "+
+			"	<button type=\"button\" id=\"upload-close\" class=\"btn btn-outline-primary\">Close</button> "+
+			'</div>';
+			
+			var width = 720; var height = 640;
+			
+			edu.gmu.csiss.geoweaver.fileupload.uploader = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+	    		title: 'File Uploader',
+	    	    left: 0, 
+	    	    top: 0, 
+	    	    width: width, 
+	    	    height: height,
+	    	    appearanceName: 'yosemite',
+	    	    style: {
+                    backgroundColor: 'rgb(255,255,255)',
+		    	    fontSize: 12,
+                    overflow:'auto'
+                },
+	    	    html: content
+	    	});
+	    	
+			edu.gmu.csiss.geoweaver.fileupload.uploader.setControl({
+                styleDisplay:'inline',
+                maximizeButton: 'zoomButton',
+                demaximizeButton: 'dezoomButton',
+                minimizeButton: 'minimizeButton',
+                deminimizeButton: 'deminimizeButton',
+                hideButton: 'closeButton',
+                animation: true,
+                animationDuration: 150,
+
+            });
+	    	
+			edu.gmu.csiss.geoweaver.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
+				
+                _frame.closeFrame();
+                
+            });
+            
+	    	//Show the window
+			edu.gmu.csiss.geoweaver.fileupload.uploader.show();
+	    	
+			edu.gmu.csiss.geoweaver.fileupload.uploader.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			
+			$('#drag-and-drop-zone').dmUploader({ //
+			    url: '../FileUploadServlet',
+			    maxFileSize: 3000000000, // 3000 Megs max
+			    auto: false,
+			    queue: true,
+			    onDragEnter: function(){
+			      // Happens when dragging something over the DnD area
+			      this.addClass('active');
 			    },
+			    onDragLeave: function(){
+			      // Happens when dragging something OUT of the DnD area
+			      this.removeClass('active');
+			    },
+			    onInit: function(){
+			      // Plugin is ready to use
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Uploader initialized :)', 'info');
+			    },
+			    onComplete: function(){
+			      // All files in the queue are processed (success or error)
+//			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('All pending tranfers finished');
+			    },
+			    onNewFile: function(id, file){
+			      // When a new file is added using the file selector or the DnD area
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('New file added #' + id);
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_add_file(id, file);
+			    },
+			    onBeforeUpload: function(id){
+			      // about tho start uploading a file
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Starting the upload of #' + id);
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, '', true);
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
+			    },
+			    onUploadProgress: function(id, percent){
+			      // Updating file progress
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, percent);
+			    },
+			    onUploadSuccess: function(id, data){
+			      // A file was successfully uploaded
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 90, '', true);
+			      data = $.parseJSON(data);
+			      edu.gmu.csiss.geoweaver.fileupload.transfer(id, data.url);
+			    },
+			    onUploadError: function(id, xhr, status, message){
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'danger', message);
+			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
+			    },
+			    onFallbackMode: function(){
+			      // When the browser doesn't support this plugin :(
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
+			    },
+			    onFileSizeError: function(file){
+			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
+			    }
+			});
+			
+			$("#upload-start").click(function(){
 				
-				onshown: function(){
-					
-					$('#drag-and-drop-zone').dmUploader({ //
-					    url: '../FileUploadServlet',
-					    maxFileSize: 3000000000, // 3000 Megs max
-					    auto: false,
-					    queue: true,
-					    onDragEnter: function(){
-					      // Happens when dragging something over the DnD area
-					      this.addClass('active');
-					    },
-					    onDragLeave: function(){
-					      // Happens when dragging something OUT of the DnD area
-					      this.removeClass('active');
-					    },
-					    onInit: function(){
-					      // Plugin is ready to use
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Uploader initialized :)', 'info');
-					    },
-					    onComplete: function(){
-					      // All files in the queue are processed (success or error)
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('All pending tranfers finished');
-					    },
-					    onNewFile: function(id, file){
-					      // When a new file is added using the file selector or the DnD area
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('New file added #' + id);
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_add_file(id, file);
-					    },
-					    onBeforeUpload: function(id){
-					      // about tho start uploading a file
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Starting the upload of #' + id);
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, '', true);
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
-					    },
-					    onUploadProgress: function(id, percent){
-					      // Updating file progress
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, percent);
-					    },
-					    onUploadSuccess: function(id, data){
-					      // A file was successfully uploaded
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 90, '', true);
-					      data = $.parseJSON(data);
-					      edu.gmu.csiss.geoweaver.fileupload.transfer(id, data.url);
-					    },
-					    onUploadError: function(id, xhr, status, message){
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'danger', message);
-					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
-					    },
-					    onFallbackMode: function(){
-					      // When the browser doesn't support this plugin :(
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
-					    },
-					    onFileSizeError: function(file){
-					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
-					    }
-					});
-					
-				},
+				$('#drag-and-drop-zone').dmUploader('start');
 				
-				buttons: [{
-					
-					label: "Start",
-					
-					id: 'btn-start',
-					
-					action: function(dialog){
-						
-						$('#drag-and-drop-zone').dmUploader('start');
-						
-						var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
-	                    $button.disable();
-	                    $button.spin();
-	                    dialog.setClosable(false);
-						
-					}
-					
-				},{
-					
-					label: "Stop",
-					
-					action: function(dialog){
-						
-						$('#drag-and-drop-zone').dmUploader('cancel');
-						
-						dialog.getButton("btn-start").enable();
-						dialog.getButton("btn-start").stopSpin();
-						dialog.setClosable(true);
-						
-					}
-					
-				},{
-					
-					label: "Reset",
-					
-					action: function(dialog){
-						
-						$("#drag-and-drop-zone").dmUploader("reset");
-						$("#files").empty();
-						$("#debug").empty();
-						
-						dialog.getButton("btn-start").enable();
-						dialog.getButton("btn-start").stopSpin();
-						dialog.setClosable(true);
-						
-					}
-					
-				},{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
+				var $button = $("#upload-start"); // 'this' here is a jQuery object that wrapping the <button> DOM element.
+//                $button.disable();
+                $('#upload-start').prop('disabled', true);
+//                $button.spin();
+//                dialog.setClosable(false);
 				
 			});
 			
-			edu.gmu.csiss.geoweaver.fileupload.uploader.open();
+			$("#upload-stop").click(function(){
+				$('#drag-and-drop-zone').dmUploader('cancel');
+				$('#upload-start').prop('disabled', false);
+//				dialog.getButton("btn-start").enable();
+//				dialog.getButton("btn-start").stopSpin();
+//				dialog.setClosable(true);
+			});
+			
+			$("#upload-reset").click(function(){
+				$("#drag-and-drop-zone").dmUploader("reset");
+				$("#files").empty();
+				$("#debug").empty();
+				$('#upload-start').prop('disabled', false);
+//				dialog.getButton("btn-start").enable();
+//				dialog.getButton("btn-start").stopSpin();
+//				dialog.setClosable(true);
+				
+			});
+			
+			$("#upload-close").click(function(){
+				
+				edu.gmu.csiss.geoweaver.fileupload.uploader.closeFrame();
+				
+			});
+			
+			
+//			edu.gmu.csiss.geoweaver.fileupload.uploader = new BootstrapDialog({
+//				
+//				title: "File Uploader",
+//				
+//				closable: false,
+//				
+//				message: "<div class=\"row\" style=\"margin: 5px;\"> "+
+//			    "    <div class=\"col-md-12 col-sm-12\"> "+
+//			    "      <!-- Our markup, the important part here! --> "+
+//			    "      <div id=\"drag-and-drop-zone\" class=\"dm-uploader p-5\"> "+
+//			    "        <h3 class=\"mb-5 mt-5 text-muted\">Drag &amp; drop files here</h3> "+
+//			
+//			    "        <div class=\"btn btn-primary btn-block mb-5\"> "+
+//			    "            <span>Open the file Browser</span> "+
+//			    "            <input type=\"file\" title='Click to add Files' /> "+
+//			    "        </div> "+
+//			    "      </div><!-- /uploader --> "+
+//			    "    </div> "+
+//			    "    <div class=\"col-md-12 col-sm-12\"> "+
+//			    "      <div class=\"card h-100\"> "+
+//			    "        <div class=\"card-header\"> "+
+//			    "          File List "+
+//			    "        </div> "+
+//			    "        <ul class=\"list-unstyled p-2 d-flex flex-column col\" id=\"files\"> "+
+//			    "          <li class=\"text-muted text-center empty\">No files uploaded.</li> "+
+//			    "        </ul> "+
+//			    "      </div> "+
+//			    "    </div> "+
+//			    "  </div><div class=\"row\" style=\"margin: 5px;\" > "+
+//			    "    <div class=\"col-12\"> "+
+//			    "       <div class=\"card h-100\"> "+
+//			    "        <div class=\"card-header\"> "+
+//			    "          Debug Messages "+
+//			    "        </div> "+
+//			    "       <ul class=\"list-group list-group-flush\" id=\"debug\"> "+
+//			    "          <li class=\"list-group-item text-muted empty\">Loading plugin....</li> "+
+//			    "        </ul> "+
+//			    "      </div> "+
+//			    "    </div> "+
+//			    "  </div>"+ 
+//			    " 	<script type=\"text/html\" id=\"files-template\">"+
+//			    "  	<li class=\"media\">"+
+//			    "    <div class=\"media-body mb-1\">"+
+//			    "      <p class=\"mb-2\">"+
+//			    "        <strong>%%filename%%</strong> - Status: <span class=\"text-muted\">Waiting</span>"+
+//			    "      </p>"+
+//			    "      <div class=\"progress mb-2\">"+
+//			    "        <div class=\"progress-bar progress-bar-striped progress-bar-animated bg-primary\""+ 
+//			    "          role=\"progressbar\""+
+//			    "          style=\"width: 0%\" "+
+//			    "          aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\">"+
+//			    "        </div>"+
+//			    "      </div>"+
+//			    "      <hr class=\"mt-1 mb-1\" />"+
+//			    "    </div>"+
+//			    "  	</li>"+
+//			    "	</script>"+
+//			    "	<script  type=\"text/html\" id=\"debug-template\">" +
+//			    "		<li class=\"list-group-item text-%%color%%\"><strong>%%date%%</strong>: %%message%%</li>" +
+//			    "	</script>",
+//			    
+//			    size: BootstrapDialog.SIZE_WIDE,
+//			    
+//			    onhide: function(){
+//			    	
+//			    	edu.gmu.csiss.geoweaver.fileupload.clean();
+//			    	
+//			    },
+//				
+//				onshown: function(){
+//					
+//					$('#drag-and-drop-zone').dmUploader({ //
+//					    url: '../FileUploadServlet',
+//					    maxFileSize: 3000000000, // 3000 Megs max
+//					    auto: false,
+//					    queue: true,
+//					    onDragEnter: function(){
+//					      // Happens when dragging something over the DnD area
+//					      this.addClass('active');
+//					    },
+//					    onDragLeave: function(){
+//					      // Happens when dragging something OUT of the DnD area
+//					      this.removeClass('active');
+//					    },
+//					    onInit: function(){
+//					      // Plugin is ready to use
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Uploader initialized :)', 'info');
+//					    },
+//					    onComplete: function(){
+//					      // All files in the queue are processed (success or error)
+////					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('All pending tranfers finished');
+//					    },
+//					    onNewFile: function(id, file){
+//					      // When a new file is added using the file selector or the DnD area
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('New file added #' + id);
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_add_file(id, file);
+//					    },
+//					    onBeforeUpload: function(id){
+//					      // about tho start uploading a file
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Starting the upload of #' + id);
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, '', true);
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
+//					    },
+//					    onUploadProgress: function(id, percent){
+//					      // Updating file progress
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, percent);
+//					    },
+//					    onUploadSuccess: function(id, data){
+//					      // A file was successfully uploaded
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 90, '', true);
+//					      data = $.parseJSON(data);
+//					      edu.gmu.csiss.geoweaver.fileupload.transfer(id, data.url);
+//					    },
+//					    onUploadError: function(id, xhr, status, message){
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'danger', message);
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
+//					    },
+//					    onFallbackMode: function(){
+//					      // When the browser doesn't support this plugin :(
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
+//					    },
+//					    onFileSizeError: function(file){
+//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
+//					    }
+//					});
+//					
+//				},
+//				
+//				buttons: [{
+//					
+//					label: "Start",
+//					
+//					id: 'btn-start',
+//					
+//					action: function(dialog){
+//						
+//						$('#drag-and-drop-zone').dmUploader('start');
+//						
+//						var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+//	                    $button.disable();
+//	                    $button.spin();
+//	                    dialog.setClosable(false);
+//						
+//					}
+//					
+//				},{
+//					
+//					label: "Stop",
+//					
+//					action: function(dialog){
+//						
+//						$('#drag-and-drop-zone').dmUploader('cancel');
+//						
+//						dialog.getButton("btn-start").enable();
+//						dialog.getButton("btn-start").stopSpin();
+//						dialog.setClosable(true);
+//						
+//					}
+//					
+//				},{
+//					
+//					label: "Reset",
+//					
+//					action: function(dialog){
+//						
+//						$("#drag-and-drop-zone").dmUploader("reset");
+//						$("#files").empty();
+//						$("#debug").empty();
+//						
+//						dialog.getButton("btn-start").enable();
+//						dialog.getButton("btn-start").stopSpin();
+//						dialog.setClosable(true);
+//						
+//					}
+//					
+//				},{
+//					
+//					label: "Close",
+//					
+//					action: function(dialog){
+//						
+//						dialog.close();
+//						
+//					}
+//					
+//				}]
+//				
+//			});
+//			
+//			edu.gmu.csiss.geoweaver.fileupload.uploader.open();
 			
 		},
 		
