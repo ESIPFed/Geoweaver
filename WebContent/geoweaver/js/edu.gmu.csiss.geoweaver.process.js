@@ -429,7 +429,7 @@ edu.gmu.csiss.geoweaver.process = {
         			  
         		}else if(this.value == "jupyter"){
         			
-        			edu.gmu.csiss.geoweaver.process.showJupyter(null, edu.gmu.csiss.geoweaver.process.jupytercode,edu.gmu.csiss.geoweaver.process.cmid);
+        			edu.gmu.csiss.geoweaver.process.showJupyter(edu.gmu.csiss.geoweaver.process.jupytercode, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}else if(this.value == "python"){
         			
