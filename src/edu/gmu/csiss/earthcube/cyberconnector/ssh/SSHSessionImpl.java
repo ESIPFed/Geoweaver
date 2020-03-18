@@ -379,11 +379,11 @@ public class SSHSessionImpl implements SSHSession {
     		
     		//new version of execution in which all the python files are copied in the host
     		
-    		cmdline += "mkdir " + basedir + "/" + token + ";";
+    		cmdline += "mkdir " + token + ";";
     		
-    		cmdline += "tar -xvf " + token + ".tar -C " + basedir + "/" + token + "/; ";
+    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
     		
-    		cmdline += "cd "+ basedir + "/" + token + "/; ";
+    		cmdline += "cd "+ token + "/; ";
     		
 //    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		

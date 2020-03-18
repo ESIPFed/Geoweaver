@@ -782,7 +782,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 					
 				}
 
-				dialog.close();
+				dialog.closeFrame();
 				
 			}).fail(function(error){
 				
