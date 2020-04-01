@@ -7,6 +7,12 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy", "env": {"bin":"python3", "pyenv": "cdl"}}],
 		
+		password_frame: null,
+		
+		ssh_password_frame: null,
+		
+		new_host_frame: null,
+		
 		clearCache: function(){
 			
 			this.cred_cache = [];
@@ -142,76 +148,168 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		enter_password: function(hid, req, business_callback){
 			
-			var content = '   <div class="form-group row required">'+
+			if(this.password_frame != null){
+				
+				try{
+				
+					this.password_frame.closeFrame();
+					
+				}catch(e){}
+				
+				this.password_frame = null;
+				
+			}
+			
+			var content = '<div class="modal-body">'+
+			   '   <div class="form-group row required" style="font-size: 12px;">'+
 		       '     <label for="host password" class="col-sm-4 col-form-label control-label">Input Host User Password: </label>'+
-		       '     <div class="col-sm-8">'+
+		       '     <div class="col-sm-6">'+
 		       '		<input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\" >'+
 		       '     </div>'+
 		       '     <div class="col-sm-12 form-check">'+
-		       '		<input type="checkbox" class="form-check-input" id="remember">'+
+		       '		<input type="checkbox" class="form-check-input" id="remember" />'+
 		       '		<label class="form-check-label" for="remember">Remember password</label>'+
 		       '     </div>'+
-		       '   </div>';
+		       '   </div></div>';
 			
-			BootstrapDialog.show({
+			content += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"pswd-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
+			
+			
+			var width = 520; var height = 340;
+			
+			this.password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+	    		title: 'Host Password',
+	    	    left: 0, 
+	    	    top: 0, 
+	    	    width: width, 
+	    	    height: height,
+	    	    appearanceName: 'yosemite',
+	    	    style: {
+	                backgroundColor: 'rgb(255,255,255)',
+		    	    fontSize: 12,
+	                overflow:'auto'
+	            },
+	    	    html: content
+	    	});
+	    	
+			this.password_frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
+	        });
+	    	
+			this.password_frame.on('closeButton', 'click', (_frame, evt) => {
+	            _frame.closeFrame();
+	            
+	        });
+	        
+	    	//Show the window
+			this.password_frame.show();
+	    	
+			this.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+	    	
+			$("#inputpswd").on('keypress',function(e) {
 				
-				title: "Host Password",
+			    if(e.which == 13) {
+			    	
+			    	$("#pswd-confirm-btn").click();
+			    	
+			    }
+			    
+			}); 
+			
+			$("#pswd-confirm-btn").click(function(){
 				
-				closable: false,
-				
-				message: content,
-				
-				onshown: function(dialog){
-					
-					$("#inputpswd").on('keypress',function(e) {
-					    if(e.which == 13) {
-					    	
-					    	$("#pswd-confirm-btn").click();
-					    	
-					    }
-					}); 
-					
-				},
-				
-				buttons: [{
-					
-	            	label: 'Confirm',
+//				$("#pswd-confirm-btn").spin();
+            	
+            	$('#pswd-confirm-btn').prop('disabled', true);
+            	
+//            	dialogItself.enableButtons(false);
+            	
+            	if(document.getElementById('remember').checked) {
+            	    
+            		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
+            		
+            	}
+            	
+            	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, edu.gmu.csiss.geoweaver.host.password_frame, $('#pswd-confirm-btn'), business_callback);
 	            	
-	            	id: 'pswd-confirm-btn',
-	                
-	                action: function(dialogItself){
-	                	
-	                	var $button = this;
-	                	
-	                	$button.spin();
-	                	
-	                	$('#pswd-confirm-btn').prop('disabled', true);
-	                	
-//	                	dialogItself.enableButtons(false);
-	                	
-	                	if(document.getElementById('remember').checked) {
-	                	    
-	                		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
-	                		
-	                	}
-	                	
-	                	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
-	                	
-	                }
-					
-				},{
-					
-	            	label: 'Cancel',
-	                
-	                action: function(dialogItself){
-	                	
-	                    dialogItself.close();
-	                    
-	                }
-					
-				}]
+			});
+			
+			$("#pswd-cancel-btn").click(function(){
+				
+				edu.gmu.csiss.geoweaver.host.password_frame.closeFrame();
 				
 			});
+			
+//			BootstrapDialog.show({
+//				
+//				title: "Host Password",
+//				
+//				closable: false,
+//				
+//				message: content,
+//				
+//				onshown: function(dialog){
+//					
+//					$("#inputpswd").on('keypress',function(e) {
+//					    if(e.which == 13) {
+//					    	
+//					    	$("#pswd-confirm-btn").click();
+//					    	
+//					    }
+//					}); 
+//					
+//				},
+//				
+//				buttons: [{
+//					
+//	            	label: 'Confirm',
+//	            	
+//	            	id: 'pswd-confirm-btn',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                	var $button = this;
+//	                	
+//	                	$button.spin();
+//	                	
+//	                	$('#pswd-confirm-btn').prop('disabled', true);
+//	                	
+////	                	dialogItself.enableButtons(false);
+//	                	
+//	                	if(document.getElementById('remember').checked) {
+//	                	    
+//	                		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
+//	                		
+//	                	}
+//	                	
+//	                	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
+//	                	
+//	                }
+//					
+//				},{
+//					
+//	            	label: 'Cancel',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                    dialogItself.close();
+//	                    
+//	                }
+//					
+//				}]
+//				
+//			});
 			
 			
 		},
@@ -582,8 +680,25 @@ edu.gmu.csiss.geoweaver.host = {
 				//open the login page
 				
 				hostmsg = $.parseJSON(msg);
+				
+				if(edu.gmu.csiss.geoweaver.host.ssh_password_frame != null){
+					
+					try{
+						
+						edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+						
+					}catch(e){
+						
+						console.error("Probably it is closed already.");
+						
+					}
+					
+					edu.gmu.csiss.geoweaver.host.ssh_password_frame = null;
+					
+				}
 
-				var cont = "<div class=\"row\">";
+				var cont = '<div class="modal-body" style=\"font-size: 12px;\">'+
+					"<div class=\"row\">";
 				
 				cont += "<div class=\"col col-md-5\">IP</div><div class=\"col col-md-5\">" + hostmsg.ip + "</div>";
 				
@@ -593,108 +708,233 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" id=\"passwd\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
 								
-				cont += "</div>";
+				cont += "</div></div>";
 				
-				BootstrapDialog.show({
-		            
-					title: 'Open SSH session',
-		            
-		            message: cont,
-		            
-		            closable: false,
-		            
-		            buttons: [{
-		                
-		            	label: 'Connect',
-		                
-		                action: function(dialog) {
-		                	
-		                	var $button = this;
-		                	
-		                	$button.spin();
-		                	
-		                    dialog.enableButtons(false);
-		                	
-		                	$.ajax({
-		                		
-		                		url: "key",
-		                		
-		                		type: "POST",
-		                		
-		                		data: ""
-		                		
-		                	}).done(function(msg){
-		                		
-		                		//encrypt the password using the received rsa key
-		                		msg = $.parseJSON(msg);
-		                		
-		                		var encrypt = new JSEncrypt();
-		                		
-		                        encrypt.setPublicKey(msg.rsa_public);
-		                        
-		                        var encrypted = encrypt.encrypt($("#passwd").val());
-		                        
-		                        var req = {
-		                        		host: hostmsg.ip,
-		                        		port: hostmsg.port,
-		                        		username: hostmsg.username,
-		                        		password: encrypted
-		                        }
-		                	
-			                	$.ajax({
-			                		
-			                		url: "geoweaver-ssh-login-inbox",
-			                		
-			                		method: "POST",
-			                		
-			                		data: req
-			                		
-			                	}).done(function(msg){
-			                		
-			                		msg = $.parseJSON(msg);
-			                		
-			                		if(msg.token!=null){
-			                			
-				                		//open a dialog to show the SSH command line interface
-	
-				                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
-			                			
-			                		}else{
-			                			
-			                			alert("Fail to open SSH session");
-			                			
-			                		}
-				                	dialog.close();
-			                		
-			                	}).fail(function(status){
-			                		
-			                		alert("Fail to open SSH session" + status);
-			                		
-			                		$button.stopSpin();
-			                		
-			                		dialog.enableButtons(true);
-			                		
-			                	});
-			                	
-		                        
-		                	});
-		                	
-		                	
-		                	
-		                }
-		            }, {
-		            	
-		                label: 'Cancel',
-		                
-		                action: function(dialog) {
-		                
-		                	dialog.close();
-		                
-		                }
-		            
-		            }]
-		        
-				});
+				cont += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"ssh-connect-btn\" class=\"btn btn-outline-primary\">Connect</button> "+
+				"	<button type=\"button\" id=\"ssh-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
+				
+				var width = 500; var height = 340;
+				
+				edu.gmu.csiss.geoweaver.host.ssh_password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			    		title: 'Open SSH session',
+			    	    left: 0, 
+			    	    top: 0, 
+			    	    width: width, 
+			    	    height: height,
+			    	    appearanceName: 'yosemite',
+			    	    style: {
+		                    backgroundColor: 'rgb(255,255,255)',
+				    	    fontSize: 12,
+		                    overflow:'auto'
+		                },
+			    	    html: cont
+		    	});
+		    	
+				edu.gmu.csiss.geoweaver.host.ssh_password_frame.setControl({
+		            styleDisplay:'inline',
+		            maximizeButton: 'zoomButton',
+		            demaximizeButton: 'dezoomButton',
+		            minimizeButton: 'minimizeButton',
+		            deminimizeButton: 'deminimizeButton',
+		            hideButton: 'closeButton',
+		            animation: true,
+		            animationDuration: 150,
+		
+		        });
+		    	
+				edu.gmu.csiss.geoweaver.host.ssh_password_frame.show();
+		    	
+				edu.gmu.csiss.geoweaver.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+		    	
+		    	$("#ssh-connect-btn").click(function(){
+		    		
+//		    		var $button = this;
+//                	
+//                	$button.spin();
+//                	
+//                    dialog.enableButtons(false);
+		    		
+		    		$("#ssh-connect-btn").prop("disabled", true);
+                	
+                	$.ajax({
+                		
+                		url: "key",
+                		
+                		type: "POST",
+                		
+                		data: ""
+                		
+                	}).done(function(msg){
+                		
+                		//encrypt the password using the received rsa key
+                		msg = $.parseJSON(msg);
+                		
+                		var encrypt = new JSEncrypt();
+                		
+                        encrypt.setPublicKey(msg.rsa_public);
+                        
+                        var encrypted = encrypt.encrypt($("#passwd").val());
+                        
+                        var req = {
+                        		host: hostmsg.ip,
+                        		port: hostmsg.port,
+                        		username: hostmsg.username,
+                        		password: encrypted
+                        }
+                	
+	                	$.ajax({
+	                		
+	                		url: "geoweaver-ssh-login-inbox",
+	                		
+	                		method: "POST",
+	                		
+	                		data: req
+	                		
+	                	}).done(function(msg){
+	                		
+	                		msg = $.parseJSON(msg);
+	                		
+	                		if(msg.token!=null){
+	                			
+		                		//open a dialog to show the SSH command line interface
+
+		                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
+	                			
+	                		}else{
+	                			
+	                			alert("Fail to open SSH session");
+	                			
+	                		}
+	                		try{
+	                			edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+	                		}catch(e){}
+	                		
+	                		
+	                	}).fail(function(status){
+	                		
+	                		alert("Fail to open SSH session" + status);
+	                		
+	                		$("#ssh-connect-btn").prop("disabled", false);
+	                		
+//	                		$button.stopSpin();
+//	                		
+//	                		dialog.enableButtons(true);
+	                		
+	                	});
+	                	
+                        
+                	});
+		    		
+		    	});
+		    	
+		    	$("#ssh-cancel-btn").click(function(){
+		    		
+		    		edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+		    		
+		    	});
+				
+//				BootstrapDialog.show({
+//		            
+//					title: 'Open SSH session',
+//		            
+//		            message: cont,
+//		            
+//		            closable: false,
+//		            
+//		            buttons: [{
+//		                
+//		            	label: 'Connect',
+//		                
+//		                action: function(dialog) {
+//		                	
+//		                	var $button = this;
+//		                	
+//		                	$button.spin();
+//		                	
+//		                    dialog.enableButtons(false);
+//		                	
+//		                	$.ajax({
+//		                		
+//		                		url: "key",
+//		                		
+//		                		type: "POST",
+//		                		
+//		                		data: ""
+//		                		
+//		                	}).done(function(msg){
+//		                		
+//		                		//encrypt the password using the received rsa key
+//		                		msg = $.parseJSON(msg);
+//		                		
+//		                		var encrypt = new JSEncrypt();
+//		                		
+//		                        encrypt.setPublicKey(msg.rsa_public);
+//		                        
+//		                        var encrypted = encrypt.encrypt($("#passwd").val());
+//		                        
+//		                        var req = {
+//		                        		host: hostmsg.ip,
+//		                        		port: hostmsg.port,
+//		                        		username: hostmsg.username,
+//		                        		password: encrypted
+//		                        }
+//		                	
+//			                	$.ajax({
+//			                		
+//			                		url: "geoweaver-ssh-login-inbox",
+//			                		
+//			                		method: "POST",
+//			                		
+//			                		data: req
+//			                		
+//			                	}).done(function(msg){
+//			                		
+//			                		msg = $.parseJSON(msg);
+//			                		
+//			                		if(msg.token!=null){
+//			                			
+//				                		//open a dialog to show the SSH command line interface
+//	
+//				                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
+//			                			
+//			                		}else{
+//			                			
+//			                			alert("Fail to open SSH session");
+//			                			
+//			                		}
+//				                	dialog.close();
+//			                		
+//			                	}).fail(function(status){
+//			                		
+//			                		alert("Fail to open SSH session" + status);
+//			                		
+//			                		$button.stopSpin();
+//			                		
+//			                		dialog.enableButtons(true);
+//			                		
+//			                	});
+//			                	
+//		                        
+//		                	});
+//		                	
+//		                	
+//		                	
+//		                }
+//		            }, {
+//		            	
+//		                label: 'Cancel',
+//		                
+//		                action: function(dialog) {
+//		                
+//		                	dialog.close();
+//		                
+//		                }
+//		            
+//		            }]
+//		        
+//				});
 				
 			});
 			
@@ -847,66 +1087,165 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		newDialog: function(){
 			
-			BootstrapDialog.show({
+			if(edu.gmu.csiss.geoweaver.host.new_host_frame!=null){
 				
-				title: "Add new host",
+				try{
+					
+					edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();
+					
+				}catch(e){
+					
+					console.error("Fail to close old frame. Maybe it is already closed.");
+					
+				}
 				
-	            message: '<form>'+
-				       '   <div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
-				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
-				       '     </div>'+
-				       '   </div>'+
-				       '   <div class="form-group row required">'+
-				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
-				       '     <div class="col-sm-10">'+
-				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
-				       '     </div>'+
-				       '   </div>'+
-				       '   <div class="form-group row required">'+
-				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
-				       '     <div class="col-sm-10">'+
-				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
-				       '     </div>'+
-				       '   </div>'+
-				       '   <div class="form-group row required">'+
-				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
-				       '     <div class="col-sm-10">'+
-				       '       <input type="text" class="form-control" id="username" placeholder="">'+
-				       '     </div>'+
-				       '   </div>'+
-				       ' </form>',
-	            
-	            cssClass: 'dialog-vertical-center',
-	            
-	            buttons: [{
-	            	
-	                label: 'Add',
-	                
-	                action: function(dialogItself){
-	                	
-	                	edu.gmu.csiss.geoweaver.host.add(function(){
-	                		
-		                    dialogItself.close();
-		                    
-	                	});
-	                	
-	                }
-	            
-	            },{
-	            
-	            	label: 'Close',
-	                
-	                action: function(dialogItself){
-	                	
-	                    dialogItself.close();
-	                    
-	                }
-	        
-	            }]
+				edu.gmu.csiss.geoweaver.host.new_host_frame = null;
+				
+			}
 			
+			var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+			   '<form>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+		       '     <div class="col-sm-10">'+
+		       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
+		       '     <div class="col-sm-10">'+
+		       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
+		       '     <div class="col-sm-10">'+
+		       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
+		       '     <div class="col-sm-10">'+
+		       '       <input type="text" class="form-control" id="username" placeholder="">'+
+		       '     </div>'+
+		       '   </div>'+
+		       ' </form>'+
+		       '</div>';
+			
+			content += '<div class="modal-footer">' +
+			"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+			"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+			'</div>';
+			
+			var width = 500; var height = 450;
+			
+			edu.gmu.csiss.geoweaver.host.new_host_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+		    		title: 'Add new host',
+		    	    left: 0, 
+		    	    top: 0, 
+		    	    width: width, 
+		    	    height: height,
+		    	    appearanceName: 'yosemite',
+		    	    style: {
+	                    backgroundColor: 'rgb(255,255,255)',
+			    	    fontSize: 12,
+	                    overflow:'auto'
+	                },
+		    	    html: content
+	    	});
+	    	
+			edu.gmu.csiss.geoweaver.host.new_host_frame.setControl({
+	            styleDisplay:'inline',
+	            maximizeButton: 'zoomButton',
+	            demaximizeButton: 'dezoomButton',
+	            minimizeButton: 'minimizeButton',
+	            deminimizeButton: 'deminimizeButton',
+	            hideButton: 'closeButton',
+	            animation: true,
+	            animationDuration: 150,
+	
 	        });
+	    	
+			edu.gmu.csiss.geoweaver.host.new_host_frame.show();
+	    	
+			edu.gmu.csiss.geoweaver.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			
+			$("#host-add-btn").click(function(){
+				
+            	edu.gmu.csiss.geoweaver.host.add(function(){
+        		
+            		try{edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();}catch(e){}
+	                
+	        	});
+				
+			});
+			
+			$("#host-cancel-btn").click(function(){
+				
+				edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();
+				
+			});
+			
+//			BootstrapDialog.show({
+//				
+//				title: "Add new host",
+//				
+//	            message: '<form>'+
+//				       '   <div class="form-group row required">'+
+//				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+//				       '     <div class="col-sm-10">'+
+//				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+//				       '     </div>'+
+//				       '   </div>'+
+//				       '   <div class="form-group row required">'+
+//				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
+//				       '     <div class="col-sm-10">'+
+//				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
+//				       '     </div>'+
+//				       '   </div>'+
+//				       '   <div class="form-group row required">'+
+//				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
+//				       '     <div class="col-sm-10">'+
+//				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
+//				       '     </div>'+
+//				       '   </div>'+
+//				       '   <div class="form-group row required">'+
+//				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
+//				       '     <div class="col-sm-10">'+
+//				       '       <input type="text" class="form-control" id="username" placeholder="">'+
+//				       '     </div>'+
+//				       '   </div>'+
+//				       ' </form>',
+//	            
+//	            cssClass: 'dialog-vertical-center',
+//	            
+//	            buttons: [{
+//	            	
+//	                label: 'Add',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                	edu.gmu.csiss.geoweaver.host.add(function(){
+//	                		
+//		                    dialogItself.close();
+//		                    
+//	                	});
+//	                	
+//	                }
+//	            
+//	            },{
+//	            
+//	            	label: 'Close',
+//	                
+//	                action: function(dialogItself){
+//	                	
+//	                    dialogItself.close();
+//	                    
+//	                }
+//	        
+//	            }]
+//			
+//	        });
 			
 		},
 		

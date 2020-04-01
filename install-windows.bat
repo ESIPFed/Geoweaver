@@ -105,6 +105,7 @@ curl -L "https://github.com/ESIPFed/Geoweaver/releases/download/latest/Geoweaver
 
 copy "Geoweaver.war" "apache-tomcat-9.0.22\webapps\"
 
+
 echo Move database in place
 
 copy "..\db\geoweaver.mv.db" "C:%HOMEPATH%\"

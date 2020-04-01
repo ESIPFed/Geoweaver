@@ -14,6 +14,8 @@ edu.gmu.csiss.geoweaver.process = {
 		
 		current_pid: null,
 		
+		env_frame: null,
+		
 		envlist: {},
 		
 		cmid: null,  //the id used to differentiate the dialogs
@@ -427,7 +429,7 @@ edu.gmu.csiss.geoweaver.process = {
         			  
         		}else if(this.value == "jupyter"){
         			
-        			edu.gmu.csiss.geoweaver.process.showJupyter(null, edu.gmu.csiss.geoweaver.process.jupytercode,edu.gmu.csiss.geoweaver.process.cmid);
+        			edu.gmu.csiss.geoweaver.process.showJupyter(edu.gmu.csiss.geoweaver.process.jupytercode, edu.gmu.csiss.geoweaver.process.cmid);
         			
         		}else if(this.value == "python"){
         			
@@ -1604,7 +1606,13 @@ edu.gmu.csiss.geoweaver.process = {
 					
 				}
 				
-				if(dialog) dialog.close();
+//				if(dialog) dialog.close();
+				
+				if(dialog) {
+					
+					try{dialog.closeFrame(); }catch(e){}
+					
+				}
 				
 			}).fail(function(jxr, status){
 				
@@ -1670,6 +1678,18 @@ edu.gmu.csiss.geoweaver.process = {
                 		
                 		msg = $.parseJSON(msg);
                 		
+                		if(edu.gmu.csiss.geoweaver.process.env_frame != null){
+                			
+                			try{
+                				
+                				edu.gmu.csiss.geoweaver.process.env_frame.closeFrame();
+                				
+                			}catch(e){}
+                			
+                			edu.gmu.csiss.geoweaver.process.env_frame = null;
+                			
+                		}
+                		
                 		var envselector = "<div class=\"form-group\">"+
                 			"<label for=\"env-select\">Select Environment:</label>"+
                 			"<select id=\"env-select\" class=\"form-control\"> "+
@@ -1686,129 +1706,279 @@ edu.gmu.csiss.geoweaver.process = {
                 		
                 		envselector += "</select>";
                 		
-                		BootstrapDialog.show({
-            				
-            				title: "Set " + req.desc + " environment",
-            				
-            				message: "<form> "+
-        					"    <div class=\"row\"> "+
-        						envselector +
-        					"    </div>"+
-        					"	<div class=\"form-group row\"> "+
-        					"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
-        					"    <div class=\"col-sm-8\"> "+
-        					"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
-        					"    </div> "+
-        					"  	</div>"+
-        					"	<div class=\"form-group row\"> "+
-        					"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
-        					"    <div class=\"col-sm-8\"> "+
-        					"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
-        					"    </div> "+
-        					"  	</div>"+
-        					"	<div class=\"form-group row\"> "+
-        					"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
-        					"    <div class=\"col-sm-8\"> "+
-        					"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
-        					"    </div> "+
-        					"  	</div>"+
-        					"</form>"+
-        					"	<div class=\"form-group col-sm-10\">"+
-        				    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
-        				    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
-        				    "   </div>",
-        					
-        					onshown: function(){
-        						
-        						$("#env-select").change(function(e){
-        							
-        							if($(this).val() == 'default'){
-        								
-        								$("#bin").prop('disabled', true);
-        								
-        								$("#env").prop('disabled', true);
-        								
-        								$("#basedir").prop('disabled', true);
-        								
-        							}else{
-        								
-        								$("#bin").prop('disabled', false);
-        								
-        								$("#env").prop('disabled', false);
-        								
-        								$("#basedir").prop('disabled', false);
-        								
-        								if($(this).val() != 'new'){
-        									
-        									var envid = $(this).val();
-        									
-        									for(var i=0;i<edu.gmu.csiss.geoweaver.process.envlist.length;i+=1){
-        										
-        										var env = edu.gmu.csiss.geoweaver.process.envlist[i];
-        										
-        										if(env.id == envid){
-        											
+                		var content = '<div class="modal-body" style="font-size: 12px;">'+
+                			"<form> "+
+	    					"    <div class=\"row\"> "+
+								envselector +
+							"    </div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"</form>"+
+							"	<div class=\"form-group col-sm-10\">"+
+						    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
+						    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+						    "   </div></div>";
+                		
+                		content += '<div class="modal-footer">' +
+        				"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+        				'</div>';
+                		
+                		var width = 520; var height = 340;
+            			
+            			edu.gmu.csiss.geoweaver.process.env_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+            	    		title: "Set " + req.desc + " environment",
+            	    	    left: 0, 
+            	    	    top: 0, 
+            	    	    width: width, 
+            	    	    height: height,
+            	    	    appearanceName: 'yosemite',
+            	    	    style: {
+            	                backgroundColor: 'rgb(255,255,255)',
+            		    	    fontSize: 12,
+            	                overflow:'auto'
+            	            },
+            	    	    html: content
+            	    	});
+            	    	
+            			edu.gmu.csiss.geoweaver.process.env_frame.setControl({
+            	            styleDisplay:'inline',
+            	            maximizeButton: 'zoomButton',
+            	            demaximizeButton: 'dezoomButton',
+            	            minimizeButton: 'minimizeButton',
+            	            deminimizeButton: 'deminimizeButton',
+            	            hideButton: 'closeButton',
+            	            animation: true,
+            	            animationDuration: 150,
+            	
+            	        });
+            	    	
+            			edu.gmu.csiss.geoweaver.process.env_frame.on('closeButton', 'click', (_frame, evt) => {
+            	            _frame.closeFrame();
+            	            
+            	        });
+            	        
+            	    	//Show the window
+            			edu.gmu.csiss.geoweaver.process.env_frame.show();
+            	    	
+            			edu.gmu.csiss.geoweaver.process.env_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+            	    	
+            			$("#env-select").change(function(e){
+							
+							if($(this).val() == 'default'){
+								
+								$("#bin").prop('disabled', true);
+								
+								$("#env").prop('disabled', true);
+								
+								$("#basedir").prop('disabled', true);
+								
+							}else{
+								
+								$("#bin").prop('disabled', false);
+								
+								$("#env").prop('disabled', false);
+								
+								$("#basedir").prop('disabled', false);
+								
+								if($(this).val() != 'new'){
+									
+									var envid = $(this).val();
+									
+									for(var i=0;i<edu.gmu.csiss.geoweaver.process.envlist.length;i+=1){
+										
+										var env = edu.gmu.csiss.geoweaver.process.envlist[i];
+										
+										if(env.id == envid){
+											
 
-                									$("#bin").val(env.bin);
-                									
-                									$("#env").val(env.pyenv);
-                									
-                									$("#basedir").val(env.basedir);
-                									
-                									break;
-        										}
-        										
-        										
-        									}
+        									$("#bin").val(env.bin);
         									
-        								}
-        								
-        							}
-        							
-        						})
-        						
-        					},
+        									$("#env").val(env.pyenv);
+        									
+        									$("#basedir").val(env.basedir);
+        									
+        									break;
+										}
+										
+										
+									}
+									
+								}
+								
+							}
+							
+						})
+						
+						$("#process-confirm-btn").click(function(){
+							
+							if($(this).val() == 'default'){
+    	                		
+    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
+    	                		
+    	                	}else{
+    	                		
+    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+    	                		
+    	                	}
+    	                	
+    	                	if($("#remember").prop('checked')){
+    	                		
+    	                		edu.gmu.csiss.geoweaver.host.setEnvCache(hid, req.env);
+    	                		
+    	                	}
+    	                	
+    	                	edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
+    	                	
+    	                	edu.gmu.csiss.geoweaver.process.env_frame.closeFrame();
+							
+						});
+            			
+            			$("#process-cancel-btn").click(function(){
             				
-            				buttons: [{
-            					
-            	            	label: 'Confirm',
-            	                
-            	                action: function(dialog){
-            	                	
-            	                	if($(this).val() == 'default'){
-            	                		
-            	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-            	                		
-            	                	}else{
-            	                		
-            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-            	                		
-            	                	}
-            	                	
-            	                	if($("#remember").prop('checked')){
-            	                		
-            	                		edu.gmu.csiss.geoweaver.host.setEnvCache(hid, req.env);
-            	                		
-            	                	}
-            	                	
-            	                	edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
-            	                	
-            	                	dialog.close();
-            	                	
-            	                }
-            					
-            				},{
-            					
-            					label: 'Cancel',
-            					
-            					action: function(dialog){
-            						
-            						dialog.close();
-            						
-            					}
-            					
-            				}]
+            				edu.gmu.csiss.geoweaver.process.env_frame.closeFrame();
+            				
             			});
+                		
+//                		BootstrapDialog.show({
+//            				
+//            				title: "Set " + req.desc + " environment",
+//            				
+//            				message: "<form> "+
+//        					"    <div class=\"row\"> "+
+//        						envselector +
+//        					"    </div>"+
+//        					"	<div class=\"form-group row\"> "+
+//        					"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+//        					"    <div class=\"col-sm-8\"> "+
+//        					"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+//        					"    </div> "+
+//        					"  	</div>"+
+//        					"	<div class=\"form-group row\"> "+
+//        					"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+//        					"    <div class=\"col-sm-8\"> "+
+//        					"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+//        					"    </div> "+
+//        					"  	</div>"+
+//        					"	<div class=\"form-group row\"> "+
+//        					"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+//        					"    <div class=\"col-sm-8\"> "+
+//        					"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+//        					"    </div> "+
+//        					"  	</div>"+
+//        					"</form>"+
+//        					"	<div class=\"form-group col-sm-10\">"+
+//        				    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
+//        				    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+//        				    "   </div>",
+//        					
+//        					onshown: function(){
+//        						
+//        						$("#env-select").change(function(e){
+//        							
+//        							if($(this).val() == 'default'){
+//        								
+//        								$("#bin").prop('disabled', true);
+//        								
+//        								$("#env").prop('disabled', true);
+//        								
+//        								$("#basedir").prop('disabled', true);
+//        								
+//        							}else{
+//        								
+//        								$("#bin").prop('disabled', false);
+//        								
+//        								$("#env").prop('disabled', false);
+//        								
+//        								$("#basedir").prop('disabled', false);
+//        								
+//        								if($(this).val() != 'new'){
+//        									
+//        									var envid = $(this).val();
+//        									
+//        									for(var i=0;i<edu.gmu.csiss.geoweaver.process.envlist.length;i+=1){
+//        										
+//        										var env = edu.gmu.csiss.geoweaver.process.envlist[i];
+//        										
+//        										if(env.id == envid){
+//        											
+//
+//                									$("#bin").val(env.bin);
+//                									
+//                									$("#env").val(env.pyenv);
+//                									
+//                									$("#basedir").val(env.basedir);
+//                									
+//                									break;
+//        										}
+//        										
+//        										
+//        									}
+//        									
+//        								}
+//        								
+//        							}
+//        							
+//        						})
+//        						
+//        					},
+//            				
+//            				buttons: [{
+//            					
+//            	            	label: 'Confirm',
+//            	                
+//            	                action: function(dialog){
+//            	                	
+//            	                	if($(this).val() == 'default'){
+//            	                		
+//            	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
+//            	                		
+//            	                	}else{
+//            	                		
+//            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+//            	                		
+//            	                	}
+//            	                	
+//            	                	if($("#remember").prop('checked')){
+//            	                		
+//            	                		edu.gmu.csiss.geoweaver.host.setEnvCache(hid, req.env);
+//            	                		
+//            	                	}
+//            	                	
+//            	                	edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.process.executeCallback );
+//            	                	
+//            	                	dialog.close();
+//            	                	
+//            	                }
+//            					
+//            				},{
+//            					
+//            					label: 'Cancel',
+//            					
+//            					action: function(dialog){
+//            						
+//            						dialog.close();
+//            						
+//            					}
+//            					
+//            				}]
+//            			});
                 		
                 	}).fail(function(jxr, status){
         				
@@ -1848,7 +2018,8 @@ edu.gmu.csiss.geoweaver.process = {
 			
 			if(h==null){
 				
-				var content = '<form>'+
+				var content = '<div class="modal-body" style="font-size: 12px;">'+
+				   '<form>'+
 			       '   <div class="form-group row required">'+
 			       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run Process '+pname+' on: </label>'+
 			       '     <div class="col-sm-8">'+
@@ -1860,82 +2031,182 @@ edu.gmu.csiss.geoweaver.process = {
 			       '     </div>'+
 			       '     </div>'+
 			       '   </div>'+
-			       '</form>';
+			       '</form></div>';
 				
-				BootstrapDialog.show({
+				content += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"host-execute-btn\" class=\"btn btn-outline-primary\">Execute</button> "+
+				"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
+				
+				if(edu.gmu.csiss.geoweaver.process.host_frame!=null){
 					
-					title: "Select a host",
+					try{
+						edu.gmu.csiss.geoweaver.process.host_frame.closeFrame();
+					}catch(e){}
 					
-					closable: false,
+					edu.gmu.csiss.geoweaver.process.host_frame = null;
 					
-		            message: content,
-		            
-		            onshown: function(){
-		            	
-		            	$.ajax({
-		            		
-		            		url: "list",
-		            		
-		            		method: "POST",
-		            		
-		            		data: "type=host"
-		            		
-		            	}).done(function(msg){
-		            		
-		            		msg = $.parseJSON(msg);
-		            		
-		            		$("#hostselector").find('option').remove().end();
-		            		
-		            		for(var i=0;i<msg.length;i++){
-		            			
-		            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-		            			
-		            		}
-		            		
-		            	}).fail(function(jxr, status){
-		    				
-		    				console.error("fail to list host");
-		    				
-		    			});
-		            	
-		            },
-		            
-		            buttons: [{
-			            
-		            	label: 'Execute',
-		                
-		                action: function(dialogItself){
-		                	
-		                	var hostid = $("#hostselector").children(":selected").attr("id");
-		                	
-		                	console.log("selected host: " + hostid);
-		                	
-		                	//remember the process-host connection
-		                	if(document.getElementById('remember').checked) {
-		                	    
-		                		edu.gmu.csiss.geoweaver.process.setCache(pid, hostid); //remember s
-		                		
-		                	}
-		                	
-		                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
-		                	
-		                    dialogItself.close();
-		                    
-		                }
-		        
-		            },{
-			            
-		            	label: 'Cancel',
-		                
-		                action: function(dialogItself){
-		                	
-		                    dialogItself.close();
-		                    
-		                }
-		        
-		            }]
-		            
-				});
+				}
+				
+				var width = 500; var height = 540;
+				
+				edu.gmu.csiss.geoweaver.process.host_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			    		title: 'Select a host',
+			    	    left: 0, 
+			    	    top: 0, 
+			    	    width: width, 
+			    	    height: height,
+			    	    appearanceName: 'yosemite',
+			    	    style: {
+		                    backgroundColor: 'rgb(255,255,255)',
+				    	    fontSize: 12,
+		                    overflow:'auto'
+		                },
+			    	    html: content
+			    	    
+		    	});
+		    	
+				edu.gmu.csiss.geoweaver.process.host_frame.setControl({
+		            styleDisplay:'inline',
+		            maximizeButton: 'zoomButton',
+		            demaximizeButton: 'dezoomButton',
+		            minimizeButton: 'minimizeButton',
+		            deminimizeButton: 'deminimizeButton',
+		            hideButton: 'closeButton',
+		            animation: true,
+		            animationDuration: 150,
+		
+		        });
+		    	
+				edu.gmu.csiss.geoweaver.process.host_frame.show();
+		    	
+				edu.gmu.csiss.geoweaver.process.host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+		    	
+		    	$.ajax({
+            		
+            		url: "list",
+            		
+            		method: "POST",
+            		
+            		data: "type=host"
+            		
+            	}).done(function(msg){
+            		
+            		msg = $.parseJSON(msg);
+            		
+            		$("#hostselector").find('option').remove().end();
+            		
+            		for(var i=0;i<msg.length;i++){
+            			
+            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+            			
+            		}
+            		
+            	}).fail(function(jxr, status){
+    				
+    				console.error("fail to list host");
+    				
+    			});
+		    	
+		    	$("#host-execute-btn").click(function(){
+		    		
+		    		var hostid = $("#hostselector").children(":selected").attr("id");
+                	
+                	console.log("selected host: " + hostid);
+                	
+                	//remember the process-host connection
+                	if(document.getElementById('remember').checked) {
+                	    
+                		edu.gmu.csiss.geoweaver.process.setCache(pid, hostid); //remember s
+                		
+                	}
+                	
+                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
+                	
+                	edu.gmu.csiss.geoweaver.process.host_frame.closeFrame();
+		    		
+		    	});
+		    	
+		    	$("#host-cancel-btn").click(function(){
+		    		
+		    		edu.gmu.csiss.geoweaver.process.host_frame.closeFrame();
+		    		
+		    	});
+				
+//				BootstrapDialog.show({
+//					
+//					title: "Select a host",
+//					
+//					closable: false,
+//					
+//		            message: content,
+//		            
+//		            onshown: function(){
+//		            	
+//		            	$.ajax({
+//		            		
+//		            		url: "list",
+//		            		
+//		            		method: "POST",
+//		            		
+//		            		data: "type=host"
+//		            		
+//		            	}).done(function(msg){
+//		            		
+//		            		msg = $.parseJSON(msg);
+//		            		
+//		            		$("#hostselector").find('option').remove().end();
+//		            		
+//		            		for(var i=0;i<msg.length;i++){
+//		            			
+//		            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+//		            			
+//		            		}
+//		            		
+//		            	}).fail(function(jxr, status){
+//		    				
+//		    				console.error("fail to list host");
+//		    				
+//		    			});
+//		            	
+//		            },
+//		            
+//		            buttons: [{
+//			            
+//		            	label: 'Execute',
+//		                
+//		                action: function(dialogItself){
+//		                	
+//		                	var hostid = $("#hostselector").children(":selected").attr("id");
+//		                	
+//		                	console.log("selected host: " + hostid);
+//		                	
+//		                	//remember the process-host connection
+//		                	if(document.getElementById('remember').checked) {
+//		                	    
+//		                		edu.gmu.csiss.geoweaver.process.setCache(pid, hostid); //remember s
+//		                		
+//		                	}
+//		                	
+//		                	edu.gmu.csiss.geoweaver.process.executeProcess(pid, hostid, desc);
+//		                	
+//		                    dialogItself.close();
+//		                    
+//		                }
+//		        
+//		            },{
+//			            
+//		            	label: 'Cancel',
+//		                
+//		                action: function(dialogItself){
+//		                	
+//		                    dialogItself.close();
+//		                    
+//		                }
+//		        
+//		            }]
+//		            
+//				});
 				
 			}else{
 				
