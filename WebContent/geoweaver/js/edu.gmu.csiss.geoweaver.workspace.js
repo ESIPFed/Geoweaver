@@ -8,7 +8,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		
 		currentmode: 1, //1: normal; 2: monitor
 		
-		jsFrame: new JSFrame(),
+		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
 		
 		openModalWindow:function() {
 			
@@ -16,7 +16,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 			
 			$("#test-jsframe").addClass("fa-shower");
 			
-	        const jsFrame = new JSFrame();
+	        const jsFrame = new JSFrame({parentElement: $('#jsframe-container')[0]});
 //	        const innerHTML = '<div class="modal-header">' +
 //	            '<h6 class="modal-title">Do want to save ?</h6>' +
 //	            '</div>' +
