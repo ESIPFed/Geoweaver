@@ -160,10 +160,23 @@ edu.gmu.csiss.geoweaver.workspace = {
     	          .on("dragend", function() {
     	            // todo check if edge-mode is selected
     	          });
-
+    	    
     	    // listen for key events
     	    d3.select(window).on("keydown", function(){
-    	      thisGraph.svgKeyDown.call(thisGraph);
+    	    	
+    	    	switch (d3.event.keyCode) {
+	    	        case 8: //backspace = 8
+	
+	    	          // BACKSPACE_KEY was fired in <input id="textbox">
+	    	          if(d3.event.target.nodeName.toLowerCase() === 'input') {
+
+		    	          event.stopPropagation();
+		    	          return;
+	    	          }    
+	    	          
+	    	   }
+    	    	
+    	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
     	    .on("keyup", function(){
     	      thisGraph.svgKeyUp.call(thisGraph);

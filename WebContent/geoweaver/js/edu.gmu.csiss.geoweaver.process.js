@@ -1068,6 +1068,10 @@ edu.gmu.csiss.geoweaver.process = {
 			
 		},
 		
+		restoreBackspace: function(event){
+			event.stopPropagation();
+		},
+		
 		getProcessDialogTemplate: function(){
 			
 			edu.gmu.csiss.geoweaver.process.cmid = Math.floor(Math.random() * 1000);
@@ -1090,7 +1094,8 @@ edu.gmu.csiss.geoweaver.process = {
 //		       '   <div class="form-group row required">'+
 		       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
 		       '     <div class="col-sm-4">'+
-		       '			<input class="form-control form-control-sm" id="processname-'+edu.gmu.csiss.geoweaver.process.cmid+'"></input>'+
+		       '			<input type="text" class="form-control form-control-sm" id="processname-'+edu.gmu.csiss.geoweaver.process.cmid+'"></input>'+
+//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>'+
 		       
@@ -1098,6 +1103,8 @@ edu.gmu.csiss.geoweaver.process = {
 		       
 		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits.</p>'+
 		       ' </form></div>';
+			
+			
 			
 			return content;
 			
