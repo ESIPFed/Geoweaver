@@ -78,7 +78,7 @@ public class WorkflowTool {
 
         }
 
-        StringBuffer sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
+        sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
 
         try {
 
@@ -88,7 +88,7 @@ public class WorkflowTool {
 
                 String pid = rs.getString("id");
 
-                String resp = pt.stop(pid);
+                pt.stop(pid);
 
             }
 
@@ -104,7 +104,7 @@ public class WorkflowTool {
 
         }
 
-        StringBuffer sql = new StringBuffer("update history set end_time = '");
+        sql = new StringBuffer("update history set end_time = '");
 
         String history_end_time = BaseTool.getCurrentMySQLDatetime();
 
