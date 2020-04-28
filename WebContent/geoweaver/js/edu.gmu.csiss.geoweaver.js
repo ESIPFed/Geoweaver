@@ -28,3 +28,6 @@ edu = {
 			}
 		}
 };
+
+// GW will be the short name of the package
+var GW = edu.gmu.csiss.geoweaver

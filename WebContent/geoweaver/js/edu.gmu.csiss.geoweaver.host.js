@@ -381,7 +381,7 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		enter_pswd_m : function(newhosts, hosts, req, business_callback){
 			
-			var content = '';
+			var content = '<div class="modal-body">';
 			
 			for(var i=0;i<newhosts.length;i++){
 				
@@ -396,62 +396,118 @@ edu.gmu.csiss.geoweaver.host = {
 			content += '     <div class="form-group form-check">'+
 		       '		<input type="checkbox" class="form-check-input" id="remember">'+
 		       '		<label class="form-check-label" for="remember">Remember password</label>'+
-		       '     </div>';
+		       '     </div></div>';
 			
+			content += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"pswd-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
+				"	<button type=\"button\" id=\"pswd-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
 			
-			BootstrapDialog.show({
+			var frame = GW.process.createJSFrameDialog(360, 360, content, "Host Password");
+			
+			frame.on('#pswd-cancel', 'click', (_frame, evt) => {
 				
-				title: "Host Password",
+				_frame.closeFrame()
 				
-				closable: false,
+			})
+			
+			frame.on('#pswd-confirm', 'click', (_frame, evt) => {
 				
-				message: content,
+				var filled = true;
 				
-				buttons: [{
-					
-	         	label: 'Confirm',
-	             
-	             action: function(dialogItself){
-	             	
-	             	var $button = this;
-	             	
-	             	$button.spin();
-	             	
-	             	dialogItself.enableButtons(false);
-	             	
-	             	var shortpasswds = [];
-	             	
-	             	for(var i=0;i<newhosts.length;i++){
-	             		
-	             		shortpasswds.push($("#inputpswd_" + i).val());
-	             		
-	             		if(document.getElementById('remember').checked) {
-	             			
-	             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
-	             			
-	             		}
-	             		
-	             	}
-	             	
-	             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
-	             	
-	             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
-	             	
-	             }
-					
-				},{
-					
-					label: 'Cancel',
-	             
-			        action: function(dialogItself){
-			         	
-			             dialogItself.close();
-			             
-			        }
-					
-				}]
+				$.each( $( "input[type='password']" ), function() {
+					if(!$(this).val()){
+						
+						filled = false;
+						
+						alert("Please input password. ");
+						
+						return;
+						
+					}
+				});
+				
+				if(!filled) return;
+				
+				var $button = $(this);
+             	
+             	$button.spin();
+             	
+             	var shortpasswds = [];
+             	
+             	for(var i=0;i<newhosts.length;i++){
+             		
+             		shortpasswds.push($("#inputpswd_" + i).val());
+             		
+             		if(document.getElementById('remember').checked) {
+             			
+             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
+             			
+             		}
+             		
+             	}
+             	
+             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
+             	
+             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+             	
+				_frame.closeFrame()
 				
 			});
+			
+//			BootstrapDialog.show({
+//				
+//				title: "Host Password",
+//				
+//				closable: false,
+//				
+//				message: content,
+//				
+//				buttons: [{
+//					
+//	         	label: 'Confirm',
+//	             
+//	             action: function(dialogItself){
+//	             	
+//	             	var $button = this;
+//	             	
+//	             	$button.spin();
+//	             	
+//	             	dialogItself.enableButtons(false);
+//	             	
+//	             	var shortpasswds = [];
+//	             	
+//	             	for(var i=0;i<newhosts.length;i++){
+//	             		
+//	             		shortpasswds.push($("#inputpswd_" + i).val());
+//	             		
+//	             		if(document.getElementById('remember').checked) {
+//	             			
+//	             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
+//	             			
+//	             		}
+//	             		
+//	             	}
+//	             	
+//	             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
+//	             	
+//	             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+//	             	
+//	             }
+//					
+//				},{
+//					
+//					label: 'Cancel',
+//	             
+//			        action: function(dialogItself){
+//			         	
+//			             dialogItself.close();
+//			             
+//			        }
+//					
+//				}]
+//				
+//			});
 			
 		},
 		

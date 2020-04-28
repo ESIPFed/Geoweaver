@@ -312,7 +312,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 		
 		//pop up a dialog to ask which they would like to show it
 		
-		var req = "<div class=\"row\"> "+
+		var req = "<div class=\"modal-body\"><div class=\"row\"> "+
 		"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
 		"		      <label class=\"labeltext\">How do you want to load the workflow?</label><br/>"+
 		"		      <div class=\"form-check-inline\">"+
@@ -327,53 +327,86 @@ edu.gmu.csiss.geoweaver.workflow = {
 //		"					</label>"+
 		"			  </div>"+
 		"		  </div>"+
-		"	</div>";
+		"	</div></div>";
 		
-		BootstrapDialog.show({
+		req += '<div class="modal-footer">' +
+		"	<button type=\"button\" id=\"workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
+		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+		'</div>';
+		
+		var frame = GW.process.createJSFrameDialog(320, 210, req, "Show a Way");
+		
+		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 			
-			title: "Show a way",
+			//get workflow details by the selected way
 			
-			message: req,
+			var selValue = $('input[name=addway]:checked').val(); 
 			
-			buttons: [{
-				
-				label: "Confirm",
-				
-				action: function(dialog){
-					
-					//get workflow details by the selected way
-					
-					var selValue = $('input[name=addway]:checked').val(); 
-					
-					console.log("selected way: " + selValue);
-					
-					if(selValue == "one"){
-						
-						edu.gmu.csiss.geoweaver.workflow.showProcess(wid);
-						
-					}else if(selValue == "all"){
-						
-						edu.gmu.csiss.geoweaver.workflow.showWorkflow(wid);
-						
-					}
-					
-					dialog.close();
-					
-				}
-				
-			},{
-				
-				label: "Cancel",
-				
-				action: function(dialog){					
-					
-					dialog.close();
-					
-				}
-				
-			}]
+			console.log("selected way: " + selValue);
 			
-		});
+			if(selValue == "one"){
+				
+				edu.gmu.csiss.geoweaver.workflow.showProcess(wid);
+				
+			}else if(selValue == "all"){
+				
+				edu.gmu.csiss.geoweaver.workflow.showWorkflow(wid);
+				
+			}
+			
+        	_frame.closeFrame();
+        	
+        });
+		
+		frame.on('#workflow-cancel', 'click', (_frame, evt) => {
+        	_frame.closeFrame();
+        });
+		
+//		BootstrapDialog.show({
+//			
+//			title: "Show a way",
+//			
+//			message: req,
+//			
+//			buttons: [{
+//				
+//				label: "Confirm",
+//				
+//				action: function(dialog){
+//					
+//					//get workflow details by the selected way
+//					
+//					var selValue = $('input[name=addway]:checked').val(); 
+//					
+//					console.log("selected way: " + selValue);
+//					
+//					if(selValue == "one"){
+//						
+//						edu.gmu.csiss.geoweaver.workflow.showProcess(wid);
+//						
+//					}else if(selValue == "all"){
+//						
+//						edu.gmu.csiss.geoweaver.workflow.showWorkflow(wid);
+//						
+//					}
+//					
+//					dialog.close();
+//					
+//				}
+//				
+//			},{
+//				
+//				label: "Cancel",
+//				
+//				action: function(dialog){					
+//					
+//					dialog.close();
+//					
+//				}
+//				
+//			}]
+//			
+//		});
 		
 	},
 	
@@ -412,7 +445,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 				
 				var nodes = msg.nodes;
 				
-				var content = '<form>'+
+				var content = '<div  class=\"modal-body\"><form>'+
 			       '   <div class=\"panel-body\"><div class="form-group row required">'+
 			       '     <label for="hostselector" class="col-md-4 col-form-label control-label">Mode: </label>'+
 			       '     <div class="col-md-8">'+
@@ -450,121 +483,229 @@ edu.gmu.csiss.geoweaver.workflow = {
 			       '		<label class="form-check-label" for="remember">Remember this workflow-host connection</label>'+
 			       '     </div>';
 				
-				content+= '</form>';
-			       
+				content+= '</form></div>';
 				
-				BootstrapDialog.show({
+				content += '<div class="modal-footer">' +
+				"	<button type=\"button\" id=\"host-select-run\" class=\"btn btn-outline-primary\">Run</button> "+
+				"	<button type=\"button\" id=\"host-select-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(480, 500, content, "Select Host");
+				
+				edu.gmu.csiss.geoweaver.host.refreshHostList();
+				
+				$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
+					       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+					       '     <div class="col-sm-8">'+
+					       '		<select class="form-control hostselector" id="hostforworkflow">'+
+					       '  		</select>'+
+					       '     </div>'+
+					       '   </div>');
+				
+				$("input[name='modeswitch']").change(function(e){
 					
-					title: "Select host",
+			    	$("#selectarea").empty();
 					
-					message: content,
-					
-					onshown: function(){
-						
-						edu.gmu.csiss.geoweaver.host.refreshHostList();
-						
-						$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
-							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-							       '     <div class="col-sm-8">'+
-							       '		<select class="form-control hostselector" id="hostforworkflow">'+
-							       '  		</select>'+
-							       '     </div>'+
-							       '   </div>');
-						
-						$("input[name='modeswitch']").change(function(e){
+				    if($(this).val() == 'one') {
+				    
+				    	//only show one host selector
+				    	
+				    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+					       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+					       '     <div class="col-sm-8">'+
+					       '		<select class="form-control hostselector" id="hostforworkflow">'+
+					       '  		</select>'+
+					       '     </div>'+
+					       '   </div>');
+				    
+				    } else {
+				    
+				    	for(var i=0;i<nodes.length;i++){
 							
-					    	$("#selectarea").empty();
+				    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+						       '     <div class="col-sm-8">'+
+						       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+						       '  		</select>'+
+						       '     </div>'+
+						       '   </div>');
 							
-						    if($(this).val() == 'one') {
-						    
-						    	//only show one host selector
-						    	
-						    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-							       '     <div class="col-sm-8">'+
-							       '		<select class="form-control hostselector" id="hostforworkflow">'+
-							       '  		</select>'+
-							       '     </div>'+
-							       '   </div>');
-						    
-						    } else {
-						    
-						    	for(var i=0;i<nodes.length;i++){
-									
-						    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-								       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-								       '     <div class="col-sm-8">'+
-								       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
-								       '  		</select>'+
-								       '     </div>'+
-								       '   </div>');
-									
-								}
-						    
-						    }
-						    
-						    edu.gmu.csiss.geoweaver.host.refreshHostList();
-						    
+						}
+				    
+				    }
+				    
+				    edu.gmu.csiss.geoweaver.host.refreshHostList();
+				    
+				});
+				
+				frame.on('#host-select-run', 'click', (_frame, evt) => {
+					
+					var hosts = [];
+					
+					var mode;
+					
+					if($('input[name=modeswitch]:checked').val()=="one"){
+						
+						//all on one
+						
+						mode = "one";
+						
+						var thehost = $("#hostforworkflow").val();
+						
+						hosts.push({
+							"name":thehost, 
+							"id": $("#hostforworkflow").find('option:selected').attr('id')
 						});
 						
-					},
-					
-					buttons: [{
+					}else{
 						
-						label: "Run",
+						//multiple
 						
-						action: function(dialog){
+						mode = "different";
+						
+						for(var i=0;i<nodes.length;i++){
 							
-							var hosts = [];
-							
-							var mode;
-							
-							if($('input[name=modeswitch]:checked').val()=="one"){
-								
-								//all on one
-								
-								mode = "one";
-								
-								var thehost = $("#hostforworkflow").val();
-								
-								hosts.push({
-									"name":thehost, 
-									"id": $("#hostforworkflow").find('option:selected').attr('id')
-								});
-								
-							}else{
-								
-								//multiple
-								
-								mode = "different";
-								
-								for(var i=0;i<nodes.length;i++){
-									
-									hosts.push({
-										"name":$("#hostforprocess_"+i).val(), 
-										"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
-									});
-									
-								}
-								
-							}
-							
-							//remember the process-host connection
-		                	if(document.getElementById('remember').checked) {
-		                	    
-		                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
-		                		
-		                	}
-							
-							edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
-							
-							dialog.close();
+							hosts.push({
+								"name":$("#hostforprocess_"+i).val(), 
+								"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
+							});
 							
 						}
 						
-					}]
+					}
 					
-				});
+					//remember the process-host connection
+                	if(document.getElementById('remember').checked) {
+                	    
+                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
+                		
+                	}
+					
+					edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
+					
+		        	_frame.closeFrame();
+		        	
+		        });
+				
+				frame.on('#host-select-cancel', 'click', (_frame, evt) => {
+					
+		        	_frame.closeFrame();
+		        	
+		        });
+			       
+				
+//				BootstrapDialog.show({
+//					
+//					title: "Select host",
+//					
+//					message: content,
+//					
+//					onshown: function(){
+//						
+//						edu.gmu.csiss.geoweaver.host.refreshHostList();
+//						
+//						$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
+//							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+//							       '     <div class="col-sm-8">'+
+//							       '		<select class="form-control hostselector" id="hostforworkflow">'+
+//							       '  		</select>'+
+//							       '     </div>'+
+//							       '   </div>');
+//						
+//						$("input[name='modeswitch']").change(function(e){
+//							
+//					    	$("#selectarea").empty();
+//							
+//						    if($(this).val() == 'one') {
+//						    
+//						    	//only show one host selector
+//						    	
+//						    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+//							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
+//							       '     <div class="col-sm-8">'+
+//							       '		<select class="form-control hostselector" id="hostforworkflow">'+
+//							       '  		</select>'+
+//							       '     </div>'+
+//							       '   </div>');
+//						    
+//						    } else {
+//						    
+//						    	for(var i=0;i<nodes.length;i++){
+//									
+//						    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
+//								       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+//								       '     <div class="col-sm-8">'+
+//								       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+//								       '  		</select>'+
+//								       '     </div>'+
+//								       '   </div>');
+//									
+//								}
+//						    
+//						    }
+//						    
+//						    edu.gmu.csiss.geoweaver.host.refreshHostList();
+//						    
+//						});
+//						
+//					},
+//					
+//					buttons: [{
+//						
+//						label: "Run",
+//						
+//						action: function(dialog){
+//							
+//							var hosts = [];
+//							
+//							var mode;
+//							
+//							if($('input[name=modeswitch]:checked').val()=="one"){
+//								
+//								//all on one
+//								
+//								mode = "one";
+//								
+//								var thehost = $("#hostforworkflow").val();
+//								
+//								hosts.push({
+//									"name":thehost, 
+//									"id": $("#hostforworkflow").find('option:selected').attr('id')
+//								});
+//								
+//							}else{
+//								
+//								//multiple
+//								
+//								mode = "different";
+//								
+//								for(var i=0;i<nodes.length;i++){
+//									
+//									hosts.push({
+//										"name":$("#hostforprocess_"+i).val(), 
+//										"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
+//									});
+//									
+//								}
+//								
+//							}
+//							
+//							//remember the process-host connection
+//		                	if(document.getElementById('remember').checked) {
+//		                	    
+//		                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
+//		                		
+//		                	}
+//							
+//							edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
+//							
+//							dialog.close();
+//							
+//						}
+//						
+//					}]
+//					
+//				});
 				
 			}).fail(function(jxr, status){
 				
