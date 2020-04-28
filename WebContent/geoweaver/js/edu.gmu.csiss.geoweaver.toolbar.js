@@ -6,13 +6,13 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.toolbar = {
+GW.toolbar = {
 		
 		monitor_switch: false,
 		
 		init: function(){
 			
-			$("#toolbar-search").click(edu.gmu.csiss.geoweaver.search.showDialog);
+			$("#toolbar-search").click(GW.search.showDialog);
 			
 			$("#toolbar-add").click(this.add);
 			
@@ -30,7 +30,7 @@ edu.gmu.csiss.geoweaver.toolbar = {
 		
 		settings: function(){
 			
-			edu.gmu.csiss.geoweaver.settings.showDialog();
+			GW.settings.showDialog();
 			
 		},
 		
@@ -44,111 +44,44 @@ edu.gmu.csiss.geoweaver.toolbar = {
 			
 			//list recent execution history
 			
-			var width = 300, height = 180;
+			var content = "<div class=\"modal-body\"><div class=\"btn-group\" role=\"group\" >"+
+			"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
+			"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
+			"</div></div>"
 			
-	    	const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
-	    		title: 'Recent History',
-	    	    width: width, height: height,
-	    	    appearanceName: 'yosemite',
-	    	    movable: true,
-	    	    html:  "<div class=\"modal-body\"><div class=\"btn-group\" role=\"group\" >"+
-				"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
-				"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
-				"</div></div>"
-	    	});
-	    	
-//	    	frame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
-	    	
-	    	frame.setControl({
-	            maximizeButton: 'maximizeButton',
-	            demaximizeButton: 'restoreButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            animation: true,
-	            animationDuration: 200,
-
-	        });
-	    	
+			var frame = GW.process.createJSFrameDialog(300, 180, content, "Recent History");
+			
             frame.on('#history-process-d', 'click', (_frame, evt) => {
-            	edu.gmu.csiss.geoweaver.process.recent(20);
+            	GW.process.recent(20);
             	_frame.closeFrame();
             });
             
             frame.on('#history-workflow-d', 'click', (_frame, evt) => {
-            	edu.gmu.csiss.geoweaver.workflow.recent(20);
+            	GW.workflow.recent(20);
             	_frame.closeFrame();
             });
             
-	    	//Show the window
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
-//			BootstrapDialog.show({
-//				
-//				title: "Recent History",
-//				
-//				message: "<div class=\"btn-group\" role=\"group\" >"+
-//					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Process</button>"+
-//					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflow</button>"+
-//					"</div>",
-//					
-//				onshown: function(dialogRef){
-//					
-//					$("#history-process-d").click(function(){
-//					
-//						edu.gmu.csiss.geoweaver.process.recent(20);
-//						
-//						dialogRef.close();
-//						
-//					});
-//					
-//					$("#history-workflow-d").click(function(){
-//						
-//						edu.gmu.csiss.geoweaver.workflow.recent(20);
-//						
-//						dialogRef.close();
-//						
-//					});
-//					
-//				},
-//				
-//				buttons: [{
-//					
-//					label: "Close",
-//					
-//					action: function(dialogItself){
-//						
-//						dialogItself.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
-			
-			
 		},
 		
 		monitor: function(){
 			
 			if(this.monitor_switch){
 				
-				edu.gmu.csiss.geoweaver.monitor.closeProgressIndicator();
+				GW.monitor.closeProgressIndicator();
 				
-				edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+				GW.monitor.closeWorkspaceIndicator();
 				
 			}else{
 				
-				edu.gmu.csiss.geoweaver.monitor.openProgressIndicator();
+				GW.monitor.openProgressIndicator();
 				
-				edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
+				GW.monitor.openWorkspaceIndicator();
 				
 			}
 
 			//show the running processes and workflows
 
-			edu.gmu.csiss.geoweaver.monitor.showDialog();
+			GW.monitor.showDialog();
 			
 			this.monitor_switch = !this.monitor_switch;
 			
@@ -156,55 +89,37 @@ edu.gmu.csiss.geoweaver.toolbar = {
 		
 		add: function(){
 			
-			BootstrapDialog.show({
+			var dialogid = GW.process.getRandomId();
+			
+			var content = "<div style=\"padding:15px; text-align:center;\" class=\"btn-group\" role=\"group\" >"+
+			"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newhost-d\">Host</button>"+
+			"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">Process</button>"+
+			"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"newworkflow-d\">Workflow</button>"+
+			"</div>"
+			
+			var frame = GW.process.createJSFrameDialog(320, 180, content, "New");
+			
+			$("#newhost-d").click(function(){
 				
-				title: "New",
+				GW.host.newDialog();
 				
-				message: "<div class=\"btn-group\" role=\"group\" >"+
-					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newhost-d\">Host</button>"+
-					"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">Process</button>"+
-					"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"newworkflow-d\">Workflow</button>"+
-					"</div>",
-					
-				onshown: function(dialogRef){
-					
-					$("#newhost-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.host.newDialog();
-						
-						dialogRef.close();
-						
-					});
-					
-					$("#newprocess-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.process.newDialog();
-						
-						dialogRef.close();
-						
-					});
-					
-					$("#newworkflow-d").click(function(){
-						
-						edu.gmu.csiss.geoweaver.workflow.newDialog();
-						
-						dialogRef.close();
-						
-					});
-					
-				},
+				frame.closeFrame();
 				
-				buttons: [{
-					
-					label: "Close",
-					
-					action: function(dialog){
-						
-						dialog.close();
-						
-					}
-					
-				}]
+			});
+			
+			$("#newprocess-d").click(function(){
+				
+				GW.process.newDialog();
+				
+				frame.closeFrame();
+				
+			});
+			
+			$("#newworkflow-d").click(function(){
+				
+				GW.workflow.newDialog();
+				
+				frame.closeFrame();
 				
 			});
 			

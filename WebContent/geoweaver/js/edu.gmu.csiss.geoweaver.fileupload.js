@@ -6,7 +6,7 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.fileupload = {
+GW.fileupload = {
 		
 		uploader: null,
 		
@@ -31,7 +31,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 			//it is divided into two steps
 			//let users input credentials of the selected host
 			
-			edu.gmu.csiss.geoweaver.fileupload.hid = hid;
+			GW.fileupload.hid = hid;
 			
 			$.ajax({
 				
@@ -47,11 +47,11 @@ edu.gmu.csiss.geoweaver.fileupload = {
 				
 				msg = $.parseJSON(msg);
 				
-				if(edu.gmu.csiss.geoweaver.fileupload.password_frame != null){
+				if(GW.fileupload.password_frame != null){
 					
 					try{
 					
-						edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+						GW.fileupload.password_frame.closeFrame();
 						
 					}catch(e){
 						
@@ -59,7 +59,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 						
 					}
 					
-					edu.gmu.csiss.geoweaver.fileupload.password_frame = null;
+					GW.fileupload.password_frame = null;
 					
 				}
 
@@ -75,7 +75,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 				
 				var width = 320; var height = 200;
 				
-				edu.gmu.csiss.geoweaver.fileupload.password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+				GW.fileupload.password_frame = GW.workspace.jsFrame.create({
 		    		title: 'Authorization',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -90,7 +90,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 		    	    html: content
 		    	});
 		    	
-				edu.gmu.csiss.geoweaver.fileupload.password_frame.setControl({
+				GW.fileupload.password_frame.setControl({
 	                styleDisplay:'inline',
 	                maximizeButton: 'zoomButton',
 	                demaximizeButton: 'dezoomButton',
@@ -102,15 +102,15 @@ edu.gmu.csiss.geoweaver.fileupload = {
 
 	            });
 		    	
-				edu.gmu.csiss.geoweaver.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
+				GW.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
 	                _frame.closeFrame();
 	                
 	            });
 	            
 		    	//Show the window
-				edu.gmu.csiss.geoweaver.fileupload.password_frame.show();
+				GW.fileupload.password_frame.show();
 		    	
-				edu.gmu.csiss.geoweaver.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+				GW.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$("#pswd-confirm-btn").click(function(){
 		    		
@@ -118,13 +118,13 @@ edu.gmu.csiss.geoweaver.fileupload = {
 //                	
 //                	$button.spin();
                 	
-//		    		edu.gmu.csiss.geoweaver.fileupload.password_frame.enableButtons(false);
+//		    		GW.fileupload.password_frame.enableButtons(false);
 		    		
 		    		
                 	
-                	edu.gmu.csiss.geoweaver.fileupload.password = $('#inputpswd').val()
+                	GW.fileupload.password = $('#inputpswd').val()
                 	
-                	if(edu.gmu.csiss.geoweaver.fileupload.password == ""){
+                	if(GW.fileupload.password == ""){
                 		
                 		alert("Please input correct password.");
                 		
@@ -132,15 +132,15 @@ edu.gmu.csiss.geoweaver.fileupload = {
                 		
                 	}
                 	
-                	edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
+                	GW.fileupload.showUploadDialog();
                 	
-                	edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+                	GW.fileupload.password_frame.closeFrame();
 		    		
 		    	});
 		    	
 		    	$("#pswd-cancel-btn").click(function(){
 		    		
-		    		edu.gmu.csiss.geoweaver.fileupload.password_frame.closeFrame();
+		    		GW.fileupload.password_frame.closeFrame();
 		    		
 		    	});
 				
@@ -164,9 +164,9 @@ edu.gmu.csiss.geoweaver.fileupload = {
 //		                	
 //		                	dialog.enableButtons(false);
 //		                	
-//		                	edu.gmu.csiss.geoweaver.fileupload.password = $('#inputpswd').val()
+//		                	GW.fileupload.password = $('#inputpswd').val()
 //		                	
-//		                	edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
+//		                	GW.fileupload.showUploadDialog();
 //		                	
 //		                    dialog.close();
 //		                	
@@ -278,7 +278,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 			
 			var width = 720; var height = 640;
 			
-			edu.gmu.csiss.geoweaver.fileupload.uploader = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			GW.fileupload.uploader = GW.workspace.jsFrame.create({
 	    		title: 'File Uploader',
 	    	    left: 0, 
 	    	    top: 0, 
@@ -293,7 +293,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 	    	    html: content
 	    	});
 	    	
-			edu.gmu.csiss.geoweaver.fileupload.uploader.setControl({
+			GW.fileupload.uploader.setControl({
                 styleDisplay:'inline',
                 maximizeButton: 'zoomButton',
                 demaximizeButton: 'dezoomButton',
@@ -305,16 +305,16 @@ edu.gmu.csiss.geoweaver.fileupload = {
 
             });
 	    	
-			edu.gmu.csiss.geoweaver.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
+			GW.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
 				
                 _frame.closeFrame();
                 
             });
             
 	    	//Show the window
-			edu.gmu.csiss.geoweaver.fileupload.uploader.show();
+			GW.fileupload.uploader.show();
 	    	
-			edu.gmu.csiss.geoweaver.fileupload.uploader.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			GW.fileupload.uploader.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$('#drag-and-drop-zone').dmUploader({ //
 			    url: '../FileUploadServlet',
@@ -331,45 +331,45 @@ edu.gmu.csiss.geoweaver.fileupload = {
 			    },
 			    onInit: function(){
 			      // Plugin is ready to use
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Uploader initialized :)', 'info');
+			      GW.fileupload.ui_add_log('Uploader initialized :)', 'info');
 			    },
 			    onComplete: function(){
 			      // All files in the queue are processed (success or error)
-//			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('All pending tranfers finished');
+//			      GW.fileupload.ui_add_log('All pending tranfers finished');
 			    },
 			    onNewFile: function(id, file){
 			      // When a new file is added using the file selector or the DnD area
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('New file added #' + id);
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_add_file(id, file);
+			      GW.fileupload.ui_add_log('New file added #' + id);
+			      GW.fileupload.ui_multi_add_file(id, file);
 			    },
 			    onBeforeUpload: function(id){
 			      // about tho start uploading a file
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Starting the upload of #' + id);
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, '', true);
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
+			      GW.fileupload.ui_add_log('Starting the upload of #' + id);
+			      GW.fileupload.ui_multi_update_file_progress(id, 0, '', true);
+			      GW.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
 			    },
 			    onUploadProgress: function(id, percent){
 			      // Updating file progress
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, percent);
+			      GW.fileupload.ui_multi_update_file_progress(id, percent);
 			    },
 			    onUploadSuccess: function(id, data){
 			      // A file was successfully uploaded
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 90, '', true);
+			      GW.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
+			      GW.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
+			      GW.fileupload.ui_multi_update_file_progress(id, 90, '', true);
 			      data = $.parseJSON(data);
-			      edu.gmu.csiss.geoweaver.fileupload.transfer(id, data.url);
+			      GW.fileupload.transfer(id, data.url);
 			    },
 			    onUploadError: function(id, xhr, status, message){
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'danger', message);
-			      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
+			      GW.fileupload.ui_multi_update_file_status(id, 'danger', message);
+			      GW.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
 			    },
 			    onFallbackMode: function(){
 			      // When the browser doesn't support this plugin :(
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
+			      GW.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
 			    },
 			    onFileSizeError: function(file){
-			      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
+			      GW.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
 			    }
 			});
 			
@@ -406,12 +406,12 @@ edu.gmu.csiss.geoweaver.fileupload = {
 			
 			$("#upload-close").click(function(){
 				
-				edu.gmu.csiss.geoweaver.fileupload.uploader.closeFrame();
+				GW.fileupload.uploader.closeFrame();
 				
 			});
 			
 			
-//			edu.gmu.csiss.geoweaver.fileupload.uploader = new BootstrapDialog({
+//			GW.fileupload.uploader = new BootstrapDialog({
 //				
 //				title: "File Uploader",
 //				
@@ -476,7 +476,7 @@ edu.gmu.csiss.geoweaver.fileupload = {
 //			    
 //			    onhide: function(){
 //			    	
-//			    	edu.gmu.csiss.geoweaver.fileupload.clean();
+//			    	GW.fileupload.clean();
 //			    	
 //			    },
 //				
@@ -497,45 +497,45 @@ edu.gmu.csiss.geoweaver.fileupload = {
 //					    },
 //					    onInit: function(){
 //					      // Plugin is ready to use
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Uploader initialized :)', 'info');
+//					      GW.fileupload.ui_add_log('Uploader initialized :)', 'info');
 //					    },
 //					    onComplete: function(){
 //					      // All files in the queue are processed (success or error)
-////					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('All pending tranfers finished');
+////					      GW.fileupload.ui_add_log('All pending tranfers finished');
 //					    },
 //					    onNewFile: function(id, file){
 //					      // When a new file is added using the file selector or the DnD area
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('New file added #' + id);
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_add_file(id, file);
+//					      GW.fileupload.ui_add_log('New file added #' + id);
+//					      GW.fileupload.ui_multi_add_file(id, file);
 //					    },
 //					    onBeforeUpload: function(id){
 //					      // about tho start uploading a file
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Starting the upload of #' + id);
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, '', true);
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
+//					      GW.fileupload.ui_add_log('Starting the upload of #' + id);
+//					      GW.fileupload.ui_multi_update_file_progress(id, 0, '', true);
+//					      GW.fileupload.ui_multi_update_file_status(id, 'uploading', 'Uploading...');
 //					    },
 //					    onUploadProgress: function(id, percent){
 //					      // Updating file progress
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, percent);
+//					      GW.fileupload.ui_multi_update_file_progress(id, percent);
 //					    },
 //					    onUploadSuccess: function(id, data){
 //					      // A file was successfully uploaded
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 90, '', true);
+//					      GW.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
+//					      GW.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
+//					      GW.fileupload.ui_multi_update_file_progress(id, 90, '', true);
 //					      data = $.parseJSON(data);
-//					      edu.gmu.csiss.geoweaver.fileupload.transfer(id, data.url);
+//					      GW.fileupload.transfer(id, data.url);
 //					    },
 //					    onUploadError: function(id, xhr, status, message){
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'danger', message);
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
+//					      GW.fileupload.ui_multi_update_file_status(id, 'danger', message);
+//					      GW.fileupload.ui_multi_update_file_progress(id, 0, 'danger', false);  
 //					    },
 //					    onFallbackMode: function(){
 //					      // When the browser doesn't support this plugin :(
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
+//					      GW.fileupload.ui_add_log('Plugin cant be used here, running Fallback callback', 'danger');
 //					    },
 //					    onFileSizeError: function(file){
-//					      edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
+//					      GW.fileupload.ui_add_log('File \'' + file.name + '\' cannot be added: size excess limit', 'danger');
 //					    }
 //					});
 //					
@@ -602,13 +602,13 @@ edu.gmu.csiss.geoweaver.fileupload = {
 //				
 //			});
 //			
-//			edu.gmu.csiss.geoweaver.fileupload.uploader.open();
+//			GW.fileupload.uploader.open();
 			
 		},
 		
 		transfer: function(id, url){
 			
-			edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Start to transfer to file to remote host, please wait until it is finished...');
+			GW.fileupload.ui_add_log('Start to transfer to file to remote host, please wait until it is finished...');
 			
 			//Two-step encryption is applied here. 
         	//First, get public key from server.
@@ -631,15 +631,15 @@ edu.gmu.csiss.geoweaver.fileupload = {
         		
                 encrypt.setPublicKey(msg.rsa_public);
                 
-                var encrypted = encrypt.encrypt(edu.gmu.csiss.geoweaver.fileupload.password);
+                var encrypted = encrypt.encrypt(GW.fileupload.password);
                 
-//                edu.gmu.csiss.geoweaver.fileupload.encrypted = encrypted;
+//                GW.fileupload.encrypted = encrypted;
                 
-//                edu.gmu.csiss.geoweaver.fileupload.showUploadDialog();
+//                GW.fileupload.showUploadDialog();
                 
                 var req = {
     					
-    					hid: edu.gmu.csiss.geoweaver.fileupload.hid,
+    					hid: GW.fileupload.hid,
     					
     					encrypted: encrypted,
     					
@@ -661,35 +661,35 @@ edu.gmu.csiss.geoweaver.fileupload = {
     				
     				console.log("response: " + data);
 
-    				edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Temporary file in Geoweaver temporary folder is removed');
+    				GW.fileupload.ui_add_log('Temporary file in Geoweaver temporary folder is removed');
     				
-    				edu.gmu.csiss.geoweaver.fileupload.ui_add_log('File has been on remote host!' + data.filename);
+    				GW.fileupload.ui_add_log('File has been on remote host!' + data.filename);
     				
-    				edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_progress(id, 100, 'success', false);
+    				GW.fileupload.ui_multi_update_file_progress(id, 100, 'success', false);
     			    
-    				edu.gmu.csiss.geoweaver.fileupload.ui_multi_update_file_status(id, 'success', 'Upload Complete');
+    				GW.fileupload.ui_multi_update_file_status(id, 'success', 'Upload Complete');
     				
-    				var $btn = edu.gmu.csiss.geoweaver.fileupload.uploader.getButton("btn-start");
+    				var $btn = GW.fileupload.uploader.getButton("btn-start");
     				
     				$btn.enable();
     				
     				$btn.stopSpin();
     				
-    				edu.gmu.csiss.geoweaver.fileupload.uploader.setClosable(true);
+    				GW.fileupload.uploader.setClosable(true);
     				
     			}).fail(function(){
     				
     				console.error("fail to transfer the file to remote host");
     				
-    				edu.gmu.csiss.geoweaver.fileupload.ui_add_log('Fail to transfer');
+    				GW.fileupload.ui_add_log('Fail to transfer');
     				
-    				var $btn = edu.gmu.csiss.geoweaver.fileupload.uploader.getButton("btn-start");
+    				var $btn = GW.fileupload.uploader.getButton("btn-start");
     				
     				$btn.enable();
     				
     				$btn.stopSpin();
     				
-    				edu.gmu.csiss.geoweaver.fileupload.uploader.setClosable(true);
+    				GW.fileupload.uploader.setClosable(true);
     				
     			});
                 

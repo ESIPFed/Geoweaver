@@ -8,20 +8,20 @@
 * 
 */
 
-edu.gmu.csiss.geoweaver.main = {
+GW.main = {
 	
 	init: function(){
 		
-		$("#menuheader").val("Geoweaver v" + edu.gmu.csiss.geoweaver.version);
+		$("#menuheader").val("Geoweaver v" + GW.version);
 		
-		edu.gmu.csiss.geoweaver.workspace.init();
+		GW.workspace.init();
 		
-		edu.gmu.csiss.geoweaver.toolbar.init();
+		GW.toolbar.init();
 		
-		edu.gmu.csiss.geoweaver.menu.init();
+		GW.menu.init();
 		
 	}
 		
 };
 
-edu.gmu.csiss.geoweaver.main.init();
+GW.main.init();
