@@ -6,7 +6,7 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.monitor = {
+GW.monitor = {
 		
 		ws: null,
 		
@@ -37,13 +37,13 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			this.ws = null;
 			
-			edu.gmu.csiss.geoweaver.workspace.currentmode = 1;
+			GW.workspace.currentmode = 1;
 			
 			console.log("this workflow monitor websocket has been closed");
 			
-			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+			GW.monitor.closeWorkspaceIndicator();
 			
-			edu.gmu.csiss.geoweaver.monitor.closeProgressIndicator();
+			GW.monitor.closeProgressIndicator();
 			
 		},
 		
@@ -51,9 +51,9 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			try {
 		    	
-//		        if(e.data.indexOf(edu.gmu.csiss.geoweaver.ssh.special.prompt) == -1 && 
+//		        if(e.data.indexOf(GW.ssh.special.prompt) == -1 && 
 //		        		
-//		        		e.data.indexOf(edu.gmu.csiss.geoweaver.ssh.special.ready) == -1) {
+//		        		e.data.indexOf(GW.ssh.special.ready) == -1) {
 				
 		        	var returnmsg = $.parseJSON(e.data);
 		        	
@@ -61,11 +61,11 @@ edu.gmu.csiss.geoweaver.monitor = {
 		        	
 		        	if(returnmsg.builtin){
 		        		
-		        		edu.gmu.csiss.geoweaver.process.callback(returnmsg);
+		        		GW.process.callback(returnmsg);
 		        		
 		        	}else{
 		        		
-		        		edu.gmu.csiss.geoweaver.workspace.updateStatus(returnmsg);
+		        		GW.workspace.updateStatus(returnmsg);
 		        		
 		        	}
 		        	
@@ -89,9 +89,9 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			console.error("error in monitoring workflow " + e );
 			
-			edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+			GW.monitor.closeWorkspaceIndicator();
 			
-			edu.gmu.csiss.geoweaver.monitor.closeProgressIndicator();
+			GW.monitor.closeProgressIndicator();
 			
 		},
 		
@@ -158,9 +158,9 @@ edu.gmu.csiss.geoweaver.monitor = {
 		
 		openWorkspaceIndicator: function(){
 			
-			if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow != null){
+			if(GW.workflow.loaded_workflow != null){
 				
-				$("#current_workflow_name").html("Current workflow : " + edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+				$("#current_workflow_name").html("Current workflow : " + GW.workflow.loaded_workflow);
 				
 				$("#current_workflow_name").removeClass("invisible");
 				
@@ -201,25 +201,25 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 //			//only start when the mode is in monitor mode
 //			
-//			if(edu.gmu.csiss.geoweaver.workspace.currentmode == edu.gmu.csiss.geoweaver.workspace.MONITOR){
+//			if(GW.workspace.currentmode == GW.workspace.MONITOR){
 			
-				edu.gmu.csiss.geoweaver.workspace.currentmode = 2;
+				GW.workspace.currentmode = 2;
 				
-				edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
+				GW.monitor.openWorkspaceIndicator();
 				
-				edu.gmu.csiss.geoweaver.monitor.openProgressIndicator();
+				GW.monitor.openProgressIndicator();
 
-				edu.gmu.csiss.geoweaver.monitor.ws = new SockJS("task");
+				GW.monitor.ws = new SockJS("task");
 		        
-				edu.gmu.csiss.geoweaver.monitor.historyid = historyid;
+				GW.monitor.historyid = historyid;
 		        
-				edu.gmu.csiss.geoweaver.monitor.ws.onopen = function(e) { edu.gmu.csiss.geoweaver.monitor.ws_onopen(e) };
+				GW.monitor.ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
 		        
-				edu.gmu.csiss.geoweaver.monitor.ws.onclose = function(e) { edu.gmu.csiss.geoweaver.monitor.ws_onclose(e) };
+				GW.monitor.ws.onclose = function(e) { GW.monitor.ws_onclose(e) };
 		        
-				edu.gmu.csiss.geoweaver.monitor.ws.onmessage = function(e) { edu.gmu.csiss.geoweaver.monitor.ws_onmessage(e) };
+				GW.monitor.ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
 		        
-				edu.gmu.csiss.geoweaver.monitor.ws.onerror = function(e) { edu.gmu.csiss.geoweaver.monitor.ws_onerror(e) };
+				GW.monitor.ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
 				
 //			}
 			
@@ -233,7 +233,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 				
 				this.ws = null;
 				
-				edu.gmu.csiss.geoweaver.workspace.currentmode = 1;
+				GW.workspace.currentmode = 1;
 				
 			}
 			
@@ -263,7 +263,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 					
 					msg = $.parseJSON(msg);
 					
-					var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
+					var content = GW.process.getTable(msg);
 					
 					$("#running_process_table").html(content);
 					
@@ -294,7 +294,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+				var content = GW.workflow.getTable(msg);
 				
 				$("#running_workflow_table").html(content);
 				
@@ -318,7 +318,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 			
 			var width = 720; var height = 480;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'Activity Monitor',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -350,7 +350,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 	    	
 	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
-	    	edu.gmu.csiss.geoweaver.monitor.refresh();
+	    	GW.monitor.refresh();
 	    	
 //			BootstrapDialog.show({
 //				
@@ -382,7 +382,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 //							
 //							msg = $.parseJSON(msg);
 //							
-//							var content = edu.gmu.csiss.geoweaver.process.getTable(msg);
+//							var content = GW.process.getTable(msg);
 //							
 //							$("#running_process_table").html(content);
 //							
@@ -413,7 +413,7 @@ edu.gmu.csiss.geoweaver.monitor = {
 //						
 //						msg = $.parseJSON(msg);
 //						
-//						var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+//						var content = GW.workflow.getTable(msg);
 //						
 //						$("#running_workflow_table").html(content);
 //						

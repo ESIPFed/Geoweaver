@@ -3,7 +3,7 @@
  * @author Ziheng Sun
  */
 
-edu.gmu.csiss.geoweaver.search = {
+GW.search = {
 		
 		showResults: function(data){
 			
@@ -20,7 +20,7 @@ edu.gmu.csiss.geoweaver.search = {
 			for(var i=0;i<data.length;i+=1){
 				
 				content += "<tr>"+
-					"      <td><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+
+					"      <td><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+
 					data[i].id + "', '" + data[i].type + 
 					"')\" >"+data[i].name+"</td>"+
 					"      <td>"+data[i].desc+"</td>"+
@@ -33,7 +33,7 @@ edu.gmu.csiss.geoweaver.search = {
 			
 			var width = 800; var height = 500;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'Search Results',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -80,7 +80,7 @@ edu.gmu.csiss.geoweaver.search = {
 				
 				data = $.parseJSON(data);
 				
-				edu.gmu.csiss.geoweaver.search.showResults(data);
+				GW.search.showResults(data);
 				
 			}).fail(function(){
 				
@@ -114,7 +114,7 @@ edu.gmu.csiss.geoweaver.search = {
 			
 			var width = 500; var height = 200;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'Search',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -147,7 +147,7 @@ edu.gmu.csiss.geoweaver.search = {
 	    	
 	    	$("#search").click(function(){
 	    		
-	    		edu.gmu.csiss.geoweaver.search.send($("#keywords").val(), $("#resource-type-select").val());
+	    		GW.search.send($("#keywords").val(), $("#resource-type-select").val());
 	    		
 	    	});
 			

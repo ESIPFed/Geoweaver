@@ -6,7 +6,7 @@
 *
 */     
 
-edu.gmu.csiss.geoweaver.workflow = {
+GW.workflow = {
 		
 	loaded_workflow: null,
 	
@@ -70,7 +70,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 		
 		//check if there is more than one processes in the workspace
 		
-		if(edu.gmu.csiss.geoweaver.workspace.checkIfWorkflow()){
+		if(GW.workspace.checkIfWorkflow()){
 			
 			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
 			   '<form>'+
@@ -84,7 +84,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			var width = 520; var height = 450;
 			
-			edu.gmu.csiss.geoweaver.menu.del_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			GW.menu.del_frame = GW.workspace.jsFrame.create({
 	    		title: 'Authorization',
 	    	    left: 0, 
 	    	    top: 0, 
@@ -99,7 +99,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 	    	    html: content
 	    	});
 	    	
-			edu.gmu.csiss.geoweaver.menu.del_frame.setControl({
+			GW.menu.del_frame.setControl({
                 styleDisplay:'inline',
                 maximizeButton: 'zoomButton',
                 demaximizeButton: 'dezoomButton',
@@ -111,15 +111,15 @@ edu.gmu.csiss.geoweaver.workflow = {
 
             });
 	    	
-			edu.gmu.csiss.geoweaver.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
+			GW.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
                 _frame.closeFrame();
                 
             });
             
 	    	//Show the window
-			edu.gmu.csiss.geoweaver.menu.del_frame.show();
+			GW.menu.del_frame.show();
 	    	
-			edu.gmu.csiss.geoweaver.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			GW.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			
 			
@@ -152,9 +152,9 @@ edu.gmu.csiss.geoweaver.workflow = {
 //							
 //							"type": "workflow",
 //							
-//							"nodes": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.nodes), 
+//							"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
 //							
-//							"edges": JSON.stringify(edu.gmu.csiss.geoweaver.workspace.theGraph.edges)
+//							"edges": JSON.stringify(GW.workspace.theGraph.edges)
 //							
 //						};
 //						
@@ -170,15 +170,15 @@ edu.gmu.csiss.geoweaver.workflow = {
 //							
 //							msg = $.parseJSON(msg);
 //							
-//							edu.gmu.csiss.geoweaver.workflow.addMenuItem(msg);
+//							GW.workflow.addMenuItem(msg);
 //							
 //							console.log("the workflow is added");
 //							
-//							edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
+//							GW.workflow.loaded_workflow = msg.id;
 //							
 //							if(createandrun){
 //								
-//								edu.gmu.csiss.geoweaver.workflow.run(msg.id);
+//								GW.workflow.run(msg.id);
 //								
 //							}
 //							
@@ -291,9 +291,9 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			msg = $.parseJSON(msg);
 			
-			edu.gmu.csiss.geoweaver.workflow.loaded_workflow = msg.id;
+			GW.workflow.loaded_workflow = msg.id;
 			
-			edu.gmu.csiss.geoweaver.workspace.theGraph.load(msg);
+			GW.workspace.theGraph.load(msg);
 			
 		}).fail(function(jxr, status){
 			
@@ -346,11 +346,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			if(selValue == "one"){
 				
-				edu.gmu.csiss.geoweaver.workflow.showProcess(wid);
+				GW.workflow.showProcess(wid);
 				
 			}else if(selValue == "all"){
 				
-				edu.gmu.csiss.geoweaver.workflow.showWorkflow(wid);
+				GW.workflow.showWorkflow(wid);
 				
 			}
 			
@@ -382,11 +382,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 //					
 //					if(selValue == "one"){
 //						
-//						edu.gmu.csiss.geoweaver.workflow.showProcess(wid);
+//						GW.workflow.showProcess(wid);
 //						
 //					}else if(selValue == "all"){
 //						
-//						edu.gmu.csiss.geoweaver.workflow.showWorkflow(wid);
+//						GW.workflow.showWorkflow(wid);
 //						
 //					}
 //					
@@ -492,7 +492,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 				
 				var frame = GW.process.createJSFrameDialog(480, 500, content, "Select Host");
 				
-				edu.gmu.csiss.geoweaver.host.refreshHostList();
+				GW.host.refreshHostList();
 				
 				$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
 					       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
@@ -534,7 +534,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 				    
 				    }
 				    
-				    edu.gmu.csiss.geoweaver.host.refreshHostList();
+				    GW.host.refreshHostList();
 				    
 				});
 				
@@ -577,11 +577,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 					//remember the process-host connection
                 	if(document.getElementById('remember').checked) {
                 	    
-                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
+                		GW.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
                 		
                 	}
 					
-					edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
+					GW.workflow.execute(id, mode, hosts);
 					
 		        	_frame.closeFrame();
 		        	
@@ -602,7 +602,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 //					
 //					onshown: function(){
 //						
-//						edu.gmu.csiss.geoweaver.host.refreshHostList();
+//						GW.host.refreshHostList();
 //						
 //						$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
 //							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
@@ -644,7 +644,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 //						    
 //						    }
 //						    
-//						    edu.gmu.csiss.geoweaver.host.refreshHostList();
+//						    GW.host.refreshHostList();
 //						    
 //						});
 //						
@@ -693,11 +693,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 //							//remember the process-host connection
 //		                	if(document.getElementById('remember').checked) {
 //		                	    
-//		                		edu.gmu.csiss.geoweaver.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
+//		                		GW.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
 //		                		
 //		                	}
 //							
-//							edu.gmu.csiss.geoweaver.workflow.execute(id, mode, hosts);
+//							GW.workflow.execute(id, mode, hosts);
 //							
 //							dialog.close();
 //							
@@ -715,7 +715,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 
 		}else{
 			
-			edu.gmu.csiss.geoweaver.workflow.execute(id, phs.mode, phs.hosts);
+			GW.workflow.execute(id, phs.mode, phs.hosts);
 			
 		}
 		
@@ -744,12 +744,12 @@ edu.gmu.csiss.geoweaver.workflow = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					edu.gmu.csiss.geoweaver.process.showSSHOutputLog(msg); //use the same method as the single process
+					GW.process.showSSHOutputLog(msg); //use the same method as the single process
 					
-					if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow!=null
-							&&edu.gmu.csiss.geoweaver.workflow.loaded_workflow==req.id){
+					if(GW.workflow.loaded_workflow!=null
+							&&GW.workflow.loaded_workflow==req.id){
 						
-    					edu.gmu.csiss.geoweaver.monitor.startMonitor(msg.history_id);
+    					GW.monitor.startMonitor(msg.history_id);
     					
 					}
 					
@@ -810,7 +810,7 @@ edu.gmu.csiss.geoweaver.workflow = {
  				
  		};
 		
-		edu.gmu.csiss.geoweaver.host.start_auth_multiple(hosts, req, edu.gmu.csiss.geoweaver.workflow.execute_callback);
+		GW.host.start_auth_multiple(hosts, req, GW.workflow.execute_callback);
 		
 	},
 	
@@ -866,7 +866,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
 					status_col+
-					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";
 				
 			}
@@ -875,7 +875,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			var width = 800; var height = 640;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'History',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -979,11 +979,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 				"      <td>"+msg[i].id+"</td> "+
 				"      <td>"+msg[i].begin_time+"</td> "+
 				status_col +
-				"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
+				"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
 			
 			if(msg[i].status == "Running"){
 				
-				content += "		<a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.stop('"+msg[i].id+"'), 'workflow'\">Stop</a> ";
+				content += "		<a href=\"javascript: GW.workflow.stop('"+msg[i].id+"'), 'workflow'\">Stop</a> ";
 			}
 				
 			content += "   </td> </tr>";
@@ -1018,11 +1018,11 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			msg = $.parseJSON(msg);
 			
-			var content = edu.gmu.csiss.geoweaver.workflow.getTable(msg);
+			var content = GW.workflow.getTable(msg);
 			
 			var width = 600; var height = 360;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'History',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -1084,7 +1084,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 //					"      <td>"+msg[i].id+"</td> "+
 //					"      <td>"+msg[i].begin_time+"</td> "+
 //					status_col+
-//					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
+//					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 //					"    </tr>";
 //				
 //			}
@@ -1147,7 +1147,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 					
 			}
 			
-			edu.gmu.csiss.geoweaver.process.getHistoryDetails(process_history_id);
+			GW.process.getHistoryDetails(process_history_id);
 			
 		}).fail(function(){
 			
@@ -1186,7 +1186,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 				content += "    <tr> "+
 					"      <td>"+msg.input[i]+"</td> "+
 					"      <td>"+msg.output[i]+"</td> "+
-					"      <td><a href=\"javascript: edu.gmu.csiss.geoweaver.process.getHistoryDetails('"+msg.output[i]+"')\">Check</a></td> "+
+					"      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg.output[i]+"')\">Check</a></td> "+
 					"    </tr>";
 				
 			}
@@ -1195,7 +1195,7 @@ edu.gmu.csiss.geoweaver.workflow = {
 			
 			var width = 800; var height = 640;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'History',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -1237,18 +1237,18 @@ edu.gmu.csiss.geoweaver.workflow = {
 	
 	addMenuItem: function(one){
 		
-		$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'workflow')\">" + 
+		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">" + 
 	    		
-				one.name + "</a> <i class=\"fa fa-history subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.history('"+
+				one.name + "</a> <i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
 	        	
-				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"edu.gmu.csiss.geoweaver.workflow.add('"+
+				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
 	        	
-				one.id+"')\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('"+
+				one.id+"')\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
 	        	
 				one.id+"','workflow')\"></i>"+
 				
 				//removed on 1/31/2019 - it is not allowed to run from the tree.
-//				" <i class=\"fa fa-play subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.workflow.run('"+
+//				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.workflow.run('"+
 //	        	
 //				one.id+"','"+one.name+"')\" data-toggle=\"tooltip\" title=\"Run Workflow\"></i> "+
 				

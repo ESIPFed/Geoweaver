@@ -6,7 +6,7 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.tutorial = {
+GW.tutorial = {
 		
 		showDialog: function(){
 			

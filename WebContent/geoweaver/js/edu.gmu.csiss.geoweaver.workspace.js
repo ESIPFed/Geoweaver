@@ -2,7 +2,7 @@
  * author: Ziheng Sun
  * date: 20180925
  */
-edu.gmu.csiss.geoweaver.workspace = {
+GW.workspace = {
 		
 		theGraph: null,
 		
@@ -10,78 +10,94 @@ edu.gmu.csiss.geoweaver.workspace = {
 		
 		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
 		
+		resizeIframe: function(obj){
+			
+			obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+			
+		},
+		
 		openModalWindow:function() {
 			
 			$("#toolbar-left").css('z-index', 1);
 			
 			$("#test-jsframe").addClass("fa-shower");
 			
-	        const jsFrame = new JSFrame({parentElement: $('#jsframe-container')[0]});
-//	        const innerHTML = '<div class="modal-header">' +
-//	            '<h6 class="modal-title">Do want to save ?</h6>' +
-//	            '</div>' +
-//	            '<div class="modal-footer">' +
-//	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
-//	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
-//	            '</div>';
-	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
-
-	        const modalFrame = jsFrame.create({
-	            name: 'my-modal-window',
-	            title: 'Confirmation',
-	            appearanceName: 'yosemite',
-	            left: 0, top: 0, width: 320, height: 150,
-	            style: {
-                    backgroundColor: 'rgb(255,255,255)',
-                    overflow:'auto'
-
-                },
-	            movable: true,
-	            resizable: true,
-	            html: innerHTML
-	        });
-	        modalFrame.setControl({
-                styleDisplay:'inline',
-                maximizeButton: 'zoomButton',
-                demaximizeButton: 'dezoomButton',
-                minimizeButton: 'minimizeButton',
-                deminimizeButton: 'deminimizeButton',
-                hideButton: 'closeButton',
-                animation: true,
-                animationDuration: 150,
-
-            });
-	        //Place window in the center
-	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
-
-
-	        //Handling the button's click event
-	        modalFrame.on('#bt_submit', 'click', (_frame, e) => {
-	            _frame.extra = {
-	                result: 'submitted'
-	            }
-	            _frame.closeFrame();
-	        });
-	        modalFrame.on('#bt_cancel', 'click', (frame, e) => {
-	            //You can also get frame object from JSFrame object.
-	            var _frame = jsFrame.getWindowByName('my-modal-window');
-	            _frame.extra = {
-	                result: 'canceled'
-	            }
-	            _frame.closeFrame();
-	        });
-
-//	        //Open as modal window
-//	        modalFrame.showModal(_frame => {
-//	            //You can get callback when closing the modal window
-//	            jsFrame.showToast({
-//	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
-//	                align: 'center',
-//	                duration: 2000
-//	            });
+			var content = "<div height=\"100%\"><iframe width=\"100%\" frameborder=\"0\" scrolling=\"no\" onload=\"GW.workspace.resizeIframe(this)\" id=\"jupyter-iframe\" src=\"http://localhost:8080/CyberConnector/web/index\"></iframe></div>"
+				
+//			$.get("http://geobrain.csiss.gmu.edu/jupyter", function (response){ 
+//				var html = response;
+//				var html_src = 'data:text/html;charset=utf-8,' + html;
+//				$("#jupyter-iframe").attr("src" , html_src);
+//			});
+			
+			GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
+			
+//	        const jsFrame = new JSFrame({parentElement: $('#jsframe-container')[0]});
+////	        const innerHTML = '<div class="modal-header">' +
+////	            '<h6 class="modal-title">Do want to save ?</h6>' +
+////	            '</div>' +
+////	            '<div class="modal-footer">' +
+////	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
+////	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
+////	            '</div>';
+//	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
+//
+//	        const modalFrame = jsFrame.create({
+//	            name: 'my-modal-window',
+//	            title: 'Confirmation',
+//	            appearanceName: 'yosemite',
+//	            left: 0, top: 0, width: 320, height: 150,
+//	            style: {
+//                    backgroundColor: 'rgb(255,255,255)',
+//                    overflow:'auto'
+//
+//                },
+//	            movable: true,
+//	            resizable: true,
+//	            html: innerHTML
 //	        });
-	        
-	        modalFrame.show()
+//	        modalFrame.setControl({
+//                styleDisplay:'inline',
+//                maximizeButton: 'zoomButton',
+//                demaximizeButton: 'dezoomButton',
+//                minimizeButton: 'minimizeButton',
+//                deminimizeButton: 'deminimizeButton',
+//                hideButton: 'closeButton',
+//                animation: true,
+//                animationDuration: 150,
+//
+//            });
+//	        //Place window in the center
+//	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
+//
+//
+//	        //Handling the button's click event
+//	        modalFrame.on('#bt_submit', 'click', (_frame, e) => {
+//	            _frame.extra = {
+//	                result: 'submitted'
+//	            }
+//	            _frame.closeFrame();
+//	        });
+//	        modalFrame.on('#bt_cancel', 'click', (frame, e) => {
+//	            //You can also get frame object from JSFrame object.
+//	            var _frame = jsFrame.getWindowByName('my-modal-window');
+//	            _frame.extra = {
+//	                result: 'canceled'
+//	            }
+//	            _frame.closeFrame();
+//	        });
+//
+////	        //Open as modal window
+////	        modalFrame.showModal(_frame => {
+////	            //You can get callback when closing the modal window
+////	            jsFrame.showToast({
+////	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
+////	                align: 'center',
+////	                duration: 2000
+////	            });
+////	        });
+//	        
+//	        modalFrame.show()
 
 
 	    },
@@ -237,7 +253,7 @@ edu.gmu.csiss.geoweaver.workspace = {
           	        saveEdges.push({source: val.source, target: val.target});
           	      });
           	      
-          	      edu.gmu.csiss.geoweaver.workflow.save(thisGraph.nodes, saveEdges);
+          	      GW.workflow.save(thisGraph.nodes, saveEdges);
 //          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
 //          	    		  {type: "text/plain;charset=utf-8"});
 //          	      window.saveAs(blob, "geoweaver.json");
@@ -250,13 +266,13 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    d3.select("#execute-workflow").on("click", function(){
     	    	
     	    	//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, save the workflow first.
-    	    	if(edu.gmu.csiss.geoweaver.workflow.loaded_workflow==null){
+    	    	if(GW.workflow.loaded_workflow==null){
     	    		
-        	    	edu.gmu.csiss.geoweaver.workflow.newDialog(true);
+        	    	GW.workflow.newDialog(true);
         	    	
     	    	}else{
     	    		
-    	    		edu.gmu.csiss.geoweaver.workflow.run(edu.gmu.csiss.geoweaver.workflow.loaded_workflow);
+    	    		GW.workflow.run(GW.workflow.loaded_workflow);
     	    		
     	    	}
     	    	
@@ -266,17 +282,17 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    	
     	    	//get the selected node id
     	    	
-//    	    	var selectedNode = edu.gmu.csiss.geoweaver.workspace.theGraph.state.selectedNode;
+//    	    	var selectedNode = GW.workspace.theGraph.state.selectedNode;
 //    	    	
 //    	    	if(selectedNode == null){
 //    	    		
 //    	    		alert("No process is selected");
 //    	    		
 //    	    	}else{
-//    	    		edu.gmu.csiss.geoweaver.workflow.showProcessLog(edu.gmu.csiss.geoweaver.monitor.historyid, selectedNode.id);
+//    	    		GW.workflow.showProcessLog(GW.monitor.historyid, selectedNode.id);
 //    	    	}
     	    	
-    	    	edu.gmu.csiss.geoweaver.result.showDialog("");
+    	    	GW.result.showDialog("");
     	    	
     	    });
     	    
@@ -284,7 +300,7 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    	
     	    	//get the selected node id
     	    	
-    	    	var selectedNode = edu.gmu.csiss.geoweaver.workspace.theGraph.state.selectedNode;
+    	    	var selectedNode = GW.workspace.theGraph.state.selectedNode;
     	    	
     	    	if(selectedNode == null){
     	    		
@@ -292,7 +308,7 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    		
     	    	}else{
     	    		
-    	    		edu.gmu.csiss.geoweaver.workflow.showProcessLog(edu.gmu.csiss.geoweaver.monitor.historyid, selectedNode.id);
+    	    		GW.workflow.showProcessLog(GW.monitor.historyid, selectedNode.id);
     	    		
     	    	}
     	    	
@@ -302,7 +318,7 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    	
     	    	//get the selected node id
     	    	
-    	    	var selectedNode = edu.gmu.csiss.geoweaver.workspace.theGraph.state.selectedNode;
+    	    	var selectedNode = GW.workspace.theGraph.state.selectedNode;
     	    	
     	    	if(selectedNode == null){
     	    		
@@ -312,7 +328,7 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    		
 	    			var id = selectedNode.id.split("-")[0];
 	    			
-	    			edu.gmu.csiss.geoweaver.menu.details(id, "process");
+	    			GW.menu.details(id, "process");
     	    		
     	    	}
     	    	
@@ -326,9 +342,9 @@ edu.gmu.csiss.geoweaver.workspace = {
     	    
     	    d3.select("#test-jsframe").on('click', function(){
     	    	
-    	    	edu.gmu.csiss.geoweaver.workspace.openModalWindow();
+    	    	GW.workspace.openModalWindow();
     	    	
-//    	    	const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+//    	    	const frame = GW.workspace.jsFrame.create({
 //    	    		title: 'Test Window',
 //    	    	    left: 120, 
 //    	    	    top: 120, 
@@ -415,11 +431,11 @@ edu.gmu.csiss.geoweaver.workspace = {
 		 */
 		addListeners: function(){
 			  
-			  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.setIdCt = function(idct){
+			  GW.workspace.GraphCreator.prototype.setIdCt = function(idct){
 	    	    this.idct = idct;
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.consts =  {
+	    	  GW.workspace.GraphCreator.prototype.consts =  {
 	    	    selectedClass: "selected",
 	    	    connectClass: "connect-node",
 	    	    circleGClass: "conceptG",
@@ -433,7 +449,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	
 	    	  /* PROTOTYPE FUNCTIONS */
 	    	  
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.dragmove = function(d) {
+	    	  GW.workspace.GraphCreator.prototype.dragmove = function(d) {
 	    	    var thisGraph = this;
 	    	    if (thisGraph.state.shiftNodeDrag){
 	    	      thisGraph.dragLine.attr('d', 'M' + d.x + ',' + d.y + 'L' + d3.mouse(thisGraph.svgG.node())[0] + ',' + d3.mouse(this.svgG.node())[1]);
@@ -444,7 +460,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    }
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.deleteGraph = function(skipPrompt){
+	    	  GW.workspace.GraphCreator.prototype.deleteGraph = function(skipPrompt){
 	    	    var thisGraph = this,
 	    	        doDelete = true;
 	    	    
@@ -482,7 +498,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  };
 	    	  
 	    	  //add on 11/2/2018
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.load = function(workflow){
+	    	  GW.workspace.GraphCreator.prototype.load = function(workflow){
 	    		  
 	    		  try{
 	    			
@@ -507,11 +523,11 @@ edu.gmu.csiss.geoweaver.workspace = {
     	            
     	            newEdges.forEach(function(e, i){
     	            	
-    	            	newEdges[i] = {source: edu.gmu.csiss.geoweaver.workspace.theGraph.nodes.filter(function(n){
+    	            	newEdges[i] = {source: GW.workspace.theGraph.nodes.filter(function(n){
     	            			return n.id == e.source.id;
     	            		})[0],
     	                
-	            			target: edu.gmu.csiss.geoweaver.workspace.theGraph.nodes.filter(function(n){
+	            			target: GW.workspace.theGraph.nodes.filter(function(n){
 	            				return n.id == e.target.id;
 	            			})[0]};
     	            	
@@ -529,7 +545,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  }
 	
 	    	  /* select all text in element: taken from http://stackoverflow.com/questions/6139107/programatically-select-text-in-a-contenteditable-html-element */
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.selectElementContents = function(el) {
+	    	  GW.workspace.GraphCreator.prototype.selectElementContents = function(el) {
 	    	    var range = document.createRange();
 	    	    range.selectNodeContents(el);
 	    	    var sel = window.getSelection();
@@ -539,7 +555,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	
 	
 	    	  /* insert svg line breaks: taken from http://stackoverflow.com/questions/13241475/how-do-i-include-newlines-in-labels-in-d3-charts */
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.insertTitleLinebreaks = function (gEl, title) {
+	    	  GW.workspace.GraphCreator.prototype.insertTitleLinebreaks = function (gEl, title) {
 	    	    var words = title.split(/\s+/g),
 	    	        nwords = words.length;
 	    	    var el = gEl.append("text")
@@ -562,7 +578,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	
 	    	  
 	    	  // remove edges associated with a node
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.spliceLinksForNode = function(node) {
+	    	  GW.workspace.GraphCreator.prototype.spliceLinksForNode = function(node) {
 	    	    var thisGraph = this,
 	    	        toSplice = thisGraph.edges.filter(function(l) {
 	    	      return (l.source === node || l.target === node);
@@ -572,7 +588,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    });
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.replaceSelectEdge = function(d3Path, edgeData){
+	    	  GW.workspace.GraphCreator.prototype.replaceSelectEdge = function(d3Path, edgeData){
 	    	    var thisGraph = this;
 	    	    d3Path.classed(thisGraph.consts.selectedClass, true);
 	    	    if (thisGraph.state.selectedEdge){
@@ -581,7 +597,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    thisGraph.state.selectedEdge = edgeData;
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.replaceSelectNode = function(d3Node, nodeData){
+	    	  GW.workspace.GraphCreator.prototype.replaceSelectNode = function(d3Node, nodeData){
 	    	    var thisGraph = this;
 	    	    d3Node.classed(this.consts.selectedClass, true);
 	    	    if (thisGraph.state.selectedNode){
@@ -591,7 +607,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    console.log("selected node changed : " + nodeData.id);
 	    	  };
 	    	  
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.removeSelectFromNode = function(){
+	    	  GW.workspace.GraphCreator.prototype.removeSelectFromNode = function(){
 	    	    var thisGraph = this;
 	    	    thisGraph.circles.filter(function(cd){
 	    	      return cd.id === thisGraph.state.selectedNode.id;
@@ -600,7 +616,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.removeSelectFromEdge = function(){
+	    	  GW.workspace.GraphCreator.prototype.removeSelectFromEdge = function(){
 	    	    var thisGraph = this;
 	    	    thisGraph.paths.filter(function(cd){
 	    	      return cd === thisGraph.state.selectedEdge;
@@ -608,7 +624,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    thisGraph.state.selectedEdge = null;
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.pathMouseDown = function(d3path, d){
+	    	  GW.workspace.GraphCreator.prototype.pathMouseDown = function(d3path, d){
 	    	    var thisGraph = this,
 	    	        state = thisGraph.state;
 	    	    d3.event.stopPropagation();
@@ -627,7 +643,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  };
 	
 	    	  // mousedown on node
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.circleMouseDown = function(d3node, d){
+	    	  GW.workspace.GraphCreator.prototype.circleMouseDown = function(d3node, d){
 	    	    var thisGraph = this,
 	    	        state = thisGraph.state;
 	    	    d3.event.stopPropagation();
@@ -642,7 +658,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  };
 	
 	    	  /* place editable text on node in place of svg text */
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.changeTextOfNode = function(d3node, d){
+	    	  GW.workspace.GraphCreator.prototype.changeTextOfNode = function(d3node, d){
 	    	    var thisGraph= this,
 	    	        consts = thisGraph.consts,
 	    	        htmlEl = d3node.node();
@@ -682,7 +698,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  };
 	
 	    	  // mouseup on nodes
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.circleMouseUp = function(d3node, d){
+	    	  GW.workspace.GraphCreator.prototype.circleMouseUp = function(d3node, d){
 	    	    var thisGraph = this,
 	    	        state = thisGraph.state,
 	    	        consts = thisGraph.consts;
@@ -742,12 +758,12 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  }; // end of circles mouseup
 	
 	    	  // mousedown on main svg
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.svgMouseDown = function(){
+	    	  GW.workspace.GraphCreator.prototype.svgMouseDown = function(){
 	    	    this.state.graphMouseDown = true;
 	    	  };
 	
 	    	  // mouseup on main svg
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.svgMouseUp = function(){
+	    	  GW.workspace.GraphCreator.prototype.svgMouseUp = function(){
 	    	    var thisGraph = this,
 	    	        state = thisGraph.state;
 	    	    if (state.justScaleTransGraph) {
@@ -774,7 +790,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    state.graphMouseDown = false;
 	    	  };
 	    	  
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.removeNode = function(pid) {
+	    	  GW.workspace.GraphCreator.prototype.removeNode = function(pid) {
 	    	    
 	    		var thisGraph = this;
   	    		
@@ -799,7 +815,7 @@ edu.gmu.csiss.geoweaver.workspace = {
   	    		thisGraph.updateGraph();
 	    	  }
 	    	  
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.removeNodes = function(pid) {
+	    	  GW.workspace.GraphCreator.prototype.removeNodes = function(pid) {
 		    	    var thisGraph = this;
 		    	    //remove the workspace object
     	    		var selectedNodes = thisGraph.getNodesById(pid);
@@ -812,7 +828,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  }
 	
 	    	  // keydown on main svg
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.svgKeyDown = function() {
+	    	  GW.workspace.GraphCreator.prototype.svgKeyDown = function() {
 	    		if(Object.keys(BootstrapDialog.dialogs).length){
 	    			return; //if there are shown dialogs, key activity will be disconnected from svg
 	    		}
@@ -834,7 +850,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		    	        
 		    	    	var pid = selectedNode.id;
 		    	    	console.log("going to remove process: " + pid);
-	//	    	    	edu.gmu.csiss.geoweaver.menu.del(pid, "process");
+	//	    	    	GW.menu.del(pid, "process");
 		    	    	thisGraph.removeNode(pid);
 		    	    	
 		    	      } else if (selectedEdge){
@@ -849,7 +865,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    }
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.svgKeyUp = function() {
+	    	  GW.workspace.GraphCreator.prototype.svgKeyUp = function() {
 	    		  if(Object.keys(BootstrapDialog.dialogs).length){
 		    			return;
 		    	  }
@@ -857,7 +873,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  };
 	
 	    	  // call to propagate changes to graph
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.updateGraph = function(){
+	    	  GW.workspace.GraphCreator.prototype.updateGraph = function(){
 	    	    
 	    	    var thisGraph = this,
 	    	        consts = thisGraph.consts,
@@ -938,13 +954,13 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	    thisGraph.circles.exit().remove();
 	    	  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.zoomed = function(){
+	    	  GW.workspace.GraphCreator.prototype.zoomed = function(){
 	    	    this.state.justScaleTransGraph = true;
 	    	    d3.select("." + this.consts.graphClass)
 	    	      .attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"); 
 	    	  };
 	    	  
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.addProcess = function(id, name){
+	    	  GW.workspace.GraphCreator.prototype.addProcess = function(id, name){
 		  			
 	    		  	var thisGraph = this;
 		  			//how to find a location
@@ -953,7 +969,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		  			
 		  			var y = Math.floor(Math.random() * 600) + 1;
 		  			
-		  			var randomid = edu.gmu.csiss.geoweaver.workspace.makeid();
+		  			var randomid = GW.workspace.makeid();
 		  			
 		  			var insid = id +"-"+ randomid;
 		  			
@@ -967,7 +983,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		  			
 		  	  };
 		  	  
-		  	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.addEdge = function(frompid, topid){
+		  	  GW.workspace.GraphCreator.prototype.addEdge = function(frompid, topid){
 		  			
 		  		  	var thisGraph = this;
 		  		  
@@ -979,7 +995,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		  			
 		      };
 		      
-		      edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.renderStatus = function(statusList){
+		      GW.workspace.GraphCreator.prototype.renderStatus = function(statusList){
 		    	  
 		    	  	console.log("monitor workflow status called");
 		    	  	
@@ -1015,13 +1031,13 @@ edu.gmu.csiss.geoweaver.workspace = {
 		        		
 		        		newnodes.push(node);
 		        		
-		        		edu.gmu.csiss.geoweaver.monitor.updateProgress(id, flag);
+		        		GW.monitor.updateProgress(id, flag);
 		        		
 		        	}
 					
-					edu.gmu.csiss.geoweaver.workspace.theGraph.nodes = newnodes;
+					GW.workspace.theGraph.nodes = newnodes;
 					
-					edu.gmu.csiss.geoweaver.workspace.theGraph.updateGraph();
+					GW.workspace.theGraph.updateGraph();
 					
 					console.log("circle should change its color");
 					
@@ -1029,7 +1045,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  /**
 	    	   * NodeS
 	    	   */
-		      edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.getNodesById = function(id){
+		      GW.workspace.GraphCreator.prototype.getNodesById = function(id){
 		    	  
 		    	var thisGraph = this;
 		    		
@@ -1051,7 +1067,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		      /**
 		       * Node
 		       */
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.getNodeById = function(id){
+	    	  GW.workspace.GraphCreator.prototype.getNodeById = function(id){
 	    	
 	    		var thisGraph = this;
 	    		
@@ -1073,7 +1089,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	  			
 	  		  };
 	
-	    	  edu.gmu.csiss.geoweaver.workspace.GraphCreator.prototype.updateWindow = function(svg){
+	    	  GW.workspace.GraphCreator.prototype.updateWindow = function(svg){
 	    	    var docEl = document.documentElement,
 	    	        bodyEl = document.getElementsByTagName('body')[0];
 	    	    var x = window.innerWidth || docEl.clientWidth || bodyEl.clientWidth;
@@ -1085,7 +1101,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		
 		updateStatus: function(statusList){
 			
-			edu.gmu.csiss.geoweaver.workspace.theGraph.renderStatus(statusList);
+			GW.workspace.theGraph.renderStatus(statusList);
 			
 		},
 		
@@ -1120,7 +1136,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 		
 		init: function(){
 			
-			  edu.gmu.csiss.geoweaver.workspace.addListeners();
+			  GW.workspace.addListeners();
 			  
 	    	  /**** MAIN ****/
 	
@@ -1150,7 +1166,7 @@ edu.gmu.csiss.geoweaver.workspace = {
 	    	  
 	    	  var format = d3.format(",d");
 	    	  
-	    	  this.theGraph = new edu.gmu.csiss.geoweaver.workspace.GraphCreator(svg, nodes, edges);
+	    	  this.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
 	    	  
 	    	  this.theGraph.updateGraph();
 			

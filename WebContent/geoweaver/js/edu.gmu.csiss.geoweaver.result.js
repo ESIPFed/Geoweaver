@@ -4,7 +4,7 @@
 *
 */
 
-edu.gmu.csiss.geoweaver.result = {
+GW.result = {
 		
 		preview: function(filename){
 			
@@ -45,7 +45,7 @@ edu.gmu.csiss.geoweaver.result = {
 			
 			var url = "../temp/" + filename;
 			
-			edu.gmu.csiss.geoweaver.result.download_path(url, filename);
+			GW.result.download_path(url, filename);
 			
 		},
 		
@@ -187,7 +187,7 @@ edu.gmu.csiss.geoweaver.result = {
                 		
                 		if(msg.ret=="success"){
                 			
-                			edu.gmu.csiss.geoweaver.result.preview(msg.filename);
+                			GW.result.preview(msg.filename);
                 			
                 		}
                 		
@@ -273,7 +273,7 @@ edu.gmu.csiss.geoweaver.result = {
 	            		
 	            		if(msg.ret=="success"){
 	            			
-	            			edu.gmu.csiss.geoweaver.result.download(msg.filename);
+	            			GW.result.download(msg.filename);
 	            			
 	            		}
 	            		

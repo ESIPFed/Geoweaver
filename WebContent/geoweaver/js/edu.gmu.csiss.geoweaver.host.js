@@ -3,7 +3,7 @@
  * author: Ziheng Sun
  * 
  */
-edu.gmu.csiss.geoweaver.host = {
+GW.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy", "env": {"bin":"python3", "pyenv": "cdl"}}],
 		
@@ -23,11 +23,11 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var is = false;
 			
-			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+			for(var i=0;i<GW.host.cred_cache.length;i++){
 				
-				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+				if(GW.host.cred_cache[i].h == hid){
 					
-					edu.gmu.csiss.geoweaver.host.cred_cache[i].env = env;
+					GW.host.cred_cache[i].env = env;
 					
 					is = true;
 					
@@ -39,7 +39,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			if(!is){
 				
-				edu.gmu.csiss.geoweaver.host.cred_cache.push({"h": hid, "env": env});
+				GW.host.cred_cache.push({"h": hid, "env": env});
 				
 			}
 			
@@ -49,11 +49,11 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var is = false;
 			
-			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+			for(var i=0;i<GW.host.cred_cache.length;i++){
 				
-				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+				if(GW.host.cred_cache[i].h == hid){
 					
-					edu.gmu.csiss.geoweaver.host.cred_cache[i].s = s;
+					GW.host.cred_cache[i].s = s;
 					
 					is = true;
 					
@@ -65,7 +65,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			if(!is){
 				
-				edu.gmu.csiss.geoweaver.host.cred_cache.push({"h": hid, "s": s});
+				GW.host.cred_cache.push({"h": hid, "s": s});
 				
 			}
 			
@@ -75,11 +75,11 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var env = null;
 			
-			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+			for(var i=0;i<GW.host.cred_cache.length;i++){
 				
-				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+				if(GW.host.cred_cache[i].h == hid){
 					
-					env = edu.gmu.csiss.geoweaver.host.cred_cache[i].env;
+					env = GW.host.cred_cache[i].env;
 					
 					break;
 					
@@ -95,11 +95,11 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var s = null;
 			
-			for(var i=0;i<edu.gmu.csiss.geoweaver.host.cred_cache.length;i++){
+			for(var i=0;i<GW.host.cred_cache.length;i++){
 				
-				if(edu.gmu.csiss.geoweaver.host.cred_cache[i].h == hid){
+				if(GW.host.cred_cache[i].h == hid){
 					
-					s = edu.gmu.csiss.geoweaver.host.cred_cache[i].s;
+					s = GW.host.cred_cache[i].s;
 					
 					break;
 					
@@ -180,7 +180,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var width = 520; var height = 340;
 			
-			this.password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			this.password_frame = GW.workspace.jsFrame.create({
 	    		title: 'Host Password',
 	    	    left: 0, 
 	    	    top: 0, 
@@ -237,17 +237,17 @@ edu.gmu.csiss.geoweaver.host = {
             	
             	if(document.getElementById('remember').checked) {
             	    
-            		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
+            		GW.host.setCache(hid, $('#inputpswd').val()); //remember s
             		
             	}
             	
-            	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, edu.gmu.csiss.geoweaver.host.password_frame, $('#pswd-confirm-btn'), business_callback);
+            	GW.host.encrypt(hid, $('#inputpswd').val(), req, GW.host.password_frame, $('#pswd-confirm-btn'), business_callback);
 	            	
 			});
 			
 			$("#pswd-cancel-btn").click(function(){
 				
-				edu.gmu.csiss.geoweaver.host.password_frame.closeFrame();
+				GW.host.password_frame.closeFrame();
 				
 			});
 			
@@ -289,11 +289,11 @@ edu.gmu.csiss.geoweaver.host = {
 //	                	
 //	                	if(document.getElementById('remember').checked) {
 //	                	    
-//	                		edu.gmu.csiss.geoweaver.host.setCache(hid, $('#inputpswd').val()); //remember s
+//	                		GW.host.setCache(hid, $('#inputpswd').val()); //remember s
 //	                		
 //	                	}
 //	                	
-//	                	edu.gmu.csiss.geoweaver.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
+//	                	GW.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
 //	                	
 //	                }
 //					
@@ -316,15 +316,15 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		start_auth_single: function(hid, req, business_callback){
 			
-			var s = edu.gmu.csiss.geoweaver.host.findCache(hid);
+			var s = GW.host.findCache(hid);
 			
 			if(s==null){
 				
-				edu.gmu.csiss.geoweaver.host.enter_password(hid, req, business_callback);
+				GW.host.enter_password(hid, req, business_callback);
 				
 			}else{
 				
-				edu.gmu.csiss.geoweaver.host.encrypt(hid, s, req, null, null, business_callback);
+				GW.host.encrypt(hid, s, req, null, null, business_callback);
 				
 			}
 			
@@ -363,7 +363,7 @@ edu.gmu.csiss.geoweaver.host = {
                 	
                 }
                 
-                var ids = edu.gmu.csiss.geoweaver.host.turnHosts2Ids(hosts);
+                var ids = GW.host.turnHosts2Ids(hosts);
                 
                 req.hosts = ids;
                 
@@ -441,15 +441,15 @@ edu.gmu.csiss.geoweaver.host = {
              		
              		if(document.getElementById('remember').checked) {
              			
-             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
+             			GW.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
              			
              		}
              		
              	}
              	
-             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
+             	var passwds = GW.host.extendList(shortpasswds, newhosts, hosts);
              	
-             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+             	GW.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
              	
 				_frame.closeFrame()
 				
@@ -483,15 +483,15 @@ edu.gmu.csiss.geoweaver.host = {
 //	             		
 //	             		if(document.getElementById('remember').checked) {
 //	             			
-//	             			edu.gmu.csiss.geoweaver.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
+//	             			GW.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
 //	             			
 //	             		}
 //	             		
 //	             	}
 //	             	
-//	             	var passwds = edu.gmu.csiss.geoweaver.host.extendList(shortpasswds, newhosts, hosts);
+//	             	var passwds = GW.host.extendList(shortpasswds, newhosts, hosts);
 //	             	
-//	             	edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+//	             	GW.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
 //	             	
 //	             }
 //					
@@ -517,13 +517,13 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			if(newhosts.length>0){
 				
-				edu.gmu.csiss.geoweaver.host.enter_pswd_m(newhosts, hosts, req, business_callback);
+				GW.host.enter_pswd_m(newhosts, hosts, req, business_callback);
 				
 			}else{
 				
-				var passwds = edu.gmu.csiss.geoweaver.host.extendList([], newhosts, hosts);
+				var passwds = GW.host.extendList([], newhosts, hosts);
 				
-				edu.gmu.csiss.geoweaver.host.encrypt_m(hosts, passwds, req, null, null, business_callback);
+				GW.host.encrypt_m(hosts, passwds, req, null, null, business_callback);
 			}
 			
 			
@@ -573,7 +573,7 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				else
 					
-					fullpasswdslist.push(edu.gmu.csiss.geoweaver.host.findCache(hosts[i].id));
+					fullpasswdslist.push(GW.host.findCache(hosts[i].id));
 				
 			}
 			
@@ -601,7 +601,7 @@ edu.gmu.csiss.geoweaver.host = {
 					
 				}
 				
-				if(!exist && edu.gmu.csiss.geoweaver.host.findCache(hosts[i].id)==null){ //the p is not cached
+				if(!exist && GW.host.findCache(hosts[i].id)==null){ //the p is not cached
 					
 					newhosts.push(hosts[i]);
 					
@@ -646,7 +646,7 @@ edu.gmu.csiss.geoweaver.host = {
 
 		showSSHCmd: function(token){
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'SSH Command Line',
 		    	    left: 60, top: 60, width: 600, height: 540,
 		    	    appearanceName: 'yosemite',
@@ -664,7 +664,7 @@ edu.gmu.csiss.geoweaver.host = {
 		    });
 			
 		    frame.on('closeButton', 'click', (_frame, evt) => {
-		    	edu.gmu.csiss.geoweaver.host.closeSSH(token);
+		    	GW.host.closeSSH(token);
 		        _frame.closeFrame();
 		        
 		    });
@@ -684,7 +684,7 @@ edu.gmu.csiss.geoweaver.host = {
 //	            
 //	            onhide: function(dialogRef){
 //	                
-////	            	edu.gmu.csiss.geoweaver.menu.closeSSH(token);
+////	            	GW.menu.closeSSH(token);
 //	                
 //	            },
 //	            
@@ -706,7 +706,7 @@ edu.gmu.csiss.geoweaver.host = {
 //	                
 //	                action: function(dialog) {
 //	                	
-//	                	edu.gmu.csiss.geoweaver.host.closeSSH(token);
+//	                	GW.host.closeSSH(token);
 //	                	
 //	                	dialog.close();
 //	                	
@@ -715,7 +715,7 @@ edu.gmu.csiss.geoweaver.host = {
 //	        
 //			});
 //			
-//			edu.gmu.csiss.geoweaver.menu.setFullScreen(dialog);
+//			GW.menu.setFullScreen(dialog);
 			
 		},
 		
@@ -737,11 +737,11 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				hostmsg = $.parseJSON(msg);
 				
-				if(edu.gmu.csiss.geoweaver.host.ssh_password_frame != null){
+				if(GW.host.ssh_password_frame != null){
 					
 					try{
 						
-						edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+						GW.host.ssh_password_frame.closeFrame();
 						
 					}catch(e){
 						
@@ -749,7 +749,7 @@ edu.gmu.csiss.geoweaver.host = {
 						
 					}
 					
-					edu.gmu.csiss.geoweaver.host.ssh_password_frame = null;
+					GW.host.ssh_password_frame = null;
 					
 				}
 
@@ -773,7 +773,7 @@ edu.gmu.csiss.geoweaver.host = {
 				
 				var width = 500; var height = 340;
 				
-				edu.gmu.csiss.geoweaver.host.ssh_password_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+				GW.host.ssh_password_frame = GW.workspace.jsFrame.create({
 			    		title: 'Open SSH session',
 			    	    left: 0, 
 			    	    top: 0, 
@@ -788,7 +788,7 @@ edu.gmu.csiss.geoweaver.host = {
 			    	    html: cont
 		    	});
 		    	
-				edu.gmu.csiss.geoweaver.host.ssh_password_frame.setControl({
+				GW.host.ssh_password_frame.setControl({
 		            styleDisplay:'inline',
 		            maximizeButton: 'zoomButton',
 		            demaximizeButton: 'dezoomButton',
@@ -800,9 +800,9 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		        });
 		    	
-				edu.gmu.csiss.geoweaver.host.ssh_password_frame.show();
+				GW.host.ssh_password_frame.show();
 		    	
-				edu.gmu.csiss.geoweaver.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+				GW.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$("#ssh-connect-btn").click(function(){
 		    		
@@ -856,7 +856,7 @@ edu.gmu.csiss.geoweaver.host = {
 	                			
 		                		//open a dialog to show the SSH command line interface
 
-		                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
+		                		GW.host.showSSHCmd(msg.token);
 	                			
 	                		}else{
 	                			
@@ -864,7 +864,7 @@ edu.gmu.csiss.geoweaver.host = {
 	                			
 	                		}
 	                		try{
-	                			edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+	                			GW.host.ssh_password_frame.closeFrame();
 	                		}catch(e){}
 	                		
 	                		
@@ -887,7 +887,7 @@ edu.gmu.csiss.geoweaver.host = {
 		    	
 		    	$("#ssh-cancel-btn").click(function(){
 		    		
-		    		edu.gmu.csiss.geoweaver.host.ssh_password_frame.closeFrame();
+		    		GW.host.ssh_password_frame.closeFrame();
 		    		
 		    	});
 				
@@ -953,7 +953,7 @@ edu.gmu.csiss.geoweaver.host = {
 //			                			
 //				                		//open a dialog to show the SSH command line interface
 //	
-//				                		edu.gmu.csiss.geoweaver.host.showSSHCmd(msg.token);
+//				                		GW.host.showSSHCmd(msg.token);
 //			                			
 //			                		}else{
 //			                			
@@ -1028,17 +1028,17 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		addMenuItem: function(one){
 			
-			$("#"+edu.gmu.csiss.geoweaver.menu.getPanelIdByType("host")).append("<li class=\"host\" id=\"host-" + one.id + 
+			$("#"+GW.menu.getPanelIdByType("host")).append("<li class=\"host\" id=\"host-" + one.id + 
 					
-				"\"><a href=\"javascript:void(0)\" onclick=\"edu.gmu.csiss.geoweaver.menu.details('"+one.id+"', 'host')\">" + 
+				"\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
     				
-				one.name + "</a> <i class=\"fa fa-external-link-square subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.host.openssh('"+
+				one.name + "</a> <i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
             				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i><i class=\"fa fa-upload subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.fileupload.uploadfile('"+
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i><i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
             				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-sitemap subalignicon\" onclick=\"edu.gmu.csiss.geoweaver.filebrowser.start('"+
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
             				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"edu.gmu.csiss.geoweaver.menu.del('" +
+				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
             				
 				one.id+"','host')\"></i> </li>");
 			
@@ -1121,7 +1121,7 @@ edu.gmu.csiss.geoweaver.host = {
 		    		
 		    		msg = $.parseJSON(msg);
 		    		
-		    		edu.gmu.csiss.geoweaver.host.addMenuItem(msg);
+		    		GW.host.addMenuItem(msg);
 		    		
 		    		callback();
 		    		
@@ -1143,11 +1143,11 @@ edu.gmu.csiss.geoweaver.host = {
 		
 		newDialog: function(){
 			
-			if(edu.gmu.csiss.geoweaver.host.new_host_frame!=null){
+			if(GW.host.new_host_frame!=null){
 				
 				try{
 					
-					edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();
+					GW.host.new_host_frame.closeFrame();
 					
 				}catch(e){
 					
@@ -1155,7 +1155,7 @@ edu.gmu.csiss.geoweaver.host = {
 					
 				}
 				
-				edu.gmu.csiss.geoweaver.host.new_host_frame = null;
+				GW.host.new_host_frame = null;
 				
 			}
 			
@@ -1195,7 +1195,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			var width = 500; var height = 450;
 			
-			edu.gmu.csiss.geoweaver.host.new_host_frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			GW.host.new_host_frame = GW.workspace.jsFrame.create({
 		    		title: 'Add new host',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -1210,7 +1210,7 @@ edu.gmu.csiss.geoweaver.host = {
 		    	    html: content
 	    	});
 	    	
-			edu.gmu.csiss.geoweaver.host.new_host_frame.setControl({
+			GW.host.new_host_frame.setControl({
 	            styleDisplay:'inline',
 	            maximizeButton: 'zoomButton',
 	            demaximizeButton: 'dezoomButton',
@@ -1222,15 +1222,15 @@ edu.gmu.csiss.geoweaver.host = {
 	
 	        });
 	    	
-			edu.gmu.csiss.geoweaver.host.new_host_frame.show();
+			GW.host.new_host_frame.show();
 	    	
-			edu.gmu.csiss.geoweaver.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			GW.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$("#host-add-btn").click(function(){
 				
-            	edu.gmu.csiss.geoweaver.host.add(function(){
+            	GW.host.add(function(){
         		
-            		try{edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();}catch(e){}
+            		try{GW.host.new_host_frame.closeFrame();}catch(e){}
 	                
 	        	});
 				
@@ -1238,7 +1238,7 @@ edu.gmu.csiss.geoweaver.host = {
 			
 			$("#host-cancel-btn").click(function(){
 				
-				edu.gmu.csiss.geoweaver.host.new_host_frame.closeFrame();
+				GW.host.new_host_frame.closeFrame();
 				
 			});
 			
@@ -1281,7 +1281,7 @@ edu.gmu.csiss.geoweaver.host = {
 //	                
 //	                action: function(dialogItself){
 //	                	
-//	                	edu.gmu.csiss.geoweaver.host.add(function(){
+//	                	GW.host.add(function(){
 //	                		
 //		                    dialogItself.close();
 //		                    

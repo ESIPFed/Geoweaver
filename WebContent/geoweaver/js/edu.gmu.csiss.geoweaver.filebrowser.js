@@ -4,7 +4,7 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.filebrowser = {
+GW.filebrowser = {
 		
 		current_path: null,
 		
@@ -22,7 +22,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				method: "POST",
 				
-				data: { "filepath" : edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name}
+				data: { "filepath" : GW.filebrowser.current_path + file_name}
 				
 			}).done(function(msg){
 				
@@ -30,11 +30,11 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				if(msg.ret == "success"){
 					
-					edu.gmu.csiss.geoweaver.filebrowser.edit_file = 1;
+					GW.filebrowser.edit_file = 1;
 
 					var width = 800; var height = 640;
 					
-					const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+					const frame = GW.workspace.jsFrame.create({
 				    		title: 'File Editor',
 				    	    left: 0, 
 				    	    top: 0, 
@@ -73,7 +73,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			    	
 					$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
 	            	
-					edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+					GW.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
 		        		
 		        		lineNumbers: true,
 		        		lineWrapping: true
@@ -89,7 +89,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 					
 					$.get( "../" + url_path, function( data ) {
 						
-						edu.gmu.csiss.geoweaver.filebrowser.editor.setValue(data);
+						GW.filebrowser.editor.setValue(data);
 						
 						$("#loading_btn").hide();
 						
@@ -126,8 +126,8 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 	                		
 	                		method: "POST",
 	                		
-	                		data: { filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name, 
-	                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()}
+	                		data: { filepath: GW.filebrowser.current_path + file_name, 
+	                			content: GW.filebrowser.editor.getValue()}
 	                		
 	                	}).done(function(msg){
 	                		
@@ -155,7 +155,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 	        			
 	        			var suffix = file_name.match(patt1);
 	                	
-	                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
+	                	if(GW.filebrowser.isIn(suffix[1],["py", "sh"])){
 	                		
 	                		//step 1: add the file as a new process
 	                		
@@ -173,13 +173,13 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		                			
 		                			name: file_name,
 		                			
-		                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
+		                			filepath: GW.filebrowser.current_path + file_name,
 		                			
-		                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
+		                			hid: GW.filebrowser.current_hid,
 		                			
 		                			type: type,
 		                			
-		                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
+		                			content: GW.filebrowser.editor.getValue()
 		                			
 		                	};
 		                	
@@ -197,12 +197,12 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		                		
 		                		var pid = msg.id;
 		                		
-		                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
+		                		GW.process.addMenuItem(msg, type);
 		                		
-		                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
+		                		GW.process.executeProcess(pid, GW.filebrowser.current_hid, type);
 		                		
-		                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
-		                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
+		                		GW.ssh.addlog("The process " + msg.name + " is added to the process list.");
+		                		GW.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
 		                		
 		                	});
 		                	
@@ -235,7 +235,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //							
 //							$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
 //			            	
-//							edu.gmu.csiss.geoweaver.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
+//							GW.filebrowser.editor = CodeMirror.fromTextArea(document.getElementById("code_editor"), {
 //				        		
 //				        		lineNumbers: true,
 //				        		lineWrapping: true
@@ -251,7 +251,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //							
 //							$.get( "../" + url_path, function( data ) {
 //								
-//								edu.gmu.csiss.geoweaver.filebrowser.editor.setValue(data);
+//								GW.filebrowser.editor.setValue(data);
 //								
 //								$("#loading_btn").hide();
 //								
@@ -292,8 +292,8 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //			                		
 //			                		method: "POST",
 //			                		
-//			                		data: { filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name, 
-//			                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()}
+//			                		data: { filepath: GW.filebrowser.current_path + file_name, 
+//			                			content: GW.filebrowser.editor.getValue()}
 //			                		
 //			                	}).done(function(msg){
 //			                		
@@ -324,7 +324,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //			        			
 //			        			var suffix = file_name.match(patt1);
 //			                	
-//			                	if(edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["py", "sh"])){
+//			                	if(GW.filebrowser.isIn(suffix[1],["py", "sh"])){
 //			                		
 //			                		//step 1: add the file as a new process
 //			                		
@@ -342,13 +342,13 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //				                			
 //				                			name: file_name,
 //				                			
-//				                			filepath: edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name,
+//				                			filepath: GW.filebrowser.current_path + file_name,
 //				                			
-//				                			hid: edu.gmu.csiss.geoweaver.filebrowser.current_hid,
+//				                			hid: GW.filebrowser.current_hid,
 //				                			
 //				                			type: type,
 //				                			
-//				                			content: edu.gmu.csiss.geoweaver.filebrowser.editor.getValue()
+//				                			content: GW.filebrowser.editor.getValue()
 //				                			
 //				                	};
 //				                	
@@ -366,12 +366,12 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //				                		
 //				                		var pid = msg.id;
 //				                		
-//				                		edu.gmu.csiss.geoweaver.process.addMenuItem(msg, type);
+//				                		GW.process.addMenuItem(msg, type);
 //				                		
-//				                		edu.gmu.csiss.geoweaver.process.executeProcess(pid, edu.gmu.csiss.geoweaver.filebrowser.current_hid, type);
+//				                		GW.process.executeProcess(pid, GW.filebrowser.current_hid, type);
 //				                		
-//				                		edu.gmu.csiss.geoweaver.ssh.addlog("The process " + msg.name + " is added to the process list.");
-//				                		edu.gmu.csiss.geoweaver.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
+//				                		GW.ssh.addlog("The process " + msg.name + " is added to the process list.");
+//				                		GW.ssh.addlog("Pop up authorization dialog to initiate the run of the process : " + pid);
 //				                		
 //				                	});
 //				                	
@@ -414,7 +414,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		
 		downloadFile: function(file_name){
 			
-			var path = edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name;
+			var path = GW.filebrowser.current_path + file_name;
 			
 			var req = {filepath : path};
 			
@@ -434,7 +434,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 					
 					var fileurl = msg.path;
 					
-					edu.gmu.csiss.geoweaver.result.download_path("../" + fileurl, file_name); //remove web from Geoweaver/web
+					GW.result.download_path("../" + fileurl, file_name); //remove web from Geoweaver/web
 					
 				}else{
 					
@@ -464,15 +464,15 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			
 			var suffix = file_name.match(patt1);
 			
-			if(Number(file_size) < 10*1024*1024 && edu.gmu.csiss.geoweaver.filebrowser.isIn(suffix[1],["txt", "py", "sh", "java", "log", "js", "r", "c", "cpp", "f", "go", "sql", "php", "perl", "js"]) ){
+			if(Number(file_size) < 10*1024*1024 && GW.filebrowser.isIn(suffix[1],["txt", "py", "sh", "java", "log", "js", "r", "c", "cpp", "f", "go", "sql", "php", "perl", "js"]) ){
 				
 				//edit the file
-				edu.gmu.csiss.geoweaver.filebrowser.openFileEditor(file_name);
+				GW.filebrowser.openFileEditor(file_name);
 				
 			}else{
 				
 				//directly download the file
-				edu.gmu.csiss.geoweaver.filebrowser.downloadFile(file_name);
+				GW.filebrowser.downloadFile(file_name);
 				
 			}
 			
@@ -484,7 +484,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				url: "openfilebrowser",
 				
-				data: {"init_path": edu.gmu.csiss.geoweaver.filebrowser.current_path + file_name + "/"},
+				data: {"init_path": GW.filebrowser.current_path + file_name + "/"},
 			
 				method: "POST"
 				
@@ -494,7 +494,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				if(msg.ret!="failure")
 				
-					edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
+					GW.filebrowser.updateBrowser(msg);
 				
 				else
 					
@@ -526,16 +526,16 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 		
 		updateBrowser: function(msg){
 			
-			edu.gmu.csiss.geoweaver.filebrowser.current_path = msg.current;
+			GW.filebrowser.current_path = msg.current;
 			
 			var parentfolder = "..";
 			
-			if(edu.gmu.csiss.geoweaver.filebrowser.current_path == "/")
+			if(GW.filebrowser.current_path == "/")
 				
 				parentfolder = ".";
 			
 			var cont = '<tr>'+
-			  '    <td class="col-md-6" style="word-wrap:break-word;"><span><i class="pull-left fa fa-folder"></i><a style="word-wrap:break-word;" href="javascript:edu.gmu.csiss.geoweaver.filebrowser.continuebrowser(\''+
+			  '    <td class="col-md-6" style="word-wrap:break-word;"><span><i class="pull-left fa fa-folder"></i><a style="word-wrap:break-word;" href="javascript:GW.filebrowser.continuebrowser(\''+
 			  parentfolder+'\')" >'+parentfolder+'</a></span></td>'+
 			  '    <td> </td>'+
 			  '    <td> </td>'+
@@ -548,17 +548,17 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				if(msg.array[i].isdirectory){
 					
-					cont += '    <td class="col-md-6 word-wrap" ><span><i class="pull-left fa fa-folder"></i><a class="word-wrap" href="javascript:edu.gmu.csiss.geoweaver.filebrowser.continuebrowser(\'' + 
+					cont += '    <td class="col-md-6 word-wrap" ><span><i class="pull-left fa fa-folder"></i><a class="word-wrap" href="javascript:GW.filebrowser.continuebrowser(\'' + 
 			  			msg.array[i].name + '\')" >' +msg.array[i].name+'</a></span></td>';
 						
 				}else{
 					
-					cont += '    <td class="col-md-5 word-wrap"><span><i class="pull-left fa fa-file"></i><a  class="word-wrap" href="javascript:edu.gmu.csiss.geoweaver.filebrowser.operatefile(\'' + 
+					cont += '    <td class="col-md-5 word-wrap"><span><i class="pull-left fa fa-file"></i><a  class="word-wrap" href="javascript:GW.filebrowser.operatefile(\'' + 
 			  			msg.array[i].name + '\', \'' + msg.array[i].size + '\')" >' +msg.array[i].name+'</a></span></td>';
 					
 				}
 				
-				cont +=  '    <td>'+edu.gmu.csiss.geoweaver.filebrowser.s2Date(msg.array[i].mtime)+'</td>'+
+				cont +=  '    <td>'+GW.filebrowser.s2Date(msg.array[i].mtime)+'</td>'+
 				  '    <td>'+msg.array[i].size+'</td>'+
 				  '    <td>'+msg.array[i].mode+'</td>'+
 				  '  </tr>';
@@ -632,10 +632,10 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			cont += '<table class="table table-sm table-dark col-md-12" id="directory_table"> '+
 				'  <thead> '+
 				'    <tr> '+
-				'      <th class="col-md-5 word-wrap"  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(0)" >Name</th> '+
-				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(1)" >Last Modified</th> '+
-				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(2)" >Size</th> '+
-				'      <th  onclick="edu.gmu.csiss.geoweaver.filebrowser.sortTable(3)" >Mode</th> '+
+				'      <th class="col-md-5 word-wrap"  onclick="GW.filebrowser.sortTable(0)" >Name</th> '+
+				'      <th  onclick="GW.filebrowser.sortTable(1)" >Last Modified</th> '+
+				'      <th  onclick="GW.filebrowser.sortTable(2)" >Size</th> '+
+				'      <th  onclick="GW.filebrowser.sortTable(3)" >Mode</th> '+
 				'    </tr> '+
 				'  </thead> '+
 				'  <tbody>'+ 
@@ -643,7 +643,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			
 			var width = 800; var height = 640;
 			
-			const frame = edu.gmu.csiss.geoweaver.workspace.jsFrame.create({
+			const frame = GW.workspace.jsFrame.create({
 		    		title: 'File Browser',
 		    	    left: 0, 
 		    	    top: 0, 
@@ -674,13 +674,13 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 	    	
 	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
-	    	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
+	    	GW.filebrowser.updateBrowser(msg);
         	
-        	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
+        	GW.filebrowser.edit_file = 0;
         	
         	frame.on('closeButton', 'click', (_frame, evt) => {
         		
-            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+            	if(GW.filebrowser.edit_file==0){
 	        		
 	        		//only close connection when the file editor is not present
 	        		$.ajax({
@@ -713,15 +713,15 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 //	            
 //	            onshown: function(){
 //	            	
-//	            	edu.gmu.csiss.geoweaver.filebrowser.updateBrowser(msg);
+//	            	GW.filebrowser.updateBrowser(msg);
 //	            	
-//	            	edu.gmu.csiss.geoweaver.filebrowser.edit_file = 0;
+//	            	GW.filebrowser.edit_file = 0;
 //	            	
 //	            },
 //	            
 //	            onhide: function(){
 //	            	
-//	            	if(edu.gmu.csiss.geoweaver.filebrowser.edit_file==0){
+//	            	if(GW.filebrowser.edit_file==0){
 //	            		
 //	            		//only close connection when the file editor is not present
 //	            		$.ajax({
@@ -774,7 +774,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 				
 				if(msg.current.length){
 					
-					edu.gmu.csiss.geoweaver.filebrowser.showFolderBrowserDialog(msg);
+					GW.filebrowser.showFolderBrowserDialog(msg);
 					
 				}else{
 					
@@ -808,7 +808,7 @@ edu.gmu.csiss.geoweaver.filebrowser = {
 			
 			this.current_hid = hid;
 			
-			edu.gmu.csiss.geoweaver.host.start_auth_single(hid, req, edu.gmu.csiss.geoweaver.filebrowser.connect_folder);
+			GW.host.start_auth_single(hid, req, GW.filebrowser.connect_folder);
 			
 		}
 		

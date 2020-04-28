@@ -6,7 +6,7 @@
  * 
  */
 
-edu.gmu.csiss.geoweaver.ssh = {
+GW.ssh = {
 		
 		shell: null,
 	    
@@ -72,7 +72,7 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    ws_onopen: function (e) {
 	    	
 	      //open the indicator
-//	      edu.gmu.csiss.geoweaver.monitor.openWorkspaceIndicator();
+//	      GW.monitor.openWorkspaceIndicator();
 	      
 	      //shell.echo(special.white + "connected" + special.reset);
 	      this.echo("connected");
@@ -98,7 +98,7 @@ edu.gmu.csiss.geoweaver.ssh = {
 	    	
 	        try{
 
-//	        	edu.gmu.csiss.geoweaver.monitor.closeWorkspaceIndicator();
+//	        	GW.monitor.closeWorkspaceIndicator();
 	        	
 	        	this.echo("disconnected");
 	        	
@@ -190,19 +190,19 @@ edu.gmu.csiss.geoweaver.ssh = {
 //				
 //				onshown: function(){
 					
-					edu.gmu.csiss.geoweaver.ssh.ws = new SockJS("shell");
+					GW.ssh.ws = new SockJS("shell");
 			        
-					edu.gmu.csiss.geoweaver.ssh.output_div_id = "log_box_id";
+					GW.ssh.output_div_id = "log_box_id";
 			        
-					edu.gmu.csiss.geoweaver.ssh.token = token;
+					GW.ssh.token = token;
 			        
-					edu.gmu.csiss.geoweaver.ssh.ws.onopen = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onopen(e) };
+					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
 			        
-					edu.gmu.csiss.geoweaver.ssh.ws.onclose = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onclose(e) };
+					GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
 			        
-					edu.gmu.csiss.geoweaver.ssh.ws.onmessage = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onmessage(e) };
+					GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
 			        
-					edu.gmu.csiss.geoweaver.ssh.ws.onerror = function(e) { edu.gmu.csiss.geoweaver.ssh.ws_onerror(e) };
+					GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
 			        
 //				},
 //
@@ -221,7 +221,7 @@ edu.gmu.csiss.geoweaver.ssh = {
 ////						
 ////						//send the message to shut down the SSH session and stop the process
 ////						
-////						edu.gmu.csiss.geoweaver.ssh.ws.send("exit");
+////						GW.ssh.ws.send("exit");
 ////						
 //////						dialog.close();
 ////						
