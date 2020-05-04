@@ -18,7 +18,7 @@ edu = {
 							
 					sponsor: "ESIPLab incubator project",
 					
-					version: "0.8.0",
+					version: "0.8.2",
 					
 					author: "Ziheng Sun",
 					
@@ -28,3 +28,6 @@ edu = {
 			}
 		}
 };
+
+// GW will be the short name of the package
+var GW = edu.gmu.csiss.geoweaver
