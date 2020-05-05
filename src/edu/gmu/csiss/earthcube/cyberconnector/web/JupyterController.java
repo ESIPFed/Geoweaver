@@ -31,7 +31,8 @@ public class JupyterController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private String scheme = "http";
-	private String server = "192.168.0.80";
+//	private String server = "192.168.0.80";
+	private String server = "localhost";
 	private int port = 8888;
 	
 	RestTemplate restTemplate = new RestTemplate();

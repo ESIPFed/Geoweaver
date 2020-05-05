@@ -22,7 +22,7 @@ GW.workspace = {
 			
 			$("#test-jsframe").addClass("fa-shower");
 			
-			var content = "<div height=\"100%\"><iframe width=\"100%\" frameborder=\"0\" scrolling=\"no\" onload=\"GW.workspace.resizeIframe(this)\" id=\"jupyter-iframe\" src=\"http://localhost:8080/CyberConnector/web/index\"></iframe></div>"
+			var content = "<div height=\"100%\"><iframe width=\"100%\" frameborder=\"0\" scrolling=\"no\" onload=\"GW.workspace.resizeIframe(this)\" id=\"jupyter-iframe\" src=\"/Geoweaver/web/jupyter-proxy/\"></iframe></div>"
 				
 //			$.get("http://geobrain.csiss.gmu.edu/jupyter", function (response){ 
 //				var html = response;
