@@ -2,7 +2,9 @@ package edu.gmu.csiss.earthcube.cyberconnector.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,8 +41,8 @@ public class JupyterController {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private String scheme = "http";
-	private String server = "192.168.0.80";
-//	private String server = "localhost";
+//	private String server = "192.168.0.80";
+	private String server = "localhost";
 	private int port = 8888;
 	
 	RestTemplate restTemplate = new RestTemplate();
@@ -56,7 +58,7 @@ public class JupyterController {
 				.replace("/custom/", "/Geoweaver/web/jupyter-proxy/custom/")
 				.replace("/login?", "/Geoweaver/web/jupyter-proxy/login?")
 				.replace("/tree", "/Geoweaver/web/jupyter-proxy/tree")
-				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
+//				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
 				;
 		
 		return resp;
@@ -67,6 +69,8 @@ public class JupyterController {
 		ResponseEntity resp = null;
 		
 		try {
+			
+			logger.info("==============");
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
@@ -106,6 +110,8 @@ public class JupyterController {
 		ResponseEntity resp = null;
 		
 		try {
+			
+			logger.info("==============");
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
@@ -151,9 +157,13 @@ public class JupyterController {
 			
 //			URI uri = new URI("https", null, server, port, request.getRequestURI(), request.getQueryString(), null);
 			
+			logger.info("==============");
+			
 			logger.info("Request URI: " + request.getRequestURI());
 			
 			logger.info("Query String: " + request.getQueryString());
+			
+			logger.info("Original Request String: " + request.getParameterMap());
 			
 			String realurl =  request.getRequestURI().substring(request.getRequestURI().indexOf("jupyter-proxy") + 13);// /Geoweaver/web/jupyter-proxy/test
 			
@@ -175,26 +185,35 @@ public class JupyterController {
 			
 			logger.info("HTTP Method: " + method.toString());
 			
-			headers.clear();
-				
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//			headers.clear();
+//				
+//			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 			
 			MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 			
 			Iterator hmIterator = request.getParameterMap().entrySet().iterator(); 
 			  
 	        // Iterate through the hashmap 
-	        // and add some bonus marks for every student 
-	        System.out.println("HashMap after adding bonus marks:"); 
+			
+			StringBuffer reqstr = new StringBuffer();
 	  
 	        while (hmIterator.hasNext()) { 
-	            Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
+	            
+	        	Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
+	            
 	            map.add((String)mapElement.getKey(), ((String[])(mapElement.getValue()))[0]);
 	            
-	        } 
-//			map.add("email", "first.last@example.com");
+	            if(!BaseTool.isNull(reqstr.toString())) {
+	            	
+	            	reqstr.append("&");
+	            	
+	            }
+	            
+	            reqstr.append((String)mapElement.getKey()).append("=").append(((String[])(mapElement.getValue()))[0]);
+	            
+	        }
 
-			HttpEntity requestentity = new HttpEntity(map, httpheaders);
+			HttpEntity requestentity = new HttpEntity(reqstr.toString(), httpheaders);
 			
 			
 			logger.info("Body: " + requestentity.getBody());
@@ -203,7 +222,24 @@ public class JupyterController {
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 		    
-		    logger.info("Response: " + responseEntity.getBody());
+		    if(responseEntity.getStatusCode()==HttpStatus.FOUND) {
+		    	
+		    	logger.info("Redirection: " + responseEntity.getHeaders());
+			    
+			    logger.info("Response: " + responseEntity.getBody());
+			    
+//			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
+			    
+			    
+			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+		    	
+		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
+		    	
+		    	
+		    	
+		    }
+		    
+		    
 		    
 		    resp = new ResponseEntity(
 		    		replaceURLProxyHeader(responseEntity.getBody()), 
