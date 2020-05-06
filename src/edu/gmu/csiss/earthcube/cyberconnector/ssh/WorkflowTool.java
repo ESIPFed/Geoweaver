@@ -39,6 +39,15 @@ public class WorkflowTool {
 	 * @return
 	 */
 	public static String stop(String history_id) {
+<<<<<<< HEAD
+		
+		//write the code to stop the execution of a workflow
+		
+//		WorkflowTool.getById();
+		
+		return null;
+		
+=======
 
         ProcessTool pt = new ProcessTool();
 
@@ -118,6 +127,7 @@ public class WorkflowTool {
 
         return null;
 
+>>>>>>> 360fbee70870372bb89981ddd54059a029115e82
 	}
 	
 	public static String list(String owner){
