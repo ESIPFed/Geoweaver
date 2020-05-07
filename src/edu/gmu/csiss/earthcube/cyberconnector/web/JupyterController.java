@@ -105,6 +105,7 @@ public class JupyterController {
 	    
 	}
 	
+	@SuppressWarnings("unchecked")
 	private ResponseEntity processGET(HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = null;
@@ -131,7 +132,9 @@ public class JupyterController {
 //		    
 //		    	logger.info("Response Body: " + responseEntity.getBody());
 		    
-		    resp = new ResponseEntity(
+		    
+		    
+		    resp = new ResponseEntity<String>(
 		    		replaceURLProxyHeader(responseEntity.getBody()), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
@@ -230,8 +233,11 @@ public class JupyterController {
 			    
 //			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 			    
+//			    responseEntity.getHeaders().compute("Location", (k, v) -> {v.clear(); v.add("/Geoweaver/web/jupyter-proxy/tree?");});
 			    
-			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+//			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+			    
+			    logger.info(responseEntity.getHeaders().toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
