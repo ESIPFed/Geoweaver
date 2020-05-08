@@ -225,9 +225,13 @@ public class JupyterController {
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 		    
+		    HttpHeaders respheaders = responseEntity.getHeaders();
+		    
 		    if(responseEntity.getStatusCode()==HttpStatus.FOUND) {
 		    	
-		    	logger.info("Redirection: " + responseEntity.getHeaders());
+		    	MultiValueMap<String, String> headers =new LinkedMultiValueMap<String, String>();
+		    	
+		    	logger.info("Redirection: " + respheaders);
 			    
 			    logger.info("Response: " + responseEntity.getBody());
 			    
@@ -237,7 +241,13 @@ public class JupyterController {
 			    
 //			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
 			    
-			    logger.info(responseEntity.getHeaders().toString());
+//			    respheaders.set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+			    
+//			    respheaders.setLocation(new URI("/Geoweaver/web/jupyter-proxy/tree?"));
+			    
+			    respheaders.add("Test", "Test Value");
+			    
+			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
@@ -249,7 +259,7 @@ public class JupyterController {
 		    
 		    resp = new ResponseEntity(
 		    		replaceURLProxyHeader(responseEntity.getBody()), 
-		    		responseEntity.getHeaders(), 
+		    		respheaders, 
 		    		responseEntity.getStatusCode());
 		    
 			
