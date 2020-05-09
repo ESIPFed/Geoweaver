@@ -50,7 +50,7 @@ public class JupyterController {
 	
 	HttpHeaders headers = new HttpHeaders();
 	
-	String replaceURLProxyHeader(String resp) {
+	String addURLProxy(String resp) {
 		
 		if(!BaseTool.isNull(resp))
 			resp = resp
@@ -59,6 +59,16 @@ public class JupyterController {
 				.replace("\"/custom/", "\"/Geoweaver/web/jupyter-proxy/custom/")
 				.replace("\"/login?", "\"/Geoweaver/web/jupyter-proxy/login?")
 				.replace("\"/tree", "\"/Geoweaver/web/jupyter-proxy/tree")
+//				.replace("'contents': 'services/contents',", "'contents': 'Geoweaver/web/jupyter-proxy/services/contents',")
+				.replace("/static/base/images/logo.png", "/Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
+				.replace("baseUrl: '/static/',", "baseUrl: '/Geoweaver/web/jupyter-proxy/static/',")
+				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/web/jupyter-proxy/', 'api/config',")
+				.replace("this.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+				.replace("that.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/custom/custom'], function() {});")
+//				.replace("this.base_url", "'/Geoweaver/web/jupyter-proxy/'")
+//				.replace("static/base/images/logo.png", "Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
+//				.replace("static/services/contents", "Geoweaver/web/jupyter-proxy/static/services/contents")
 //				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
 				;
 		
@@ -92,7 +102,7 @@ public class JupyterController {
 //		    	logger.info("Response Body: " + responseEntity.getBody());
 		    
 		    resp = new ResponseEntity(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
+		    		addURLProxy(responseEntity.getBody()), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
 		    
@@ -135,15 +145,17 @@ public class JupyterController {
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, entity, String.class);
 		    
-//		    if(realurl.indexOf("auth")!=-1)
-//		    
-	    	logger.info("Response Body: " + responseEntity.getBody());
+		    if(realurl.equals("/tree"))
+		    
+		    	logger.info("Response Body: " + responseEntity.getBody());
 	    	
 	    	logger.info("Response Header: " + responseEntity.getHeaders());
-		    
+	    	
+	    	String newbody = addURLProxy(responseEntity.getBody());
+	    	
 		    resp = new ResponseEntity<String>(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
-		    		responseEntity.getHeaders(), 
+		    		newbody, 
+		    		updateHeaderLength(responseEntity.getHeaders(), newbody), 
 		    		responseEntity.getStatusCode());
 		    
 		}catch(Exception e) {
@@ -154,6 +166,34 @@ public class JupyterController {
 		
 	    return resp;
 	    
+	}
+	
+	HttpHeaders updateHeaderLength(HttpHeaders oldheaders, String returnbody) {
+		
+		
+		HttpHeaders newheaders = new HttpHeaders();
+    	
+	    
+		oldheaders.forEach((key, value) -> {
+	    	
+	    	if(key.toLowerCase().equals("location")) {
+	    		
+	    		newheaders.set(key, "/Geoweaver/web/jupyter-proxy" + value.get(0));
+	    		
+	    	}else if (key.toLowerCase().equals("content-length")){
+	    		
+	    		newheaders.set(key, String.valueOf(returnbody.length()));
+	    		
+	    	}else {
+	    		
+	    		newheaders.set(key, value.get(0));
+	    		
+	    	}
+	    	
+	    });
+		
+		return newheaders;
+		
 	}
 	
 	@RequestMapping(value="/jupyter-proxy/login", method = RequestMethod.POST)
@@ -282,10 +322,8 @@ public class JupyterController {
 		    	
 		    }
 		    
-		    
-		    
 		    resp = new ResponseEntity(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
+		    		null, 
 		    		respheaders, 
 		    		responseEntity.getStatusCode());
 		    
