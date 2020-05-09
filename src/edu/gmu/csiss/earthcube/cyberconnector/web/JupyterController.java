@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,15 +50,25 @@ public class JupyterController {
 	
 	HttpHeaders headers = new HttpHeaders();
 	
-	String replaceURLProxyHeader(String resp) {
+	String addURLProxy(String resp) {
 		
 		if(!BaseTool.isNull(resp))
 			resp = resp
 //				.replaceAll(scheme + "://" + server + ":" + port, replacement)
-				.replace("/static/", "/Geoweaver/web/jupyter-proxy/static/")
-				.replace("/custom/", "/Geoweaver/web/jupyter-proxy/custom/")
-				.replace("/login?", "/Geoweaver/web/jupyter-proxy/login?")
-				.replace("/tree", "/Geoweaver/web/jupyter-proxy/tree")
+				.replace("\"/static/", "\"/Geoweaver/web/jupyter-proxy/static/")
+				.replace("\"/custom/", "\"/Geoweaver/web/jupyter-proxy/custom/")
+				.replace("\"/login?", "\"/Geoweaver/web/jupyter-proxy/login?")
+				.replace("\"/tree", "\"/Geoweaver/web/jupyter-proxy/tree")
+//				.replace("'contents': 'services/contents',", "'contents': 'Geoweaver/web/jupyter-proxy/services/contents',")
+				.replace("/static/base/images/logo.png", "/Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
+				.replace("baseUrl: '/static/',", "baseUrl: '/Geoweaver/web/jupyter-proxy/static/',")
+				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/web/jupyter-proxy/', 'api/config',")
+				.replace("this.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+				.replace("that.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/custom/custom'], function() {});")
+//				.replace("this.base_url", "'/Geoweaver/web/jupyter-proxy/'")
+//				.replace("static/base/images/logo.png", "Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
+//				.replace("static/services/contents", "Geoweaver/web/jupyter-proxy/static/services/contents")
 //				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
 				;
 		
@@ -91,7 +102,7 @@ public class JupyterController {
 //		    	logger.info("Response Body: " + responseEntity.getBody());
 		    
 		    resp = new ResponseEntity(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
+		    		addURLProxy(responseEntity.getBody()), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
 		    
@@ -105,13 +116,16 @@ public class JupyterController {
 	    
 	}
 	
-	private ResponseEntity processGET(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	@SuppressWarnings("unchecked")
+	private ResponseEntity processGET(HttpHeaders headers, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = null;
 		
 		try {
 			
 			logger.info("==============");
+			
+			logger.info("This is a GET request...");
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
@@ -125,15 +139,23 @@ public class JupyterController {
 			
 			logger.info("HTTP Method: " + method.toString());
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, null, String.class);
+			logger.info("HTTP Headers: " + headers.toString());
+			
+			HttpEntity entity = new HttpEntity(headers);
+			
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, entity, String.class);
 		    
-//		    if(realurl.indexOf("auth")!=-1)
-//		    
-//		    	logger.info("Response Body: " + responseEntity.getBody());
+		    if(realurl.equals("/tree"))
 		    
-		    resp = new ResponseEntity(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
-		    		responseEntity.getHeaders(), 
+		    	logger.info("Response Body: " + responseEntity.getBody());
+	    	
+	    	logger.info("Response Header: " + responseEntity.getHeaders());
+	    	
+	    	String newbody = addURLProxy(responseEntity.getBody());
+	    	
+		    resp = new ResponseEntity<String>(
+		    		newbody, 
+		    		updateHeaderLength(responseEntity.getHeaders(), newbody), 
 		    		responseEntity.getStatusCode());
 		    
 		}catch(Exception e) {
@@ -144,6 +166,34 @@ public class JupyterController {
 		
 	    return resp;
 	    
+	}
+	
+	HttpHeaders updateHeaderLength(HttpHeaders oldheaders, String returnbody) {
+		
+		
+		HttpHeaders newheaders = new HttpHeaders();
+    	
+	    
+		oldheaders.forEach((key, value) -> {
+	    	
+	    	if(key.toLowerCase().equals("location")) {
+	    		
+	    		newheaders.set(key, "/Geoweaver/web/jupyter-proxy" + value.get(0));
+	    		
+	    	}else if (key.toLowerCase().equals("content-length")){
+	    		
+	    		newheaders.set(key, String.valueOf(returnbody.length()));
+	    		
+	    	}else {
+	    		
+	    		newheaders.set(key, value.get(0));
+	    		
+	    	}
+	    	
+	    });
+		
+		return newheaders;
+		
 	}
 	
 	@RequestMapping(value="/jupyter-proxy/login", method = RequestMethod.POST)
@@ -222,16 +272,49 @@ public class JupyterController {
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 		    
+		    HttpHeaders respheaders = responseEntity.getHeaders();
+		    
 		    if(responseEntity.getStatusCode()==HttpStatus.FOUND) {
 		    	
-		    	logger.info("Redirection: " + responseEntity.getHeaders());
+//		    	MultiValueMap<String, String> headers =new LinkedMultiValueMap<String, String>();
+		    	
+		    	HttpHeaders newheaders = new HttpHeaders();
+		    	
+		    	logger.info("Redirection: " + respheaders);
 			    
 			    logger.info("Response: " + responseEntity.getBody());
 			    
 //			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 			    
+//			    responseEntity.getHeaders().compute("Location", (k, v) -> {v.clear(); v.add("/Geoweaver/web/jupyter-proxy/tree?");});
 			    
-			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+//			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+			    
+//			    respheaders.set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
+			    
+//			    respheaders.setLocation(new URI("/Geoweaver/web/jupyter-proxy/tree?"));
+			    
+//			    respheaders.add("Test", "Test Value");
+			    
+			    respheaders.forEach((key, value) -> {
+			    	
+			    	if(key.toLowerCase().equals("location")) {
+			    		
+			    		newheaders.set(key, "/Geoweaver/web/jupyter-proxy" + value.get(0));
+			    		
+			    	}else {
+			    		
+			    		newheaders.set(key, value.get(0));
+			    		
+			    	}
+			    	
+			    });
+			    
+			    respheaders = newheaders;
+			    
+//			    Set ent = respheaders.entrySet();
+			    
+			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
@@ -239,11 +322,9 @@ public class JupyterController {
 		    	
 		    }
 		    
-		    
-		    
 		    resp = new ResponseEntity(
-		    		replaceURLProxyHeader(responseEntity.getBody()), 
-		    		responseEntity.getHeaders(), 
+		    		null, 
+		    		respheaders, 
 		    		responseEntity.getStatusCode());
 		    
 			
@@ -322,18 +403,18 @@ public class JupyterController {
 	}
 	
 	@RequestMapping(value="/jupyter-proxy/**", method = RequestMethod.GET)
-	public ResponseEntity proxyget(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxyget(HttpMethod method, @RequestHeader HttpHeaders headers, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET( method, request);
+		ResponseEntity resp = processGET( headers, method, request);
 		
 	    return resp;
 	    
 	}
 	
 	@RequestMapping(value="/jupyter-proxy", method = RequestMethod.GET)
-	public ResponseEntity proxyroot_get(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxyroot_get(HttpMethod method, @RequestHeader HttpHeaders headers, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET(method, request);
+		ResponseEntity resp = processGET(headers, method, request);
 		
 //		try {
 //			
