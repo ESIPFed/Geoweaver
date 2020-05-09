@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,10 +55,10 @@ public class JupyterController {
 		if(!BaseTool.isNull(resp))
 			resp = resp
 //				.replaceAll(scheme + "://" + server + ":" + port, replacement)
-				.replace("/static/", "/Geoweaver/web/jupyter-proxy/static/")
-				.replace("/custom/", "/Geoweaver/web/jupyter-proxy/custom/")
-				.replace("/login?", "/Geoweaver/web/jupyter-proxy/login?")
-				.replace("/tree", "/Geoweaver/web/jupyter-proxy/tree")
+				.replace("\"/static/", "\"/Geoweaver/web/jupyter-proxy/static/")
+				.replace("\"/custom/", "\"/Geoweaver/web/jupyter-proxy/custom/")
+				.replace("\"/login?", "\"/Geoweaver/web/jupyter-proxy/login?")
+				.replace("\"/tree", "\"/Geoweaver/web/jupyter-proxy/tree")
 //				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
 				;
 		
@@ -106,13 +107,15 @@ public class JupyterController {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private ResponseEntity processGET(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	private ResponseEntity processGET(HttpHeaders headers, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = null;
 		
 		try {
 			
 			logger.info("==============");
+			
+			logger.info("This is a GET request...");
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
@@ -126,13 +129,17 @@ public class JupyterController {
 			
 			logger.info("HTTP Method: " + method.toString());
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, null, String.class);
+			logger.info("HTTP Headers: " + headers.toString());
+			
+			HttpEntity entity = new HttpEntity(headers);
+			
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(uri, method, entity, String.class);
 		    
 //		    if(realurl.indexOf("auth")!=-1)
 //		    
-//		    	logger.info("Response Body: " + responseEntity.getBody());
-		    
-		    
+	    	logger.info("Response Body: " + responseEntity.getBody());
+	    	
+	    	logger.info("Response Header: " + responseEntity.getHeaders());
 		    
 		    resp = new ResponseEntity<String>(
 		    		replaceURLProxyHeader(responseEntity.getBody()), 
@@ -229,7 +236,9 @@ public class JupyterController {
 		    
 		    if(responseEntity.getStatusCode()==HttpStatus.FOUND) {
 		    	
-		    	MultiValueMap<String, String> headers =new LinkedMultiValueMap<String, String>();
+//		    	MultiValueMap<String, String> headers =new LinkedMultiValueMap<String, String>();
+		    	
+		    	HttpHeaders newheaders = new HttpHeaders();
 		    	
 		    	logger.info("Redirection: " + respheaders);
 			    
@@ -245,7 +254,25 @@ public class JupyterController {
 			    
 //			    respheaders.setLocation(new URI("/Geoweaver/web/jupyter-proxy/tree?"));
 			    
-			    respheaders.add("Test", "Test Value");
+//			    respheaders.add("Test", "Test Value");
+			    
+			    respheaders.forEach((key, value) -> {
+			    	
+			    	if(key.toLowerCase().equals("location")) {
+			    		
+			    		newheaders.set(key, "/Geoweaver/web/jupyter-proxy" + value.get(0));
+			    		
+			    	}else {
+			    		
+			    		newheaders.set(key, value.get(0));
+			    		
+			    	}
+			    	
+			    });
+			    
+			    respheaders = newheaders;
+			    
+//			    Set ent = respheaders.entrySet();
 			    
 			    logger.info(respheaders.toString());
 		    	
@@ -338,18 +365,18 @@ public class JupyterController {
 	}
 	
 	@RequestMapping(value="/jupyter-proxy/**", method = RequestMethod.GET)
-	public ResponseEntity proxyget(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxyget(HttpMethod method, @RequestHeader HttpHeaders headers, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET( method, request);
+		ResponseEntity resp = processGET( headers, method, request);
 		
 	    return resp;
 	    
 	}
 	
 	@RequestMapping(value="/jupyter-proxy", method = RequestMethod.GET)
-	public ResponseEntity proxyroot_get(HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxyroot_get(HttpMethod method, @RequestHeader HttpHeaders headers, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET(method, request);
+		ResponseEntity resp = processGET(headers, method, request);
 		
 //		try {
 //			
