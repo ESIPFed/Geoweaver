@@ -86,6 +86,11 @@
             <systemPath>${basedir}/WebContent/WEB-INF/lib/commons-httpclient-3.1.jar</systemPath>
         </dependency>
         <dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.6</version>
+		</dependency>
+        <dependency>
             <groupId>net.opengis.wms</groupId>
             <artifactId>net.opengis.wms</artifactId>
             <version>2.6.2</version>
