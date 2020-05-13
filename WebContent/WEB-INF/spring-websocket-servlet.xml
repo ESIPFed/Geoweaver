@@ -11,12 +11,15 @@
         
         <bean id="tasksocket" class="edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket"/>
         
+        <bean id="jupytersocket" class="edu.gmu.csiss.earthcube.cyberconnector.web.JupyterSocket"/>
 		
         <websocket:handlers>
             
             <websocket:mapping path="/shell" handler="shellsocket"/>
             
             <websocket:mapping path="/task" handler="tasksocket"/>
+            
+            <websocket:mapping path="/jupyter-socket" handler="jupytersocket"/>
             
             <websocket:sockjs/>
             
