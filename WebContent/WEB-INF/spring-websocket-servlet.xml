@@ -10,6 +10,7 @@
         <bean id="shellsocket" class="edu.gmu.csiss.earthcube.cyberconnector.ssh.ShellSocket"/>
         
         <bean id="tasksocket" class="edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket"/>
+        
 		
         <websocket:handlers>
             
