@@ -1,5 +1,6 @@
 package edu.gmu.csiss.earthcube.cyberconnector.web;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
@@ -7,6 +8,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class JupyterSocket  implements WebSocketHandler {
 
+	Logger logger = Logger.getLogger(this.getClass());
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		
@@ -17,7 +20,7 @@ public class JupyterSocket  implements WebSocketHandler {
 	@Override
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
 		
-		
+		logger.info("Received Socket Message");
 		
 	}
 
@@ -31,7 +34,7 @@ public class JupyterSocket  implements WebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		
-		
+		logger.info("Socket Connection Closed");
 		
 	}
 

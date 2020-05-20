@@ -66,8 +66,11 @@ public class JupyterController {
 				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/web/jupyter-proxy/', 'api/config',")
 				.replace("this.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
 				.replace("that.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+				.replace("'/Geoweaver/web/jupyter-proxy/', \"api/kernels\"", "'/jupytersocket/', \"api/kernels\"")
 				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/web/jupyter-proxy/files/")
+				.replace("this.notebook.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
+//				.replace("\"nbextensions/\"", "\"Geoweaver/web/jupyter-proxy/nbextensions/\"")
 //				.replace("this.base_url", "'/Geoweaver/web/jupyter-proxy/'")
 //				.replace("static/base/images/logo.png", "Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
 //				.replace("static/services/contents", "Geoweaver/web/jupyter-proxy/static/services/contents")
@@ -93,6 +96,27 @@ public class JupyterController {
 					message, 
 		    		updateHeaderLength(headers, message), 
 		    		HttpStatus.FORBIDDEN);
+			
+		}else if(message.indexOf("404 Not Found")!=-1) {
+			
+			resp = new ResponseEntity<String>(
+					message, 
+		    		updateHeaderLength(headers, message), 
+		    		HttpStatus.NOT_FOUND);
+			
+		}else if(message.indexOf("400 Bad Request")!=-1) {
+			
+			resp = new ResponseEntity<String>(
+					message, 
+		    		updateHeaderLength(headers, message), 
+		    		HttpStatus.BAD_REQUEST);
+			
+		}else {
+			
+			resp = new ResponseEntity<String>(
+					message, 
+		    		updateHeaderLength(headers, message), 
+		    		HttpStatus.INTERNAL_SERVER_ERROR);
 			
 		}
 		
