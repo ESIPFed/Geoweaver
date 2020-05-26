@@ -19,7 +19,7 @@
             
             <websocket:mapping path="/task" handler="tasksocket"/>
             
-            <websocket:mapping path="/jupyter-socket" handler="jupytersocket"/>
+            <websocket:mapping path="/jupyter" handler="jupytersocket"/>
             
             <websocket:sockjs/>
             

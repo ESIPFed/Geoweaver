@@ -264,6 +264,11 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.10</version>
         </dependency>
+        <dependency>
+		  <groupId>org.java-websocket</groupId>
+		  <artifactId>Java-WebSocket</artifactId>
+		  <version>1.5.1</version>
+		</dependency>
     </dependencies>
     <organization>
         <name>Center for Spatial Information Science and Systems</name>

@@ -13,7 +13,7 @@ public class JupyterSocket  implements WebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		
-		
+		logger.info("After connection established");
 		
 	}
 
@@ -27,7 +27,7 @@ public class JupyterSocket  implements WebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		
-		
+		logger.info("Handle Transportation Error");
 		
 	}
 
@@ -41,7 +41,7 @@ public class JupyterSocket  implements WebSocketHandler {
 	@Override
 	public boolean supportsPartialMessages() {
 		
-		
+		logger.info("Supports Partial Messages");
 		
 		return false;
 	}
