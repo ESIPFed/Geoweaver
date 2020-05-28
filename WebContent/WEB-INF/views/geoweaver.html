@@ -74,53 +74,77 @@
 	
 		<div class="main">
 		
-			<div class="row" style="height:100%; margin: 0; padding: 0;">
+			<!-- Top menu bar -->
 			
+			<div class="row" style="height: 50px; margin: 0; padding: 0; background-color:black;">
+			
+				<div style="display: block; position: absolute; top: 5px; left: 5px; width: 70px; height:40px; color: yellow; background-color: silver;" id="menuheader" >
+				
+					<img src="../header.png" width="50px" />
+					
+				</div>
+				
+				
+				<!-- Top Toolbar -->
+				
 				<div id="top_toolbar">
 				
-					<div id="toolbar-left" style="position: absolute; top: 10px; left: 30px; height: 50px; z-index:1;" >
+					<div id="toolbar-left" style="position: absolute; top: 5px; left: 80px; height: 50px; z-index:1;" >
 					
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-search"><i class="fa fa-search"  alt="search"></i></button>
+						
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-add"><i class="fa fa-plus" alt="create"></i></button>
+						
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-history"><i class="fa fa-history" alt="List the recent execution history"></i></button>
+						
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-monitor"><i class="fa fa-film" alt="monitor"></i></button>
+						
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-settings"><i class="fa fa-cog" alt="settings"></i></button>
+						
 						<!-- <button class="btn btn-default toolbar-btn black-background white" id="toolbar-diff"><i class="fa fa-calculator" alt="difference"></i></button> -->
 						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-print"><i class="fa fa-print" alt="print"></i></button>
 						
 					</div>
 				
 				</div>
+			
+			</div>
+			
+			<!-- tool box -->
 				
-				<div id="toolbox">
-				  
-			      <input type="file" id="hidden-file-upload" ></input>
+			<div id="toolbox" style="position: absolute; top: 60px; left: 10px;">
+			  
+			    <input type="file" id="hidden-file-upload" ></input>
 			      
-			      <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" style="color:gray" alt="test jsframe graph" ></i>
+			    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" style="color:gray" alt="test jsframe graph" ></i>
 			      
-			      <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" style="color:gray" alt="upload graph" ></i>
+			    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" style="color:gray" alt="upload graph" ></i>
 			      
-			      <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" style="color:gray" alt="download graph" ></i>
+			    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" style="color:gray" alt="download graph" ></i>
 			      
-			      <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" style="color:gray" alt="save workflow"></i> 
+			    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" style="color:gray" alt="save workflow"></i> 
 			      
-			      <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" style="color:gray" alt="execute workflow"></i> 
+			    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" style="color:gray" alt="execute workflow"></i> 
 			      
-			      <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" style="color:gray" alt="show object information"></i>
+			    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" style="color:gray" alt="show object information"></i>
 			      
-			      <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" style="color:gray" alt="show process log"></i> 
+			    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" style="color:gray" alt="show process log"></i> 
 			      
-			      <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" style="color:gray" alt="get result"></i> 
+			    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" style="color:gray" alt="get result"></i> 
 			      
-			      <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" style="color:gray"  alt="delete graph" ></i> 
-			      
-			    </div>
+			    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" style="color:gray"  alt="delete graph" ></i> 
+		      
+		    </div>
+			
+			<div class="row" style="position: absolute; height:calc(100% - 50px); top: 50px; margin: 0; padding: 0;">
+				
+			    <!-- Workspace -->
 			    
 				<div class="col col-md-9" id="workspace" style="height:100%; margin: 0;padding: 0;">
 					
 					<!-- log window right top -->
-					
-					<div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 50px; z-index:1;">
+				
+					<div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
 						
 						<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
 						
@@ -139,26 +163,26 @@
 				    <!-- progress right bottom, above the status indicator -->
 					
 					<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
-						<!-- <div id="bar-1">
-							Task1
-							<div class="progress">
-							  <div class="progress-bar progress-bar-striped active" role="progressbar"
-							  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
-							    40%
-							  </div>
-							</div>
-						</div> -->
+					
+					<!-- <div id="bar-1">
+						Task1
+						<div class="progress">
+						  <div class="progress-bar progress-bar-striped active" role="progressbar"
+						  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+						    40%
+						  </div>
+						</div>
+					</div> -->
 				    	
 				    </div>
 				
 				</div>
 			
-				<div class="col col-md-3 pull-right" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
+				<div class="col col-md-3 pull-right small-height" id="sidemenu" style="height: 100vh; margin: 0;padding: 0;">
 					
 					<div class="nav-side-menu">
 		
-					    <div style="color: yellow; background-color: silver;" class="brand" id="menuheader" ><img src="../header.png" width="150" /></div>
-					
+					    
 					    <!-- <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> -->
 					  	
 					    <div class="menu-list">
