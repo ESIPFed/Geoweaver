@@ -94,7 +94,7 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>
     	/WEB-INF/spring-webmvc-servlet.xml
-    	<!-- /WEB-INF/spring-websocket-servlet.xml -->
+    	/WEB-INF/spring-websocket-servlet.xml
     </param-value>
   </context-param>
   <listener>
