@@ -23,7 +23,7 @@ public class JupyterWebSocketConfig implements WebSocketConfigurer  {
     public ServletServerContainerFactoryBean createWebSocketContainer() {
 		System.out.print("WebSocket container is created ");
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxBinaryMessageBufferSize(1024000);
+//        container.setMaxBinaryMessageBufferSize(1024000);
         return container;
     }
 
