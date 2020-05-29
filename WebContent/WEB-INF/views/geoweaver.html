@@ -82,9 +82,9 @@
 				  <a style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: #ebebeb; " href="javascript:void(0)">
 				  	<img src="../header.png" width="90px" height="40px" />
 				  </a>
-				  <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
+				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
 				  	Geoweaver
-				  </div>
+				  </div> -->
 				  <a id="toolbar-search"  
 				  data-toggle="tooltip" title="Search Process/Workflow/Hosts"
 				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
@@ -164,29 +164,38 @@
 			
 			<!-- tool box -->
 				
-			<div id="toolbox" style="position: absolute; top: 60px; left: 10px;">
+			<div id="toolbox" style="position: absolute; top: 60px; left: 10px;width: 70px;">
 			  
-			  	<i>Workflow Bar</i>
+			  	<i style="text-align:center; padding-top:10px; margin-left: 5px;">Workflow Toolbar</i>
 			  
-			    <i><input type="file" id="hidden-file-upload" ></input></i>
+			    <i id="hidden-file-upload" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0; padding:0;" alt="Hidden File Upload" ></i>
 			      
-			    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" style="color:gray" alt="test jsframe graph" ></i>
+			    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
 			      
-			    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" style="color:gray" alt="upload graph" ></i>
+			    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
 			      
-			    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" style="color:gray" alt="download graph" ></i>
+			    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="download graph" ></i>
 			      
-			    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" style="color:gray" alt="save workflow"></i> 
+			    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 
 			      
-			    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" style="color:gray" alt="execute workflow"></i> 
+			    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="execute workflow"></i> 
 			      
-			    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" style="color:gray" alt="show object information"></i>
+			    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="show object information"></i>
 			      
-			    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" style="color:gray" alt="show process log"></i> 
+			    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="show process log"></i> 
 			      
-			    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" style="color:gray" alt="get result"></i> 
+			    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;" alt="get result"></i> 
 			      
-			    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" style="color:gray"  alt="delete graph" ></i> 
+			    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" 
+			    	style="color:gray; margin:0; padding-top:5px;display: block;text-align: center;transition: all 0.3s ease;"  alt="delete graph" ></i> 
 		      
 		    </div>
 			
