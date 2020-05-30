@@ -15,6 +15,7 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
  * @author JensenSun
  *
  */
+@Deprecated
 @Configuration
 @EnableWebSocket
 public class JupyterWebSocketConfig implements WebSocketConfigurer  {

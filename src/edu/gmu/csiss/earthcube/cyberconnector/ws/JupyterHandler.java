@@ -8,8 +8,12 @@ import java.io.IOException;
 
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
-
-
+/**
+ * No used
+ * @author JensenSun
+ *
+ */
+@Deprecated
 public class JupyterHandler extends AbstractWebSocketHandler {
 	
 
