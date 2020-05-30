@@ -6,8 +6,17 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/websocket
         http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+        
+        <websocket:handlers>
+			<websocket:mapping path="/socket" handler="jupyterhandler"/>
+			<websocket:handshake-interceptors>
+				<bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+			</websocket:handshake-interceptors>
+		</websocket:handlers>
 		
-        <bean id="shellsocket" class="edu.gmu.csiss.earthcube.cyberconnector.ssh.ShellSocket"/>
+		<bean id="jupyterhandler" class="edu.gmu.csiss.earthcube.cyberconnector.ws.JupyterHandler"/>
+		
+        <!-- <bean id="shellsocket" class="edu.gmu.csiss.earthcube.cyberconnector.ssh.ShellSocket"/>
         
         <bean id="tasksocket" class="edu.gmu.csiss.earthcube.cyberconnector.tasks.TaskSocket"/>
         
@@ -19,10 +28,10 @@
             
             <websocket:mapping path="/task" handler="tasksocket"/>
             
-            <websocket:mapping path="/jupyter-socket" handler="jupytersocket"/>
+            <websocket:mapping path="/jupyter" handler="jupytersocket"/>
             
             <websocket:sockjs/>
             
-        </websocket:handlers>
+        </websocket:handlers> -->
         
 </beans>

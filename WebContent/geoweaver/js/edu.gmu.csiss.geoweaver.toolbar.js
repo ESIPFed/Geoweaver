@@ -26,6 +26,8 @@ GW.toolbar = {
 			
 			this.listenLogWindowSlider();
 			
+			$('[data-toggle="tooltip"]').tooltip();   
+			
 		},
 		
 		settings: function(){

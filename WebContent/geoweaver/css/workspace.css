@@ -24,19 +24,16 @@ body{
 }
 
 #toolbox{
-    position: absolute;
+    /* position: absolute;
     bottom: 0;
-    left: 0;
-    margin-bottom: 0.5em;
-    margin-left: 1em;
+    left: 0; */
     border: 2px solid #EEEEEE;
     border-radius: 5px;
-    padding: 1em;
     z-index: 5;
 }
 
 #toolbox input{
-    width: 30px;
+    width: 20px;
     opacity: 0.4;
 }
 #toolbox input:hover{

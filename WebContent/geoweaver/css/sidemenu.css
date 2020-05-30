@@ -19,6 +19,13 @@
   text-align: center;
   font-size: 14px;
 }
+
+.small-height {
+	
+	height: calc(100vh - 50px);
+	
+}
+
 .nav-side-menu .toggle-btn {
   display: none;
 }
