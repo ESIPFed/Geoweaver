@@ -66,7 +66,7 @@ public class JupyterController {
 				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/web/jupyter-proxy/', 'api/config',")
 				.replace("this.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
 				.replace("that.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
-				.replace("'/Geoweaver/web/jupyter-proxy/', \"api/kernels\"", "'/jupyter/', \"api/kernels\"")
+				.replace("'/Geoweaver/web/jupyter-proxy/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/', \"api/kernels\"")
 				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/web/jupyter-proxy/files/")
 				.replace("this.notebook.base_url,", "'/Geoweaver/web/jupyter-proxy/',")
