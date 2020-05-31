@@ -1,14 +1,10 @@
 package edu.gmu.csiss.earthcube.cyberconnector.ws;
 
-
-import org.apache.log4j.Logger;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class Java2JupyterConnector extends JFrame {
+public class Java2JupyterClientDialog extends JFrame {
 
    private final JLabel messageLabel =
       new JLabel("Client Message");
@@ -30,7 +26,7 @@ public class Java2JupyterConnector extends JFrame {
       new JTextArea("");
    private final Java2JupyterClientEndpoint client;
 
-   public Java2JupyterConnector() throws Exception {
+   public Java2JupyterClientDialog() throws Exception {
       setSize(400, 400);
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       setVisible(true);
@@ -51,6 +47,8 @@ public class Java2JupyterConnector extends JFrame {
 
       client = new Java2JupyterClientEndpoint(new URI("ws://localhost:8888/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c"), null);
       
+      
+      
       sendButton.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
@@ -66,7 +64,7 @@ public class Java2JupyterConnector extends JFrame {
 
    public static void main(String[] args) throws Exception {
 	   
-	  Java2JupyterConnector clientWindow = new Java2JupyterConnector();
+	   Java2JupyterClientDialog clientWindow = new Java2JupyterClientDialog();
 	   
    }
    

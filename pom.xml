@@ -319,6 +319,13 @@
 		    <version>1.17</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>juli</artifactId>
+		    <version>6.0.26</version>
+		</dependency>
+				
+		
         <!-- end of geoweaver -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

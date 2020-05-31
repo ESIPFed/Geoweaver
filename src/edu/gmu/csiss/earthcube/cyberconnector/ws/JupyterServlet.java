@@ -13,7 +13,10 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.context.request.WebRequest;
+
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 
 /**
  * This works
@@ -29,7 +32,7 @@ public class JupyterServlet {
 	Java2JupyterClientEndpoint client = null;
 	
 	@OnOpen
-    public void onOpen(Session session, @PathParam("uuid1") String uuid1) {
+    public void onOpen(Session session, HttpHeaders httpHeaders,  @PathParam("uuid1") String uuid1) {
 		
 		try {
 			
@@ -45,6 +48,7 @@ public class JupyterServlet {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
 		}
 		
     }
@@ -63,15 +67,22 @@ public class JupyterServlet {
         
 	    	try {
 	    		
-	    		logger.info("Received message: " + message);
-	        	
-	        	logger.info("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
-	        	
-	        	logger.info("Transfer message to Jupyter Notebook server..");
-	        	
-	        	client.sendMessage(message);
-	        	
-	        	
+	    		if(BaseTool.isNull(client)) {
+	    			
+	    			session.close();
+	    			
+	    		}else {
+	    			
+	    			logger.info("Received message: " + message);
+		        	
+		        	logger.info("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
+		        	
+		        	logger.info("Transfer message to Jupyter Notebook server..");
+		        	
+		        	client.sendMessage(message);
+		        	
+	    		}
+	    		
 	    	}catch(Exception e) {
 	    		
 	    		e.printStackTrace();
@@ -84,9 +95,9 @@ public class JupyterServlet {
     @OnClose
     public void onClose(final Session session) {
     	
-    		try {
-    			
-        		logger.error("Channel closed.");
+		try {
+			
+    		logger.error("Channel closed.");
         		
 			client.userSession.close(); //close websocket connection
 			
