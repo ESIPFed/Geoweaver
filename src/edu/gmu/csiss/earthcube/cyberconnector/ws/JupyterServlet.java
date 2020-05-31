@@ -99,7 +99,7 @@ public class JupyterServlet {
 			
     		logger.error("Channel closed.");
         		
-			client.userSession.close(); //close websocket connection
+			client.newjupyteression.close(); //close websocket connection
 			
 		} catch (IOException e) {
 			
