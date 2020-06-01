@@ -24,17 +24,20 @@ public class Java2JupyterClientEndpoint {
     private Logger logger = Logger.getLogger(this.getClass());
 
     public Java2JupyterClientEndpoint(URI endpointURI, Session servletsession) {
+    	
         try {
+        	
         	this.servletsession = servletsession;
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, endpointURI);
             
-//            WebSocketContainer container=ContainerProvider.getWebSocketContainer();
-//            	container.connectToServer(this, new URI(uri));
         } catch (Exception e) {
+        	
         	e.printStackTrace();
             throw new RuntimeException(e);
+            
         }
+        
     }
 
     /**
