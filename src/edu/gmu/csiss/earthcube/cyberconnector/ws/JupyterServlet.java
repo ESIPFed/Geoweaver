@@ -32,7 +32,7 @@ public class JupyterServlet {
 	Java2JupyterClientEndpoint client = null;
 	
 	@OnOpen
-    public void onOpen(Session session, HttpHeaders httpHeaders,  @PathParam("uuid1") String uuid1) {
+    public void onOpen(Session session, @PathParam("uuid1") String uuid1) {
 		
 		try {
 			
