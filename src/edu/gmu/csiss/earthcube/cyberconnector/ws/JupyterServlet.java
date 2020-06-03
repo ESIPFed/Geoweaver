@@ -1,5 +1,9 @@
 package edu.gmu.csiss.earthcube.cyberconnector.ws;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -9,7 +13,10 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.context.request.WebRequest;
+
+import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 
 /**
  * This works
@@ -22,52 +29,83 @@ public class JupyterServlet {
 	
 	Logger logger = Logger.getLogger(JupyterServlet.class);
 	
+	Java2JupyterClientEndpoint client = null;
+	
 	@OnOpen
-    public void onOpen( final Session session) {
+    public void onOpen(Session session, @PathParam("uuid1") String uuid1) {
 		
-		logger.info("websocket channel openned");
-		
-		logger.info("Query String: " + session.getQueryString());
+		try {
+			
+			logger.info("websocket channel openned");
+			
+			String trueurl = "ws://localhost:8888/api/kernels/"+uuid1+
+					"/channels?" + session.getQueryString();
+			
+			logger.info("Query String: " + trueurl);
+			
+			client = new Java2JupyterClientEndpoint(new URI(trueurl), session);
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 		
     }
 
     @OnError
     public void onError(final Session session, final Throwable throwable) throws Throwable {
         
-    	logger.error("websocket channel error" + throwable.getLocalizedMessage());
-    	
-    	throw throwable;
+	    	logger.error("websocket channel error" + throwable.getLocalizedMessage());
+	    	
+	    	throw throwable;
     	
     }
 
     @OnMessage
     public void onMessage(String message, @PathParam("uuid1") String uuid1, Session session) {
         
-    	try {
-    		
-    		logger.info("Received message: " + message);
-        	
-        	logger.info("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
-        	
-        	logger.info("Transfer message to Jupyter Notebook server..");
-        	
-        	logger.info("Receive message from Jupyter notebook");
-        	
-        	logger.info("Send the response message back to client");
-        	
-    	}catch(Exception e) {
-    		
-    		e.printStackTrace();
-    		
-    	}
+	    	try {
+	    		
+	    		if(BaseTool.isNull(client)) {
+	    			
+	    			session.close();
+	    			
+	    		}else {
+	    			
+	    			logger.info("Received message: " + message);
+		        	
+		        	logger.info("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
+		        	
+		        	logger.info("Transfer message to Jupyter Notebook server..");
+		        	
+		        	client.sendMessage(message);
+		        	
+	    		}
+	    		
+	    	}catch(Exception e) {
+	    		
+	    		e.printStackTrace();
+	    		
+	    	}
     	
     	
     }
 
     @OnClose
     public void onClose(final Session session) {
-        
-    	logger.error("Channel closed.");
+    	
+		try {
+			
+    		logger.error("Channel closed.");
+        		
+			client.newjupyteression.close(); //close websocket connection
+			
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+			
+		}
     	
     }
 
