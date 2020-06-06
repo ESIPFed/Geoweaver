@@ -2,7 +2,11 @@ package edu.gmu.csiss.earthcube.cyberconnector.ws;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ClientEndpointConfig.Builder;
@@ -27,11 +31,14 @@ public class Java2JupyterClientEndpoint extends Endpoint {
     private Session jssession;
     private Logger logger = Logger.getLogger(this.getClass());
 
-    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession) {
+    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers) {
         try {
+        	
         	this.jssession = jssession;
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            //build ClientEndpointConfig
+            
+        	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            
+        	//build ClientEndpointConfig
             Builder configBuilder = ClientEndpointConfig.Builder.create();
             
 //            configBuilder.configurator(new Configurator() {
@@ -42,10 +49,24 @@ public class Java2JupyterClientEndpoint extends Endpoint {
 //            });
             ClientEndpointConfig clientConfig = configBuilder.build();
             
+            Iterator<String> itr = headers.keySet().iterator();
+            
+            while (itr.hasNext())
+            {
+            	String key = itr.next();
+            	
+            	List<String> value = headers.get(key);
+
+            	System.out.println(key + "=" + value);
+            	
+            	clientConfig.getUserProperties().put(key, value.get(0));
+            	
+            }
+            
 //            clientConfig.getConfigurator().beforeRequest(headers);
-            clientConfig.getUserProperties().put("Sec-WebSocket-Extensions", "permessage-deflate; client_max_window_bits");
-            clientConfig.getUserProperties().put("Sec-WebSocket-Key", "JNOrKMA6YhDCRijp46/ofg==");
-            clientConfig.getUserProperties().put("Sec-WebSocket-Version", "13");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Extensions", "permessage-deflate; client_max_window_bits");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Key", "JNOrKMA6YhDCRijp46/ofg==");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Version", "13");
             
 //            Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
 //            Sec-WebSocket-Key: JNOrKMA6YhDCRijp46/ofg==
@@ -72,6 +93,7 @@ public class Java2JupyterClientEndpoint extends Endpoint {
     	logger.info("The connection between Java and Jupyter server is established.");
         this.newjupyteression = session;
 	}
+    
     /**
      * Callback hook for Connection open events.
      * 

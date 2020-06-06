@@ -1,12 +1,9 @@
 package edu.gmu.csiss.earthcube.cyberconnector.ws;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import javax.servlet.http.HttpSession;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * 
@@ -15,24 +12,36 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
  * @author JensenSun
  *
  */
-@Deprecated
-@Configuration
-@EnableWebSocket
-public class JupyterWebSocketConfig implements WebSocketConfigurer  {
- 
-	@Bean
-    public ServletServerContainerFactoryBean createWebSocketContainer() {
-		System.out.print("WebSocket container is created ");
-        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-//        container.setMaxBinaryMessageBufferSize(1024000);
-        return container;
-    }
 
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    	System.out.print("WebSocket handler is registered for URL mapping /socket ");
-        registry.addHandler(new JupyterHandler(), "/socket").setAllowedOrigins("*");
+public class JupyterWebSocketConfig extends ServerEndpointConfig.Configurator  {
+ 
+//	@Bean
+//    public ServletServerContainerFactoryBean createWebSocketContainer() {
+//		System.out.print("WebSocket container is created ");
+//        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+////        container.setMaxBinaryMessageBufferSize(1024000);
+//        return container;
+//    }
+//
+//    @Override
+//    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+//    	System.out.print("WebSocket handler is registered for URL mapping /socket ");
+//        registry.addHandler(new JupyterHandler(), "/socket").setAllowedOrigins("*");
+//    }
+	@Override
+    public void modifyHandshake(ServerEndpointConfig config, 
+                                HandshakeRequest request, 
+                                HandshakeResponse response)
+    {
+        HttpSession httpSession = (HttpSession)request.getHttpSession();
+        
+        System.out.println("Received Handshake Request Headers: " + request.getHeaders());
+        
+        System.out.println("HttpSession Configure User Properties: " + config.getUserProperties());
+        
+        config.getUserProperties().put("RequestHeaders", request.getHeaders());
+        
+//        config.getUserProperties().put(HttpSession.class.getName(),httpSession);
     }
-    
 
 }
