@@ -28,38 +28,26 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
  *
  */
 //ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c
-@ServerEndpoint(value = "/jupyter-socket/api/kernels/{uuid1}/channels", 
+@ServerEndpoint(value = "/workspace-socket", 
 	configurator = JupyterWebSocketServerConfig.class)
-public class JupyterServlet {
+public class WorkspaceServlet {
 	
-	Logger logger = Logger.getLogger(JupyterServlet.class);
-	
-	Java2JupyterClientEndpoint client = null;
+	Logger logger = Logger.getLogger(WorkspaceServlet.class);
 	
 	private Session wsSession;
 	
 //    private HttpSession httpSession;
 	
 	@OnOpen
-    public void open(Session session, @PathParam("uuid1") String uuid1, EndpointConfig config) {
+    public void open(Session session, EndpointConfig config) {
 		
 		try {
 			
 			logger.info("websocket channel openned");
 			
-			String trueurl = "ws://localhost:8888/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
-			
-			logger.info("Query String: " + trueurl);
-			
 			this.wsSession = session;
 			
-//			this.httpSession = (HttpSession) config.getUserProperties()
-//                    .get(HttpSession.class.getName());
-			Map<String, List<String>> headers = (Map<String, List<String>>)config.getUserProperties().get("RequestHeaders");
-			
-			client = new Java2JupyterClientEndpoint(new URI(trueurl), session, headers);
-			
-		} catch (URISyntaxException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
@@ -77,26 +65,16 @@ public class JupyterServlet {
     }
 
     @OnMessage
-    public void echo(String message, @PathParam("uuid1") String uuid1, Session session) {
+    public void echo(String message, Session session) {
         
     	try {
     		
-    		if(BaseTool.isNull(client)) {
-    			
-    			session.close();
-    			
-    		}else {
-    			
-    			logger.info("Received message: " + message);
-	        	
-	        	logger.info("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
-	        	
-	        	logger.info("Transfer message to Jupyter Notebook server..");
-	        	
-	        	client.sendMessage(message);
-	        	
-    		}
-    		
+			logger.info("Received message: " + message);
+        	
+        	logger.info(" - Session ID: " + session.getQueryString());
+        	
+        	logger.info("Transfer message to Jupyter Notebook server..");
+        	
     	}catch(Exception e) {
     		
     		e.printStackTrace();
@@ -111,10 +89,8 @@ public class JupyterServlet {
 		try {
 			
     		logger.error("Channel closed.");
-        		
-			client.newjupyteression.close(); //close websocket connection
-			
-		} catch (IOException e) {
+        	
+		} catch (Exception e) {
 			
 			e.printStackTrace();
 			

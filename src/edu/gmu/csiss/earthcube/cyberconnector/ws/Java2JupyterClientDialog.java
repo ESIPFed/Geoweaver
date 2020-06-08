@@ -5,6 +5,10 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,6 +29,57 @@ public class Java2JupyterClientDialog extends JFrame {
    private final JTextArea serverMessageText =
       new JTextArea("");
    private final Java2JupyterClientEndpoint client;
+   
+   
+   Map<String, List<String>> getHeaders(){
+	  
+//     GET ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/50b8eae7-e877-45a5-9686-fb99f179bec4/channels?session_id=7587997d388b4669965953d6506c9c33 HTTP/1.1
+//	  Host: localhost:8080
+//	  Connection: Upgrade
+//	  Pragma: no-cache
+//	  Cache-Control: no-cache
+//	  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36
+//	  Upgrade: websocket
+//	  Origin: http://localhost:8080
+//	  Sec-WebSocket-Version: 13
+//	  Accept-Encoding: gzip, deflate, br
+//	  Accept-Language: en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,lb;q=0.6
+//	  Cookie: JSESSIONID=6A76ED20085E0D3F2C56248F370D765C; username-localhost-8888="2|1:0|10:1589056727|23:username-localhost-8888|44:OTc5NGFkYjk5Mjc0NGZhODk4YjdlZTljMTdlYjhkYzg=|2b129b076ea248da7bb60b67ef5215ace4e1f22d5b8357892740daf831011afb"; _xsrf=2|71c72b4a|edbb6345b2cfe9820c5f7ae7bbb029af|1589331447
+//	  Sec-WebSocket-Key: cu+bm2FWa4WMw21AoK848Q==
+//	  Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+	  
+	  Map<String, List<String>> headers = new HashMap<String, List<String>>();
+      List vals = new ArrayList();
+      vals.add("Upgrade");
+      headers.put("Connection", vals);
+      vals.clear();
+      vals.add("no-cache");
+      headers.put("Cache-Control", vals);
+      vals.clear();
+      vals.add("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36");
+      headers.put("User-Agent", vals);
+      vals.clear();
+      vals.add("13");
+      headers.put("Sec-WebSocket-Version", vals);
+      vals.clear();
+      vals.add("JSESSIONID=6A76ED20085E0D3F2C56248F370D765C; username-localhost-8888=\"2|1:0|10:1589056727|23:username-localhost-8888|44:OTc5NGFkYjk5Mjc0NGZhODk4YjdlZTljMTdlYjhkYzg=|2b129b076ea248da7bb60b67ef5215ace4e1f22d5b8357892740daf831011afb\"; _xsrf=2|71c72b4a|edbb6345b2cfe9820c5f7ae7bbb029af|1589331447");
+      headers.put("Cookie", vals);
+      vals.clear();
+      vals.add("cu+bm2FWa4WMw21AoK848Q==");
+      headers.put("Sec-WebSocket-Key", vals);
+      vals.clear();
+      vals.add("permessage-deflate; client_max_window_bits");
+      headers.put("Sec-WebSocket-Extensions", vals);
+      vals.clear();
+      vals.add("gzip, deflate, br");
+      headers.put("Accept-Encoding", vals);
+      vals.clear();
+      vals.add("en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,lb;q=0.6");
+      headers.put("Accept-Language", vals);
+      
+      return headers;
+	   
+   }
 
    public Java2JupyterClientDialog() throws Exception {
       setSize(400, 400);
@@ -44,10 +99,14 @@ public class Java2JupyterClientDialog extends JFrame {
          JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       scroll.setViewportView(serverMessageText);
       add(scroll, BorderLayout.CENTER);
-
-      client = new Java2JupyterClientEndpoint(new URI("ws://localhost:8888/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c"), null, null);
       
+      String wsurl = "ws://localhost:8080/Geoweaver/shell-socket";
       
+      client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders());
+      
+      client.setWindow(this);
+      
+//      client = new Java2JupyterClientEndpoint(new URI("ws://localhost:8888/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c"), null, getHeaders());
       
       sendButton.addActionListener(new ActionListener() {
          @Override
@@ -55,6 +114,7 @@ public class Java2JupyterClientDialog extends JFrame {
             client.sendMessage(messageField.getText());
          }
       });
+      
    }
 
    public void writeServerMessage(String message) {

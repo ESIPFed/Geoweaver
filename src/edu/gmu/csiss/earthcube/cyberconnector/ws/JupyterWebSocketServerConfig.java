@@ -13,7 +13,7 @@ import javax.websocket.server.ServerEndpointConfig;
  *
  */
 
-public class JupyterWebSocketConfig extends ServerEndpointConfig.Configurator  {
+public class JupyterWebSocketServerConfig extends ServerEndpointConfig.Configurator  {
  
 //	@Bean
 //    public ServletServerContainerFactoryBean createWebSocketContainer() {
