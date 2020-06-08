@@ -119,7 +119,9 @@ GW.ssh = {
 
 	    ws_onerror: function (e) {
 	    	
-	        this.error(e);
+	        this.error("The process execution failed.")
+
+	        this.error("Reason: " + e);
 	        
 	    },
 	    
@@ -195,6 +197,8 @@ GW.ssh = {
 					GW.ssh.output_div_id = "log_box_id";
 			        
 					GW.ssh.token = token;
+					
+					this.echo("Running process " + token)
 			        
 					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
 			        
