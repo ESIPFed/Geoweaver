@@ -2,6 +2,11 @@
 /**
  * 
  * SSH client
+ * 
+ * Create a shared websocket shell to stream all the results from server to the client. 
+ * 
+ * Distinguish the outputs of different sessions using tokens.
+ *  
  * @author Ziheng Sun
  * 
  */
