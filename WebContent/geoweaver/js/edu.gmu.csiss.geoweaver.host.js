@@ -430,8 +430,8 @@ GW.host = {
 				if(!filled) return;
 				
 				var $button = $(this);
-             	
-             	$button.spin();
+//             	
+//             	$button.spin();
              	
              	var shortpasswds = [];
              	
@@ -449,7 +449,7 @@ GW.host = {
              	
              	var passwds = GW.host.extendList(shortpasswds, newhosts, hosts);
              	
-             	GW.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+             	GW.host.encrypt_m(hosts, passwds, req, _frame, $button, business_callback);
              	
 				_frame.closeFrame()
 				

@@ -199,13 +199,13 @@ GW.ssh = {
 			
 //			this.echo("Running process " + token)
 	        
-			GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
+			GW.ssh.all_ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
 	        
-			GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
+			GW.ssh.all_ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
 	        
-			GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+			GW.ssh.all_ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
 	        
-			GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
+			GW.ssh.all_ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
 	    	
 	    },
 

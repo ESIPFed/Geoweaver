@@ -32,94 +32,135 @@ public class DataBaseOperation {
 	
 	private final static Logger logger = Logger.getLogger(DataBaseOperation.class);
     
-//	private  static Connection q_conn, e_conn,u_conn;
+	private static Connection conn;
 	
-	private static List<Connection> conn_pool = new ArrayList(); //maximum 5 connections
+//	private static List<Connection> conn_pool = new ArrayList(); //maximum 5 connections
+//	
+//	static int maximum_connection = 10;
+//	
+//	static void addNewConnection(Connection newcon) {
+//		
+//		if(conn_pool.size()>=maximum_connection) {
+//			
+//			//close the oldest connections
+//			
+//			try {
+//				
+//				conn_pool.get(0).close();
+//				
+//				conn_pool.remove(0);
+//				
+//			} catch (SQLException e) {
+//				
+//				e.printStackTrace();
+//			
+//			} 
+//			
+//		}
+//			
+//		conn_pool.add(newcon);
+//		
+//	}
+//	
+//	static synchronized Connection getLiveConnection() {
+//		
+//		Connection con = null;
+//		
+//		try {
+//			
+//			for(int i=0;i<conn_pool.size();i++) {
+//				
+//				if(!conn_pool.get(i).isValid(1)) {
+//					
+//					try {
+//					
+//						conn_pool.get(i).close();
+//						
+//						conn_pool.remove(i);
+//						
+//						i=0;
+//						
+//					}catch(Exception e) {
+//						
+//						e.printStackTrace();
+//						
+//					}
+//					
+//					
+//				}
+//				
+//			}
+//			
+//			for(int i=0;i<conn_pool.size(); i++) {
+//
+//				if(!conn_pool.get(i).isClosed() && !conn_pool.get(i).isReadOnly() ) {
+//					
+//					con = conn_pool.get(i);
+//					
+//					break;
+//					
+//				}
+//				
+//			}
+//
+//			if(con == null) {
+//				
+//				Class.forName(driver);
+//				
+//				con = DriverManager.getConnection(database_url, user, password);
+//				
+//				addNewConnection(con);
+//				
+//			}
+//			
+//		} catch (Exception e) {
+//			
+//			e.printStackTrace();
+//			
+//		}
+//		
+//		return con;
+//	}
 	
-	static int maximum_connection = 10;
-	
-	static void addNewConnection(Connection newcon) {
+	static Connection reconnect() {
 		
-		if(conn_pool.size()>=maximum_connection) {
-			
-			//close the oldest connections
-			
+		
 			try {
 				
-				conn_pool.get(0).close();
+				if(BaseTool.isNull(conn) || conn.isClosed()) {
 				
-				conn_pool.remove(0);
-				
-			} catch (SQLException e) {
+					Class.forName(driver);
+					
+					conn = DriverManager.getConnection(database_url, user, password);
+					
+	//				Connection conn = DriverManager.getConnection(database_url, user, password);
+	//				
+	//				if(conn.isClosed()) {
+	//					
+	////					database_url = SysDir.database_docker_url;
+	//					
+	//					logger.error("the normal database is closed. Switch to docker version.");
+	//					
+	//				}else {
+	//					
+	//					addNewConnection(conn);
+	//					
+	//				}
+
+				}
+			} catch(Exception e) {   
 				
 				e.printStackTrace();
-			
+				
+//				database_url = SysDir.database_docker_url;
+				
+				logger.warn("the normal database has error. Switch to docker version.");
+				
 			} 
 			
-		}
+			return conn;
 			
-		conn_pool.add(newcon);
 		
-	}
-	
-	static synchronized Connection getLiveConnection() {
-		
-		Connection con = null;
-		
-		try {
-			
-			for(int i=0;i<conn_pool.size();i++) {
-				
-				if(!conn_pool.get(i).isValid(1)) {
-					
-					try {
-					
-						conn_pool.get(i).close();
-						
-						conn_pool.remove(i);
-						
-						i=0;
-						
-					}catch(Exception e) {
-						
-						e.printStackTrace();
-						
-					}
-					
-					
-				}
-				
-			}
-			
-			for(int i=0;i<conn_pool.size(); i++) {
-
-				if(!conn_pool.get(i).isClosed() && !conn_pool.get(i).isReadOnly() ) {
-					
-					con = conn_pool.get(i);
-					
-					break;
-					
-				}
-				
-			}
-
-			if(con == null) {
-				
-				Class.forName(driver);
-				
-				con = DriverManager.getConnection(database_url, user, password);
-				
-				addNewConnection(con);
-				
-			}
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-		
-		return con;
 	}
 	
 	static{
@@ -130,34 +171,7 @@ public class DataBaseOperation {
 		password = SysDir.database_password;
 		
 		//check if docker 
-		
-		try {
-			
-			Class.forName(driver);	
-			
-			Connection conn = DriverManager.getConnection(database_url, user, password);
-			
-			if(conn.isClosed()) {
-				
-//				database_url = SysDir.database_docker_url;
-				
-				logger.error("the normal database is closed. Switch to docker version.");
-				
-			}else {
-				
-				addNewConnection(conn);
-				
-			}
-			
-		} catch(Exception e) {   
-			
-			e.printStackTrace();
-			
-//			database_url = SysDir.database_docker_url;
-			
-			logger.warn("the normal database has error. Switch to docker version.");
-			
-		} 
+		reconnect();
 		
 //		try {
 //			Properties p = new Properties();			
@@ -184,7 +198,7 @@ public class DataBaseOperation {
                                             Statement statement = null;
 		try {
 			
-			Connection q_conn = DataBaseOperation.getLiveConnection();
+			Connection q_conn = reconnect();
 			
 //			q_conn = DriverManager.getConnection(database_url, user, password);	
 //			if(!conn.isClosed())	
@@ -196,11 +210,11 @@ public class DataBaseOperation {
                         
 		} catch(SQLException e) {   
 			logger.error("The SQL query causes exception."+e.getLocalizedMessage());
-                                                                    throw new RuntimeException("The SQL query causes exception."+e.getClass().getName()+":"+e.getLocalizedMessage());
+            throw new RuntimeException("The SQL query causes exception."+e.getClass().getName()+":"+e.getLocalizedMessage());
 			//e.printStackTrace();   
 		} catch(Exception e) {   
 			logger.error("Exception happens." + e.getLocalizedMessage());
-                                                                   throw new RuntimeException("Exception happens." +e.getClass().getName()+":"+ e.getLocalizedMessage());
+			throw new RuntimeException("Exception happens." +e.getClass().getName()+":"+ e.getLocalizedMessage());
 			//e.printStackTrace();   
 		}  
 	}
@@ -240,7 +254,7 @@ public class DataBaseOperation {
 	 public synchronized static boolean execute(String sql){
 		 boolean issuccess = false;
 		 try {
-			Connection e_conn = DataBaseOperation.getLiveConnection();
+			Connection e_conn = reconnect();
 //			Class.forName(driver);		
 //			e_conn = DriverManager.getConnection(database_url, user, password);		
 //			if(!conn.isClosed())		
@@ -282,7 +296,7 @@ public class DataBaseOperation {
 //			
 //			e_conn = DriverManager.getConnection(database_url, user, password);
 			
-			Connection e_conn = DataBaseOperation.getLiveConnection();
+			Connection e_conn = reconnect();
 			
 			PreparedStatement statement= e_conn.prepareStatement   (sql );
 			
@@ -327,7 +341,7 @@ public class DataBaseOperation {
 	 public synchronized static int update(String sql){
 		int rt = -1;
 		try {
-			Connection u_conn = DataBaseOperation.getLiveConnection();
+			Connection u_conn = reconnect();
 //			Class.forName(driver);	
 //			u_conn = DriverManager.getConnection(database_url, user, password);	
 //			if(!conn.isClosed())	
@@ -357,7 +371,7 @@ public class DataBaseOperation {
 	 public synchronized static boolean GetColumnFromDatabase(String name, String featureid, String column, String storeimgpath) {
 	    	boolean suc = false;
 	    	try{
-	    		Connection u_conn = DataBaseOperation.getLiveConnection();
+	    		Connection u_conn = reconnect();
 //	    		Class.forName(driver);
 //                u_conn = DriverManager.getConnection(database_url, user, password);
                 String sql = "select "+ column +" from igfds.sample where feature_id = '"+featureid + "' and name = '"+name+"'";
@@ -413,7 +427,7 @@ public class DataBaseOperation {
 	    try {
 //	      Class.forName(driver);
 //	      u_conn = DriverManager.getConnection(database_url, user, password);
-	      Connection u_conn = DataBaseOperation.getLiveConnection();
+	      Connection u_conn = reconnect();
 		  String INSERT_PICTURE = "update igfds.sample set image_block = ? where name = ? and feature_id = ?";
 
 		  u_conn.setAutoCommit(false);
@@ -455,7 +469,7 @@ public class DataBaseOperation {
 		    FileInputStream fis = null;
 		    PreparedStatement ps = null;
 		    try {
-		      Connection u_conn = DataBaseOperation.getLiveConnection();
+		      Connection u_conn = reconnect();
 //		      Class.forName(driver);
 //		      u_conn = DriverManager.getConnection(database_url, user, password);	
 			  String INSERT_PICTURE = "update igfds.sample set geometry = ? where name = ? and feature_id = ?";

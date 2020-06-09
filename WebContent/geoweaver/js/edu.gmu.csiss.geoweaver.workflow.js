@@ -10,6 +10,8 @@ GW.workflow = {
 		
 	loaded_workflow: null,
 	
+	new_frame: null,
+	
 	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
 	
 	clearCache: function(){
@@ -80,11 +82,15 @@ GW.workflow = {
 		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
 		       '     </div>'+
 		       '   </div>'+
-		       '</form>';
+		       '</form></div>';
+			
+			content += '<div class="modal-footer">' +
+			"<button type=\"button\" id=\"new-workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
+			'</div>';
 			
 			var width = 520; var height = 450;
 			
-			GW.menu.del_frame = GW.workspace.jsFrame.create({
+			GW.workflow.new_frame = GW.workspace.jsFrame.create({
 	    		title: 'Authorization',
 	    	    left: 0, 
 	    	    top: 0, 
@@ -99,7 +105,7 @@ GW.workflow = {
 	    	    html: content
 	    	});
 	    	
-			GW.menu.del_frame.setControl({
+			GW.workflow.new_frame.setControl({
                 styleDisplay:'inline',
                 maximizeButton: 'zoomButton',
                 demaximizeButton: 'dezoomButton',
@@ -111,17 +117,73 @@ GW.workflow = {
 
             });
 	    	
-			GW.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
+			GW.workflow.new_frame.on('closeButton', 'click', (_frame, evt) => {
                 _frame.closeFrame();
                 
             });
             
 	    	//Show the window
-			GW.menu.del_frame.show();
+			GW.workflow.new_frame.show();
 	    	
-			GW.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			GW.workflow.new_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
-			
+			$("#new-workflow-confirm").click(function(){
+				
+            	$("#new-workflow-confirm").prop('disabled', true);
+				
+				//save the new workflow
+				
+				var workflow = {
+					
+					"name": $("#workflow_name").val(), 
+					
+					"type": "workflow",
+					
+					"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
+					
+					"edges": JSON.stringify(GW.workspace.theGraph.edges)
+					
+				};
+				
+				
+				
+				$.ajax({
+					
+					url: "add",
+		    		
+		    		method: "POST",
+		    		
+		    		data: workflow
+		    		
+				}).done(function(msg){
+					
+					msg = $.parseJSON(msg);
+					
+					GW.workflow.new_frame.closeFrame()
+					
+					GW.workflow.addMenuItem(msg);
+					
+					console.log("the workflow is added");
+					
+					GW.workflow.loaded_workflow = msg.id;
+					
+					if(createandrun){
+						
+						GW.workflow.run(msg.id);
+						
+					}
+					
+				}).fail(function(jqXHR, textStatus){
+					
+					console.error("fail to add workflow");
+					
+					alert("Fail to create new workflow");
+					
+					$("#new-workflow-confirm").prop('disabled', false);
+					
+				});
+				
+			});
 			
 //			BootstrapDialog.show({
 //				
