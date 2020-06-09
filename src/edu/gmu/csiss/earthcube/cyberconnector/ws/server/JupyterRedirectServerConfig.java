@@ -1,4 +1,4 @@
-package edu.gmu.csiss.earthcube.cyberconnector.ws;
+package edu.gmu.csiss.earthcube.cyberconnector.ws.server;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.HandshakeResponse;
@@ -13,7 +13,7 @@ import javax.websocket.server.ServerEndpointConfig;
  *
  */
 
-public class JupyterWebSocketServerConfig extends ServerEndpointConfig.Configurator  {
+public class JupyterRedirectServerConfig extends ServerEndpointConfig.Configurator  {
  
 //	@Bean
 //    public ServletServerContainerFactoryBean createWebSocketContainer() {

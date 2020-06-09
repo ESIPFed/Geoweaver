@@ -1,4 +1,4 @@
-package edu.gmu.csiss.earthcube.cyberconnector.ws;
+package edu.gmu.csiss.earthcube.cyberconnector.ws.client;
 
 import java.io.IOException;
 import java.net.URI;
@@ -94,15 +94,25 @@ public class Java2JupyterClientEndpoint
         
     }
     
-    
-    
 //    @Override
 //	public void onOpen(Session session, EndpointConfig config) {
 //    	logger.info("Override The connection between Java and Jupyter server is established.");
 //        this.newjupyteression = session;
 //	}
     
-    public Java2JupyterClientDialog getWindow() {
+    public Session getNewjupyteression() {
+		return newjupyteression;
+	}
+
+
+
+	public void setNewjupyteression(Session newjupyteression) {
+		this.newjupyteression = newjupyteression;
+	}
+
+
+
+	public Java2JupyterClientDialog getWindow() {
 		return window;
 	}
 

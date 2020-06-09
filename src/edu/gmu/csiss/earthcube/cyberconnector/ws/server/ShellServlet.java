@@ -1,4 +1,4 @@
-package edu.gmu.csiss.earthcube.cyberconnector.ws;
+package edu.gmu.csiss.earthcube.cyberconnector.ws.server;
 
 import java.io.IOException;
 import java.net.URI;

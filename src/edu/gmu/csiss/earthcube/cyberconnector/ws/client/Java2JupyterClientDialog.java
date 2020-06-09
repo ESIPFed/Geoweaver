@@ -1,4 +1,4 @@
-package edu.gmu.csiss.earthcube.cyberconnector.ws;
+package edu.gmu.csiss.earthcube.cyberconnector.ws.client;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

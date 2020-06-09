@@ -182,6 +182,26 @@ GW.ssh = {
 	    			+ time + "</span> " + content + "</p>");
 //	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
 	    },
+	    
+	    startLogSocket: function(token){
+	    	
+	    	GW.ssh.ws = new SockJS("shell-socket");
+	        
+			GW.ssh.output_div_id = "log_box_id";
+	        
+			GW.ssh.token = token;
+			
+//			this.echo("Running process " + token)
+	        
+			GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
+	        
+			GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
+	        
+			GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+	        
+			GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
+	    	
+	    },
 
 		openLog: function(token){
 			
