@@ -24,7 +24,9 @@ import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.ws.client.Java2JupyterClientEndpoint;
 
 /**
- * This works
+ * 
+ * This works for redirecting all the jupyter notebook traffic
+ * 
  * @author JensenSun
  *
  */

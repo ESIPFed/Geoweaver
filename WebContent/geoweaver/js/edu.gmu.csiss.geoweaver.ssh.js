@@ -6,6 +6,10 @@
  * Create a shared websocket shell to stream all the results from server to the client. 
  * 
  * Distinguish the outputs of different sessions using tokens.
+ * 
+ * Only one ssh session is allowed at one time. 
+ * 
+ * Only one running workflow is allowed at one time. 
  *  
  * @author Ziheng Sun
  * 
@@ -30,6 +34,8 @@ GW.ssh = {
     	output_div_id: null,
 	    
 	    ws: null,
+	    
+	    all_ws: null, //future websocket session for all the traffic between client and server
 	    
 	    last_prompt: null,
 	    
@@ -185,7 +191,7 @@ GW.ssh = {
 	    
 	    startLogSocket: function(token){
 	    	
-	    	GW.ssh.ws = new SockJS("shell-socket");
+	    	GW.ssh.all_ws = new WebSocket("ws://localhost:8080/Geoweaver/shell-socket");
 	        
 			GW.ssh.output_div_id = "log_box_id";
 	        

@@ -23,16 +23,17 @@ import org.springframework.web.context.request.WebRequest;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 
 /**
- * This works
+ * 
+ * This works but will be used for mointoring workflow
+ * 
  * @author JensenSun
  *
  */
 //ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c
-@ServerEndpoint(value = "/workspace-socket", 
-	configurator = JupyterWebSocketServerConfig.class)
-public class WorkspaceServlet {
+@ServerEndpoint(value = "/workflow-socket")
+public class WorkflowServlet {
 	
-	Logger logger = Logger.getLogger(WorkspaceServlet.class);
+	Logger logger = Logger.getLogger(WorkflowServlet.class);
 	
 	private Session wsSession;
 	
