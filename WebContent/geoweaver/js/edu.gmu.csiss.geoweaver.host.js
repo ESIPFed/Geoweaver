@@ -177,45 +177,46 @@ GW.host = {
 				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 			
+			this.password_frame = GW.process.createJSFrameDialog(520, 340, content, "Host Password")
 			
-			var width = 520; var height = 340;
-			
-			this.password_frame = GW.workspace.jsFrame.create({
-	    		title: 'Host Password',
-	    	    left: 0, 
-	    	    top: 0, 
-	    	    width: width, 
-	    	    height: height,
-	    	    appearanceName: 'yosemite',
-	    	    style: {
-	                backgroundColor: 'rgb(255,255,255)',
-		    	    fontSize: 12,
-	                overflow:'auto'
-	            },
-	    	    html: content
-	    	});
+//			var width = 520; var height = 340;
+//			
+//			this.password_frame = GW.workspace.jsFrame.create({
+//	    		title: 'Host Password',
+//	    	    left: 0, 
+//	    	    top: 0, 
+//	    	    width: width, 
+//	    	    height: height,
+//	    	    appearanceName: 'yosemite',
+//	    	    style: {
+//	                backgroundColor: 'rgb(255,255,255)',
+//		    	    fontSize: 12,
+//	                overflow:'auto'
+//	            },
+//	    	    html: content
+//	    	});
+//	    	
+//			this.password_frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
 	    	
-			this.password_frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-			this.password_frame.on('closeButton', 'click', (_frame, evt) => {
-	            _frame.closeFrame();
-	            
-	        });
+//			this.password_frame.on('closeButton', 'click', (_frame, evt) => {
+//	            _frame.closeFrame();
+//	            
+//	        });
 	        
 	    	//Show the window
-			this.password_frame.show();
+//			this.password_frame.show();
 	    	
-			this.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			this.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
 			$("#inputpswd").on('keypress',function(e) {
 				
@@ -430,8 +431,8 @@ GW.host = {
 				if(!filled) return;
 				
 				var $button = $(this);
-             	
-             	$button.spin();
+//             	
+//             	$button.spin();
              	
              	var shortpasswds = [];
              	
@@ -449,7 +450,7 @@ GW.host = {
              	
              	var passwds = GW.host.extendList(shortpasswds, newhosts, hosts);
              	
-             	GW.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
+             	GW.host.encrypt_m(hosts, passwds, req, _frame, $button, business_callback);
              	
 				_frame.closeFrame()
 				
@@ -646,33 +647,36 @@ GW.host = {
 
 		showSSHCmd: function(token){
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'SSH Command Line',
-		    	    left: 60, top: 60, width: 600, height: 540,
-		    	    appearanceName: 'yosemite',
-		    	    html: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>"
-		    	});
-		    	
-		    	frame.setControl({
-		            maximizeButton: 'maximizeButton',
-		            demaximizeButton: 'restoreButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            animation: true,
-		            animationDuration: 200,
-		
-		    });
+			var frame = GW.process.createJSFrameDialog(600, 540, "<iframe src=\"geoweaver-ssh?token="+
+					token+"\" style=\"height:100%;width:100%;\"></iframe>", "SSH Command Line")
 			
-		    frame.on('closeButton', 'click', (_frame, evt) => {
-		    	GW.host.closeSSH(token);
-		        _frame.closeFrame();
-		        
-		    });
-    
-	    	//Show the window
-	    	frame.show();
-	    	
-	    	frame.setPosition(window.innerWidth / 4, window.innerHeight / 4, 'CENTER_TOP');
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'SSH Command Line',
+//		    	    left: 60, top: 60, width: 600, height: 540,
+//		    	    appearanceName: 'yosemite',
+//		    	    html: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>"
+//		    	});
+//		    	
+//		    	frame.setControl({
+//		            maximizeButton: 'maximizeButton',
+//		            demaximizeButton: 'restoreButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            animation: true,
+//		            animationDuration: 200,
+//		
+//		    });
+//			
+//		    frame.on('closeButton', 'click', (_frame, evt) => {
+//		    	GW.host.closeSSH(token);
+//		        _frame.closeFrame();
+//		        
+//		    });
+//    
+//	    	//Show the window
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition(window.innerWidth / 4, window.innerHeight / 4, 'CENTER_TOP');
 			
 //			var dialog = new BootstrapDialog.show({
 //	            
@@ -771,38 +775,40 @@ GW.host = {
 				"	<button type=\"button\" id=\"ssh-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 				
-				var width = 500; var height = 340;
+				GW.host.ssh_password_frame = GW.process.createJSFrameDialog(500, 340, cont, "Open SSH session")
 				
-				GW.host.ssh_password_frame = GW.workspace.jsFrame.create({
-			    		title: 'Open SSH session',
-			    	    left: 0, 
-			    	    top: 0, 
-			    	    width: width, 
-			    	    height: height,
-			    	    appearanceName: 'yosemite',
-			    	    style: {
-		                    backgroundColor: 'rgb(255,255,255)',
-				    	    fontSize: 12,
-		                    overflow:'auto'
-		                },
-			    	    html: cont
-		    	});
-		    	
-				GW.host.ssh_password_frame.setControl({
-		            styleDisplay:'inline',
-		            maximizeButton: 'zoomButton',
-		            demaximizeButton: 'dezoomButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            hideButton: 'closeButton',
-		            animation: true,
-		            animationDuration: 150,
-		
-		        });
-		    	
-				GW.host.ssh_password_frame.show();
-		    	
-				GW.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				var width = 500; var height = 340;
+//				
+//				GW.host.ssh_password_frame = GW.workspace.jsFrame.create({
+//			    		title: 'Open SSH session',
+//			    	    left: 0, 
+//			    	    top: 0, 
+//			    	    width: width, 
+//			    	    height: height,
+//			    	    appearanceName: 'yosemite',
+//			    	    style: {
+//		                    backgroundColor: 'rgb(255,255,255)',
+//				    	    fontSize: 12,
+//		                    overflow:'auto'
+//		                },
+//			    	    html: cont
+//		    	});
+//		    	
+//				GW.host.ssh_password_frame.setControl({
+//		            styleDisplay:'inline',
+//		            maximizeButton: 'zoomButton',
+//		            demaximizeButton: 'dezoomButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            hideButton: 'closeButton',
+//		            animation: true,
+//		            animationDuration: 150,
+//		
+//		        });
+//		    	
+//				GW.host.ssh_password_frame.show();
+//		    	
+//				GW.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$("#ssh-connect-btn").click(function(){
 		    		
@@ -1193,38 +1199,40 @@ GW.host = {
 			"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 			'</div>';
 			
-			var width = 500; var height = 450;
+			GW.host.new_host_frame = GW.process.createJSFrameDialog(500, 450, content, "Add new host")
 			
-			GW.host.new_host_frame = GW.workspace.jsFrame.create({
-		    		title: 'Add new host',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-	    	});
-	    	
-			GW.host.new_host_frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-			GW.host.new_host_frame.show();
-	    	
-			GW.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 500; var height = 450;
+//			
+//			GW.host.new_host_frame = GW.workspace.jsFrame.create({
+//		    		title: 'Add new host',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//	    	});
+//	    	
+//			GW.host.new_host_frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//			GW.host.new_host_frame.show();
+//	    	
+//			GW.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$("#host-add-btn").click(function(){
 				

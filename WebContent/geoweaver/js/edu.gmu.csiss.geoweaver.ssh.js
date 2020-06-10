@@ -2,6 +2,15 @@
 /**
  * 
  * SSH client
+ * 
+ * Create a shared websocket shell to stream all the results from server to the client. 
+ * 
+ * Distinguish the outputs of different sessions using tokens.
+ * 
+ * Only one ssh session is allowed at one time. 
+ * 
+ * Only one running workflow is allowed at one time. 
+ *  
  * @author Ziheng Sun
  * 
  */
@@ -25,6 +34,8 @@ GW.ssh = {
     	output_div_id: null,
 	    
 	    ws: null,
+	    
+	    all_ws: null, //future websocket session for all the traffic between client and server
 	    
 	    last_prompt: null,
 	    
@@ -119,7 +130,9 @@ GW.ssh = {
 
 	    ws_onerror: function (e) {
 	    	
-	        this.error(e);
+	        this.error("The process execution failed.")
+
+	        this.error("Reason: " + e);
 	        
 	    },
 	    
@@ -175,10 +188,31 @@ GW.ssh = {
 	    			+ time + "</span> " + content + "</p>");
 //	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
 	    },
+	    
+	    startLogSocket: function(token){
+	    	
+	    	GW.ssh.all_ws = new WebSocket("ws://localhost:8080/Geoweaver/shell-socket");
+	        
+			GW.ssh.output_div_id = "log_box_id";
+	        
+			GW.ssh.token = token;
+			
+//			this.echo("Running process " + token)
+	        
+			GW.ssh.all_ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
+	        
+			GW.ssh.all_ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
+	        
+			GW.ssh.all_ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+	        
+			GW.ssh.all_ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
+	    	
+	    },
 
 		openLog: function(token){
 			
-			$("#log-window").slideToggle(true);
+//			$("#log-window").slideToggle(true);
+			switchTab(document.getElementById("main-console-tab"), "main-console");
 			
 //			BootstrapDialog.show({
 //				
@@ -195,6 +229,8 @@ GW.ssh = {
 					GW.ssh.output_div_id = "log_box_id";
 			        
 					GW.ssh.token = token;
+					
+					this.echo("Running process " + token)
 			        
 					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
 			        

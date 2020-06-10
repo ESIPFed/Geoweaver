@@ -1,15 +1,16 @@
-package edu.gmu.csiss.earthcube.cyberconnector.ws;
+package edu.gmu.csiss.earthcube.cyberconnector.ws.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ClientEndpointConfig.Builder;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -21,17 +22,25 @@ import org.apache.log4j.Logger;
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 
 @ClientEndpoint
-public class Java2JupyterClientEndpoint extends Endpoint {
+public class Java2JupyterClientEndpoint 
+//extends Endpoint 
+{
 
 	Session newjupyteression = null;
-    private Session jssession;
+	
     private Logger logger = Logger.getLogger(this.getClass());
+    
+    private Java2JupyterClientDialog window;
 
-    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession) {
+    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers) {
+    	
         try {
-        	this.jssession = jssession;
-            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            //build ClientEndpointConfig
+        	
+        	this.newjupyteression = jssession;
+            
+        	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            
+        	//build ClientEndpointConfig
             Builder configBuilder = ClientEndpointConfig.Builder.create();
             
 //            configBuilder.configurator(new Configurator() {
@@ -42,16 +51,35 @@ public class Java2JupyterClientEndpoint extends Endpoint {
 //            });
             ClientEndpointConfig clientConfig = configBuilder.build();
             
+            if(!BaseTool.isNull(headers)) {
+            	
+            	Iterator<String> itr = headers.keySet().iterator();
+                
+                while (itr.hasNext())
+                {
+                	String key = itr.next();
+                	
+                	List<String> value = headers.get(key);
+
+                	System.out.println(key + "=" + value);
+                	
+                	clientConfig.getUserProperties().put(key, value.get(0));
+                	
+                }
+            	
+            }
+            
 //            clientConfig.getConfigurator().beforeRequest(headers);
-            clientConfig.getUserProperties().put("Sec-WebSocket-Extensions", "permessage-deflate; client_max_window_bits");
-            clientConfig.getUserProperties().put("Sec-WebSocket-Key", "JNOrKMA6YhDCRijp46/ofg==");
-            clientConfig.getUserProperties().put("Sec-WebSocket-Version", "13");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Extensions", "permessage-deflate; client_max_window_bits");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Key", "JNOrKMA6YhDCRijp46/ofg==");
+//            clientConfig.getUserProperties().put("Sec-WebSocket-Version", "13");
             
 //            Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
 //            Sec-WebSocket-Key: JNOrKMA6YhDCRijp46/ofg==
 //            Sec-WebSocket-Version: 13
             
-            container.connectToServer(this, clientConfig, endpointURI);
+//            container.connectToServer(this, clientConfig, endpointURI);
+            container.connectToServer(this, endpointURI);
             
 //            Session newjupytersession = container.connectToServer(this,  endpointURI);
             
@@ -66,13 +94,37 @@ public class Java2JupyterClientEndpoint extends Endpoint {
         
     }
     
+//    @Override
+//	public void onOpen(Session session, EndpointConfig config) {
+//    	logger.info("Override The connection between Java and Jupyter server is established.");
+//        this.newjupyteression = session;
+//	}
     
-    @Override
-	public void onOpen(Session session, EndpointConfig config) {
-    	logger.info("The connection between Java and Jupyter server is established.");
-        this.newjupyteression = session;
+    public Session getNewjupyteression() {
+		return newjupyteression;
 	}
-    /**
+
+
+
+	public void setNewjupyteression(Session newjupyteression) {
+		this.newjupyteression = newjupyteression;
+	}
+
+
+
+	public Java2JupyterClientDialog getWindow() {
+		return window;
+	}
+
+
+
+	public void setWindow(Java2JupyterClientDialog window) {
+		this.window = window;
+	}
+
+
+
+	/**
      * Callback hook for Connection open events.
      * 
      * @param userSession
@@ -80,7 +132,7 @@ public class Java2JupyterClientEndpoint extends Endpoint {
      */
     @OnOpen
     public void onOpen(Session userSession) {
-    	logger.info("The connection between Java and Jupyter server is established.");
+    	logger.info("Annotation The connection between Java and Jupyter server is established.");
         this.newjupyteression = userSession;
     }
 
@@ -98,7 +150,7 @@ public class Java2JupyterClientEndpoint extends Endpoint {
         	logger.info("The connection between Java and Jupyter is closed.");
         	this.newjupyteression = null;
         	logger.info("The connection between Javascript and Geoweaver is closed. ");
-			if(!BaseTool.isNull(this.jssession)) this.jssession.close();
+			if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -115,7 +167,12 @@ public class Java2JupyterClientEndpoint extends Endpoint {
     public void onMessage(String message) {
     	logger.info("Received message from remote Jupyter server: " + message);
     	logger.info("send this message back to the client");
-    	if(!BaseTool.isNull(this.jssession)) this.jssession.getAsyncRemote().sendText(message);
+//    	if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.getAsyncRemote().sendText(message);
+    	if(!BaseTool.isNull(window)) {
+    		
+    		window.writeServerMessage(message);
+    		
+    	}
     	
     }
 

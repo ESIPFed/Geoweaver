@@ -31,38 +31,40 @@ GW.search = {
 			
 			content += "</tbody></table></div>";
 			
-			var width = 800; var height = 500;
+			var frame = GW.process.createJSFrameDialog(800, 500, content, "Search Results")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'Search Results',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgba(255,255,255,0.8)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 800; var height = 500;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'Search Results',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgba(255,255,255,0.8)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 		},
 		
@@ -112,38 +114,40 @@ GW.search = {
 				"<button type=\"button\" id=\"search\" class=\"btn btn-outline-primary\">Search</button> "+
 				'</div>';
 			
-			var width = 500; var height = 200;
+			var frame = GW.process.createJSFrameDialog(500, 200, content, "Search")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'Search',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgba(255,255,255,0.8)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 500; var height = 200;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'Search',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgba(255,255,255,0.8)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
 	    	$("#search").click(function(){
 	    		

@@ -33,6 +33,46 @@
         
         <link rel="stylesheet" href="../css/imageviewer.css" />
         
+        <style type="text/css">
+        	/* Style the tab */
+			.tab {
+			  overflow: hidden;
+			  border: 1px solid #ccc;
+			  background-color: #f1f1f1;
+			}
+			
+			/* Style the buttons inside the tab */
+			.tab button {
+			  background-color: inherit;
+			  float: left;
+			  border: none;
+			  outline: none;
+			  cursor: pointer;
+			  padding: 3px 3px;
+			  transition: 0.3s;
+			  font-size: 12px;
+			}
+			
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+			  background-color: #ddd;
+			}
+			
+			/* Create an active/current tablink class */
+			.tab button.active {
+			  background-color: #ccc;
+			}
+			
+			/* Style the tab content */
+			.tabcontent {
+			  display: none;
+			  padding: 6px 12px;
+			  /* border: 1px solid #ccc; */
+			  border-top: none;
+			}
+        
+        </style>
+        
 		<script type="text/javascript" src="../geoweaver/js/FileSaver.min.js"></script>
 		
 		<script type="text/javascript" src="../geoweaver/js/jsencrypt.min.js"></script>
@@ -164,84 +204,118 @@
 			
 			<!-- tool box -->
 				
-			<div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 0px;width: 80px;">
-			  
-			  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
-			  
-			    <i id="hidden-file-upload" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" ></i>
-			      
-			    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
-			    	style="color:gray; padding:0; margin:0; margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
-			      
-			    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
-			      
-			    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="download graph" ></i>
-			      
-			    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 
-			      
-			    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="execute workflow"></i> 
-			      
-			    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show object information"></i>
-			      
-			    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show process log"></i> 
-			      
-			    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="get result"></i> 
-			      
-			    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" 
-			    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;"  alt="delete graph" ></i> 
-		      
-		    </div>
 			
-			<div class="row" style="position: absolute; height:calc(100% - 50px); top: 50px; margin: 0; padding: 0;">
+			
+			<div class="row" style="height:calc(100% - 50px); top: 50px; margin: 0; padding: 0;">
+				
 				
 			    <!-- Workspace -->
 			    
-				<div class="col col-md-9" id="workspace" style="height:100%; margin: 0;padding: 0;">
-					
-					<!-- log window right top -->
-					
-					<div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
-						
-						<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
-						
-						<div id="log-window" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
-					
+			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
+			    
+				    <div class="tab">
+					  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+					  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Workflow</button>
+					  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
 					</div>
-			
-					<!-- status indicator right bottom -->
-					
-					<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:1;">
-			    	  		<span id="current_workflow_name" class="invisible">Current Workflow: </span>
-				      	<i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
-				    
-				    </div>
-				    
-				    <!-- progress right bottom, above the status indicator -->
-					
-					<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
-					
-					<!-- <div id="bar-1">
-						Task1
-						<div class="progress">
-						  <div class="progress-bar progress-bar-striped active" role="progressbar"
-						  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
-						    40%
-						  </div>
-						</div>
-					</div> -->
-				    	
-				    </div>
 				
-				</div>
-			
-				<div class="col col-md-3 pull-right small-height" id="sidemenu" style="height: 100vh; margin: 0;padding: 0;">
+					<!-- <div id="London" class="tabcontent">
+					  <h3>London</h3>
+					  <p>London is the capital city of England.</p>
+					</div> -->
+					
+					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0;">
+						  <h2>Welcome to Geoweaver! </h2>
+					</div>
+						
+					<div id="main-console" class="tabcontent" style="height:100%; left:0; margin:0;">
+						  <h2>logging information and errors</h2>
+						  <div id="log-window">
+						  	
+						  	
+						  
+						  </div>
+						  
+					</div>
+				
+			    		<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
+					
+							<!-- log window right top -->
+							
+							<!-- <div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
+								
+								<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
+								
+								<div id="log-window-2" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
+							
+							</div> -->
+							
+							
+					
+							<!-- status indicator right bottom -->
+							
+							<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:1;">
+					    	  		<span id="current_workflow_name" class="invisible">Current Workflow: </span>
+						      	<i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
+						    
+						    </div>
+						    
+						    <!-- progress right bottom, above the status indicator -->
+							
+							<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
+							
+							<!-- <div id="bar-1">
+								Task1
+								<div class="progress">
+								  <div class="progress-bar progress-bar-striped active" role="progressbar"
+								  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+								    40%
+								  </div>
+								</div>
+							</div> -->
+						    	
+						    </div>
+						    
+						    <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 0px;width: 80px;">
+					  	
+							  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
+							  
+							    <i id="hidden-file-upload" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" ></i>
+							      
+							    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
+							    	style="color:gray; padding:0; margin:0; margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
+							      
+							    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
+							      
+							    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="download graph" ></i>
+							      
+							    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 
+							      
+							    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="execute workflow"></i> 
+							      
+							    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show object information"></i>
+							      
+							    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show process log"></i> 
+							      
+							    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="get result"></i> 
+							      
+							    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;"  alt="delete graph" ></i> 
+						      
+						    </div>
+						
+						</div>
+			    </div>
+			    
+				
+				<div class="col col-md-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
 					
 					<div class="nav-side-menu">
 		
@@ -304,6 +378,8 @@
 					</div>
 					
 				</div>
+			
+				
 				
 				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">
@@ -343,6 +419,40 @@
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.toolbar.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.menu.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>
+	    
+	    <script>
+	    
+	    	function switchTab(ele, name){
+	    		
+	    		console.log("Turn on the tab " + name)
+	    		
+	    		var i, tabcontent, tablinks;
+			  tabcontent = document.getElementsByClassName("tabcontent");
+			  for (i = 0; i < tabcontent.length; i++) {
+			    tabcontent[i].style.display = "none";
+			  }
+			  tablinks = document.getElementsByClassName("tablinks");
+			  for (i = 0; i < tablinks.length; i++) {
+			    tablinks[i].className = tablinks[i].className.replace(" active", "");
+			  }
+			  document.getElementById(name).style.display = "block";
+			  ele.className += " active";
+	    		
+	    	}
+	    	
+			function openCity(evt, name) {
+			  switchTab(evt.currentTarget, name);
+			}
+			
+			$(document).ready(function(){
+				console.log("trigger click event");
+				//$("main-content-tab").trigger("click")
+				switchTab(document.getElementById("main-general-tab"), "main-general");
+				
+			});
+			
+		
+		</script>
 	    
 	</body>
 

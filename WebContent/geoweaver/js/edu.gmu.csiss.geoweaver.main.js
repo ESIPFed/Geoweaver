@@ -20,6 +20,8 @@ GW.main = {
 		
 		GW.menu.init();
 		
+		GW.ssh.startLogSocket();
+		
 	}
 		
 };
