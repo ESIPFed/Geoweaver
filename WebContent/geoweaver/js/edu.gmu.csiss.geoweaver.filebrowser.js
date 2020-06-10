@@ -31,45 +31,49 @@ GW.filebrowser = {
 				if(msg.ret == "success"){
 					
 					GW.filebrowser.edit_file = 1;
-
-					var width = 800; var height = 640;
 					
-					const frame = GW.workspace.jsFrame.create({
-				    		title: 'File Editor',
-				    	    left: 0, 
-				    	    top: 0, 
-				    	    width: width, 
-				    	    height: height,
-				    	    appearanceName: 'yosemite',
-				    	    style: {
-			                    backgroundColor: 'rgb(255,255,255)',
-					    	    fontSize: 12,
-			                    overflow:'auto'
-			                },
-				    	    html: "<div class=\"modal-body\" style=\"font-size:12px;\" ><div id=\"codearea\" class=\"form-group row required\" ></div>"+
-							"<button id=\"loading_btn\" class=\"btn btn-sm btn-warning\"><span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span> Loading...</button></div>" + 
-							'<div class="modal-footer">' +
-							"	<button type=\"button\" id=\"browser-save\" class=\"btn btn-outline-primary\">Save</button> "+
-							"	<button type=\"button\" id=\"browser-run\" class=\"btn btn-outline-primary\">Run</button> "+
-							'</div>'
-				    	    
-			    	});
-			    	
-					frame.setControl({
-			            styleDisplay:'inline',
-			            maximizeButton: 'zoomButton',
-			            demaximizeButton: 'dezoomButton',
-			            minimizeButton: 'minimizeButton',
-			            deminimizeButton: 'deminimizeButton',
-			            hideButton: 'closeButton',
-			            animation: true,
-			            animationDuration: 150,
-			
-			        });
-			    	
-			    	frame.show();
-			    	
-			    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+					var content = "<div class=\"modal-body\" style=\"font-size:12px;\" ><div id=\"codearea\" class=\"form-group row required\" ></div>"+
+					"<button id=\"loading_btn\" class=\"btn btn-sm btn-warning\"><span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span> Loading...</button></div>" + 
+					'<div class="modal-footer">' +
+					"	<button type=\"button\" id=\"browser-save\" class=\"btn btn-outline-primary\">Save</button> "+
+					"	<button type=\"button\" id=\"browser-run\" class=\"btn btn-outline-primary\">Run</button> "+
+					'</div>'
+					
+					var frame = GW.process.createJSFrameDialog(800, 640, content, 'File Editor')
+
+//					var width = 800; var height = 640;
+//					
+//					const frame = GW.workspace.jsFrame.create({
+//				    		title: 'File Editor',
+//				    	    left: 0, 
+//				    	    top: 0, 
+//				    	    width: width, 
+//				    	    height: height,
+//				    	    appearanceName: 'yosemite',
+//				    	    style: {
+//			                    backgroundColor: 'rgb(255,255,255)',
+//					    	    fontSize: 12,
+//			                    overflow:'auto'
+//			                },
+//				    	    html: 
+//				    	    
+//			    	});
+//			    	
+//					frame.setControl({
+//			            styleDisplay:'inline',
+//			            maximizeButton: 'zoomButton',
+//			            demaximizeButton: 'dezoomButton',
+//			            minimizeButton: 'minimizeButton',
+//			            deminimizeButton: 'deminimizeButton',
+//			            hideButton: 'closeButton',
+//			            animation: true,
+//			            animationDuration: 150,
+//			
+//			        });
+//			    	
+//			    	frame.show();
+//			    	
+//			    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			    	
 					$("#codearea").append('<textarea id="code_editor" placeholder=""></textarea>');
 	            	
@@ -641,38 +645,40 @@ GW.filebrowser = {
 				'  <tbody>'+ 
 				'  </tbody></table></div></div>';
 			
-			var width = 800; var height = 640;
+			var frame = GW.process.createJSFrameDialog(800, 640, cont, 'File Browser')
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'File Browser',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: cont
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 800; var height = 640;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'File Browser',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: cont
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
 	    	GW.filebrowser.updateBrowser(msg);
         	

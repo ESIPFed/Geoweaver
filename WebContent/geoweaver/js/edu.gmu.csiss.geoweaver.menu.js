@@ -233,46 +233,46 @@ GW.menu = {
 				"	<button type=\"button\" id=\"del-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 			
+			GW.menu.del_frame = GW.process.createJSFrameDialog(320, 150, content, "Alert")
 			
-			
-			var width = 320; var height = 150;
-			
-			GW.menu.del_frame = GW.workspace.jsFrame.create({
-	    		title: 'Alert',
-	    	    left: 0, 
-	    	    top: 0, 
-	    	    width: width, 
-	    	    height: height,
-	    	    appearanceName: 'yosemite',
-	    	    style: {
-                    backgroundColor: 'rgb(255,255,255)',
-		    	    fontSize: 12,
-                    overflow:'auto'
-                },
-	    	    html: content
-	    	});
-	    	
-			GW.menu.del_frame.setControl({
-                styleDisplay:'inline',
-                maximizeButton: 'zoomButton',
-                demaximizeButton: 'dezoomButton',
-                minimizeButton: 'minimizeButton',
-                deminimizeButton: 'deminimizeButton',
-                hideButton: 'closeButton',
-                animation: true,
-                animationDuration: 150,
-
-            });
-	    	
-			GW.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
-                _frame.closeFrame();
-                
-            });
-            
-	    	//Show the window
-			GW.menu.del_frame.show();
-	    	
-			GW.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 320; var height = 150;
+//			
+//			GW.menu.del_frame = GW.workspace.jsFrame.create({
+//	    		title: 'Alert',
+//	    	    left: 0, 
+//	    	    top: 0, 
+//	    	    width: width, 
+//	    	    height: height,
+//	    	    appearanceName: 'yosemite',
+//	    	    style: {
+//                    backgroundColor: 'rgb(255,255,255)',
+//		    	    fontSize: 12,
+//                    overflow:'auto'
+//                },
+//	    	    html: content
+//	    	});
+//	    	
+//			GW.menu.del_frame.setControl({
+//                styleDisplay:'inline',
+//                maximizeButton: 'zoomButton',
+//                demaximizeButton: 'dezoomButton',
+//                minimizeButton: 'minimizeButton',
+//                deminimizeButton: 'deminimizeButton',
+//                hideButton: 'closeButton',
+//                animation: true,
+//                animationDuration: 150,
+//
+//            });
+//	    	
+//			GW.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
+//                _frame.closeFrame();
+//                
+//            });
+//            
+//	    	//Show the window
+//			GW.menu.del_frame.show();
+//	    	
+//			GW.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$("#del-confirm-btn").click(function(){
 				

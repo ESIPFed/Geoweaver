@@ -480,39 +480,41 @@ GW.process = {
 				
 				content += "</tbody></div>";
 				
-				var width = 720; var height = 480;
+				var frame = GW.process.createJSFrameDialog(720, 480, content, 'History of ' + msg.name)
 				
-				const frame = GW.workspace.jsFrame.create({
-			    		title: 'History of ' + msg.name,
-			    	    left: 0, 
-			    	    top: 0, 
-			    	    width: width, 
-			    	    height: height,
-			    	    appearanceName: 'yosemite',
-			    	    style: {
-		                    backgroundColor: 'rgb(255,255,255)',
-				    	    fontSize: 12,
-		                    overflow:'auto'
-		                },
-			    	    html: content
-		    	});
-		    	
-				frame.setControl({
-		            styleDisplay:'inline',
-		            maximizeButton: 'zoomButton',
-		            demaximizeButton: 'dezoomButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            hideButton: 'closeButton',
-		            animation: true,
-		            animationDuration: 150,
-		
-		        });
-		    	
-		    	//Show the window
-		    	frame.show();
-		    	
-		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				var width = 720; var height = 480;
+				
+//				const frame = GW.workspace.jsFrame.create({
+//			    		title: 'History of ' + msg.name,
+//			    	    left: 0, 
+//			    	    top: 0, 
+//			    	    width: width, 
+//			    	    height: height,
+//			    	    appearanceName: 'yosemite',
+//			    	    style: {
+//		                    backgroundColor: 'rgb(255,255,255)',
+//				    	    fontSize: 12,
+//		                    overflow:'auto'
+//		                },
+//			    	    html: content
+//		    	});
+//		    	
+//				frame.setControl({
+//		            styleDisplay:'inline',
+//		            maximizeButton: 'zoomButton',
+//		            demaximizeButton: 'dezoomButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            hideButton: 'closeButton',
+//		            animation: true,
+//		            animationDuration: 150,
+//		
+//		        });
+//		    	
+//		    	//Show the window
+//		    	frame.show();
+//		    	
+//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 				
 //				BootstrapDialog.show({
 //					
@@ -641,39 +643,41 @@ GW.process = {
 				
 				var content = "<div class=\"modal-body\" style=\"font-size:12px;\">"+ GW.process.getTable(msg) + "</div>";
 				
-				var width = 800; var height = 500;
+				var frame = GW.process.createJSFrameDialog(800, 500, content, "History")
 				
-				const frame = GW.workspace.jsFrame.create({
-			    		title: 'History',
-			    	    left: 0, 
-			    	    top: 0, 
-			    	    width: width, 
-			    	    height: height,
-			    	    appearanceName: 'yosemite',
-			    	    style: {
-		                    backgroundColor: 'rgb(255,255,255)',
-				    	    fontSize: 12,
-		                    overflow:'auto'
-		                },
-			    	    html: content
-		    	});
-		    	
-				frame.setControl({
-		            styleDisplay:'inline',
-		            maximizeButton: 'zoomButton',
-		            demaximizeButton: 'dezoomButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            hideButton: 'closeButton',
-		            animation: true,
-		            animationDuration: 150,
-		
-		        });
-		    	
-		    	//Show the window
-		    	frame.show();
-		    	
-		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				var width = 800; var height = 500;
+//				
+//				const frame = GW.workspace.jsFrame.create({
+//			    		title: 'History',
+//			    	    left: 0, 
+//			    	    top: 0, 
+//			    	    width: width, 
+//			    	    height: height,
+//			    	    appearanceName: 'yosemite',
+//			    	    style: {
+//		                    backgroundColor: 'rgb(255,255,255)',
+//				    	    fontSize: 12,
+//		                    overflow:'auto'
+//		                },
+//			    	    html: content
+//		    	});
+//		    	
+//				frame.setControl({
+//		            styleDisplay:'inline',
+//		            maximizeButton: 'zoomButton',
+//		            demaximizeButton: 'dezoomButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            hideButton: 'closeButton',
+//		            animation: true,
+//		            animationDuration: 150,
+//		
+//		        });
+//		    	
+//		    	//Show the window
+//		    	frame.show();
+//		    	
+//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 				
 //				BootstrapDialog.show({
 //					
@@ -820,38 +824,40 @@ GW.process = {
 					"<button type=\"button\" id=\"retrieve-result\" class=\"btn btn-outline-primary\">Retrieve Result</button> "+
 					'</div>';
 				
-				var width = 800; var height = 560;
+				var frame = GW.process.createJSFrameDialog(800, 560, content, 'Process Log of ' + msg.name)
 				
-				const frame = GW.workspace.jsFrame.create({
-			    		title: 'Process Log of ' + msg.name,
-			    	    left: 0, 
-			    	    top: 0, 
-			    	    width: width, 
-			    	    height: height,
-			    	    appearanceName: 'yosemite',
-			    	    style: {
-		                    backgroundColor: 'rgb(255,255,255)',
-				    	    fontSize: 12,
-		                    overflow:'auto'
-		                },
-			    	    html: content
-		    	});
-		    	
-				frame.setControl({
-		            styleDisplay:'inline',
-		            maximizeButton: 'zoomButton',
-		            demaximizeButton: 'dezoomButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            hideButton: 'closeButton',
-		            animation: true,
-		            animationDuration: 150,
-		
-		        });
-		    	
-		    	frame.show();
-		    	
-		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				var width = 800; var height = 560;
+//				
+//				const frame = GW.workspace.jsFrame.create({
+//			    		title: 'Process Log of ' + msg.name,
+//			    	    left: 0, 
+//			    	    top: 0, 
+//			    	    width: width, 
+//			    	    height: height,
+//			    	    appearanceName: 'yosemite',
+//			    	    style: {
+//		                    backgroundColor: 'rgb(255,255,255)',
+//				    	    fontSize: 12,
+//		                    overflow:'auto'
+//		                },
+//			    	    html: content
+//		    	});
+//		    	
+//				frame.setControl({
+//		            styleDisplay:'inline',
+//		            maximizeButton: 'zoomButton',
+//		            demaximizeButton: 'dezoomButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            hideButton: 'closeButton',
+//		            animation: true,
+//		            animationDuration: 150,
+//		
+//		        });
+//		    	
+//		    	frame.show();
+//		    	
+//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$("#retrieve-result").click(function(){
 		    		
@@ -1531,44 +1537,46 @@ GW.process = {
         				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
         				'</div>';
                 		
-                		var width = 520; var height = 340;
-            			
-            			GW.process.env_frame = GW.workspace.jsFrame.create({
-            	    		title: "Set " + req.desc + " environment",
-            	    	    left: 0, 
-            	    	    top: 0, 
-            	    	    width: width, 
-            	    	    height: height,
-            	    	    appearanceName: 'yosemite',
-            	    	    style: {
-            	                backgroundColor: 'rgb(255,255,255)',
-            		    	    fontSize: 12,
-            	                overflow:'auto'
-            	            },
-            	    	    html: content
-            	    	});
-            	    	
-            			GW.process.env_frame.setControl({
-            	            styleDisplay:'inline',
-            	            maximizeButton: 'zoomButton',
-            	            demaximizeButton: 'dezoomButton',
-            	            minimizeButton: 'minimizeButton',
-            	            deminimizeButton: 'deminimizeButton',
-            	            hideButton: 'closeButton',
-            	            animation: true,
-            	            animationDuration: 150,
-            	
-            	        });
-            	    	
-            			GW.process.env_frame.on('closeButton', 'click', (_frame, evt) => {
-            	            _frame.closeFrame();
-            	            
-            	        });
-            	        
-            	    	//Show the window
-            			GW.process.env_frame.show();
-            	    	
-            			GW.process.env_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.desc + " environment")
+                		
+//                		var width = 520; var height = 340;
+//            			
+//            			GW.process.env_frame = GW.workspace.jsFrame.create({
+//            	    		title: "Set " + req.desc + " environment",
+//            	    	    left: 0, 
+//            	    	    top: 0, 
+//            	    	    width: width, 
+//            	    	    height: height,
+//            	    	    appearanceName: 'yosemite',
+//            	    	    style: {
+//            	                backgroundColor: 'rgb(255,255,255)',
+//            		    	    fontSize: 12,
+//            	                overflow:'auto'
+//            	            },
+//            	    	    html: content
+//            	    	});
+//            	    	
+//            			GW.process.env_frame.setControl({
+//            	            styleDisplay:'inline',
+//            	            maximizeButton: 'zoomButton',
+//            	            demaximizeButton: 'dezoomButton',
+//            	            minimizeButton: 'minimizeButton',
+//            	            deminimizeButton: 'deminimizeButton',
+//            	            hideButton: 'closeButton',
+//            	            animation: true,
+//            	            animationDuration: 150,
+//            	
+//            	        });
+//            	    	
+//            			GW.process.env_frame.on('closeButton', 'click', (_frame, evt) => {
+//            	            _frame.closeFrame();
+//            	            
+//            	        });
+//            	        
+//            	    	//Show the window
+//            			GW.process.env_frame.show();
+//            	    	
+//            			GW.process.env_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
             	    	
             			$("#env-select").change(function(e){
 							
@@ -1839,39 +1847,41 @@ GW.process = {
 					
 				}
 				
-				var width = 500; var height = 540;
+				GW.process.host_frame = GW.process.createJSFrameDialog(500, 540, content, 'Select a host')
 				
-				GW.process.host_frame = GW.workspace.jsFrame.create({
-			    		title: 'Select a host',
-			    	    left: 0, 
-			    	    top: 0, 
-			    	    width: width, 
-			    	    height: height,
-			    	    appearanceName: 'yosemite',
-			    	    style: {
-		                    backgroundColor: 'rgb(255,255,255)',
-				    	    fontSize: 12,
-		                    overflow:'auto'
-		                },
-			    	    html: content
-			    	    
-		    	});
-		    	
-				GW.process.host_frame.setControl({
-		            styleDisplay:'inline',
-		            maximizeButton: 'zoomButton',
-		            demaximizeButton: 'dezoomButton',
-		            minimizeButton: 'minimizeButton',
-		            deminimizeButton: 'deminimizeButton',
-		            hideButton: 'closeButton',
-		            animation: true,
-		            animationDuration: 150,
-		
-		        });
-		    	
-				GW.process.host_frame.show();
-		    	
-				GW.process.host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				var width = 500; var height = 540;
+//				
+//				GW.process.host_frame = GW.workspace.jsFrame.create({
+//			    		title: 'Select a host',
+//			    	    left: 0, 
+//			    	    top: 0, 
+//			    	    width: width, 
+//			    	    height: height,
+//			    	    appearanceName: 'yosemite',
+//			    	    style: {
+//		                    backgroundColor: 'rgb(255,255,255)',
+//				    	    fontSize: 12,
+//		                    overflow:'auto'
+//		                },
+//			    	    html: content
+//			    	    
+//		    	});
+//		    	
+//				GW.process.host_frame.setControl({
+//		            styleDisplay:'inline',
+//		            maximizeButton: 'zoomButton',
+//		            demaximizeButton: 'dezoomButton',
+//		            minimizeButton: 'minimizeButton',
+//		            deminimizeButton: 'deminimizeButton',
+//		            hideButton: 'closeButton',
+//		            animation: true,
+//		            animationDuration: 150,
+//		
+//		        });
+//		    	
+//				GW.process.host_frame.show();
+//		    	
+//				GW.process.host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$.ajax({
             		

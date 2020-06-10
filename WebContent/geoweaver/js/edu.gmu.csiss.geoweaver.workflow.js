@@ -88,44 +88,46 @@ GW.workflow = {
 			"<button type=\"button\" id=\"new-workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
 			'</div>';
 			
-			var width = 520; var height = 450;
+			GW.workflow.new_frame = GW.process.createJSFrameDialog(520, 450, content, "Authorization")
 			
-			GW.workflow.new_frame = GW.workspace.jsFrame.create({
-	    		title: 'Authorization',
-	    	    left: 0, 
-	    	    top: 0, 
-	    	    width: width, 
-	    	    height: height,
-	    	    appearanceName: 'yosemite',
-	    	    style: {
-                    backgroundColor: 'rgb(255,255,255)',
-		    	    fontSize: 12,
-                    overflow:'auto'
-                },
-	    	    html: content
-	    	});
-	    	
-			GW.workflow.new_frame.setControl({
-                styleDisplay:'inline',
-                maximizeButton: 'zoomButton',
-                demaximizeButton: 'dezoomButton',
-                minimizeButton: 'minimizeButton',
-                deminimizeButton: 'deminimizeButton',
-                hideButton: 'closeButton',
-                animation: true,
-                animationDuration: 150,
-
-            });
-	    	
-			GW.workflow.new_frame.on('closeButton', 'click', (_frame, evt) => {
-                _frame.closeFrame();
-                
-            });
-            
-	    	//Show the window
-			GW.workflow.new_frame.show();
-	    	
-			GW.workflow.new_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 520; var height = 450;
+//			
+//			GW.workflow.new_frame = GW.workspace.jsFrame.create({
+//	    		title: 'Authorization',
+//	    	    left: 0, 
+//	    	    top: 0, 
+//	    	    width: width, 
+//	    	    height: height,
+//	    	    appearanceName: 'yosemite',
+//	    	    style: {
+//                    backgroundColor: 'rgb(255,255,255)',
+//		    	    fontSize: 12,
+//                    overflow:'auto'
+//                },
+//	    	    html: content
+//	    	});
+//	    	
+//			GW.workflow.new_frame.setControl({
+//                styleDisplay:'inline',
+//                maximizeButton: 'zoomButton',
+//                demaximizeButton: 'dezoomButton',
+//                minimizeButton: 'minimizeButton',
+//                deminimizeButton: 'deminimizeButton',
+//                hideButton: 'closeButton',
+//                animation: true,
+//                animationDuration: 150,
+//
+//            });
+//	    	
+//			GW.workflow.new_frame.on('closeButton', 'click', (_frame, evt) => {
+//                _frame.closeFrame();
+//                
+//            });
+//            
+//	    	//Show the window
+//			GW.workflow.new_frame.show();
+//	    	
+//			GW.workflow.new_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$("#new-workflow-confirm").click(function(){
 				
@@ -935,39 +937,41 @@ GW.workflow = {
 			
 			content += "</tbody></table></div>";
 			
-			var width = 800; var height = 640;
+			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'History',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-		    	    
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 800; var height = 640;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'History',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//		    	    
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 //			BootstrapDialog.show({
 //				
@@ -1082,39 +1086,41 @@ GW.workflow = {
 			
 			var content = GW.workflow.getTable(msg);
 			
-			var width = 600; var height = 360;
+			var frame = GW.process.createJSFrameDialog(600, 360, content, "History")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'History',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-		    	    
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 600; var height = 360;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'History',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//		    	    
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 //			var content = "<table class=\"table\"> "+
 //			"  <thead> "+
@@ -1255,39 +1261,41 @@ GW.workflow = {
 			
 			content += "</tbody></table></div>";
 			
-			var width = 800; var height = 640;
+			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'History',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-		    	    
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 800; var height = 640;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'History',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//		    	    
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 		}).fail(function(){
 			

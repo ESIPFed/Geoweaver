@@ -316,39 +316,41 @@ GW.monitor = {
 				"<button type=\"button\" id=\"refresh-monitor\" class=\"btn btn-outline-primary\">Refresh</button> "+
 				'</div>';
 			
-			var width = 720; var height = 480;
+			var frame = GW.process.createJSFrameDialog(720, 480, content, "Activity Monitor")
 			
-			const frame = GW.workspace.jsFrame.create({
-		    		title: 'Activity Monitor',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgba(255,255,255,0.8)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-	    	});
-	    	
-			frame.setControl({
-	            styleDisplay:'inline',
-	            maximizeButton: 'zoomButton',
-	            demaximizeButton: 'dezoomButton',
-	            minimizeButton: 'minimizeButton',
-	            deminimizeButton: 'deminimizeButton',
-	            hideButton: 'closeButton',
-	            animation: true,
-	            animationDuration: 150,
-	
-	        });
-	    	
-	    	//Show the window
-	    	frame.show();
-	    	
-	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			var width = 720; var height = 480;
+//			
+//			const frame = GW.workspace.jsFrame.create({
+//		    		title: 'Activity Monitor',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgba(255,255,255,0.8)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//	    	});
+//	    	
+//			frame.setControl({
+//	            styleDisplay:'inline',
+//	            maximizeButton: 'zoomButton',
+//	            demaximizeButton: 'dezoomButton',
+//	            minimizeButton: 'minimizeButton',
+//	            deminimizeButton: 'deminimizeButton',
+//	            hideButton: 'closeButton',
+//	            animation: true,
+//	            animationDuration: 150,
+//	
+//	        });
+//	    	
+//	    	//Show the window
+//	    	frame.show();
+//	    	
+//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 	    	
 	    	GW.monitor.refresh();
 	    	

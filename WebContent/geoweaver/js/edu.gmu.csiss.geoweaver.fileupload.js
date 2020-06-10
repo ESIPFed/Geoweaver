@@ -73,34 +73,36 @@ GW.fileupload = {
 				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 				
-				var width = 320; var height = 200;
+//				var width = 320; var height = 200;
+//				
+//				GW.fileupload.password_frame = GW.workspace.jsFrame.create({
+//		    		title: 'Authorization',
+//		    	    left: 0, 
+//		    	    top: 0, 
+//		    	    width: width, 
+//		    	    height: height,
+//		    	    appearanceName: 'yosemite',
+//		    	    style: {
+//	                    backgroundColor: 'rgb(255,255,255)',
+//			    	    fontSize: 12,
+//	                    overflow:'auto'
+//	                },
+//		    	    html: content
+//		    	});
+//		    	
+//				GW.fileupload.password_frame.setControl({
+//	                styleDisplay:'inline',
+//	                maximizeButton: 'zoomButton',
+//	                demaximizeButton: 'dezoomButton',
+//	                minimizeButton: 'minimizeButton',
+//	                deminimizeButton: 'deminimizeButton',
+//	                hideButton: 'closeButton',
+//	                animation: true,
+//	                animationDuration: 150,
+//
+//	            });
 				
-				GW.fileupload.password_frame = GW.workspace.jsFrame.create({
-		    		title: 'Authorization',
-		    	    left: 0, 
-		    	    top: 0, 
-		    	    width: width, 
-		    	    height: height,
-		    	    appearanceName: 'yosemite',
-		    	    style: {
-	                    backgroundColor: 'rgb(255,255,255)',
-			    	    fontSize: 12,
-	                    overflow:'auto'
-	                },
-		    	    html: content
-		    	});
-		    	
-				GW.fileupload.password_frame.setControl({
-	                styleDisplay:'inline',
-	                maximizeButton: 'zoomButton',
-	                demaximizeButton: 'dezoomButton',
-	                minimizeButton: 'minimizeButton',
-	                deminimizeButton: 'deminimizeButton',
-	                hideButton: 'closeButton',
-	                animation: true,
-	                animationDuration: 150,
-
-	            });
+				GW.fileupload.password_frame = GW.process.createJSFrameDialog(320, 200, content, "Authorization")
 		    	
 				GW.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
 	                _frame.closeFrame();
@@ -108,9 +110,9 @@ GW.fileupload = {
 	            });
 	            
 		    	//Show the window
-				GW.fileupload.password_frame.show();
-		    	
-				GW.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//				GW.fileupload.password_frame.show();
+//		    	
+//				GW.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 		    	
 		    	$("#pswd-confirm-btn").click(function(){
 		    		
@@ -276,34 +278,36 @@ GW.fileupload = {
 			"	<button type=\"button\" id=\"upload-close\" class=\"btn btn-outline-primary\">Close</button> "+
 			'</div>';
 			
-			var width = 720; var height = 640;
+			GW.fileupload.uploader = GW.process.createJSFrameDialog(720, 640, content, "File Uploader")
 			
-			GW.fileupload.uploader = GW.workspace.jsFrame.create({
-	    		title: 'File Uploader',
-	    	    left: 0, 
-	    	    top: 0, 
-	    	    width: width, 
-	    	    height: height,
-	    	    appearanceName: 'yosemite',
-	    	    style: {
-                    backgroundColor: 'rgb(255,255,255)',
-		    	    fontSize: 12,
-                    overflow:'auto'
-                },
-	    	    html: content
-	    	});
-	    	
-			GW.fileupload.uploader.setControl({
-                styleDisplay:'inline',
-                maximizeButton: 'zoomButton',
-                demaximizeButton: 'dezoomButton',
-                minimizeButton: 'minimizeButton',
-                deminimizeButton: 'deminimizeButton',
-                hideButton: 'closeButton',
-                animation: true,
-                animationDuration: 150,
-
-            });
+//			var width = 720; var height = 640;
+//			
+//			GW.fileupload.uploader = GW.workspace.jsFrame.create({
+//	    		title: 'File Uploader',
+//	    	    left: 0, 
+//	    	    top: 0, 
+//	    	    width: width, 
+//	    	    height: height,
+//	    	    appearanceName: 'yosemite',
+//	    	    style: {
+//                    backgroundColor: 'rgb(255,255,255)',
+//		    	    fontSize: 12,
+//                    overflow:'auto'
+//                },
+//	    	    html: content
+//	    	});
+//	    	
+//			GW.fileupload.uploader.setControl({
+//                styleDisplay:'inline',
+//                maximizeButton: 'zoomButton',
+//                demaximizeButton: 'dezoomButton',
+//                minimizeButton: 'minimizeButton',
+//                deminimizeButton: 'deminimizeButton',
+//                hideButton: 'closeButton',
+//                animation: true,
+//                animationDuration: 150,
+//
+//            });
 	    	
 			GW.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
 				
@@ -312,9 +316,9 @@ GW.fileupload = {
             });
             
 	    	//Show the window
-			GW.fileupload.uploader.show();
-	    	
-			GW.fileupload.uploader.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+//			GW.fileupload.uploader.show();
+//	    	
+//			GW.fileupload.uploader.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$('#drag-and-drop-zone').dmUploader({ //
 			    url: '../FileUploadServlet',

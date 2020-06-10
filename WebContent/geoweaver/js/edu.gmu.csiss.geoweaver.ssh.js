@@ -211,7 +211,8 @@ GW.ssh = {
 
 		openLog: function(token){
 			
-			$("#log-window").slideToggle(true);
+//			$("#log-window").slideToggle(true);
+			switchTab(document.getElementById("main-console-tab"), "main-console");
 			
 //			BootstrapDialog.show({
 //				
