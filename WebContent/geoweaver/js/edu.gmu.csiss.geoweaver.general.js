@@ -1,5 +1,11 @@
 
-
+/**
+ * 
+ * Show welcome page
+ * 
+ * @author Ziheng Sun
+ * 
+ */
 
 GW.general = {
 		

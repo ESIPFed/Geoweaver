@@ -206,7 +206,7 @@
 				
 			
 			
-			<div class="row" style="height:calc(100% - 50px); top: 50px; margin: 0; padding: 0;">
+			<div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;">
 				
 				
 			    <!-- Workspace -->
@@ -217,7 +217,8 @@
 					  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
 					  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
 					  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-					  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Workflow</button>
+					  <button class="tablinks" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+					  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Workflow Builder</button>
 					  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
 					</div>
 				
@@ -226,16 +227,117 @@
 					  <p>London is the capital city of England.</p>
 					</div> -->
 					
-					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0;"> 
-						  <h2>Welcome to Geoweaver! </h2>
+					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;"> 
+						  <div id="main-general-content" style="overflow-y: scroll; padding: 5px;margin-bottom: 5px; margin-top: 5px;">
+						  	<h2>Welcome to Geoweaver! </h2>
+						  </div>
 					</div>
 					
-					<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0;">
+					<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+						  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 5px; margin-bottom: 5px; margin-top: 5px;">
 						  <h2>Please select a host on the right panel! </h2>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  <p>test</p>
+						  
+						  </div>
+					</div>
+					 
+					<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+						  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 5px;margin-bottom: 5px; margin-top: 5px;">
+						  	<h2>Please select a process on the right panel!</h2>
+						  	<p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							<p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+							  <p>test</p>
+						  </div>
 					</div>
 					
-					<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0;">
-						  <h2>Please select a process on the right panel!</h2>
+					<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+						  <div id="main-workflow-content" style="overflow-y: scroll;  padding: 5px; margin-bottom: 5px; margin-top: 5px;">
+						  	<h2>Please select a workflow on the right panel!</h2>
+						  </div>
 					</div>
 						
 					<div id="main-console" class="tabcontent" style="height:100%; left:0; margin:0;">

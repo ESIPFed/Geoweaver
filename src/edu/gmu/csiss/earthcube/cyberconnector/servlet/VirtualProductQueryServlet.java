@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import edu.gmu.csiss.earthcube.cyberconnector.database.DataBaseOperation;
 import edu.gmu.csiss.earthcube.cyberconnector.tools.PlaceOrderTool;
 import edu.gmu.csiss.earthcube.cyberconnector.user.User;
 import edu.gmu.csiss.earthcube.cyberconnector.user.UserTool;
@@ -151,5 +152,16 @@ public class VirtualProductQueryServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doit(request, response);
 	}
+
+	@Override
+	public void destroy() {
+		
+		logger.info("Destory servlet. Close JDBC connection..");
+		
+		DataBaseOperation.closeConnection();
+		
+		super.destroy();
+	}
+	
 	
 }

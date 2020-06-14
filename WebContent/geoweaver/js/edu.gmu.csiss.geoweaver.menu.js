@@ -116,7 +116,11 @@ GW.menu = {
 				
 				content += "</dl></div>";
 				
-				GW.process.createJSFrameDialog(500, 480, content, "Details");
+				console.log("type :", type)
+				
+				$("#main-"+type+"-content").html(content);
+				
+//				GW.process.createJSFrameDialog(500, 480, content, "Details");
 				
 //				var width = 500; var height = 480;
 //				
