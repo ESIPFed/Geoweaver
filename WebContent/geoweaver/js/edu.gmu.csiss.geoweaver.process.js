@@ -1163,8 +1163,6 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\">";
 			
-			
-			
 			content += '   <div class="row" style="padding:0px;margin:0px;">'+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
@@ -1190,11 +1188,10 @@ GW.process = {
 		       '			<input type="text" class="form-control form-control-sm" id="processid"></input>'+
 //		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
-		       '	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
-		       '	 <div class="col-md-6" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits.</p></div>'+
-		       
+		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits.</p></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
 			   '   </div>';
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
@@ -1232,17 +1229,6 @@ GW.process = {
 						process_name = val;
 						
 					}
-//					else{
-//
-//						if(typeof val =='object')
-//						{
-//						  val = JSON.stringify(val);
-//						}
-//						
-//						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-//						"<div class=\"col col-md-7\">"+val+"</div>";
-//						
-//					}
 					
 				}
 
@@ -1263,7 +1249,6 @@ GW.process = {
 			console.log("The detected code language is : ", lang);
 			
 			if(code_type == "jupyter"){
-				
 				
 				if(typeof code != 'object'){
 					code = $.parseJSON(code);
@@ -1303,19 +1288,11 @@ GW.process = {
 				
 			}
 			
-			var menuItem = " <div class=\"row\">"+
+			var menuItem = " <p align=\"right\">"+
 			
 			"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
         	
 			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
-			
-//			"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
-//        	
-//			process_id+"','"+process_name+"')\"></i>"+
-			
-			"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
-        	
-			process_id+"','process')\"></i>"+
 			
 			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
         	
@@ -1325,7 +1302,15 @@ GW.process = {
         	
 			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> "+
 			
-			"</div>";
+//			"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
+//        	
+//			process_id+"','"+process_name+"')\"></i>"+
+			
+			"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+        	
+			process_id+"','process')\"></i>"+
+			
+			"</p>";
 			
 			$("#process-btn-group").append(menuItem);
 			

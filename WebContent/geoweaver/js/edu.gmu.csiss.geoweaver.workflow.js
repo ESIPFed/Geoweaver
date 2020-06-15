@@ -53,6 +53,10 @@ GW.workflow = {
 		
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
 		
+		var workflowid = null;
+		
+		var workflowname = null;
+		
 		jQuery.each(msg, function(i, val) {
 			
 			if(val!=null&&val!="null"&&val!=""){
@@ -62,6 +66,17 @@ GW.workflow = {
 					  val = JSON.stringify(val);
 					}
 					
+					if(i=="id"){
+						
+						workflowid = val;
+						
+					}else if(i=="name"){
+						
+						workflowname = val;
+						
+					}
+					
+					
 					content += "<div class=\"col col-md-3\">"+i+"</div>"+
 					"<div class=\"col col-md-7\">"+val+"</div>";
 					
@@ -69,7 +84,25 @@ GW.workflow = {
 
 		});
 		
-		content += "</div></div>";
+		content += "</div>"+
+		
+		"<p align=\"right\">"+
+		
+		"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
+    	
+		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+		
+		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+    	
+		workflowid+"')\"></i> "+
+		
+		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
+    	
+		workflowid+"','workflow')\"></i>"+
+		
+		"</p>"+
+		
+		"</div>";
 		
 		$("#main-workflow-content").html(content);
 		
@@ -1336,15 +1369,23 @@ GW.workflow = {
 	
 	addMenuItem: function(one){
 		
-		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">" + 
+		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
+				
+				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">" + 
 	    		
-				one.name + "</a> <i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
-	        	
-				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
-	        	
-				one.id+"')\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
-	        	
-				one.id+"','workflow')\"></i>"+
+				one.name + "</a> "+
+				
+//				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
+//	        	
+//				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+//				
+//				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+//	        	
+//				one.id+"')\"></i> "+
+//				
+//				"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
+//	        	
+//				one.id+"','workflow')\"></i>"+
 				
 				//removed on 1/31/2019 - it is not allowed to run from the tree.
 //				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.workflow.run('"+
