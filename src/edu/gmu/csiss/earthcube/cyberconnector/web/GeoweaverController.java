@@ -66,8 +66,7 @@ public class GeoweaverController {
 	@PreDestroy
     public void destroy() {
 		
-        System.out.println(
-          "Callback triggered - @PreDestroy.");
+        System.out.println("Callback triggered - @PreDestroy.");
         
         sshSessionManager.closeAll();
         

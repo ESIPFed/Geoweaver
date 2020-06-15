@@ -1147,6 +1147,37 @@ GW.host = {
 			
 		},
 		
+		display: function(msg){
+			
+			var content = "<div class=\"modal-body\">";
+			
+			content += "<div class=\"row\" style=\"font-size: 12px;\">";
+			
+			jQuery.each(msg, function(i, val) {
+				
+				if(val!=null&&val!="null"&&val!=""){
+					
+						if(typeof val =='object')
+						{
+						  val = JSON.stringify(val);
+						}
+						
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+						"<div class=\"col col-md-7\">"+val+"</div>";
+						
+				}
+
+			});
+			
+			content += "</div></div>";
+			
+			
+			$("#main-host-content").html(content);
+			
+			switchTab(document.getElementById("main-host-tab"), "main-host-info");
+			
+		},
+		
 		newDialog: function(){
 			
 			if(GW.host.new_host_frame!=null){

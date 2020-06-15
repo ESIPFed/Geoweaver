@@ -91,34 +91,19 @@ GW.menu = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = "<div class=\"modal-body\"><dl class=\"row\" style=\"font-size: 12px;\">";
-				
-				jQuery.each(msg, function(i, val) {
+				if(type=="process"){
 					
-					if(val!=null&&val!="null"&&val!=""){
-						
-//						if(i=="code"){
-//							
-//							val = GW.menu.unescape(val);
-//							
-//						}
-						
-						if(typeof val =='object')
-						{
-						  val = JSON.stringify(val);
-						}
-						
-						content += "    <dt class=\"col col-md-3\">"+i+"</dt>"+
-						"    <dd class=\"col col-md-7\">"+val+"</dd>";
-					}
-
-				});
-				
-				content += "</dl></div>";
-				
-				console.log("type :", type)
-				
-				$("#main-"+type+"-content").html(content);
+					GW.process.display(msg);
+					
+				}else if(type=="host"){
+					
+					GW.host.display(msg);
+					
+				}else if(type=="workflow"){
+					
+					GW.workflow.display(msg);
+					
+				}
 				
 //				GW.process.createJSFrameDialog(500, 480, content, "Details");
 				
