@@ -14,6 +14,8 @@ GW.process = {
 		
 		current_pid: null,
 		
+		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
+		
 		env_frame: null,
 		
 		envlist: {},
@@ -108,20 +110,20 @@ GW.process = {
 			
 			GW.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
-        		lineNumbers: true,
-        		
-        		lineWrapping: true,
-        		
-        		extraKeys: {
-        			
-	    		    "Ctrl-S": function(instance) { 
-	    		    	
-	    		    	GW.process.update(GW.process.current_pid, cmid);
-	    		    	
-	    		     }
-	    		}
-			
-        	});
+	        		lineNumbers: true,
+	        		
+	        		lineWrapping: true,
+	        		
+	        		extraKeys: {
+	        			
+		    		    "Ctrl-S": function(instance) { 
+		    		    	
+		    		    		GW.process.update(GW.process.current_pid, cmid);
+		    		    	
+		    		    }
+		    		}
+				
+	        	});
 			
 			$(".CodeMirror").css('font-size',"10pt");
 			
@@ -1075,81 +1077,81 @@ GW.process = {
 				
 				var frame = GW.process.createJSFrameDialog(720, 640, content, "Edit Process")
 				
-            	var old_name = msg.name;
-            	
-            	var old_lang = msg.description;
-            	
-            	var old_code = msg.code;
-            	
-            	$("#processcategory-"+GW.process.cmid).val(old_lang);
-            	
-            	$("#processname-"+GW.process.cmid).val(msg.name);
-            	
-            	$("#codearea-"+GW.process.cmid).empty();
-        		
-        		if( old_lang == "shell"){
-        			
-	            	GW.process.showShell(old_code, GW.process.cmid);
-        			  
-        		}else if(old_lang == "builtin"){
-        			
-        			GW.process.showBuiltinProcess(old_code, GW.process.cmid);
-        			
-        		}else if(old_lang == "jupyter"){
-        			
-        			GW.process.showJupyter(old_code, GW.process.cmid);
-        			
-        		}else if(old_lang == "python"){
-        			
-        			GW.process.showPython(old_code, GW.process.cmid);
-        			
-        		}
-            	
-            	$("#processcategory-"+GW.process.cmid).on('change', function() {
-            		
-            		$("#codearea-"+GW.process.cmid).empty();
-            		
-            		var old_code_new = null;
-            		
-            		if(this.value == old_lang){
-            			
-            			old_code_new = old_code;
-            			
-            		}
-            		
-            		if( this.value == "shell"){
-            			
-    	            	GW.process.showShell(old_code_new, GW.process.cmid);
-            			  
-            		}else if(this.value == "builtin"){
-            			
-            			GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
-            			
-            		}else if(this.value == "jupyter"){
-            			
-            			GW.process.showJupyter(old_code_new, GW.process.cmid);
-            			
-            		}else if(this.value == "python"){
-            			
-            			GW.process.showPython(old_code_new, GW.process.cmid);
-            			
-            		}
-            		
-            	});
-            	
-            	$("#edit-save-process-"+GW.process.cmid).click(function(){
-            		
-            		GW.process.update(msg.id, GW.process.cmid);
-            		
-            	});
-            	
-            	$("#edit-run-process-"+GW.process.cmid).click(function(){
-            		
-            		//not finished yet
-            		
-            		GW.process.runProcess(msg.id, msg.name, msg.description);
-            		
-            	});
+	            	var old_name = msg.name;
+	            	
+	            	var old_lang = msg.description;
+	            	
+	            	var old_code = msg.code;
+	            	
+	            	$("#processcategory-"+GW.process.cmid).val(old_lang);
+	            	
+	            	$("#processname-"+GW.process.cmid).val(msg.name);
+	            	
+	            	$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( old_lang == "shell"){
+	        			
+		            	GW.process.showShell(old_code, GW.process.cmid);
+	        			  
+	        		}else if(old_lang == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(old_code, GW.process.cmid);
+	        			
+	        		}else if(old_lang == "jupyter"){
+	        			
+	        			GW.process.showJupyter(old_code, GW.process.cmid);
+	        			
+	        		}else if(old_lang == "python"){
+	        			
+	        			GW.process.showPython(old_code, GW.process.cmid);
+	        			
+	        		}
+	            	
+	            	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	            		
+	            		$("#codearea-"+GW.process.cmid).empty();
+	            		
+	            		var old_code_new = null;
+	            		
+	            		if(this.value == old_lang){
+	            			
+	            			old_code_new = old_code;
+	            			
+	            		}
+	            		
+	            		if( this.value == "shell"){
+	            			
+	    	            	GW.process.showShell(old_code_new, GW.process.cmid);
+	            			  
+	            		}else if(this.value == "builtin"){
+	            			
+	            			GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
+	            			
+	            		}else if(this.value == "jupyter"){
+	            			
+	            			GW.process.showJupyter(old_code_new, GW.process.cmid);
+	            			
+	            		}else if(this.value == "python"){
+	            			
+	            			GW.process.showPython(old_code_new, GW.process.cmid);
+	            			
+	            		}
+	            		
+	            	});
+	            	
+	            	$("#edit-save-process-"+GW.process.cmid).click(function(){
+	            		
+	            		GW.process.update(msg.id, GW.process.cmid);
+	            		
+	            	});
+	            	
+	            	$("#edit-run-process-"+GW.process.cmid).click(function(){
+	            		
+	            		//not finished yet
+	            		
+	            		GW.process.runProcess(msg.id, msg.name, msg.description);
+	            		
+	            	});
 				
 			}).fail(function(jxr, status){
 				
@@ -1160,6 +1162,8 @@ GW.process = {
 		},
 		
 		display: function(msg){
+			
+			GW.process.editOn = false;
 			
 			var content = "<div class=\"modal-body\">";
 			
@@ -1277,9 +1281,28 @@ GW.process = {
 		      		  lineWrapping: true,
 		      		  theme: "yonce",
 		      		  mode: "text/x-sh",
+		      		  readOnly: false,
 //			          viewportMargin: Infinity,
-			          value: code
-			        });
+			          value: code,
+			          extraKeys: {
+			        			
+				    		    "Ctrl-S": function(instance) { 
+				    		    	
+				    		    		if(!GW.process.editOn){
+				    		    			
+					    		    		var process_code = GW.general.process_code_editor.getValue()
+					    		    	
+					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
+					    		    	
+				    		    		}else{
+				    		    			
+				    		    			alert("Please turn on edit mode!");
+				    		    			
+				    		    		}
+				    		    	
+				    		    }
+				    	  }
+			    });
 				
 
 //				$(".CodeMirror").css('font-size',"10pt");
@@ -1288,15 +1311,15 @@ GW.process = {
 				
 			}
 			
+			GW.process.editSwitch();
+			
 			var menuItem = " <p align=\"right\">"+
 			
 			"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
         	
 			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 			
-			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
-        	
-			process_id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> "+
+			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> "+
 			
 			"<i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
         	
@@ -1313,6 +1336,24 @@ GW.process = {
 			"</p>";
 			
 			$("#process-btn-group").append(menuItem);
+			
+		},
+		
+		editSwitch: function(){
+			
+			console.log("Turn on/off the fields");
+			
+			GW.process.editOn = !GW.process.editOn;
+			
+			$("#processcategory").prop( "disabled", GW.process.editOn );
+			
+			$("#processname").prop( "disabled", GW.process.editOn );
+			
+			$("#processid").prop( "disabled", GW.process.editOn );
+			
+//			$("#code-embed").prop( "disabled", GW.process.editOn );
+			
+			GW.general.process_code_editor.setOption("readOnly", GW.process.editOn)
 			
 		},
 		
@@ -1389,34 +1430,24 @@ GW.process = {
 			
 		},
 		
-		update: function(pid, cmid){
+		updateRaw: function(pid, pname, plang, pdesc, pcode){
 			
-			console.log("update process id: " + pid);
-			
-			if(this.precheck()){
-				
-				var req =  { 
-						
-						type: "process", lang: $("#processcategory-"+cmid).val(),
-						
-						desc: $("#processcategory-"+cmid).val(), //use the description column to store the process type
+			var req =  {
 					
-						name: $("#processname-"+cmid).val(), 
-						
-						id: pid,
-		    			
-						code: GW.process.getCode(cmid)
-						
-				};
+					type: "process", 
+					
+					lang: plang,
+					
+					desc: pdesc, //use the description column to store the process type
 				
-//				"type=process&lang="+$("#processcategory").val() + 
-//				
-//					"&name=" + $("#processname").val() + 
-//					
-//					"&id=" + pid +
-//	    			
-//		    		"&code=" + GW.process.editor.getValue();
-		    	
+					name: pname, 
+					
+					id: pid,
+	    			
+					code: pcode
+					
+			};
+			
 		    	$.ajax({
 		    		
 		    		url: "edit",
@@ -1438,6 +1469,25 @@ GW.process = {
 		    		alert("Fail to update the process.");
 		    		
 		    	});
+			
+			
+		},
+		
+		update: function(pid, cmid){
+			
+			console.log("update process id: " + pid);
+			
+			if(this.precheck()){
+				
+				var plang = $("#processcategory-"+cmid).val();
+				
+				var pname = $("#processname-"+cmid).val();
+				
+				var pdesc = $("#processcategory-"+cmid).val();
+				
+				var pcode =  GW.process.getCode(cmid);
+				
+				this.updateRaw(pid, pname, plang, pdesc, pcode);
 				
 			}else{
 				
