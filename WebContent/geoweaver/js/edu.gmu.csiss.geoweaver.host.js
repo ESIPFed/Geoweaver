@@ -1038,15 +1038,25 @@ GW.host = {
 					
 				"\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
     				
-				one.name + "</a> <i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
-            				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i><i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
-            				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i> <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
-            				
-				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i> <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
-            				
-				one.id+"','host')\"></i> </li>");
+				one.name + "</a> "+
+				
+//				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
+//            				
+//				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
+//				
+//				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
+//            				
+//				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
+//				
+//				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
+//            				
+//				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>"+
+//				
+//				" <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
+//            				
+//				one.id+"','host')\"></i>"+
+				
+			" </li>");
 			
 		},
 		
@@ -1144,6 +1154,67 @@ GW.host = {
 			}
 			
 			
+			
+		},
+		
+		display: function(msg){
+			
+			var content = "<div class=\"modal-body\">";
+			
+			content += "<div class=\"row\" style=\"font-size: 12px;\">";
+			
+			var hostid = null;
+			
+			jQuery.each(msg, function(i, val) {
+				
+				if(val!=null&&val!="null"&&val!=""){
+					
+						if(typeof val =='object')
+						{
+						  val = JSON.stringify(val);
+						}
+						
+						if(i=="id"){
+							
+							hostid = val;
+							
+						}
+						
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+						"<div class=\"col col-md-7\">"+val+"</div>";
+						
+				}
+
+			});
+			
+			content += "</div>"+
+			
+			"<p align=\"right\">"+
+			
+				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
+				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
+				
+				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
+	        				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
+				
+				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
+	        				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>"+
+				
+				" <i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
+	        				
+				hostid+"','host')\"></i>"+
+			
+			"</p>"+
+			
+			"</div>";
+			
+			
+			$("#main-host-content").html(content);
+			
+			switchTab(document.getElementById("main-host-tab"), "main-host-info");
 			
 		},
 		

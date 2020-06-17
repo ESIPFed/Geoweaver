@@ -14,6 +14,8 @@ GW.process = {
 		
 		current_pid: null,
 		
+		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
+		
 		env_frame: null,
 		
 		envlist: {},
@@ -108,22 +110,24 @@ GW.process = {
 			
 			GW.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
-        		lineNumbers: true,
-        		
-        		lineWrapping: true,
-        		
-        		extraKeys: {
-        			
-	    		    "Ctrl-S": function(instance) { 
-	    		    	
-	    		    	GW.process.update(GW.process.current_pid, cmid);
-	    		    	
-	    		     }
-	    		}
-			
-        	});
+	        		lineNumbers: true,
+	        		
+	        		lineWrapping: true,
+	        		
+	        		extraKeys: {
+	        			
+		    		    "Ctrl-S": function(instance) { 
+		    		    	
+		    		    		GW.process.update(GW.process.current_pid, cmid);
+		    		    	
+		    		    }
+		    		}
+				
+	        	});
 			
 			$(".CodeMirror").css('font-size',"10pt");
+			
+			$(".CodeMirror").css('height',"auto");
 			
 			GW.process.editor.setSize(null, 360);
 			
@@ -217,6 +221,8 @@ GW.process = {
         		
         		lineWrapping: true,
         		
+        		theme: "yonce",
+        		
         		extraKeys: {
         			
 	    		    "Ctrl-S": function(instance) { 
@@ -229,6 +235,8 @@ GW.process = {
         	});
 				
 			$(".CodeMirror").css('font-size',"10pt");
+
+			$(".CodeMirror").css('height',"auto");
 			
 			GW.process.editor.setSize(null, 360);
 			
@@ -1069,81 +1077,81 @@ GW.process = {
 				
 				var frame = GW.process.createJSFrameDialog(720, 640, content, "Edit Process")
 				
-            	var old_name = msg.name;
-            	
-            	var old_lang = msg.description;
-            	
-            	var old_code = msg.code;
-            	
-            	$("#processcategory-"+GW.process.cmid).val(old_lang);
-            	
-            	$("#processname-"+GW.process.cmid).val(msg.name);
-            	
-            	$("#codearea-"+GW.process.cmid).empty();
-        		
-        		if( old_lang == "shell"){
-        			
-	            	GW.process.showShell(old_code, GW.process.cmid);
-        			  
-        		}else if(old_lang == "builtin"){
-        			
-        			GW.process.showBuiltinProcess(old_code, GW.process.cmid);
-        			
-        		}else if(old_lang == "jupyter"){
-        			
-        			GW.process.showJupyter(old_code, GW.process.cmid);
-        			
-        		}else if(old_lang == "python"){
-        			
-        			GW.process.showPython(old_code, GW.process.cmid);
-        			
-        		}
-            	
-            	$("#processcategory-"+GW.process.cmid).on('change', function() {
-            		
-            		$("#codearea-"+GW.process.cmid).empty();
-            		
-            		var old_code_new = null;
-            		
-            		if(this.value == old_lang){
-            			
-            			old_code_new = old_code;
-            			
-            		}
-            		
-            		if( this.value == "shell"){
-            			
-    	            	GW.process.showShell(old_code_new, GW.process.cmid);
-            			  
-            		}else if(this.value == "builtin"){
-            			
-            			GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
-            			
-            		}else if(this.value == "jupyter"){
-            			
-            			GW.process.showJupyter(old_code_new, GW.process.cmid);
-            			
-            		}else if(this.value == "python"){
-            			
-            			GW.process.showPython(old_code_new, GW.process.cmid);
-            			
-            		}
-            		
-            	});
-            	
-            	$("#edit-save-process-"+GW.process.cmid).click(function(){
-            		
-            		GW.process.update(msg.id, GW.process.cmid);
-            		
-            	});
-            	
-            	$("#edit-run-process-"+GW.process.cmid).click(function(){
-            		
-            		//not finished yet
-            		
-            		GW.process.runProcess(msg.id, msg.name, msg.description);
-            		
-            	});
+	            	var old_name = msg.name;
+	            	
+	            	var old_lang = msg.description;
+	            	
+	            	var old_code = msg.code;
+	            	
+	            	$("#processcategory-"+GW.process.cmid).val(old_lang);
+	            	
+	            	$("#processname-"+GW.process.cmid).val(msg.name);
+	            	
+	            	$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( old_lang == "shell"){
+	        			
+		            	GW.process.showShell(old_code, GW.process.cmid);
+	        			  
+	        		}else if(old_lang == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(old_code, GW.process.cmid);
+	        			
+	        		}else if(old_lang == "jupyter"){
+	        			
+	        			GW.process.showJupyter(old_code, GW.process.cmid);
+	        			
+	        		}else if(old_lang == "python"){
+	        			
+	        			GW.process.showPython(old_code, GW.process.cmid);
+	        			
+	        		}
+	            	
+	            	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	            		
+	            		$("#codearea-"+GW.process.cmid).empty();
+	            		
+	            		var old_code_new = null;
+	            		
+	            		if(this.value == old_lang){
+	            			
+	            			old_code_new = old_code;
+	            			
+	            		}
+	            		
+	            		if( this.value == "shell"){
+	            			
+	    	            	GW.process.showShell(old_code_new, GW.process.cmid);
+	            			  
+	            		}else if(this.value == "builtin"){
+	            			
+	            			GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
+	            			
+	            		}else if(this.value == "jupyter"){
+	            			
+	            			GW.process.showJupyter(old_code_new, GW.process.cmid);
+	            			
+	            		}else if(this.value == "python"){
+	            			
+	            			GW.process.showPython(old_code_new, GW.process.cmid);
+	            			
+	            		}
+	            		
+	            	});
+	            	
+	            	$("#edit-save-process-"+GW.process.cmid).click(function(){
+	            		
+	            		GW.process.update(msg.id, GW.process.cmid);
+	            		
+	            	});
+	            	
+	            	$("#edit-run-process-"+GW.process.cmid).click(function(){
+	            		
+	            		//not finished yet
+	            		
+	            		GW.process.runProcess(msg.id, msg.name, msg.description);
+	            		
+	            	});
 				
 			}).fail(function(jxr, status){
 				
@@ -1153,24 +1161,221 @@ GW.process = {
 			
 		},
 		
+		display: function(msg){
+			
+			GW.process.editOn = false;
+			
+			var content = "<div class=\"modal-body\">";
+			
+			content += '   <div class="row" style="padding:0px;margin:0px;">'+
+		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
+		       '     <div class="col-sm-3" style="padding:0;">'+
+		       '			<select class="form-control form-control-sm" id="processcategory">'+
+			   '    			<option value="shell">Shell</option>'+
+			   '    			<option value="builtin">Built-In Process</option>'+
+			   '    			<option value="jupyter">Jupyter Notebook</option>'+
+			   '    			<option value="python">Python</option>'+
+			   /*'    		<option value="python">Python</option>'+
+			   '    			<option value="r">R</option>'+
+			   '    			<option value="matlab">Matlab</option>'+*/
+			   '  			</select>'+
+		       '     </div>'+
+		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</div>'+
+		       '     <div class="col-sm-4" style="padding:0;">'+
+		       '			<input type="text" class="form-control form-control-sm" id="processname"></input>'+
+//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+		       '     </div>'+
+		       '   </div>' + 
+		       '   <div class="row" style="padding:0px;margin:0px;">'+
+		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
+		       '     <div class="col-sm-3" style="padding:0;">'+
+		       '			<input type="text" class="form-control form-control-sm" id="processid"></input>'+
+//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
+		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits.</p></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
+			   '   </div>';
+			
+			content += "<div class=\"row\" style=\"font-size: 12px;\">";
+			
+			var code = null;
+			
+			var code_type = null;
+			
+			var process_id = null;
+			
+			var process_name = null;
+			
+			jQuery.each(msg, function(i, val) {
+				
+				if(val!=null&&val!="null"&&val!=""){
+					
+					if(i=="description"){
+						
+						code_type = val;
+						
+					}
+					
+					if(i=="code"){
+						
+						code = val;
+						
+						content += "<div class=\"col col-md-12\" id=\"code-embed\" style=\"width:100%;\" ></div>";
+						
+					}else if(i=="id"){
+						
+						process_id = val;
+						
+					}else if(i=="name"){
+						
+						process_name = val;
+						
+					}
+					
+				}
+
+			});
+			
+			content += "</div></div>";
+			
+			$("#main-process-content").html(content);
+			
+			switchTab(document.getElementById("main-process-tab"), "main-process-info");
+			
+			$("#processcategory").val(code_type);
+			
+			$("#processname").val(process_name);
+			
+			$("#processid").val(process_id);
+			
+			console.log("The detected code language is : ", lang);
+			
+			if(code_type == "jupyter"){
+				
+				if(typeof code != 'object'){
+					code = $.parseJSON(code);
+				}
+				
+				var notebook = nb.parse(code);
+				
+				var rendered = notebook.render();
+				
+				code = rendered;
+				
+				$("#code-embed").append(code);
+				
+			}else{
+
+				var lang = GW.general.getCodeStyleByLang(code_type);
+				
+				val = GW.process.unescape(code);
+				
+				code = val;
+				
+				GW.general.process_code_editor = CodeMirror(document.getElementById("code-embed"), {
+//			          mode: "text/html",
+//			          extraKeys: {"Ctrl-Space": "autocomplete"},
+			          lineNumbers: true,
+		      		  lineWrapping: true,
+		      		  theme: "yonce",
+		      		  mode: "text/x-sh",
+		      		  readOnly: false,
+//			          viewportMargin: Infinity,
+			          value: code,
+			          extraKeys: {
+			        			
+				    		    "Ctrl-S": function(instance) { 
+				    		    	
+				    		    		if(!GW.process.editOn){
+				    		    			
+					    		    		var process_code = GW.general.process_code_editor.getValue()
+					    		    	
+					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
+					    		    	
+				    		    		}else{
+				    		    			
+				    		    			alert("Please turn on edit mode!");
+				    		    			
+				    		    		}
+				    		    	
+				    		    }
+				    	  }
+			    });
+				
+
+//				$(".CodeMirror").css('font-size',"10pt");
+				$(".CodeMirror").css('height',"auto");
+				$(".CodeMirror").css('max-height',"none");
+				
+			}
+			
+			GW.process.editSwitch();
+			
+			var menuItem = " <p align=\"right\">"+
+			
+			"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
+        	
+			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+			
+			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> "+
+			
+			"<i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
+        	
+			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> "+
+			
+//			"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
+//        	
+//			process_id+"','"+process_name+"')\"></i>"+
+			
+			"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+        	
+			process_id+"','process')\"></i>"+
+			
+			"</p>";
+			
+			$("#process-btn-group").append(menuItem);
+			
+		},
+		
+		editSwitch: function(){
+			
+			console.log("Turn on/off the fields");
+			
+			GW.process.editOn = !GW.process.editOn;
+			
+			$("#processcategory").prop( "disabled", GW.process.editOn );
+			
+			$("#processname").prop( "disabled", GW.process.editOn );
+			
+			$("#processid").prop( "disabled", GW.process.editOn );
+			
+//			$("#code-embed").prop( "disabled", GW.process.editOn );
+			
+			GW.general.process_code_editor.setOption("readOnly", GW.process.editOn)
+			
+		},
+		
 		/**
 		 * add a new item under the process menu
 		 */
 		addMenuItem: function(one, folder){
 			
-			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">" + 
-    		
-			one.name + "</a><i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
-        	
-			one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> <i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
-        	
-			one.id+"','"+one.name+"')\"></i><i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
-        	
-			one.id+"','process')\"></i><i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
-        	
-			one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i> <i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
-        	
-			one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> </li>";
+			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\">"+
+				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">" + 
+				one.name + "</a>"+
+//				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
+//				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
+				one.id+"','"+one.name+"')\"></i>"+
+//				"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+//				one.id+"','process')\"></i>"+
+//				"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
+//				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i>"+
+//				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
+//				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i>"+
+			" </li>";
 			
 			if(folder!=null){
 				
@@ -1225,34 +1430,24 @@ GW.process = {
 			
 		},
 		
-		update: function(pid, cmid){
+		updateRaw: function(pid, pname, plang, pdesc, pcode){
 			
-			console.log("update process id: " + pid);
-			
-			if(this.precheck()){
-				
-				var req =  { 
-						
-						type: "process", lang: $("#processcategory-"+cmid).val(),
-						
-						desc: $("#processcategory-"+cmid).val(), //use the description column to store the process type
+			var req =  {
 					
-						name: $("#processname-"+cmid).val(), 
-						
-						id: pid,
-		    			
-						code: GW.process.getCode(cmid)
-						
-				};
+					type: "process", 
+					
+					lang: plang,
+					
+					desc: pdesc, //use the description column to store the process type
 				
-//				"type=process&lang="+$("#processcategory").val() + 
-//				
-//					"&name=" + $("#processname").val() + 
-//					
-//					"&id=" + pid +
-//	    			
-//		    		"&code=" + GW.process.editor.getValue();
-		    	
+					name: pname, 
+					
+					id: pid,
+	    			
+					code: pcode
+					
+			};
+			
 		    	$.ajax({
 		    		
 		    		url: "edit",
@@ -1274,6 +1469,25 @@ GW.process = {
 		    		alert("Fail to update the process.");
 		    		
 		    	});
+			
+			
+		},
+		
+		update: function(pid, cmid){
+			
+			console.log("update process id: " + pid);
+			
+			if(this.precheck()){
+				
+				var plang = $("#processcategory-"+cmid).val();
+				
+				var pname = $("#processname-"+cmid).val();
+				
+				var pdesc = $("#processcategory-"+cmid).val();
+				
+				var pcode =  GW.process.getCode(cmid);
+				
+				this.updateRaw(pid, pname, plang, pdesc, pcode);
 				
 			}else{
 				

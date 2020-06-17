@@ -21,6 +21,14 @@
 		
 		<link rel="stylesheet" href="../geoweaver/codemirror/lib/codemirror.css" />
 		
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/xq-dark.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/xq-light.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/yeti.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/idea.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/darcula.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/yonce.css">
+		<link rel="stylesheet" href="../geoweaver/codemirror/theme/zenburn.css">
+		
 		<link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" />
     	
    		<link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" />
@@ -108,11 +116,11 @@
     	
 	</head>
 	
-	<body style="cursor: auto;">
+	<body style="cursor: auto; padding:0;">
 	
 		<div id="jsframe-container"></div>
 	
-		<div class="main">
+		<div class="container" style="margin:0; padding:0; width:100%; height:100%;">
 		
 			<!-- Top menu bar -->
 			
@@ -206,37 +214,54 @@
 				
 			
 			
-			<div class="row" style="height:calc(100% - 50px); top: 50px; margin: 0; padding: 0;">
+			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
+			<div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;">
 				
 				
 			    <!-- Workspace -->
 			    
 			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
-				    <div class="tab">
-					  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
-					  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Workflow</button>
-					  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
-					</div>
-				
-					<!-- <div id="London" class="tabcontent">
-					  <h3>London</h3>
-					  <p>London is the capital city of England.</p>
-					</div> -->
-					
-					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0;">
-						  <h2>Welcome to Geoweaver! </h2>
-					</div>
+					    <div class="tab">
+						  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+						  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
+						  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
+						  <button class="tablinks" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+						  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Workflow Builder</button>
+						  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+						</div>
 						
-					<div id="main-console" class="tabcontent" style="height:100%; left:0; margin:0;">
-						  <h2>logging information and errors</h2>
-						  <div id="log-window">
-						  	
-						  	
-						  
-						  </div>
-						  
-					</div>
+						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;"> 
+							  <div id="main-general-content" style="height:100%;overflow-y: scroll; padding: 5px;">
+							  	<h2>Welcome to Geoweaver! </h2>
+							  </div> 
+						</div>
+						
+						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 5px; ">
+							  	<h2>Please select a host on the right panel! </h2>
+							  </div>
+						</div>
+						 
+						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+							  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 5px;">
+							  	<h2>Please select a process on the right panel!</h2>
+							  </div>
+						</div>
+						
+						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;">
+							  <div id="main-workflow-content" style="overflow-y: scroll;  padding: 5px; ">
+							  	<h2>Please select a workflow on the right panel!</h2>
+							  </div>
+						</div>
+							
+						<div id="main-console" class="tabcontent" style="height:100%; left:0; margin:0;">
+							  <h2>logging information and errors</h2>
+							  <div id="log-window">
+							  	
+							  </div>
+							  
+						</div>
 				
 			    		<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
 					
@@ -315,7 +340,7 @@
 			    </div>
 			    
 				
-				<div class="col col-md-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
+				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
 					
 					<div class="nav-side-menu">
 		
@@ -418,15 +443,16 @@
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.settings.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.toolbar.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.menu.js"></script>
+	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.general.js"></script>
 	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>
 	    
 	    <script>
 	    
 	    	function switchTab(ele, name){
 	    		
-	    		console.log("Turn on the tab " + name)
+	    	  console.log("Turn on the tab " + name)
 	    		
-	    		var i, tabcontent, tablinks;
+	    	  var i, tabcontent, tablinks;
 			  tabcontent = document.getElementsByClassName("tabcontent");
 			  for (i = 0; i < tabcontent.length; i++) {
 			    tabcontent[i].style.display = "none";

@@ -18,6 +18,8 @@ GW.main = {
 		
 		GW.toolbar.init();
 		
+		GW.general.init();
+		
 		GW.menu.init();
 		
 		GW.ssh.startLogSocket();
