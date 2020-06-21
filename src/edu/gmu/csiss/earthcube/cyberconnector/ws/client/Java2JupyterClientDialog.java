@@ -62,10 +62,10 @@ public class Java2JupyterClientDialog extends JFrame {
       vals.add("13");
       headers.put("Sec-WebSocket-Version", vals);
       vals.clear();
-      vals.add("JSESSIONID=6A76ED20085E0D3F2C56248F370D765C; username-localhost-8888=\"2|1:0|10:1589056727|23:username-localhost-8888|44:OTc5NGFkYjk5Mjc0NGZhODk4YjdlZTljMTdlYjhkYzg=|2b129b076ea248da7bb60b67ef5215ace4e1f22d5b8357892740daf831011afb\"; _xsrf=2|71c72b4a|edbb6345b2cfe9820c5f7ae7bbb029af|1589331447");
+      vals.add("JSESSIONID=B6740B35283A0081A0A75BEFD3CE9265; _xsrf=2|56aa5ecc|8c1e5470fb6844ba80e26ca0f3fb00ac|1592420813; username-localhost-8888=\"2|1:0|10:1592420823|23:username-localhost-8888|44:YmJlOWU4NTljMjEwNGQ2YTllNDJhNDZlYzBmNDBkZTU=|6b6e1012a25db4c8d9191921dd9dfd92290eafdecd171e6b4fad2678ab6cfaf3\"");
       headers.put("Cookie", vals);
       vals.clear();
-      vals.add("cu+bm2FWa4WMw21AoK848Q==");
+      vals.add("FI1AraAMT7iChOkIzp2tfA==");
       headers.put("Sec-WebSocket-Key", vals);
       vals.clear();
       vals.add("permessage-deflate; client_max_window_bits");
@@ -100,7 +100,9 @@ public class Java2JupyterClientDialog extends JFrame {
       scroll.setViewportView(serverMessageText);
       add(scroll, BorderLayout.CENTER);
       
-      String wsurl = "ws://localhost:8080/Geoweaver/shell-socket";
+//      String wsurl = "ws://localhost:8080/Geoweaver/shell-socket";
+      
+      String wsurl = "ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/8b7e9d57-c83b-4449-91d8-c0486c99c389/channels?session_id=e792c1994197490d8c8780dac70d3d07";
       
       client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders());
       
