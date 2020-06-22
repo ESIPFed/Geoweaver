@@ -1214,7 +1214,8 @@ GW.host = {
 			
 			$("#main-host-content").html(content);
 			
-			switchTab(document.getElementById("main-host-tab"), "main-host-info");
+//			switchTab(document.getElementById("main-host-tab"), "main-host-info");
+			GW.general.switchTab("host");
 			
 		},
 		

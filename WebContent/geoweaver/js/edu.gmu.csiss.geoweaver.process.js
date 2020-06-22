@@ -1196,6 +1196,8 @@ GW.process = {
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits.</p></div>'+
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
+			   '   </div>'
+		       '   <div class="row" id="process-history-container" style="padding:0px;margin:0px;" >'+
 			   '   </div>';
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
@@ -1238,11 +1240,16 @@ GW.process = {
 
 			});
 			
-			content += "</div></div>";
+			content += '</div>'+
+			'   <div class="row" style="padding:0px;margin:0px;" >'+
+			'		<div class="col col-md-12" id="console-output"  style="width:100%;" ></div>'+
+		    '   </div>'+
+			'</div>';
 			
 			$("#main-process-content").html(content);
 			
-			switchTab(document.getElementById("main-process-tab"), "main-process-info");
+//			switchTab(document.getElementById("main-process-tab"), "main-process-info");
+			GW.general.switchTab("process");
 			
 			$("#processcategory").val(code_type);
 			

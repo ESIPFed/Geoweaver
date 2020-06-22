@@ -106,7 +106,8 @@ GW.workflow = {
 		
 		$("#main-workflow-content").html(content);
 		
-		switchTab(document.getElementById("main-workflow-tab"), "main-workflow-info");
+//		switchTab(document.getElementById("main-workflow-tab"), "main-workflow-info");
+		GW.general.switchTab("workflow")
 		
 	},
 
@@ -480,6 +481,11 @@ GW.workflow = {
 				
 			}
 			
+			// switch to the workflow tab
+//			switchTab(document.getElementById("main-workspace-tab"), "workspace");
+			
+			GW.general.switchTab("workspace")
+			
         	_frame.closeFrame();
         	
         });
@@ -487,6 +493,8 @@ GW.workflow = {
 		frame.on('#workflow-cancel', 'click', (_frame, evt) => {
         	_frame.closeFrame();
         });
+		
+		
 		
 //		BootstrapDialog.show({
 //			
