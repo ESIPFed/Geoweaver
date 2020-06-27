@@ -25,6 +25,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import java.io.BufferedReader;
 
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
@@ -32,6 +34,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
+import edu.gmu.csiss.earthcube.cyberconnector.ws.server.ShellServlet;
 
 public class SSHSessionOutput implements Runnable {
 
@@ -39,7 +42,9 @@ public class SSHSessionOutput implements Runnable {
 
     protected final BufferedReader in;
     
-    protected WebSocketSession out; // log&shell websocket
+    protected WebSocketSession out; // log&shell websocket - not used any more
+    
+    protected Session wsout;
     
     protected String token; // session token
     
@@ -49,6 +54,7 @@ public class SSHSessionOutput implements Runnable {
         log.info("created");
         this.in = in;
         this.token = token;
+        wsout = ShellServlet.findSessionById(token);
     }
     
     public void stop() {
@@ -130,7 +136,7 @@ public class SSHSessionOutput implements Runnable {
 //                
 //                logs.append(line).append("\n");
                 
-                if(!BaseTool.isNull(out)) {
+                if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 //                	
 //                	if(prelog.toString()!=null) {
 //                		
@@ -140,9 +146,10 @@ public class SSHSessionOutput implements Runnable {
 //                		
 //                	}
                 	
-//                    log.info("message out {}:{}", out.getId(), line);
+                    log.info("wsout message {}:{}", wsout.getId(), line);
                     
-                    out.sendMessage(new TextMessage(line));
+//                    out.sendMessage(new TextMessage(line));
+                	wsout.getBasicRemote().sendText(line);
                     
 //                }else {
 //                	
@@ -166,7 +173,7 @@ public class SSHSessionOutput implements Runnable {
     
     public void setWebSocketSession(WebSocketSession session) {
         log.info("received websocket session");
-        this.out = session;
+//        this.out = session;
     }
     
 }

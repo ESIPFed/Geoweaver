@@ -19,6 +19,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.websocket.WsSession;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.context.request.WebRequest;
@@ -59,7 +60,11 @@ public class ShellServlet {
 			
 			this.wsSession = session;
 			
-			peers.put(session.getId(), session);
+			WsSession wss = (WsSession) session;
+			
+			System.out.println("Web Socket Session ID:" + wss.getHttpSessionId());
+			
+			peers.put(wss.getHttpSessionId(), session);
 			
 		} catch (Exception e) {
 			
@@ -243,7 +248,7 @@ public class ShellServlet {
     }
     
     
-    protected static javax.websocket.Session findSessionById(String sessionid) {
+    public static javax.websocket.Session findSessionById(String sessionid) {
         if (peers.containsKey(sessionid)) {
             return peers.get(sessionid);
         }

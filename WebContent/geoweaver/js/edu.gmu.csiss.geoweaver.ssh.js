@@ -80,18 +80,6 @@ GW.ssh = {
 	    	
 	    },
 	    	  
-	    ws_onopen: function (e) {
-	    	
-	      //open the indicator
-//	      GW.monitor.openWorkspaceIndicator();
-	      
-	      //shell.echo(special.white + "connected" + special.reset);
-	      this.echo("connected");
-	      // link the SSH session established with spring security logon to the websocket session...
-	      this.send(this.token);
-	      
-	    },
-	    
 	    send: function (data) {
 	    	
 	        if(this.ws != null){
@@ -104,6 +92,19 @@ GW.ssh = {
 	        
 	        }
 	    },
+	    
+	    ws_onopen: function (e) {
+	    	
+	      //open the indicator
+//	      GW.monitor.openWorkspaceIndicator();
+	      
+	      //shell.echo(special.white + "connected" + special.reset);
+	      this.echo("connected");
+	      // link the SSH session established with spring security logon to the websocket session...
+	      this.send(this.token);
+	      
+	    },
+	    
 
 	    ws_onclose: function (e) {
 	    	
@@ -191,6 +192,8 @@ GW.ssh = {
 	    
 	    startLogSocket: function(token){
 	    	
+	    	console.log("WebSocket Channel is Openned");
+	    	
 	    	GW.ssh.all_ws = new WebSocket("ws://localhost:8080/Geoweaver/shell-socket");
 	        
 			GW.ssh.output_div_id = "log_box_id";
@@ -224,22 +227,24 @@ GW.ssh = {
 //				closable: true,
 //				
 //				onshown: function(){
+			
 					
-					GW.ssh.ws = new SockJS("shell");
-			        
-					GW.ssh.output_div_id = "log_box_id";
-			        
-					GW.ssh.token = token;
-					
-					this.echo("Running process " + token)
-			        
-					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
-			        
-					GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
-			        
-					GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
-			        
-					GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
+//					GW.ssh.ws = new SockJS("shell");
+//			        
+//					GW.ssh.output_div_id = "log_box_id";
+//			        
+//					GW.ssh.token = token;
+//					
+//					this.echo("Running process " + token)
+//			        
+//					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
+//			        
+//					GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
+//			        
+//					GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+//			        
+//					GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
+			
 			        
 //				},
 //

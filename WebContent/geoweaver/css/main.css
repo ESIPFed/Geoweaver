@@ -1,0 +1,74 @@
+/* 
+	First: A couple styles to make the demo page look good
+ */
+body {
+	padding-bottom: 2rem;
+}
+
+nav {
+	border-top: 4px solid #28a745;
+}
+
+nav li.active {
+	border-bottom: 4px solid #28a745;	
+}
+
+.row {
+	margin-bottom: 1rem;
+}
+[class*="col-"] {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+hr {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+}
+
+.progress {
+	height: 1.5rem;
+}
+
+#files {
+    overflow-y: scroll !important;
+    min-height: 320px;
+}
+@media (min-width: 768px) {
+	#files {
+		min-height: 0;
+	}
+}
+
+#debug {
+	overflow-y: scroll !important;
+	height: 180px;	
+}
+
+
+/* These are for the single examle */
+.preview-img {
+	width: 64px;
+	height: 64px;
+}
+
+form {
+	border: solid #f7f7f9 !important;
+	padding: 1.5rem
+}
+
+form.active {
+	border-color: red !important;
+}
+
+form .progress {
+	height: 38px;
+}
+
+.dm-uploader {
+	border: 0.25rem dashed #A5A5C7;
+}
+.dm-uploader.active {
+	border-color: red;
+
+	border-style: solid;
+}

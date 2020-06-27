@@ -9,6 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import edu.gmu.csiss.earthcube.cyberconnector.utils.BaseTool;
 import edu.gmu.csiss.earthcube.cyberconnector.web.GeoweaverController;
+import edu.gmu.csiss.earthcube.cyberconnector.ws.server.ShellServlet;
 
 public class SSHCmdSessionOutput  extends SSHSessionOutput {
 
@@ -16,6 +17,8 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     public SSHCmdSessionOutput(BufferedReader in, String token) {
     	
     	super(in, token);
+    	
+    	wsout = ShellServlet.findSessionById(token);
     	
     }
     
@@ -98,7 +101,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 
                 logs.append(line).append("\n");
                 
-                if(!BaseTool.isNull(out) && out.isOpen()) {
+                if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
                 	
                 	if(prelog.toString()!=null) {
                 		
@@ -108,7 +111,10 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 		
                 	}
                 	
-                    out.sendMessage(new TextMessage(line));
+                	log.info("wsout message {}:{}", wsout.getId(), line);
+                	
+//                    out.sendMessage(new TextMessage(line));
+                	wsout.getBasicRemote().sendText(line);
                     
                 }else {
                 	
@@ -138,7 +144,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     
     public void setWebSocketSession(WebSocketSession session) {
         log.info("received websocket session");
-        this.out = session;
+//        this.out = session;
     }
     
 }

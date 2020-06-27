@@ -674,7 +674,7 @@ public class GeoweaverController {
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = ProcessTool.execute(pid, hid, password, null, false, bin, pyenv, basedir);
+			resp = ProcessTool.execute(pid, hid, password, session.getId(), false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			
