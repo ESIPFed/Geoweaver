@@ -564,7 +564,7 @@ public class GeoweaverController {
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			
-			resp = WorkflowTool.execute(id, mode, hosts, passwords, null);
+			resp = WorkflowTool.execute(id, mode, hosts, passwords, session.getId());
 			
 		}catch(Exception e) {
 			

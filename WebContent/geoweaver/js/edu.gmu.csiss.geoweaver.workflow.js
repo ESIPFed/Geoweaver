@@ -903,9 +903,9 @@ GW.workflow = {
 				
 			}catch(e){
 				
-				if(button) button.stopSpin();
-        		
-				if(dialogItself) dialogItself.enableButtons(true);
+//				if(button) button.stopSpin();
+//        		
+//				if(dialogItself) dialogItself.enableButtons(true);
 				
 				alert("fail to execute the workflow " + req.wid + ": " + e);
 				

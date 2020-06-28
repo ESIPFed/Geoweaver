@@ -101,6 +101,12 @@ public class SSHSessionImpl implements SSHSession {
     /** end of history section **/
     /**********************************************/
     
+    public SSHSessionImpl() {
+    	
+    	history_id = new RandomString(12).toString(); //create a history id everytime the process is executed
+    	
+    }
+    
     public String getHistory_process() {
 		return history_process;
 	}
@@ -348,7 +354,7 @@ public class SSHSessionImpl implements SSHSession {
     @Override
 	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-		this.history_id = token; //new RandomString(12).nextString();
+//		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		
@@ -463,7 +469,7 @@ public class SSHSessionImpl implements SSHSession {
     @Override
 	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-		this.history_id = token; //new RandomString(12).nextString();
+//		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		
@@ -578,7 +584,7 @@ public class SSHSessionImpl implements SSHSession {
 	@Override
 	public void runBash(String script, String processid, boolean isjoin, String token) {
     	
-		this.history_id = token; //new RandomString(12).nextString();
+//		this.history_id = token; //new RandomString(12).nextString();
 		
 		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
 		

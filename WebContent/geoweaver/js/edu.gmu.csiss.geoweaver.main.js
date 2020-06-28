@@ -9,6 +9,20 @@
 */
 
 GW.main = {
+		
+	getJSessionId: function (){
+		
+	    var jsId = document.cookie.match(/JSESSIONID=[^;]+/);
+	    
+	    if(jsId != null) {
+	        if (jsId instanceof Array)
+	            jsId = jsId[0].substring(11);
+	        else
+	            jsId = jsId.substring(11);
+	    }
+	    
+	    return jsId;
+	},
 	
 	init: function(){
 		
@@ -22,7 +36,7 @@ GW.main = {
 		
 		GW.menu.init();
 		
-		GW.ssh.startLogSocket();
+		GW.ssh.startLogSocket(GW.main.getJSessionId());
 		
 	}
 		

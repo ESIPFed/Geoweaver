@@ -129,15 +129,15 @@ GW.toolbar = {
 		
 		listenLogWindowSlider: function(){
 			
-			$("#log-window").slideToggle(true);
-			
-			$(".btn-minimize").click(function(){
-			    
-				$(this).toggleClass('btn-plus');
-			    
-			    $("#log-window").slideToggle();
-			
-			});
+//			$("#log-window").slideToggle(true);
+//			
+//			$(".btn-minimize").click(function(){
+//			    
+//				$(this).toggleClass('btn-plus');
+//			    
+//			    $("#log-window").slideToggle();
+//			
+//			});
 			
 		}
 		

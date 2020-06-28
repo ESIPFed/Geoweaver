@@ -1563,7 +1563,7 @@ GW.process = {
 		 */
 		showSSHOutputLog: function(msg){
 			
-			GW.ssh.openLog(msg.token);
+			GW.ssh.openLog(msg);
 			
 		},
 		

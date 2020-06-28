@@ -66,21 +66,14 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		this.name = name;
 		
+		this.history_id = new RandomString(11).nextString();
+		
 	}
 	
 	public String getHistory_id() {
 		return history_id;
 	}
 	
-	@Override
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-
 
 
 	@Override
@@ -101,7 +94,6 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		this.token = token;
 		
-		this.history_id = new RandomString(11).nextString();
 		
 	}
 	
@@ -387,6 +379,12 @@ public class GeoweaverWorkflowTask extends Task {
 //		setChanged();
 //		notifyObservers(this);
 
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return name;
 	}
 
 }

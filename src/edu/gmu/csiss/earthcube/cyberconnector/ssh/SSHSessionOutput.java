@@ -50,6 +50,8 @@ public class SSHSessionOutput implements Runnable {
     
     protected boolean run = true;
     
+    protected String history_id;
+    
     public SSHSessionOutput(BufferedReader in, String token) {
         log.info("created");
         this.in = in;
@@ -146,10 +148,11 @@ public class SSHSessionOutput implements Runnable {
 //                		
 //                	}
                 	
-                    log.info("wsout message {}:{}", wsout.getId(), line);
+                    log.info("wsout message {}:{}", token, line);
                     
-//                    out.sendMessage(new TextMessage(line));
-                	wsout.getBasicRemote().sendText(line);
+//                    out.sendMessage(new TextMessage(line)); // for the SockJS session to deliver it back to the SSH Terminal
+                    
+                	wsout.getBasicRemote().sendText(line); // for the All information web socket session
                     
 //                }else {
 //                	

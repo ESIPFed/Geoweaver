@@ -198,7 +198,7 @@ GW.ssh = {
 	        
 			GW.ssh.output_div_id = "log_box_id";
 	        
-			GW.ssh.token = token;
+			GW.ssh.token = token; //token is the jsession id
 			
 //			this.echo("Running process " + token)
 	        
@@ -217,6 +217,8 @@ GW.ssh = {
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
 			GW.general.switchTab("console");
+			
+			this.addlog("=======\nStart to process " + msg.name);
 			
 //			BootstrapDialog.show({
 //				

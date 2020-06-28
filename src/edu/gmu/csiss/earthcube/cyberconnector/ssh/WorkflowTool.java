@@ -417,13 +417,7 @@ public class WorkflowTool {
 		
 		try {
 			
-			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask(token);
-			
-			if(BaseTool.isNull(token)) {
-				
-				token = task.getHistory_id(); //new RandomString(12).nextString(); //this token will be used to establish websocket session
-				
-			}
+			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask("GW-Workflow-Run-" + token);
 			
 			task.initialize(id, mode, hosts, pswds, token);
 			
