@@ -5,7 +5,7 @@
   <!-- 
 	  <servlet>
 	    <servlet-name>GetInputDetailsServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.GetInputDetailsServlet</servlet-class>
+	    <servlet-class>gw.servlet.GetInputDetailsServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>GetInputDetailsServlet</servlet-name>
@@ -13,7 +13,7 @@
 	  </servlet-mapping>
 	  <servlet>
 	    <servlet-name>FetchProductListServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.FetchProductListServlet</servlet-class>
+	    <servlet-class>gw.servlet.FetchProductListServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>FetchProductListServlet</servlet-name>
@@ -21,7 +21,7 @@
 	  </servlet-mapping>
 	  <servlet>
 	    <servlet-name>OrderCheckingServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.OrderCheckingServlet</servlet-class>
+	    <servlet-class>gw.servlet.OrderCheckingServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>OrderCheckingServlet</servlet-name>
@@ -29,7 +29,7 @@
 	  </servlet-mapping>
 	  <servlet>
 	    <servlet-name>ServiceUnregistrationServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.ServiceUnregistrationServlet</servlet-class>
+	    <servlet-class>gw.servlet.ServiceUnregistrationServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>ServiceUnregistrationServlet</servlet-name>
@@ -37,7 +37,7 @@
 	  </servlet-mapping>
 	  <servlet>
 	    <servlet-name>ServiceRegisterServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.ServiceRegisterServlet</servlet-class>
+	    <servlet-class>gw.servlet.ServiceRegisterServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>ServiceRegisterServlet</servlet-name>
@@ -45,7 +45,7 @@
 	  </servlet-mapping>
 	  <servlet>
 	    <servlet-name>MetadataQueryServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.MetadataQueryServlet</servlet-class>
+	    <servlet-class>gw.servlet.MetadataQueryServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>MetadataQueryServlet</servlet-name>
@@ -53,7 +53,7 @@
 	  </servlet-mapping> 
 	  <servlet>
 	    <servlet-name>VirtualProductQueryServlet</servlet-name>
-	    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.VirtualProductQueryServlet</servlet-class>
+	    <servlet-class>gw.servlet.VirtualProductQueryServlet</servlet-class>
 	  </servlet>
 	  <servlet-mapping>
 	    <servlet-name>VirtualProductQueryServlet</servlet-name>
@@ -62,7 +62,7 @@
   -->
   <servlet>
     <servlet-name>FileUploadServlet</servlet-name>
-    <servlet-class>edu.gmu.csiss.earthcube.cyberconnector.servlet.FileUploadServlet</servlet-class>
+    <servlet-class>gw.servlet.FileUploadServlet</servlet-class>
     <init-param>
       <param-name>filepath</param-name>
       <param-value>uploadFile</param-value>

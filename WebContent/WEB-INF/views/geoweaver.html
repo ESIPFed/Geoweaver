@@ -44,6 +44,8 @@
         
         <link rel="stylesheet" href="../css/imageviewer.css" />
         
+        <link rel="stylesheet" href="../geoweaver/css/Chart.min.css" />
+        
         <style type="text/css">
         	/* Style the tab */
 			.tab {
@@ -80,6 +82,13 @@
 			  padding: 6px 12px;
 			  /* border: 1px solid #ccc; */
 			  border-top: none;
+			}
+			
+			#process-history-chart-container {
+			
+				width: 200px;
+				height: 100px;
+			
 			}
         
         </style>
@@ -124,6 +133,7 @@
    	
    		<script type="text/javascript" src="../geoweaver/js/jsframe.js" ></script>
     	
+    	<script type="text/javascript" src="../geoweaver/js/Chart.min.js"></script>
     	
 	</head>
 	
@@ -176,10 +186,10 @@
 				  </a>
 				  <a  
 				  data-toggle="tooltip" title="Information"
-				  style="float: right; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:edu.gmu.csiss.geoweaver.tutorial.showDialog()">
+				  style="float: right; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:gw.tutorial.showDialog()">
                   	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
                   </a>
-				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:edu.gmu.csiss.geoweaver.about.showDialog()">
+				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:gw.about.showDialog()">
 				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
 				  </a>
 				</div>
@@ -398,13 +408,13 @@
 					                </li> -->
 					
 									<li>
-					                  <a href="javascript:edu.gmu.csiss.geoweaver.tutorial.showDialog()">
+					                  <a href="javascript:gw.tutorial.showDialog()">
 					                  <i class="fa fa-book fa-lg"></i> Tutorial
 					                  </a>
 					                </li>
 						
 					                <li>
-					                  <a href="javascript:edu.gmu.csiss.geoweaver.about.showDialog()">
+					                  <a href="javascript:gw.about.showDialog()">
 					                  <i class="fa fa-info fa-lg"></i> About
 					                  </a>
 					                </li>
@@ -439,24 +449,25 @@
         <script src="../geoweaver/js/prism.min.js"></script>
 		<script src="../geoweaver/js/notebook.js" ></script>
     	<script src="../geoweaver/js/d3.min.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.general.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.tutorial.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.about.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workspace.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.ssh.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.fileupload.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.filebrowser.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.host.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.result.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.process.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.workflow.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.monitor.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.search.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.settings.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.toolbar.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.menu.js"></script>
-	    <script src="../geoweaver/js/edu.gmu.csiss.geoweaver.main.js"></script>
+	    <script src="../geoweaver/js/gw.js"></script>
+	    <script src="../geoweaver/js/gw.general.js"></script>
+	    <script src="../geoweaver/js/gw.tutorial.js"></script>
+	    <script src="../geoweaver/js/gw.about.js"></script>
+	    <script src="../geoweaver/js/gw.chart.js"></script>
+	    <script src="../geoweaver/js/gw.workspace.js"></script>
+	    <script src="../geoweaver/js/gw.ssh.js"></script>
+	    <script src="../geoweaver/js/gw.fileupload.js"></script>
+	    <script src="../geoweaver/js/gw.filebrowser.js"></script>
+	    <script src="../geoweaver/js/gw.host.js"></script>
+	    <script src="../geoweaver/js/gw.result.js"></script>
+	    <script src="../geoweaver/js/gw.process.js"></script>
+	    <script src="../geoweaver/js/gw.workflow.js"></script>
+	    <script src="../geoweaver/js/gw.monitor.js"></script>
+	    <script src="../geoweaver/js/gw.search.js"></script>
+	    <script src="../geoweaver/js/gw.settings.js"></script>
+	    <script src="../geoweaver/js/gw.toolbar.js"></script>
+	    <script src="../geoweaver/js/gw.menu.js"></script>
+	    <script src="../geoweaver/js/gw.main.js"></script>
 	    
 	    <script>
 	    
