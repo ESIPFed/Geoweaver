@@ -338,6 +338,11 @@
             <version>1.9.10</version>
         </dependency>
         
+        <dependency>
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>tomcat-websocket</artifactId>
+		    <version>8.5.43</version>
+		</dependency>
 		
     </dependencies>
     <organization>

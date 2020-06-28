@@ -209,6 +209,7 @@ GW.monitor = {
 				
 				GW.monitor.openProgressIndicator();
 
+				
 				GW.monitor.ws = new SockJS("task");
 		        
 				GW.monitor.historyid = historyid;

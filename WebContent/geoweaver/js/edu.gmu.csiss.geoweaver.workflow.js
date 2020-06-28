@@ -870,6 +870,8 @@ GW.workflow = {
 			
 			try{
 				
+				console.log(msg)
+				
 				msg = $.parseJSON(msg);
 				
 				if(msg.ret == "success"){
@@ -899,9 +901,11 @@ GW.workflow = {
 					
 				}
 				
-				if(dialogItself) dialogItself.close();
+//				if(dialogItself) dialogItself.close();
 				
 			}catch(e){
+				
+				console.error(e)
 				
 //				if(button) button.stopSpin();
 //        		

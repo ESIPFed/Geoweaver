@@ -374,7 +374,7 @@ GW.host = {
                 
          	}).fail(function(jxr, status){
          		 
-         		console.error("fail to execute workflow");
+         		console.error("fail to get encrypted key");
          		
          	});
 			

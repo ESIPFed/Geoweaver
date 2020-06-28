@@ -140,7 +140,7 @@ GW.ssh = {
 	    ws_onmessage: function (e) {
 	      
 	      try {
-	    	
+	    	  
 	        if(e.data.indexOf(this.special.prompt) == -1 && 
 	        		
 	        		e.data.indexOf(this.special.ready) == -1 && 
@@ -212,13 +212,13 @@ GW.ssh = {
 	    	
 	    },
 
-		openLog: function(token){
+		openLog: function(msg){
 			
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
 			GW.general.switchTab("console");
 			
-			this.addlog("=======\nStart to process " + msg.name);
+			this.addlog("=======\nStart to process " + msg.history_id);
 			
 //			BootstrapDialog.show({
 //				
