@@ -103,7 +103,7 @@ public class SSHSessionImpl implements SSHSession {
     
     public SSHSessionImpl() {
     	
-    	history_id = new RandomString(12).toString(); //create a history id everytime the process is executed
+    	history_id = new RandomString(12).nextString(); //create a history id everytime the process is executed
     	
     }
     

@@ -93,7 +93,8 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 	
                 	if(!BaseTool.isNull(session)) session.saveHistory(logs.toString(), "Done");
                 	
-                	wsout.getBasicRemote().sendText("The process "+session.getHistory_id()+" is finished.");
+                	if(!BaseTool.isNull(wsout) && wsout.isOpen())
+                		wsout.getBasicRemote().sendText("The process "+session.getHistory_id()+" is finished.");
                 	
                 	break;
                 	
