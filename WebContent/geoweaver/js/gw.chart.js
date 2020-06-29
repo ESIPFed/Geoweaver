@@ -2,7 +2,7 @@
 
 GW.chart = {
 		
-		process_history_chart: null,
+		history_chart: {},
 		
 		chartColors : {
 				red: 'rgb(255, 99, 132)',
@@ -148,12 +148,23 @@ GW.chart = {
 		
 		isInSameDay: function(date1, date2){
 			
+			var day1 = this.getYYYYMMDD(date1);
 			
+			var day2 = this.getYYYYMMDD(date2);
+			
+			var isin = false;
+			
+			if(day1==day2){
+				
+				isin  =true;
+				
+			}
+			
+			return isin;
 			
 		},
-
 		
-		renderProcessHistoryChart: function(msg){
+		renderUtil: function(type, msg){
 			
 			this.utils.srand(Date.now());
 			
@@ -203,87 +214,143 @@ GW.chart = {
 			
 			for(var i=0;i<msg.length;i+=1){
 				
+				var current = new Date(msg[i].begin_time);
+				
 				if(previous==null){
-					
-					var current = new Date(msg[j].begin_time);
 					
 					previous = current;
 					
 					labels.push(this.getYYYYMMDD(current));
 					
-					if(current.status=="Done"){
+					if(msg[i].status=="Done"){
 						
+						suc_times += 1
+						
+					}else if(msg[i].status == "Failed"){
+						
+						fail_times += 1
+						
+					}else if(msg[i].status == "Running"){
+						
+						running_times += 1
+						
+					}
+					
+					if(msg.length==1){
+						
+						succeed.push(suc_times);
+						
+						failed.push(fail_times);
+						
+						running.push(running_times);
 						
 					}
 					
 				}else if(this.isInSameDay(current, previous)){
 					
+					if(msg[i].status=="Done"){
+						
+						suc_times += 1
+						
+					}else if(msg[i].status == "Failed"){
+						
+						fail_times += 1
+						
+					}else if(msg[i].status == "Running"){
+						
+						running_times += 1
+						
+					}
 					
+					if(i==(msg.length-1)){
+						
+						succeed.push(suc_times);
+						
+						failed.push(fail_times);
+						
+						running.push(running_times);
+						
+					}
 					
 				}else if(!this.isInSameDay(current, previous)){
 					
+					previous = current;
 					
+					succeed.push(suc_times);
+					
+					failed.push(fail_times);
+					
+					running.push(running_times);
+					
+					labels.push(this.getYYYYMMDD(current));
+					
+					suc_times = 0, fail_times = 0, running_times = 0;
+					
+					if(msg[i].status=="Done"){
+						
+						suc_times += 1
+						
+					}else if(msg[i].status == "Failed"){
+						
+						fail_times += 1
+						
+					}else if(msg[i].status == "Running"){
+						
+						running_times += 1
+						
+					}
+						
+					if(i==(msg.length-1)){
+						
+						succeed.push(suc_times);
+						
+						failed.push(fail_times);
+						
+						running.push(running_times);
+						
+					}
 					
 				}
 				
 			}
 			
+			console.log(labels)
 			
-			var ctx = document.getElementById('process-history-chart').getContext('2d');
+			console.log(succeed);
+			
+			
+			var ctx = document.getElementById(type + '-history-chart').getContext('2d');
 			var config = {
 				type: 'line',
 				data: {
-					labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+					labels: labels,
 					datasets: [{
 						label: 'Running',
 						fill: false,
 						backgroundColor: this.chartColors.blue,
 						borderColor: this.chartColors.blue,
-						data: [
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor()
-						],
+						borderDash: [5, 5],
+						data: running,
 					}, {
 						label: 'Succeeded',
 						fill: false,
 						backgroundColor: this.chartColors.green,
 						borderColor: this.chartColors.green,
 						borderDash: [5, 5],
-						data: [
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor()
-						],
+						data: succeed,
 					}, {
 						label: 'Failed',
 						backgroundColor: this.chartColors.red,
 						borderColor: this.chartColors.red,
-						data: [
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor(),
-							this.randomScalingFactor()
-						],
-						fill: true,
+						borderDash: [5, 5],
+						data: failed
 					}]
 				},
 				options: {
 					responsive: true,
 					title: {
 						display: true,
-						text: 'Chart.js Line Chart'
+						text: type + ' Execution History Chart'
 					},
 					tooltips: {
 						mode: 'index',
@@ -298,21 +365,40 @@ GW.chart = {
 							display: true,
 							scaleLabel: {
 								display: true,
-								labelString: 'Month'
+								labelString: 'Date'
 							}
 						}],
 						yAxes: [{
 							display: true,
 							scaleLabel: {
 								display: true,
-								labelString: 'Value'
+								labelString: 'Number of Runs'
 							}
 						}]
 					}
 				}
 			};
 
-			this.process_history_chart = new Chart(ctx, config);
+			this.history_chart[type] = new Chart(ctx, config);
+			
+		},
+
+		
+		renderProcessHistoryChart: function(msg){
+			
+			this.renderUtil("process", msg);
+			
+		},
+		
+		renderWorkflowHistoryChart: function(msg){
+			
+			this.renderUtil("workflow", msg);
+			
+		},
+		
+		renderHostHistoryChart: function(msg){
+			
+			this.renderUtil("host", msg);
 			
 		}
 		

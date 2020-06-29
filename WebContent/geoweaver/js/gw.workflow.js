@@ -1132,6 +1132,13 @@ GW.workflow = {
 		
 		content += "</tbody></table></div>";
 		
+		// create an interactive chart to show all the data
+		
+		content = "<div id=\"workflow-chart-container\" width=\"200\" height=\"100\">"+
+		"<canvas id=\"workflow-history-chart\" style=\"width:200px !important; height:100px !important;\" ></canvas>"+
+		"</div>" + 
+		content;
+		
 		return content;
 		
 	},
@@ -1159,8 +1166,11 @@ GW.workflow = {
 			msg = $.parseJSON(msg);
 			
 			var content = GW.workflow.getTable(msg);
+
+			GW.chart.renderWorkflowHistoryChart(msg);
 			
-			var frame = GW.process.createJSFrameDialog(600, 360, content, "History")
+			
+//			var frame = GW.process.createJSFrameDialog(600, 360, content, "History")
 			
 //			var width = 600; var height = 360;
 //			

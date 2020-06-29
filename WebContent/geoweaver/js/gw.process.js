@@ -662,6 +662,13 @@ GW.process = {
 				
 				GW.chart.renderProcessHistoryChart(msg);
 				
+				console.log("Scroll to the history section.")
+				
+				//the code has bug, when it scrolls to the location, the header toolbar is gone. Reason unknown.
+//				var elmnt = document.getElementById("process-history-container");
+//				 
+//				elmnt.scrollIntoView(true);
+				
 				
 //				var content = "<div class=\"modal-body\" style=\"font-size:12px;\">"+ GW.process.getTable(msg) + "</div>";
 //				
