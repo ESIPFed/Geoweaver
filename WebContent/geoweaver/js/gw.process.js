@@ -621,7 +621,8 @@ GW.process = {
 			
 			// create an interactive chart to show all the data
 			
-			content = "<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
+			content = "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
+			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
 			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:100px !important;\" ></canvas>"+
 			"</div>" + 
 			content;
@@ -661,6 +662,12 @@ GW.process = {
 				$("#process-history-container").html(GW.process.getTable(msg));
 				
 				GW.chart.renderProcessHistoryChart(msg);
+				
+				$("#closeHistory").click(function(){
+					
+					$("#process-history-container").html("");
+					
+				});
 				
 				console.log("Scroll to the history section.")
 				
@@ -806,54 +813,78 @@ GW.process = {
 					
 				}
 				
-				var content = "<div class=\"modal-body\" style=\"font-size:12px;\"><div class=\"form-group row\">"+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"row\">"+
-				"	    	<dt class=\"col col-md-3\">Log Id</dt>"+
-				"	    	<dd class=\"col col-md-7\">"+msg.id+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"form-group row\">"+
-				"	    	<dt class=\"col col-md-3\">Process Id</dt>"+
-				"	    	<dd class=\"col col-md-7\">"+msg.process+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"</div>"+
-				"<div class=\"row\">"+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"row\">"+
-				"	    	<dt class=\"col col-md-3\">Begin Time</dt>"+
-				"	    	<dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"row\">"+
-				"	    	<dt class=\"col col-md-3\">End Time</dt>"+
-				"	    	<dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"</div>"+
-				"<div class=\"row\"> "+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"row\">"+
-				"	    	<dt class=\"col col-md-12\">Input</dt>"+
-				"	    	<dd class=\"col col-md-12 word-wrap\">"+msg.input+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"	<div class=\"col col-md-6\"> "+
-				"		<div class=\"row\">"+
-				"	    	<dt class=\"col col-md-12\">Output</dt>"+
-				"	    	<dd class=\"col col-md-12 word-wrap\" id=\"log-output\">"+output+"</dd>"+
-				"		</div>"+
-				"	</div>"+
-				"</div></div>";
+				console.log("Update the code with the old version")
 				
-				content += '<div class="modal-footer">' +
-					"<button type=\"button\" id=\"retrieve-result\" class=\"btn btn-outline-primary\">Retrieve Result</button> "+
-					'</div>';
+				GW.process.editor.setValue(GW.process.unescape(msg.input));
 				
-				var frame = GW.process.createJSFrameDialog(800, 560, content, 'Process Log of ' + msg.name)
+				output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+				
+				"<p> Execution started at " + msg.begin_time + "</p>"+ 
+				
+				"<p> Execution ended at " + msg.end_time + "</p>"+
+				
+				"<p> The old code used has been refreshed in the code editor.</p>"+
+				
+				"<div>" + 
+				
+				output + "</div>";
+				
+				$("#console-output").html(output);
+				
+				$("#closeLog").click(function(){
+					
+					$("#console-output").html("");
+					
+				});
+				
+//				var content = "<div class=\"modal-body\" style=\"font-size:12px;\"><div class=\"form-group row\">"+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"row\">"+
+//				"	    	<dt class=\"col col-md-3\">Log Id</dt>"+
+//				"	    	<dd class=\"col col-md-7\">"+msg.id+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"form-group row\">"+
+//				"	    	<dt class=\"col col-md-3\">Process Id</dt>"+
+//				"	    	<dd class=\"col col-md-7\">"+msg.process+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"</div>"+
+//				"<div class=\"row\">"+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"row\">"+
+//				"	    	<dt class=\"col col-md-3\">Begin Time</dt>"+
+//				"	    	<dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"row\">"+
+//				"	    	<dt class=\"col col-md-3\">End Time</dt>"+
+//				"	    	<dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"</div>"+
+//				"<div class=\"row\"> "+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"row\">"+
+//				"	    	<dt class=\"col col-md-12\">Input</dt>"+
+//				"	    	<dd class=\"col col-md-12 word-wrap\">"+msg.input+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"	<div class=\"col col-md-6\"> "+
+//				"		<div class=\"row\">"+
+//				"	    	<dt class=\"col col-md-12\">Output</dt>"+
+//				"	    	<dd class=\"col col-md-12 word-wrap\" id=\"log-output\">"+output+"</dd>"+
+//				"		</div>"+
+//				"	</div>"+
+//				"</div></div>";
+//				
+//				content += '<div class="modal-footer">' +
+//					"<button type=\"button\" id=\"retrieve-result\" class=\"btn btn-outline-primary\">Retrieve Result</button> "+
+//					'</div>';
+//				
+//				var frame = GW.process.createJSFrameDialog(800, 560, content, 'Process Log of ' + msg.name)
 				
 //				var width = 800; var height = 560;
 //				
@@ -1189,6 +1220,7 @@ GW.process = {
 			var content = "<div class=\"modal-body\">";
 			
 			content += '   <div class="row" style="padding:0px;margin:0px;">'+
+			   ''+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory">'+
@@ -1219,7 +1251,11 @@ GW.process = {
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
 			   '   </div>' ;
 			
-			content += "<div class=\"row\" style=\"font-size: 12px;\">";
+			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
+		    '   </div>';
+			
+			content += "<div class=\"row\" style=\"font-size: 12px;\">"+
+				"<div class=\"col col-md-12\" ><h4 class=\"border-bottom\">Code Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> </div>";
 			
 			var code = null;
 			
@@ -1263,8 +1299,7 @@ GW.process = {
 			'   <div class="row" style="padding:0px;margin:0px;" >'+
 			'		<div class="col col-md-12" id="console-output"  style="width:100%;" ></div>'+
 		    '   </div>'+
-	        '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
-		    '   </div>'+
+	        
 			'</div>';
 			
 			$("#main-process-content").html(content);
@@ -1302,7 +1337,7 @@ GW.process = {
 				
 				code = val;
 				
-				GW.general.process_code_editor = CodeMirror(document.getElementById("code-embed"), {
+				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
 //			          mode: "text/html",
 //			          extraKeys: {"Ctrl-Space": "autocomplete"},
 			          lineNumbers: true,
@@ -1318,7 +1353,7 @@ GW.process = {
 				    		    	
 				    		    		if(!GW.process.editOn){
 				    		    			
-					    		    		var process_code = GW.general.process_code_editor.getValue()
+					    		    		var process_code = GW.process.editor.getValue()
 					    		    	
 					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
 					    		    	
@@ -1381,7 +1416,7 @@ GW.process = {
 			
 //			$("#code-embed").prop( "disabled", GW.process.editOn );
 			
-			GW.general.process_code_editor.setOption("readOnly", GW.process.editOn)
+			GW.process.editor.setOption("readOnly", GW.process.editOn)
 			
 		},
 		
@@ -2067,7 +2102,7 @@ GW.process = {
 			       '		<select class="form-control" id="hostselector" >'+
 			       '  		</select>'+
 			       '     <div class="col-sm-12 form-check">'+
-			       '		<input type="checkbox" class="form-check-input" id="remember">'+
+			       '		<input type="checkbox" class="form-check-input" id="remember" />'+
 			       '		<label class="form-check-label" for="remember">Remember this process-host connection</label>'+
 			       '     </div>'+
 			       '     </div>'+

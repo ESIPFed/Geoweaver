@@ -352,7 +352,7 @@ GW.chart = {
 						borderDash: [5, 5],
 						data: running,
 					}, {
-						label: 'Succeeded',
+						label: 'Done',
 						fill: false,
 						backgroundColor: this.chartColors.green,
 						borderColor: this.chartColors.green,
