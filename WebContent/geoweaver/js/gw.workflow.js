@@ -84,7 +84,7 @@ GW.workflow = {
 
 		});
 		
-		content += "</div>"+
+		content += "</div><div>"+
 		
 		"<p align=\"right\">"+
 		
@@ -100,7 +100,11 @@ GW.workflow = {
     	
 		workflowid+"','workflow')\"></i>"+
 		
-		"</p>"+
+		"</p></div>"+
+		
+		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
+		
+	    '   </div>'+
 		
 		"</div>";
 		
@@ -1166,6 +1170,8 @@ GW.workflow = {
 			msg = $.parseJSON(msg);
 			
 			var content = GW.workflow.getTable(msg);
+			
+			$("#workflow-history-container").html(content);
 
 			GW.chart.renderWorkflowHistoryChart(msg);
 			

@@ -168,7 +168,7 @@ GW.chart = {
 			
 			this.utils.srand(Date.now());
 			
-			var labels = [], succeed = [], failed = [], running = [];
+			var labels = [], succeed = [], failed = [], running = [], unknown = [];
 			
 //			2019-12-05 15:27:13
 			
@@ -210,7 +210,7 @@ GW.chart = {
 			
 			var previous = null;
 			
-			var suc_times = 0, fail_times = 0, running_times = 0;
+			var suc_times = 0, fail_times = 0, running_times = 0, unknown_times = 0;
 			
 			for(var i=0;i<msg.length;i+=1){
 				
@@ -234,6 +234,10 @@ GW.chart = {
 						
 						running_times += 1
 						
+					}else{
+						
+						unknown_times += 1
+						
 					}
 					
 					if(msg.length==1){
@@ -243,6 +247,8 @@ GW.chart = {
 						failed.push(fail_times);
 						
 						running.push(running_times);
+						
+						unknown.push(unknown_times);
 						
 					}
 					
@@ -260,6 +266,10 @@ GW.chart = {
 						
 						running_times += 1
 						
+					}else{
+						
+						unknown_times += 1
+						
 					}
 					
 					if(i==(msg.length-1)){
@@ -269,6 +279,8 @@ GW.chart = {
 						failed.push(fail_times);
 						
 						running.push(running_times);
+						
+						unknown.push(unknown_times);
 						
 					}
 					
@@ -282,9 +294,11 @@ GW.chart = {
 					
 					running.push(running_times);
 					
+					unknown.push(unknown_times);
+					
 					labels.push(this.getYYYYMMDD(current));
 					
-					suc_times = 0, fail_times = 0, running_times = 0;
+					suc_times = 0, fail_times = 0, running_times = 0, unknown_times = 0;
 					
 					if(msg[i].status=="Done"){
 						
@@ -298,6 +312,10 @@ GW.chart = {
 						
 						running_times += 1
 						
+					}else{
+						
+						unknown_times += 1
+						
 					}
 						
 					if(i==(msg.length-1)){
@@ -307,6 +325,8 @@ GW.chart = {
 						failed.push(fail_times);
 						
 						running.push(running_times);
+						
+						unknown.push(unknown_times);
 						
 					}
 					
@@ -344,6 +364,12 @@ GW.chart = {
 						borderColor: this.chartColors.red,
 						borderDash: [5, 5],
 						data: failed
+					}, {
+						label: 'Unknown',
+						backgroundColor: this.chartColors.grey,
+						borderColor: this.chartColors.grey,
+						borderDash: [5, 5],
+						data: unknown
 					}]
 				},
 				options: {
