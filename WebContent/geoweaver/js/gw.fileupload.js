@@ -278,7 +278,18 @@ GW.fileupload = {
 			"	<button type=\"button\" id=\"upload-close\" class=\"btn btn-outline-primary\">Close</button> "+
 			'</div>';
 			
-			GW.fileupload.uploader = GW.process.createJSFrameDialog(720, 640, content, "File Uploader")
+			content = "<h4 class=\"border-bottom\">File Uploader Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeFileUploader\" >close</button></h4>"+
+				content;
+			
+//			GW.fileupload.uploader = GW.process.createJSFrameDialog(720, 640, content, "File Uploader")
+			
+			$("#host-file-uploader").html(content);
+			
+			$("#closeFileUploader").click(function(){
+				
+				$("#host-file-uploader").html("");
+				
+			});
 			
 //			var width = 720; var height = 640;
 //			
@@ -309,11 +320,11 @@ GW.fileupload = {
 //
 //            });
 	    	
-			GW.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
-				
-                _frame.closeFrame();
-                
-            });
+//			GW.fileupload.uploader.on('closeButton', 'click', (_frame, evt) => {
+//				
+//                _frame.closeFrame();
+//                
+//            });
             
 	    	//Show the window
 //			GW.fileupload.uploader.show();
@@ -410,7 +421,7 @@ GW.fileupload = {
 			
 			$("#upload-close").click(function(){
 				
-				GW.fileupload.uploader.closeFrame();
+//				GW.fileupload.uploader.closeFrame();
 				
 			});
 			
@@ -615,94 +626,98 @@ GW.fileupload = {
 			GW.fileupload.ui_add_log('Start to transfer to file to remote host, please wait until it is finished...');
 			
 			//Two-step encryption is applied here. 
-        	//First, get public key from server.
-        	//Second, encrypt the password and sent the encypted string to server. 
-        	$.ajax({
-        		
-        		url: "key",
-        		
-        		type: "POST",
-        		
-        		data: ""
-        		
-        	}).done(function(msg){
-        		
-        		//encrypt the password using the received rsa key
-        		
-        		msg = $.parseJSON(msg);
-        		
-        		var encrypt = new JSEncrypt();
-        		
-                encrypt.setPublicKey(msg.rsa_public);
-                
-                var encrypted = encrypt.encrypt(GW.fileupload.password);
-                
-//                GW.fileupload.encrypted = encrypted;
-                
-//                GW.fileupload.showUploadDialog();
-                
-                var req = {
-    					
-    					hid: GW.fileupload.hid,
-    					
-    					encrypted: encrypted,
-    					
-    					filepath: url
-    					
-    			}
-    			
-    			$.ajax({
-    				
-    				url: "upload",
-    				
-    				type: "POST",
-    				
-    				data: req
-    				
-    			}).done(function(data){
-    				
-    				data = $.parseJSON(data);
-    				
-    				console.log("response: " + data);
-
-    				GW.fileupload.ui_add_log('Temporary file in Geoweaver temporary folder is removed');
-    				
-    				GW.fileupload.ui_add_log('File has been on remote host!' + data.filename);
-    				
-    				GW.fileupload.ui_multi_update_file_progress(id, 100, 'success', false);
-    			    
-    				GW.fileupload.ui_multi_update_file_status(id, 'success', 'Upload Complete');
-    				
-    				var $btn = GW.fileupload.uploader.getButton("btn-start");
-    				
-    				$btn.enable();
-    				
-    				$btn.stopSpin();
-    				
-    				GW.fileupload.uploader.setClosable(true);
-    				
-    			}).fail(function(){
-    				
-    				console.error("fail to transfer the file to remote host");
-    				
-    				GW.fileupload.ui_add_log('Fail to transfer');
-    				
-    				var $btn = GW.fileupload.uploader.getButton("btn-start");
-    				
-    				$btn.enable();
-    				
-    				$btn.stopSpin();
-    				
-    				GW.fileupload.uploader.setClosable(true);
-    				
-    			});
-                
-        		
-        	}).fail(function(jxr, status){
-        		
-        		console.error("fail to encrypt key");
-        		
-        	});
+	        	//First, get public key from server.
+	        	//Second, encrypt the password and sent the encypted string to server. 
+	        	$.ajax({
+	        		
+	        		url: "key",
+	        		
+	        		type: "POST",
+	        		
+	        		data: ""
+	        		
+	        	}).done(function(msg){
+	        		
+	        		//encrypt the password using the received rsa key
+	        		
+	        		msg = $.parseJSON(msg);
+	        		
+	        		var encrypt = new JSEncrypt();
+	        		
+	                encrypt.setPublicKey(msg.rsa_public);
+	                
+	                var encrypted = encrypt.encrypt(GW.fileupload.password);
+	                
+	//                GW.fileupload.encrypted = encrypted;
+	                
+	//                GW.fileupload.showUploadDialog();
+	                
+	                var req = {
+	    					
+	    					hid: GW.fileupload.hid,
+	    					
+	    					encrypted: encrypted,
+	    					
+	    					filepath: url
+	    					
+	    			}
+	    			
+	    			$.ajax({
+	    				
+	    				url: "upload",
+	    				
+	    				type: "POST",
+	    				
+	    				data: req
+	    				
+	    			}).done(function(data){
+	    				
+	    				data = $.parseJSON(data);
+	    				
+	    				console.log("response: " + data);
+	
+	    				GW.fileupload.ui_add_log('Temporary file in Geoweaver temporary folder is removed');
+	    				
+	    				GW.fileupload.ui_add_log('File has been on remote host!' + data.filename);
+	    				
+	    				GW.fileupload.ui_multi_update_file_progress(id, 100, 'success', false);
+	    			    
+	    				GW.fileupload.ui_multi_update_file_status(id, 'success', 'Upload Complete');
+	    				
+	    				$('#upload-start').prop('disabled', true);
+	    				
+//	    				var $btn = $("#btn-start");
+//	    				
+//	    				$btn.enable();
+//	    				
+//	    				$btn.stopSpin();
+	    				
+	//    				GW.fileupload.uploader.setClosable(true);
+	    				
+	    			}).fail(function(){
+	    				
+	    				console.error("fail to transfer the file to remote host");
+	    				
+	    				GW.fileupload.ui_add_log('Fail to transfer');
+	    				
+//	    				var $btn = $("#btn-start");
+//	    				
+//	    				$btn.enable();
+//	    				
+//	    				$btn.stopSpin();
+	    				
+	    				$('#upload-start').prop('disabled', true);
+	    				
+	//    				GW.fileupload.uploader.setClosable(true);
+	    				
+	    			});
+	                
+	        		
+	        	}).fail(function(jxr, status){
+	        		
+	        		console.error("fail to encrypt key");
+	        		
+	        	});
 			
 		},
 		

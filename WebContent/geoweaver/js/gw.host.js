@@ -647,8 +647,13 @@ GW.host = {
 
 		showSSHCmd: function(token){
 			
-			var frame = GW.process.createJSFrameDialog(600, 540, "<iframe src=\"geoweaver-ssh?token="+
-					token+"\" style=\"height:100%;width:100%;\"></iframe>", "SSH Command Line")
+//			var frame = GW.process.createJSFrameDialog(600, 540, "<iframe src=\"geoweaver-ssh?token="+
+//					token+"\" style=\"height:100%;width:100%;\"></iframe>", "SSH Command Line")
+			
+			var frame = "<iframe src=\"geoweaver-ssh?token="+
+			token+"\" style=\"height:100%;width:100%;\"></iframe>"
+			
+			$("#ssh-terminal-iframe").html(frame);
 			
 //			const frame = GW.workspace.jsFrame.create({
 //		    		title: 'SSH Command Line',
@@ -1189,6 +1194,8 @@ GW.host = {
 			
 			content += "</div>"+
 			
+			"<div class=\"row\"><div class=\"col-md-12\">"+
+			
 			"<p align=\"right\">"+
 			
 				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
@@ -1208,6 +1215,20 @@ GW.host = {
 				hostid+"','host')\"></i>"+
 			
 			"</p>"+
+			
+			"</div></div>"+
+			
+			"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:600px;\" id=\"ssh-terminal-iframe\">"+
+			
+			"</div></div>"+
+			
+			"<div class=\"row\"><div class=\"col-md-12\" id=\"host-file-uploader\">"+
+			
+			"</div></div>"+
+			
+			"<div class=\"row\"><div class=\"col-md-12\" style=\"height:800px;\" id=\"host-file-browser\">"+
+			
+			"</div></div>"+
 			
 			"</div>";
 			
