@@ -650,81 +650,20 @@ GW.host = {
 //			var frame = GW.process.createJSFrameDialog(600, 540, "<iframe src=\"geoweaver-ssh?token="+
 //					token+"\" style=\"height:100%;width:100%;\"></iframe>", "SSH Command Line")
 			
-			var frame = "<iframe src=\"geoweaver-ssh?token="+
-			token+"\" style=\"height:100%;width:100%;\"></iframe>"
+			var frame = "<h4 class=\"border-bottom\">SSH Terminal Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeSSHTerminal\" >close</button></h4>"+
+			
+			"<iframe src=\"geoweaver-ssh?token="+
+			token+"\" style=\"max-height:600px;width:100%;\"></iframe>"
 			
 			$("#ssh-terminal-iframe").html(frame);
 			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'SSH Command Line',
-//		    	    left: 60, top: 60, width: 600, height: 540,
-//		    	    appearanceName: 'yosemite',
-//		    	    html: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>"
-//		    	});
-//		    	
-//		    	frame.setControl({
-//		            maximizeButton: 'maximizeButton',
-//		            demaximizeButton: 'restoreButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            animation: true,
-//		            animationDuration: 200,
-//		
-//		    });
-//			
-//		    frame.on('closeButton', 'click', (_frame, evt) => {
-//		    	GW.host.closeSSH(token);
-//		        _frame.closeFrame();
-//		        
-//		    });
-//    
-//	    	//Show the window
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition(window.innerWidth / 4, window.innerHeight / 4, 'CENTER_TOP');
-			
-//			var dialog = new BootstrapDialog.show({
-//	            
-//				title: 'SSH Command Line',
-//	            
-//	            message: "<iframe src=\"geoweaver-ssh?token="+token+"\" style=\"height:100%;width:100%;\"></iframe>",
-//				
-//	            size: BootstrapDialog.SIZE_WIDE,
-//	            
-//	            onhide: function(dialogRef){
-//	                
-////	            	GW.menu.closeSSH(token);
-//	                
-//	            },
-//	            
-//	            closable: false,
-//	            
-//	            buttons: [{
-//	            	
-//	            	label: 'Create Process',
-//	            	
-//	            	action: function(dialog){
-//	            		
-//	            		console.log("not ready yet");
-//	            		
-//	            	}
-//	            	
-//	            },{
-//	                
-//	            	label: 'Close Connection',
-//	                
-//	                action: function(dialog) {
-//	                	
-//	                	GW.host.closeSSH(token);
-//	                	
-//	                	dialog.close();
-//	                	
-//	                }
-//	            }]
-//	        
-//			});
-//			
-//			GW.menu.setFullScreen(dialog);
+			$("#closeSSHTerminal").click(function(){
+				
+				GW.host.closeSSH(token);
+				
+				$("#ssh-terminal-iframe").html("");
+				
+			})
 			
 		},
 		
@@ -782,46 +721,7 @@ GW.host = {
 				
 				GW.host.ssh_password_frame = GW.process.createJSFrameDialog(500, 340, cont, "Open SSH session")
 				
-//				var width = 500; var height = 340;
-//				
-//				GW.host.ssh_password_frame = GW.workspace.jsFrame.create({
-//			    		title: 'Open SSH session',
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: cont
-//		    	});
-//		    	
-//				GW.host.ssh_password_frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//				GW.host.ssh_password_frame.show();
-//		    	
-//				GW.host.ssh_password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-		    	
 		    	$("#ssh-connect-btn").click(function(){
-		    		
-//		    		var $button = this;
-//                	
-//                	$button.spin();
-//                	
-//                    dialog.enableButtons(false);
 		    		
 		    		$("#ssh-connect-btn").prop("disabled", true);
                 	
@@ -885,10 +785,6 @@ GW.host = {
 	                		
 	                		$("#ssh-connect-btn").prop("disabled", false);
 	                		
-//	                		$button.stopSpin();
-//	                		
-//	                		dialog.enableButtons(true);
-	                		
 	                	});
 	                	
                         
@@ -902,106 +798,6 @@ GW.host = {
 		    		
 		    	});
 				
-//				BootstrapDialog.show({
-//		            
-//					title: 'Open SSH session',
-//		            
-//		            message: cont,
-//		            
-//		            closable: false,
-//		            
-//		            buttons: [{
-//		                
-//		            	label: 'Connect',
-//		                
-//		                action: function(dialog) {
-//		                	
-//		                	var $button = this;
-//		                	
-//		                	$button.spin();
-//		                	
-//		                    dialog.enableButtons(false);
-//		                	
-//		                	$.ajax({
-//		                		
-//		                		url: "key",
-//		                		
-//		                		type: "POST",
-//		                		
-//		                		data: ""
-//		                		
-//		                	}).done(function(msg){
-//		                		
-//		                		//encrypt the password using the received rsa key
-//		                		msg = $.parseJSON(msg);
-//		                		
-//		                		var encrypt = new JSEncrypt();
-//		                		
-//		                        encrypt.setPublicKey(msg.rsa_public);
-//		                        
-//		                        var encrypted = encrypt.encrypt($("#passwd").val());
-//		                        
-//		                        var req = {
-//		                        		host: hostmsg.ip,
-//		                        		port: hostmsg.port,
-//		                        		username: hostmsg.username,
-//		                        		password: encrypted
-//		                        }
-//		                	
-//			                	$.ajax({
-//			                		
-//			                		url: "geoweaver-ssh-login-inbox",
-//			                		
-//			                		method: "POST",
-//			                		
-//			                		data: req
-//			                		
-//			                	}).done(function(msg){
-//			                		
-//			                		msg = $.parseJSON(msg);
-//			                		
-//			                		if(msg.token!=null){
-//			                			
-//				                		//open a dialog to show the SSH command line interface
-//	
-//				                		GW.host.showSSHCmd(msg.token);
-//			                			
-//			                		}else{
-//			                			
-//			                			alert("Fail to open SSH session");
-//			                			
-//			                		}
-//				                	dialog.close();
-//			                		
-//			                	}).fail(function(status){
-//			                		
-//			                		alert("Fail to open SSH session" + status);
-//			                		
-//			                		$button.stopSpin();
-//			                		
-//			                		dialog.enableButtons(true);
-//			                		
-//			                	});
-//			                	
-//		                        
-//		                	});
-//		                	
-//		                	
-//		                	
-//		                }
-//		            }, {
-//		            	
-//		                label: 'Cancel',
-//		                
-//		                action: function(dialog) {
-//		                
-//		                	dialog.close();
-//		                
-//		                }
-//		            
-//		            }]
-//		        
-//				});
 				
 			});
 			
@@ -1045,22 +841,6 @@ GW.host = {
     				
 				one.name + "</a> "+
 				
-//				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
-//            				
-//				one.id + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
-//				
-//				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
-//            				
-//				one.id + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
-//				
-//				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
-//            				
-//				one.id + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>"+
-//				
-//				" <i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
-//            				
-//				one.id+"','host')\"></i>"+
-				
 			" </li>");
 			
 		},
@@ -1076,14 +856,6 @@ GW.host = {
 			$('#hosts').collapse("show");
 			
 		},
-		
-//		validateIP: function(value){
-//			
-//			var ip = "^(?:(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)\.){3}(?:25[0-5]2[0-4][0-9][01]?[0-9][0-9]?)$";
-//			
-//            return value.match(ip);
-//			
-//		},
 		
 		validateIP: function(ipaddress) {  
 			
@@ -1168,7 +940,7 @@ GW.host = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null;
+			var hostid = null, hostip = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -1185,12 +957,23 @@ GW.host = {
 							
 						}
 						
+						if(i=="ip"){
+							
+							hostip = val;
+							
+						}
+						
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
 						"<div class=\"col col-md-7\">"+val+"</div>";
 						
 				}
 
 			});
+			
+			var delbtn = "";
+			
+			if(hostip!="127.0.0.1")
+				delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 			
 			content += "</div>"+
 			
@@ -1210,9 +993,7 @@ GW.host = {
 	        				
 				hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>"+
 				
-				" <i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +
-	        				
-				hostid+"','host')\"></i>"+
+				delbtn +
 			
 			"</p>"+
 			
@@ -1226,7 +1007,7 @@ GW.host = {
 			
 			"</div></div>"+
 			
-			"<div class=\"row\"><div class=\"col-md-12\" style=\"height:800px;\" id=\"host-file-browser\">"+
+			"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-file-browser\">"+
 			
 			"</div></div>"+
 			

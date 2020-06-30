@@ -2,15 +2,17 @@ package gw.ssh;
 
 import java.io.BufferedReader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.utils.BaseTool;
 import gw.web.GeoweaverController;
-import gw.ws.server.ShellServlet;
-
+import gw.ws.server.CommandServlet;
+/**
+ * This class is for command line output
+ * 
+ * @author JensenSun
+ *
+ */
 public class SSHCmdSessionOutput  extends SSHSessionOutput {
 
 	
@@ -18,7 +20,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     	
     	super(in, token);
     	
-    	wsout = ShellServlet.findSessionById(token);
+    	wsout = CommandServlet.findSessionById(token);
     	
     }
     

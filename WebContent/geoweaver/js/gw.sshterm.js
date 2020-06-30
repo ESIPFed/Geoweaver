@@ -227,10 +227,24 @@ function getContextURLPath() {
     return rootUrl;
 }
 
+function getWsPrefixURL (){
+	
+	var s = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/";
+	
+	s +=  "Geoweaver/";
+	
+	console.log("Ws URL Prefix: ", s)
+	
+	return s
+	
+}
+
 $(document).ready(function ($) {
 	
-    ws = new SockJS("shell");
-    
+//    ws = new SockJS("shell");
+	
+	ws = new WebSocket(getWsPrefixURL() + "terminal-socket")
+	
     ws.onopen = function(e) { ws_onopen(e) };
     
     ws.onclose = function(e) { ws_onclose(e) };

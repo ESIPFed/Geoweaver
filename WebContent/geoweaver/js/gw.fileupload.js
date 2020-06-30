@@ -73,35 +73,6 @@ GW.fileupload = {
 				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 				
-//				var width = 320; var height = 200;
-//				
-//				GW.fileupload.password_frame = GW.workspace.jsFrame.create({
-//		    		title: 'Authorization',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	});
-//		    	
-//				GW.fileupload.password_frame.setControl({
-//	                styleDisplay:'inline',
-//	                maximizeButton: 'zoomButton',
-//	                demaximizeButton: 'dezoomButton',
-//	                minimizeButton: 'minimizeButton',
-//	                deminimizeButton: 'deminimizeButton',
-//	                hideButton: 'closeButton',
-//	                animation: true,
-//	                animationDuration: 150,
-//
-//	            });
-				
 				GW.fileupload.password_frame = GW.process.createJSFrameDialog(320, 200, content, "Authorization")
 		    	
 				GW.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
@@ -145,47 +116,6 @@ GW.fileupload = {
 		    		GW.fileupload.password_frame.closeFrame();
 		    		
 		    	});
-				
-//				BootstrapDialog.show({
-//		            
-//					title: 'Authorization',
-//		            
-//		            message: cont,
-//		            
-//		            closable: false,
-//		            
-//		            buttons: [{
-//		                
-//		            	label: 'Submit',
-//		                
-//		                action: function(dialog) {
-//		                	
-//		                	var $button = this;
-//		                	
-//		                	$button.spin();
-//		                	
-//		                	dialog.enableButtons(false);
-//		                	
-//		                	GW.fileupload.password = $('#inputpswd').val()
-//		                	
-//		                	GW.fileupload.showUploadDialog();
-//		                	
-//		                    dialog.close();
-//		                	
-//		                }
-//		            }, {
-//		            	
-//		                label: 'Cancel',
-//		                
-//		                action: function(dialog) {
-//		                	
-//		                	dialog.close();
-//		                
-//		                }
-//		            
-//		            }]
-//		        
-//				});
 				
 			});
 			
@@ -422,6 +352,9 @@ GW.fileupload = {
 			$("#upload-close").click(function(){
 				
 //				GW.fileupload.uploader.closeFrame();
+				
+				$("#host-file-uploader").html("");
+				
 				
 			});
 			
@@ -684,7 +617,7 @@ GW.fileupload = {
 	    			    
 	    				GW.fileupload.ui_multi_update_file_status(id, 'success', 'Upload Complete');
 	    				
-	    				$('#upload-start').prop('disabled', true);
+	    				$('#upload-start').prop('disabled', false);
 	    				
 //	    				var $btn = $("#btn-start");
 //	    				
@@ -706,7 +639,7 @@ GW.fileupload = {
 //	    				
 //	    				$btn.stopSpin();
 	    				
-	    				$('#upload-start').prop('disabled', true);
+	    				$('#upload-start').prop('disabled', false);
 	    				
 	//    				GW.fileupload.uploader.setClosable(true);
 	    				

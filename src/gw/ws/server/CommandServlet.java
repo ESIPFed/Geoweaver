@@ -38,10 +38,10 @@ import gw.web.GeoweaverController;
  *
  */
 //ws://localhost:8080/geoweaver-shell-socket
-@ServerEndpoint(value = "/shell-socket")
-public class ShellServlet {
+@ServerEndpoint(value = "/command-socket")
+public class CommandServlet {
 	
-	Logger logger = Logger.getLogger(ShellServlet.class);
+	Logger logger = Logger.getLogger(CommandServlet.class);
 	
 	private Session wsSession;
 	

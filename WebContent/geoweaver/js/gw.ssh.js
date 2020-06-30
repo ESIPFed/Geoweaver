@@ -41,8 +41,6 @@ GW.ssh = {
 	    
 	    password_cout: 0,
 	    
-//		root : this.getContextURLPath(),
-		
 		key : '',
 		
 		username : '<sec:authentication property="principal" />',
@@ -172,15 +170,6 @@ GW.ssh = {
 	      }
 	      
 	    },
-
-//	    getContextURLPath: function () {
-//	        var rootUrl = location.protocol;
-//	        rootUrl = rootUrl+"//"+location.host;
-//	        var path = location.pathname;
-//	        var tempStr = path.split('/');
-//	        rootUrl = rootUrl+"/"+tempStr[1];
-//	        return rootUrl;
-//	    },
 	    
 	    addlog: function(content){
 	    	var dt = new Date();
@@ -190,11 +179,23 @@ GW.ssh = {
 //	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
 	    },
 	    
+	    getWsPrefixURL: function(){
+	    	
+	    	var s = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/";
+	    	
+	    	s += "Geoweaver/";
+	    	
+	    	console.log("Ws URL Prefix: ", s)
+	    	
+	    	return s;
+	    	
+	    },
+	    
 	    startLogSocket: function(token){
 	    	
 	    	console.log("WebSocket Channel is Openned");
 	    	
-	    	GW.ssh.all_ws = new WebSocket("ws://localhost:8080/Geoweaver/shell-socket");
+	    	GW.ssh.all_ws = new WebSocket(this.getWsPrefixURL() + "command-socket");
 	        
 			GW.ssh.output_div_id = "log_box_id";
 	        

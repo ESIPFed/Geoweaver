@@ -29,13 +29,18 @@ import javax.websocket.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.utils.BaseTool;
 import gw.web.GeoweaverController;
-import gw.ws.server.ShellServlet;
-
+import gw.ws.server.TerminalServlet;
+/**
+ * 
+ * This class is used for monitoring the traffic from SSH session/Terminal console
+ * 
+ * @author JensenSun
+ *
+ */
 public class SSHSessionOutput implements Runnable {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -56,7 +61,7 @@ public class SSHSessionOutput implements Runnable {
         log.info("created");
         this.in = in;
         this.token = token;
-        wsout = ShellServlet.findSessionById(token);
+        wsout = TerminalServlet.findSessionById(token);
     }
     
     public void stop() {
@@ -158,6 +163,10 @@ public class SSHSessionOutput implements Runnable {
 //                	
 //                	prelog.append(line).append("\n");
 //                	
+                }else {
+                	
+                	wsout = TerminalServlet.findSessionById(token);
+                	
                 }
                 
             } catch (Exception e) {
