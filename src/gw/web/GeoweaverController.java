@@ -1088,7 +1088,9 @@ public class GeoweaverController {
         	
         	String password = RSAEncryptTool.getPassword(encrypted, session.getId());
         	
-        	String token = request.getParameter("token");
+//        	String token = request.getParameter("token");
+        	
+        	String token = session.getId(); //use session id as token
         	
 //        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
 //        		
@@ -1096,7 +1098,7 @@ public class GeoweaverController {
 //        		
 //        	}else {
         		
-        		token = new RandomString(16).nextString(); //token must be assigned by server in case somebody else hijacks it
+//        		token = new RandomString(16).nextString(); //token must be assigned by server in case somebody else hijacks it
             	
             	SSHSession sshSession = new SSHSessionImpl();
             	
@@ -1108,7 +1110,7 @@ public class GeoweaverController {
                 
 //                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sessionsByToken.put(token, sshSession); //disposable token, can only be used for once
+                sshSessionManager.sessionsByToken.put(token, sshSession); //token is session id
         		
 //        	}
         	

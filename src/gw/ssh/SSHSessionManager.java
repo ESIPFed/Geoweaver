@@ -43,6 +43,8 @@ public class SSHSessionManager {
 //    public final ConcurrentHashMap<String, SSHSession> sessionsByUsername = new ConcurrentHashMap<String, SSHSession>();   
     /**
      * this map contains all the ssh sessions
+     * Key: HttpSession ID
+     * Value: Open SSH Terminal Session
      */
     public final ConcurrentHashMap<String, SSHSession> sessionsByToken = new ConcurrentHashMap<String, SSHSession>();
     

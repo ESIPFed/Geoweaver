@@ -631,6 +631,8 @@ GW.host = {
 				
 					console.log("SSH session is closed.");
 					
+					$("#ssh-terminal-iframe").html("");
+					
 				}else{
 					
 					console.error("Fail to close SSH.");
@@ -653,7 +655,7 @@ GW.host = {
 			var frame = "<h4 class=\"border-bottom\">SSH Terminal Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeSSHTerminal\" >close</button></h4>"+
 			
 			"<iframe src=\"geoweaver-ssh?token="+
-			token+"\" style=\"max-height:600px;width:100%;\"></iframe>"
+			token+"\" style=\"height: 500px; max-height:600px;width:100%;\"></iframe>"
 			
 			$("#ssh-terminal-iframe").html(frame);
 			
@@ -661,7 +663,7 @@ GW.host = {
 				
 				GW.host.closeSSH(token);
 				
-				$("#ssh-terminal-iframe").html("");
+				$("#ssh-terminal-iframe").html(""); //double remove to make sure it clears every time
 				
 			})
 			
