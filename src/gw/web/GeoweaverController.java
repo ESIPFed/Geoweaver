@@ -219,6 +219,12 @@ public class GeoweaverController {
 		
 	}
 	
+	/**
+	 * Get history of process or workflow
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/log", method = RequestMethod.POST)
     public @ResponseBody String one_history(ModelMap model, WebRequest request){
 		

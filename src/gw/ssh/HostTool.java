@@ -143,7 +143,7 @@ public class HostTool {
 		StringBuffer json = new StringBuffer("[");
 		try {
 			
-			String sql = "select id, name from hosts;";
+			String sql = "select id, ip, name from hosts;";
 			
 			ResultSet rs = DataBaseOperation.query(sql);
 			
@@ -155,13 +155,18 @@ public class HostTool {
 				
 				String hostname = rs.getString("name");
 				
+				String ip = rs.getString("ip");
+				
 				if( num++ != 0) {
 					
 					json.append(",");
 					
 				}
 				
-				json.append("{\"id\":\"").append(hostid).append("\", \"name\": \"").append(hostname).append("\"}");
+				json.append("{\"id\":\"").append(hostid)
+					.append("\", \"name\": \"").append(hostname)
+					.append("\", \"ip\": \"").append(ip)
+					.append("\"}");
 				
 			}
 			

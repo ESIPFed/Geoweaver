@@ -707,7 +707,7 @@ public class WorkflowTool {
 			
 			if(rs.next()) {
 				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				resp.append("{ \"hid\": \"").append(rs.getString("id")).append("\", ");
 				
 				resp.append("\"process\": \"").append(rs.getString("process")).append("\", ");
 				

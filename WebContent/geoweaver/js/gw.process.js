@@ -428,7 +428,7 @@ GW.process = {
 			
 		},
 		
-		recent: function(num){
+		recent: function(num, outside){
 
 			$.ajax({
 				
@@ -463,25 +463,27 @@ GW.process = {
 				
 				for(var i=0;i<msg.length;i++){
 					
-//					var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-//					
-//					if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
-//						
-//						status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-//						
-//					}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
-//						
-//						status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-//						
-//					}
-					
 					var status_col = GW.process.getStatusCol(msg[i].id, msg[i].status);
+					
+					var detailbtn = null;
+					
+					if(outside){
+						
+						detailbtn = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						
+					}else{
+						
+						detailbtn = "      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						
+					}
+					
+//					detailbtn = "      <td><a href=\"javascript: void(0))\">Details</a></td> ";
 					
 					content += "    <tr> "+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 						status_col +
-						"      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> "+
+						detailbtn + 
 						"    </tr>";
 					
 				}
@@ -781,6 +783,102 @@ GW.process = {
 			
 		},
 		
+		showHistoryDetails: function(history_id){
+			
+
+			$.ajax({
+				
+				url: "log",
+				
+				method: "POST",
+				
+				data: "type=process&id=" + history_id
+				
+			}).done(function(msg){
+				
+				if(msg==""){
+					
+					alert("Cannot find the process history in the database.");
+					
+					return;
+					
+				}
+				
+				msg = $.parseJSON(msg);
+				
+				GW.process.display(msg);
+				
+				GW.process.displayOutput(msg);
+				
+			}).fail(function(){
+				
+				
+			});
+			
+			
+		},
+		
+		displayOutput: function(msg){
+			
+			var output = msg.output;
+			
+			if(msg.output=="logfile"){
+				
+				output = "<div class=\"spinner-border\" role=\"status\"> "+
+				"	  <span class=\"sr-only\">Loading...</span> "+
+				"	</div>";
+				
+			}
+			
+			console.log("Update the code with the old version")
+			
+			GW.process.editor.setValue(GW.process.unescape(msg.input));
+			
+			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+			
+			"<p> Execution started at " + msg.begin_time + "</p>"+ 
+			
+			"<p> Execution ended at " + msg.end_time + "</p>"+
+			
+			"<p> The old code used has been refreshed in the code editor.</p>"+
+			
+			"<div>" + 
+			
+			output + "</div>";
+			
+			$("#console-output").html(output);
+			
+			$("#closeLog").click(function(){
+				
+				$("#console-output").html("");
+				
+			});
+			
+		    	$("#retrieve-result").click(function(){
+		    		
+		    		GW.result.showDialog(history_id);
+		    		
+		    	});
+		    	
+		    	if(msg.output=="logfile"){
+					
+				$.get("../temp/" + msg.id + ".log" ).success(function(data){
+					
+					if(data!=null)
+						$("#log-output").text(data);
+					else
+						$("#log-output").text("missing log");
+					
+				}).error(function(){
+					
+					$("#log-output").text("missing log");
+					
+				});
+				
+			}
+			
+		},
+		
 		getHistoryDetails: function(history_id){
 			
 			$.ajax({
@@ -803,196 +901,68 @@ GW.process = {
 				
 				msg = $.parseJSON(msg);
 				
-				var output = msg.output;
+				GW.process.displayOutput(msg);
 				
-				if(msg.output=="logfile"){
-					
-					output = "<div class=\"spinner-border\" role=\"status\"> "+
-					"	  <span class=\"sr-only\">Loading...</span> "+
-					"	</div>";
-					
-				}
-				
-				console.log("Update the code with the old version")
-				
-				GW.process.editor.setValue(GW.process.unescape(msg.input));
-				
-				output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
-				
-				"<p> Execution started at " + msg.begin_time + "</p>"+ 
-				
-				"<p> Execution ended at " + msg.end_time + "</p>"+
-				
-				"<p> The old code used has been refreshed in the code editor.</p>"+
-				
-				"<div>" + 
-				
-				output + "</div>";
-				
-				$("#console-output").html(output);
-				
-				$("#closeLog").click(function(){
-					
-					$("#console-output").html("");
-					
-				});
-				
-//				var content = "<div class=\"modal-body\" style=\"font-size:12px;\"><div class=\"form-group row\">"+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"row\">"+
-//				"	    	<dt class=\"col col-md-3\">Log Id</dt>"+
-//				"	    	<dd class=\"col col-md-7\">"+msg.id+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"form-group row\">"+
-//				"	    	<dt class=\"col col-md-3\">Process Id</dt>"+
-//				"	    	<dd class=\"col col-md-7\">"+msg.process+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"</div>"+
-//				"<div class=\"row\">"+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"row\">"+
-//				"	    	<dt class=\"col col-md-3\">Begin Time</dt>"+
-//				"	    	<dd class=\"col col-md-7\">"+msg.begin_time+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"row\">"+
-//				"	    	<dt class=\"col col-md-3\">End Time</dt>"+
-//				"	    	<dd class=\"col col-md-7\">"+msg.end_time+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"</div>"+
-//				"<div class=\"row\"> "+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"row\">"+
-//				"	    	<dt class=\"col col-md-12\">Input</dt>"+
-//				"	    	<dd class=\"col col-md-12 word-wrap\">"+msg.input+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"	<div class=\"col col-md-6\"> "+
-//				"		<div class=\"row\">"+
-//				"	    	<dt class=\"col col-md-12\">Output</dt>"+
-//				"	    	<dd class=\"col col-md-12 word-wrap\" id=\"log-output\">"+output+"</dd>"+
-//				"		</div>"+
-//				"	</div>"+
-//				"</div></div>";
+//				var output = msg.output;
 //				
-//				content += '<div class="modal-footer">' +
-//					"<button type=\"button\" id=\"retrieve-result\" class=\"btn btn-outline-primary\">Retrieve Result</button> "+
-//					'</div>';
+//				if(msg.output=="logfile"){
+//					
+//					output = "<div class=\"spinner-border\" role=\"status\"> "+
+//					"	  <span class=\"sr-only\">Loading...</span> "+
+//					"	</div>";
+//					
+//				}
 //				
-//				var frame = GW.process.createJSFrameDialog(800, 560, content, 'Process Log of ' + msg.name)
-				
-//				var width = 800; var height = 560;
+//				console.log("Update the code with the old version")
 //				
-//				const frame = GW.workspace.jsFrame.create({
-//			    		title: 'Process Log of ' + msg.name,
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: content
-//		    	});
-//		    	
-//				frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//		    	frame.show();
-//		    	
-//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-		    	
-		    	$("#retrieve-result").click(function(){
-		    		
-		    		GW.result.showDialog(history_id);
-		    		
-		    	});
-		    	
-		    	if(msg.output=="logfile"){
-					
-					$.get("../temp/" + msg.id + ".log" ).success(function(data){
-						
-						if(data!=null)
-							$("#log-output").text(data);
-						else
-							$("#log-output").text("missing log");
-						
-					}).error(function(){
-						
-						$("#log-output").text("missing log");
-						
-					});
-					
-				}
-				
-//				BootstrapDialog.show({
+//				
+//				
+//				GW.process.editor.setValue(GW.process.unescape(msg.input));
+//				
+//				output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+//				
+//				"<p> Execution started at " + msg.begin_time + "</p>"+ 
+//				
+//				"<p> Execution ended at " + msg.end_time + "</p>"+
+//				
+//				"<p> The old code used has been refreshed in the code editor.</p>"+
+//				
+//				"<div>" + 
+//				
+//				output + "</div>";
+//				
+//				$("#console-output").html(output);
+//				
+//				$("#closeLog").click(function(){
 //					
-//					title: "Process Log",
-//					
-//					size: BootstrapDialog.SIZE_WIDE,
-//					
-//					message: content,
-//					
-//					onshown: function(){
-//						
-//						if(msg.output=="logfile"){
-//							
-//							$.get("../temp/" + msg.id + ".log" ).success(function(data){
-//								
-//								if(data!=null)
-//									$("#log-output").text(data);
-//								else
-//									$("#log-output").text("missing log");
-//								
-//							}).error(function(){
-//								
-//								$("#log-output").text("missing log");
-//								
-//							});
-//							
-//						}
-//						
-//					},
-//					
-//					buttons: [{
-//						
-//						label: "Retrieve Result",
-//						
-//						action: function(dialog){
-//							
-//							GW.result.showDialog(history_id);
-//							
-//						}
-//						
-//					},{
-//						
-//						label: "Close",
-//						
-//						action: function(dialog){
-//							
-//							dialog.close();
-//						}
-//						
-//					}]
+//					$("#console-output").html("");
 //					
 //				});
+//				
+//				GW.general.switchTab("process");
+//				
+//			    	$("#retrieve-result").click(function(){
+//			    		
+//			    		GW.result.showDialog(history_id);
+//			    		
+//			    	});
+//			    	
+//			    	if(msg.output=="logfile"){
+//						
+//					$.get("../temp/" + msg.id + ".log" ).success(function(data){
+//						
+//						if(data!=null)
+//							$("#log-output").text(data);
+//						else
+//							$("#log-output").text("missing log");
+//						
+//					}).error(function(){
+//						
+//						$("#log-output").text("missing log");
+//						
+//					});
+//					
+//				}
 				
 			}).fail(function(){
 				
@@ -1213,6 +1183,8 @@ GW.process = {
 			
 		},
 		
+		
+		
 		display: function(msg){
 			
 			GW.process.editOn = false;
@@ -1269,13 +1241,13 @@ GW.process = {
 				
 				if(val!=null&&val!="null"&&val!=""){
 					
-					if(i=="description"){
+					if(i=="description" || i=="category"){
 						
 						code_type = val;
 						
 					}
 					
-					if(i=="code"){
+					if(i=="code" || i=="input"){
 						
 						code = val;
 						
@@ -1729,348 +1701,184 @@ GW.process = {
             
             if(req.desc == "python" || req.desc == "jupyter"){
             	
-            	//check if there is cached environment for this host
-            	
-            	var cached_env = GW.host.findEnvCache(hid);
-            	
-            	if(cached_env!=null){
-            		
-            		req.env = cached_env;
-            		
-            	}else{
-
-                	// retrive the environment list of a host
-                	$.ajax({
-                		
-                		url: "env",
-                		
-                		method: "POST",
-                		
-                		data: "hid=" + hid
-                		
-                	}).done(function(msg){
-                		
-                		msg = $.parseJSON(msg);
-                		
-                		if(GW.process.env_frame != null){
-                			
-                			try{
-                				
-                				GW.process.env_frame.closeFrame();
-                				
-                			}catch(e){}
-                			
-                			GW.process.env_frame = null;
-                			
-                		}
-                		
-                		var envselector = "<div class=\"form-group\">"+
-                			"<label for=\"env-select\">Select Environment:</label>"+
-                			"<select id=\"env-select\" class=\"form-control\"> "+
-                			"	<option value=\"default\">Default</option>"+
-                			"	<option value=\"new\">New</option>";
-                		
-                		GW.process.envlist = msg;
-    						
-                		for(var i=0;i<msg.length;i+=1){
-                			
-                			envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
-                			
-                		}
-                		
-                		envselector += "</select>";
-                		
-                		var content = '<div class="modal-body" style="font-size: 12px;">'+
-                			"<form> "+
-	    					"    <div class=\"row\"> "+
-								envselector +
-							"    </div>"+
-							"	<div class=\"form-group row\"> "+
-							"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
-							"    <div class=\"col-sm-8\"> "+
-							"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
-							"    </div> "+
-							"  	</div>"+
-							"	<div class=\"form-group row\"> "+
-							"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
-							"    <div class=\"col-sm-8\"> "+
-							"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
-							"    </div> "+
-							"  	</div>"+
-							"	<div class=\"form-group row\"> "+
-							"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
-							"    <div class=\"col-sm-8\"> "+
-							"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
-							"    </div> "+
-							"  	</div>"+
-							"</form>"+
-							"	<div class=\"form-group col-sm-10\">"+
-						    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
-						    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
-						    "   </div></div>";
-                		
-                		content += '<div class="modal-footer">' +
-        				"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
-        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-        				'</div>';
-                		
-                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.desc + " environment")
-                		
-//                		var width = 520; var height = 340;
-//            			
-//            			GW.process.env_frame = GW.workspace.jsFrame.create({
-//            	    		title: "Set " + req.desc + " environment",
-//            	    	    left: 0, 
-//            	    	    top: 0, 
-//            	    	    width: width, 
-//            	    	    height: height,
-//            	    	    appearanceName: 'yosemite',
-//            	    	    style: {
-//            	                backgroundColor: 'rgb(255,255,255)',
-//            		    	    fontSize: 12,
-//            	                overflow:'auto'
-//            	            },
-//            	    	    html: content
-//            	    	});
-//            	    	
-//            			GW.process.env_frame.setControl({
-//            	            styleDisplay:'inline',
-//            	            maximizeButton: 'zoomButton',
-//            	            demaximizeButton: 'dezoomButton',
-//            	            minimizeButton: 'minimizeButton',
-//            	            deminimizeButton: 'deminimizeButton',
-//            	            hideButton: 'closeButton',
-//            	            animation: true,
-//            	            animationDuration: 150,
-//            	
-//            	        });
-//            	    	
-//            			GW.process.env_frame.on('closeButton', 'click', (_frame, evt) => {
-//            	            _frame.closeFrame();
-//            	            
-//            	        });
-//            	        
-//            	    	//Show the window
-//            			GW.process.env_frame.show();
-//            	    	
-//            			GW.process.env_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-            	    	
-            			$("#env-select").change(function(e){
-							
-							if($(this).val() == 'default'){
+	            	//check if there is cached environment for this host
+	            	
+	            	var cached_env = GW.host.findEnvCache(hid);
+	            	
+	            	if(cached_env!=null){
+	            		
+	            		req.env = cached_env;
+	            		
+	            	}else{
+	
+	                	// retrive the environment list of a host
+	                	$.ajax({
+	                		
+	                		url: "env",
+	                		
+	                		method: "POST",
+	                		
+	                		data: "hid=" + hid
+	                		
+	                	}).done(function(msg){
+	                		
+	                		msg = $.parseJSON(msg);
+	                		
+	                		if(GW.process.env_frame != null){
+	                			
+	                			try{
+	                				
+	                				GW.process.env_frame.closeFrame();
+	                				
+	                			}catch(e){}
+	                			
+	                			GW.process.env_frame = null;
+	                			
+	                		}
+	                		
+	                		var envselector = "<div class=\"form-group\">"+
+	                			"<label for=\"env-select\">Select Environment:</label>"+
+	                			"<select id=\"env-select\" class=\"form-control\"> "+
+	                			"	<option value=\"default\">Default</option>"+
+	                			"	<option value=\"new\">New</option>";
+	                		
+	                		GW.process.envlist = msg;
+	    						
+	                		for(var i=0;i<msg.length;i+=1){
+	                			
+	                			envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
+	                			
+	                		}
+	                		
+	                		envselector += "</select>";
+	                		
+	                		var content = '<div class="modal-body" style="font-size: 12px;">'+
+	                			"<form> "+
+		    					"    <div class=\"row\"> "+
+									envselector +
+								"    </div>"+
+								"	<div class=\"form-group row\"> "+
+								"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+								"    <div class=\"col-sm-8\"> "+
+								"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+								"    </div> "+
+								"  	</div>"+
+								"	<div class=\"form-group row\"> "+
+								"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+								"    <div class=\"col-sm-8\"> "+
+								"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+								"    </div> "+
+								"  	</div>"+
+								"	<div class=\"form-group row\"> "+
+								"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+								"    <div class=\"col-sm-8\"> "+
+								"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+								"    </div> "+
+								"  	</div>"+
+								"</form>"+
+								"	<div class=\"form-group col-sm-10\">"+
+							    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" checked=\"true\">"+
+							    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+							    "   </div></div>";
+	                		
+	                		content += '<div class="modal-footer">' +
+	        				"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+	        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+	        				'</div>';
+	                		
+	                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.desc + " environment")
+	                		
+	            			$("#env-select").change(function(e){
 								
-								$("#bin").prop('disabled', true);
-								
-								$("#env").prop('disabled', true);
-								
-								$("#basedir").prop('disabled', true);
-								
-							}else{
-								
-								$("#bin").prop('disabled', false);
-								
-								$("#env").prop('disabled', false);
-								
-								$("#basedir").prop('disabled', false);
-								
-								if($(this).val() != 'new'){
+								if($(this).val() == 'default'){
 									
-									var envid = $(this).val();
+									$("#bin").prop('disabled', true);
 									
-									for(var i=0;i<GW.process.envlist.length;i+=1){
+									$("#env").prop('disabled', true);
+									
+									$("#basedir").prop('disabled', true);
+									
+								}else{
+									
+									$("#bin").prop('disabled', false);
+									
+									$("#env").prop('disabled', false);
+									
+									$("#basedir").prop('disabled', false);
+									
+									if($(this).val() != 'new'){
 										
-										var env = GW.process.envlist[i];
+										var envid = $(this).val();
 										
-										if(env.id == envid){
+										for(var i=0;i<GW.process.envlist.length;i+=1){
 											
-
-        									$("#bin").val(env.bin);
-        									
-        									$("#env").val(env.pyenv);
-        									
-        									$("#basedir").val(env.basedir);
-        									
-        									break;
+											var env = GW.process.envlist[i];
+											
+											if(env.id == envid){
+												
+		        									$("#bin").val(env.bin);
+		        									
+		        									$("#env").val(env.pyenv);
+		        									
+		        									$("#basedir").val(env.basedir);
+		        									
+		        									break;
+		        									
+											}
+											
 										}
-										
 										
 									}
 									
 								}
 								
-							}
+							})
 							
-						})
-						
-						$("#process-confirm-btn").click(function(){
-							
-							if($(this).val() == 'default'){
-    	                		
-    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-    	                		
-    	                	}else{
-    	                		
-    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-    	                		
-    	                	}
-    	                	
-    	                	if($("#remember").prop('checked')){
-    	                		
-    	                		GW.host.setEnvCache(hid, req.env);
-    	                		
-    	                	}
-    	                	
-    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-    	                	
-    	                	GW.process.env_frame.closeFrame();
-							
-						});
-            			
-            			$("#process-cancel-btn").click(function(){
-            				
-            				GW.process.env_frame.closeFrame();
-            				
-            			});
-                		
-//                		BootstrapDialog.show({
-//            				
-//            				title: "Set " + req.desc + " environment",
-//            				
-//            				message: "<form> "+
-//        					"    <div class=\"row\"> "+
-//        						envselector +
-//        					"    </div>"+
-//        					"	<div class=\"form-group row\"> "+
-//        					"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
-//        					"    <div class=\"col-sm-8\"> "+
-//        					"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
-//        					"    </div> "+
-//        					"  	</div>"+
-//        					"	<div class=\"form-group row\"> "+
-//        					"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
-//        					"    <div class=\"col-sm-8\"> "+
-//        					"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
-//        					"    </div> "+
-//        					"  	</div>"+
-//        					"	<div class=\"form-group row\"> "+
-//        					"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
-//        					"    <div class=\"col-sm-8\"> "+
-//        					"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
-//        					"    </div> "+
-//        					"  	</div>"+
-//        					"</form>"+
-//        					"	<div class=\"form-group col-sm-10\">"+
-//        				    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\">"+
-//        				    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
-//        				    "   </div>",
-//        					
-//        					onshown: function(){
-//        						
-//        						$("#env-select").change(function(e){
-//        							
-//        							if($(this).val() == 'default'){
-//        								
-//        								$("#bin").prop('disabled', true);
-//        								
-//        								$("#env").prop('disabled', true);
-//        								
-//        								$("#basedir").prop('disabled', true);
-//        								
-//        							}else{
-//        								
-//        								$("#bin").prop('disabled', false);
-//        								
-//        								$("#env").prop('disabled', false);
-//        								
-//        								$("#basedir").prop('disabled', false);
-//        								
-//        								if($(this).val() != 'new'){
-//        									
-//        									var envid = $(this).val();
-//        									
-//        									for(var i=0;i<GW.process.envlist.length;i+=1){
-//        										
-//        										var env = GW.process.envlist[i];
-//        										
-//        										if(env.id == envid){
-//        											
-//
-//                									$("#bin").val(env.bin);
-//                									
-//                									$("#env").val(env.pyenv);
-//                									
-//                									$("#basedir").val(env.basedir);
-//                									
-//                									break;
-//        										}
-//        										
-//        										
-//        									}
-//        									
-//        								}
-//        								
-//        							}
-//        							
-//        						})
-//        						
-//        					},
-//            				
-//            				buttons: [{
-//            					
-//            	            	label: 'Confirm',
-//            	                
-//            	                action: function(dialog){
-//            	                	
-//            	                	if($(this).val() == 'default'){
-//            	                		
-//            	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-//            	                		
-//            	                	}else{
-//            	                		
-//            	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-//            	                		
-//            	                	}
-//            	                	
-//            	                	if($("#remember").prop('checked')){
-//            	                		
-//            	                		GW.host.setEnvCache(hid, req.env);
-//            	                		
-//            	                	}
-//            	                	
-//            	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-//            	                	
-//            	                	dialog.close();
-//            	                	
-//            	                }
-//            					
-//            				},{
-//            					
-//            					label: 'Cancel',
-//            					
-//            					action: function(dialog){
-//            						
-//            						dialog.close();
-//            						
-//            					}
-//            					
-//            				}]
-//            			});
-                		
-                	}).fail(function(jxr, status){
-        				
-        				console.error("fail to get the environment on this host");
-        				
-        			});
-        			
-            		
-            	}
+							$("#process-confirm-btn").click(function(){
+								
+								if($(this).val() == 'default'){
+	    	                		
+			    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
+			    	                		
+			    	                	}else{
+			    	                		
+			    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+			    	                		
+			    	                	}
+			    	                	
+			    	                	if($("#remember").prop('checked')){
+			    	                		
+			    	                		GW.host.setEnvCache(hid, req.env);
+			    	                		
+			    	                	}
+			    	                	
+			    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+			    	                	
+			    	                	GW.process.env_frame.closeFrame();
+								
+							});
+	            			
+	            			$("#process-cancel-btn").click(function(){
+	            				
+	            				GW.process.env_frame.closeFrame();
+	            				
+	            			});
+	                		
+	                	}).fail(function(jxr, status){
+	        				
+	        				console.error("fail to get the environment on this host");
+	        				
+	        			});
+	        			
+	            		
+	            	}
             	
     			
-    		}else{
-    			
-    			GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-    			
-    		}
+	    		}else{
+	    			
+	    			GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+	    			
+	    		}
 			
 		},
 		
@@ -2085,6 +1893,7 @@ GW.process = {
 //			GW.host.checklive(selectedhostid, hostcallback);
 //			
 //		},
+		
 		
 		runProcess: function(pid, pname, desc){
 			
@@ -2102,7 +1911,7 @@ GW.process = {
 			       '		<select class="form-control" id="hostselector" >'+
 			       '  		</select>'+
 			       '     <div class="col-sm-12 form-check">'+
-			       '		<input type="checkbox" class="form-check-input" id="remember" />'+
+			       '		<input type="checkbox" class="form-check-input" id="remember" checked=\"true\" />'+
 			       '		<label class="form-check-label" for="remember">Remember this process-host connection</label>'+
 			       '     </div>'+
 			       '     </div>'+
@@ -2124,167 +1933,66 @@ GW.process = {
 					
 				}
 				
-				GW.process.host_frame = GW.process.createJSFrameDialog(500, 540, content, 'Select a host')
+				GW.process.host_frame = GW.process.createJSFrameDialog(550, 280, content, 'Select a host')
 				
-//				var width = 500; var height = 540;
-//				
-//				GW.process.host_frame = GW.workspace.jsFrame.create({
-//			    		title: 'Select a host',
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: content
-//			    	    
-//		    	});
-//		    	
-//				GW.process.host_frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//				GW.process.host_frame.show();
-//		    	
-//				GW.process.host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-		    	
-		    	$.ajax({
-            		
-            		url: "list",
-            		
-            		method: "POST",
-            		
-            		data: "type=host"
-            		
-            	}).done(function(msg){
-            		
-            		msg = $.parseJSON(msg);
-            		
-            		$("#hostselector").find('option').remove().end();
-            		
-            		for(var i=0;i<msg.length;i++){
-            			
-            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-            			
-            		}
-            		
-            	}).fail(function(jxr, status){
-    				
-    				console.error("fail to list host");
-    				
-    			});
-		    	
-		    	$("#host-execute-btn").click(function(){
-		    		
-		    		var hostid = $("#hostselector").children(":selected").attr("id");
-                	
-                	console.log("selected host: " + hostid);
-                	
-                	//remember the process-host connection
-                	if(document.getElementById('remember').checked) {
-                	    
-                		GW.process.setCache(pid, hostid); //remember s
-                		
-                	}
-                	
-                	GW.process.executeProcess(pid, hostid, desc);
-                	
-                	GW.process.host_frame.closeFrame();
-		    		
-		    	});
-		    	
-		    	$("#host-cancel-btn").click(function(){
-		    		
-		    		GW.process.host_frame.closeFrame();
-		    		
-		    	});
-				
-//				BootstrapDialog.show({
-//					
-//					title: "Select a host",
-//					
-//					closable: false,
-//					
-//		            message: content,
-//		            
-//		            onshown: function(){
-//		            	
-//		            	$.ajax({
-//		            		
-//		            		url: "list",
-//		            		
-//		            		method: "POST",
-//		            		
-//		            		data: "type=host"
-//		            		
-//		            	}).done(function(msg){
-//		            		
-//		            		msg = $.parseJSON(msg);
-//		            		
-//		            		$("#hostselector").find('option').remove().end();
-//		            		
-//		            		for(var i=0;i<msg.length;i++){
-//		            			
-//		            			$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-//		            			
-//		            		}
-//		            		
-//		            	}).fail(function(jxr, status){
-//		    				
-//		    				console.error("fail to list host");
-//		    				
-//		    			});
-//		            	
-//		            },
-//		            
-//		            buttons: [{
-//			            
-//		            	label: 'Execute',
-//		                
-//		                action: function(dialogItself){
-//		                	
-//		                	var hostid = $("#hostselector").children(":selected").attr("id");
-//		                	
-//		                	console.log("selected host: " + hostid);
-//		                	
-//		                	//remember the process-host connection
-//		                	if(document.getElementById('remember').checked) {
-//		                	    
-//		                		GW.process.setCache(pid, hostid); //remember s
-//		                		
-//		                	}
-//		                	
-//		                	GW.process.executeProcess(pid, hostid, desc);
-//		                	
-//		                    dialogItself.close();
-//		                    
-//		                }
-//		        
-//		            },{
-//			            
-//		            	label: 'Cancel',
-//		                
-//		                action: function(dialogItself){
-//		                	
-//		                    dialogItself.close();
-//		                    
-//		                }
-//		        
-//		            }]
-//		            
-//				});
+			    	$.ajax({
+	            		
+	            		url: "list",
+	            		
+	            		method: "POST",
+	            		
+	            		data: "type=host"
+	            		
+	            	}).done(function(msg){
+	            		
+	            		msg = $.parseJSON(msg);
+	            		
+	            		$("#hostselector").find('option').remove().end();
+	            		
+	            		for(var i=0;i<msg.length;i++){
+	            			
+	            			if(GW.host.isLocal(msg[i])){
+	            				
+	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" selected=\"selected\">"+msg[i].name+"</option>");
+	            				
+	            			}else{
+	            				
+	            				$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+	            				
+	            			}
+	            			
+	            		}
+	            		
+	            	}).fail(function(jxr, status){
+	    				
+	    				console.error("fail to list host");
+	    				
+	    			});
+			    	
+			    	$("#host-execute-btn").click(function(){
+			    		
+			    		var hostid = $("#hostselector").children(":selected").attr("id");
+	                	
+	                	console.log("selected host: " + hostid);
+	                	
+	                	//remember the process-host connection
+	                	if(document.getElementById('remember').checked) {
+	                	    
+	                		GW.process.setCache(pid, hostid); //remember s
+	                		
+	                	}
+	                	
+	                	GW.process.executeProcess(pid, hostid, desc);
+	                	
+	                	GW.process.host_frame.closeFrame();
+			    		
+			    	});
+			    	
+			    	$("#host-cancel-btn").click(function(){
+			    		
+			    		GW.process.host_frame.closeFrame();
+			    		
+			    	});
 				
 			}else{
 				

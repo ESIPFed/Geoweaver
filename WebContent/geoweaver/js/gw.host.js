@@ -111,6 +111,20 @@ GW.host = {
 			
 		},
 		
+		isLocal: function(msg){
+			
+			var is = false;
+			
+			if(msg.ip=="127.0.0.1"){
+				
+				is = true;
+				
+			}
+			
+			return is;
+			
+		},
+		
 		encrypt: function(hid, pstext, req, dialog, button, business_callback){
 			
 			//Two-step encryption is applied here. 

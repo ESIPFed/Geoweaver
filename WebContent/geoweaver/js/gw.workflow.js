@@ -1344,7 +1344,7 @@ GW.workflow = {
 				content += "    <tr> "+
 					"      <td>"+msg.input[i]+"</td> "+
 					"      <td>"+msg.output[i]+"</td> "+
-					"      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg.output[i]+"')\">Check</a></td> "+
+					"      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg.output[i]+"')\">Check</a></td> "+
 					"    </tr>";
 				
 			}

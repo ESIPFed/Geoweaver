@@ -1095,9 +1095,9 @@ public class ProcessTool {
 			
 			if(rs.next()) {
 				
-				resp.append("{ \"id\": \"").append(rs.getString("history.id")).append("\", ");
+				resp.append("{ \"hid\": \"").append(rs.getString("history.id")).append("\", ");
 				
-				resp.append("\"process\": \"").append(rs.getString("process")).append("\", ");
+				resp.append("\"id\": \"").append(rs.getString("process")).append("\", ");
 				
 				resp.append("\"name\": \"").append(rs.getString("name")).append("\", ");
 				
@@ -1108,6 +1108,8 @@ public class ProcessTool {
 				resp.append("\"input\":\"").append(escape(rs.getString("input"))).append("\", ");
 				
 				resp.append("\"output\":\"").append(escape(rs.getString("output"))).append("\", ");
+				
+				resp.append("\"category\":\"").append(escape(rs.getString("description"))).append("\", ");
 				
 				resp.append("\"host\":\"").append(escape(rs.getString("host"))).append("\", ");
 				

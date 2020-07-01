@@ -54,12 +54,12 @@ GW.toolbar = {
 			var frame = GW.process.createJSFrameDialog(300, 180, content, "Recent History");
 			
             frame.on('#history-process-d', 'click', (_frame, evt) => {
-            	GW.process.recent(20);
+            	GW.process.recent(20, true);
             	_frame.closeFrame();
             });
             
             frame.on('#history-workflow-d', 'click', (_frame, evt) => {
-            	GW.workflow.recent(20);
+            	GW.workflow.recent(20, true);
             	_frame.closeFrame();
             });
             
