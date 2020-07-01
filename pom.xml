@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Geoweaver</artifactId>
-    <version>0.8.3</version>
+    <version>0.8.4</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
@@ -280,11 +280,11 @@
 		    <version>1.4.199</version>
 		    <!-- <scope>test</scope> -->
 		</dependency>
-        <dependency>
+        <!-- <dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
 		    <version>5.1.42</version>
-		</dependency>
+		</dependency> -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
@@ -338,6 +338,11 @@
             <version>1.9.10</version>
         </dependency>
         
+        <dependency>
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>tomcat-websocket</artifactId>
+		    <version>8.5.43</version>
+		</dependency>
 		
     </dependencies>
     <organization>
