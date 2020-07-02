@@ -470,59 +470,6 @@ GW.host = {
 				
 			});
 			
-//			BootstrapDialog.show({
-//				
-//				title: "Host Password",
-//				
-//				closable: false,
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//	         	label: 'Confirm',
-//	             
-//	             action: function(dialogItself){
-//	             	
-//	             	var $button = this;
-//	             	
-//	             	$button.spin();
-//	             	
-//	             	dialogItself.enableButtons(false);
-//	             	
-//	             	var shortpasswds = [];
-//	             	
-//	             	for(var i=0;i<newhosts.length;i++){
-//	             		
-//	             		shortpasswds.push($("#inputpswd_" + i).val());
-//	             		
-//	             		if(document.getElementById('remember').checked) {
-//	             			
-//	             			GW.host.setCache(newhosts[i].id, $("#inputpswd_" + i).val());
-//	             			
-//	             		}
-//	             		
-//	             	}
-//	             	
-//	             	var passwds = GW.host.extendList(shortpasswds, newhosts, hosts);
-//	             	
-//	             	GW.host.encrypt_m(hosts, passwds, req, dialogItself, $button, business_callback);
-//	             	
-//	             }
-//					
-//				},{
-//					
-//					label: 'Cancel',
-//	             
-//			        action: function(dialogItself){
-//			         	
-//			             dialogItself.close();
-//			             
-//			        }
-//					
-//				}]
-//				
-//			});
 			
 		},
 		
@@ -540,8 +487,6 @@ GW.host = {
 				
 				GW.host.encrypt_m(hosts, passwds, req, null, null, business_callback);
 			}
-			
-			
 			
 		},
 		
@@ -997,6 +942,10 @@ GW.host = {
 			
 			"<p align=\"right\">"+
 			
+				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
+				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+			
 				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
 				
 				hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
@@ -1034,6 +983,13 @@ GW.host = {
 			
 //			switchTab(document.getElementById("main-host-tab"), "main-host-info");
 			GW.general.switchTab("host");
+			
+		},
+		
+		recent: function(hid){
+			
+			
+			
 			
 		},
 		
