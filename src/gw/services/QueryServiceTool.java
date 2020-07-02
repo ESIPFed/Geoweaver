@@ -13,6 +13,7 @@ import gw.database.DataBaseOperation;
 *@time Feb 22, 2017 10:52:54 AM
 *Original aim is to support CyberConnector.
 */
+@Deprecated
 public class QueryServiceTool {
 	
 	

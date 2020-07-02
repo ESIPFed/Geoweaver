@@ -1,4 +1,4 @@
-package gw.ssh;
+package gw.tools;
 
 
 import java.sql.ResultSet;
@@ -15,11 +15,35 @@ public class HostTool {
 
 	static Logger logger = Logger.getLogger(HostTool.class);
 	
-	
-	
-	public static String detail(String id) {
+
+	/**
+	 * Judge if the host is localhost
+	 * @param hid
+	 * @return
+	 */
+	public static boolean islocal(String hid) {
 		
-		String detail = null;
+		boolean is = false;
+		
+		JSONObject obj = HostTool.detailJSONObj(hid);
+		
+		if("127.0.0.1".equals(obj.get("ip"))) {
+			
+			is = true;
+			
+		}
+		
+		return is;
+		
+	}
+	
+	
+	/**
+	 * Detail JSON object
+	 * @param id
+	 * @return
+	 */
+	public static JSONObject detailJSONObj(String id) {
 		
 		String sql = "select * from hosts where id = '" + id + "';";
 		
@@ -83,9 +107,6 @@ public class HostTool {
 
 			}
 			
-			detail = obj.toJSONString();
-			
-			logger.info(detail);
 			
 		} catch (Exception e) {
 			
@@ -97,6 +118,14 @@ public class HostTool {
 			
 		}
 
+		
+		return obj;
+		
+	}
+	
+	public static String detail(String id) {
+		
+		String detail = detailJSONObj(id).toJSONString();
 		
 		return detail;
 		

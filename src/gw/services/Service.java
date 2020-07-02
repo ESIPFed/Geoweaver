@@ -1,10 +1,12 @@
 package gw.services;
 /**
 *Class Service.java
+*Probably in future, this will be reactivated when Geoweaver want to support RESTful web services
 *@author Ziheng Sun
 *@time Feb 2, 2017 5:12:36 PM
 *Original aim is to support CyberConnector.
 */
+@Deprecated
 public class Service {
 	
 	String id, home, name, username, desc, status, expiration, majorversion, minorversion, keywords, servicetype, accessurl, wsdlurl, registerdate;

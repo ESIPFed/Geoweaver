@@ -52,12 +52,6 @@ GW.menu = {
 			
 			dialog.getModalBody().children()[0].children[0].style.height = '100%';
 			
-//			dialog.getModalHeader().css('height', '10%');
-//			
-//			dialog.getModalFooter().css('height', '10%');
-			
-//			dialog.open();
-			
 		},
 		
 		unescape: function(value){
@@ -104,70 +98,6 @@ GW.menu = {
 					GW.workflow.display(msg);
 					
 				}
-				
-//				GW.process.createJSFrameDialog(500, 480, content, "Details");
-				
-//				var width = 500; var height = 480;
-//				
-//				const frame = GW.workspace.jsFrame.create({
-//			    		title: 'Details',
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: content
-//		    	});
-//		    	
-//				frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//		    	frame.show();
-//		    	
-//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-				
-//				BootstrapDialog.show({
-//		            
-//					title: 'Details',
-//		            
-//		            message: content,
-//		            
-//		            buttons: [{
-//		                
-//		            	label: 'Ok',
-//		                
-//		                action: function(dialog) {
-//		                	
-//		                	dialog.close();
-//		                	
-//		                }
-//		            }, {
-//		            	
-//		                label: 'Cancel',
-//		                
-//		                action: function(dialog) {
-//		                
-//		                	dialog.close();
-//		                
-//		                }
-//		            
-//		            }]
-//		        
-//				});
 				
 			});
 			
@@ -224,45 +154,6 @@ GW.menu = {
 			
 			GW.menu.del_frame = GW.process.createJSFrameDialog(320, 150, content, "Alert")
 			
-//			var width = 320; var height = 150;
-//			
-//			GW.menu.del_frame = GW.workspace.jsFrame.create({
-//	    		title: 'Alert',
-//	    	    left: 0, 
-//	    	    top: 0, 
-//	    	    width: width, 
-//	    	    height: height,
-//	    	    appearanceName: 'yosemite',
-//	    	    style: {
-//                    backgroundColor: 'rgb(255,255,255)',
-//		    	    fontSize: 12,
-//                    overflow:'auto'
-//                },
-//	    	    html: content
-//	    	});
-//	    	
-//			GW.menu.del_frame.setControl({
-//                styleDisplay:'inline',
-//                maximizeButton: 'zoomButton',
-//                demaximizeButton: 'dezoomButton',
-//                minimizeButton: 'minimizeButton',
-//                deminimizeButton: 'deminimizeButton',
-//                hideButton: 'closeButton',
-//                animation: true,
-//                animationDuration: 150,
-//
-//            });
-//	    	
-//			GW.menu.del_frame.on('closeButton', 'click', (_frame, evt) => {
-//                _frame.closeFrame();
-//                
-//            });
-//            
-//	    	//Show the window
-//			GW.menu.del_frame.show();
-//	    	
-//			GW.menu.del_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
 			$("#del-confirm-btn").click(function(){
 				
 				$.ajax({
@@ -312,72 +203,6 @@ GW.menu = {
 				
 			});
 			
-//			BootstrapDialog.show({
-//	            
-//				title: 'Alert',
-//	            
-//	            message: 'Are you sure to remove this '+type+'?',
-//	            
-//	            buttons: [{
-//	                
-//	            	label: 'Yes',
-//	                
-//	                action: function(dialog) {
-//	                	
-//	                	$.ajax({
-//	        				
-//	        				url: "del",
-//	        				
-//	        				method: "POST",
-//	        				
-//	        				//remove the database record
-//	        				data: "id="+id + "&type=" + type
-//	        				
-//	        			}).done(function(msg){
-//	        				
-//	        				if(msg=="done"){
-//	        					
-//	        					//remove the menu item
-//	        					$("#"+type+"-" + id).remove();
-//	        					
-//	        					if(type=="process"){
-//	        						
-//	        						//remove the workspace object
-//	        						GW.workspace.theGraph.removeNodes(id);
-//	        						
-//	        					}
-//	        					
-//	        					console.log("the element is removed " + type + "-" + id);
-//	        					
-//	        				}else{
-//	        					
-//	        					console.error("fail to remove " + id);
-//	        					
-//	        				}
-//	        				
-//	        			}).fail(function(jxr, status){
-//	        				
-//	        				console.error("fail to delete " + status);
-//	        				
-//	        			});
-//	                	
-//	                	dialog.close();
-//	                	
-//	                }
-//	            }, {
-//	            	
-//	                label: 'Cancel',
-//	                
-//	                action: function(dialog) {
-//	                
-//	                	dialog.close();
-//	                
-//	                }
-//	            
-//	            }]
-//	        
-//			});
-			
 		},
 		
 		listen: function(type){
@@ -399,12 +224,6 @@ GW.menu = {
 				}
 				
 			});
-			
-//			$("#testhost").click(function(){
-//				
-//				GW.menu.showSSHCmd("test111");
-//				
-//			});
 			
 		}
 		

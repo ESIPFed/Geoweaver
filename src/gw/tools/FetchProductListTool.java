@@ -13,6 +13,7 @@ import gw.database.DataBaseBroker;
  *@time Oct 30, 2015 4:57:08 PM
  *Original aim is to support CyberConnector.
  */
+@Deprecated
 public class FetchProductListTool {
 	
 	public String getProductListJSON(){

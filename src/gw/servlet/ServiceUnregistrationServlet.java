@@ -14,6 +14,7 @@ import gw.services.RegisterServiceTool;
 /**
  * Servlet implementation class ServiceUnregistrationServlet
  */
+@Deprecated
 public class ServiceUnregistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

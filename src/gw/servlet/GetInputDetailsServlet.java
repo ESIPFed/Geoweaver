@@ -16,6 +16,7 @@ import gw.utils.BaseTool;
 /**
  * Servlet implementation class GetInputDetailsServlet
  */
+@Deprecated
 public class GetInputDetailsServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;

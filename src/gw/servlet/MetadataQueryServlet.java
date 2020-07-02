@@ -19,6 +19,7 @@ import gw.utils.BaseTool;
  * @date 2015.8.11
  * Aim to support CyberConnector
  */
+@Deprecated
 public class MetadataQueryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     

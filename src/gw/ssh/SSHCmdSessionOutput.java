@@ -45,7 +45,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     	
     	int nullnumber = 0;
     	
-    	SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(token);
+    	SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(token);
     	
     	if(!BaseTool.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
     	

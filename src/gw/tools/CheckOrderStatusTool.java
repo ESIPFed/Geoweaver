@@ -8,6 +8,7 @@ import gw.database.DataBaseOperation;
  *@time Sep 2, 2015 4:54:22 PM
  *Original aim is to support CyberConnector.
  */
+@Deprecated
 public class CheckOrderStatusTool {
 	String on = null;
 	/**

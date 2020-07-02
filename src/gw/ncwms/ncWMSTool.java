@@ -4,6 +4,12 @@ import gw.utils.BaseTool;
 import gw.utils.MyHttpUtils;
 import gw.utils.SysDir;
 
+/**
+ * not used in Geoweaver
+ * @author jensensun
+ *
+ */
+@Deprecated
 public class ncWMSTool {
 	
 	public static void addDataset(String querystr) {

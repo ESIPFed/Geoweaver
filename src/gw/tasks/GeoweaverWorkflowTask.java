@@ -12,12 +12,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
-import gw.ssh.HostTool;
-import gw.ssh.ProcessTool;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
-import gw.ssh.Workflow;
-import gw.ssh.WorkflowTool;
+import gw.tools.HostTool;
+import gw.tools.ProcessTool;
+import gw.tools.Workflow;
+import gw.tools.WorkflowTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.STATUS;
@@ -299,7 +299,7 @@ public class GeoweaverWorkflowTask extends Task {
 //					
 //					session.login(hid, password, token, false);
 //					
-//					GeoweaverController.sshSessionManager.sessionsByToken.put(token, session);
+//					GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
 //					
 //					session.runBash(code, nextid, true);  //every task only has no more than one active SSH session at a time
 //					

@@ -96,7 +96,7 @@ public class CommandServlet {
         	
 //        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
         	
-            SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
+            SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
             
             if (sshSession == null) {
                 
@@ -104,16 +104,16 @@ public class CommandServlet {
                 
                 // TODO is there a better way to do this?
                 // Can the client send the websocket session id and username in a REST call to link them up?
-                sshSession = GeoweaverController.sshSessionManager.sessionsByToken.get(message);
+                sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(message);
                 
 //                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
                 if(sshSession!=null) {
                 	
 //                	sshSession.setWebSocketSession(session);
                     
-                	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
+                	GeoweaverController.sshSessionManager.sshSessionByToken.put(session.getId(), sshSession);
                 	
-//                	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
+//                	GeoweaverController.sshSessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
                     
                 }else {
                 	
@@ -161,7 +161,7 @@ public class CommandServlet {
 //                
 //                // TODO is there a better way to do this?
 //                // Can the client send the websocket session id and username in a REST call to link them up?
-//                sshSession = GeoweaverController.sshSessionManager.sessionsByToken.get(message);
+//                sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(message);
 //                
 ////                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
 //                if(sshSession!=null) {
@@ -170,7 +170,7 @@ public class CommandServlet {
 //                    
 //                	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
 //                	
-////                	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
+////                	GeoweaverController.sshSessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
 //                    
 //                }else {
 //                	
@@ -230,11 +230,11 @@ public class CommandServlet {
             //close SSH session
             if(GeoweaverController.sshSessionManager!=null) {
             	
-            	SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
-                if (sshSession != null && sshSession.isShell()) { //only close when it is shell
+            	SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
+                if (sshSession != null && sshSession.isTerminal()) { //only close when it is shell
                     sshSession.logout();
                 }
-                GeoweaverController.sshSessionManager.sessionsByWebsocketID.remove(session.getId());
+                GeoweaverController.sshSessionManager.sshSessionByToken.remove(session.getId());
             	
             }
             peers.remove(session.getId());
