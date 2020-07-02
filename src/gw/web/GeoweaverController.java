@@ -26,14 +26,14 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import gw.search.GWSearchTool;
-import gw.ssh.FileTool;
-import gw.ssh.HostTool;
-import gw.ssh.ProcessTool;
 import gw.ssh.RSAEncryptTool;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
 import gw.ssh.SSHSessionManager;
-import gw.ssh.WorkflowTool;
+import gw.tools.FileTool;
+import gw.tools.HostTool;
+import gw.tools.ProcessTool;
+import gw.tools.WorkflowTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
@@ -1018,7 +1018,7 @@ public class GeoweaverController {
     		
 //    		model.addAttribute("username", name);
     		
-    		SSHSession ss = sshSessionManager.sessionsByToken.get(token);
+    		SSHSession ss = sshSessionManager.sshSessionByToken.get(token);
     		
     		if(ss!=null) {
     			
@@ -1051,13 +1051,13 @@ public class GeoweaverController {
         	
         	if(token != null) {
 
-            	SSHSession s =  sshSessionManager.sessionsByToken.get(token);
+            	SSHSession s =  sshSessionManager.sshSessionByToken.get(token);
             	
             	if(s != null) {
             		
             		s.logout();
             		
-            		sshSessionManager.sessionsByToken.remove(token);
+            		sshSessionManager.sshSessionByToken.remove(token);
             		
             	}
         		
@@ -1098,9 +1098,9 @@ public class GeoweaverController {
         	
         	String token = session.getId(); //use session id as token
         	
-//        	if(token!=null && sshSessionManager.sessionsByToken.get(token)!=null) {
+//        	if(token!=null && sshSessionManager.sshSessionByToken.get(token)!=null) {
 //        		
-////        		token = sshSessionManager.sessionsByToken.get(token).getToken();
+////        		token = sshSessionManager.sshSessionByToken.get(token).getToken();
 //        		
 //        	}else {
         		
@@ -1116,7 +1116,7 @@ public class GeoweaverController {
                 
 //                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sessionsByToken.put(token, sshSession); //token is session id
+                sshSessionManager.sshSessionByToken.put(token, sshSession); //token is session id
         		
 //        	}
         	
@@ -1159,9 +1159,9 @@ public class GeoweaverController {
         	
         	String token = null;
         	
-        	if(sshSessionManager.sessionsByToken.get(host+"-"+username)!=null) {
+        	if(sshSessionManager.sshSessionByToken.get(host+"-"+username)!=null) {
         		
-//        		token = sshSessionManager.sessionsByToken.get(host+"-"+username).getToken();
+//        		token = sshSessionManager.sshSessionByToken.get(host+"-"+username).getToken();
         		
         	}else {
         		
@@ -1177,7 +1177,7 @@ public class GeoweaverController {
                 
 //                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sessionsByToken.put(token, sshSession);
+                sshSessionManager.sshSessionByToken.put(token, sshSession);
         		
         	}
         	

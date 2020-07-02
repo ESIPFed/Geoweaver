@@ -15,7 +15,7 @@ public class HistoryTool {
 		
 		try {
 			
-			SSHSession session = GeoweaverController.sshSessionManager.sessionsByToken.get(history_id);
+			SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(history_id);
 			
 			if(session!=null) {
 				

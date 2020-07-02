@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import gw.local.LocalSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class SSHSessionManager {
     /**
      * this map onlys contains the ssh sessions with one or more associated websocket sessions
      */
-    public final ConcurrentHashMap<String, SSHSession> sessionsByWebsocketID = new ConcurrentHashMap<String, SSHSession>();   
+//    public final ConcurrentHashMap<String, SSHSession> sessionsByWebsocketID = new ConcurrentHashMap<String, SSHSession>();   
     
 //    public final ConcurrentHashMap<String, SSHSession> sessionsByUsername = new ConcurrentHashMap<String, SSHSession>();   
     /**
@@ -46,19 +47,33 @@ public class SSHSessionManager {
      * Key: HttpSession ID
      * Value: Open SSH Terminal Session
      */
-    public final ConcurrentHashMap<String, SSHSession> sessionsByToken = new ConcurrentHashMap<String, SSHSession>();
+    public final ConcurrentHashMap<String, SSHSession> sshSessionByToken = new ConcurrentHashMap<String, SSHSession>();
+    
+    public final ConcurrentHashMap<String, LocalSession> localSessionByToken = new ConcurrentHashMap<String, LocalSession>();
     
     public void closeByToken(String token) {
     	
-    	if(sessionsByToken.containsKey(token)) {
+    	if(sshSessionByToken.containsKey(token)) {
     		
     		log.info("log out the session");
     		
-    		SSHSession sshSession = sessionsByToken.get(token);
+    		SSHSession sshSession = sshSessionByToken.get(token);
     		
     		sshSession.logout();
     		
-    		sessionsByToken.remove(token);
+    		sshSessionByToken.remove(token);
+    		
+    	}
+    	
+    	if(localSessionByToken.containsKey(token)) {
+    		
+    		log.info("log out the session");
+    		
+    		LocalSession localSession = localSessionByToken.get(token);
+    		
+    		localSession.logout();
+    		
+    		localSessionByToken.remove(token);
     		
     	}
     	
@@ -69,32 +84,32 @@ public class SSHSessionManager {
 		// close all the related websocket sessions 
 		// updated: websocket will be automatically closed if it detects no SSH session on the back end
 		
-		Iterator it = sessionsByWebsocketID.entrySet().iterator();
-	    
-		while (it.hasNext()) {
-	    	
-	    	ConcurrentHashMap.Entry pair = (ConcurrentHashMap.Entry)it.next();
-	    	
-	    	SSHSession ssh = (SSHSession)pair.getValue();
-	    	
-	    	if(ssh.getToken().equals(token)) {
-	    		
-	    		String websocketid = (String)pair.getKey();
-	    		
-	    		try {
-					
-	    			ShellSocket.findSessionById(websocketid).close();
-	    			
-	    			sessionsByWebsocketID.remove(websocketid);
-					
-				} catch (Exception e) {
-					
-					e.printStackTrace();
-					
-				}
-	    		
-	    	}
-	    }
+//		Iterator it = sessionsByWebsocketID.entrySet().iterator();
+//	    
+//		while (it.hasNext()) {
+//	    	
+//	    	ConcurrentHashMap.Entry pair = (ConcurrentHashMap.Entry)it.next();
+//	    	
+//	    	SSHSession ssh = (SSHSession)pair.getValue();
+//	    	
+//	    	if(ssh.getToken().equals(token)) {
+//	    		
+//	    		String websocketid = (String)pair.getKey();
+//	    		
+//	    		try {
+//					
+//	    			ShellSocket.findSessionById(websocketid).close();
+//	    			
+//	    			sessionsByWebsocketID.remove(websocketid);
+//					
+//				} catch (Exception e) {
+//					
+//					e.printStackTrace();
+//					
+//				}
+//	    		
+//	    	}
+//	    }
     	
     }
     
@@ -111,17 +126,23 @@ public class SSHSessionManager {
 //        		
 //        	}
     		
-        	for (Entry<String, SSHSession> o : sessionsByWebsocketID.entrySet()) {
-        		
-        		String websocketid = (String)o.getKey();
-        		
-        		ShellSocket.findSessionById(websocketid).close();
-    			
+//        	for (Entry<String, SSHSession> o : sessionsByWebsocketID.entrySet()) {
+//        		
+//        		String websocketid = (String)o.getKey();
+//        		
+//        		ShellSocket.findSessionById(websocketid).close();
+//    			
+//        		o.getValue().logout();
+//        		
+//        	}
+        	
+        	for (Entry<String, SSHSession> o : sshSessionByToken.entrySet()) {
+        	    
         		o.getValue().logout();
         		
         	}
         	
-        	for (Entry<String, SSHSession> o : sessionsByToken.entrySet()) {
+        	for (Entry<String, LocalSession> o : localSessionByToken.entrySet()) {
         	    
         		o.getValue().logout();
         		
@@ -129,9 +150,11 @@ public class SSHSessionManager {
         	
 //        	sessionsByUsername.clear();
         	
-        	sessionsByWebsocketID.clear();
+//        	sessionsByWebsocketID.clear();
         	
-        	sessionsByToken.clear();
+        	sshSessionByToken.clear();
+        	
+        	localSessionByToken.clear();
         	
     	}catch(Exception e) {
     		

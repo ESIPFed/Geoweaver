@@ -20,6 +20,7 @@ import gw.utils.TimeExtentValidator;
 /**
  * Servlet implementation class OrderCheckingServlet
  */
+@Deprecated
 public class OrderCheckingServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;

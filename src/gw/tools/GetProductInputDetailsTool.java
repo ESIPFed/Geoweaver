@@ -11,6 +11,7 @@ import gw.utils.SysDir;
  *@time Oct 30, 2015 5:55:17 PM
  *Original aim is to support CyberConnector.
  */
+@Deprecated
 public class GetProductInputDetailsTool {
 	
 	Logger logger = Logger.getLogger(GetProductInputDetailsTool.class);

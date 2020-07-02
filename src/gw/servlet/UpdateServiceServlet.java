@@ -15,6 +15,7 @@ import gw.user.UserTool;
 /**
  * Servlet implementation class UpdateServiceServlet
  */
+@Deprecated
 @WebServlet("/UpdateServiceServlet")
 public class UpdateServiceServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

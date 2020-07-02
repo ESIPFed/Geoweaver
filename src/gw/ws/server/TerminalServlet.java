@@ -45,6 +45,8 @@ public class TerminalServlet {
 	
 	private Session wsSession;
 	
+	private String httpSessionID;
+	
 	private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});
     
     static Map<String, Session> peers =new HashMap();
@@ -61,6 +63,8 @@ public class TerminalServlet {
 			this.wsSession = session;
 			
 			WsSession wss = (WsSession) session;
+			
+			httpSessionID = wss.getHttpSessionId();
 			
 			System.out.println("Web Socket Session ID:" + wss.getHttpSessionId());
 			
@@ -92,7 +96,9 @@ public class TerminalServlet {
         	
 //        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
         	
-            SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
+//            SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
+			
+			SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(httpSessionID);
             
             if (sshSession == null) {
                 
@@ -100,16 +106,16 @@ public class TerminalServlet {
                 
                 // TODO is there a better way to do this?
                 // Can the client send the websocket session id and username in a REST call to link them up?
-                sshSession = GeoweaverController.sshSessionManager.sessionsByToken.get(message);
+                sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(message);
                 
 //                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
                 if(sshSession!=null) {
                 	
 //                	sshSession.setWebSocketSession(session);
                     
-                	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
+                	GeoweaverController.sshSessionManager.sshSessionByToken.put(session.getId(), sshSession);
                 	
-//                	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
+//                	GeoweaverController.sshSessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
                     
                 }else {
                 	
@@ -168,11 +174,11 @@ public class TerminalServlet {
             //close SSH session
             if(GeoweaverController.sshSessionManager!=null) {
             	
-            	SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
-                if (sshSession != null && sshSession.isShell()) { //only close when it is shell
+            	SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
+                if (sshSession != null && sshSession.isTerminal()) { //only close when it is shell
                     sshSession.logout();
                 }
-                GeoweaverController.sshSessionManager.sessionsByWebsocketID.remove(session.getId());
+                GeoweaverController.sshSessionManager.sshSessionByToken.remove(session.getId());
             	
             }
             peers.remove(session.getId());

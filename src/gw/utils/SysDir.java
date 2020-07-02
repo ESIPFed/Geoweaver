@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -63,6 +66,8 @@ public class SysDir {
 	public static String database_user = null;
 
 	public static String database_password = null;
+	
+	public static String workspace = null;
 
 	static Properties readProperties(String path) {
 		Properties p = new Properties();
@@ -78,6 +83,13 @@ public class SysDir {
 		}
 
 		return p;
+	}
+	
+	static  Path normalizedPath(String path) throws IOException {
+		String homedir = System.getProperty("user.home") + File.separator;
+		path = path.replaceAll("~", homedir);
+
+		return Paths.get(path).normalize().toAbsolutePath();
 	}
 
 	static{
@@ -145,7 +157,9 @@ public class SysDir {
 			database_url = p.getProperty("database_url");
 
 			database_docker_url = p.getProperty("database_docker_url");
-
+			
+			workspace = normalizedPath(p.getProperty("workspace")).toString();
+			
 			// SECRET PROPERTIES
 
 			ncUsername = secrets.getProperty("ncwms_username");
@@ -155,6 +169,20 @@ public class SysDir {
 			database_user = secrets.getProperty("database_user");
 
 			database_password = secrets.getProperty("database_password");
+			
+			//create the workspace folder if it doesn't exist
+			
+			File workspacefolder = new File(workspace);
+			
+			System.out.println("Check if the workspace folder exists. If not, create it." + workspace);
+			
+//			Files.createDirectories(workspace);
+			
+			if(!workspacefolder.exists()) {
+				
+				workspacefolder.mkdirs();
+				
+			}
 			
 		} catch (Exception e) {
 			

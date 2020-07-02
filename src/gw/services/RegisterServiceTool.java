@@ -17,6 +17,7 @@ import gw.utils.SysDir;
  *@time Aug 19, 2015 11:32:18 AM
  *Original aim is to support CyberConnector.
  */
+@Deprecated
 public class RegisterServiceTool {
 	
 	static Logger logger = Logger.getLogger(RegisterServiceTool.class);

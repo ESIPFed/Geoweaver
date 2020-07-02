@@ -16,10 +16,12 @@ import org.springframework.web.socket.WebSocketSession;
 import gw.web.GeoweaverController;
 
 /**
+ * Replaced by the TerminalServlet
  * Created by usta on 20.02.2015.
  * Modified by Ziheng Sun on 19 Sep 2018
  * 
  */
+@Deprecated
 public class ShellSocket implements WebSocketHandler {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -42,7 +44,7 @@ public class ShellSocket implements WebSocketHandler {
         
         String messageText = ((TextMessage)message).getPayload(); //token from client
         
-        SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
+        SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
         
         if (sshSession == null) {
             
@@ -50,16 +52,16 @@ public class ShellSocket implements WebSocketHandler {
             
             // TODO is there a better way to do this?
             // Can the client send the websocket session id and username in a REST call to link them up?
-            sshSession = GeoweaverController.sshSessionManager.sessionsByToken.get(messageText);
+            sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(messageText);
             
 //            if(sshSession!=null&&sshSession.getSSHInput().ready()) {
             if(sshSession!=null) {
             	
             	sshSession.setWebSocketSession(session);
                 
-            	GeoweaverController.sshSessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
+            	GeoweaverController.sshSessionManager.sshSessionByToken.put(session.getId(), sshSession);
             	
-//            	GeoweaverController.sshSessionManager.sessionsByToken.remove(messageText); //remove session, a token can only be used once
+//            	GeoweaverController.sshSessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
                 
             }else {
             	
@@ -120,11 +122,11 @@ public class ShellSocket implements WebSocketHandler {
         //close SSH session
         if(GeoweaverController.sshSessionManager!=null) {
         	
-        	SSHSession sshSession = GeoweaverController.sshSessionManager.sessionsByWebsocketID.get(session.getId());
-            if (sshSession != null && sshSession.isShell()) { //only close when it is shell
+        	SSHSession sshSession = GeoweaverController.sshSessionManager.sshSessionByToken.get(session.getId());
+            if (sshSession != null && sshSession.isTerminal()) { //only close when it is shell
                 sshSession.logout();
             }
-            GeoweaverController.sshSessionManager.sessionsByWebsocketID.remove(session.getId());
+            GeoweaverController.sshSessionManager.sshSessionByToken.remove(session.getId());
         	
         }
         peers.remove(session.getId());

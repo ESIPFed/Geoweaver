@@ -1,4 +1,4 @@
-package gw.ssh;
+package gw.tools;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +20,6 @@ import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.STATUS;
 import gw.web.GeoweaverController;
-import gw.ssh.ProcessTool;
 
 /**
  * 

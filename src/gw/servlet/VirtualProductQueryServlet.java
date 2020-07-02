@@ -27,6 +27,7 @@ import gw.utils.TimeExtentValidator;
  * @author Ziheng Sun
  * @date 2015.8.6
  */
+@Deprecated
 public class VirtualProductQueryServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;

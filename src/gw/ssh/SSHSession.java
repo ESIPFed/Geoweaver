@@ -45,9 +45,9 @@ public interface SSHSession {
 	 * @return
 	 * @throws AuthenticationException
 	 */
-    public boolean login(String host, String port, String username, String password, String token, boolean isShell) throws AuthenticationException;
+    public boolean login(String host, String port, String username, String password, String token, boolean isTerminal) throws AuthenticationException;
     
-    public boolean login(String hostid, String password, String token, boolean isShell);
+    public boolean login(String hostid, String password, String token, boolean isTerminal);
 
     public boolean logout();
     
@@ -55,7 +55,7 @@ public interface SSHSession {
     
     public SSHClient getSsh();
     
-    public boolean isShell();
+    public boolean isTerminal();
 
 	public void setSSHJSession(Session session);
 	

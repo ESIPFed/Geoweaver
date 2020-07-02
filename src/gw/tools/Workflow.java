@@ -1,4 +1,4 @@
-package gw.ssh;
+package gw.tools;
 
 public class Workflow {
 

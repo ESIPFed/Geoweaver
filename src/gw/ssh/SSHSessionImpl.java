@@ -38,6 +38,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
+import gw.tools.HostTool;
+import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
@@ -80,7 +82,7 @@ public class SSHSessionImpl implements SSHSession {
     
     private String           port;
     
-    private boolean			 isShell;
+    private boolean			 isTerminal;
     
     /**********************************************/
     /** section of the geoweaver history records **/
@@ -151,12 +153,12 @@ public class SSHSessionImpl implements SSHSession {
 		return port;
 	}
 	
-	public boolean isShell() {
+	public boolean isTerminal() {
 		
-		return isShell;
+		return isTerminal;
 	}
 	
-	public boolean login(String hostid, String password, String token, boolean isShell) {
+	public boolean login(String hostid, String password, String token, boolean isTerminal) {
 		
 		this.hostid = hostid;
 		
@@ -167,7 +169,7 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-    public boolean login(String host, String port, String username, String password, String token, boolean isShell) throws AuthenticationException {
+    public boolean login(String host, String port, String username, String password, String token, boolean isTerminal) throws AuthenticationException {
         try {
             logout();
             // ssh.authPublickey(System.getProperty("user.name"));
@@ -189,9 +191,9 @@ public class SSHSessionImpl implements SSHSession {
             session.allocateDefaultPTY(); 
             this.username = username;
             this.token = token;
-            this.isShell = isShell;
+            this.isTerminal = isTerminal;
             
-            if(isShell) {
+            if(isTerminal) {
             	//shell
             	log.info("starting shell");
                 shell = session.startShell(); //SSH session creates SSH Shell. if shell is null, it is in command mode.

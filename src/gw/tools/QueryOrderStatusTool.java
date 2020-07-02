@@ -13,6 +13,7 @@ import gw.database.DataBaseBroker;
  *@time Aug 10, 2015 12:11:27 PM
  *Original aim is to support iGFDS.
  */
+@Deprecated
 public class QueryOrderStatusTool {
 
 	/**

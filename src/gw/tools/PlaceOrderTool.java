@@ -21,6 +21,7 @@ import it.sauronsoftware.cron4j.Scheduler;
  *@time Aug 10, 2015 12:10:54 PM
  *Original aim is to support CyberConnector.
  */
+@Deprecated
 public class PlaceOrderTool {
 	
 	

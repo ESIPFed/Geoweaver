@@ -15,6 +15,7 @@ import gw.utils.BaseTool;
 /**
  * Servlet implementation class FetchProductListServlet
  */
+@Deprecated
 public class FetchProductListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

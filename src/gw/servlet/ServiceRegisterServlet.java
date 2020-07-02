@@ -16,6 +16,7 @@ import gw.user.UserTool;
 /**
  * Servlet implementation class ServiceRegisterServlet
  */
+@Deprecated
 public class ServiceRegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
