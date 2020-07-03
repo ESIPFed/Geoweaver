@@ -623,11 +623,10 @@ GW.process = {
 			
 			// create an interactive chart to show all the data
 			
-			content = "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
+			content ="<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
 			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
 			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:100px !important;\" ></canvas>"+
-			"</div>" + 
-			content;
+			"</div>" + content ;
 			
 			return content;
 			
@@ -1666,9 +1665,9 @@ GW.process = {
 				
 				if($("#inputpswd").length) $("#inputpswd").val("");
 				
-				if(button) button.stopSpin();
-	    		
-				if(dialog) dialog.enableButtons(true);
+//				if(button) button.stopSpin();
+//	    		
+//				if(dialog) dialog.enableButtons(true);
 	    		
 				console.error("fail to execute the process " + req.processId);
 				

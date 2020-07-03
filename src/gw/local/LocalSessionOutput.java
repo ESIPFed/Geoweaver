@@ -10,6 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import gw.utils.BaseTool;
 import gw.web.GeoweaverController;
+import gw.ws.server.CommandServlet;
 import gw.ws.server.TerminalServlet;
 
 public class LocalSessionOutput  implements Runnable{
@@ -32,7 +33,7 @@ public class LocalSessionOutput  implements Runnable{
         log.info("created");
         this.in = in;
         this.token = token;
-        wsout = TerminalServlet.findSessionById(token);
+        wsout = CommandServlet.findSessionById(token);
     }
     
     public void stop() {
@@ -44,7 +45,7 @@ public class LocalSessionOutput  implements Runnable{
     @Override
     public void run() {
         
-    	log.info("SSH session output thread started");
+    	log.info("Local session output thread started");
     	
     	StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
         
