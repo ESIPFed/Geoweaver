@@ -71,7 +71,7 @@ public class SSHSessionManager {
     		
     		LocalSession localSession = localSessionByToken.get(token);
     		
-    		localSession.logout();
+    		localSession.stop();
     		
     		localSessionByToken.remove(token);
     		
@@ -144,7 +144,7 @@ public class SSHSessionManager {
         	
         	for (Entry<String, LocalSession> o : localSessionByToken.entrySet()) {
         	    
-        		o.getValue().logout();
+        		o.getValue().stop();
         		
         	}
         	

@@ -86,10 +86,18 @@ public class SysDir {
 	}
 	
 	static  Path normalizedPath(String path) throws IOException {
-		String homedir = System.getProperty("user.home") + File.separator;
-		path = path.replace("~", homedir);
+		
+		Path p = null;
+		
+		if(!BaseTool.isNull(path)) {
+			
+			String homedir = System.getProperty("user.home") + File.separator;
+			path = path.replace("~", homedir);
 
-		return Paths.get(path).normalize().toAbsolutePath();
+			p =  Paths.get(path).normalize().toAbsolutePath();
+			
+		}
+		return p;
 	}
 
 	static{

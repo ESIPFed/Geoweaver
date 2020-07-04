@@ -1,11 +1,15 @@
-package gw.local;
+package gw.tools;
 
 import org.json.simple.JSONObject;
 
+import gw.local.LocalSession;
+import gw.local.LocalSessionNixImpl;
+import gw.local.LocalSessionWinImpl;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
 import gw.tools.HostTool;
 import gw.tools.ProcessTool;
+import gw.utils.OSValidator;
 import gw.utils.RandomString;
 import gw.web.GeoweaverController;
 
@@ -35,13 +39,25 @@ public class LocalhostTool {
 			
 //			String[] hostdetails = HostTool.getHostDetailsById(hid);
 			
-			LocalSession session = new LocalSessionImpl();
+			LocalSession session = null;
 			
-			session.login(token, false);
+			if(OSValidator.isWindows()) {
+				
+				session = new LocalSessionWinImpl();
+				
+			}else if(OSValidator.isMac() || OSValidator.isUnix()) {
+				
+				session = new LocalSessionNixImpl();
+				
+			}else {
+				
+				throw new RuntimeException("This operating system is not supported as localhost.");
+				
+			}
 			
 			session.runBash(code, id, isjoin, token); 
 			
-			String historyid = session.getHistory_id();
+			String historyid = session.getHistory().getHistory_id();
 			
 			GeoweaverController.sshSessionManager.localSessionByToken.put(token, session);
 			

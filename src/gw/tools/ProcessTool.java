@@ -1,40 +1,24 @@
 package gw.tools;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
-import gw.local.LocalhostTool;
 import gw.ssh.SSHSession;
-import gw.ssh.SSHSessionImpl;
-import gw.tasks.GeoweaverProcessTask;
-import gw.tasks.TaskManager;
-import gw.tasks.TaskSocket;
-import gw.user.User;
-import gw.user.UserTool;
 import gw.utils.BaseTool;
-import gw.utils.Message;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
 import gw.web.GeoweaverController;
-import net.schmizz.sshj.common.IOUtils;
-import net.schmizz.sshj.connection.channel.direct.Session;
 
 public class ProcessTool {
 	
 	static Logger logger = LoggerFactory.getLogger(ProcessTool.class);
+	
+	static HistoryTool history_tool = new HistoryTool();
 	
 	/**
 	 * Get the list of processes
@@ -513,7 +497,7 @@ public class ProcessTool {
 //			
 //			session.runBash(code, id, isjoin); 
 //			
-			HistoryTool.stop(hisid);
+			history_tool.stop(hisid);
 //				
 			resp = "{\"history_id\": \""+hisid+
 //					
@@ -783,57 +767,7 @@ public class ProcessTool {
 	 */
 	public static String all_history(String pid) {
 		
-		StringBuffer resp = new StringBuffer() ;
-		
-		StringBuffer sql = new StringBuffer("select * from history where process = '").append(pid).append("'  ORDER BY begin_time DESC;");
-		
-		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
-		try {
-			
-			resp.append("[");
-			
-			int num = 0;
-			
-			while(rs.next()) {
-				
-				if(num!=0) {
-					
-					resp.append(", ");
-					
-				}
-				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
-				
-				resp.append("\"begin_time\": \"").append(rs.getString("begin_time"));
-				
-				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
-				
-				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
-				
-				resp.append("\", \"status\": \"").append(escape(rs.getString("indicator")));
-				
-				resp.append("\", \"host\": \"").append(escape(rs.getString("host")));
-				
-				resp.append("\"}");
-				
-				num++;
-				
-			}
-			
-			resp.append("]");
-			
-			if(num==0)
-				
-				resp = new StringBuffer();
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-			
-		}
-		
-		return resp.toString();
+		return history_tool.process_all_history(pid);
 		
 	}
 	

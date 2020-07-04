@@ -32,6 +32,7 @@ public class WorkflowTool {
 	
 	private static Logger logger = Logger.getLogger(WorkflowTool.class);
 	
+	
 	/**
 	 * For Andrew
 	 * @param history_id
@@ -558,57 +559,9 @@ public class WorkflowTool {
 	 */
 	public static String all_history(String workflow_id) {
 		
-		StringBuffer resp = new StringBuffer() ;
+		HistoryTool tool = new HistoryTool();
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = '").append(workflow_id).append("'  ORDER BY begin_time DESC;");
-		
-		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
-		try {
-			
-			resp.append("[");
-			
-			int num = 0;
-			
-			while(rs.next()) {
-				
-				if(num!=0) {
-					
-					resp.append(", ");
-					
-				}
-				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
-				
-				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\", ");
-				
-				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
-				
-				resp.append("\"status\": \"").append(ProcessTool.escape(rs.getString("indicator"))).append("\", ");
-				
-				resp.append("\"output\": \"").append(rs.getString("output")).append("\"}");
-				
-				num++;
-				
-			}
-			
-			resp.append("]");
-			
-			if(num==0)
-				
-				resp = new StringBuffer();
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-			
-		}finally {
-			
-			DataBaseOperation.closeConnection();
-			
-		}
-		
-		return resp.toString();
+		return tool.workflow_all_history(workflow_id);
 		
 	}
 	

@@ -75,7 +75,9 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
                 			
                 			System.out.println("null output lines exceed 10. Disconnected.");
                 			
-                			if(!BaseTool.isNull(session)) session.saveHistory(logs.toString(), "Done");
+                			if(!BaseTool.isNull(session)) 
+                				
+                				session.saveHistory(logs.toString(), "Done");
                 			
                 			break;
                 			

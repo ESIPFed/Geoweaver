@@ -65,76 +65,14 @@ public class LocalSessionOutput  implements Runnable{
             	
                 String line = in.readLine();
                 
-//                out.sendMessage(new TextMessage(line));
-                
-//                linenumber++;
-//                
-//                //when detected the command is finished, end this process
-//                if(BaseTool.isNull(line)) {
-//                	
-//                	//if ten consective output lines are null, break this loop
-//                	
-//                	if(startrecorder==-1) 
-//                		startrecorder = linenumber;
-//                	else
-//                		nullnumber++;
-//                	
-//                	if(nullnumber==10) {
-//                		
-//                		if((startrecorder+nullnumber)==linenumber) {
-//                			
-//                			System.out.println("null output lines exceed 100. Disconnected.");
-//                			
-//                			GeoweaverController.sshSessionManager.closeByToken(token);
-//                		
-//                			break;
-//                			
-//                		}else {
-//                			
-//                			startrecorder = -1;
-//                			
-//                			nullnumber = 0;
-//                			
-//                		}
-//                		
-//                	}
-//                	
-//                }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-//                	
-//                	SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(token);
-//                	
-//                	session.saveHistory(logs.toString());
-//                	
-//                	GeoweaverController.sshSessionManager.closeByToken(token);
-//                	
-//                	break;
-//                	
-//                }
-//                
-                log.info("shell thread output >> " + line);
-//                
-//                logs.append(line).append("\n");
+                log.info("local output >> " + line);
                 
                 if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-//                	
-//                	if(prelog.toString()!=null) {
-//                		
-//                		line = prelog.toString() + line;
-//                		
-//                		prelog = new StringBuffer();
-//                		
-//                	}
                 	
                     log.info("wsout message {}:{}", token, line);
                     
-//                    out.sendMessage(new TextMessage(line)); // for the SockJS session to deliver it back to the SSH Terminal
-                    
                 	wsout.getBasicRemote().sendText(line); // for the All information web socket session
                     
-//                }else {
-//                	
-//                	prelog.append(line).append("\n");
-//                	
                 }else {
                 	
                 	wsout = TerminalServlet.findSessionById(token);
@@ -155,11 +93,5 @@ public class LocalSessionOutput  implements Runnable{
 
     }
     
-    public void setWebSocketSession(WebSocketSession session) {
-        log.info("received websocket session");
-//        this.out = session;
-    }
-    
-	
 
 }
