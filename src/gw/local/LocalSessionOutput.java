@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 
+import gw.ssh.SSHSession;
 import gw.utils.BaseTool;
 import gw.web.GeoweaverController;
 import gw.ws.server.CommandServlet;
@@ -45,6 +46,7 @@ public class LocalSessionOutput  implements Runnable{
     @Override
     public void run() {
         
+
     	log.info("Local session output thread started");
     	
     	StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
@@ -57,6 +59,10 @@ public class LocalSessionOutput  implements Runnable{
     	
     	int nullnumber = 0;
     	
+    	LocalSession session = GeoweaverController.sshSessionManager.localSessionByToken.get(token);
+    	
+    	if(!BaseTool.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
+    	
         while (run) {
         	
             try {
@@ -65,17 +71,77 @@ public class LocalSessionOutput  implements Runnable{
             	
                 String line = in.readLine();
                 
-                log.info("local output >> " + line);
+                linenumber++;
                 
-                if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+                //when detected the command is finished, end this process
+                if(BaseTool.isNull(line)) {
                 	
-                    log.info("wsout message {}:{}", token, line);
-                    
-                	wsout.getBasicRemote().sendText(line); // for the All information web socket session
-                    
+                	//if ten consective output lines are null, break this loop
+                	
+                	if(startrecorder==-1) 
+                		startrecorder = linenumber;
+                	else
+                		nullnumber++;
+                	
+                	if(nullnumber==10) {
+                		
+                		if((startrecorder+nullnumber)==linenumber) {
+                			
+                			System.out.println("null output lines exceed 10. Disconnected.");
+                			
+                			if(!BaseTool.isNull(session)) 
+                				
+                				session.saveHistory(logs.toString(), "Done");
+                			
+                			break;
+                			
+                		}else {
+                			
+                			startrecorder = -1;
+                			
+                			nullnumber = 0;
+                			
+                		}
+                		
+                	}
+                	
+                }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
+                	
+//                	session.saveHistory(logs.toString()); //complete the record
+                	
+                	if(!BaseTool.isNull(session)) session.saveHistory(logs.toString(), "Done");
+                	
+                	if(!BaseTool.isNull(wsout) && wsout.isOpen())
+                		wsout.getBasicRemote().sendText("The process "+session.getHistory().getHistory_id()+" is finished.");
+                	
+                	break;
+                	
                 }else {
                 	
-                	wsout = TerminalServlet.findSessionById(token);
+                	log.info("Local thread output >> " + line);
+                    
+                    logs.append(line).append("\n");
+                    
+                    if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+                    	
+                    	if(prelog.toString()!=null) {
+                    		
+                    		line = prelog.toString() + line;
+                    		
+                    		prelog = new StringBuffer();
+                    		
+                    	}
+                    	
+//                    	log.info("wsout message {}:{}", wsout.getId(), line);
+                    	
+//                        out.sendMessage(new TextMessage(line));
+                    	wsout.getBasicRemote().sendText(line);
+                        
+                    }else {
+                    	
+                    	prelog.append(line).append("\n");
+                    	
+                    }
                 	
                 }
                 
@@ -83,13 +149,21 @@ public class LocalSessionOutput  implements Runnable{
             	
                 e.printStackTrace();
                 
-                GeoweaverController.sshSessionManager.closeByToken(token);
+                if(!BaseTool.isNull(session)) 
+                	
+                	session.saveHistory(logs.toString(), "Failed");
+                
+            }finally {
+            	
+//                session.saveHistory(logs.toString()); //write the failed record
                 
             }
             
         }
         
-        log.info("SSH session output thread ended");
+        GeoweaverController.sshSessionManager.closeByToken(token);
+        
+        log.info("Local session output thread ended");
 
     }
     

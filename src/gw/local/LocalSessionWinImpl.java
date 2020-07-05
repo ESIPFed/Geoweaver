@@ -1,6 +1,7 @@
 package gw.local;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -228,6 +229,15 @@ public class LocalSessionWinImpl implements LocalSession {
 		}
 		
 		return true;
+		
+	}
+
+	@Override
+	public boolean clean() {
+		
+		File temp = new File(tempfile);
+		
+		return temp.delete();
 		
 	}
 

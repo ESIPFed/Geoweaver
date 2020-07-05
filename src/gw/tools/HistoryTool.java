@@ -9,6 +9,7 @@ import gw.database.DataBaseOperation;
 import gw.log.History;
 import gw.ssh.SSHSession;
 import gw.utils.BaseTool;
+import gw.utils.RandomString;
 import gw.utils.SysDir;
 import gw.web.GeoweaverController;
 /**
@@ -22,6 +23,31 @@ public class HistoryTool {
 	
 	Logger log = Logger.getLogger(this.getClass());
 	
+	/**
+	 * Initialize the process history
+	 * @param history
+	 * @param processid
+	 * @param script
+	 * @return
+	 */
+	public History initProcessHistory(History history, String processid, String script) {
+		
+		history.setHistory_id(new RandomString(12).nextString());
+		
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+		
+		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
+		
+		history.setHistory_input(script);
+		
+		return history;
+		
+	}
+	
+	/**
+	 * Update or finalize the history in database
+	 * @param history
+	 */
 	public void saveHistory(History history) {
 		
     	try {

@@ -26,6 +26,8 @@ public interface LocalSession {
 	
 	public BufferedReader getLocalInput();
 	
+	public boolean clean();
+	
 	/**
 	 * Stop all the ongoing commands and tasks
 	 * @return

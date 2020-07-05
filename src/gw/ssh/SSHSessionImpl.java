@@ -27,8 +27,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.Normalizer;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -37,14 +35,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.socket.WebSocketSession;
 
-import gw.database.DataBaseOperation;
 import gw.log.History;
 import gw.tools.HistoryTool;
 import gw.tools.HostTool;
 import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
-import gw.utils.SysDir;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;

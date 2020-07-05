@@ -55,7 +55,7 @@ public class SSHSessionManager {
     	
     	if(sshSessionByToken.containsKey(token)) {
     		
-    		log.info("log out the session");
+    		log.info("log out the ssh session");
     		
     		SSHSession sshSession = sshSessionByToken.get(token);
     		
@@ -67,7 +67,7 @@ public class SSHSessionManager {
     	
     	if(localSessionByToken.containsKey(token)) {
     		
-    		log.info("log out the session");
+    		log.info("log out the local session");
     		
     		LocalSession localSession = localSessionByToken.get(token);
     		
