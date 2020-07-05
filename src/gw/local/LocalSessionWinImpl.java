@@ -7,22 +7,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.socket.WebSocketSession;
 
+import gw.log.ExecutionStatus;
 import gw.log.History;
-import gw.log.LogSaver;
-import gw.ssh.SSHCmdSessionOutput;
-import gw.ssh.SSHSessionOutput;
 import gw.tools.HistoryTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
-import net.schmizz.sshj.SSHClient;
-import net.schmizz.sshj.connection.channel.direct.Session;
-import net.schmizz.sshj.connection.channel.direct.Session.Command;
 
 /**
+ * 
  * For Windows
  * 
  * @author JensenSun
@@ -48,7 +42,7 @@ public class LocalSessionWinImpl implements LocalSession {
     
     private History          history = new History();
     
-    private HistoryTool         history_tool = new HistoryTool();
+    private HistoryTool      history_tool = new HistoryTool();
     
     private Process          process;
 	
@@ -168,7 +162,9 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			this.history.setHistory_output(e.getLocalizedMessage());
 			
-			this.history.setIndicator();
+			this.history.setIndicator(ExecutionStatus.FAILED);
+			
+			this.history_tool.saveHistory(this.history);
 			
 		}
     	

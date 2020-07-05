@@ -38,6 +38,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
+import gw.log.History;
+import gw.tools.HistoryTool;
 import gw.tools.HostTool;
 import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
@@ -87,17 +89,21 @@ public class SSHSessionImpl implements SSHSession {
     /**********************************************/
     /** section of the geoweaver history records **/
     /**********************************************/
-    private String			 history_input;
+//    private String			 history_input;
+//    
+//    private String			 history_output;
+//    
+//    private String			 history_begin_time;
+//    
+//    private String			 history_end_time;
+//    
+//    private String			 history_process;
+//    
+//    private String			 history_id;
     
-    private String			 history_output;
+    private History          history = new History();
     
-    private String			 history_begin_time;
-    
-    private String			 history_end_time;
-    
-    private String			 history_process;
-    
-    private String			 history_id;
+    private HistoryTool      history_tool = new HistoryTool();
     
     /**********************************************/
     /** end of history section **/
@@ -105,24 +111,24 @@ public class SSHSessionImpl implements SSHSession {
     
     public SSHSessionImpl() {
     	
-    	history_id = new RandomString(12).nextString(); //create a history id everytime the process is executed
+    	this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
     	
     }
     
     public String getHistory_process() {
-		return history_process;
+		return history.getHistory_process();
 	}
 
 	public void setHistory_process(String history_process) {
-		this.history_process = history_process;
+		history.setHistory_process(history_process);
 	}
 
 	public String getHistory_id() {
-		return history_id;
+		return history.getHistory_id();
 	}
 
 	public void setHistory_id(String history_id) {
-		this.history_id = history_id;
+		history.setHistory_id(history_id);
 	}
 	
     public SSHClient getSsh() {
@@ -262,71 +268,74 @@ public class SSHSessionImpl implements SSHSession {
     
     @Override
 	public void saveHistory(String logs, String status) {
-		
-    	try {
-    		
-    		log.info("save history " + status);
-    		
-    		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
-    		
-    		//the log is more than 65500 characters, write it into a log file
-    		if(logs.length()>65500) {
-    			
-    			String logfile = SysDir.upload_file_path + "/" + this.history_id + ".log";
-    			
-    			BaseTool.writeString2File(logs, BaseTool.getCyberConnectorRootPath() + logfile);
-    			
-    			this.history_output = "logfile";
-    			
-    		}else {
-    			
-    			this.history_output = logs;
-    			
-    		}
-    		
-    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
-    		
-    		ResultSet rs = DataBaseOperation.query(sql.toString());
-    		
-			if(!rs.next()) {
-				
-				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
-				
-				sql.append(this.history_id).append("','");
-				
-				sql.append(this.history_process).append("','");
-				
-				sql.append(this.history_begin_time).append("', ?, ?, '");
-				
-				sql.append(this.hostid).append("', '");
-				
-				sql.append(status).append("' )");
-				
-				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
-				
-			}else {
-				
-				sql = new StringBuffer("update history set end_time = '");
-				
-				sql.append(this.history_end_time);
-				
-				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
-				
-				sql.append(this.history_id).append("';");
-				
-				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
-				
-			}
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-			
-		}finally {
-			
-			DataBaseOperation.closeConnection();
-			
-		}
+		history.setHistory_output(logs);
+		history.setIndicator(status);
+    	this.history_tool.saveHistory(history);
+    	
+//    	try {
+//    		
+//    		log.info("save history " + status);
+//    		
+//    		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
+//    		
+//    		//the log is more than 65500 characters, write it into a log file
+//    		if(logs.length()>65500) {
+//    			
+//    			String logfile = SysDir.upload_file_path + "/" + this.history_id + ".log";
+//    			
+//    			BaseTool.writeString2File(logs, BaseTool.getCyberConnectorRootPath() + logfile);
+//    			
+//    			this.history_output = "logfile";
+//    			
+//    		}else {
+//    			
+//    			this.history_output = logs;
+//    			
+//    		}
+//    		
+//    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
+//    		
+//    		ResultSet rs = DataBaseOperation.query(sql.toString());
+//    		
+//			if(!rs.next()) {
+//				
+//				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
+//				
+//				sql.append(this.history_id).append("','");
+//				
+//				sql.append(this.history_process).append("','");
+//				
+//				sql.append(this.history_begin_time).append("', ?, ?, '");
+//				
+//				sql.append(this.hostid).append("', '");
+//				
+//				sql.append(status).append("' )");
+//				
+//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
+//				
+//			}else {
+//				
+//				sql = new StringBuffer("update history set end_time = '");
+//				
+//				sql.append(this.history_end_time);
+//				
+//				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
+//				
+//				sql.append(this.history_id).append("';");
+//				
+//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
+//				
+//			}
+//			
+//		} catch (SQLException e) {
+//			
+//			e.printStackTrace();
+//			
+//		}finally {
+//			
+//			DataBaseOperation.closeConnection();
+//			
+//		}
     	
 	}
     
@@ -358,11 +367,11 @@ public class SSHSessionImpl implements SSHSession {
     	
 //		this.history_id = token; //new RandomString(12).nextString();
 		
-		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		this.history_begin_time = BaseTool.getCurrentMySQLDatetime();
+		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
 		
-		this.history_input = python;
+		history.setHistory_input(python);
     	
     	try {
     		
@@ -473,11 +482,11 @@ public class SSHSessionImpl implements SSHSession {
     	
 //		this.history_id = token; //new RandomString(12).nextString();
 		
-		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		this.history_begin_time = BaseTool.getCurrentMySQLDatetime();
+		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
 		
-		this.history_input = notebookjson;
+		history.setHistory_input(notebookjson);
     	
     	try {
     		
@@ -493,7 +502,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		notebookjson = escapeJupter(notebookjson);
     		
-    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
+    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history.getHistory_id() + ".ipynb; ";
     		
 //    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
 //    			
@@ -517,9 +526,9 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
+    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history.getHistory_id() + ".ipynb;";
     		
-    		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
+    		cmdline += "rm ./jupyter-" + history.getHistory_id() + ".ipynb; "; // remove the script finally, leave no trace behind
     		
     		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
@@ -588,11 +597,11 @@ public class SSHSessionImpl implements SSHSession {
     	
 //		this.history_id = token; //new RandomString(12).nextString();
 		
-		this.history_process = processid.split("-")[0]; //only retain process id, remove object id
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		this.history_begin_time = BaseTool.getCurrentMySQLDatetime();
+		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
 		
-		this.history_input = script;
+		history.setHistory_input(script);
     	
     	try {
     		
