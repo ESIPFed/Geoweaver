@@ -52,7 +52,7 @@ public class HistoryTool {
 		
     	try {
     		
-    		log.info("save history " + history.getIndicator());
+    		log.info("save history status: " + history.getIndicator());
     		
     		history.setHistory_end_time(BaseTool.getCurrentMySQLDatetime());
     		

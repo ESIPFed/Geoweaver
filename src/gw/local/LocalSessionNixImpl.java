@@ -280,46 +280,46 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		//new version of execution in which all the python files are copied in the host
     		
-    		cmdline += "mkdir " + token + ";";
+//    		cmdline += "mkdir " + token + ";";
+//    		
+//    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
+//    		
+//    		cmdline += "cd "+ token + "/; ";
+//    		
+////    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
+//    		
+//    		cmdline += "chmod +x *.py;";
     		
-    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
+//    		String filename = ProcessTool.getNameById(processid);
+//    		
+//    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
+//    		
+//    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
+//
+////    			cmdline += "python python-" + history_id + ".py;";
+//    			cmdline += "python " + filename + "; ";
+//    			
+//    		}else {
+//    			
+////    			cmdline += "conda init; ";
+//    			
+//    			cmdline += "source activate " + pyenv + "; "; //for demo only
+//    			
+//    			cmdline += bin + " " + filename + "; ";
+//    			
+//    		}
+//    		
+//    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+//    		
+//    		cmdline += "cd ..; rm -R " + token + "*;";
+//    		
+//    		log.info(cmdline);
+//    		
+//    		Command cmd = session.exec(cmdline);
     		
-    		cmdline += "cd "+ token + "/; ";
-    		
-//    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
-    		
-    		cmdline += "chmod +x *.py;";
-    		
-    		String filename = ProcessTool.getNameById(processid);
-    		
-    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
-    		
-    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
-
-//    			cmdline += "python python-" + history_id + ".py;";
-    			cmdline += "python " + filename + "; ";
-    			
-    		}else {
-    			
-//    			cmdline += "conda init; ";
-    			
-    			cmdline += "source activate " + pyenv + "; "; //for demo only
-    			
-    			cmdline += bin + " " + filename + "; ";
-    			
-    		}
-    		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
-    		
-    		cmdline += "cd ..; rm -R " + token + "*;";
-    		
-    		log.info(cmdline);
-    		
-    		Command cmd = session.exec(cmdline);
-    		
-            log.info("SSH command session established");
+//            log.info("SSH command session established");
             
-            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+//            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
             sender = new LocalSessionOutput(input, token);
             

@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import javax.websocket.Session;
+
 import org.apache.log4j.Logger;
 
 import gw.log.ExecutionStatus;
@@ -15,6 +17,7 @@ import gw.tools.HistoryTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
+import gw.ws.server.CommandServlet;
 
 /**
  * 
@@ -78,13 +81,11 @@ public class LocalSessionWinImpl implements LocalSession {
 	@Override
 	public void runBash(String script, String processid, boolean isjoin, String token) {
 		
-//		this.history_id = token; //new RandomString(12).nextString();
-		
 		this.token = token;
 		
-		this.isTerminal = isjoin; //if is terminal, don't wait; if not, wait for it finishes. 
+		this.isTerminal = isjoin;
 		
-		log.info("processid: " + processid);
+		this.history.setHistory_id(new RandomString(12).nextString());
 		
 		this.history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
@@ -103,18 +104,6 @@ public class LocalSessionWinImpl implements LocalSession {
     		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		BaseTool.writeString2File(script, tempfile);
-    		
-//    		String cmdline = "echo \"" 
-//    				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
-//    				+ "\" > geoweaver-" + token + ".sh; ";
-//    		
-//    		cmdline += "chmod +x geoweaver-" + token + ".sh; ";
-//    		
-//    		cmdline += "./geoweaver-" + token + ".sh;";
-//    		
-//    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
-			
-//    		log.info(cmdline);
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
@@ -159,6 +148,28 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			e.printStackTrace();
 			
+			try {
+			
+				Session wsout = CommandServlet.findSessionById(token);
+				
+				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+					
+					log.info("The failed message has been sent to client");
+					
+					wsout.getBasicRemote().sendText(e.getLocalizedMessage());
+					
+					wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+					
+				}
+				
+			} catch (IOException e1) {
+				
+				e1.printStackTrace();
+				
+			}
+			
+			this.stop();
+			
 			this.history.setHistory_end_time(BaseTool.getCurrentMySQLDatetime());
 			
 			this.history.setHistory_output(e.getLocalizedMessage());
@@ -180,9 +191,116 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv, String basedir,
+	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir,
 			String token) {
-		// TODO Auto-generated method stub
+		
+		history = history_tool.initProcessHistory(history, processid, python);
+		
+    	try {
+    		
+    		log.info("save to local file: " + python);
+    		
+    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
+
+    		BaseTool.writeString2File(python, tempfile);
+    		
+    		
+    		
+//    		python = escapeJupter(python);
+    		
+//    		log.info("escaped command: " + python);
+    		
+//    		python = python.replaceAll("\\\n", ".");
+//    		python = python.replace("\\n", "\\\\n");
+    		
+//    		String cmdline = "";
+//    		
+//    		if(!BaseTool.isNull(basedir)||"default".equals(basedir)) {
+//    			
+//    			cmdline += "cd \"" + basedir + "\"; ";
+//    			
+//    		}
+    		
+    		//new version of execution in which all the python files are copied in the host
+    		
+//    		cmdline += "mkdir " + token + ";";
+//    		
+//    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
+//    		
+//    		cmdline += "cd "+ token + "/; ";
+//    		
+////    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
+//    		
+//    		cmdline += "chmod +x *.py;";
+    		
+//    		String filename = ProcessTool.getNameById(processid);
+//    		
+//    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
+//    		
+//    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
+//
+////    			cmdline += "python python-" + history_id + ".py;";
+//    			cmdline += "python " + filename + "; ";
+//    			
+//    		}else {
+//    			
+////    			cmdline += "conda init; ";
+//    			
+//    			cmdline += "source activate " + pyenv + "; "; //for demo only
+//    			
+//    			cmdline += bin + " " + filename + "; ";
+//    			
+//    		}
+//    		
+//    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+//    		
+//    		cmdline += "cd ..; rm -R " + token + "*;";
+//    		
+//    		log.info(cmdline);
+//    		
+//    		Command cmd = session.exec(cmdline);
+    		
+//            log.info("SSH command session established");
+            
+//            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            
+            sender = new LocalSessionOutput(input, token);
+            
+            //moved here on 10/29/2018
+            //all SSH sessions must have a output thread
+            
+            thread = new Thread(sender);
+            
+            thread.setName("SSH Command output thread");
+            
+            log.info("starting sending thread");
+            
+            thread.start();
+            
+            log.info("returning to the client..");
+            
+            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        
+//	        cmd = "./geoweaver-" + token + ".sh";
+//	        		
+//	        output.write((cmd + '\n').getBytes());
+//			
+////	        output.flush();
+//	        	
+//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
+//	        
+//	        output.write((cmd + '\n').getBytes());
+//	        output.flush();
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
 		
 	}
 
