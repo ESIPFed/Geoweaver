@@ -82,7 +82,7 @@ public class ProcessTool {
 		
 		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
 		
-		StringBuffer resp = new StringBuffer();
+//		StringBuffer resp = new StringBuffer();
 		
 		try {
 
@@ -104,7 +104,9 @@ public class ProcessTool {
 				
 					lang = rs.getString("description");
 				
-				resp.append("\"description\":\"").append(lang).append("\", ");
+//				resp.append("\"description\":\"").append(lang).append("\", ");
+				
+				p.setDescription(lang);
 				
 				String code = rs.getString("code");
 
@@ -122,17 +124,21 @@ public class ProcessTool {
 //					
 //					System.out.println(code);
 					
-					resp.append("\"code\":").append(code).append(" ");
+//					resp.append("\"code\":").append(code).append(" ");
+					
+//					p.setCode(code);
 					
 				}else {
 					
 					code = escape(code);
 					
-					resp.append("\"code\":\"").append(code).append("\" ");
+//					resp.append("\"code\":\"").append(code).append("\" ");
 					
 				}
 				
-				resp.append(" }");
+				p.setCode(code);
+				
+//				resp.append(" }");
 				
 			}
 			
@@ -144,72 +150,44 @@ public class ProcessTool {
 			
 		}
 		
-		return resp.toString();
+		return p;
 		
 	}
 	
 	public static String detail(String id) {
 		
-		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
+		GWProcess p = getProcessById(id);
 		
 		StringBuffer resp = new StringBuffer();
 		
-		try {
+		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
+		
+		resp.append("\"name\":\"").append(p.getName()).append("\", ");
+		
+		String lang = "shell";
+		
+		if(!BaseTool.isNull(p.getDescription()))
+		
+			lang = p.getDescription();
+		
+		resp.append("\"description\":\"").append(lang).append("\", ");
+		
+		String code = p.getCode();
 
-			ResultSet rs = DataBaseOperation.query(sql.toString());
+		if(lang.equals("jupyter")) {
 			
-			if(rs.next()) {
-				
-				resp.append("{ \"id\":\"").append(rs.getString("id")).append("\", ");
-				
-				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
-				
-				String lang = "shell";
-				
-				if(!BaseTool.isNull(rs.getString("description")))
-				
-					lang = rs.getString("description");
-				
-				resp.append("\"description\":\"").append(lang).append("\", ");
-				
-				String code = rs.getString("code");
-
-				if(lang.equals("jupyter")) {
-					
-//					String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
-//					
-//					String filename = code;
-//					
-//					String filepath = folderpath + filename;
-//					
-//					code = BaseTool.readStringFromFile(filepath);
-//					
-////					code = escape(code);
-//					
-//					System.out.println(code);
-					
-					resp.append("\"code\":").append(code).append(" ");
-					
-				}else {
-					
-					code = escape(code);
-					
-					resp.append("\"code\":\"").append(code).append("\" ");
-					
-				}
-				
-				resp.append(" }");
-				
-			}
+			resp.append("\"code\":").append(code).append(" ");
 			
-		} catch (Exception e) {
+		}else {
 			
-			e.printStackTrace();
+			code = escape(code);
 			
-			throw new RuntimeException(e.getLocalizedMessage());
+			resp.append("\"code\":\"").append(code).append("\" ");
 			
 		}
 		
+		resp.append(" }");
+				
 		return resp.toString();
 		
 	}
