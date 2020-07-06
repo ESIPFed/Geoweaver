@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gw.database.DataBaseOperation;
+import gw.process.GWProcess;
 import gw.ssh.SSHSession;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
@@ -72,6 +73,78 @@ public class ProcessTool {
 		DataBaseOperation.closeConnection();
 		
 		return json.toString();
+		
+	}
+	
+	public static GWProcess getProcessById(String id) {
+		
+		GWProcess p = new GWProcess();
+		
+		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
+		
+		StringBuffer resp = new StringBuffer();
+		
+		try {
+
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+//				resp.append("{ \"id\":\"").append(rs.getString("id")).append("\", ");
+//				
+//				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
+				
+				p.setId(rs.getString("id"));
+				
+				p.setName(rs.getString("name"));
+				
+				String lang = "shell";
+				
+				if(!BaseTool.isNull(rs.getString("description")))
+				
+					lang = rs.getString("description");
+				
+				resp.append("\"description\":\"").append(lang).append("\", ");
+				
+				String code = rs.getString("code");
+
+				if(lang.equals("jupyter")) {
+					
+//					String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+//					
+//					String filename = code;
+//					
+//					String filepath = folderpath + filename;
+//					
+//					code = BaseTool.readStringFromFile(filepath);
+//					
+////					code = escape(code);
+//					
+//					System.out.println(code);
+					
+					resp.append("\"code\":").append(code).append(" ");
+					
+				}else {
+					
+					code = escape(code);
+					
+					resp.append("\"code\":\"").append(code).append("\" ");
+					
+				}
+				
+				resp.append(" }");
+				
+			}
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}
+		
+		return resp.toString();
 		
 	}
 	

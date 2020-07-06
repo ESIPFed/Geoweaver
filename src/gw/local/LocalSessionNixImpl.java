@@ -259,9 +259,11 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("save to local file: " + python);
     		
-    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
-
-    		BaseTool.writeString2File(python, tempfile);
+    		ProcessTool.detail(processid);
+    		
+//    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
+//
+//    		BaseTool.writeString2File(python, tempfile);
     		
 //    		python = escapeJupter(python);
     		

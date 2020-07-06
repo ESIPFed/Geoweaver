@@ -200,9 +200,9 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		log.info("save to local file: " + python);
     		
-    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
-
-    		BaseTool.writeString2File(python, tempfile);
+//    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
+//
+//    		BaseTool.writeString2File(python, tempfile);
     		
     		
     		
