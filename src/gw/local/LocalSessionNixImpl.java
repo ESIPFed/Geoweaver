@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 
 import gw.log.History;
+import gw.process.GWProcess;
 import gw.ssh.SSHCmdSessionOutput;
 import gw.tools.HistoryTool;
 import gw.tools.ProcessTool;
@@ -259,7 +260,27 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("save to local file: " + python);
     		
-    		ProcessTool.detail(processid);
+    		GWProcess pro = ProcessTool.getProcessById(processid);
+    		
+    		ProcessBuilder builder = new ProcessBuilder();
+    		
+    		builder.directory(new File(SysDir.workspace + "/" + token));
+    		
+    		String pythonfilename = pro.getName();
+    		
+    		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
+    		
+    		builder.command(new String[] {"python", pythonfilename} );
+    		
+    		builder.redirectErrorStream(true);
+    		
+    		Process process = builder.start();
+    		
+    		InputStream stdout = process.getInputStream ();
+    		
+            log.info("Local session established");
+            
+            input = new BufferedReader(new InputStreamReader(stdout));
     		
 //    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
 //

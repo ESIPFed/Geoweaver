@@ -69,6 +69,8 @@ public class LocalSessionOutput  implements Runnable{
                 
             	// readLine will block if nothing to send
             	
+            	if(BaseTool.isNull(in)) break;
+            	
                 String line = in.readLine();
                 
                 linenumber++;

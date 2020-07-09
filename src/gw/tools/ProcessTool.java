@@ -90,10 +90,6 @@ public class ProcessTool {
 			
 			if(rs.next()) {
 				
-//				resp.append("{ \"id\":\"").append(rs.getString("id")).append("\", ");
-//				
-//				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
-				
 				p.setId(rs.getString("id"));
 				
 				p.setName(rs.getString("name"));
@@ -104,41 +100,19 @@ public class ProcessTool {
 				
 					lang = rs.getString("description");
 				
-//				resp.append("\"description\":\"").append(lang).append("\", ");
-				
 				p.setDescription(lang);
 				
 				String code = rs.getString("code");
 
 				if(lang.equals("jupyter")) {
 					
-//					String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
-//					
-//					String filename = code;
-//					
-//					String filepath = folderpath + filename;
-//					
-//					code = BaseTool.readStringFromFile(filepath);
-//					
-////					code = escape(code);
-//					
-//					System.out.println(code);
-					
-//					resp.append("\"code\":").append(code).append(" ");
-					
-//					p.setCode(code);
-					
 				}else {
 					
 					code = escape(code);
 					
-//					resp.append("\"code\":\"").append(code).append("\" ");
-					
 				}
 				
 				p.setCode(code);
-				
-//				resp.append(" }");
 				
 			}
 			
