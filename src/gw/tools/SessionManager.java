@@ -1,4 +1,4 @@
-package gw.ssh;
+package gw.tools;
 /*
 
 The MIT License (MIT)
@@ -27,11 +27,12 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import gw.local.LocalSession;
+import gw.ssh.SSHSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SSHSessionManager {
+public class SessionManager {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
     

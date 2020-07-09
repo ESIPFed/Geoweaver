@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
 
+import gw.log.ExecutionStatus;
 import gw.log.History;
 import gw.process.GWProcess;
 import gw.ssh.SSHCmdSessionOutput;
@@ -46,20 +47,30 @@ public class LocalSessionNixImpl implements LocalSession {
     private HistoryTool      history_tool = new HistoryTool();
     
     private String           tempfile;
-
-
-//	@Override
-//	public void setWebSocketSession(WebSocketSession session) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-
+    
+    /**
+	 * Initialize history object when process execution starts
+	 * @param script
+	 * @param processid
+	 * @param isjoin
+	 * @param token
+	 */
+	public void initHistory(String script, String processid, boolean isjoin, String token) {
+		
+		this.token = token;
+		
+		this.isTerminal = isjoin;
+		
+		history = history_tool.initProcessHistory(history, processid, script);
+		
+	}
+    
 	@Override
 	public void runBash(String script, String processid, boolean isjoin, String token) {
 		
-//		this.history_id = token; //new RandomString(12).nextString();
+//		this.history = history_tool.initProcessHistory(history, processid, script);
 		
-		this.history = history_tool.initProcessHistory(history, processid, script);
+		this.initHistory(script, processid, isjoin, token);
     	
     	try {
     		
@@ -112,35 +123,14 @@ public class LocalSessionNixImpl implements LocalSession {
 	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String env, String basedir,
 			String token) {
 		
-		history = history_tool.initProcessHistory(history, processid, notebookjson);
-
-//		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-//		
-//		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
-//		
-//		history.setHistory_input(notebookjson);
-    	
+//		history = history_tool.initProcessHistory(history, processid, notebookjson);
+		
+		this.initHistory(notebookjson, processid, isjoin, token);
+		
     	try {
     		
     		log.info("starting command");
     		
-//    		String cmdline = "";
-//    		
-//    		if(!BaseTool.isNull(basedir)||"default".equals(basedir)) {
-//    			
-//    			cmdline += "cd \"" + basedir + "\"; ";
-//    			
-//    		}
-//    		
-//    		notebookjson = escapeJupter(notebookjson);
-//    		
-//    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history.getHistory_id() + ".ipynb; ";
-    		
-//    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
-//    			
-//    			cmdline += "source activate " + pyenv + "; ";
-//    			
-//    		}
     		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
 
     		BaseTool.writeString2File(notebookjson, tempfile);
@@ -245,16 +235,17 @@ public class LocalSessionNixImpl implements LocalSession {
 	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir,
 			String token) {
 		
-
 //		this.history_id = token; //new RandomString(12).nextString();
 		
-		history = history_tool.initProcessHistory(history, processid, python);
+//		history = history_tool.initProcessHistory(history, processid, python);
 		
 //		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 //		
 //		history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
 //		
 //		history.setHistory_input(python);
+		
+		this.initHistory(python, processid, isjoin, token);
     	
     	try {
     		
@@ -395,8 +386,12 @@ public class LocalSessionNixImpl implements LocalSession {
 	public void saveHistory(String logs, String status) {
 		
 		history.setHistory_output(logs);
+		
 		history.setIndicator(status);
+		
 		history_tool.saveHistory(history);
+		
+		ProcessTool.updateJupyter(history, this.token);
 		
 	}
 

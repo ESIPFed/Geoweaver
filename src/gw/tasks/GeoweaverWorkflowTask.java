@@ -356,7 +356,7 @@ public class GeoweaverWorkflowTask extends Task {
 			
 		} finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close ssh output transferring websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close ssh output transferring websocket at the end
 			
 			stopMonitor(); //shut down workflow status monitor websocket
 			

@@ -35,6 +35,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import gw.tools.SessionManager;
+
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private SSHSessionManager sshSessionManager;
+	private SessionManager sessionManager;
 
 	@Bean
 	public SSHAuthenticationProvider sshAuthentication() {

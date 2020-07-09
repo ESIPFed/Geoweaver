@@ -13,7 +13,9 @@ import org.apache.log4j.Logger;
 
 import gw.log.ExecutionStatus;
 import gw.log.History;
+import gw.process.GWProcess;
 import gw.tools.HistoryTool;
+import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
@@ -78,20 +80,82 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 	}
 	
-	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	/**
+	 * If the process ends with error
+	 * @param token
+	 * @param message
+	 */
+	public void endWithError(String token, String message) {
+		
+		try {
+			
+			Session wsout = CommandServlet.findSessionById(token);
+			
+			if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+				
+				log.info("The failed message has been sent to client");
+				
+				wsout.getBasicRemote().sendText(message);
+				
+				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+				
+			}
+			
+		} catch (IOException e1) {
+			
+			e1.printStackTrace();
+			
+		}
+		
+		this.stop();
+		
+		this.history.setHistory_end_time(BaseTool.getCurrentMySQLDatetime());
+		
+		this.history.setHistory_output(message);
+		
+		this.history.setIndicator(ExecutionStatus.FAILED);
+		
+		this.history_tool.saveHistory(this.history);
+		
+	}
+	
+	/**
+	 * Initialize history object when process execution starts
+	 * @param script
+	 * @param processid
+	 * @param isjoin
+	 * @param token
+	 */
+	public void initHistory(String script, String processid, boolean isjoin, String token) {
 		
 		this.token = token;
 		
 		this.isTerminal = isjoin;
 		
-		this.history.setHistory_id(new RandomString(12).nextString());
+		history = history_tool.initProcessHistory(history, processid, script);
 		
-		this.history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+	}
+	
+	@Override
+	public void saveHistory(String logs, String status) {
 		
-		this.history.setHistory_begin_time(BaseTool.getCurrentMySQLDatetime());
+//		log.info("Save History in LocalSessionWIn is called ");
 		
-		this.history.setHistory_input(script);
+		this.history.setHistory_output(logs);
+		
+		this.history.setIndicator(status);
+		
+		history_tool.saveHistory(history);
+		
+		//for jupyter, save the jupyter nbconvert to replace the code
+		ProcessTool.updateJupyter(history, this.token);
+		
+	}
+	
+	@Override
+	public void runBash(String script, String processid, boolean isjoin, String token) {
+		
+		this.initHistory(script, processid, isjoin, token);
     	
     	try {
     		
@@ -107,14 +171,6 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-//    		// -- Linux --
-//
-//    		// Run a shell command
-//    		processBuilder.command("bash", "-c", "ls /home/mkyong/");
-//
-//    		// Run a shell script
-//    		processBuilder.command("path/to/hello.sh");
-//
 //    		// -- Windows --
 //
 //    		// Run a command
@@ -148,121 +204,101 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			e.printStackTrace();
 			
-			try {
-			
-				Session wsout = CommandServlet.findSessionById(token);
-				
-				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-					
-					log.info("The failed message has been sent to client");
-					
-					wsout.getBasicRemote().sendText(e.getLocalizedMessage());
-					
-					wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
-					
-				}
-				
-			} catch (IOException e1) {
-				
-				e1.printStackTrace();
-				
-			}
-			
-			this.stop();
-			
-			this.history.setHistory_end_time(BaseTool.getCurrentMySQLDatetime());
-			
-			this.history.setHistory_output(e.getLocalizedMessage());
-			
-			this.history.setIndicator(ExecutionStatus.FAILED);
-			
-			this.history_tool.saveHistory(this.history);
+			this.endWithError(token, e.getLocalizedMessage());
 			
 		}
     	
 		
 	}
+	
 
 	@Override
 	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir,
 			String token) {
-		// TODO Auto-generated method stub
+
+		this.initHistory(script, processid, isjoin, token);
 		
+    	try {
+    		
+    		GWProcess pro = ProcessTool.getProcessById(processid);
+    		
+    		ProcessBuilder builder = new ProcessBuilder();
+    		
+    		builder.directory(new File(SysDir.workspace + "/" + token));
+    		
+    		String pythonfilename = pro.getName();
+    		
+    		log.info("Start to execute jupyter notebook: " + pythonfilename);
+    		
+    		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
+    		
+    		builder.command(new String[] {"jupyter", "nbconvert", "--to", "notebook", "--execute", pythonfilename} );
+    		
+    		builder.redirectErrorStream(true);
+    		
+    		Process process = builder.start();
+    		
+    		InputStream stdout = process.getInputStream ();
+    		
+            log.info("Local session established");
+            
+            input = new BufferedReader(new InputStreamReader(stdout));
+            
+            sender = new LocalSessionOutput(input, token);
+            
+            thread = new Thread(sender);
+            
+            thread.setName("SSH Command output thread");
+            
+            log.info("starting sending thread");
+            
+            thread.start();
+            
+            log.info("returning to the client..");
+            
+            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			this.endWithError(token, e.getLocalizedMessage());
+			
+		}
+    	
 	}
 
 	@Override
 	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir,
 			String token) {
 		
-		history = history_tool.initProcessHistory(history, processid, python);
+		this.initHistory(python, processid, isjoin, token);
 		
     	try {
     		
     		log.info("save to local file: " + python);
+
+    		GWProcess pro = ProcessTool.getProcessById(processid);
     		
-//    		tempfile = SysDir.workspace + "/gw-" + token + "-" + history.getHistory_id() + ".py";
-//
-//    		BaseTool.writeString2File(python, tempfile);
+    		ProcessBuilder builder = new ProcessBuilder();
     		
+    		builder.directory(new File(SysDir.workspace + "/" + token));
     		
+    		String pythonfilename = pro.getName();
     		
-//    		python = escapeJupter(python);
+    		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
     		
-//    		log.info("escaped command: " + python);
+    		builder.command(new String[] {"python", pythonfilename} );
     		
-//    		python = python.replaceAll("\\\n", ".");
-//    		python = python.replace("\\n", "\\\\n");
+    		builder.redirectErrorStream(true);
     		
-//    		String cmdline = "";
-//    		
-//    		if(!BaseTool.isNull(basedir)||"default".equals(basedir)) {
-//    			
-//    			cmdline += "cd \"" + basedir + "\"; ";
-//    			
-//    		}
+    		Process process = builder.start();
     		
-    		//new version of execution in which all the python files are copied in the host
+    		InputStream stdout = process.getInputStream ();
     		
-//    		cmdline += "mkdir " + token + ";";
-//    		
-//    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
-//    		
-//    		cmdline += "cd "+ token + "/; ";
-//    		
-////    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
-//    		
-//    		cmdline += "chmod +x *.py;";
-    		
-//    		String filename = ProcessTool.getNameById(processid);
-//    		
-//    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
-//    		
-//    		if(BaseTool.isNull(bin)||"default".equals(bin)) {
-//
-////    			cmdline += "python python-" + history_id + ".py;";
-//    			cmdline += "python " + filename + "; ";
-//    			
-//    		}else {
-//    			
-////    			cmdline += "conda init; ";
-//    			
-//    			cmdline += "source activate " + pyenv + "; "; //for demo only
-//    			
-//    			cmdline += bin + " " + filename + "; ";
-//    			
-//    		}
-//    		
-//    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
-//    		
-//    		cmdline += "cd ..; rm -R " + token + "*;";
-//    		
-//    		log.info(cmdline);
-//    		
-//    		Command cmd = session.exec(cmdline);
-    		
-//            log.info("SSH command session established");
+            log.info("Local session established");
             
-//            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(stdout));
             
             sender = new LocalSessionOutput(input, token);
             
@@ -280,25 +316,12 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("returning to the client..");
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        
-//	        cmd = "./geoweaver-" + token + ".sh";
-//	        		
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        	
-//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//	        output.flush();
 	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
+			
+			this.endWithError(token, e.getLocalizedMessage());
 			
 		}
 		
@@ -306,20 +329,12 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Override
 	public void runMultipleBashes(String[] script, String processid) {
-		// TODO Auto-generated method stub
+		
+		throw new RuntimeException("Not Supported Yet");
 		
 	}
 
-	@Override
-	public void saveHistory(String logs, String status) {
-		
-		this.history.setHistory_output(logs);
-		
-		this.history.setIndicator(status);
-		
-		history_tool.saveHistory(history);
-		
-	}
+	
 
 	@Override
 	public boolean stop() {

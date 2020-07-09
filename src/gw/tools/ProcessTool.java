@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gw.database.DataBaseOperation;
+import gw.log.ExecutionStatus;
+import gw.log.History;
 import gw.process.GWProcess;
 import gw.ssh.SSHSession;
 import gw.utils.BaseTool;
@@ -76,6 +78,13 @@ public class ProcessTool {
 		
 	}
 	
+	/**
+	 * Get Process Object by Process Id
+	 * @param id
+	 * Process ID
+	 * @return
+	 * GWProcess
+	 */
 	public static GWProcess getProcessById(String id) {
 		
 		GWProcess p = new GWProcess();
@@ -154,7 +163,7 @@ public class ProcessTool {
 			
 		}else {
 			
-			code = escape(code);
+//			code = escape(code); //it already escaped once
 			
 			resp.append("\"code\":\"").append(code).append("\" ");
 			
@@ -181,15 +190,15 @@ public class ProcessTool {
 		
 		String resp = null;
 		
-		if(!BaseTool.isNull(code))
-		
+		if(!BaseTool.isNull(code)) {
+
 			resp = code.replaceAll("\\\\", "\\\\\\\\")
 					.replaceAll("\"", "\\\\\"")
 					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
 					.replaceAll("	", "\\\\t");
-		
-//		logger.info(resp);
-		
+			
+		}
+			
 		return resp;
 		
 	}
@@ -204,6 +213,72 @@ public class ProcessTool {
 		
 	}
 	
+	/**
+	 * Update the Process
+	 * @param p
+	 * Process Object
+	 */
+	public static void update(GWProcess p ) {
+		
+//		logger.info("The process code is updated: " + p.getCode());
+		
+		StringBuffer sql = new StringBuffer("update process_type set name = '").append(p.getName())
+				
+				.append("', code = ?, description = '").append(p.getDescription()).append("' where id = '").append(p.getId()).append("';");
+		
+//		logger.info(sql.toString());
+		
+		DataBaseOperation.preexecute(sql.toString(), new String[] {p.getCode()});
+		
+	}
+
+	/**
+	 * for jupyter, save the jupyter nbconvert to replace the code
+	 * @param h
+	 * @param token
+	 */
+	public static void updateJupyter(History h, String token) {
+		
+		if(h.getIndicator().equals(ExecutionStatus.DONE)) {
+			
+			GWProcess p = ProcessTool.getProcessById(h.getHistory_process());
+			
+			if(!BaseTool.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
+				
+//								log.info("save new jupyter into the code");
+				
+				String newfilename = p.getName();
+				
+				if(!newfilename.endsWith(".ipynb")) {
+					
+					newfilename += ".nbconvert.ipynb";
+					
+				}else {
+					
+					newfilename = newfilename.replace(".ipynb", ".nbconvert.ipynb");
+					
+				}
+				
+				String newresult = BaseTool.readStringFromFile(SysDir.workspace + "/" + token + "/" + newfilename);
+				
+				p.setCode(newresult);
+				
+				ProcessTool.update(p);
+				
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * Update the Process
+	 * @param id
+	 * @param name
+	 * @param lang
+	 * @param code
+	 * @param description
+	 */
 	public static void update(String id, String name, String lang, String code, String description) {
 		
 		StringBuffer sql = new StringBuffer("update process_type set name = '").append(name)
@@ -497,7 +572,7 @@ public class ProcessTool {
 		
 		try {
 			
-			SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(hisid);
+			SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
 			
 			if(!BaseTool.isNull(session))
 				

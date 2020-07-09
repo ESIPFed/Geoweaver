@@ -59,7 +59,7 @@ public class LocalSessionOutput  implements Runnable{
     	
     	int nullnumber = 0;
     	
-    	LocalSession session = GeoweaverController.sshSessionManager.localSessionByToken.get(token);
+    	LocalSession session = GeoweaverController.sessionManager.localSessionByToken.get(token);
     	
     	if(!BaseTool.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
     	
@@ -163,7 +163,7 @@ public class LocalSessionOutput  implements Runnable{
             
         }
         
-        GeoweaverController.sshSessionManager.closeByToken(token);
+        GeoweaverController.sessionManager.closeByToken(token);
         
         log.info("Local session output thread ended");
 

@@ -13,6 +13,7 @@ import gw.database.DataBaseOperation;
 import gw.local.LocalSession;
 import gw.local.LocalSessionNixImpl;
 import gw.local.LocalSessionWinImpl;
+import gw.process.GWProcess;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
 import gw.tools.HostTool;
@@ -65,7 +66,7 @@ public class LocalhostTool {
 			
 			String historyid = session.getHistory().getHistory_id();
 			
-			GeoweaverController.sshSessionManager.localSessionByToken.put(token, session);
+			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
 			resp = "{\"history_id\": \""+historyid+
 					
@@ -81,7 +82,7 @@ public class LocalhostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -143,10 +144,54 @@ public class LocalhostTool {
 	 * @param basedir
 	 * @return
 	 */
-	public static String executeJupyterProcess(String id, String hid, String pswd, String token, boolean isjoin,
+	public static String executeJupyterProcess(String id, String hid, 
+			String pswd, String token, boolean isjoin,
 			String bin, String pyenv, String basedir) {
-		// TODO Auto-generated method stub
-		return null;
+
+		String resp = null;
+		
+		try {
+			
+			//get code of the process
+			
+//			String code = ProcessTool.getCodeById(id);
+			
+			GWProcess process = ProcessTool.getProcessById(id);
+			
+			localizeJupyter(process.getCode(), process.getName(), token);
+			
+			LocalSession session = getLocalSession();
+			
+			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+			
+			session.runJupyter(process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
+			
+			String historyid = session.getHistory().getHistory_id();
+			
+			resp = "{\"history_id\": \""+historyid+
+					
+					"\", \"token\": \""+token+
+					
+					"\", \"ret\": \"success\"}";
+			
+			//save environment
+			
+			HostTool.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+		
+		return resp;
+		
 	}
 	
 	
@@ -180,7 +225,7 @@ public class LocalhostTool {
 			
 			LocalSession session = getLocalSession();
 			
-			GeoweaverController.sshSessionManager.localSessionByToken.put(token, session);
+			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
 			session.runPython(code, id, isjoin, bin, pyenv, basedir, token); 
 			
@@ -204,7 +249,7 @@ public class LocalhostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -233,6 +278,31 @@ public class LocalhostTool {
 		}
 		
 		logger.info("The temp python files for " + hid + " have been deleted.");
+		
+	}
+	
+	/**
+	 * Save Jupyter into the Local Workspace Folder if it is run on Localhost
+	 * @param code
+	 * @param token
+	 */
+	public static void localizeJupyter(String code, String name, String token) {
+		
+		File workfolder = new File(SysDir.workspace + "/" + token);
+		
+		if(!workfolder.exists()) {
+			
+			workfolder.mkdirs();
+			
+		}
+		
+		if(!name.endsWith(".ipynb")) {
+			
+			name += ".ipynb";
+			
+		}
+		
+		BaseTool.writeString2File(code, workfolder + "/" + name);
 		
 	}
 	

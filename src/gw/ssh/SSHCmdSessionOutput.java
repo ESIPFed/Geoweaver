@@ -45,7 +45,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
     	
     	int nullnumber = 0;
     	
-    	SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(token);
+    	SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
     	
     	if(!BaseTool.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
     	
@@ -143,7 +143,7 @@ public class SSHCmdSessionOutput  extends SSHSessionOutput {
             
         }
         
-        GeoweaverController.sshSessionManager.closeByToken(token);
+        GeoweaverController.sessionManager.closeByToken(token);
         
         log.info("SSH session output thread ended");
 

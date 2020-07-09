@@ -262,7 +262,7 @@ GW.process = {
 		        '  <div class="input-group-append"> '+
 		        '    <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button> '+
 		        '  </div> '+
-		        '</div></div></div> <div id="jupyter_area-'+cmid+'"></div>';
+		        '</div></div></div> <div id="jupyter_area"></div>';
 			
 			$("#codearea-"+cmid).append(cont);
 			
@@ -831,7 +831,8 @@ GW.process = {
 			
 			console.log("Update the code with the old version")
 			
-			GW.process.editor.setValue(GW.process.unescape(msg.input));
+			if(GW.process.editor)
+				GW.process.editor.setValue(GW.process.unescape(msg.input));
 			
 			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
@@ -1387,7 +1388,7 @@ GW.process = {
 			
 //			$("#code-embed").prop( "disabled", GW.process.editOn );
 			
-			GW.process.editor.setOption("readOnly", GW.process.editOn)
+			if(GW.process.editor)GW.process.editor.setOption("readOnly", GW.process.editOn)
 			
 		},
 		
@@ -1627,37 +1628,46 @@ GW.process = {
 				
 			}).done(function(msg){
 				
-				msg = $.parseJSON(msg);
-				
-				if(msg.ret == "success"){
+				if(msg){
 					
-					console.log("the process is under execution.");
+					msg = $.parseJSON(msg);
 					
-					console.log("history id: " + msg.history_id);
-					
-					GW.process.showSSHOutputLog(msg);
-					
-					if(req.desc == "builtin"){
+					if(msg.ret == "success"){
 						
-						GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+						console.log("the process is under execution.");
+						
+						console.log("history id: " + msg.history_id);
+						
+						GW.process.showSSHOutputLog(msg);
+						
+						if(req.desc == "builtin"){
+							
+							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+							
+						}
+						
+					}else if(msg.ret == "fail"){
+						
+						alert("Fail to execute the process.");
+						
+						console.error("fail to execute the process " + msg.reason);
 						
 					}
 					
-				}else if(msg.ret == "fail"){
+//					if(dialog) dialog.close();
 					
-					alert("Fail to execute the process.");
+					if(dialog) {
+						
+						try{dialog.closeFrame(); }catch(e){}
+						
+					}
 					
-					console.error("fail to execute the process " + msg.reason);
+				}else{
+					
+					console.error("Return Response is Empty");
 					
 				}
 				
-//				if(dialog) dialog.close();
-				
-				if(dialog) {
-					
-					try{dialog.closeFrame(); }catch(e){}
-					
-				}
 				
 			}).fail(function(jxr, status){
 				
@@ -1665,10 +1675,6 @@ GW.process = {
 				
 				if($("#inputpswd").length) $("#inputpswd").val("");
 				
-//				if(button) button.stopSpin();
-//	    		
-//				if(dialog) dialog.enableButtons(true);
-	    		
 				console.error("fail to execute the process " + req.processId);
 				
 			});
@@ -1687,8 +1693,6 @@ GW.process = {
 		 * Execute one process
 		 */
 		executeProcess: function(pid, hid, desc){
-			
-			//
 			
             var req = {
 		    		
@@ -1709,6 +1713,10 @@ GW.process = {
 	            	if(cached_env!=null){
 	            		
 	            		req.env = cached_env;
+	            		
+	            		GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+	                	
+//	                	if(GW.process.env_frame) GW.process.env_frame.closeFrame();
 	            		
 	            	}else{
 	
@@ -1839,23 +1847,23 @@ GW.process = {
 								
 								if($(this).val() == 'default'){
 	    	                		
-			    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-			    	                		
-			    	                	}else{
-			    	                		
-			    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-			    	                		
-			    	                	}
-			    	                	
-			    	                	if($("#remember").prop('checked')){
-			    	                		
-			    	                		GW.host.setEnvCache(hid, req.env);
-			    	                		
-			    	                	}
-			    	                	
-			    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-			    	                	
-			    	                	GW.process.env_frame.closeFrame();
+	    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
+	    	                		
+	    	                	}else{
+	    	                		
+	    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+	    	                		
+	    	                	}
+	    	                	
+	    	                	if($("#remember").prop('checked')){
+	    	                		
+	    	                		GW.host.setEnvCache(hid, req.env);
+	    	                		
+	    	                	}
+	    	                	
+	    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+	    	                	
+	    	                	GW.process.env_frame.closeFrame();
 								
 							});
 	            			
@@ -1897,8 +1905,6 @@ GW.process = {
 		
 		
 		runProcess: function(pid, pname, desc){
-			
-			//select a host
 			
 			var h = this.findCache(pid);
 			

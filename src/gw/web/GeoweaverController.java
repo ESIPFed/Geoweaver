@@ -29,10 +29,10 @@ import gw.search.GWSearchTool;
 import gw.ssh.RSAEncryptTool;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
-import gw.ssh.SSHSessionManager;
 import gw.tools.FileTool;
 import gw.tools.HostTool;
 import gw.tools.ProcessTool;
+import gw.tools.SessionManager;
 import gw.tools.WorkflowTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
@@ -55,11 +55,11 @@ public class GeoweaverController {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public static SSHSessionManager sshSessionManager;
+	public static SessionManager sessionManager;
 	
 	static {
 		
-		sshSessionManager = new SSHSessionManager();
+		sessionManager = new SessionManager();
 		
 	}
 	
@@ -68,7 +68,7 @@ public class GeoweaverController {
 		
         System.out.println("Callback triggered - @PreDestroy.");
         
-        sshSessionManager.closeAll();
+        sessionManager.closeAll();
         
     }
 	
@@ -1018,7 +1018,7 @@ public class GeoweaverController {
     		
 //    		model.addAttribute("username", name);
     		
-    		SSHSession ss = sshSessionManager.sshSessionByToken.get(token);
+    		SSHSession ss = sessionManager.sshSessionByToken.get(token);
     		
     		if(ss!=null) {
     			
@@ -1051,13 +1051,13 @@ public class GeoweaverController {
         	
         	if(token != null) {
 
-            	SSHSession s =  sshSessionManager.sshSessionByToken.get(token);
+            	SSHSession s =  sessionManager.sshSessionByToken.get(token);
             	
             	if(s != null) {
             		
             		s.logout();
             		
-            		sshSessionManager.sshSessionByToken.remove(token);
+            		sessionManager.sshSessionByToken.remove(token);
             		
             	}
         		
@@ -1098,9 +1098,9 @@ public class GeoweaverController {
         	
         	String token = session.getId(); //use session id as token
         	
-//        	if(token!=null && sshSessionManager.sshSessionByToken.get(token)!=null) {
+//        	if(token!=null && sessionManager.sshSessionByToken.get(token)!=null) {
 //        		
-////        		token = sshSessionManager.sshSessionByToken.get(token).getToken();
+////        		token = sessionManager.sshSessionByToken.get(token).getToken();
 //        		
 //        	}else {
         		
@@ -1114,9 +1114,9 @@ public class GeoweaverController {
                         
                 logger.info("adding SSH session for {}", username);
                 
-//                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
+//                sessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sshSessionByToken.put(token, sshSession); //token is session id
+                sessionManager.sshSessionByToken.put(token, sshSession); //token is session id
         		
 //        	}
         	
@@ -1159,9 +1159,9 @@ public class GeoweaverController {
         	
         	String token = null;
         	
-        	if(sshSessionManager.sshSessionByToken.get(host+"-"+username)!=null) {
+        	if(sessionManager.sshSessionByToken.get(host+"-"+username)!=null) {
         		
-//        		token = sshSessionManager.sshSessionByToken.get(host+"-"+username).getToken();
+//        		token = sessionManager.sshSessionByToken.get(host+"-"+username).getToken();
         		
         	}else {
         		
@@ -1175,9 +1175,9 @@ public class GeoweaverController {
                         
                 logger.info("adding SSH session for {}", username);
                 
-//                sshSessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
+//                sessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
-                sshSessionManager.sshSessionByToken.put(token, sshSession);
+                sessionManager.sshSessionByToken.put(token, sshSession);
         		
         	}
         	
@@ -1231,7 +1231,7 @@ public class GeoweaverController {
 
     public static void main(String[] args) {
     	
-    	sshSessionManager.closeAll();
+    	sessionManager.closeAll();
     	
     }
 	
