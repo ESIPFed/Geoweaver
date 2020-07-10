@@ -1,5 +1,6 @@
 package gw.tools;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -259,11 +260,17 @@ public class ProcessTool {
 					
 				}
 				
-				String newresult = BaseTool.readStringFromFile(SysDir.workspace + "/" + token + "/" + newfilename);
+				String resfile = SysDir.workspace + "/" + token + "/" + newfilename;
 				
-				p.setCode(newresult);
-				
-				ProcessTool.update(p);
+				if(new File(resfile).exists()) {
+					
+					String newresult = BaseTool.readStringFromFile(resfile);
+					
+					p.setCode(newresult);
+					
+					ProcessTool.update(p);
+					
+				}
 				
 			}
 			
