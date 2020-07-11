@@ -147,7 +147,6 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 		history_tool.saveHistory(history);
 		
-		//for jupyter, save the jupyter nbconvert to replace the code
 		ProcessTool.updateJupyter(history, this.token);
 		
 	}
