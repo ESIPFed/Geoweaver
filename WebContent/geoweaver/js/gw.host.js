@@ -13,6 +13,8 @@ GW.host = {
 		
 		new_host_frame: null,
 		
+		local_hid: null,
+		
 		clearCache: function(){
 			
 			this.cred_cache = [];
@@ -333,7 +335,11 @@ GW.host = {
 			
 			var s = GW.host.findCache(hid);
 			
-			if(s==null){
+			if(hid == GW.host.local_hid){
+				
+				GW.host.encrypt(hid, "local", req, null, null, business_callback);
+				
+			}else if(s==null){
 				
 				GW.host.enter_password(hid, req, business_callback);
 				

@@ -194,6 +194,56 @@ public class BaseTool {
     }
 	
 	/**
+	 * Run Local Command
+	 * @param command
+	 * @return
+	 */
+	public static String runLocalCommand(String command) {
+		
+		StringBuffer output = new StringBuffer();
+		
+		try {
+			
+			System.out.println("PATH enviroment: " + System.getenv("PATH"));
+			
+			ProcessBuilder builder = new ProcessBuilder();
+    		
+			builder.command("bash", "-c", command);
+    		
+    		builder.redirectErrorStream(true);
+    		
+    		Process process = builder.start();
+    		
+    		InputStream stdout = process.getInputStream ();
+    		
+            System.out.println("Local session established");
+            
+            BufferedReader input = new BufferedReader(new InputStreamReader(stdout));
+            
+            String line;
+        	while ((line = input.readLine()) != null) {
+        		output.append(line + "\n");
+        	}
+
+        	int exitVal = process.waitFor();
+        	if (exitVal == 0) {
+        		System.out.println("Success!");
+        	} else {
+        		//abnormal...
+        		output.append("Failed");
+        	}
+            
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return output.toString();
+		
+		
+	}
+	
+	/**
 	 * Parse VCI date
 	 * @param datestr
 	 * @return

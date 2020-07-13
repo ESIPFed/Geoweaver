@@ -1716,11 +1716,10 @@ GW.process = {
 	            		
 	            		GW.host.start_auth_single(hid, req, GW.process.executeCallback );
 	                	
-//	                	if(GW.process.env_frame) GW.process.env_frame.closeFrame();
-	            		
 	            	}else{
-	
-	                	// retrive the environment list of a host
+	            		
+	                	// retrieve the environment list of a host
+	            		
 	                	$.ajax({
 	                		
 	                		url: "env",
@@ -1960,11 +1959,13 @@ GW.process = {
 	            			
 	            			if(GW.host.isLocal(msg[i])){
 	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" selected=\"selected\">"+msg[i].name+"</option>");
+	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+	            						"\" selected=\"selected\">"+msg[i].name+"</option>");
 	            				
 	            			}else{
 	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+	            						"\" >"+msg[i].name+"</option>");
 	            				
 	            			}
 	            			
@@ -1979,10 +1980,21 @@ GW.process = {
 			    	$("#host-execute-btn").click(function(){
 			    		
 			    		var hostid = $("#hostselector").children(":selected").attr("id");
+			    		
+			    		var hostip = $("#hostselector").children(":selected").attr("value");
+			    		
+			    		console.log("host ip: " + hostip);
 	                	
 	                	console.log("selected host: " + hostid);
 	                	
+	                	if(hostip=="127.0.0.1"){
+	                		
+	                		GW.host.local_hid = hostid;
+	                		
+	                	}
+	                	
 	                	//remember the process-host connection
+	                	
 	                	if(document.getElementById('remember').checked) {
 	                	    
 	                		GW.process.setCache(pid, hostid); //remember s
