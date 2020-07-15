@@ -257,9 +257,9 @@ public class RemotehostTool {
 		
 		try {
 			
-			String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.temp_file_path + "/" + hid + "/";
+			String folderpath = BaseTool.getWebAppRootPath() + SysDir.temp_file_path + "/" + hid + "/";
 			
-			resp = BaseTool.getCyberConnectorRootPath() + SysDir.temp_file_path + "/" + hid + ".tar";
+			resp = BaseTool.getWebAppRootPath() + SysDir.temp_file_path + "/" + hid + ".tar";
 			
 			new File(folderpath).mkdirs(); //make a temporary folder
 			

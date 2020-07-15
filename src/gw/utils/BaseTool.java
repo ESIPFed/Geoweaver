@@ -46,6 +46,9 @@ import org.dom4j.io.SAXReader;
 import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
 
+import gw.local.LocalSessionNixImpl;
+import gw.local.LocalSessionWinImpl;
+
 
 /**
  *Class BaseTool.java
@@ -57,6 +60,7 @@ public class BaseTool {
 	
 	private static String _classpath = null;
 	static Logger logger = Logger.getLogger(BaseTool.class);
+	static String path_env = null;
 	/**
 	 * Judge whether an object is null
 	 * @param obj
@@ -193,12 +197,210 @@ public class BaseTool {
         return document;
     }
 	
+	
+	
+	/**
+	 * Get Local Environment Path
+	 */
+	public static void getLocalPATHEnvironment() {
+		
+		if(isNull(path_env)) {
+			
+			if(OSValidator.isWindows()) {
+				
+				path_env = BaseTool.runCmdNoEnv("cmd.exe /C echo %PATH%");
+				
+			}else if(OSValidator.isMac() || OSValidator.isUnix()) {
+				
+				path_env = BaseTool.runCmdNoEnv("bash -c echo $PATH");
+				
+			}else {
+				
+				logger.error("This operating system is not supported as localhost.");
+				
+				path_env = "/usr/bin/"; //use this default path
+				
+			}
+			
+//			logger.info("Got Path: " + path_env);
+			
+		}
+		
+	}
+	
+	/**
+	 * Run the command without setting environment variables
+	 * @param cmd
+	 * @return
+	 */
+	public static String runCmdNoEnv(String cmd) {
+		
+		StringBuffer logrec = new StringBuffer();
+		
+		try {
+			
+			ProcessBuilder builder = new ProcessBuilder(cmd.split(" "));
+			
+			builder.directory(new File(SysDir.workspace));
+			builder.redirectErrorStream(true);
+			Process proc = builder.start(); // may throw IOException
+	        InputStream ips = proc.getInputStream();
+	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
+	        String str = null;
+	        proc.waitFor();
+	        
+	        int exit_value = proc.exitValue();
+	       
+	        do
+	        {
+	        	if ((str = brd.readLine()) != null)
+	        	{
+	        		logrec.append(str).append("\n");
+	        	}
+	        }
+	        while ((str != null));
+	       
+	        System.out.println(logrec);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return logrec.toString();
+		
+	}
+	
+	/**
+	 * Run Local Command with local path environment
+	 * @param command
+	 * @return
+	 */
+	public static String runCmdEnv(String cmd){
+		
+		StringBuffer logrec = new StringBuffer();
+		
+		try {
+			
+			getLocalPATHEnvironment();
+			
+			ProcessBuilder builder = new ProcessBuilder(cmd.split(" "));
+			if(!isNull(path_env)) {
+				builder.environment().put("PATH", path_env);
+				logger.info("Builder PATH Environment: " + builder.environment().get("PATH"));
+			}
+			builder.directory(new File(SysDir.workspace));
+			builder.redirectErrorStream(true);
+			Process proc = builder.start(); // may throw IOException
+	        InputStream ips = proc.getInputStream();
+	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
+	        String str = null;
+	        proc.waitFor();
+	        
+	        int exit_value = proc.exitValue();
+	        
+	        do
+	        {
+	        	if ((str = brd.readLine()) != null)
+	        	{
+	        		System.out.println("PROC OUT: " + str);
+	        		logrec.append(str).append("\n");
+	        	}
+	        }
+	        while ((str != null));
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return logrec.toString();
+		
+	 }
+	
+//	 public boolean run(String script) throws InterruptedException, IOException{
+//	// 	String scriptFile = "/usr/local/apache-tomcat-6.0.36/webapps/temp/"+getUUID()+".sh";
+//         String scriptFile = SysDir.tempdir + getUUID()+".sh";
+//         writeStringIntoFile(script, scriptFile);
+//
+//         Runtime.getRuntime().exec("chmod +x " + scriptFile).waitFor();
+//         String[] env = {"GISBASE="+SysDir.GISBASE,
+//                         "GISDBASE="+SysDir.GISDBASE,
+//                         "HOME="+SysDir.HOME,
+//                         "GISRC="+SysDir.GISRC,
+//                         "GRASS_GUI="+SysDir.GRASS_GUI,
+//                         "GIS_LOCK="+SysDir.GIS_LOCK,
+//                         "PATH="+SysDir.PATH,
+//                         "DYLD_LIBRARY_PATH="+SysDir.DYLD_LIBRARY_PATH,
+//                         "LD_LIBRARY_PATH="+SysDir.LD_LIBRARY_PATH,
+//                         "GRASS_PERL="+SysDir.GRASS_PERL,
+//                         "GRASS_PAGER="+SysDir.GRASS_PAGER};
+//         Runtime.getRuntime().exec("chmod +x " + scriptFile).waitFor();
+//         Process proc = Runtime.getRuntime().exec(scriptFile, env);
+//
+//         //[GISBASE=/usr/lib/grass64/,
+//         //GISDBASE=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419, 
+//         //HOME=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419, 
+//         //GISRC=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419/.grassrc, 
+//         //GRASS_GUI=text, 
+//         //GIS_LOCK=0, 
+//         //PATH=/usr/lib/grass64//bin:/usr/lib/grass64//scripts:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/grasslib/bin:.,
+//         //DYLD_LIBRARY_PATH=/usr/lib//lib:/usr/lib/grass64//lib:/lib:/usr/lib:/usr/local/lib:/usr/local/grasslib/lib, 
+//         //LD_LIBRARY_PATH=/usr/lib//lib:/usr/lib/grass64//lib:/lib:/usr/lib:/usr/local/lib:/usr/local/grasslib/lib,
+//         //GRASS_PERL=/usr/bin/perl, 
+//         //GRASS_ORGANIZATION=LIESMARS, 
+//         //GRASS_PAGER=more]
+//
+//       InputStream ips = proc.getInputStream();
+//       InputStream eps = proc.getErrorStream();
+//       BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
+//       BufferedReader ebrd = new BufferedReader(new InputStreamReader(eps));
+//       String str = null; String estr = null;
+//       proc.waitFor();
+//       int exit_value = proc.exitValue();
+//       StringBuffer logrec = new StringBuffer();
+//       if (exit_value != 0)
+//       {
+//         err.append("The following error was generated while running the script:\n"  +scriptFile+ "\n");
+//         do
+//         {
+//           if ((estr = ebrd.readLine()) == null)
+//             continue;
+//           err.append("PROC ERR: " + estr + "\n");
+//           logrec.append( estr + "\n");
+//         }
+//         while ((str != null) || (estr != null));
+//         System.out.println(err);
+//         return false;
+//       }
+//
+//       do
+//       {
+//         if ((str = brd.readLine()) != null)
+//         {
+//           System.out.println("PROC OUT: " + str);
+//           logrec.append(str).append("\n");
+//         }
+//         if ((estr = ebrd.readLine()) == null)
+//           continue;
+//         System.out.println("PROC ERR: " + estr);
+//         logrec.append(estr).append("\n");
+//       }
+//       while ((str != null) || (estr != null));
+//       System.out.println(err);
+//       log = logrec.toString();
+//       return true;
+// 	}
+
+	
 	/**
 	 * Run Local Command
 	 * @param command
 	 * @return
 	 */
-	public static String runLocalCommand(String command) {
+	public static String runLocalNuxCommand(String command) {
 		
 		StringBuffer output = new StringBuffer();
 		
@@ -263,7 +465,7 @@ public class BaseTool {
 	 * Get the root file path of CyberConnector
 	 * @return
 	 */
-	public static String getCyberConnectorRootPath(){
+	public static String getWebAppRootPath(){
 		
 		String classpath = getClassPath();
 		
@@ -427,7 +629,7 @@ public class BaseTool {
 			
 		}
 		
-		String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+		String folderpath = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/";
 		
 		String folderuri = SysDir.PREFIXURL + "/CyberConnector/" + SysDir.upload_file_path + "/";
 		
@@ -845,7 +1047,7 @@ public class BaseTool {
 		
 //		String url = BaseTool.cacheData("http://thredds.ucar.edu/thredds/fileServer/grib/NCEP/NDFD/NWS/CONUS/CONDUIT/NDFD_NWS_CONUS_conduit_2p5km_20170613_1800.grib2");
 		
-		String path = BaseTool.getCyberConnectorRootPath();
+		String path = BaseTool.getWebAppRootPath();
 		
 		System.out.println(path);
 		

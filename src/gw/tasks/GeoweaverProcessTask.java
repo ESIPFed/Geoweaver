@@ -1,7 +1,6 @@
 package gw.tasks;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.websocket.Session;
 
@@ -9,11 +8,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
 import gw.tools.FileTool;
+import gw.tools.HostTool;
 import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
@@ -161,15 +159,24 @@ public class GeoweaverProcessTask  extends Task {
 				
 //				String dest = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
 				
-				File folder = new File(BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path);
+				File folder = new File(BaseTool.getWebAppRootPath() + SysDir.upload_file_path);
 				
 				if(!folder.exists()) {
 					folder.mkdir();
 				}
 				
-				String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+				String fileloc = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + filename;
 				
-				FileTool.scp_download(host, pswd, filepath, fileloc);
+				if(HostTool.islocal(host)) {
+					
+					FileTool.download_local(filepath, fileloc);
+					
+				}else {
+
+					FileTool.scp_download(host, pswd, filepath, fileloc);
+					
+				}
+				
 				
 				logger.info("result info: " + fileloc);
 				

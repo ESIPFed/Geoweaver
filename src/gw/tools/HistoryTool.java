@@ -63,7 +63,7 @@ public class HistoryTool {
     			
     			String logfile = SysDir.upload_file_path + "/" + history.getHistory_id() + ".log";
     			
-    			BaseTool.writeString2File(logs, BaseTool.getCyberConnectorRootPath() + logfile);
+    			BaseTool.writeString2File(logs, BaseTool.getWebAppRootPath() + logfile);
     			
     			history.setHistory_output("logfile");
     			

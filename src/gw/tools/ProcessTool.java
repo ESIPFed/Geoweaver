@@ -307,7 +307,7 @@ public class ProcessTool {
 	 */
 	public static String add_local(String name, String lang, String code, String desc) {
 		
-		String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+		String folderpath = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/";
 		
 		String filename = "jupyter-code-" + new RandomString(7).nextString();
 		

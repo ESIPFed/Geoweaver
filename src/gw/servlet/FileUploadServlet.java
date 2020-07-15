@@ -52,9 +52,9 @@ public class FileUploadServlet extends HttpServlet {
     	
     	tempPath = SysDir.temp_file_path;
         
-        filePath = BaseTool.getCyberConnectorRootPath() + relativePath;
+        filePath = BaseTool.getWebAppRootPath() + relativePath;
         
-        tempPath = BaseTool.getCyberConnectorRootPath() + tempPath;
+        tempPath = BaseTool.getWebAppRootPath() + tempPath;
         
 //        File uploadfolder = new File(filePath);
 //        

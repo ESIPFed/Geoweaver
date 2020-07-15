@@ -805,7 +805,7 @@ public class GeoweaverController {
 	    try {
 	    
 	    	// get your file as InputStream
-	    	String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + fileName;
+	    	String fileloc = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + fileName;
 	      
 	    	File my_file = new File(fileloc);
 	      
@@ -847,7 +847,7 @@ public class GeoweaverController {
 			
 			String filename = rel_filepath.substring(rel_url.length());
 			
-			String filepath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+			String filepath = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + filename;
 			
 			String hid = request.getParameter("hid");
 			

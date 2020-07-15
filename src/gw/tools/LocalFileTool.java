@@ -173,7 +173,7 @@ public class LocalFileTool {
 	                		
 	                		p.setId(file.getName());
 	                		
-	                		if(file.getAbsolutePath().startsWith(BaseTool.getCyberConnectorRootPath()+
+	                		if(file.getAbsolutePath().startsWith(BaseTool.getWebAppRootPath()+
 	                				SysDir.upload_file_path)) {
 	                			
 	                			accessurl = SysDir.PREFIXURL+"/CyberConnector/"+SysDir.upload_file_path+"/";
@@ -230,10 +230,10 @@ public class LocalFileTool {
 	 */
 	public static SearchResponse search(String keywords, int recordsperpage, int pageno, List formats) {
 		
-		logger.debug("upload folder: " + BaseTool.getCyberConnectorRootPath()+SysDir.upload_file_path);
+		logger.debug("upload folder: " + BaseTool.getWebAppRootPath()+SysDir.upload_file_path);
 		
 		SearchResponse resp1 = LocalFileTool.search(keywords, recordsperpage, pageno,
-				BaseTool.getCyberConnectorRootPath()+SysDir.upload_file_path, formats);
+				BaseTool.getWebAppRootPath()+SysDir.upload_file_path, formats);
 		
 		if(resp1.getProducts().size()<recordsperpage) {
 			

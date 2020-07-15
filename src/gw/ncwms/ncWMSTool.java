@@ -48,7 +48,7 @@ public class ncWMSTool {
 		
 		if(location.startsWith(SysDir.PREFIXURL)) {
 			
-			location = BaseTool.getCyberConnectorRootPath() + "/" + location.replaceAll(SysDir.PREFIXURL+"/CyberConnector/","");
+			location = BaseTool.getWebAppRootPath() + "/" + location.replaceAll(SysDir.PREFIXURL+"/CyberConnector/","");
 			
 			System.out.println("the new location is : " + location);
 			
