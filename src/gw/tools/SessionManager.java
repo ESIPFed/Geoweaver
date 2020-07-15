@@ -52,6 +52,8 @@ public class SessionManager {
     
     public final ConcurrentHashMap<String, LocalSession> localSessionByToken = new ConcurrentHashMap<String, LocalSession>();
     
+    
+    
     public void closeByToken(String token) {
     	
     	if(sshSessionByToken.containsKey(token)) {

@@ -2,6 +2,8 @@ package gw.tasks;
 
 import java.util.Observable;
 
+import javax.websocket.Session;
+
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -34,6 +36,6 @@ public abstract class Task extends Observable{
 	
 	public abstract String getHistory_id();
 	
-	public abstract void startMonitor(WebSocketSession session);
+	public abstract void startMonitor(Session session);
 	
 }

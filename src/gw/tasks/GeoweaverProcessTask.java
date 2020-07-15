@@ -3,6 +3,8 @@ package gw.tasks;
 import java.io.File;
 import java.io.IOException;
 
+import javax.websocket.Session;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +18,7 @@ import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
+import gw.ws.server.CommandServlet;
 
 /**
  * 
@@ -72,6 +75,11 @@ public class GeoweaverProcessTask  extends Task {
 		
 		this.isjoin = isjoin;
 		
+		Session ws = CommandServlet.findSessionById(token);
+		
+		if(!BaseTool.isNull(ws)) this.startMonitor(ws);
+		
+		
 	}
 	
 	public String getHistory_id() {
@@ -93,18 +101,20 @@ public class GeoweaverProcessTask  extends Task {
 	 */
 	public void stopMonitor() {
 		
-		try {
-			
-			logger.info("close the websocket session from server side");
-			
-			if(!BaseTool.isNull(monitor))
-				monitor.close();
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-			
-		}
+		//no closing anymore, the websocket session between client and server should be always active
+		
+//		try {
+//			
+//			logger.info("close the websocket session from server side");
+//			
+////			if(!BaseTool.isNull(monitor))
+////				monitor.close();
+//			
+//		} catch (IOException e) {
+//			
+//			e.printStackTrace();
+//			
+//		}
 		
 	}
 
@@ -166,8 +176,12 @@ public class GeoweaverProcessTask  extends Task {
 				String ret = "{\"builtin\": true, \"history_id\": \"" + this.history_id + 
 						"\", \"operation\":\""+operation+"\", \"filename\": \"" + filename + "\"}";
 				
-				if(monitor!=null) 
-					monitor.sendMessage(new TextMessage(ret));
+				if(monitor!=null) {
+					
+					monitor.getAsyncRemote().sendText(ret);
+//					monitor.sendMessage(new TextMessage(ret));
+					
+				}
 				else
 					logger.warn("Monitor websocket session should not be null!");
 				

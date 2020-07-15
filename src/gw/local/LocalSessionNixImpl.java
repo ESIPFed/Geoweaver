@@ -183,9 +183,6 @@ public class LocalSessionNixImpl implements LocalSession {
     		// Get a list of all environment variables
             final Map<String, String> envMap = new HashMap<String, String>(System.getenv());
             
-            
-
-    		
     		if(BaseTool.isNull(bin)||"default".equals(bin)) {
 
 //    			cmdline += "python python-" + history_id + ".py;";

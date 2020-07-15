@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.websocket.Session;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,7 +40,7 @@ public class GeoweaverWorkflowTask extends Task {
 	
 	String token;
 	
-	WebSocketSession monitor = null;
+	Session monitor = null;
 	
 	/**********************************************/
     /** section of the geoweaver history records **/
@@ -122,7 +124,7 @@ public class GeoweaverWorkflowTask extends Task {
 	 * Start the monitoring of the task
 	 * @param socketsession
 	 */
-	public void startMonitor(WebSocketSession socketsession) {
+	public void startMonitor(Session socketsession) {
 		
 		monitor = socketsession;
 		
@@ -157,7 +159,8 @@ public class GeoweaverWorkflowTask extends Task {
 					
 				}
 				
-				monitor.sendMessage(new TextMessage(array.toJSONString()));
+//				monitor.sendMessage(new TextMessage(array.toJSONString()));
+				monitor.getAsyncRemote().sendText(array.toJSONString());
 				
 			}
 			

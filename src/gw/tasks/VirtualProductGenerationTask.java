@@ -2,6 +2,8 @@ package gw.tasks;
 
 import java.util.Map;
 
+import javax.websocket.Session;
+
 import org.apache.log4j.Logger;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -207,7 +209,7 @@ public class VirtualProductGenerationTask extends Task {
 	}
 
 	@Override
-	public void startMonitor(WebSocketSession session) {
+	public void startMonitor(Session session) {
 		
 		
 	}
