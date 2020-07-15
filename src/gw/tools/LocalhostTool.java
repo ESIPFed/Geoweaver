@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
 import gw.local.LocalSession;
@@ -16,6 +17,9 @@ import gw.local.LocalSessionWinImpl;
 import gw.process.GWProcess;
 import gw.ssh.SSHSession;
 import gw.ssh.SSHSessionImpl;
+import gw.tasks.GeoweaverProcessTask;
+import gw.tasks.TaskManager;
+import gw.tasks.TaskSocket;
 import gw.tools.HostTool;
 import gw.tools.ProcessTool;
 import gw.utils.BaseTool;
@@ -23,6 +27,7 @@ import gw.utils.OSValidator;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
 import gw.web.GeoweaverController;
+import gw.ws.server.CommandServlet;
 
 /**
  * 
@@ -128,8 +133,78 @@ public class LocalhostTool {
 	 */
 	public static String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
 		
+		String resp = null;
 		
-		return null;
+		try {
+			
+			//get code of the process
+			
+			String code = ProcessTool.getCodeById(id);
+			
+			logger.debug(code);
+			
+			//get host ip, port, user name and password
+			
+//			String[] hostdetails = HostTool.getHostDetailsById(hid);
+			
+			
+//			SSHSession session = new SSHSessionImpl();
+//			
+//			session.login(hid, pswd, token, false);
+//			
+//			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+//			
+//			session.runBash(code, id, isjoin); 
+			
+//			String historyid = session.getHistory_id();
+			
+			GeoweaverProcessTask t = new GeoweaverProcessTask(token);
+			
+			t.initialize(id, hid, pswd, token, isjoin);
+			
+			// find active websocket for this builtin process when it is running as a member process in a workflow
+			// If this builtin process is running solo, the TaskSocket will take care of the problem.
+			
+			javax.websocket.Session ws = CommandServlet.findSessionById(token);
+			
+			if(!BaseTool.isNull(ws)) t.startMonitor(ws);
+			
+			if(isjoin) {
+			
+				TaskManager.runDirectly(t);
+				
+			}else {
+			
+				TaskManager.addANewTask(t);
+				
+			}
+			
+			String historyid = t.getHistory_id();
+			
+			resp = "{\"history_id\": \""+historyid+
+					
+					"\", \"token\": \""+token+
+					
+					"\", \"ret\": \"success\"}";
+			
+//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
+			
+			//register the input/output into the database
+	        
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}  finally {
+			
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			
+		}
+        		
+		return resp;
+		
 	}
 
 	/**

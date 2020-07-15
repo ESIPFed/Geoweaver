@@ -50,7 +50,7 @@ public class GeoweaverProcessTask  extends Task {
     
     Logger logger = Logger.getLogger(this.getClass());
 	
-	WebSocketSession monitor = null;
+    javax.websocket.Session monitor = null;
 	
 	public GeoweaverProcessTask(String name) {
 		
@@ -82,7 +82,7 @@ public class GeoweaverProcessTask  extends Task {
 	 * Start the monitoring of the task
 	 * @param socketsession
 	 */
-	public void startMonitor(WebSocketSession socketsession) {
+	public void startMonitor(javax.websocket.Session socketsession) {
 		
 		monitor = socketsession;
 		
