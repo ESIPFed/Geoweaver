@@ -210,17 +210,19 @@ GW.monitor = {
 				GW.monitor.openProgressIndicator();
 
 				
-				GW.monitor.ws = new SockJS("task");
-		        
-				GW.monitor.historyid = historyid;
-		        
-				GW.monitor.ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
-		        
-				GW.monitor.ws.onclose = function(e) { GW.monitor.ws_onclose(e) };
-		        
-				GW.monitor.ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
-		        
-				GW.monitor.ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
+				//not used any more
+				
+//				GW.monitor.ws = new SockJS("task");
+//		        
+//				GW.monitor.historyid = historyid;
+//		        
+//				GW.monitor.ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
+//		        
+//				GW.monitor.ws.onclose = function(e) { GW.monitor.ws_onclose(e) };
+//		        
+//				GW.monitor.ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
+//		        
+//				GW.monitor.ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
 				
 //			}
 			

@@ -96,7 +96,7 @@ public class FileTool {
 			
 			e.printStackTrace();
 			
-			
+			throw new RuntimeException(e.getLocalizedMessage());
 			
 		}finally {
             

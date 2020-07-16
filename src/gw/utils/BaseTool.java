@@ -218,7 +218,13 @@ public class BaseTool {
 				
 				logger.error("This operating system is not supported as localhost.");
 				
-				path_env = "/usr/bin/"; //use this default path
+				
+				
+			}
+			
+			if(isNull(path_env)) {
+				
+				path_env = "/usr/bin/:/bin/:/usr/local/bin"; //use this default path
 				
 			}
 			
@@ -238,12 +244,16 @@ public class BaseTool {
 		StringBuffer logrec = new StringBuffer();
 		
 		try {
+//			String[] env = {
+//					"PATH=.:/bin/:/usr/bin:/usr/local/bin:/opt/local/bin",
+//					"LD_LIBRARY_PATH=.:/usr/lib:/usr/local/lib"};
 			
 			ProcessBuilder builder = new ProcessBuilder(cmd.split(" "));
 			
 			builder.directory(new File(SysDir.workspace));
 			builder.redirectErrorStream(true);
 			Process proc = builder.start(); // may throw IOException
+//			Process proc = Runtime.getRuntime().exec(cmd.split(" "), env);
 	        InputStream ips = proc.getInputStream();
 	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
 	        String str = null;

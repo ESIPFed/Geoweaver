@@ -1301,6 +1301,41 @@ GW.process = {
 				
 				$("#code-embed").append(code);
 				
+			}else if(code_type=="builtin"){
+				
+				var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
+				'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes">';
+				
+				for(var i=0;i<GW.process.builtin_processes.length;i++){
+					
+					cont += '    		<option value="'+GW.process.builtin_processes[i].operation +
+						'">'+GW.process.builtin_processes[i].operation + '</option>';
+					
+				}
+				
+			   	cont += '  		</select></div>';
+			   	
+			   	code = $.parseJSON(code)
+			   	
+			   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
+			   		
+					cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+					GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
+					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
+					GW.process.builtin_processes[0].params[i].name+'" ></input>';
+					cont += '</div>';
+					
+				}
+			   	
+			   	$("#code-embed").html(cont);
+			   	
+		   		for(var j=0;j<code.params.length;j+=1){
+		   			
+		   			$("#param_" + code.params[j].name).val(code.params[j].value);
+		   				
+		   		}
+				
+				
 			}else{
 
 				var lang = GW.general.getCodeStyleByLang(code_type);
@@ -1602,6 +1637,8 @@ GW.process = {
 			
 			var oper = msg.operation;
 			
+			console.log("Builtin Callback Triggered");
+			
 			if(oper == "ShowResultMap"){
 				
 				//show the map
@@ -1640,11 +1677,11 @@ GW.process = {
 						
 						GW.process.showSSHOutputLog(msg);
 						
-						if(req.desc == "builtin"){
-							
-							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
-							
-						}
+//						if(req.desc == "builtin"){
+//							
+//							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
+//							
+//						}
 						
 					}else if(msg.ret == "fail"){
 						
