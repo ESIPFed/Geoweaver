@@ -1751,19 +1751,6 @@ GW.process = {
 			
 		},
 		
-//		checkhost: function(){
-//			
-//			var id = $(this).attr("id");
-//			
-//			console.log("the select id is " + id);
-//			
-//			var selectedhostid = $(this).find(":selected").attr("id");
-//			
-//			GW.host.checklive(selectedhostid, hostcallback);
-//			
-//		},
-		
-		
 		runProcess: function(pid, pname, desc){
 			
 			var h = this.findCache(pid);
