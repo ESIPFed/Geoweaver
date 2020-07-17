@@ -492,62 +492,6 @@ GW.process = {
 				
 				var frame = GW.process.createJSFrameDialog(720, 480, content, 'History of ' + msg.name)
 				
-//				var width = 720; var height = 480;
-				
-//				const frame = GW.workspace.jsFrame.create({
-//			    		title: 'History of ' + msg.name,
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: content
-//		    	});
-//		    	
-//				frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//		    	//Show the window
-//		    	frame.show();
-//		    	
-//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-				
-//				BootstrapDialog.show({
-//					
-//					title: "History",
-//					
-//					closable: false,
-//					
-//					message: content,
-//					
-//					buttons: [{
-//						
-//						label: "Close",
-//						
-//						action: function(dialog){
-//							
-//							dialog.close();
-//							
-//						}
-//						
-//					}]
-//					
-//				});
-				
 			}).fail(function(jxr, status){
 				
 				console.error(status);
@@ -676,65 +620,6 @@ GW.process = {
 //				var elmnt = document.getElementById("process-history-container");
 //				 
 //				elmnt.scrollIntoView(true);
-				
-				
-//				var content = "<div class=\"modal-body\" style=\"font-size:12px;\">"+ GW.process.getTable(msg) + "</div>";
-//				
-//				var frame = GW.process.createJSFrameDialog(800, 500, content, "History")
-				
-//				var width = 800; var height = 500;
-//				
-//				const frame = GW.workspace.jsFrame.create({
-//			    		title: 'History',
-//			    	    left: 0, 
-//			    	    top: 0, 
-//			    	    width: width, 
-//			    	    height: height,
-//			    	    appearanceName: 'yosemite',
-//			    	    style: {
-//		                    backgroundColor: 'rgb(255,255,255)',
-//				    	    fontSize: 12,
-//		                    overflow:'auto'
-//		                },
-//			    	    html: content
-//		    	});
-//		    	
-//				frame.setControl({
-//		            styleDisplay:'inline',
-//		            maximizeButton: 'zoomButton',
-//		            demaximizeButton: 'dezoomButton',
-//		            minimizeButton: 'minimizeButton',
-//		            deminimizeButton: 'deminimizeButton',
-//		            hideButton: 'closeButton',
-//		            animation: true,
-//		            animationDuration: 150,
-//		
-//		        });
-//		    	
-//		    	//Show the window
-//		    	frame.show();
-//		    	
-//		    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-				
-//				BootstrapDialog.show({
-//					
-//					title: "History",
-//					
-//					message: "<div>" + content + "</div>",
-//					
-//					buttons: [{
-//						
-//						label: "Close",
-//						
-//						action: function(dialog){
-//							
-//							dialog.close();
-//							
-//						}
-//						
-//					}]
-//					
-//				});
 				
 			}).fail(function(jxr, status){
 				
@@ -903,67 +788,6 @@ GW.process = {
 				
 				GW.process.displayOutput(msg);
 				
-//				var output = msg.output;
-//				
-//				if(msg.output=="logfile"){
-//					
-//					output = "<div class=\"spinner-border\" role=\"status\"> "+
-//					"	  <span class=\"sr-only\">Loading...</span> "+
-//					"	</div>";
-//					
-//				}
-//				
-//				console.log("Update the code with the old version")
-//				
-//				
-//				
-//				GW.process.editor.setValue(GW.process.unescape(msg.input));
-//				
-//				output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
-//				
-//				"<p> Execution started at " + msg.begin_time + "</p>"+ 
-//				
-//				"<p> Execution ended at " + msg.end_time + "</p>"+
-//				
-//				"<p> The old code used has been refreshed in the code editor.</p>"+
-//				
-//				"<div>" + 
-//				
-//				output + "</div>";
-//				
-//				$("#console-output").html(output);
-//				
-//				$("#closeLog").click(function(){
-//					
-//					$("#console-output").html("");
-//					
-//				});
-//				
-//				GW.general.switchTab("process");
-//				
-//			    	$("#retrieve-result").click(function(){
-//			    		
-//			    		GW.result.showDialog(history_id);
-//			    		
-//			    	});
-//			    	
-//			    	if(msg.output=="logfile"){
-//						
-//					$.get("../temp/" + msg.id + ".log" ).success(function(data){
-//						
-//						if(data!=null)
-//							$("#log-output").text(data);
-//						else
-//							$("#log-output").text("missing log");
-//						
-//					}).error(function(){
-//						
-//						$("#log-output").text("missing log");
-//						
-//					});
-//					
-//				}
-				
 			}).fail(function(){
 				
 				
@@ -1020,10 +844,8 @@ GW.process = {
 //		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>'+
-		       
 		       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
-		       
-		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits.</p>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <span class="badge badge-secondary">Enable Edit</span> to edit. </p>'+
 		       ' </form></div>';
 			
 			return content;
@@ -1219,7 +1041,7 @@ GW.process = {
 		       '     </div>'+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
-		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits.</p></div>'+
+		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <span class="badge badge-secondary">Enable Edit</span> to edit.</p></div>'+
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
 			   '   </div>' ;
 			
@@ -1518,27 +1340,29 @@ GW.process = {
 					
 			};
 			
-		    	$.ajax({
-		    		
-		    		url: "edit",
-		    		
-		    		method: "POST",
-		    		
-		    		data: req
-		    		
-		    	}).done(function(msg){
-		    		
-		    		msg = $.parseJSON(msg);
-		    		
-		    		console.log("Updated!!");
-		    		
-		    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
-		    		
-		    	}).fail(function(jqXHR, textStatus){
-		    		
-		    		alert("Fail to update the process.");
-		    		
-		    	});
+	    	$.ajax({
+	    		
+	    		url: "edit",
+	    		
+	    		method: "POST",
+	    		
+	    		data: req
+	    		
+	    	}).done(function(msg){
+	    		
+	    		msg = $.parseJSON(msg);
+	    		
+	    		console.log("Updated!!");
+	    		
+	    		GW.general.showToasts("Code updated.");
+	    		
+	    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
+	    		
+	    	}).fail(function(jqXHR, textStatus){
+	    		
+	    		alert("Fail to update the process.");
+	    		
+	    	});
 			
 			
 		},
