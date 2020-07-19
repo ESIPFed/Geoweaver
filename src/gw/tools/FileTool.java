@@ -76,20 +76,28 @@ public class FileTool {
 	public static void copy(String srcpath, String destpath) throws IOException {
 
         InputStream is = null;
+        
         OutputStream os = null;
         
 		try {
+			
 			File src = new File(srcpath);
+			
 			File dest = new File(destpath);
-            is = new FileInputStream(src);
-            os = new FileOutputStream(dest);
+            
+			is = new FileInputStream(src);
+            
+			os = new FileOutputStream(dest);
 
             // buffer size 1K
             byte[] buf = new byte[1024*128];
 
             int bytesRead;
+            
             while ((bytesRead = is.read(buf)) > 0) {
-                os.write(buf, 0, bytesRead);
+            
+            	os.write(buf, 0, bytesRead);
+            
             }
 	            
 		}catch(Exception e) {
