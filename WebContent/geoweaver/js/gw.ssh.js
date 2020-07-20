@@ -64,7 +64,26 @@ GW.ssh = {
 	    	content = content.replace(/\n/g,'<br/>')
 	    	
 //	    	$("#"+this.output_div_id).append("<p style=\"text-align: left; \">"+content+"</p>"); //show all the ssh output
+	    	
+
+	    	
 	    	this.addlog(content);
+	    	
+	    	// trigger the builtin process
+	    	
+	    	var returnmsg = $.parseJSON(content);
+	      	
+	    	console.log(returnmsg);
+	      	
+	    	if(returnmsg.builtin){
+	      		
+	      		GW.process.callback(returnmsg);
+	      		
+	      	}else{
+	      		
+	      		GW.workspace.updateStatus(returnmsg);
+	      		
+	      	}
 	    	
 	    },
 	    
@@ -100,6 +119,7 @@ GW.ssh = {
 	      this.echo("connected");
 	      // link the SSH session established with spring security logon to the websocket session...
 	      this.send(this.token);
+	      
 	      
 	    },
 	    

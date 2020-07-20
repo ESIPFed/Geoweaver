@@ -1244,7 +1244,7 @@ GW.process = {
 			
 			$("#processname").prop( "disabled", GW.process.editOn );
 			
-			$("#processid").prop( "disabled", false ); //always cannot edit id
+			$("#processid").prop( "disabled", true ); //always cannot edit id
 			
 			if(GW.process.editor){
 				

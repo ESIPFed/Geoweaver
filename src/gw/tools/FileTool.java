@@ -43,9 +43,7 @@ public class FileTool {
 		
 		try {
 			
-			String filename = new File(localPath).getName();
-			
-			String dest = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + newfilename;
+			String dest = newfilename;
 			
 			File destfile = new File(dest);
 			
@@ -57,9 +55,7 @@ public class FileTool {
 			
 			copy(localPath, dest);
 			
-			log.info(localPath + " " + dest);
-			
-			resp = "{\"ret\": \"success\", \"path\": \"" + SysDir.upload_file_path + "/" + newfilename + "\"}";
+			resp = "{\"ret\": \"success\", \"path\": \"" + dest + "\"}";
 			
 		}catch(Exception e) {
 			
@@ -74,6 +70,8 @@ public class FileTool {
 	}
 	
 	public static void copy(String srcpath, String destpath) throws IOException {
+		
+		log.info("Copying " + srcpath + " to " + destpath);
 
         InputStream is = null;
         
