@@ -65,8 +65,6 @@ GW.ssh = {
 	    	
 //	    	$("#"+this.output_div_id).append("<p style=\"text-align: left; \">"+content+"</p>"); //show all the ssh output
 	    	
-
-	    	
 	    	this.addlog(content);
 	    	
 	    	// trigger the builtin process
