@@ -173,7 +173,7 @@ public class SSHSessionOutput implements Runnable {
             	
                 e.printStackTrace();
                 
-                GeoweaverController.sshSessionManager.closeByToken(token);
+                GeoweaverController.sessionManager.closeByToken(token);
                 
             }
             

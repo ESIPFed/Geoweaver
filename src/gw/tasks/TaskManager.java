@@ -3,6 +3,8 @@ package gw.tasks;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.Session;
+
 import org.springframework.web.socket.WebSocketSession;
 
 import gw.utils.SysDir;
@@ -114,7 +116,7 @@ public class TaskManager {
 	 * @param sessionid
 	 * @param taskname
 	 */
-	public static void monitorTask(String historyid, WebSocketSession session) {
+	public static void monitorTask(String historyid, Session session) {
 		
 		// search the task with the name in waitinglist and runninglist
 		

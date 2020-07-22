@@ -13,6 +13,13 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+/**
+ * 
+ * Use CommandServlet/TerminalServlet/WorkflowServlet instead
+ * @deprecated
+ * @author jensensun
+ *
+ */
 public class TaskSocket  implements WebSocketHandler {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -55,7 +62,7 @@ public class TaskSocket  implements WebSocketHandler {
         
 //        String[] st = messageText.split("="); // sessionid = taskname
         
-        TaskManager.monitorTask(messageText, socketsession);
+//        TaskManager.monitorTask(messageText, socketsession);
         
         if (logoutCommands.contains(messageText.trim().toLowerCase())) {
             

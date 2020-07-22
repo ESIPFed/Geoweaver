@@ -3,38 +3,26 @@ package gw.tools;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.WebSocketSession;
 
 import gw.database.DataBaseOperation;
-import gw.local.LocalhostTool;
+import gw.log.ExecutionStatus;
+import gw.log.History;
+import gw.process.GWProcess;
 import gw.ssh.SSHSession;
-import gw.ssh.SSHSessionImpl;
-import gw.tasks.GeoweaverProcessTask;
-import gw.tasks.TaskManager;
-import gw.tasks.TaskSocket;
-import gw.user.User;
-import gw.user.UserTool;
 import gw.utils.BaseTool;
-import gw.utils.Message;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
 import gw.web.GeoweaverController;
-import net.schmizz.sshj.common.IOUtils;
-import net.schmizz.sshj.connection.channel.direct.Session;
 
 public class ProcessTool {
 	
 	static Logger logger = LoggerFactory.getLogger(ProcessTool.class);
+	
+	static HistoryTool history_tool = new HistoryTool();
 	
 	/**
 	 * Get the list of processes
@@ -91,11 +79,20 @@ public class ProcessTool {
 		
 	}
 	
-	public static String detail(String id) {
+	/**
+	 * Get Process Object by Process Id
+	 * @param id
+	 * Process ID
+	 * @return
+	 * GWProcess
+	 */
+	public static GWProcess getProcessById(String id) {
+		
+		GWProcess p = new GWProcess();
 		
 		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
 		
-		StringBuffer resp = new StringBuffer();
+//		StringBuffer resp = new StringBuffer();
 		
 		try {
 
@@ -103,9 +100,9 @@ public class ProcessTool {
 			
 			if(rs.next()) {
 				
-				resp.append("{ \"id\":\"").append(rs.getString("id")).append("\", ");
+				p.setId(rs.getString("id"));
 				
-				resp.append("\"name\":\"").append(rs.getString("name")).append("\", ");
+				p.setName(rs.getString("name"));
 				
 				String lang = "shell";
 				
@@ -113,35 +110,19 @@ public class ProcessTool {
 				
 					lang = rs.getString("description");
 				
-				resp.append("\"description\":\"").append(lang).append("\", ");
+				p.setDescription(lang);
 				
 				String code = rs.getString("code");
 
 				if(lang.equals("jupyter")) {
 					
-//					String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
-//					
-//					String filename = code;
-//					
-//					String filepath = folderpath + filename;
-//					
-//					code = BaseTool.readStringFromFile(filepath);
-//					
-////					code = escape(code);
-//					
-//					System.out.println(code);
-					
-					resp.append("\"code\":").append(code).append(" ");
-					
 				}else {
 					
 					code = escape(code);
 					
-					resp.append("\"code\":\"").append(code).append("\" ");
-					
 				}
 				
-				resp.append(" }");
+				p.setCode(code);
 				
 			}
 			
@@ -153,6 +134,44 @@ public class ProcessTool {
 			
 		}
 		
+		return p;
+		
+	}
+	
+	public static String detail(String id) {
+		
+		GWProcess p = getProcessById(id);
+		
+		StringBuffer resp = new StringBuffer();
+		
+		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
+		
+		resp.append("\"name\":\"").append(p.getName()).append("\", ");
+		
+		String lang = "shell";
+		
+		if(!BaseTool.isNull(p.getDescription()))
+		
+			lang = p.getDescription();
+		
+		resp.append("\"description\":\"").append(lang).append("\", ");
+		
+		String code = p.getCode();
+
+		if(lang.equals("jupyter")) {
+			
+			resp.append("\"code\":").append(code).append(" ");
+			
+		}else {
+			
+//			code = escape(code); //it already escaped once
+			
+			resp.append("\"code\":\"").append(code).append("\" ");
+			
+		}
+		
+		resp.append(" }");
+				
 		return resp.toString();
 		
 	}
@@ -172,15 +191,15 @@ public class ProcessTool {
 		
 		String resp = null;
 		
-		if(!BaseTool.isNull(code))
-		
+		if(!BaseTool.isNull(code)) {
+
 			resp = code.replaceAll("\\\\", "\\\\\\\\")
 					.replaceAll("\"", "\\\\\"")
 					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
 					.replaceAll("	", "\\\\t");
-		
-//		logger.info(resp);
-		
+			
+		}
+			
 		return resp;
 		
 	}
@@ -195,6 +214,78 @@ public class ProcessTool {
 		
 	}
 	
+	/**
+	 * Update the Process
+	 * @param p
+	 * Process Object
+	 */
+	public static void update(GWProcess p ) {
+		
+//		logger.info("The process code is updated: " + p.getCode());
+		
+		StringBuffer sql = new StringBuffer("update process_type set name = '").append(p.getName())
+				
+				.append("', code = ?, description = '").append(p.getDescription()).append("' where id = '").append(p.getId()).append("';");
+		
+//		logger.info(sql.toString());
+		
+		DataBaseOperation.preexecute(sql.toString(), new String[] {p.getCode()});
+		
+	}
+
+	/**
+	 * for jupyter, save the jupyter nbconvert to replace the code
+	 * @param h
+	 * @param token
+	 */
+	public static void updateJupyter(History h, String token) {
+		
+		if(h.getIndicator().equals(ExecutionStatus.DONE)) {
+			
+			GWProcess p = ProcessTool.getProcessById(h.getHistory_process());
+			
+			if(!BaseTool.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
+				
+//								log.info("save new jupyter into the code");
+				
+				String newfilename = p.getName();
+				
+				if(!newfilename.endsWith(".ipynb")) {
+					
+					newfilename += ".nbconvert.ipynb";
+					
+				}else {
+					
+					newfilename = newfilename.replace(".ipynb", ".nbconvert.ipynb");
+					
+				}
+				
+				String resfile = SysDir.workspace + "/" + token + "/" + newfilename;
+				
+				if(new File(resfile).exists()) {
+					
+					String newresult = BaseTool.readStringFromFile(resfile);
+					
+					p.setCode(newresult);
+					
+					ProcessTool.update(p);
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	/**
+	 * Update the Process
+	 * @param id
+	 * @param name
+	 * @param lang
+	 * @param code
+	 * @param description
+	 */
 	public static void update(String id, String name, String lang, String code, String description) {
 		
 		StringBuffer sql = new StringBuffer("update process_type set name = '").append(name)
@@ -216,7 +307,7 @@ public class ProcessTool {
 	 */
 	public static String add_local(String name, String lang, String code, String desc) {
 		
-		String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/";
+		String folderpath = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/";
 		
 		String filename = "jupyter-code-" + new RandomString(7).nextString();
 		
@@ -488,7 +579,7 @@ public class ProcessTool {
 		
 		try {
 			
-			SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(hisid);
+			SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
 			
 			if(!BaseTool.isNull(session))
 				
@@ -513,7 +604,7 @@ public class ProcessTool {
 //			
 //			session.runBash(code, id, isjoin); 
 //			
-			HistoryTool.stop(hisid);
+			history_tool.stop(hisid);
 //				
 			resp = "{\"history_id\": \""+hisid+
 //					
@@ -783,57 +874,7 @@ public class ProcessTool {
 	 */
 	public static String all_history(String pid) {
 		
-		StringBuffer resp = new StringBuffer() ;
-		
-		StringBuffer sql = new StringBuffer("select * from history where process = '").append(pid).append("'  ORDER BY begin_time DESC;");
-		
-		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
-		try {
-			
-			resp.append("[");
-			
-			int num = 0;
-			
-			while(rs.next()) {
-				
-				if(num!=0) {
-					
-					resp.append(", ");
-					
-				}
-				
-				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
-				
-				resp.append("\"begin_time\": \"").append(rs.getString("begin_time"));
-				
-				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
-				
-				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
-				
-				resp.append("\", \"status\": \"").append(escape(rs.getString("indicator")));
-				
-				resp.append("\", \"host\": \"").append(escape(rs.getString("host")));
-				
-				resp.append("\"}");
-				
-				num++;
-				
-			}
-			
-			resp.append("]");
-			
-			if(num==0)
-				
-				resp = new StringBuffer();
-			
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-			
-		}
-		
-		return resp.toString();
+		return history_tool.process_all_history(pid);
 		
 	}
 	

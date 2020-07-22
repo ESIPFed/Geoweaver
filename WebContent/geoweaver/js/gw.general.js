@@ -35,6 +35,21 @@ GW.general = {
 			
 		},
 		
+		showToasts:function(message) {
+		  
+		  // Get the snackbar DIV
+		  var x = document.getElementById("snackbar");
+
+		  // Add the "show" class to DIV
+		  x.className = "show";
+		  
+		  $("#snackbar").html(message);
+
+		  // After 3 seconds, remove the show class from DIV
+		  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+		  
+		},
+		
 		getCodeStyleByLang: function(lang){
 			
 			var codestyle = "text/x-shell";

@@ -1,7 +1,11 @@
 package gw.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,88 @@ public class FileTool {
 	static Map<String, SSHSession> token2session = new HashMap();
 
 	static Map<String, SFTPClient> token2ftpclient = new HashMap();
+	
+	/**
+	 * Move a localfile to the public folder for downloading
+	 * @param localPath
+	 * @param newfilename
+	 * @return
+	 */
+	public static String download_local(String localPath, String newfilename) {
+		
+		String resp = null;
+		
+		try {
+			
+			String dest = newfilename;
+			
+			File destfile = new File(dest);
+			
+			if(destfile.exists()) {
+				
+				destfile.delete();
+				
+			}
+			
+			copy(localPath, dest);
+			
+			resp = "{\"ret\": \"success\", \"path\": \"" + dest + "\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = "{\"ret\": \"failure\", \"reason\": \"" + e.getLocalizedMessage() + "\"}";
+			
+		}
+
+		return resp;
+		
+	}
+	
+	public static void copy(String srcpath, String destpath) throws IOException {
+		
+		log.info("Copying " + srcpath + " to " + destpath);
+
+        InputStream is = null;
+        
+        OutputStream os = null;
+        
+		try {
+			
+			File src = new File(srcpath);
+			
+			File dest = new File(destpath);
+            
+			is = new FileInputStream(src);
+            
+			os = new FileOutputStream(dest);
+
+            // buffer size 1K
+            byte[] buf = new byte[1024*128];
+
+            int bytesRead;
+            
+            while ((bytesRead = is.read(buf)) > 0) {
+            
+            	os.write(buf, 0, bytesRead);
+            
+            }
+	            
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}finally {
+            
+        	is.close();
+            os.close();
+        }
+		
+    }
+
 	
 	/**
 	 * Upload a file from local to a specific location on a remote host
@@ -320,7 +406,7 @@ public class FileTool {
 				
 				String filename = new File(filepath).getName();
 				
-				String local = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename + new RandomString(3).nextString();
+				String local = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + filename + new RandomString(3).nextString();
 				
 				BaseTool.writeString2File(content, local);
 				
@@ -362,7 +448,7 @@ public class FileTool {
 			
 			String filename = new File(filepath).getName();
 			
-			String dest = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+			String dest = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + filename;
 			
 			File destfile = new File(dest);
 			
@@ -428,14 +514,20 @@ public class FileTool {
 		
 	}
 
-	
+	/**
+	 * SCP download
+	 * @param hid
+	 * @param password
+	 * @param file_path
+	 * @return
+	 */
 	public static String scp_download(String hid, String password, String file_path) {
 		
 //		file_path = BaseTool.reducePath(file_path);
 		
 		String filename = new RandomString(9).nextString();
 		
-		String fileloc = BaseTool.getCyberConnectorRootPath() + SysDir.upload_file_path + "/" + filename;
+		String fileloc = BaseTool.getWebAppRootPath() + SysDir.upload_file_path + "/" + filename;
 		
 		scp_download(hid, password, file_path, fileloc);
 		

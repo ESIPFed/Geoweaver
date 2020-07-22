@@ -1,4 +1,4 @@
-package gw.ssh;
+package gw.tools;
 /*
 
 The MIT License (MIT)
@@ -27,11 +27,12 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import gw.local.LocalSession;
+import gw.ssh.SSHSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SSHSessionManager {
+public class SessionManager {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
     
@@ -51,11 +52,13 @@ public class SSHSessionManager {
     
     public final ConcurrentHashMap<String, LocalSession> localSessionByToken = new ConcurrentHashMap<String, LocalSession>();
     
+    
+    
     public void closeByToken(String token) {
     	
     	if(sshSessionByToken.containsKey(token)) {
     		
-    		log.info("log out the session");
+    		log.info("log out the ssh session");
     		
     		SSHSession sshSession = sshSessionByToken.get(token);
     		
@@ -67,11 +70,11 @@ public class SSHSessionManager {
     	
     	if(localSessionByToken.containsKey(token)) {
     		
-    		log.info("log out the session");
+    		log.info("log out the local session");
     		
     		LocalSession localSession = localSessionByToken.get(token);
     		
-    		localSession.logout();
+    		localSession.stop();
     		
     		localSessionByToken.remove(token);
     		
@@ -144,7 +147,7 @@ public class SSHSessionManager {
         	
         	for (Entry<String, LocalSession> o : localSessionByToken.entrySet()) {
         	    
-        		o.getValue().logout();
+        		o.getValue().stop();
         		
         	}
         	

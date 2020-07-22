@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,6 +22,7 @@ import gw.utils.BaseTool;
 import gw.utils.RandomString;
 import gw.utils.SysDir;
 import gw.web.GeoweaverController;
+import gw.ws.server.CommandServlet;
 
 public class RemotehostTool {
 	
@@ -66,7 +69,7 @@ public class RemotehostTool {
 			
 			String historyid = session.getHistory_id();
 			
-			GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
+			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
 			resp = "{\"history_id\": \""+historyid+
 					
@@ -87,7 +90,7 @@ public class RemotehostTool {
 		}  finally {
 			
 			//the websocket persists
-//			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+//			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -133,7 +136,7 @@ public class RemotehostTool {
 			
 			session.login(hid, pswd, token, false);
 			
-			GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
+			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
 			session.runJupyter(code, id, isjoin, bin, pyenv, basedir, token); 
 			
@@ -157,7 +160,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -198,26 +201,12 @@ public class RemotehostTool {
 				
 			}
 			
-//			SSHSession session = new SSHSessionImpl();
-//			
-//			session.login(hid, pswd, token, false);
-//			
-//			GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
-//			
-//			session.runBash(code, id, isjoin); 
-			
-//			String historyid = session.getHistory_id();
-			
 			GeoweaverProcessTask t = new GeoweaverProcessTask(token);
 			
 			t.initialize(id, hid, pswd, token, isjoin);
 			
 			// find active websocket for this builtin process when it is running as a member process in a workflow
 			// If this builtin process is running solo, the TaskSocket will take care of the problem.
-			
-			WebSocketSession ws = TaskSocket.findSessionById(WorkflowTool.token2ws.get(token));
-			
-			if(!BaseTool.isNull(ws)) t.startMonitor(ws);
 			
 			if(isjoin) {
 			
@@ -237,10 +226,6 @@ public class RemotehostTool {
 					
 					"\", \"ret\": \"success\"}";
 			
-//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
-			
-			//register the input/output into the database
-	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -249,7 +234,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -272,9 +257,9 @@ public class RemotehostTool {
 		
 		try {
 			
-			String folderpath = BaseTool.getCyberConnectorRootPath() + SysDir.temp_file_path + "/" + hid + "/";
+			String folderpath = BaseTool.getWebAppRootPath() + SysDir.temp_file_path + "/" + hid + "/";
 			
-			resp = BaseTool.getCyberConnectorRootPath() + SysDir.temp_file_path + "/" + hid + ".tar";
+			resp = BaseTool.getWebAppRootPath() + SysDir.temp_file_path + "/" + hid + ".tar";
 			
 			new File(folderpath).mkdirs(); //make a temporary folder
 			
@@ -311,6 +296,7 @@ public class RemotehostTool {
 				throw new RuntimeException("No python is found in the database");
 				
 			}
+			
 			//zip the files into a tar file
 			BaseTool.tar(files, resp);
 			
@@ -378,7 +364,7 @@ public class RemotehostTool {
 			
 			session.login(hid, pswd, token, false);
 			
-			GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
+			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
 			session.runPython(code, id, isjoin, bin, pyenv, basedir, token); 
 			
@@ -402,7 +388,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sshSessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
