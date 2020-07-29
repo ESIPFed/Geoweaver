@@ -2,6 +2,7 @@ package gw.ws.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,12 @@ import java.util.Map;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ClientEndpointConfig.Builder;
+import javax.websocket.ClientEndpointConfig.Configurator;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.HandshakeResponse;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -21,9 +26,8 @@ import org.apache.log4j.Logger;
 
 import gw.utils.BaseTool;
 
-@ClientEndpoint
-public class Java2JupyterClientEndpoint 
-//extends Endpoint 
+//@ClientEndpoint
+public class Java2JupyterClientEndpoint extends Endpoint 
 {
 
 	Session newjupyteression = null;
@@ -31,6 +35,7 @@ public class Java2JupyterClientEndpoint
     private Logger logger = Logger.getLogger(this.getClass());
     
     private Java2JupyterClientDialog window;
+    
 
     public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers) {
     	
@@ -39,35 +44,52 @@ public class Java2JupyterClientEndpoint
         	this.newjupyteression = jssession;
             
         	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            
+        	
         	//build ClientEndpointConfig
             Builder configBuilder = ClientEndpointConfig.Builder.create();
             
-//            configBuilder.configurator(new Configurator() {
-//                @Override
-//                public void beforeRequest(Map<String, List<String>> headers) {
-//                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
-//                }
-//            });
-            ClientEndpointConfig clientConfig = configBuilder.build();
-            
-            if(!BaseTool.isNull(headers)) {
+            configBuilder.configurator(new Configurator() {
             	
-            	Iterator<String> itr = headers.keySet().iterator();
-                
-                while (itr.hasNext())
-                {
-                	String key = itr.next();
+                @Override
+                public void beforeRequest(Map<String, List<String>> nativeheaders) {
+//                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
                 	
-                	List<String> value = headers.get(key);
-
-                	System.out.println(key + "=" + value);
+                	nativeheaders.putAll(headers);
                 	
-                	clientConfig.getUserProperties().put(key, value.get(0));
+                	logger.info("Native Headers Loggout: " + nativeheaders);
                 	
                 }
-            	
-            }
+                
+            });
+            
+            ClientEndpointConfig clientConfig = configBuilder.build();
+            
+//            if(!BaseTool.isNull(headers)) {
+//            	
+//            	Iterator<String> itr = headers.keySet().iterator();
+//                
+//                while (itr.hasNext())
+//                {
+//                	String key = itr.next();
+//                	
+//                	List<String> value = headers.get(key);
+//
+//                	System.out.println(key + "=" + value);
+//                	
+//                	clientConfig.getUserProperties().put(key, value.get(0));
+//                	
+//                }
+//            	
+//            }
+            
+//            ClientEndpointConfig.Configurator configurator = new ClientEndpointConfig.Configurator() {
+//                public void beforeRequest(Map> headers) {
+//                    headers.put("Authorization", asList("Basic " + DatatypeConverter.printBase64Binary("user:password".getBytes())));
+//                }
+//            };
+//            ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
+//                    .configurator(configurator)
+//                    .build();
             
 //            clientConfig.getConfigurator().beforeRequest(headers);
 //            clientConfig.getUserProperties().put("Sec-WebSocket-Extensions", "permessage-deflate; client_max_window_bits");
@@ -78,8 +100,8 @@ public class Java2JupyterClientEndpoint
 //            Sec-WebSocket-Key: JNOrKMA6YhDCRijp46/ofg==
 //            Sec-WebSocket-Version: 13
             
-//            container.connectToServer(this, clientConfig, endpointURI);
-            container.connectToServer(this, endpointURI);
+            container.connectToServer(this, clientConfig, endpointURI);
+//            container.connectToServer(this, endpointURI);
             
 //            Session newjupytersession = container.connectToServer(this,  endpointURI);
             
@@ -123,58 +145,68 @@ public class Java2JupyterClientEndpoint
 	}
 
 
+	@Override
+	public void onOpen(Session session, EndpointConfig config) {
+		logger.info("Annotation The connection between Java and Jupyter server is established.");
+        this.newjupyteression = session;
+		
+	}
 
-	/**
-     * Callback hook for Connection open events.
-     * 
-     * @param userSession
-     *            the userSession which is opened.
-     */
-    @OnOpen
-    public void onOpen(Session userSession) {
-    	logger.info("Annotation The connection between Java and Jupyter server is established.");
-        this.newjupyteression = userSession;
-    }
 
-    /**
-     * Callback hook for Connection close events.
-     * 
-     * @param userSession
-     *            the userSession which is getting closed.
-     * @param reason
-     *            the reason for connection close
-     */
-    @OnClose
-    public void onClose(Session userSession, CloseReason reason) {
-        try {
-        	logger.info("The connection between Java and Jupyter is closed.");
-        	this.newjupyteression = null;
-        	logger.info("The connection between Javascript and Geoweaver is closed. ");
-			if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
+//	/**
+//     * Callback hook for Connection open events.
+//     * 
+//     * @param userSession
+//     *            the userSession which is opened.
+//     */
+//    @OnOpen
+//    public void onOpen(Session userSession) {
+//    	logger.info("Annotation The connection between Java and Jupyter server is established.");
+//        this.newjupyteression = userSession;
+//    }
+	
+	
+    
 
-    /**
-     * Callback hook for Message Events. This method will be invoked when a
-     * client send a message.
-     * 
-     * @param message
-     *            The text message
-     */
-    @OnMessage
-    public void onMessage(String message) {
-    	logger.info("Received message from remote Jupyter server: " + message);
-    	logger.info("send this message back to the client");
-//    	if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.getAsyncRemote().sendText(message);
-    	if(!BaseTool.isNull(window)) {
-    		
-    		window.writeServerMessage(message);
-    		
-    	}
-    	
-    }
+//    /**
+//     * Callback hook for Connection close events.
+//     * 
+//     * @param userSession
+//     *            the userSession which is getting closed.
+//     * @param reason
+//     *            the reason for connection close
+//     */
+//    @OnClose
+//    public void onClose(Session userSession, CloseReason reason) {
+//        try {
+//        	logger.info("The connection between Java and Jupyter is closed.");
+//        	this.newjupyteression = null;
+//        	logger.info("The connection between Javascript and Geoweaver is closed. ");
+//			if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//    }
+//
+//    /**
+//     * Callback hook for Message Events. This method will be invoked when a
+//     * client send a message.
+//     * 
+//     * @param message
+//     *            The text message
+//     */
+//    @OnMessage
+//    public void onMessage(String message) {
+//    	logger.info("Received message from remote Jupyter server: " + message);
+//    	logger.info("send this message back to the client");
+////    	if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.getAsyncRemote().sendText(message);
+//    	if(!BaseTool.isNull(window)) {
+//    		
+//    		window.writeServerMessage(message);
+//    		
+//    	}
+//    	
+//    }
 
     /**
      * Send a message.
@@ -185,6 +217,7 @@ public class Java2JupyterClientEndpoint
     public void sendMessage(String message) {
         this.newjupyteression.getAsyncRemote().sendText(message);
     }
+
 
 
 
