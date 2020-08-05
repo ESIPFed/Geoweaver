@@ -3,6 +3,7 @@ package gw.ws.client;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.websocket.ContainerProvider;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
+import javax.websocket.MessageHandler;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -26,6 +28,11 @@ import org.apache.log4j.Logger;
 
 import gw.utils.BaseTool;
 
+/**
+ * 
+ * @author JensenSun
+ *
+ */
 //@ClientEndpoint
 public class Java2JupyterClientEndpoint extends Endpoint 
 {
@@ -54,7 +61,24 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 public void beforeRequest(Map<String, List<String>> nativeheaders) {
 //                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
                 	
-                	nativeheaders.putAll(headers);
+                	Map<String, List<String>> uppercaseheaders = new HashMap();
+                	
+                	Iterator hmIterator = nativeheaders.entrySet().iterator(); 
+                	
+                    while (hmIterator.hasNext()) {
+                        Map.Entry<String, List<String>> mapElement = (Map.Entry)hmIterator.next(); 
+                        
+                        String newkey = mapElement.getKey();
+                        
+                        newkey = newkey.substring(0, 1).toUpperCase() + newkey.substring(1);
+                        
+                        List<String> values = mapElement.getValue();
+                        
+                        uppercaseheaders.put(newkey, values);
+                        
+                    } 
+                    
+                	nativeheaders.putAll(uppercaseheaders);
                 	
                 	logger.info("Native Headers Loggout: " + nativeheaders);
                 	
@@ -100,7 +124,11 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //            Sec-WebSocket-Key: JNOrKMA6YhDCRijp46/ofg==
 //            Sec-WebSocket-Version: 13
             
+            
+            
             container.connectToServer(this, clientConfig, endpointURI);
+            
+            logger.info("The connection to Jupyter server is built");
 //            container.connectToServer(this, endpointURI);
             
 //            Session newjupytersession = container.connectToServer(this,  endpointURI);
@@ -116,15 +144,75 @@ public class Java2JupyterClientEndpoint extends Endpoint
         
     }
     
-//    @Override
-//	public void onOpen(Session session, EndpointConfig config) {
-//    	logger.info("Override The connection between Java and Jupyter server is established.");
-//        this.newjupyteression = session;
-//	}
+    @Override
+	public void onOpen(Session session, EndpointConfig config) {
+    	
+    	logger.info("Override The connection between Java and Jupyter server is established.");
+    	
+        this.newjupyteression = session;
+        
+        this.newjupyteression.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message) {
+            	
+                try {
+                	
+                	logger.info("Received message from remote Jupyter server: " + message);
+                	
+                	logger.info("send this message back to the client");
+                	
+//                	if(!BaseTool.isNull(this.newjupyteression)) this.newjupyteression.getAsyncRemote().sendText(message);
+                	
+                	if(!BaseTool.isNull(window)) {
+                		
+                		window.writeServerMessage(message);
+                		
+                	}
+//                    session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
+                	
+                } catch (Exception ex) {
+                	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
+                }
+            }
+        });
+	}
+    
+    @Override
+    public void onClose(Session session, CloseReason closeReason) {
+		try {
+			
+	        logger.info("Peer " + session.getId() + " disconnected due to " + closeReason.getReasonPhrase());
+	        this.newjupyteression = null;
+	    	logger.info("The connection between Javascript and Geoweaver is closed. ");
+			
+			if(!BaseTool.isNull(this.newjupyteression))this.newjupyteression.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
+    
+    @Override
+    public void onError(Session session, Throwable error) {
+        logger.info("Error communicating with peer " + session.getId() + ". Detail: "+ error.getMessage());
+    }
     
     public Session getNewjupyteression() {
 		return newjupyteression;
 	}
+
+
+    /**
+     * Send a message.
+     * 
+     * @param user
+     * @param message
+     */
+    public void sendMessage(String message) {
+        this.newjupyteression.getAsyncRemote().sendText(message);
+    }
 
 
 
@@ -143,16 +231,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 	public void setWindow(Java2JupyterClientDialog window) {
 		this.window = window;
 	}
-
-
-	@Override
-	public void onOpen(Session session, EndpointConfig config) {
-		logger.info("Annotation The connection between Java and Jupyter server is established.");
-        this.newjupyteression = session;
-		
-	}
-
-
+	
 //	/**
 //     * Callback hook for Connection open events.
 //     * 
@@ -207,17 +286,6 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //    	}
 //    	
 //    }
-
-    /**
-     * Send a message.
-     * 
-     * @param user
-     * @param message
-     */
-    public void sendMessage(String message) {
-        this.newjupyteression.getAsyncRemote().sendText(message);
-    }
-
 
 
 
