@@ -62,6 +62,8 @@ public class JupyterRedirectServlet {
 			
 			client = new Java2JupyterClientEndpoint(new URI(trueurl), session, headers);
 			
+			logger.info("The connections from javascript end to this servlet, and this servlet to Jupyter server have been created.");
+			
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
