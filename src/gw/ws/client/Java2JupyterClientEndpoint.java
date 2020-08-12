@@ -2,6 +2,7 @@ package gw.ws.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,7 +64,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 	
                 	Map<String, List<String>> uppercaseheaders = new HashMap();
                 	
-                	Iterator hmIterator = nativeheaders.entrySet().iterator(); 
+                	Iterator hmIterator = headers.entrySet().iterator(); 
                 	
                     while (hmIterator.hasNext()) {
                         Map.Entry<String, List<String>> mapElement = (Map.Entry)hmIterator.next(); 
@@ -74,7 +75,21 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         
                         List<String> values = mapElement.getValue();
                         
-                        uppercaseheaders.put(newkey, values);
+//                        if("Host".equals(newkey) ) {
+//                        	
+//                        	List<String> local = new ArrayList();
+//                        	local.add("localhost:8888");
+//                        	uppercaseheaders.put(newkey, local);
+//                        	
+//                        }else if ("Origin".equals(newkey)){
+//                        	
+//                        	List<String> local = new ArrayList();
+//                        	local.add("http://localhost:8888");
+//                        	uppercaseheaders.put(newkey, local);
+//                        	
+//                        }else {
+                        	uppercaseheaders.put(newkey, values);
+//                        }
                         
                     } 
                     
