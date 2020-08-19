@@ -45,6 +45,32 @@ public class Java2JupyterClientEndpoint extends Endpoint
     private Java2JupyterClientDialog window;
     
 
+    public static String upperAllFirst(String key) {
+    	
+    	String[] ks = key.split("-");
+    	
+    	for(int i=0;i<ks.length;i++) {
+    		
+    		ks[i] = ks[i].substring(0, 1).toUpperCase() + ks[i].substring(1);
+    		
+    		ks[i] = ks[i].replace("Websocket", "WebSocket");
+    		
+    	}
+    	
+    	StringBuffer sb = new StringBuffer();
+    	
+    	for(int i=0;i<ks.length;i++) {
+    		
+    		if(i!=0)sb.append("-");
+    		
+    		sb.append(ks[i]);
+    		
+    	}
+    	
+    	return sb.toString();
+    	
+    }
+    
     public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers) {
     	
         try {
@@ -71,7 +97,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         
                         String newkey = mapElement.getKey();
                         
-                        newkey = newkey.substring(0, 1).toUpperCase() + newkey.substring(1);
+                        newkey = upperAllFirst(newkey);
                         
                         List<String> values = mapElement.getValue();
                         
@@ -89,6 +115,8 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //                        	
 //                        }else {
                         	uppercaseheaders.put(newkey, values);
+                        	
+                        	logger.info("Key:" + newkey + " - Values: " + values);
 //                        }
                         
                     } 
