@@ -88,6 +88,8 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 public void beforeRequest(Map<String, List<String>> nativeheaders) {
 //                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
                 	
+                	logger.info("Original Native Headers: " + nativeheaders);
+                	
                 	Map<String, List<String>> uppercaseheaders = new HashMap();
                 	
                 	Iterator hmIterator = headers.entrySet().iterator(); 
@@ -98,8 +100,14 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         String newkey = mapElement.getKey();
                         
                         newkey = upperAllFirst(newkey);
+//                        newkey = newkey.toLowerCase();
                         
                         List<String> values = mapElement.getValue();
+                        
+                        if("Host".equals(newkey) || "Origin".equals(newkey)) {
+                        	
+                        	continue;
+                        }
                         
 //                        if("Host".equals(newkey) ) {
 //                        	
@@ -122,8 +130,9 @@ public class Java2JupyterClientEndpoint extends Endpoint
                     } 
                     
                 	nativeheaders.putAll(uppercaseheaders);
+//                    nativeheaders = uppercaseheaders;
                 	
-                	logger.info("Native Headers Loggout: " + nativeheaders);
+                	logger.info("New Native Headers Loggout: " + nativeheaders);
                 	
                 }
                 
