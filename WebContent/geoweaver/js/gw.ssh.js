@@ -46,42 +46,52 @@ GW.ssh = {
 		username : '<sec:authentication property="principal" />',
 		
 	    special : {
-	      black:   "\x1b[1;30m",
-	      red:     "\x1b[1;31m",
-	      green:   "\x1b[1;32m",
-	      yellow:  "\x1b[1;33m",
-	      blue:    "\x1b[1;34m",
-	      magenta: "\x1b[1;35m",
-	      cyan:    "\x1b[1;36m",
-	      white:   "\x1b[1;37m",
-	      reset:   "\x1b[0m",
-	      ready:   "]0;", 
-	      prompt:  "$"
+			  black:   "\x1b[1;30m",
+			  red:     "\x1b[1;31m",
+			  green:   "\x1b[1;32m",
+			  yellow:  "\x1b[1;33m",
+			  blue:    "\x1b[1;34m",
+			  magenta: "\x1b[1;35m",
+			  cyan:    "\x1b[1;36m",
+			  white:   "\x1b[1;37m",
+			  reset:   "\x1b[0m",
+			  ready:   "]0;", 
+			  prompt:  "$"
 	    },
 	    
 	    echo: function(content){
-	    	
-	    	content = content.replace(/\n/g,'<br/>')
-	    	
-//	    	$("#"+this.output_div_id).append("<p style=\"text-align: left; \">"+content+"</p>"); //show all the ssh output
-	    	
-	    	this.addlog(content);
-	    	
-	    	// trigger the builtin process
-	    	
-	    	var returnmsg = $.parseJSON(content);
-	      	
-	    	console.log(returnmsg);
-	      	
-	    	if(returnmsg.builtin){
-	      		
-	      		GW.process.callback(returnmsg);
-	      		
-	      	}else{
-	      		
-	      		GW.workspace.updateStatus(returnmsg);
-	      		
-	      	}
+		
+			if(content!=null){
+				
+		    	content = content.replace(/\n/g,'<br/>')
+		    	
+		    	this.addlog(content);
+		    	
+		    	// trigger the builtin process
+				
+		    	try{
+					
+					var returnmsg = $.parseJSON(content);
+		      	
+			    	console.log(returnmsg);
+			      	
+			    	if(returnmsg.builtin){
+			      		
+			      		GW.process.callback(returnmsg);
+			      		
+			      	}else{
+			      		
+			      		GW.workspace.updateStatus(returnmsg);
+			      		
+			      	}
+			
+				}catch(errors){
+					
+					console.error(errors)
+					
+				}
+		    	
+			}
 	    	
 	    },
 	    
@@ -238,85 +248,6 @@ GW.ssh = {
 			GW.general.switchTab("console");
 			
 			this.addlog("=======\nStart to process " + msg.history_id);
-			
-//			BootstrapDialog.show({
-//				
-//				title: "SSH log",
-//				
-//				message: "<div id=\"log_box_id\">",
-//				
-//				closable: true,
-//				
-//				onshown: function(){
-			
-					
-//					GW.ssh.ws = new SockJS("shell");
-//			        
-//					GW.ssh.output_div_id = "log_box_id";
-//			        
-//					GW.ssh.token = token;
-//					
-//					this.echo("Running process " + token)
-//			        
-//					GW.ssh.ws.onopen = function(e) { GW.ssh.ws_onopen(e) };
-//			        
-//					GW.ssh.ws.onclose = function(e) { GW.ssh.ws_onclose(e) };
-//			        
-//					GW.ssh.ws.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
-//			        
-//					GW.ssh.ws.onerror = function(e) { GW.ssh.ws_onerror(e) };
-			
-			        
-//				},
-//
-//				onclose: function(){
-//					
-//					//do nothing - the websocket session should be closed
-//				},
-//				
-//				buttons: [
-//					// NO Turn Back! is the symbol of web-based system
-////					{
-////					
-////					label: "Interrupt",
-////					
-////					action: function(dialog){
-////						
-////						//send the message to shut down the SSH session and stop the process
-////						
-////						GW.ssh.ws.send("exit");
-////						
-//////						dialog.close();
-////						
-////					}
-////					
-////				},
-//				
-//				{
-//					
-//					label: "Run in background",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				},{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
-			
-	        
 			
 	    },
 	    

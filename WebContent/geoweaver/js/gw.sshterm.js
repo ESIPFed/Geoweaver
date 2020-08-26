@@ -10,6 +10,7 @@ var port = window.location.port;
 var pcol = window.location.protocol; */
 var root = getContextURLPath();
 var key = '${key}';
+var completable = false;
 var username = '<sec:authentication property="principal" />';
 //alert('ID:' + key + ',USERNAME:' + username);
 var special = {
@@ -111,9 +112,11 @@ function resumeTerm(message){
 		
 	}else if(message.startsWith("[sudo] password")){
 		
-		//passwordPhase = true;
+		/*passwordPhase = true;*/
 		
 		send("\n");
+		
+		shell.set_mask(false);
 		
 	}
 	
@@ -137,63 +140,73 @@ function ws_onmessage(e) {
   
   try {
 	
-    //if(e.data.indexOf(special.prompt) == -1 && e.data.indexOf(special.ready) == -1) {
+    	//if(e.data.indexOf(special.prompt) == -1 && e.data.indexOf(special.ready) == -1) {
     	
     	console.log(e.data);
-    	
-    	var match = /\r|\n/.exec(e.data);
-    	
-    	/*if(passwordPhase){
-    		
-    		if(e.data.startsWith("[sudo] password for") || e.data.startsWith("Sorry")){
-    			
-    			//one try failed
-    			shell.set_prompt("[sudo] password for " + user + ": ");	
-    			
-    			shell.resume();
-    			
-    		}else if(e.data.startsWith("sudo")){
-    			
-    			//three tries failed
-    			passwordPhase = false;
-    			
-    			shell.set_prompt(last_prompt);
-    			
-    			shell.resume();
-    			
-    		}else{
-    			
-    			send("\n");
-    			
-    			passwordPhase = false;
-    			
-    		}
-    		
-    	}else */
-    	
-    	if(!match && e.data.indexOf("@")!=-1 && e.data.indexOf(special.prompt)){
-    		
-    		/*var breaks = e.data.split("$ ");
-    		
-    		var last_prompt = breaks[0] + "$ ";
-    		
-    		shell.set_prompt(last_prompt);
-    		
-        	shell.resume();*/
-        	
-    		resumeTerm(e.data);
-        	
-    	}else if(e.data.startsWith("[sudo] password")){
-    		
-    		//passwordPhase = true;
-    		
-    		resumeTerm(e.data);
-    		
-    	}else{
+
+		/*if(completable){
 			
-        	shell.echo(e.data);
-    		
-    	}
+			completable = false;
+			
+			
+		}else{*/
+			
+	    	var match = /\r|\n/.exec(e.data);
+	    	
+	    	/*if(passwordPhase){
+	    		
+	    		if(e.data.startsWith("[sudo] password for") || e.data.startsWith("Sorry")){
+	    			
+	    			//one try failed
+	    			shell.set_prompt("[sudo] password for " + user + ": ");	
+	    			
+	    			shell.resume();
+	    			
+	    		}else if(e.data.startsWith("sudo")){
+	    			
+	    			//three tries failed
+	    			passwordPhase = false;
+	    			
+	    			shell.set_prompt(last_prompt);
+	    			
+	    			shell.resume();
+	    			
+	    		}else{
+	    			
+	    			send("\n");
+	    			
+	    			passwordPhase = false;
+	    			
+	    		}
+	    		
+	    	}else */
+	    	
+	    	if(!match && e.data.indexOf("@")!=-1 && e.data.indexOf(special.prompt)){
+	    		
+	    		/*var breaks = e.data.split("$ ");
+	    		
+	    		var last_prompt = breaks[0] + "$ ";
+	    		
+	    		shell.set_prompt(last_prompt);
+	    		
+	        	shell.resume();*/
+	        	
+	    		resumeTerm(e.data);
+	        	
+	    	}else if(e.data.startsWith("[sudo] password")){
+	    		
+	    		//passwordPhase = true;
+	    		
+	    		resumeTerm(e.data);
+	    		
+	    	}else{
+				
+	        	shell.echo(e.data);
+	    		
+	    	}
+	    	
+			
+		/*}*/
     	
     //}
     
@@ -260,6 +273,12 @@ $(document).ready(function ($) {
     			command += "\n";
     			
     		}
+
+			if(command.startsWith("sudo")){
+				
+				shell.set_mask(true);
+				
+			}
     	
     		send(command);
     		
@@ -271,8 +290,30 @@ $(document).ready(function ($) {
             exit: false,
             clear: true,
             wrap: true,
-            greetings: "SSH on Web started. Type 'logout' to quit. \n",
+            greetings: "SSH on Web started. Type 'exit' to quit. \n",
        		
+			/*completion: function (command, callback) {
+
+				console.log("Complete command is entered - " + command + ":")
+				
+				ws.send(command + "\t");
+				
+				completable = true;
+				
+	        },*/
+
+			/*keypress:{
+			
+				""	
+				
+			},*/
+			
+			/*onCommandChange: function(command, terminal){
+				
+				console.log("Command is changed: ", command);
+				
+			},*/
+
             keymap: {
               
            	  "CTRL+D": function(e, original){

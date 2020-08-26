@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 /**
  * 
- * This works but will be used for mointoring workflow
+ * This class is used for monitoring workflow execution
  * 
  * @author JensenSun
  *

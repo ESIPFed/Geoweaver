@@ -32,7 +32,7 @@ import gw.web.GeoweaverController;
 
 /**
  * 
- * This works and will be used as the only websocket channel for transferring all the SSH related message
+ * This is used as the only websocket channel for transferring all the terminal SSH related message
  * 
  * @author JensenSun
  *

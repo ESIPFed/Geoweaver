@@ -21,7 +21,7 @@ import gw.web.GeoweaverController;
 
 /**
  * 
- * This works and will be used as the only websocket channel for transferring all the SSH related message
+ * This class is used as the only websocket channel for transferring all the non-terminal SSH related message
  * 
  * @author JensenSun
  *
@@ -32,6 +32,9 @@ public class CommandServlet {
 	
 	Logger logger = Logger.getLogger(CommandServlet.class);
 	
+	/**
+	 * WebSocket Session between the client and Geoweaver
+	 */
 	private Session wsSession;
 	
 	private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});

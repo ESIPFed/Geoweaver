@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Geoweaver</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
@@ -144,8 +144,8 @@
         </dependency>
         <dependency>
             <groupId>org.dom4j</groupId>
-            <artifactId>com.springsource.org.dom4j</artifactId>
-            <version>1.6.1</version>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
