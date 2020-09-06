@@ -86,6 +86,13 @@ public class Java2JupyterClientEndpoint extends Endpoint
             
             configBuilder.configurator(new Configurator() {
             	
+            	@Override
+            	public void afterResponse(HandshakeResponse hr) {
+            		
+            		logger.info("Response Headers from Jupyter : " + hr.getHeaders());
+
+                }
+            	
                 @Override
                 public void beforeRequest(Map<String, List<String>> nativeheaders) {
 //                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
@@ -106,7 +113,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         
                         List<String> values = mapElement.getValue();
                         
-                        if("Host".equals(newkey) || "Origin".equals(newkey)) {
+                        if("Host".equals(newkey) || "Origin".equals(newkey) || "Sec-WebSocket-Key".equals(newkey)) {
                         	
                         	continue;
                         }
