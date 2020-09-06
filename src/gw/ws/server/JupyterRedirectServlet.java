@@ -117,7 +117,7 @@ public class JupyterRedirectServlet {
 			
     		logger.error("Channel closed.");
         	
-			client.getNewjupyteression().close(); //close websocket connection
+			client.getNew_ws_session_between_geoweaver_and_jupyterserver().close(); //close websocket connection
 			
 		} catch (IOException e) {
 			
