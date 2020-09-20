@@ -69,7 +69,13 @@ public class LocalSessionOutput  implements Runnable{
                 
             	// readLine will block if nothing to send
             	
-            	if(BaseTool.isNull(in)) break;
+            	if(BaseTool.isNull(in)) { 
+            	
+            		System.out.println("Local Session Output Reader is close prematurely.");
+            		
+            		break;
+            		
+            	}
             	
                 String line = in.readLine();
                 
@@ -137,7 +143,8 @@ public class LocalSessionOutput  implements Runnable{
 //                    	log.info("wsout message {}:{}", wsout.getId(), line);
                     	
 //                        out.sendMessage(new TextMessage(line));
-                    	wsout.getBasicRemote().sendText(line);
+//                    		wsout.getBasicRemote().sendText(line);
+                		wsout.getAsyncRemote().sendText(line);
                         
                     }else {
                     	
@@ -151,9 +158,12 @@ public class LocalSessionOutput  implements Runnable{
             	
                 e.printStackTrace();
                 
+                
                 if(!BaseTool.isNull(session)) 
                 	
                 	session.saveHistory(logs.toString(), "Failed");
+
+                break;
                 
             }finally {
             	
