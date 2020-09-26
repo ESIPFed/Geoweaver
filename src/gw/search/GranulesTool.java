@@ -2,8 +2,6 @@ package gw.search;
 
 import gw.utils.SysDir;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -63,15 +61,15 @@ public class GranulesTool {
         String jsonOutput;
         List<Granule> granules = null;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            Process p = readerPB.start();
-            jsonOutput = IOUtils.toString(p.getInputStream());
-            granules = objectMapper.readValue(jsonOutput, new TypeReference<List<Granule>>(){});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        try {
+//            Process p = readerPB.start();
+//            jsonOutput = IOUtils.toString(p.getInputStream());
+//            granules = objectMapper.readValue(jsonOutput, new TypeReference<List<Granule>>(){});
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         return granules;

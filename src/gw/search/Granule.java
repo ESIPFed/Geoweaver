@@ -1,9 +1,7 @@
 package gw.search;
 
 import gw.products.Product;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Granule {
 
     private String name, iso_url, access_url, time_start, time_end;
