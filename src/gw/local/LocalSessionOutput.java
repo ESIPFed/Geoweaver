@@ -119,8 +119,15 @@ public class LocalSessionOutput  implements Runnable{
                 	
                 	if(!BaseTool.isNull(session)) session.saveHistory(logs.toString(), "Done");
                 	
-                	if(!BaseTool.isNull(wsout) && wsout.isOpen())
-                		wsout.getBasicRemote().sendText("The process "+session.getHistory().getHistory_id()+" is finished.");
+                	if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+                		
+                		synchronized(wsout){
+                		
+                			wsout.getBasicRemote().sendText("The process "+session.getHistory().getHistory_id()+" is finished.");
+                		
+                		}
+                	
+                	}
                 	
                 	break;
                 	
@@ -144,7 +151,19 @@ public class LocalSessionOutput  implements Runnable{
                     	
 //                        out.sendMessage(new TextMessage(line));
 //                    		wsout.getBasicRemote().sendText(line);
-                		wsout.getAsyncRemote().sendText(line);
+                    	synchronized(wsout) {
+                    		
+                    		try {
+                    			
+                    			wsout.getAsyncRemote().sendText(line);
+                    			
+                    		}catch(Exception e) {
+                    			
+                    			System.err.println("Fail to write the line into the remote websocket channel because of thread confliction.. " + e.getLocalizedMessage());
+                    			
+                    		}
+                    		
+                    	}
                         
                     }else {
                     	

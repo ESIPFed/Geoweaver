@@ -195,45 +195,6 @@ GW.host = {
 			
 			this.password_frame = GW.process.createJSFrameDialog(520, 340, content, "Host Password")
 			
-//			var width = 520; var height = 340;
-//			
-//			this.password_frame = GW.workspace.jsFrame.create({
-//	    		title: 'Host Password',
-//	    	    left: 0, 
-//	    	    top: 0, 
-//	    	    width: width, 
-//	    	    height: height,
-//	    	    appearanceName: 'yosemite',
-//	    	    style: {
-//	                backgroundColor: 'rgb(255,255,255)',
-//		    	    fontSize: 12,
-//	                overflow:'auto'
-//	            },
-//	    	    html: content
-//	    	});
-//	    	
-//			this.password_frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-	    	
-//			this.password_frame.on('closeButton', 'click', (_frame, evt) => {
-//	            _frame.closeFrame();
-//	            
-//	        });
-	        
-	    	//Show the window
-//			this.password_frame.show();
-	    	
-//			this.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-	    	
 			$("#inputpswd").on('keypress',function(e) {
 				
 			    if(e.which == 13) {
@@ -246,8 +207,6 @@ GW.host = {
 			
 			$("#pswd-confirm-btn").click(function(){
 				
-//				$("#pswd-confirm-btn").spin();
-            	
             	$('#pswd-confirm-btn').prop('disabled', true);
             	
 //            	dialogItself.enableButtons(false);
@@ -267,67 +226,6 @@ GW.host = {
 				GW.host.password_frame.closeFrame();
 				
 			});
-			
-//			BootstrapDialog.show({
-//				
-//				title: "Host Password",
-//				
-//				closable: false,
-//				
-//				message: content,
-//				
-//				onshown: function(dialog){
-//					
-//					$("#inputpswd").on('keypress',function(e) {
-//					    if(e.which == 13) {
-//					    	
-//					    	$("#pswd-confirm-btn").click();
-//					    	
-//					    }
-//					}); 
-//					
-//				},
-//				
-//				buttons: [{
-//					
-//	            	label: 'Confirm',
-//	            	
-//	            	id: 'pswd-confirm-btn',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                	var $button = this;
-//	                	
-//	                	$button.spin();
-//	                	
-//	                	$('#pswd-confirm-btn').prop('disabled', true);
-//	                	
-////	                	dialogItself.enableButtons(false);
-//	                	
-//	                	if(document.getElementById('remember').checked) {
-//	                	    
-//	                		GW.host.setCache(hid, $('#inputpswd').val()); //remember s
-//	                		
-//	                	}
-//	                	
-//	                	GW.host.encrypt(hid, $('#inputpswd').val(), req, dialogItself, $button, business_callback)
-//	                	
-//	                }
-//					
-//				},{
-//					
-//	            	label: 'Cancel',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                    dialogItself.close();
-//	                    
-//	                }
-//					
-//				}]
-//				
-//			});
-			
 			
 		},
 		
@@ -913,25 +811,34 @@ GW.host = {
 				
 				if(val!=null&&val!="null"&&val!=""){
 					
-						if(typeof val =='object')
-						{
-						  val = JSON.stringify(val);
-						}
+					if(typeof val =='object')
+					{
+					  val = JSON.stringify(val);
+					}
+					
+					if(i=="id"){
 						
-						if(i=="id"){
-							
-							hostid = val;
-							
-						}
+						hostid = val;
 						
-						if(i=="ip"){
-							
-							hostip = val;
-							
-						}
+					}
+					
+					if(i=="ip"){
 						
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-						"<div class=\"col col-md-7\">"+val+"</div>";
+						hostip = val;
+						
+					}
+					
+					content += "<div class=\"col col-md-3\">"+i+"</div>";
+					
+					if(i=="id"){
+						
+						content += "<div class=\"col col-md-7\">"+val+"</div>";
+						
+					}else{
+						
+						content += "<div class=\"col col-md-7\"><input type=\"text\" value=\""+val+"\" /></div>";
+						
+					}
 						
 				}
 
@@ -1019,29 +926,42 @@ GW.host = {
 			
 			var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
 			   '<form>'+
-		       '   <div class="form-group row required">'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
+		       '     <div class="col-sm-10">'+
+//		       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
+		       '	 	<select class="form-control" id="hosttype"> '+
+			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+			   '    		<option value="jupyter">Jupyter Notebook</option> '+
+			   '			<option value="gee">Google Earth Engine</option>'+
+			   '  		</select> '+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div id="host_dynamic_form">'+
+		       '   	<div class="form-group row required">'+
 		       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
 		       '     <div class="col-sm-10">'+
 		       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required">'+
+		       '   	</div>'+
+		       '   	<div class="form-group row required">'+
 		       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
 		       '     <div class="col-sm-10">'+
 		       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
 		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required">'+
+		       '   	</div>'+
+		       '   	<div class="form-group row required">'+
 		       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
 		       '     <div class="col-sm-10">'+
 		       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
 		       '     </div>'+
-		       '   </div>'+
-		       '   <div class="form-group row required">'+
+		       '   	</div>'+
+		       '   	<div class="form-group row required">'+
 		       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
 		       '     <div class="col-sm-10">'+
 		       '       <input type="text" class="form-control" id="username" placeholder="">'+
 		       '     </div>'+
+		       '   	</div>'+
 		       '   </div>'+
 		       ' </form>'+
 		       '</div>';
@@ -1052,39 +972,6 @@ GW.host = {
 			'</div>';
 			
 			GW.host.new_host_frame = GW.process.createJSFrameDialog(500, 450, content, "Add new host")
-			
-//			var width = 500; var height = 450;
-//			
-//			GW.host.new_host_frame = GW.workspace.jsFrame.create({
-//		    		title: 'Add new host',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//	    	});
-//	    	
-//			GW.host.new_host_frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//			GW.host.new_host_frame.show();
-//	    	
-//			GW.host.new_host_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
 			
 			$("#host-add-btn").click(function(){
 				
@@ -1102,66 +989,6 @@ GW.host = {
 				
 			});
 			
-//			BootstrapDialog.show({
-//				
-//				title: "Add new host",
-//				
-//	            message: '<form>'+
-//				       '   <div class="form-group row required">'+
-//				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-//				       '     <div class="col-sm-10">'+
-//				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
-//				       '     </div>'+
-//				       '   </div>'+
-//				       '   <div class="form-group row required">'+
-//				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
-//				       '     <div class="col-sm-10">'+
-//				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
-//				       '     </div>'+
-//				       '   </div>'+
-//				       '   <div class="form-group row required">'+
-//				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
-//				       '     <div class="col-sm-10">'+
-//				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
-//				       '     </div>'+
-//				       '   </div>'+
-//				       '   <div class="form-group row required">'+
-//				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
-//				       '     <div class="col-sm-10">'+
-//				       '       <input type="text" class="form-control" id="username" placeholder="">'+
-//				       '     </div>'+
-//				       '   </div>'+
-//				       ' </form>',
-//	            
-//	            cssClass: 'dialog-vertical-center',
-//	            
-//	            buttons: [{
-//	            	
-//	                label: 'Add',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                	GW.host.add(function(){
-//	                		
-//		                    dialogItself.close();
-//		                    
-//	                	});
-//	                	
-//	                }
-//	            
-//	            },{
-//	            
-//	            	label: 'Close',
-//	                
-//	                action: function(dialogItself){
-//	                	
-//	                    dialogItself.close();
-//	                    
-//	                }
-//	        
-//	            }]
-//			
-//	        });
 			
 		},
 		

@@ -148,11 +148,11 @@ GW.ssh = {
 	        	
 	        	this.echo("disconnected");
 	        	
-	        	this.echo("Try to reconnecting..");
-	        	
-	        	this.startLogSocket(GW.ssh.token)
-	        	
-	        	this.echo("Reconnected..")
+//	        	this.echo("Try to reconnecting..");
+//	        	
+//	        	this.startLogSocket(GW.ssh.token)
+//	        	
+//	        	this.echo("Reconnected..")
 	        	
 //	        	this.destroy();
 //	            
@@ -259,6 +259,18 @@ GW.ssh = {
 	    },
 
 		openLog: function(msg){
+			
+			//check if the websocket session is alive, otherwise, restore the connection
+			
+			if (GW.ssh.all_ws!=null && GW.ssh.all_ws.readyState === WebSocket.CLOSED) {
+				
+				console.log("The command websocket connection is detected to be closed. Try to reconnect...");
+				
+				GW.ssh.startLogSocket(GW.main.getJSessionId());
+				
+				console.log("The console websocket connection is restored..");
+				
+			}
 			
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
