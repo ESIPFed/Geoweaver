@@ -906,6 +906,61 @@ GW.host = {
 			
 		},
 		
+		getNewDialogContentByHostType: function(host_type){
+			
+			var content = ""
+			
+			if(host_type=="jupyter") {
+				
+				content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter Tree URL </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="The Jupyter URL endings with tree?">'+
+				       '     </div>'+
+				       '   	</div>';
+				
+			}else if(host_type == "ssh") {
+				
+				content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="username" placeholder="">'+
+				       '     </div>'+
+				       '   	</div>';
+				
+			}else if(host_type == "gee") {
+				
+				content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Client ID </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="client_id" placeholder="ee.Authenticate client ID..">'+
+				       '     </div>'+
+				       '   	</div>';
+				
+			}
+			
+			return content;
+			
+		},
+		
 		newDialog: function(){
 			
 			if(GW.host.new_host_frame!=null){
@@ -938,30 +993,7 @@ GW.host = {
 		       '     </div>'+
 		       '   </div>'+
 		       '   <div id="host_dynamic_form">'+
-		       '   	<div class="form-group row required">'+
-		       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-		       '     <div class="col-sm-10">'+
-		       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
-		       '     </div>'+
-		       '   	</div>'+
-		       '   	<div class="form-group row required">'+
-		       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
-		       '     <div class="col-sm-10">'+
-		       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
-		       '     </div>'+
-		       '   	</div>'+
-		       '   	<div class="form-group row required">'+
-		       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
-		       '     <div class="col-sm-10">'+
-		       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
-		       '     </div>'+
-		       '   	</div>'+
-		       '   	<div class="form-group row required">'+
-		       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
-		       '     <div class="col-sm-10">'+
-		       '       <input type="text" class="form-control" id="username" placeholder="">'+
-		       '     </div>'+
-		       '   	</div>'+
+		       this.getNewDialogContentByHostType("ssh")+
 		       '   </div>'+
 		       ' </form>'+
 		       '</div>';
@@ -973,6 +1005,16 @@ GW.host = {
 			
 			GW.host.new_host_frame = GW.process.createJSFrameDialog(500, 450, content, "Add new host")
 			
+			$("#hosttype").change(function(){
+				
+			    var op = $( "#hosttype option:selected" ).val()
+			    		
+				console.log("option " + op + " is selected")
+				
+				$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
+				
+			})
+					
 			$("#host-add-btn").click(function(){
 				
             	GW.host.add(function(){

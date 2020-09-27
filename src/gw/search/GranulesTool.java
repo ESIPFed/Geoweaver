@@ -1,14 +1,13 @@
 package gw.search;
 
-import gw.utils.SysDir;
-import org.apache.commons.io.IOUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import gw.utils.SysDir;
 
 
 public class GranulesTool {
