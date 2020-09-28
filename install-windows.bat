@@ -108,9 +108,17 @@ copy "Geoweaver.war" "apache-tomcat-9.0.22\webapps\"
 
 echo Move database in place
 
+echo Checking C:%HOMEPATH%\geoweaver.mv.db
+
+if not exist "geoweaver.mv.db" (
+
+echo Database file not exists Copying ...
+
 copy "..\db\geoweaver.mv.db" "C:%HOMEPATH%\"
 
 copy "..\db\geoweaver.trace.db" "C:%HOMEPATH%\"
+
+}
 
 echo start the tomcat..
 

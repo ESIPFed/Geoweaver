@@ -91,13 +91,17 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			Session wsout = CommandServlet.findSessionById(token);
 			
-			if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-				
-				log.info("The failed message has been sent to client");
-				
-				wsout.getBasicRemote().sendText(message);
-				
-				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+			synchronized(wsout) {
+
+				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+					
+					log.info("The failed message has been sent to client");
+					
+					wsout.getBasicRemote().sendText(message);
+					
+					wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+					
+				}
 				
 			}
 			
@@ -257,6 +261,8 @@ public class LocalSessionWinImpl implements LocalSession {
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
+            log.info("Local Session Windows Implementation is done.");
+            
 		} catch (Exception e) {
 			
 			e.printStackTrace();

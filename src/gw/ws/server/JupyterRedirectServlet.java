@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -17,8 +16,6 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.log4j.Logger;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.context.request.WebRequest;
 
 import gw.utils.BaseTool;
 import gw.ws.client.Java2JupyterClientEndpoint;

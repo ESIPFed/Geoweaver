@@ -109,7 +109,11 @@ public class CommandServlet {
                     
                 }else {
                 	
-                	session.getBasicRemote().sendText("No SSH connection is active");
+                	if(session.isOpen()) {
+                		
+                		session.getAsyncRemote().sendText("No SSH connection is active");
+                		
+                	}
                 	
 //                	session.close();
                 	
@@ -144,64 +148,6 @@ public class CommandServlet {
                 
             }
             
-        	
-//        	SSHSession sshSession = GeoweaverController.sessionManager.sessionsByWebsocketID.get(session.getId());
-//            
-//            if (sshSession == null) {
-//                
-//            	logger.info("linking {}:{}" +  session.getId() + message);
-//                
-//                // TODO is there a better way to do this?
-//                // Can the client send the websocket session id and username in a REST call to link them up?
-//                sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(message);
-//                
-////                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
-//                if(sshSession!=null) {
-//                	
-////                	sshSession.setWebSocketSession(session);
-//                    
-//                	GeoweaverController.sessionManager.sessionsByWebsocketID.put(session.getId(), sshSession);
-//                	
-////                	GeoweaverController.sessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
-//                    
-//                }else {
-//                	
-////                	session.sendMessage(new TextMessage("No SSH connection is active"));
-//                	
-//                	session.close();
-//                	
-//                }
-//                
-//            } else {
-//            	
-//            	logger.debug("message in {}:{}" + session.getId() + message);
-//                
-//                sshSession.getSSHOutput().write((message + '\n').getBytes());
-//                
-//                sshSession.getSSHOutput().flush();
-//                
-////    			//send Ctrl + C command to the SSH to close the connection
-////    			
-////    			cmd.getOutputStream().write(3);
-////    			
-////    		    cmd.getOutputStream().flush();
-//                
-//                // if we receive a valid logout command, then close the websocket session.
-//                // the system will logout and tidy itself up...
-//                
-//                if (logoutCommands.contains(message.trim().toLowerCase())) {
-//                    
-//                	logger.info("valid logout command received: {}" + message);
-//                	
-//                	sshSession.logout();
-//                	
-//                	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
-//                	
-//                }
-//                
-//            }
-            
-        	
     	}catch(Exception e) {
     		
     		e.printStackTrace();

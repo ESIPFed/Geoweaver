@@ -68,29 +68,33 @@ GW.ssh = {
 		    	this.addlog(content);
 		    	
 		    	// trigger the builtin process
-				
-		    	try{
-					
-					var returnmsg = $.parseJSON(content);
-		      	
-			    	console.log(returnmsg);
-			      	
-			    	if(returnmsg.builtin){
-			      		
-			      		GW.process.callback(returnmsg);
-			      		
-			      	}else{
-			      		
-			      		GW.workspace.updateStatus(returnmsg);
-			      		
-			      	}
-			
-				}catch(errors){
-					
-					console.error(errors)
-					
-				}
 		    	
+		    	if(GW.general.isJSON(content)){
+		    		
+			    	try{
+						
+						var returnmsg = $.parseJSON(content);
+			      	
+				    	console.log(returnmsg);
+				      	
+				    	if(returnmsg.builtin){
+				      		
+				      		GW.process.callback(returnmsg);
+				      		
+				      	}else{
+				      		
+				      		GW.workspace.updateStatus(returnmsg);
+				      		
+				      	}
+				
+					}catch(errors){
+						
+						console.error(errors)
+						
+					}
+		    		
+		    	}
+				
 			}
 	    	
 	    },
@@ -113,8 +117,12 @@ GW.ssh = {
 	        
 	        } else {
 	        
-	        	this.error('not connected!');
-	        
+	        	if(data!=this.token){
+	        		
+	        		this.error('not connected!');
+	        		
+	        	}
+	        	
 	        }
 	    },
 	    
@@ -140,6 +148,12 @@ GW.ssh = {
 	        	
 	        	this.echo("disconnected");
 	        	
+//	        	this.echo("Try to reconnecting..");
+//	        	
+//	        	this.startLogSocket(GW.ssh.token)
+//	        	
+//	        	this.echo("Reconnected..")
+	        	
 //	        	this.destroy();
 //	            
 //	        	this.purge();
@@ -147,6 +161,9 @@ GW.ssh = {
 	        }catch(e){
 	        	
 	        	console.error(e);
+	        	
+	        	this.echo("Reconnection failed. " + e)
+	        	
 	        }
 	        
 	        console.log("the websocket has been closed");
@@ -242,6 +259,18 @@ GW.ssh = {
 	    },
 
 		openLog: function(msg){
+			
+			//check if the websocket session is alive, otherwise, restore the connection
+			
+			if (GW.ssh.all_ws!=null && GW.ssh.all_ws.readyState === WebSocket.CLOSED) {
+				
+				console.log("The command websocket connection is detected to be closed. Try to reconnect...");
+				
+				GW.ssh.startLogSocket(GW.main.getJSessionId());
+				
+				console.log("The console websocket connection is restored..");
+				
+			}
 			
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
