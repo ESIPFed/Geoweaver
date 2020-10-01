@@ -4,10 +4,8 @@ package gw.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
@@ -705,17 +703,23 @@ public class GeoweaverController {
 			
 			if(type.equals("host")) {
 				
-//				String hostname = request.getParameter("hostname");
-//				
-//				String hostip = request.getParameter("hostip");
-//				
-//				String hostport = request.getParameter("hostport");
-//				
-//				String username = request.getParameter("username");
-//				
-//				String hostid = HostTool.update(hostname, hostip, hostport, username, null);
-//				
-//				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
+				String hostid = request.getParameter("hostid");
+				
+				String hostname = request.getParameter("hostname");
+				
+				String hostip = request.getParameter("hostip");
+				
+				String hostport = request.getParameter("hostport");
+				
+				String username = request.getParameter("username");
+				
+				String hosttype = request.getParameter("hosttype");
+				
+				String url = request.getParameter("url");
+				
+				HostTool.update(hostid, hostname, hostip, hostport, username, hosttype, null, url);
+				
+				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
 				
 			}else if(type.equals("process")) {
 				
@@ -920,7 +924,11 @@ public class GeoweaverController {
 				
 				String username = request.getParameter("username");
 				
-				String hostid = HostTool.add(hostname, hostip, hostport, username, null);
+				String hosttype = request.getParameter("hosttype");
+				
+				String url = request.getParameter("url");
+				
+				String hostid = HostTool.add(hostname, hostip, hostport,  username, url, hosttype, null);
 				
 				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\" }";
 				

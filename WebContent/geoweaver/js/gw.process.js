@@ -1293,7 +1293,8 @@ GW.process = {
 				if(!folder_ul.length){
 					
 					$("#"+GW.menu.getPanelIdByType("process"))
-						.append("<li class=\"folder\" id=\"process_folder_"+ folder +"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
+						.append("<li class=\"folder\" id=\"process_folder_"+ folder +
+						"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
 					    " <a href=\"javascript:void(0)\"> "+ folder +" </a>"+
 					    " </li>"+
 					    " <ul class=\"sub-menu collapse\" id=\"process_folder_"+ folder +"_target\"></ul>");

@@ -15,6 +15,8 @@ GW.host = {
 		
 		local_hid: null,
 		
+		editOn: false,
+		
 		clearCache: function(){
 			
 			this.cred_cache = [];
@@ -744,12 +746,35 @@ GW.host = {
 			
 			var valid = false;
 			
-			if($("#hostname").val()&&$("#hostip").val()&&$("#hostport").val()&&$("#username").val()
-					&&this.validateIP($("#hostip").val())&&$.isNumeric($("#hostport").val())){
+			var hosttype = $( "#hosttype option:selected" ).val()
+			
+			if(hosttype=="ssh"){
+
+				if($("#hostname").val()&&$("#hostip").val()&&$("#hostport").val()&&$("#username").val()
+						&&this.validateIP($("#hostip").val())&&$.isNumeric($("#hostport").val())){
+					
+					valid = true;
+					
+				}
 				
-				valid = true;
+			}else if(hosttype=="jupyter"){
+				
+				if($("#hostname").val()&&$("#jupyter_home_url").val()){
+					
+					valid = true;
+					
+				}
+				
+			}else if(hosttype=="gee"){
+				
+				if($("#hostname").val()&&$("#client_id").val()){
+					
+					valid = true;
+					
+				}
 				
 			}
+			
 			
 			return valid;
 			
@@ -759,13 +784,59 @@ GW.host = {
 			
 			if(this.precheck()){
 				
-				var req = "type=host&hostname="+$("#hostname").val() + 
-	    		
-		    		"&hostip=" + $("#hostip").val() +
-		    		
-		    		"&hostport=" + $("#hostport").val() + 
-		    		
-		    		"&username=" + $("#username").val();
+				var hostport = ""
+				
+				if(typeof $("#hostport").val() != "undefined"){
+					
+					hostport = $("#hostport").val()
+					
+				}
+				
+				var hostip = ""
+					
+				if(typeof $("#hostip").val() != "undefined"){
+					
+					hostip = $("#hostip").val()
+					
+				}
+				
+				var hosttype = $( "#hosttype option:selected" ).val()
+				
+				var jupyter_url = ""
+					
+				if(typeof $("#jupyter_home_url").val() != "undefined"){
+					
+					jupyter_url = $("#jupyter_home_url").val()
+					
+				}
+				
+//				var req = "type=host&hostname="+$("#hostname").val() + 
+//	    		
+//		    		"&hostip=" + hostip +
+//		    		
+//		    		"&hostport=" + hostport + 
+//		    		
+//		    		"&hosttype=" + hosttype
+//		    		
+//		    		"&username=" + $("#username").val();
+				
+				var req = {
+					
+					type: "host",
+					
+					hostname: $("#hostname").val(),
+					
+					hostip: hostip,
+					
+					hostport: hostport,
+					
+					url: jupyter_url,
+					
+					hosttype: hosttype,
+					
+					username: $("#username").val()
+					
+				}
 		    	
 		    	$.ajax({
 		    		
@@ -795,17 +866,91 @@ GW.host = {
 				
 			}
 			
+		},
+		
+		edit: function(){
 			
+			
+			
+		},
+		
+		editSwitch: function(){
+			
+			console.log("Turn on/off the fields");
+			
+			$(".host-value-field").prop( "disabled", GW.process.editOn );
+			
+			GW.process.editOn = !GW.process.editOn;
+			
+			if(!GW.process.editOn){
+				
+				console.log("Save the changes if any")
+				
+				
+				
+			}
+			
+		},
+		
+		openJupyter: function(hostid){
+			
+			window.open("/Geoweaver/web/jupyter-proxy/", "_blank")
+			
+		},
+		
+		getToolbar: function(hostid, hosttype){
+			
+			var content = "<i class=\"fa fa-edit subalignicon\" onclick=\"GW.host.editSwitch()\" data-toggle=\"tooltip\" title=\"Edit\"></i>";
+			
+			if(hosttype=="ssh"){
+				
+				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
+				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+				
+				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
+				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
+				
+				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
+	        				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
+				
+				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
+	        				
+				hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
+				
+			}else if(hosttype=="jupyter"){
+				
+				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('" +
+				
+					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>" + 
+					
+					"<i class=\"fab fa-file subalignicon\" onclick=\"GW.host.openJupyter('" + 
+					
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Open Jupyter\"></i>";
+				
+			}else if(hosttype=="gee"){
+				
+				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
+				
+					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>";
+				
+			}
+			
+			return content;
 			
 		},
 		
 		display: function(msg){
 			
+			GW.process.editOn = false;
+			
 			var content = "<div class=\"modal-body\">";
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null, hostip = null;
+			var hostid = null, hostip = null, hosttype = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -828,15 +973,21 @@ GW.host = {
 						
 					}
 					
+					if(i=="type"){
+						
+						hosttype = val;
+						
+					}
+					
 					content += "<div class=\"col col-md-3\">"+i+"</div>";
 					
-					if(i=="id"){
+					if(i=="id" || i=="type"){
 						
 						content += "<div class=\"col col-md-7\">"+val+"</div>";
 						
 					}else{
 						
-						content += "<div class=\"col col-md-7\"><input type=\"text\" value=\""+val+"\" /></div>";
+						content += "<div class=\"col col-md-7\"><input class=\"host-value-field\" type=\"text\" disabled=\"true\" value=\""+val+"\" /></div>";
 						
 					}
 						
@@ -855,21 +1006,7 @@ GW.host = {
 			
 			"<p align=\"right\">"+
 			
-				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
-				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
-			
-				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
-				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
-				
-				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
-	        				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
-				
-				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
-	        				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>"+
+				this.getToolbar(hostid, hosttype) +
 				
 				delbtn +
 			
@@ -897,6 +1034,7 @@ GW.host = {
 //			switchTab(document.getElementById("main-host-tab"), "main-host-info");
 			GW.general.switchTab("host");
 			
+			
 		},
 		
 		recent: function(hid){
@@ -913,11 +1051,17 @@ GW.host = {
 			if(host_type=="jupyter") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter Tree URL </label>'+
-				       '     <div class="col-sm-10">'+
-				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="The Jupyter URL endings with tree?">'+
-				       '     </div>'+
-				       '   	</div>';
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+			       '     </div>'+
+			       '   	</div>'+
+			       '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+			       '     </div>'+
+			       '   	</div>';
 				
 			}else if(host_type == "ssh") {
 				
@@ -949,6 +1093,12 @@ GW.host = {
 			}else if(host_type == "gee") {
 				
 				content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
 				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Client ID </label>'+
 				       '     <div class="col-sm-10">'+
 				       '       <input type="text" class="form-control" id="client_id" placeholder="ee.Authenticate client ID..">'+
@@ -1008,9 +1158,7 @@ GW.host = {
 			$("#hosttype").change(function(){
 				
 			    var op = $( "#hosttype option:selected" ).val()
-			    		
-				console.log("option " + op + " is selected")
-				
+			    
 				$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
 				
 			})
