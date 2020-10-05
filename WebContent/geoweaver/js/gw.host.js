@@ -479,7 +479,9 @@ GW.host = {
 			
 		},
 		
-
+		/**
+		 * Close the SSH Terminal and Connection
+		 */
 		closeSSH: function(token){
 			
 			$.ajax({
@@ -511,7 +513,10 @@ GW.host = {
 			});
 			
 		},
-
+		
+		/**
+		 * Show the SSH Terminal Section
+		 */
 		showSSHCmd: function(token){
 			
 //			var frame = GW.process.createJSFrameDialog(600, 540, "<iframe src=\"geoweaver-ssh?token="+
@@ -534,6 +539,9 @@ GW.host = {
 			
 		},
 		
+		/**
+		 * Open the SSH Connection Dialog if the host is a SSH server
+		 */
 		openssh: function(hostid){
 			
 			//get the host information
@@ -684,13 +692,17 @@ GW.host = {
         		
         		msg = $.parseJSON(msg);
         		
-        		$(".hostselector").find('option').remove().end();
+        		console.log("Start to refresh the host list..");
         		
-        		for(var i=0;i<msg.length;i++){
-        			
-        			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-        			
-        		}
+        		$("#"+GW.menu.getPanelIdByType("host")).html("");
+        		
+        		GW.host.list(msg);
+        		
+//        		for(var i=0;i<msg.length;i++){
+//        			
+//        			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+//        			
+//        		}
         		
         	}).fail(function(jxr, status){
 				
@@ -742,6 +754,46 @@ GW.host = {
 		  
 		},  
 		
+		preEditcheck: function(){
+			
+			console.log("Check if the input valid");
+			
+			var valid = false;
+			
+			var hosttype = $( "#_host_type" ).text()
+			
+			if(hosttype=="ssh" || hosttype == ""){
+
+				if($("#_host_name").val()&&$("#_host_ip").val()&&$("#_host_port").val()&&$("#_host_username").val()
+						&&this.validateIP($("#_host_ip").val())&&$.isNumeric($("#_host_port").val())){
+					
+					valid = true;
+					
+				}
+				
+			}else if(hosttype=="jupyter"){
+				
+				if($("#_host_name").val()&&$("#_host_url").val()){
+					
+					valid = true;
+					
+				}
+				
+			}else if(hosttype=="gee"){
+				
+				if($("#_host_name").val()&&$("#_host_client_id").val()){
+					
+					valid = true;
+					
+				}
+				
+			}
+			
+			return valid;
+			
+			
+		},
+		
 		precheck: function(){
 			
 			var valid = false;
@@ -775,10 +827,11 @@ GW.host = {
 				
 			}
 			
-			
 			return valid;
 			
 		},
+
+		
 		
 		add: function(callback){
 			
@@ -870,7 +923,87 @@ GW.host = {
 		
 		edit: function(){
 			
-			
+			if(this.preEditcheck()){
+				
+				var hostid = $("#_host_id").text();
+				
+				var hostname = $("#_host_name").val()
+				
+				var hostusername = $("#_host_username").val()
+				
+				var hostip = ""
+					
+				if(typeof $("#_host_ip").val() != "undefined"){
+					
+					hostip = $("#_host_ip").val()
+					
+				}
+				
+				var hostport = ""
+				
+				if(typeof $("#_host_port").val() != "undefined"){
+					
+					hostport = $("#_host_port").val()
+					
+				}
+				
+				var hosttype = $( "#_host_type" ).text()
+				
+				var jupyter_url = ""
+					
+				if(typeof $("#_host_url").val() != "undefined"){
+					
+					jupyter_url = $("#_host_url").val()
+					
+				}
+				
+				var req = {
+					
+					type: "host",
+					
+					hostname: hostname,
+					
+					hostip: hostip,
+					
+					hostport: hostport,
+					
+					url: jupyter_url,
+					
+					hosttype: hosttype,
+					
+					username: hostusername,
+					
+					hostid: hostid
+					
+				}
+		    	
+		    	$.ajax({
+		    		
+		    		url: "edit",
+		    		
+		    		method: "POST",
+		    		
+		    		data: req
+		    		
+		    	}).done(function(msg){
+		    		
+		    		msg = $.parseJSON(msg);
+		    		
+		    		GW.general.showToasts("Host updated.");
+		    		
+		    		GW.host.refreshHostList();
+		    		
+		    	}).fail(function(jqXHR, textStatus){
+		    		
+		    		alert("Fail to add the host.");
+		    		
+		    	});
+				
+			}else{
+				
+				alert("Invalid input");
+				
+			}
 			
 		},
 		
@@ -886,7 +1019,7 @@ GW.host = {
 				
 				console.log("Save the changes if any")
 				
-				
+				this.edit()
 				
 			}
 			
@@ -894,7 +1027,7 @@ GW.host = {
 		
 		openJupyter: function(hostid){
 			
-			window.open("/Geoweaver/web/jupyter-proxy/", "_blank")
+			window.open("/Geoweaver/web/jupyter-proxy/"+hostid+"/", "_blank");
 			
 		},
 		
@@ -902,23 +1035,23 @@ GW.host = {
 			
 			var content = "<i class=\"fa fa-edit subalignicon\" onclick=\"GW.host.editSwitch()\" data-toggle=\"tooltip\" title=\"Edit\"></i>";
 			
-			if(hosttype=="ssh"){
+			if( hosttype=="ssh" || hosttype == null || hosttype == "null" ){
 				
-				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
+				content += "<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
 				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
-				
-				"<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
-				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
-				
-				"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
-	        				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
-				
-				" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
-	        				
-				hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
+					
+//				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
+//				
+//				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+					
+					"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
+		        	
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Upload File\"></i>"+
+					
+					" <i class=\"fa fa-sitemap subalignicon\" onclick=\"GW.filebrowser.start('"+
+		        				
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
 				
 			}else if(hosttype=="jupyter"){
 				
@@ -926,7 +1059,7 @@ GW.host = {
 				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>" + 
 					
-					"<i class=\"fab fa-file subalignicon\" onclick=\"GW.host.openJupyter('" + 
+					"<i class=\"fa fa-external-link subalignicon\" onclick=\"GW.host.openJupyter('" + 
 					
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Open Jupyter\"></i>";
 				
@@ -983,11 +1116,13 @@ GW.host = {
 					
 					if(i=="id" || i=="type"){
 						
-						content += "<div class=\"col col-md-7\">"+val+"</div>";
+						content += "<div class=\"col col-md-7\" id=\"_host_"+i+"\" >"+val+"</div>";
 						
 					}else{
 						
-						content += "<div class=\"col col-md-7\"><input class=\"host-value-field\" type=\"text\" disabled=\"true\" value=\""+val+"\" /></div>";
+						content += "<div class=\"col col-md-7\">"+
+							"<input class=\"host-value-field\" type=\"text\" id=\"_host_"+i+"\" disabled=\"true\" value=\""+
+							val+"\" /></div>";
 						
 					}
 						
@@ -1001,32 +1136,36 @@ GW.host = {
 				delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 			
 			content += "</div>"+
-			
-			"<div class=\"row\"><div class=\"col-md-12\">"+
-			
-			"<p align=\"right\">"+
-			
-				this.getToolbar(hostid, hosttype) +
 				
-				delbtn +
-			
-			"</p>"+
-			
-			"</div></div>"+
-			
-			"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:600px;\" id=\"ssh-terminal-iframe\">"+
-			
-			"</div></div>"+
-			
-			"<div class=\"row\"><div class=\"col-md-12\" id=\"host-file-uploader\">"+
-			
-			"</div></div>"+
-			
-			"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-file-browser\">"+
-			
-			"</div></div>"+
-			
-			"</div>";
+				"<div class=\"row\"><div class=\"col-md-12\">"+
+				
+				"<p align=\"right\">"+
+				
+					this.getToolbar(hostid, hosttype) +
+					
+					delbtn +
+				
+				"</p>"+
+				
+				"</div></div>"+
+				
+				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:600px;\" id=\"ssh-terminal-iframe\">"+
+				
+				"</div></div>"+
+				
+				"<div class=\"row\"><div class=\"col-md-12\" id=\"host-file-uploader\">"+
+				
+				"</div></div>"+
+				
+				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-file-browser\">"+
+				
+				"</div></div>"+
+				
+				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-history-browser\">"+
+				
+				"</div></div>"+
+				
+				"</div>";
 			
 			
 			$("#main-host-content").html(content);
@@ -1037,9 +1176,194 @@ GW.host = {
 			
 		},
 		
+		viewJupyter: function(history_id){
+			
+			$.ajax({
+				
+				url: "log",
+				
+				method: "POST",
+				
+				data: "type=host&id=" + history_id
+				
+			}).done(function(msg){
+				
+				if(msg==""){
+					
+					alert("Cannot find the host history in the database.");
+					
+					return;
+					
+				}
+				
+				msg = $.parseJSON(msg);
+				
+				var code = msg.output;
+				
+				if(code!=null && typeof code != 'undefined'){
+					
+					if(typeof code != 'object'){
+					
+						code = $.parseJSON(code);
+					
+					}
+					
+					var notebook = nb.parse(code.content);
+					
+					var rendered = notebook.render();
+					
+					var content = '<div class="modal-body">'+$(rendered).html()+'</div>';
+					
+					content += '<div class="modal-footer">' +
+    				"	<button type=\"button\" id=\"host-history-download-btn\" class=\"btn btn-outline-primary\">Download</button> "+
+    				"	<button type=\"button\" id=\"host-history-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+    				'</div>';
+					
+//					console.log(content);
+					
+					GW.host.his_frame = GW.process.createJSFrameDialog(800, 600, content, "History Jupyter Notebook " + history_id);
+					
+					$("#host-history-download-btn").click(function(){
+						
+						GW.host.downloadJupyter(history_id);
+						
+					})
+					
+					$("#host-history-cancel-btn").click(function(){
+        				
+        				GW.host.his_frame.closeFrame();
+        				
+        			});
+					
+				}
+				
+			}).fail(function(e){
+				
+				console.error(e);
+				
+			});
+			
+		},
+		
+		downloadJupyter: function(history_id){
+
+			$.ajax({
+				
+				url: "log",
+				
+				method: "POST",
+				
+				data: "type=host&id=" + history_id
+				
+			}).done(function(msg){
+				
+				if(msg==""){
+					
+					alert("Cannot find the host history in the database.");
+					
+					return;
+					
+				}
+
+				msg = $.parseJSON(msg);
+				
+				var code = msg.output;
+				
+				if(code!=null && typeof code != 'undefined'){
+					
+					if(typeof code != 'object'){
+					
+						code = $.parseJSON(code);
+					
+					}
+					
+//				function download(content, fileName, contentType) {
+				    
+					var a = document.createElement("a");
+				    
+					var file = new Blob([JSON.stringify(code.content)], {type: "application/json"});
+				    
+				    a.href = URL.createObjectURL(file);
+				    
+				    a.target = "_blank"
+				    
+				    a.download = "jupyter-"+history_id + ".ipynb";
+				    
+				    a.click();
+				    
+//				}
+				    
+				}
+				
+//				download(jsonData, 'json.txt', 'text/plain');
+				
+				
+				
+			})
+			
+		},
+		
 		recent: function(hid){
 			
+			console.log("Show the history of all previously executed scripts/jupyter notebok");
 			
+			$.ajax({
+				
+				url: "recent",
+				
+				method: "POST",
+				
+				data: "type=host&hostid=" + hid + "&number=100"
+				
+			}).done(function(msg){
+				
+				if(!msg.length){
+					
+					alert("no history found");
+					
+					return;
+					
+				}
+				
+				msg = $.parseJSON(msg);
+				
+				var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
+				"  <thead> "+
+				"    <tr> "+
+				"      <th scope=\"col\">Process</th> "+
+				"      <th scope=\"col\">Begin Time</th> "+
+//				"      <th scope=\"col\">Status</th> "+
+				"      <th scope=\"col\">Action</th> "+
+				"    </tr> "+
+				"  </thead> "+
+				"  <tbody> ";
+				
+				for(var i=0;i<msg.length;i++){
+					
+//					var status_col = GW.process.getStatusCol(msg[i].id, msg[i].status);
+					
+					var detailbtn = "      <td><a href=\"javascript: GW.host.viewJupyter('"+msg[i].id+"')\">View</a> <a href=\"javascript: GW.host.downloadJupyter('"+msg[i].id+"')\">Download</a></td> ";
+					
+					content += "    <tr> "+
+						"      <td>"+msg[i].name+"</td> "+
+						"      <td>"+msg[i].begin_time+"</td> "+
+//						status_col +
+						detailbtn + 
+						"    </tr>";
+					
+				}
+				
+				content += "</tbody></div>";
+				
+				$("#host-history-browser").html(content);
+				
+//				var frame = GW.process.createJSFrameDialog(720, 480, content, 'History of ' + msg.name)
+				
+			}).fail(function(jxr, status){
+				
+				console.error(status);
+				
+			});
 			
 			
 		},
@@ -1051,17 +1375,17 @@ GW.host = {
 			if(host_type=="jupyter") {
 				
 				content = '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-			       '     <div class="col-sm-10">'+
-			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
-			       '     </div>'+
-			       '   	</div>'+
-			       '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
-			       '     <div class="col-sm-10">'+
-			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
-			       '     </div>'+
-			       '   	</div>';
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+				       '     </div>'+
+				       '   	</div>';
 				
 			}else if(host_type == "ssh") {
 				
@@ -1149,9 +1473,9 @@ GW.host = {
 		       '</div>';
 			
 			content += '<div class="modal-footer">' +
-			"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
-			"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-			'</div>';
+				"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+				"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+				'</div>';
 			
 			GW.host.new_host_frame = GW.process.createJSFrameDialog(500, 450, content, "Add new host")
 			

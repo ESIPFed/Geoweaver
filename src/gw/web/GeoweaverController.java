@@ -203,6 +203,12 @@ public class GeoweaverController {
 				
 				resp = WorkflowTool.recent(number);
 				
+			}else if(type.equals("host")) {
+				
+				String hid = request.getParameter("hostid");
+				
+				resp = HostTool.recent(hid, number);
+				
 			}
 			
 		}catch(Exception e) {
@@ -241,6 +247,10 @@ public class GeoweaverController {
 			}else if(type.equals("workflow")) {
 				
 				resp = WorkflowTool.one_history(hid);
+				
+			}else if(type.equals("host")) {
+				
+				resp = HostTool.one_history(hid);
 				
 			}
 			
@@ -705,6 +715,8 @@ public class GeoweaverController {
 				
 				String hostid = request.getParameter("hostid");
 				
+				checkID(hostid);
+				
 				String hostname = request.getParameter("hostname");
 				
 				String hostip = request.getParameter("hostip");
@@ -716,6 +728,8 @@ public class GeoweaverController {
 				String hosttype = request.getParameter("hosttype");
 				
 				String url = request.getParameter("url");
+				
+//				String owner = request.getParameter("owner");
 				
 				HostTool.update(hostid, hostname, hostip, hostport, username, hosttype, null, url);
 				
@@ -730,6 +744,8 @@ public class GeoweaverController {
 				String desc = request.getParameter("desc");
 				
 				String id = request.getParameter("id");
+				
+				checkID(id);
 				
 				String code = null;
 				
@@ -780,6 +796,8 @@ public class GeoweaverController {
 			}else if(type.equals("workflow")) {
 				
 				String wid = request.getParameter("id");
+				
+				checkID(wid);
 				
 				String nodes = request.getParameter("nodes");
 				
@@ -1234,6 +1252,14 @@ public class GeoweaverController {
 //        return model;
     	
     	return resp;
+    	
+    }
+    
+    void checkID(String id) {
+    	
+    	if(BaseTool.isNull(id))
+    		
+    		throw new RuntimeException("No ID found");
     	
     }
 

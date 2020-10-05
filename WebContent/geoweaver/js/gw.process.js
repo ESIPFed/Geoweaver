@@ -1012,7 +1012,6 @@ GW.process = {
 			var content = "<div class=\"modal-body\">";
 			
 			content += '   <div class="row" style="padding:0px;margin:0px;">'+
-			   ''+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory">'+
@@ -1028,14 +1027,14 @@ GW.process = {
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</div>'+
 		       '     <div class="col-sm-4" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processname"></input>'+
-//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>' + 
 		       '   <div class="row" style="padding:0px;margin:0px;">'+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processid"></input>'+
-//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
