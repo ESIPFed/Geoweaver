@@ -27,6 +27,7 @@ import javax.websocket.WebSocketContainer;
 
 import org.apache.log4j.Logger;
 
+import gw.jpa.Host;
 import gw.utils.BaseTool;
 
 /**
@@ -73,7 +74,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
     	
     }
     
-    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers) {
+    public Java2JupyterClientEndpoint(URI endpointURI, Session jssession, Map<String, List<String>> headers, Host h) {
     	
         try {
         	
@@ -103,6 +104,8 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 	
                 	Iterator hmIterator = headers.entrySet().iterator(); 
                 	
+                	String[] hostjupyters = h.parseJupyterURL();
+                	
                     while (hmIterator.hasNext()) {
                         Map.Entry<String, List<String>> mapElement = (Map.Entry)hmIterator.next(); 
                         
@@ -113,21 +116,24 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         
                         List<String> values = mapElement.getValue();
                         
-                        if("Host".equals(newkey) || "Origin".equals(newkey) || "Sec-WebSocket-Key".equals(newkey)) {
+//                        if("Sec-WebSocket-Key".equals(newkey)) {
+                    	if("Host".equals(newkey) || "Origin".equals(newkey) || "Sec-WebSocket-Key".equals(newkey)) {
                         	
                         	continue;
+                        	
                         }
                         
 //                        if("Host".equals(newkey) ) {
 //                        	
 //                        	List<String> local = new ArrayList();
-//                        	local.add("localhost:8888");
+//                        	local.add(hostjupyters[1] + ":" + hostjupyters[2]);
 //                        	uppercaseheaders.put(newkey, local);
 //                        	
 //                        }else if ("Origin".equals(newkey)){
 //                        	
 //                        	List<String> local = new ArrayList();
-//                        	local.add("http://localhost:8888");
+////                        	local.add("http://localhost:8888");
+//                        	local.add(hostjupyters[0] + "://" + hostjupyters[1] + ":" + hostjupyters[2]);
 //                        	uppercaseheaders.put(newkey, local);
 //                        	
 //                        }else {

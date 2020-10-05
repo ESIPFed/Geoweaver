@@ -4,8 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpHeaders;
 
 import gw.database.DataBaseOperation;
+import gw.log.ExecutionStatus;
 import gw.log.History;
 import gw.ssh.SSHSession;
 import gw.utils.BaseTool;
@@ -273,6 +275,34 @@ public class HistoryTool {
 		}
 		
 		return resp.toString();
+		
+	}
+	
+	/**
+	 * Save Jupyter Notebook Checkpoints into the GW database
+	 */
+	public void saveJupyterCheckpoints(String hostid, String jupyterbody, HttpHeaders headers) {
+		
+		try {
+			
+			StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
+			
+			sql.append(new RandomString(12).nextString()).append("','NA','");
+			
+			sql.append(BaseTool.getCurrentMySQLDatetime()).append("', '").append(headers.get("referer").get(0)).append("', ?, '");
+			
+			sql.append(hostid).append("', '");
+			
+			sql.append(ExecutionStatus.DONE).append("' )");
+			
+			DataBaseOperation.preexecute(sql.toString(), new String[] {jupyterbody});
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
 		
 	}
 

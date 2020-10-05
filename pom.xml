@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>Geoweaver</artifactId>
-    <version>0.8.7</version>
+    <version>0.8.8</version>
     <packaging>war</packaging>
     <name>Geoweaver</name>
     <description>ESIPLab incubator project</description>
@@ -12,6 +12,7 @@
         <thymeleaf-version>3.0.11.RELEASE</thymeleaf-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    	<hibernate.version>5.3.6.Final</hibernate.version>
     </properties>
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -280,6 +281,31 @@
 		    <version>1.4.199</version>
 		    <!-- <scope>test</scope> -->
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.12</version>
+		</dependency>
+		
+		<!-- 
+		<dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.2.Final</version>
+        </dependency> 
+        -->
+        
         <!-- <dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>

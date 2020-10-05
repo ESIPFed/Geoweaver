@@ -18,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import gw.jpa.Host;
+
 public class Java2JupyterClientDialog extends JFrame {
 
    private final JLabel messageLabel =
@@ -104,7 +106,9 @@ public class Java2JupyterClientDialog extends JFrame {
       
       String wsurl = "ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/8b7e9d57-c83b-4449-91d8-c0486c99c389/channels?session_id=e792c1994197490d8c8780dac70d3d07";
       
-      client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders());
+      Host h = new Host();
+      
+      client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders(), h);
       
       client.setWindow(this);
       

@@ -710,7 +710,8 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-		StringBuffer sql = new StringBuffer("select * from history, process_type where process_type.id = history.process ORDER BY begin_time DESC limit ").append(limit).append(";");
+		StringBuffer sql = new StringBuffer("select * from history, process_type where process_type.id = history.process ORDER BY begin_time DESC limit ")
+				.append(limit).append(";");
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
@@ -768,6 +769,8 @@ public class ProcessTool {
 		StringBuffer resp = new StringBuffer();
 		
 		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = '").append(hid).append("' and history.process=process_type.id;");
+		
+		logger.info(sql.toString());
 		
 		try {
 			

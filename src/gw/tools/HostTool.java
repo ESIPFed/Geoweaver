@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import gw.database.DataBaseOperation;
+import gw.jpa.Host;
 import gw.utils.BaseTool;
 import gw.utils.RandomString;
 
@@ -15,7 +16,7 @@ public class HostTool {
 
 	static Logger logger = Logger.getLogger(HostTool.class);
 	
-
+	
 	/**
 	 * Judge if the host is localhost
 	 * @param hid
@@ -37,6 +38,111 @@ public class HostTool {
 		
 	}
 	
+	/**
+	 * Get History by ID
+	 * @param hid
+	 * @return
+	 */
+	public static String one_history(String hid) {
+		
+		StringBuffer resp = new StringBuffer();
+		
+		StringBuffer sql = new StringBuffer("select * from history where history.id = '").append(hid).append("';");
+		
+		logger.info(sql.toString());
+		
+		try {
+			
+			ResultSet rs = DataBaseOperation.query(sql.toString());
+			
+			if(rs.next()) {
+				
+				resp.append("{ \"hid\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"id\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"process\": \"").append(rs.getString("process")).append("\", ");
+				
+				resp.append("\"name\": \"").append(rs.getString("input")).append("\", ");
+				
+				resp.append("\"begin_time\":\"").append(rs.getString("begin_time")).append("\", ");
+				
+				resp.append("\"end_time\":\"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"input\":\"").append(rs.getString("input")).append("\", ");
+				
+				resp.append("\"output\":\"").append(ProcessTool.escape(rs.getString("output"))).append("\", ");
+				
+				resp.append("\"host\":\"").append(rs.getString("host")).append("\", ");
+				
+				resp.append("\"status\":\"").append(rs.getString("indicator")).append("\" }");
+				
+			}
+			
+		} catch (SQLException e) {
+		
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
+	}
+	
+	
+	
+	public static String recent(String hostid, int limit) {
+		
+		StringBuffer resp = new StringBuffer();
+		
+		StringBuffer sql = new StringBuffer("select * from history where host = '")
+				.append(hostid).append("' ORDER BY begin_time DESC limit ").append(limit).append(";");
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			while(rs.next()) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
+				
+				resp.append("\"name\": \"").append(rs.getString("input")).append("\", ");
+				
+				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
+				
+				resp.append("\"status\": \"").append(rs.getString("indicator")).append("\", ");
+				
+				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\"}");
+				
+				num++;
+				
+			}
+			
+			resp.append("]");
+			
+			if(num==0)
+				
+				resp = new StringBuffer();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
+	}
 	
 	/**
 	 * Detail JSON object
@@ -131,11 +237,52 @@ public class HostTool {
 		
 	}
 	
+	public static Host getHostById(String id) {
+		
+		Host h = new Host();
+		
+		StringBuffer sql = new StringBuffer("select * from hosts where id = '").append(id).append("'; ");
+		
+		String[] hostdetails = new String[6] ;
+		
+		ResultSet rs = DataBaseOperation.query(sql.toString());
+		
+		try {
+			
+			if(rs.next()) {
+				
+				h.setName(rs.getString("name"));;
+				
+				h.setIp(rs.getString("ip"));
+				
+				h.setPort(rs.getString("port"));
+				
+				h.setUsername(rs.getString("username"));
+				
+				h.setType(rs.getString("type"));
+				
+				h.setUrl(rs.getString("url"));
+				
+				h.setId(id);
+				
+				h.setOwner(rs.getString("owner"));
+				
+			}
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return h;
+	}
+	
 	public static String[] getHostDetailsById(String id) {
 		
 		StringBuffer sql = new StringBuffer("select * from hosts where id = '").append(id).append("'; ");
 		
-		String[] hostdetails = new String[4] ;
+		String[] hostdetails = new String[6] ;
 		
 		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
@@ -150,6 +297,11 @@ public class HostTool {
 				hostdetails[2] = rs.getString("port");
 				
 				hostdetails[3] = rs.getString("username");
+				
+				hostdetails[4] = rs.getString("type");
+				
+				hostdetails[5] = rs.getString("url");
+				
 				
 			}
 			
@@ -172,7 +324,7 @@ public class HostTool {
 		StringBuffer json = new StringBuffer("[");
 		try {
 			
-			String sql = "select id, ip, name from hosts;";
+			String sql = "select id, ip, url, type, port, name from hosts;";
 			
 			ResultSet rs = DataBaseOperation.query(sql);
 			
@@ -186,6 +338,12 @@ public class HostTool {
 				
 				String ip = rs.getString("ip");
 				
+				String url = rs.getString("url");
+				
+				String port = rs.getString("port");
+				
+				String type = rs.getString("type");
+				
 				if( num++ != 0) {
 					
 					json.append(",");
@@ -195,6 +353,9 @@ public class HostTool {
 				json.append("{\"id\":\"").append(hostid)
 					.append("\", \"name\": \"").append(hostname)
 					.append("\", \"ip\": \"").append(ip)
+					.append("\", \"url\": \"").append(url)
+					.append("\", \"port\": \"").append(port)
+					.append("\", \"type\": \"").append(type)
 					.append("\"}");
 				
 			}
@@ -224,11 +385,11 @@ public class HostTool {
 	 * @param username
 	 * @param owner
 	 */
-	public static String add(String hostname, String hostip, String hostport, String username, String owner) {
+	public static String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner) {
 		
 		String newhostid = new RandomString(6).nextString();
 		
-		StringBuffer sql = new StringBuffer("insert into hosts (id, name, ip, port, username, owner) values ('")
+		StringBuffer sql = new StringBuffer("insert into hosts (id, name, ip, port, url, type, username, owner) values ('")
 				
 				.append(newhostid).append("', '")
 				
@@ -238,11 +399,13 @@ public class HostTool {
 				
 				.append(hostport).append("', '")
 				
+				.append(url).append("', '")
+				
+				.append(type).append("', '")
+				
 				.append(username).append("', '")
 				
 				.append(owner).append("'); ");
-		
-//		logger.info(sql);
 		
 		DataBaseOperation.execute(sql.toString());
 		
@@ -480,6 +643,55 @@ public class HostTool {
 		}
 		
 		return resp;
+	}
+
+
+	/**
+	 * Update the Host table
+	 * @param hostname
+	 * @param hostip
+	 * @param hostport
+	 * @param username
+	 * @param type
+	 * @param object
+	 * @return
+	 */
+	public static String update(String hostid, String hostname, String hostip, String hostport, String username, String type, String owner, String url) {
+
+		String resp = null;
+		
+		try {
+			
+			StringBuffer sql = new StringBuffer("update hosts set ")
+					.append("name='").append(hostname).append("', ");
+			
+			if(!BaseTool.isNull(hostip))
+					sql.append("ip='").append(hostip).append("', ");
+			
+			if(!BaseTool.isNull(hostport))
+					sql.append("port=").append(hostport).append(", ");
+			
+					
+			sql.append("username='").append(username).append("', ")
+					.append("owner='").append(owner).append("', ")
+					.append("type='").append(type).append("', ")
+					.append("url='").append(url).append("' ")
+					.append(" where id = '").append(hostid).append("';");
+			
+			logger.info(sql);
+			
+			DataBaseOperation.execute(sql.toString());
+			
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			
+			logger.error("Failed to update the host table " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
 	}
 	
 	
