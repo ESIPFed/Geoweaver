@@ -1,7 +1,9 @@
 package gw.web;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
@@ -181,7 +183,7 @@ public class JupyterController {
 			
 			newheaders.set("origin", hosturl);
 			
-			newheaders.set("referer", uri.toString());
+			newheaders.set("referer", URLDecoder.decode(uri.toString(), "utf-8"));
 			
 		} catch (Exception e) {
 			
@@ -275,19 +277,21 @@ public class JupyterController {
 	
 	private HttpHeaders getHeaders(HttpHeaders headers, HttpMethod method, HttpServletRequest request, String hostid) throws NumberFormatException, URISyntaxException {
 		
-		String realurl =  this.getRealRequestURL(request.getRequestURI());
+		HttpHeaders newheaders = headers;
 		
-		Host h = HostTool.getHostById(hostid);
+		try {
+
+			String realurl =  this.getRealRequestURL(request.getRequestURI());
+			
+			Host h = HostTool.getHostById(hostid);
+			
+			newheaders = this.updateHeaderReferer(headers, h, realurl, request.getQueryString());
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		String[] ss = h.parseJupyterURL();
-		
-		URI uri = new URI(ss[0], null, ss[1], Integer.parseInt(ss[2]), realurl, request.getQueryString(), null);
-		
-		logger.info("URL: " + uri.toString());
-		
-		logger.info("HTTP Method: " + method.toString());
-		
-		HttpHeaders newheaders = this.updateHeaderReferer(headers, h, realurl, request.getQueryString());
 		
 		return newheaders;
 		
@@ -582,7 +586,9 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+			logger.info(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
+			
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"), method, newentity, String.class);
 		    
 //		    if(realurl.equals("/tree"))
 		    

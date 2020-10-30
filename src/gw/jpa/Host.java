@@ -1,5 +1,8 @@
 package gw.jpa;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class Host {
 
 	private String id, name, ip, port, username, owner, type, url;
@@ -70,25 +73,70 @@ public class Host {
 	
 	public String[] parseJupyterURL() {
 		
-		String[] cc = new String[3];
+		String[] cc = new String[4];
 		
-		if(url!=null) {
+		try {
 			
-			String[] ss = url.split(":");
+			URL aURL = new URL(url);
+
+			System.out.println("protocol = " + aURL.getProtocol());
+			System.out.println("authority = " + aURL.getAuthority());
+			System.out.println("host = " + aURL.getHost());
+			System.out.println("port = " + aURL.getPort());
+			System.out.println("path = " + aURL.getPath());
+			System.out.println("query = " + aURL.getQuery());
+			System.out.println("filename = " + aURL.getFile());
+			System.out.println("ref = " + aURL.getRef());
 			
-			String current_scheme = ss[0];
+			cc[0] = aURL.getProtocol();
+			cc[1] = aURL.getHost();
 			
-			String current_ip = ss[1].substring(2);
+			if(aURL.getPort()!=-1) {
+
+				cc[2] = String.valueOf(aURL.getPort());
+				
+			}else {
+				
+				cc[2] = "80";
+				
+			}
 			
-//			int current_port = Integer.parseInt(ss[2].replaceAll("\\D", ""));
+			cc[3] = aURL.getPath();
 			
-			cc[0] = current_scheme;
+		}catch(Exception e) {
 			
-			cc[1] = current_ip;
-			
-			cc[2] = ss[2].replaceAll("\\D", "");
+			e.printStackTrace();
 			
 		}
+		
+		
+//		if(url!=null) {
+//			
+//			String[] ss = url.split(":");
+//			
+//			String current_scheme = ss[0];
+//			
+//			String current_ip = ss[1].substring(2);
+//			
+////			int current_port = Integer.parseInt(ss[2].replaceAll("\\D", ""));
+//			
+//			cc[0] = current_scheme;
+//			
+//			cc[1] = current_ip;
+//			
+//			if(ss.length<2) {
+//				
+//				cc[2] = "80";
+//				
+//			}else {
+//				
+//				System.out.println(ss[2]);
+//				
+//				cc[2] = ss[2].replaceAll("\\D", "");
+//				
+//			}
+//			
+//		}
 		
 		return cc;
 		
