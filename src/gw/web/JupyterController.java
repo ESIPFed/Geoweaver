@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
@@ -587,6 +588,8 @@ public class JupyterController {
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
 			logger.info(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
+			
+			((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setConnectTimeout(2000);
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"), method, newentity, String.class);
 		    
