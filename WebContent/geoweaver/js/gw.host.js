@@ -568,39 +568,130 @@ GW.host = {
 						
 					}catch(e){
 						
-						console.error("Probably it is closed already.");
+						console.log("Probably it is closed already.");
 						
 					}
 					
 					GW.host.ssh_password_frame = null;
 					
 				}
+				
+				if(GW.host.findCache(hostid)==null){
+					
+					var cont = '<div class="modal-body" style=\"font-size: 12px;\">'+
+						"<div class=\"row\">";
+					
+					cont += "<div class=\"col col-md-5\">IP</div><div class=\"col col-md-5\">" + hostmsg.ip + "</div>";
+					
+					cont += "<div class=\"col col-md-5\">Port</div><div class=\"col col-md-5\">" + hostmsg.port + "</div>";
+					
+					cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + hostmsg.username + "</div>";
+					
+					cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" id=\"passwd\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
+					
+					cont += "     <div class=\"col-sm-12 form-check\">"+
+			       "		<input type=\"checkbox\" class=\"form-check-input\" id=\"ssh-remember\" />"+
+			       "		<label class=\"form-check-label\" for=\"ssh-remember\">Remember password and don't ask again.</label>"+
+			       "     </div>";
+									
+					cont += "</div></div>";
+					
+					cont += '<div class="modal-footer">' +
+					"	<button type=\"button\" id=\"ssh-connect-btn\" class=\"btn btn-outline-primary\">Connect</button> "+
+					"	<button type=\"button\" id=\"ssh-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+					'</div>';
+					
+					GW.host.ssh_password_frame = GW.process.createJSFrameDialog(500, 340, cont, "Open SSH session")
+					
+			    	$("#ssh-connect-btn").click(function(){
+			    		
+			    		$("#ssh-connect-btn").prop("disabled", true);
+	                	
+	                	$.ajax({
+	                		
+	                		url: "key",
+	                		
+	                		type: "POST",
+	                		
+	                		data: ""
+	                		
+	                	}).done(function(msg){
+	                		
+	                		//encrypt the password using the received rsa key
+	                		msg = $.parseJSON(msg);
+	                		
+	                		var encrypt = new JSEncrypt();
+	                		
+	                        encrypt.setPublicKey(msg.rsa_public);
+	                        
+	                        var encrypted = encrypt.encrypt($("#passwd").val());
+	                        
+	                        var req = {
+	                        		host: hostmsg.ip,
+	                        		port: hostmsg.port,
+	                        		username: hostmsg.username,
+	                        		password: encrypted
+	                        }
+	                	
+		                	$.ajax({
+		                		
+		                		url: "geoweaver-ssh-login-inbox",
+		                		
+		                		method: "POST",
+		                		
+		                		data: req
+		                		
+		                	}).done(function(msg){
+		                		
+		                		msg = $.parseJSON(msg);
+		                		
+		                		if(msg.token!=null){
+		                			
+			                		//open a dialog to show the SSH command line interface
 
-				var cont = '<div class="modal-body" style=\"font-size: 12px;\">'+
-					"<div class=\"row\">";
-				
-				cont += "<div class=\"col col-md-5\">IP</div><div class=\"col col-md-5\">" + hostmsg.ip + "</div>";
-				
-				cont += "<div class=\"col col-md-5\">Port</div><div class=\"col col-md-5\">" + hostmsg.port + "</div>";
-				
-				cont += "<div class=\"col col-md-5\">User</div><div class=\"col col-md-5\">" + hostmsg.username + "</div>";
-				
-				cont += "<div class=\"col col-md-5\">Password</div><div class=\"col col-md-5\"><input type=\"password\" id=\"passwd\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>";
-								
-				cont += "</div></div>";
-				
-				cont += '<div class="modal-footer">' +
-				"	<button type=\"button\" id=\"ssh-connect-btn\" class=\"btn btn-outline-primary\">Connect</button> "+
-				"	<button type=\"button\" id=\"ssh-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-				'</div>';
-				
-				GW.host.ssh_password_frame = GW.process.createJSFrameDialog(500, 340, cont, "Open SSH session")
-				
-		    	$("#ssh-connect-btn").click(function(){
-		    		
-		    		$("#ssh-connect-btn").prop("disabled", true);
-                	
-                	$.ajax({
+			                		GW.host.showSSHCmd(msg.token);
+			                		
+			                		if(document.getElementById('ssh-remember').checked) {
+			                    	    
+			                    		GW.host.setCache(hostid, $('#passwd').val()); //only remember password if users check the box the the login is successful.
+			                    		
+			                    	}
+		                			
+		                		}else{
+		                			
+		                			alert("Fail to open SSH session");
+		                			
+		                		}
+		                		try{
+		                			GW.host.ssh_password_frame.closeFrame();
+		                		}catch(e){console.log(e)}
+		                		
+		                		
+		                	}).fail(function(status){
+		                		
+		                		alert("Fail to open SSH session" + status);
+		                		
+		                		$("#ssh-connect-btn").prop("disabled", false);
+		                		
+		                	});
+		                	
+	                        
+	                	});
+			    		
+			    	});
+			    	
+			    	$("#ssh-cancel-btn").click(function(){
+			    		
+			    		GW.host.ssh_password_frame.closeFrame();
+			    		
+			    	});
+					
+				}else{
+					
+					//if the login attempt failed once, the password will be removed and users need input again.
+					var pswd = GW.host.findCache(hostid);
+					
+					$.ajax({
                 		
                 		url: "key",
                 		
@@ -617,7 +708,7 @@ GW.host = {
                 		
                         encrypt.setPublicKey(msg.rsa_public);
                         
-                        var encrypted = encrypt.encrypt($("#passwd").val());
+                        var encrypted = encrypt.encrypt(pswd);
                         
                         var req = {
                         		host: hostmsg.ip,
@@ -643,35 +734,29 @@ GW.host = {
 		                		//open a dialog to show the SSH command line interface
 
 		                		GW.host.showSSHCmd(msg.token);
-	                			
+		                		
 	                		}else{
 	                			
 	                			alert("Fail to open SSH session");
 	                			
+	                			GW.host.setCache(hostid, null);
+	                			
 	                		}
-	                		try{
-	                			GW.host.ssh_password_frame.closeFrame();
-	                		}catch(e){}
-	                		
 	                		
 	                	}).fail(function(status){
 	                		
 	                		alert("Fail to open SSH session" + status);
 	                		
-	                		$("#ssh-connect-btn").prop("disabled", false);
+	                		GW.host.setCache(hostid, null);
+	                		//$("#ssh-connect-btn").prop("disabled", false);
 	                		
 	                	});
 	                	
                         
                 	});
-		    		
-		    	});
-		    	
-		    	$("#ssh-cancel-btn").click(function(){
-		    		
-		    		GW.host.ssh_password_frame.closeFrame();
-		    		
-		    	});
+					
+				}
+				
 				
 				
 			});

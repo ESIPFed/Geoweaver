@@ -47,59 +47,98 @@ GW.fileupload = {
 				
 				msg = $.parseJSON(msg);
 				
-				if(GW.fileupload.password_frame != null){
-					
-					try{
-					
-						GW.fileupload.password_frame.closeFrame();
+				if(GW.host.findCache(hid)==null){
+
+					if(GW.fileupload.password_frame != null){
 						
-					}catch(e){
+						try{
 						
-						console.error("Fail to close the frame. Probably it is already closed.");
+							GW.fileupload.password_frame.closeFrame();
+							
+						}catch(e){
+							
+							console.error("Fail to close the frame. Probably it is already closed.");
+							
+						}
+						
+						GW.fileupload.password_frame = null;
 						
 					}
-					
-					GW.fileupload.password_frame = null;
-					
-				}
 
-				var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
-						"<div class=\"row\">"+
-						"<div class=\"col col-md-5\">Input Host Password : </div><div class=\"col col-md-5\"><input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\"></div>"+
-						"</div></div>";
-				
-				content += '<div class="modal-footer">' +
-				"	<button type=\"button\" id=\"pswd-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
-				"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-				'</div>';
-				
-				GW.fileupload.password_frame = GW.process.createJSFrameDialog(320, 200, content, "Authorization")
-		    	
-				GW.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
-	                _frame.closeFrame();
-	                
-	            });
-	            
-		    	//Show the window
-//				GW.fileupload.password_frame.show();
-//		    	
-//				GW.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-		    	
-		    	$("#pswd-confirm-btn").click(function(){
-		    		
-//		    		var $button = this;
-//                	
-//                	$button.spin();
-                	
-//		    		GW.fileupload.password_frame.enableButtons(false);
-		    		
-		    		
-                	
-                	GW.fileupload.password = $('#inputpswd').val()
+					var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+							"<div class=\"row\">"+
+							"<div class=\"col col-md-5\">Input Host Password : </div>"+
+							"<div class=\"col col-md-5\">"+
+							"	  <input type=\"password\" class=\"form-control\" id=\"inputpswd\" placeholder=\"Password\">"+
+							"</div>"+
+							"     <div class=\"col-md-12 form-check\">"+
+						    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"upload-remember\" />"+
+						    "		<label class=\"form-check-label\" for=\"upload-remember\">Remember password and don't ask again.</label>"+
+						    "     </div>"+
+							"</div></div>";
+					
+					content += '<div class="modal-footer">' +
+					"	<button type=\"button\" id=\"pswd-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+					"	<button type=\"button\" id=\"pswd-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+					'</div>';
+					
+					GW.fileupload.password_frame = GW.process.createJSFrameDialog(350, 250, content, "Authorization")
+			    	
+					GW.fileupload.password_frame.on('closeButton', 'click', (_frame, evt) => {
+						
+		                _frame.closeFrame();
+		                
+		            });
+		            
+			    	//Show the window
+//					GW.fileupload.password_frame.show();
+//			    	
+//					GW.fileupload.password_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			    	
+			    	$("#pswd-confirm-btn").click(function(){
+			    		
+//			    		var $button = this;
+//	                	
+//	                	$button.spin();
+	                	
+//			    		GW.fileupload.password_frame.enableButtons(false);
+			    		
+	                	GW.fileupload.password = $('#inputpswd').val()
+	                	
+	                	if(GW.fileupload.password == ""){
+	                		
+	                		alert("Please input correct password.");
+	                		
+	                		return;
+	                		
+	                	}
+	                	
+	                	if(document.getElementById('upload-remember').checked) {
+	                		
+	                		GW.host.setCache(hid, GW.fileupload.password);
+	                		
+	                	}
+	                	
+	                	GW.fileupload.showUploadDialog();
+	                	
+	                	GW.fileupload.password_frame.closeFrame();
+			    		
+			    	});
+			    	
+			    	$("#pswd-cancel-btn").click(function(){
+			    		
+			    		GW.fileupload.password_frame.closeFrame();
+			    		
+			    	});
+					
+					
+				}else{
+					
+                	GW.fileupload.password = GW.host.findCache(hid);
                 	
                 	if(GW.fileupload.password == ""){
                 		
-                		alert("Please input correct password.");
+                		alert("Please clean the cache and try again.");
                 		
                 		return;
                 		
@@ -109,13 +148,8 @@ GW.fileupload = {
                 	
                 	GW.fileupload.password_frame.closeFrame();
 		    		
-		    	});
-		    	
-		    	$("#pswd-cancel-btn").click(function(){
-		    		
-		    		GW.fileupload.password_frame.closeFrame();
-		    		
-		    	});
+				}
+				
 				
 			});
 			
