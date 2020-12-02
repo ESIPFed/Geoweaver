@@ -244,6 +244,8 @@ GW.filebrowser = {
 		
 		operatefile: function(file_name, file_size){
 			
+			GW.general.showToasts("Preparing the file, please wait..");
+			
 			var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
 			
 			var suffix = file_name.match(patt1);

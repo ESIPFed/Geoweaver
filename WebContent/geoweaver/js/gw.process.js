@@ -125,6 +125,18 @@ GW.process = {
 				
 	        	});
 			
+			GW.process.editor.on('focus', function(instance, event) {
+				
+				if(GW.process.editor.isReadOnly()){
+
+					GW.general.showToasts("In Readonly Mode! Click the \"edit\" button to update.");
+					
+				}
+
+			    console.log(instance, event);
+				
+			});
+			
 			$(".CodeMirror").css('font-size',"10pt");
 			
 			$(".CodeMirror").css('height',"auto");
@@ -1096,7 +1108,20 @@ GW.process = {
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
+			$("#showCurrent").click(function(){
+				
+				GW.process.displayCodeArea(process_id, process_name, code_type,  code);
+				
+				if($("#closeHistory")) $("#closeHistory").trigger( "click" );
+				
+				if($("#closeLog")) $("#closeLog").trigger("click");
+				
+				GW.process.editSwitch();
+				
+			});
+			
 		},
+		
 		
 		displayToolbar: function(process_id, process_name, code_type){
 			
@@ -1127,6 +1152,8 @@ GW.process = {
 		},
 		
 		displayCodeArea: function(process_id, process_name, code_type, code){
+			
+			$("#code-embed").html("");
 			
 			if(code_type == "jupyter"){
 				
