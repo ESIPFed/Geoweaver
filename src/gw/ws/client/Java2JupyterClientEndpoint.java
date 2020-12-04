@@ -153,6 +153,9 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 
             });
             
+            
+            
+            
             ClientEndpointConfig clientConfig = configBuilder.build();
             
 //            if(!BaseTool.isNull(headers)) {
@@ -191,7 +194,11 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //            Sec-WebSocket-Key: JNOrKMA6YhDCRijp46/ofg==
 //            Sec-WebSocket-Version: 13
             
+            System.out.println("Default Binary Max Message Buffer Size: " + container.getDefaultMaxBinaryMessageBufferSize());
             
+            container.setDefaultMaxBinaryMessageBufferSize(10000000); //limit the binary size to 10MB
+            
+            container.setDefaultMaxTextMessageBufferSize(10000000); //limit the text size to 100MB
             
             container.connectToServer(this, clientConfig, endpointURI);
             
