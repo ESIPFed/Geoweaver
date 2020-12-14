@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
@@ -70,19 +71,24 @@ public class JupyterController {
 			resp = resp
 //				.replaceAll(scheme + "://" + server + ":" + port, replacement)
 				.replace("\"/static/", "\"/Geoweaver/web/jupyter-proxy/"+hostid+"/static/")
-				.replace("\"/custom/", "\"/Geoweaver/web/jupyter-proxy/"+hostid+"/custom/")
+				.replace("\"/custom/custom.css\"", "\"/Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom.css\"")
 				.replace("\"/login?", "\"/Geoweaver/web/jupyter-proxy/"+hostid+"/login?")
 				.replace("\"/tree", "\"/Geoweaver/web/jupyter-proxy/"+hostid+"/tree")
 //				.replace("'contents': 'services/contents',", "'contents': 'Geoweaver/web/jupyter-proxy/services/contents',")
 				.replace("/static/base/images/logo.png", "/Geoweaver/web/jupyter-proxy/"+hostid+"/static/base/images/logo.png")
 				.replace("baseUrl: '/static/',", "baseUrl: '/Geoweaver/web/jupyter-proxy/"+hostid+"/static/',")
+				
 				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/web/jupyter-proxy/"+hostid+"/', 'api/config',")
 				.replace("this.base_url,", "'/Geoweaver/web/jupyter-proxy/"+hostid+"/',")
 				.replace("that.base_url,", "'/Geoweaver/web/jupyter-proxy/"+hostid+"/',")
+				
 				.replace("'/Geoweaver/web/jupyter-proxy/"+hostid+"/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom'], function() {});")
+//				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/web/jupyter-proxy/"+hostid+"/files/")
 				.replace("this.notebook.base_url,", "'/Geoweaver/web/jupyter-proxy/"+hostid+"/',")
+				.replace("nbextensions : '/nbextensions'", "nbextensions : '../nbextensions'")
+				.replace("custom : '/custom',", "custom : '../custom',")
+				.replace("kernelspecs : '/kernelspecs',", "kernelspecs : '../kernelspecs',")
 //				.replace("\"nbextensions/\"", "\"Geoweaver/web/jupyter-proxy/nbextensions/\"")
 //				.replace("this.base_url", "'/Geoweaver/web/jupyter-proxy/'")
 //				.replace("static/base/images/logo.png", "Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
@@ -215,9 +221,9 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Request Headers: " + entity.getHeaders());
+//			logger.info("Request Headers: " + entity.getHeaders());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -321,7 +327,7 @@ public class JupyterController {
 			
 			logger.info("Request Headers: " + entity.getHeaders());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -376,7 +382,7 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.debug("Query String: " + request.getQueryString());
 			
 //			String body = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
 			
@@ -393,7 +399,7 @@ public class JupyterController {
 				
 			}
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"), method, newentity, String.class);
 		    
 		    resp = new ResponseEntity(
 		    		addURLProxy(responseEntity.getBody(), hostid), 
@@ -432,7 +438,7 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.debug("Query String: " + request.getQueryString());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -495,7 +501,7 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -562,7 +568,7 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -587,6 +593,8 @@ public class JupyterController {
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
 			logger.info(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
+			
+			((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setConnectTimeout(2000);
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"), method, newentity, String.class);
 		    
@@ -664,9 +672,9 @@ public class JupyterController {
 			
 			logger.info("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
-			logger.info("Original Request String: " + request.getParameterMap());
+//			logger.info("Original Request String: " + request.getParameterMap());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -713,9 +721,9 @@ public class JupyterController {
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-			logger.info("Body: " + requestentity.getBody());
+//			logger.info("Body: " + requestentity.getBody());
 			
-			logger.info("Headers: " + requestentity.getHeaders());
+//			logger.info("Headers: " + requestentity.getHeaders());
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, requestentity, String.class);
 		    
@@ -727,9 +735,9 @@ public class JupyterController {
 		    	
 		    	HttpHeaders newresponseheaders = new HttpHeaders();
 		    	
-		    	logger.info("Redirection: " + newresponseheaders);
-			    
-			    logger.info("Response: " + responseEntity.getBody());
+//		    	logger.info("Redirection: " + newresponseheaders);
+//			    
+//			    logger.info("Response: " + responseEntity.getBody());
 			    
 //			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 			    
@@ -761,7 +769,7 @@ public class JupyterController {
 			    
 //			    Set ent = respheaders.entrySet();
 			    
-			    logger.info(respheaders.toString());
+//			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
