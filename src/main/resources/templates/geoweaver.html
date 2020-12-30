@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+	<head>
+	
+		<title>Geoweaver</title>
+		
+		<link rel="icon" href="../img/favicon.ico" />
+		
+		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+		
+		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
+		
+   		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
+   		<link href="../css/bootstrap-colorpicker.min.css" rel="stylesheet" />
+		
+		<link href="../css/font-awesome.css" rel="stylesheet" />
+		
+		<link href="../css/workspace.css" rel="stylesheet" />
+		
+		<link href="../css/sidemenu.css" rel="stylesheet" />
+		
+		<link rel="stylesheet" href="../js/codemirror/lib/codemirror.css" />
+		
+		<link rel="stylesheet" href="../js/codemirror/theme/xq-dark.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/xq-light.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/yeti.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/idea.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/darcula.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/yonce.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/zenburn.css">
+		
+		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
+    	<link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
+    	
+   		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
+   		<link rel="stylesheet" href="../css/main.css" />
+   	
+   		<link rel="stylesheet" href="../css/prism.css" />
+    	
+        <link rel="stylesheet" href="../css/notebook.css" />
+        
+        <link rel="stylesheet" href="../css/nbpreview.css" />
+        
+        <link rel="stylesheet" href="../css/imageviewer.css" />
+        
+        <link rel="stylesheet" href="../css/Chart.min.css" />
+        
+        <style type="text/css">
+        	/* Style the tab */
+			.tab {
+			  overflow: hidden;
+			  border: 1px solid #ccc;
+			  background-color: #f1f1f1;
+			}
+			
+			/* Style the buttons inside the tab */
+			.tab button {
+			  background-color: inherit;
+			  float: left;
+			  border: none;
+			  outline: none;
+			  cursor: pointer;
+			  padding: 3px 3px;
+			  transition: 0.3s;
+			  font-size: 12px;
+			}
+			
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+			  background-color: #ddd;
+			}
+			
+			/* Create an active/current tablink class */
+			.tab button.active {
+			  background-color: #ccc;
+			}
+			
+			/* Style the tab content */
+			.tabcontent {
+			  display: none;
+			  padding: 6px 12px;
+			  /* border: 1px solid #ccc; */
+			  border-top: none;
+			}
+			
+			#process-history-chart-container {
+			
+				width: 200px;
+				height: 100px;
+			
+			}
+        
+        </style>
+        
+		<script type="text/javascript" src="../js/FileSaver.min.js"></script>
+		
+		<script type="text/javascript" src="../js/jsencrypt.min.js"></script>
+		
+		<script type="text/javascript" src="../ssh/sockjs.js" ></script>
+		
+		<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
+		
+		<script type="text/javascript" src="../js/imageviewer.min.js"></script>
+		
+		<!-- <script src="https://danielmg.org/assets/demo/uploader/js/jquery.dm-uploader.min.js?v=v10"></script>
+	    
+	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-main.js?v=v10"></script>
+		    
+	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-multiple.js?v=v10"></script>
+	  	
+	    <script src="https://danielmg.org/assets/demo/uploader/js/configs/no-queue.js?v=v10"></script> -->
+	    
+	    <script type="text/javascript" src="../js/jquery.dm-uploader.min.js"></script>
+	    
+	    <script type="text/javascript" src="../js/ui-main.js"></script>
+	    
+	    <script type="text/javascript" src="../js/ui-multiple.js"></script>
+	    
+	    <script type="text/javascript" src="../js/no-queue.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/lib/codemirror.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/mode/shell/shell.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/addon/display/placeholder.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
+    
+   		<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+   	
+   		<script type="text/javascript" src="../js/jsframe.js" ></script>
+    	
+    	<script type="text/javascript" src="../js/Chart.min.js"></script>
+    	
+	</head>
+	
+	<body style="cursor: auto; padding:0;">
+	
+		<div id="jsframe-container"></div>
+	
+		<div class="container" style="margin:0; padding:0; width:100%; height:100%;">
+		
+			<!-- Top menu bar -->
+			
+			<div class="row" style="height: 50px; margin: 0; padding: 0; background-color:black;">
+				
+				<div style="overflow: auto;">
+				  <a style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: gray; " href="javascript:void(0)">
+				  	<img src="../img/header.png" width="90px" height="40px" />
+				  </a>
+				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
+				  	Geoweaver
+				  </div> -->
+				  <a id="toolbar-search"  
+				  data-toggle="tooltip" title="Search Process/Workflow/Hosts"
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-search" alt="search" > Search</i>
+				  </a>
+				  <a id="toolbar-add" 
+				  data-toggle="tooltip" title="New Host/Process/Workflow"
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-plus"  alt="create" > Create</i>
+				  </a>
+				  <a id="toolbar-history" 
+				  data-toggle="tooltip" title="Process/Workflow History"
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-history" alt="List the recent execution history"> History</i>
+				  </a>
+				  <a id="toolbar-monitor" 
+				  data-toggle="tooltip" title="Monitor Running Process/Workflow"
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-film" alt="monitor" > Monitor</i>
+				  </a>
+				  <a id="toolbar-settings" 
+				  data-toggle="tooltip" title="Settings"
+				  style="float: left; width: 80px;text-align: center;margin-top:9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-cog" alt="settings"  > Settings</i>
+				  </a>
+				  <a id="toolbar-print" 
+				  data-toggle="tooltip" title="Print"
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  	<i class="fa fa-print" alt="print" > Print</i>
+				  </a>
+				  <a  
+				  data-toggle="tooltip" title="Information"
+				  style="float: right; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
+                  	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
+                  </a>
+				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
+				  </a>
+				</div>
+				
+				
+				<!-- Top Toolbar -->
+				
+				<!-- <div id="top_toolbar">
+				
+					<div id="toolbar-left" style="position: absolute; top: 5px; left: 80px; height: 50px; z-index:1;" >
+					
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-search">
+							<i class="fa fa-search"  alt="search"></i>
+						</button>
+						
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-add">
+							<i class="fa fa-plus" alt="create"></i>
+						</button>
+						
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-history">
+							<i class="fa fa-history" alt="List the recent execution history"></i>
+						</button>
+						
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-monitor">
+							<i class="fa fa-film" alt="monitor"></i>
+						</button>
+						
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-settings">
+							<i class="fa fa-cog" alt="settings"></i>
+						</button>
+						
+						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-print">
+							<i class="fa fa-print" alt="print"></i>
+						</button>
+						
+					</div>
+				
+				</div> -->
+			
+			</div>
+			
+			<!-- tool box -->
+				
+			
+			
+			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
+			<div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;">
+				
+				
+			    <!-- Workspace -->
+			    
+			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
+			    
+					    <div class="tab">
+						  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+						  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
+						  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
+						  <button class="tablinks" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+						  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
+						  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+						</div>
+						
+						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;"> 
+							  <div id="main-general-content" style="height:100%;overflow-y: scroll; padding: 5px;">
+							  	<h2>Welcome to Geoweaver! </h2>
+							  </div> 
+						</div>
+						
+						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 5px; ">
+							  	<h2>Please select a host on the right panel! </h2>
+							  </div>
+						</div>
+						 
+						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+							  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 5px;">
+							  	<h2>Please select a process on the right panel!</h2>
+							  </div>
+						</div>
+						
+						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+							  <div id="main-workflow-content" style="height:100%; overflow-y: scroll;">
+							  	<h2>Please select a workflow on the right panel!</h2>
+							  </div>
+						</div>
+							
+						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
+							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 0;">
+							  <h2>logging information and errors</h2>
+							  <div id="log-window">
+							  	
+							  </div>
+							</div>
+						</div>
+				
+			    		<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
+					
+							<!-- log window right top -->
+							
+							<!-- <div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
+								
+								<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
+								
+								<div id="log-window-2" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
+							
+							</div> -->
+							
+							
+					
+							<!-- status indicator right bottom -->
+							
+							<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:1;">
+					    	  		<span id="current_workflow_name" class="invisible">Current Workflow: </span>
+						      	<i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:30px;color:red"></i>
+						    
+						    </div>
+						    
+						    <!-- progress right bottom, above the status indicator -->
+							
+							<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
+							
+							<!-- <div id="bar-1">
+								Task1
+								<div class="progress">
+								  <div class="progress-bar progress-bar-striped active" role="progressbar"
+								  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
+								    40%
+								  </div>
+								</div>
+							</div> -->
+						    	
+						    </div>
+						    
+						    <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 0px;width: 80px;">
+					  	
+							  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
+							  
+							    <i id="hidden-file-upload" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" ></i>
+							      
+							    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
+							    	style="color:gray; padding:0; margin:0; margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
+							      
+							    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
+							      
+							    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="download graph" ></i>
+							      
+							    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 
+							      
+							    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="execute workflow"></i> 
+							      
+							    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show object information"></i>
+							      
+							    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show process log"></i> 
+							      
+							    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="get result"></i> 
+							      
+							    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;"  alt="delete graph" ></i> 
+						      
+						    </div>
+						
+						</div>
+			    </div>
+			    
+				
+				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
+					
+					<div class="nav-side-menu">
+		
+					    
+					    <!-- <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> -->
+					  	
+					    <div class="menu-list">
+					  
+					            <ul id="menu-content" class="menu-content collapse out">
+					                <!-- <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-dashboard fa-lg"></i> Overview
+					                  </a>
+					                </li> -->
+					
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span data-toggle="collapse" data-target="#hosts" class="arrow collapsed active"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="hosts">
+					                    
+					                </ul>
+					                
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
+					                </li>
+					                <ul class="sub-menu collapse" id="processs">
+					                  
+					                </ul>
+					
+					
+					                <li>
+					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <i class="fa fa-plus" id="newworkflow"></i> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
+					                </li>  
+					                <ul class="sub-menu collapse" id="workflows">
+					                  
+					                </ul>
+									
+					
+					                <!-- <li>
+					                  <a href="javascript:void(0)">
+					                  <i class="fa fa-share fa-lg"></i> Share
+					                  </a>
+					                </li> -->
+					
+									<li>
+					                  <a href="javascript:GW.tutorial.showDialog()">
+					                  <i class="fa fa-book fa-lg"></i> Tutorial
+					                  </a>
+					                </li>
+						
+					                <li>
+					                  <a href="javascript:GW.about.showDialog()">
+					                  <i class="fa fa-info fa-lg"></i> About
+					                  </a>
+					                </li>
+					            </ul>
+					            
+					     </div>
+					     
+					</div>
+					
+				</div>
+			
+				
+				
+				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">              
+				      <div class="modal-body">
+				      	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				        <img src="" class="imagepreview" style="width: 100%;" />
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+			</div>
+			
+			<!-- The actual snackbar -->
+			<div id="snackbar">Some message..</div>
+		
+		</div>
+		
+		<script src="../js/es5-shim.min.js"></script>
+        <script src="../js/marked.min.js"></script>
+        <script src="../js/ansi_up.min.js"></script>
+        <script src="../js/prism.min.js"></script>
+		<script src="../js/notebook.js" ></script>
+    	<script src="../js/d3.min.js"></script>
+	    <script src="../js/gw.js"></script>
+	    <script src="../js/gw.general.js"></script>
+	    <script src="../js/gw.tutorial.js"></script>
+	    <script src="../js/gw.about.js"></script>
+	    <script src="../js/gw.chart.js"></script>
+	    <script src="../js/gw.workspace.js"></script>
+	    <script src="../js/gw.ssh.js"></script>
+	    <script src="../js/gw.fileupload.js"></script>
+	    <script src="../js/gw.filebrowser.js"></script>
+	    <script src="../js/gw.host.js"></script>
+	    <script src="../js/gw.result.js"></script>
+	    <script src="../js/gw.process.js"></script>
+	    <script src="../js/gw.workflow.js"></script>
+	    <script src="../js/gw.monitor.js"></script>
+	    <script src="../js/gw.search.js"></script>
+	    <script src="../js/gw.settings.js"></script>
+	    <script src="../js/gw.toolbar.js"></script>
+	    <script src="../js/gw.menu.js"></script>
+	    <script src="../js/gw.main.js"></script>
+	    
+	    <script>
+	    
+	    	function switchTab(ele, name){
+	    		
+	    	  console.log("Turn on the tab " + name)
+	    		
+	    	  var i, tabcontent, tablinks;
+			  tabcontent = document.getElementsByClassName("tabcontent");
+			  for (i = 0; i < tabcontent.length; i++) {
+			    tabcontent[i].style.display = "none";
+			  }
+			  tablinks = document.getElementsByClassName("tablinks");
+			  for (i = 0; i < tablinks.length; i++) {
+			    tablinks[i].className = tablinks[i].className.replace(" active", "");
+			  }
+			  document.getElementById(name).style.display = "block";
+			  ele.className += " active";
+	    		
+	    	}
+	    	
+			function openCity(evt, name) {
+			  switchTab(evt.currentTarget, name);
+			}
+			
+			$(document).ready(function(){
+				console.log("trigger click event");
+				//$("main-content-tab").trigger("click")
+				switchTab(document.getElementById("main-general-tab"), "main-general");
+				
+			});
+			
+		
+		</script>
+	    
+	</body>
+
+</html>
