@@ -82,6 +82,24 @@ public class JupyterController {
 	}
 	
 	/**
+	 * Decode the url if it has spaces or other special characters
+	 * @param referurl
+	 * @return
+	 */
+	public String getRealTargetURL(String referurl) {
+		
+		String targeturl = referurl;
+		try {
+			targeturl = URLDecoder.decode(referurl,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		return targeturl;
+		
+	}
+	
+	/**
 	 * Add URL Proxy
 	 * @param resp
 	 * @param hostid
@@ -263,7 +281,7 @@ public class JupyterController {
 			
 			logger.debug("URL: " + newheaders.get("referer").get(0));
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 		    String newbody = addURLProxy(responseEntity.getBody(), hostid);
 	    	
@@ -387,7 +405,7 @@ public class JupyterController {
 			
 			logger.debug("URL: " + newheaders.get("referer").get(0));
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 		    resp = new ResponseEntity(
 		    		addURLProxy(responseEntity.getBody(), hostid), 
@@ -441,7 +459,7 @@ public class JupyterController {
 				
 			}
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 		    resp = new ResponseEntity(
 		    		addURLProxy(responseEntity.getBody(), hostid), 
@@ -502,7 +520,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(entity.getBody(), newheaders);
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 		    resp = new ResponseEntity(
 		    		addURLProxy(responseEntity.getBody(), hostid), 
@@ -563,7 +581,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 //		    if(realurl.indexOf("auth")!=-1)
 //		    
@@ -635,7 +653,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-			String targeturl = URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8");
+			String targeturl = getRealTargetURL(newheaders.get("referer").get(0));
 			
 			String sec_fetch_type = getHeaderProperty(reqentity.getHeaders(), "Sec-Fetch-Dest");
 			
@@ -849,7 +867,7 @@ public class JupyterController {
 			
 //			logger.info("Headers: " + requestentity.getHeaders());
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(newheaders.get("referer").get(0), method, requestentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
 		    HttpHeaders respheaders = responseEntity.getHeaders();
 		    

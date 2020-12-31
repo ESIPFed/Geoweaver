@@ -42,8 +42,6 @@ public class Java2JupyterClientEndpoint extends Endpoint
 	
     private Logger logger = Logger.getLogger(this.getClass());
     
-    private Java2JupyterClientDialog window;
-    
     @Autowired
     BaseTool bt;
     
@@ -235,32 +233,37 @@ public class Java2JupyterClientEndpoint extends Endpoint
         this.new_ws_session_between_geoweaver_and_jupyterserver.addMessageHandler(new MessageHandler.Whole<String>() {
             @Override
             public void onMessage(String message) {
-            	
-                try {
-                	
-                	logger.debug("Received message from remote Jupyter server: " + message);
-                	
-                	logger.debug("send this message back to the client");
-                	
-                	if(!bt.isNull(new_ws_session_between_browser_and_geoweaver)) {
-                		
-                		new_ws_session_between_browser_and_geoweaver.getAsyncRemote().sendText(message);
-                		
-                		logger.debug("the message should already be sent");
-                		
+            		
+                	synchronized(new_ws_session_between_browser_and_geoweaver) {
+                		try {
+                			
+	                		logger.debug("Received message from remote Jupyter server: " + message);
+	                	
+		                	logger.debug("send this message back to the client");
+		                	
+		                	if(!bt.isNull(new_ws_session_between_browser_and_geoweaver)) {
+		                		
+		                		new_ws_session_between_browser_and_geoweaver.getBasicRemote().sendText(message);
+		                		
+		                		logger.debug("the message should already be sent");
+		                		
+		                	}
+		                	
+		                	
+//		                	if(!bt.isNull(window)) {
+//		                		
+//		                		window.writeServerMessage(message);
+//		                		
+//		                	}
+		//                    session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
+                		} catch (Exception ex) {
+                			ex.printStackTrace();
+                        	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
+                        	
+                        	
+                        }
                 	}
-                	
-                	
-                	if(!bt.isNull(window)) {
-                		
-                		window.writeServerMessage(message);
-                		
-                	}
-//                    session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
-                	
-                } catch (Exception ex) {
-                	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
-                }
+                
             }
         });
 	}
@@ -295,7 +298,22 @@ public class Java2JupyterClientEndpoint extends Endpoint
      * @param message
      */
     public void sendMessage(String message) {
-        this.new_ws_session_between_geoweaver_and_jupyterserver.getAsyncRemote().sendText(message);
+    	
+    	if(!bt.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
+
+        	synchronized(this.new_ws_session_between_geoweaver_and_jupyterserver) {
+            	
+            	 try {
+    				this.new_ws_session_between_geoweaver_and_jupyterserver.getBasicRemote().sendText(message);
+    			} catch (IOException e) {
+    				e.printStackTrace();
+//    				this.sendMessage(e.getMessage());
+    			}
+            	
+            }
+    		
+    	}
+        
     }
     
     
@@ -316,13 +334,13 @@ public class Java2JupyterClientEndpoint extends Endpoint
 		this.new_ws_session_between_browser_and_geoweaver = new_ws_session_between_browser_and_geoweaver;
 	}
 
-	public Java2JupyterClientDialog getWindow() {
-		return window;
-	}
-	
-	public void setWindow(Java2JupyterClientDialog window) {
-		this.window = window;
-	}
+//	public Java2JupyterClientDialog getWindow() {
+//		return window;
+//	}
+//	
+//	public void setWindow(Java2JupyterClientDialog window) {
+//		this.window = window;
+//	}
 	
 //	/**
 //     * Callback hook for Connection open events.

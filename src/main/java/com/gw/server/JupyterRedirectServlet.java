@@ -34,7 +34,7 @@ import com.gw.utils.BeanTool;
 	configurator = JupyterRedirectServerConfig.class)
 public class JupyterRedirectServlet {
 	
-	Logger logger = Logger.getLogger(JupyterRedirectServlet.class);
+	Logger logger = Logger.getLogger(this.getClass());
 	
 	Session wsSession;
 	
@@ -49,6 +49,7 @@ public class JupyterRedirectServlet {
 	
 	public JupyterRedirectServlet() {
 		
+		logger.debug("Initializing Jupyter Websocket Session...");
 		
 	}
 	
@@ -124,12 +125,12 @@ public class JupyterRedirectServlet {
     	
     }
 
-    @OnMessage
+    @OnMessage(maxMessageSize = 10000000)
     public void echo(String message, @PathParam("uuid1") String uuid1, Session session) {
         
     	try {
     		
-    		init();
+//    		init();
     		
     		if(bt.isNull(client)) {
     			
@@ -160,7 +161,7 @@ public class JupyterRedirectServlet {
     	
 		try {
 			
-			init();
+//			init();
 			
     		logger.error("Channel closed.");
         	
