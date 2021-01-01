@@ -257,7 +257,7 @@ public class JupyterController {
 			
 			logger.debug("==============");
 			
-			logger.debug("Ensuring Unicode to UTF");
+//			logger.debug("Ensuring Unicode to UTF");
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
@@ -279,7 +279,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(entity.getBody(), newheaders);
 			
-			logger.debug("URL: " + newheaders.get("referer").get(0));
+//			logger.debug("URL: " + newheaders.get("referer").get(0));
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
@@ -334,7 +334,7 @@ public class JupyterController {
     	if(!bt.isNull(cts))
     		contenttype = cts.get(0);
     	
-    	logger.debug(key + " : " + contenttype);
+//    	logger.debug(key + " : " + contenttype);
     	
     	return contenttype;
 		
@@ -385,7 +385,7 @@ public class JupyterController {
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
-			logger.debug("Request Headers: " + entity.getHeaders());
+//			logger.debug("Request Headers: " + entity.getHeaders());
 			
 //			logger.info("Query String: " + request.getQueryString());
 			
@@ -403,7 +403,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(entity.getBody(), newheaders);
 			
-			logger.debug("URL: " + newheaders.get("referer").get(0));
+//			logger.debug("URL: " + newheaders.get("referer").get(0));
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
@@ -625,7 +625,7 @@ public class JupyterController {
 			
 			logger.debug("==============");
 			
-			logger.debug("This is a GET request...");
+//			logger.debug("This is a GET request...");
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
@@ -657,7 +657,7 @@ public class JupyterController {
 			
 			String sec_fetch_type = getHeaderProperty(reqentity.getHeaders(), "Sec-Fetch-Dest");
 			
-			logger.debug(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
+//			logger.debug(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
 			
 //			((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setConnectTimeout(TIMEOUT);
 			
@@ -680,9 +680,9 @@ public class JupyterController {
 				
 				ResponseEntity<String> responseEntity = restTemplate.exchange(targeturl, method, newentity, String.class);
 			    
-		    	logger.debug("Response Header: " + responseEntity.getHeaders());
-		    	
-		    	logger.debug("Response HTTP Code: " + responseEntity.getStatusCode());
+//		    	logger.debug("Response Header: " + responseEntity.getHeaders());
+//		    	
+//		    	logger.debug("Response HTTP Code: " + responseEntity.getStatusCode());
 		    	
 		    	String newbody = responseEntity.getBody();
 		    	
@@ -715,7 +715,7 @@ public class JupyterController {
 			    	
 			    	HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
 		    		
-					if(targeturl.contains("static/tree/js")) {
+//					if(targeturl.contains("static/tree/js")) {
 						
 						
 //						logger.info("Response Body: " + newbody);
@@ -724,7 +724,7 @@ public class JupyterController {
 						
 //						headers.set("Content-Length", String.valueOf(newbody.getBytes().length));
 						
-					}
+//					}
 		    		
 		    		resp = new ResponseEntity<byte[]>(
 				    		newbody.getBytes("UTF-8"), 
@@ -771,7 +771,7 @@ public class JupyterController {
 		    		
 		    	}else if (key.toLowerCase().equals("content-length")){
 		    		
-		    		logger.debug("Old Content Length: " + value);
+//		    		logger.debug("Old Content Length: " + value);
 		    		
 		    		if(!bt.isNull(returnbody))
 						try {

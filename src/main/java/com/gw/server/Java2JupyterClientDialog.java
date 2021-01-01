@@ -111,7 +111,7 @@ public class Java2JupyterClientDialog extends JFrame {
 //      client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders(), h);
       client.init(new URI(wsurl), null, getHeaders(), h);
       
-      client.setWindow(this);
+//      client.setWindow(this);
       
 //      client = new Java2JupyterClientEndpoint(new URI("ws://localhost:8888/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c"), null, getHeaders());
       

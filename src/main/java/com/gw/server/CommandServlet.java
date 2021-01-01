@@ -13,8 +13,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.log4j.Logger;
+
 import org.apache.tomcat.websocket.WsSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gw.ssh.SSHSession;
 import com.gw.web.GeoweaverController;
@@ -30,7 +32,7 @@ import com.gw.web.GeoweaverController;
 @ServerEndpoint(value = "/command-socket")
 public class CommandServlet {
 	
-	Logger logger = Logger.getLogger(CommandServlet.class);
+	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * WebSocket Session between the client and Geoweaver

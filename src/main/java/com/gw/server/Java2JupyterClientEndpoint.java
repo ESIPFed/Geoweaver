@@ -19,11 +19,13 @@ import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gw.jpa.Host;
+import com.gw.server.JupyterRedirectServlet.SessionPair;
 import com.gw.utils.BaseTool;
 
 /**
@@ -37,10 +39,10 @@ public class Java2JupyterClientEndpoint extends Endpoint
 {
 
 	Session new_ws_session_between_geoweaver_and_jupyterserver = null;
-	
+//	
 	Session new_ws_session_between_browser_and_geoweaver = null;
 	
-    private Logger logger = Logger.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
     BaseTool bt;
@@ -103,7 +105,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 public void beforeRequest(Map<String, List<String>> nativeheaders) {
 //                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
                 	
-                	logger.debug("Original Native Headers: " + nativeheaders);
+//                	logger.debug("Original Native Headers: " + nativeheaders);
                 	
                 	Map<String, List<String>> uppercaseheaders = new HashMap();
                 	
@@ -144,7 +146,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //                        }else {
                         	uppercaseheaders.put(newkey, values);
                         	
-                        	logger.debug("Key:" + newkey + " - Values: " + values);
+//                        	logger.debug("Key:" + newkey + " - Values: " + values);
 //                        }
                         
                     } 
@@ -229,43 +231,50 @@ public class Java2JupyterClientEndpoint extends Endpoint
     	logger.debug("Override The connection between Java and Jupyter server is established.");
     	
         this.new_ws_session_between_geoweaver_and_jupyterserver = session;
+    	
+    	session.addMessageHandler(new WebsocketMessageHandler(this));
         
-        this.new_ws_session_between_geoweaver_and_jupyterserver.addMessageHandler(new MessageHandler.Whole<String>() {
-            @Override
-            public void onMessage(String message) {
-            		
-                	synchronized(new_ws_session_between_browser_and_geoweaver) {
-                		try {
-                			
-	                		logger.debug("Received message from remote Jupyter server: " + message);
-	                	
-		                	logger.debug("send this message back to the client");
-		                	
-		                	if(!bt.isNull(new_ws_session_between_browser_and_geoweaver)) {
-		                		
-		                		new_ws_session_between_browser_and_geoweaver.getBasicRemote().sendText(message);
-		                		
-		                		logger.debug("the message should already be sent");
-		                		
-		                	}
-		                	
-		                	
-//		                	if(!bt.isNull(window)) {
+//        session.addMessageHandler(new MessageHandler.Whole<String>() {
+//            @Override
+//            public void onMessage(String message) {
+//            		
+//                	synchronized(jssession) {
+//                		try {
+//                			
+////	                		logger.debug("Received message from remote Jupyter server: " + message);
+//	                	
+////		                	logger.debug("send this message back to the client");
+//		                	
+//		                	if(!bt.isNull(jssession) && jssession.isOpen()) {
 //		                		
-//		                		window.writeServerMessage(message);
+//		                		jssession.getBasicRemote().sendText(message);
+//		                		
+////		                		logger.debug("the message should already be sent");
+//		                		
+//		                	}else {
+//		                		
+//		                		logger.warn("The websocket between browser and geoweaver is null or closed");
 //		                		
 //		                	}
-		//                    session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
-                		} catch (Exception ex) {
-                			ex.printStackTrace();
-                        	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
-                        	
-                        	
-                        }
-                	}
-                
-            }
-        });
+//		                	
+//		                	
+////		                	if(!bt.isNull(window)) {
+////		                		
+////		                		window.writeServerMessage(message);
+////		                		
+////		                	}
+//		//                    session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
+//                		} catch (Exception ex) {
+//                			ex.printStackTrace();
+//                        	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
+//                        	
+//                        	
+//                        }
+//                	}
+//                
+//            }
+//        });
+    	
 	}
     
     @Override
@@ -273,11 +282,19 @@ public class Java2JupyterClientEndpoint extends Endpoint
 		try {
 			
 	        logger.debug("Peer " + session.getId() + " disconnected due to " + closeReason.getReasonPhrase());
-	        this.new_ws_session_between_geoweaver_and_jupyterserver = null;
-	    	logger.debug("The connection between Javascript and Geoweaver is closed. ");
+//	        this.new_ws_session_between_geoweaver_and_jupyterserver = null;
+//	    	logger.debug("The connection between Javascript and Geoweaver is closed. ");
+	    	
+	    	SessionPair pair = JupyterRedirectServlet.findPairBy2ndSession(this);
+	    	
+	    	if(!bt.isNull(pair)) {
+	    		
+				pair.getBrowse_geoweaver_session().close();
+	    		
+	    	}
+	    	
+	    	JupyterRedirectServlet.removeClosedPair();
 			
-			if(!bt.isNull(this.new_ws_session_between_browser_and_geoweaver))
-				this.new_ws_session_between_browser_and_geoweaver.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -289,6 +306,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
     @Override
     public void onError(Session session, Throwable error) {
         logger.error("Error communicating with peer " + session.getId() + ". Detail: "+ error.getMessage());
+        JupyterRedirectServlet.removeClosedPair();
     }
     
     /**
@@ -299,20 +317,24 @@ public class Java2JupyterClientEndpoint extends Endpoint
      */
     public void sendMessage(String message) {
     	
+//    	if(!bt.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
+//    	SessionPair pair = JupyterRedirectServlet.findPairBy2ndSession(this);
+    	
     	if(!bt.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
-
-        	synchronized(this.new_ws_session_between_geoweaver_and_jupyterserver) {
+    		
+        	synchronized(new_ws_session_between_geoweaver_and_jupyterserver) {
             	
             	 try {
-    				this.new_ws_session_between_geoweaver_and_jupyterserver.getBasicRemote().sendText(message);
+            		 new_ws_session_between_geoweaver_and_jupyterserver.getBasicRemote().sendText(message);
     			} catch (IOException e) {
     				e.printStackTrace();
 //    				this.sendMessage(e.getMessage());
     			}
             	
             }
-    		
     	}
+    		
+//    	}
         
     }
     
@@ -325,14 +347,14 @@ public class Java2JupyterClientEndpoint extends Endpoint
 			Session new_ws_session_between_geoweaver_and_jupyterserver) {
 		this.new_ws_session_between_geoweaver_and_jupyterserver = new_ws_session_between_geoweaver_and_jupyterserver;
 	}
-
-	public Session getNew_ws_session_between_browser_and_geoweaver() {
-		return new_ws_session_between_browser_and_geoweaver;
-	}
-
-	public void setNew_ws_session_between_browser_and_geoweaver(Session new_ws_session_between_browser_and_geoweaver) {
-		this.new_ws_session_between_browser_and_geoweaver = new_ws_session_between_browser_and_geoweaver;
-	}
+//
+//	public Session getNew_ws_session_between_browser_and_geoweaver() {
+//		return new_ws_session_between_browser_and_geoweaver;
+//	}
+//
+//	public void setNew_ws_session_between_browser_and_geoweaver(Session new_ws_session_between_browser_and_geoweaver) {
+//		this.new_ws_session_between_browser_and_geoweaver = new_ws_session_between_browser_and_geoweaver;
+//	}
 
 //	public Java2JupyterClientDialog getWindow() {
 //		return window;

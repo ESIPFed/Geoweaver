@@ -5,7 +5,8 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 
 public class JupyterRedirectServerConfig extends ServerEndpointConfig.Configurator  {
 	
-	Logger logger = Logger.getLogger(this.getClass());
+	Logger logger = LoggerFactory.getLogger(getClass());
 //public class JupyterRedirectServerConfig extends SpringConfigurator  {
  
 //	@Bean

@@ -3,6 +3,7 @@ package com.gw.server;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
@@ -34,12 +36,14 @@ import com.gw.utils.BeanTool;
 	configurator = JupyterRedirectServerConfig.class)
 public class JupyterRedirectServlet {
 	
-	Logger logger = Logger.getLogger(this.getClass());
+	Logger logger = LoggerFactory.getLogger(getClass());
 	
-	Session wsSession;
+//	Session wsSession;
 	
 //	@Autowired
-	Java2JupyterClientEndpoint client;
+//	Java2JupyterClientEndpoint client;
+	
+	static List<SessionPair> pairs = new ArrayList();
 	
 //	@Autowired
 	HostTool ht;
@@ -53,13 +57,73 @@ public class JupyterRedirectServlet {
 		
 	}
 	
-	private void init() {
+	/**
+	 * First session is between browser and geoweaver
+	 * @param b2gsession
+	 * @return
+	 */
+	public static SessionPair findPairBy1stSession(Session b2gsession) {
 		
-		if (client == null) {
+		SessionPair pair = null;
+		
+		for(SessionPair p : pairs) {
 			
-			client = BeanTool.getBean(Java2JupyterClientEndpoint.class);
-		
+			if(p.getBrowse_geoweaver_session()==b2gsession) {
+				
+				pair = p;
+				
+				break;
+				
+			}
+			
 		}
+		
+		return pair;
+		
+	}
+	
+	/**
+	 * 2nd session is between geoweaver and jupyter
+	 * @param b2gsession
+	 * @return
+	 */
+	public static SessionPair findPairBy2ndSession(Java2JupyterClientEndpoint g2jclient) {
+		
+		SessionPair pair = null;
+		
+		for(SessionPair p : pairs) {
+			
+			if(p.getGeoweaver_jupyter_client()==g2jclient) {
+				
+				pair = p;
+				
+				break;
+				
+			}
+			
+		}
+		
+		return pair;
+		
+	}
+	
+	public static void removeClosedPair() {
+		
+		for(SessionPair p : pairs) {
+			
+			if(!p.getBrowse_geoweaver_session().isOpen() || !p.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().isOpen()) {
+				
+				System.out.println("Detected one session pair is closed on one of the websocket session. Removing it...");
+				
+				pairs.remove(p);
+				
+			}
+			
+		}
+		
+	}
+	
+	private void init(Session b2gsession) {
 		
 		if(ht==null) {
 			
@@ -73,6 +137,28 @@ public class JupyterRedirectServlet {
 			
 		}	
 		
+		if(bt.isNull(findPairBy1stSession(b2gsession))) {
+			
+			Java2JupyterClientEndpoint client = BeanTool.getBean(Java2JupyterClientEndpoint.class);
+			
+			SessionPair pair = new SessionPair();
+			
+			pair.setBrowse_geoweaver_session(b2gsession);
+			
+			pair.setGeoweaver_jupyter_client(client);
+			
+			pairs.add(pair);
+			
+		}
+		
+//		if(client==null) {
+//			
+//			Java2JupyterClientEndpoint client = BeanTool.getBean(Java2JupyterClientEndpoint.class);
+//			
+//		}
+		
+		
+		
 	}
 	
 //    private HttpSession httpSession;
@@ -82,7 +168,7 @@ public class JupyterRedirectServlet {
 		
 		try {
 			
-			init();
+			init(session);
 			
 			logger.debug("websocket channel to host "+ hostid +" openned");
 			
@@ -94,9 +180,9 @@ public class JupyterRedirectServlet {
 			
 			String trueurl = wsprotocol + "://"+hh[1]+":"+hh[2]+"/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
 			
-			logger.debug("Query String: " + trueurl);
+//			logger.debug("Query String: " + trueurl);
 			
-			this.wsSession = session;
+//			this.wsSession = session;
 			
 //			this.httpSession = (HttpSession) config.getUserProperties()
 //                    .get(HttpSession.class.getName());
@@ -104,9 +190,13 @@ public class JupyterRedirectServlet {
 			
 //			client = new Java2JupyterClientEndpoint(new URI(trueurl), session, headers, h);
 			
-			client.init(new URI(trueurl), session, headers, h);
+			SessionPair pair = findPairBy1stSession(session);
+//			
+			pair.getGeoweaver_jupyter_client().init(new URI(trueurl), session, headers, h);
 			
-			logger.debug("The connections from javascript end to this servlet, and this servlet to Jupyter server have been created.");
+//			client.init(new URI(trueurl), session, headers, h);
+			
+//			logger.debug("The connections from javascript end to this servlet, and this servlet to Jupyter server have been created.");
 			
 		} catch (URISyntaxException e) {
 			
@@ -118,7 +208,9 @@ public class JupyterRedirectServlet {
 
     @OnError
     public void error(final Session session, final Throwable throwable) throws Throwable {
-        
+    	
+    	removeClosedPair();
+    	
     	logger.error("websocket channel error" + throwable.getLocalizedMessage());
     	
     	throw throwable;
@@ -132,19 +224,24 @@ public class JupyterRedirectServlet {
     		
 //    		init();
     		
-    		if(bt.isNull(client)) {
+    		SessionPair pair = findPairBy1stSession(session);
+    		
+    		if(bt.isNull(pair)) {
     			
-    			session.close();
+    			logger.error("Cann't find the corresponding session pair");
+    			
+//    			session.close();
     			
     		}else {
     			
-    			logger.debug("Received message: " + message);
+//    			logger.debug("Received message: " + message);
 	        	
-	        	logger.debug("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
+//	        	logger.debug("UUID string: " + uuid1 + " - Session ID: " + session.getQueryString());
 	        	
-	        	logger.debug("Transfer message to Jupyter Notebook server..");
+//	        	logger.debug("Transfer message to Jupyter Notebook server..");
 	        	
-	        	client.sendMessage(message);
+	        	pair.getGeoweaver_jupyter_client().sendMessage(message);
+//	        	client.sendMessage(message);
 	        	
     		}
     		
@@ -164,13 +261,50 @@ public class JupyterRedirectServlet {
 //			init();
 			
     		logger.error("Channel closed.");
+    		
+    		SessionPair pair = findPairBy1stSession(session);
         	
-			client.getNew_ws_session_between_geoweaver_and_jupyterserver().close(); //close websocket connection
+    		if(!bt.isNull(pair)) {
+    			
+    			pair.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().close(); //close websocket connection
+        		
+        		pairs.remove(pair);
+    			
+//    			client.getNew_ws_session_between_geoweaver_and_jupyterserver().close();
+    			
+    		}
+    		
+    		removeClosedPair();
 			
 		} catch (IOException e) {
 			
 			e.printStackTrace();
 			
+		}
+    	
+    }
+    
+    
+    public class SessionPair{
+    	
+    	Session browse_geoweaver_session;
+    	
+    	Java2JupyterClientEndpoint geoweaver_jupyter_client;
+
+		public Session getBrowse_geoweaver_session() {
+			return browse_geoweaver_session;
+		}
+
+		public void setBrowse_geoweaver_session(Session browse_geoweaver_session) {
+			this.browse_geoweaver_session = browse_geoweaver_session;
+		}
+
+		public Java2JupyterClientEndpoint getGeoweaver_jupyter_client() {
+			return geoweaver_jupyter_client;
+		}
+
+		public void setGeoweaver_jupyter_client(Java2JupyterClientEndpoint geoweaver_jupyter_client) {
+			this.geoweaver_jupyter_client = geoweaver_jupyter_client;
 		}
     	
     }

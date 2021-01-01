@@ -33,7 +33,6 @@ import javax.persistence.Lob;
 import javax.xml.soap.SOAPException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -42,6 +41,8 @@ import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BaseTool {
 	
 	private String _classpath = null;
-	Logger logger = Logger.getLogger(BaseTool.class);
+	Logger logger = LoggerFactory.getLogger(getClass());
 	String path_env = null;
 	
 	@Value("${geoweaver.workspace}")
@@ -372,7 +373,7 @@ public class BaseTool {
 	        }
 	        while ((str != null));
 	       
-	        logger.debug(logrec);
+	        logger.debug(logrec.toString());
 			
 		}catch(Exception e) {
 			
