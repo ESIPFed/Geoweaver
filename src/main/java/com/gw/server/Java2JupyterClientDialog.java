@@ -109,7 +109,7 @@ public class Java2JupyterClientDialog extends JFrame {
       Host h = new Host();
       
 //      client = new Java2JupyterClientEndpoint(new URI(wsurl), null, getHeaders(), h);
-      client.init(new URI(wsurl), null, getHeaders(), h);
+      client.init(new URI(wsurl), null, getHeaders(), h, "");
       
 //      client.setWindow(this);
       

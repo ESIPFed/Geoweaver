@@ -22,6 +22,7 @@ import javax.websocket.WebSocketContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.gw.jpa.Host;
@@ -35,6 +36,7 @@ import com.gw.utils.BaseTool;
  */
 //@ClientEndpoint
 @Service
+@Scope("prototype")
 public class Java2JupyterClientEndpoint extends Endpoint 
 {
 
@@ -43,6 +45,8 @@ public class Java2JupyterClientEndpoint extends Endpoint
 	Session new_ws_session_between_browser_and_geoweaver = null;
 	
     private Logger logger = LoggerFactory.getLogger(getClass());
+    
+    String pairid;
     
     @Autowired
     BaseTool bt;
@@ -81,12 +85,14 @@ public class Java2JupyterClientEndpoint extends Endpoint
     }
     
     
-    public void init(URI endpointURI, Session jssession, Map<String, List<String>> headers, Host h) {
+    public void init(URI endpointURI, Session jssession, Map<String, List<String>> headers, Host h, String pairid) {
     	
         try {
         	
         	this.new_ws_session_between_browser_and_geoweaver = jssession;
-            
+        	
+        	this.pairid = pairid;
+        	
         	WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         	
         	//build ClientEndpointConfig
@@ -232,7 +238,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
     	
         this.new_ws_session_between_geoweaver_and_jupyterserver = session;
     	
-    	session.addMessageHandler(new WebsocketMessageHandler(this));
+    	session.addMessageHandler(new WebsocketMessageHandler(this.pairid));
         
 //        session.addMessageHandler(new MessageHandler.Whole<String>() {
 //            @Override
@@ -285,11 +291,12 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //	        this.new_ws_session_between_geoweaver_and_jupyterserver = null;
 //	    	logger.debug("The connection between Javascript and Geoweaver is closed. ");
 	    	
-	    	SessionPair pair = JupyterRedirectServlet.findPairBy2ndSession(this);
+	    	SessionPair pair = JupyterRedirectServlet.findPairByID(this.pairid);
 	    	
 	    	if(!bt.isNull(pair)) {
 	    		
 				pair.getBrowse_geoweaver_session().close();
+				pair.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().close();
 	    		
 	    	}
 	    	
@@ -325,6 +332,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
         	synchronized(new_ws_session_between_geoweaver_and_jupyterserver) {
             	
             	 try {
+//            		 logger.debug("pass message to jupyter " + this.pairid);
             		 new_ws_session_between_geoweaver_and_jupyterserver.getBasicRemote().sendText(message);
     			} catch (IOException e) {
     				e.printStackTrace();

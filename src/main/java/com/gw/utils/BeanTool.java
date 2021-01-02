@@ -19,6 +19,7 @@ public class BeanTool implements ApplicationContextAware {
 	}
 	
 	public static <T extends Object> T getBean(Class<T> beanClass) {
+		
         return context.getBean(beanClass);
     }
 	
