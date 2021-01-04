@@ -76,6 +76,8 @@ public class JupyterController {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setConnectTimeout(TIMEOUT);
 		requestFactory.setReadTimeout(TIMEOUT);
+		
+		
 
 		restTemplate.setRequestFactory(requestFactory);
 		

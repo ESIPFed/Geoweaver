@@ -17,7 +17,7 @@ edu.gmu.csiss.geoweaver.about = {
 			var content = "<div style=\"padding:10px\">"+
 					"<p class=\"text-left\">Geoweaver is a web system to allow users to easily compose and execute full-stack deep learning workflows in web browsers by ad hoc integrating the distributed spatial data facilities, high-performance computation platforms, and open-source deep learning libraries.</p>"+
 					
-					"<p class=\"text-left\" >Geoweaver (version "+edu.gmu.csiss.geoweaver.version+") is funded by ESIPLab and "+
+					"<p class=\"text-left\" >Geoweaver (version "+edu.gmu.csiss.geoweaver.version+") is funded by ESIPLab, <a href=\"https://www.nsf.gov/awardsearch/showAward?AWD_ID=1947893&HistoricalAwards=false\">NSF geoinformatics program #1947893 and #1947875</a> and "+
 					"<a href=\"https://earthdata.nasa.gov/esds/competitive-programs/access/geoweaver\">NASA ACCESS-19</a>. The source code is on <a href=\"http://github.com/ESIPFed/Geoweaver\">Github</a>.  </p>"+
 	            	
 	            	"<p class=\"text-left\">Geoweaver logo is designed by Dr. Annie Burgess <a href=\"mailto:annieburgess@esipfed.org\">contact</a>.</p>"+
