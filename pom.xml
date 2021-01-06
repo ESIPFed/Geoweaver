@@ -1,57 +1,76 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>Geoweaver</artifactId>
-    <version>0.8.8</version>
-    <packaging>war</packaging>
-    <name>Geoweaver</name>
-    <description>ESIPLab incubator project</description>
-    <properties>
-        <org.springframework-version>5.2.6.RELEASE</org.springframework-version>
-        <org.springsecurity-version>5.3.1.RELEASE</org.springsecurity-version>
-        <org.springboot-version>2.0.5.RELEASE</org.springboot-version>
-        <thymeleaf-version>3.0.11.RELEASE</thymeleaf-version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    	<hibernate.version>5.3.6.Final</hibernate.version>
-    </properties>
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-       	<testSourceDirectory>test</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <warSourceDirectory>WebContent</warSourceDirectory>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <repositories>
-        <repository>
-            <id>spring</id>
-            <url>http://repo.spring.io/plugins-release/</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.1</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.gw</groupId>
+	<artifactId>geoweaver</artifactId>
+	<version>0.9.0</version>
+	<name>geoweaver</name>
+	<description>A workflow management for hybrid AI experiments of various scales</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+	
+	
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-devtools</artifactId>
+	         <scope>runtime</scope><!-- -->
+	        <optional>true</optional>
+	    </dependency>
+		
+		
+		<!-- below come from old settings -->
+		<dependency>
 	        <groupId>junit</groupId>
 	        <artifactId>junit</artifactId>
 	        <version>4.12</version>
@@ -90,17 +109,6 @@
         </dependency> 
         -->
         
-        <dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.3</version>
-		</dependency>
-        <dependency>
-		    <groupId>commons-httpclient</groupId>
-		    <artifactId>commons-httpclient</artifactId>
-		    <version>3.1</version>
-		</dependency>
-        
         <!--<dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
@@ -113,13 +121,7 @@
 		    <artifactId>httpclient</artifactId>
 		    <version>3.1.0</version>
 		</dependency> -->
-        <dependency>
-            <groupId>net.opengis.wms</groupId>
-            <artifactId>net.opengis.wms</artifactId>
-            <version>2.6.2</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/net.opengis.wms-v_1_3_0-2.6.2-SNAPSHOT.jar</systemPath>
-        </dependency>
+		
         <!-- deprecated, changed to commons-text -->
         <!-- <dependency>
             <groupId>commons-lang3</groupId>
@@ -128,7 +130,7 @@
             <scope>system</scope>
             <systemPath>${basedir}/WebContent/WEB-INF/lib/commons-lang3-3.7.jar</systemPath>
         </dependency> -->
-        <dependency>
+		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-text</artifactId>
 		    <version>1.6</version>
@@ -164,22 +166,7 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>it.sauronsoftware.cron4j</groupId>
-            <artifactId>cron4j</artifactId>
-            <version>2.2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.3</version>
-        </dependency>
-        <dependency>
+		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${org.springframework-version}</version>
@@ -221,12 +208,11 @@
 		    <version>${org.springframework-version}</version>
 		</dependency>
 		
-		<!-- <dependency>
+		<dependency>
 		   <groupId>org.springframework.boot</groupId>
 		   <artifactId>spring-boot-starter-websocket</artifactId>
 		   <version>${org.springboot-version}</version>
-		</dependency> -->
-		 
+		</dependency>
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-messaging</artifactId>
@@ -244,17 +230,87 @@
 		    <version>${thymeleaf-version}</version>
 		</dependency>
 		
-        <!-- for geoweaver ssh -->
-        <dependency>
+		
+		
+		 -->
+		 <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>[2.8.11.1,)</version>
+            <version>[2.9.4,)</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>[2.8.11.1,)</version>
+            <version>[2.9.4,)</version>
         </dependency>
+        <dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>[2.9.4,)</version>
+		</dependency>
+		 
+		
+        <dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.3</version>
+		</dependency>
+        <dependency>
+		    <groupId>commons-httpclient</groupId>
+		    <artifactId>commons-httpclient</artifactId>
+		    <version>3.1</version>
+		</dependency>
+        
+        <dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.6</version>
+		</dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>it.sauronsoftware.cron4j</groupId>
+            <artifactId>cron4j</artifactId>
+            <version>2.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+        
+		
+        <!-- for geoweaver ssh -->
+        
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics-runtime</artifactId>
@@ -304,14 +360,13 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>1.0.2.Final</version>
         </dependency> 
-        -->
-        
-        <!-- <dependency>
+
+		<dependency>
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
 		    <version>5.1.42</version>
-		</dependency> -->
-        <dependency>
+		</dependency>
+		<dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <version>${org.springsecurity-version}</version>
@@ -326,6 +381,8 @@
             <artifactId>spring-security-taglibs</artifactId>
             <version>${org.springsecurity-version}</version>
         </dependency>
+		 -->
+        
         
         <dependency>
 		    <groupId>javax.websocket</groupId>
@@ -362,13 +419,14 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.10</version>
-        </dependency> -->
-        
+        </dependency>
         <dependency>
 		    <groupId>org.apache.tomcat</groupId>
 		    <artifactId>tomcat-websocket</artifactId>
 		    <version>8.5.43</version>
-		</dependency>
+		</dependency> -->
+        
+        
 		
 		<!-- for jdk 9+ -->
 		<dependency>
@@ -389,18 +447,16 @@
 		    <version>1.3.2</version>
 		</dependency>
 		
-    </dependencies>
-    <organization>
-        <name>Center for Spatial Information Science and Systems</name>
-        <url>http://csiss.gmu.edu</url>
-    </organization>
-    <scm>
-        <developerConnection>Ziheng Sun</developerConnection>
-        <url>https://zihengsun.github.io</url>
-    </scm>
-    <ciManagement>
-        <system>ESIPLab</system>
-        <url>https://esipfed.org/esip-lab</url>
-    </ciManagement>
-    <groupId>Geoweaver</groupId>
+	</dependencies>
+
+	<build>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
