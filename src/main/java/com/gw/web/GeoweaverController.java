@@ -34,6 +34,7 @@ import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
 import com.gw.tools.FileTool;
+import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
@@ -76,6 +77,9 @@ public class GeoweaverController {
 	
 	@Autowired
 	FileTool ft;
+	
+	@Autowired
+	HistoryTool hist;
 	
 	@Autowired
 	SSHSession sshSession;
@@ -122,6 +126,10 @@ public class GeoweaverController {
 			}else if(type.equals("workflow")) {
 				
 				resp = wt.del(id);
+				
+			}else if(type.equals("history")) {
+				
+				resp = hist.deleteById(id);
 				
 			}
 			

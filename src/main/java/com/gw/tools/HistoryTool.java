@@ -445,6 +445,14 @@ public class HistoryTool {
 		
 		
 	}
+	
+	public String deleteById(String history_id) {
+		
+		historyrepository.deleteById(history_id);
+		
+		return "done";
+		
+	}
 
 	/**
 	 * Stop the process and change the status to stopped

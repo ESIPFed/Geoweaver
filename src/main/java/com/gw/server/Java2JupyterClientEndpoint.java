@@ -300,7 +300,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 	    		
 	    	}
 	    	
-	    	JupyterRedirectServlet.removeClosedPair();
+//	    	JupyterRedirectServlet.removeClosedPair();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -313,7 +313,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
     @Override
     public void onError(Session session, Throwable error) {
         logger.error("Error communicating with peer " + session.getId() + ". Detail: "+ error.getMessage());
-        JupyterRedirectServlet.removeClosedPair();
+//        JupyterRedirectServlet.removeClosedPair();
     }
     
     /**

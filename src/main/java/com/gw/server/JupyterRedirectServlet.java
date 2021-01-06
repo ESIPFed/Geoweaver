@@ -268,7 +268,7 @@ public class JupyterRedirectServlet {
     @OnError
     public void error(final Session session, final Throwable throwable) throws Throwable {
     	
-    	removeClosedPair();
+//    	removeClosedPair();
     	
     	logger.error("websocket channel error" + throwable.getLocalizedMessage());
     	
@@ -336,7 +336,7 @@ public class JupyterRedirectServlet {
     			
     		}
     		
-    		removeClosedPair();
+//    		removeClosedPair();
 			
 		} catch (IOException e) {
 			

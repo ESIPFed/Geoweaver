@@ -1334,6 +1334,46 @@ GW.host = {
 			
 		},
 		
+		deleteJupyter: function(history_id){
+			
+			if(confirm("Are you sure to remove this history?")){
+				
+				$.ajax({
+					
+					url: "del",
+					
+					method: "POST",
+					
+					data: "type=history&id=" + history_id
+					
+				}).done(function(msg){
+					
+					if(msg==""){
+						
+						alert("Cannot find the host history in the database.");
+						
+						return;
+						
+					}else if(msg=="done"){
+						
+						console.log("The history " + history_id + " is removed")
+						
+						$("#host_history_row_" + history_id).remove()
+						
+					}else{
+						
+						alert("Fail to delete the jupyter notebook")
+						
+						console.error("Fail to delete jupyter: " + msg);
+						
+					}
+					
+				})
+				
+			}
+			
+		},
+		
 		downloadJupyter: function(history_id){
 
 			$.ajax({
@@ -1416,7 +1456,8 @@ GW.host = {
 				
 				msg = $.parseJSON(msg);
 				
-				var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
+				var content = "<h4 class=\"border-bottom\">Recent History  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHostHistoryBtn\" >close</button></h4>"+
+				"<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
 				"  <thead> "+
 				"    <tr> "+
 				"      <th scope=\"col\">Process</th> "+
@@ -1431,9 +1472,12 @@ GW.host = {
 					
 //					var status_col = GW.process.getStatusCol(msg[i].id, msg[i].status);
 					
-					var detailbtn = "      <td><a href=\"javascript: GW.host.viewJupyter('"+msg[i].id+"')\">View</a> <a href=\"javascript: GW.host.downloadJupyter('"+msg[i].id+"')\">Download</a></td> ";
+					var detailbtn = "      <td ><a href=\"javascript: GW.host.viewJupyter('"+
+						msg[i].id+"')\">View</a> <a href=\"javascript: GW.host.downloadJupyter('"+
+						msg[i].id+"')\">Download</a> <a href=\"javascript: GW.host.deleteJupyter('"+
+						msg[i].id+"')\">Delete</a></td> ";
 					
-					content += "    <tr> "+
+					content += "    <tr id=\"host_history_row_"+msg[i].id+"\"> "+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 //						status_col +
@@ -1445,6 +1489,12 @@ GW.host = {
 				content += "</tbody></div>";
 				
 				$("#host-history-browser").html(content);
+				
+				$("#closeHostHistoryBtn").on("click", function(){
+					
+					$("#host-history-browser").html("");
+					
+				});
 				
 //				var frame = GW.process.createJSFrameDialog(720, 480, content, 'History of ' + msg.name)
 				

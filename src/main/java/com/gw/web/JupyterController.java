@@ -17,6 +17,9 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,7 +56,7 @@ public class JupyterController {
 	private String server = "localhost";
 	private int port = 8888;
 	
-	
+	@Autowired
 	RestTemplate restTemplate;
 	
 	HttpHeaders headers = new HttpHeaders();
@@ -69,19 +72,50 @@ public class JupyterController {
 	
 	int TIMEOUT = 30000;
 	
-	public JupyterController() {
+	public JupyterController(RestTemplateBuilder builder) {
 		
-		restTemplate = new RestTemplate();
+//		restTemplate = new RestTemplate();
+		restTemplate = builder.build();
 		
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setConnectTimeout(TIMEOUT);
 		requestFactory.setReadTimeout(TIMEOUT);
 		
-		
-
 		restTemplate.setRequestFactory(requestFactory);
 		
 	}
+	
+	@Bean(name = "restTemplate")
+	@Scope("prototype")
+    public RestTemplate getRestTemplate() {
+		
+		RestTemplate restTemplate1 = new RestTemplate();
+//		restTemplate = builder.build();
+		
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(TIMEOUT);
+		requestFactory.setReadTimeout(TIMEOUT);
+		
+		restTemplate1.setRequestFactory(requestFactory);
+		
+        return restTemplate1;
+    }
+	
+//	@Bean
+//	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+//		
+//		RestTemplate restTemplate = builder.build();
+//	    
+//	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+//		requestFactory.setConnectTimeout(TIMEOUT);
+//		requestFactory.setReadTimeout(TIMEOUT);
+//		
+//		
+//
+//		restTemplate.setRequestFactory(requestFactory);
+//		
+//		return restTemplate;
+//	}
 	
 	/**
 	 * Decode the url if it has spaces or other special characters
@@ -980,6 +1014,8 @@ public class JupyterController {
 			
 //			logger.info("Original Request String: " + request.getParameterMap());
 			
+			logger.info("Old Headers: " + httpheaders);
+			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
 //			Host h = HostTool.getHostById(hostid);
@@ -1025,9 +1061,9 @@ public class JupyterController {
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-//			logger.info("Body: " + requestentity.getBody());
+			logger.info("Body: " + requestentity.getBody());
 			
-//			logger.info("Headers: " + requestentity.getHeaders());
+			logger.info("New Headers: " + requestentity.getHeaders());
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
