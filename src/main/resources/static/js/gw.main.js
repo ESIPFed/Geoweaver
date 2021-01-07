@@ -38,6 +38,8 @@ GW.main = {
 		
 		GW.ssh.startLogSocket(GW.main.getJSessionId());
 		
+		introJs().start();
+		
 	}
 		
 };

@@ -7,6 +7,8 @@
 		
 		<link rel="icon" href="../img/favicon.ico" />
 		
+		
+		
 		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
 		
 		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
@@ -45,6 +47,8 @@
         <link rel="stylesheet" href="../css/imageviewer.css" />
         
         <link rel="stylesheet" href="../css/Chart.min.css" />
+        
+        <link href="../css/introjs.min.css" rel="stylesheet" />
         
         <style type="text/css">
         	/* Style the tab */
@@ -93,6 +97,8 @@
         
         </style>
         
+        
+        
 		<script type="text/javascript" src="../js/FileSaver.min.js"></script>
 		
 		<script type="text/javascript" src="../js/jsencrypt.min.js"></script>
@@ -135,6 +141,8 @@
     	
     	<script type="text/javascript" src="../js/Chart.min.js"></script>
     	
+    	<script type="text/javascript" src="../js/intro.min.js"></script>
+    	
 	</head>
 	
 	<body style="cursor: auto; padding:0;">
@@ -145,10 +153,10 @@
 		
 			<!-- Top menu bar -->
 			
-			<div class="row" style="height: 50px; margin: 0; padding: 0; background-color:black;">
+			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
 				
-				<div style="overflow: auto;">
-				  <a style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: gray; " href="javascript:void(0)">
+				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
+				  <a  style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: gray; " href="javascript:void(0)">
 				  	<img src="../img/header.png" width="90px" height="40px" />
 				  </a>
 				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
@@ -241,9 +249,9 @@
 				
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
+			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
-					    <div class="tab">
+					    <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
 						  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
 						  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
 						  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
@@ -364,12 +372,12 @@
 				
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
 					
-					<div class="nav-side-menu">
+					<div class="nav-side-menu" >
 		
 					    
 					    <!-- <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> -->
 					  	
-					    <div class="menu-list">
+					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
 					  
 					            <ul id="menu-content" class="menu-content collapse out">
 					                <!-- <li>
@@ -378,14 +386,14 @@
 					                  </a>
 					                </li> -->
 					
-					                <li>
+					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Googel Earth Engine. You can add and manage multiple hosts in one place. ">
 					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span data-toggle="collapse" data-target="#hosts" class="arrow collapsed active"></span></a>
 					                </li>
-					                <ul class="sub-menu collapse" id="hosts">
+					                <ul   class="sub-menu collapse" id="hosts">
 					                    
 					                </ul>
 					                
-					                <li>
+					                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. " >
 					                  <a href="javascript:void(0)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
 					                </li>
 					                <ul class="sub-menu collapse" id="processs">
@@ -393,10 +401,10 @@
 					                </ul>
 					
 					
-					                <li>
+					                <li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. ">
 					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <i class="fa fa-plus" id="newworkflow"></i> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
 					                </li>  
-					                <ul class="sub-menu collapse" id="workflows">
+					                <ul  class="sub-menu collapse" id="workflows">
 					                  
 					                </ul>
 									
