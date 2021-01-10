@@ -51,12 +51,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity builder) throws Exception {
 		// builder.ignoring().antMatchers("/ssh/**").antMatchers("/static/**");
+		builder.ignoring().antMatchers("/Geoweaver/**");
 	}
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	
-    	http.authorizeRequests().antMatchers("/**").permitAll();
+    	http.authorizeRequests().antMatchers("/**").permitAll().and();
+    	
+//    	http.authorizeRequests().anyRequest().authenticated();
+    	
+//    	http.authorizeRequests().antMatchers("/**").permitAll().anyRequest().authenticated();
     	
     	http.cors().and().csrf().disable();
     	
