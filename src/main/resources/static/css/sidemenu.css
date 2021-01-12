@@ -60,7 +60,7 @@
 
 .nav-side-menu ul :not(collapsed) .arrow:before,
 .nav-side-menu li :not(collapsed) .arrow:before {
-  font-family: FontAwesome;
+  font-family: "Font Awesome 5 Free";
   content: "\f078";
   display: inline-block;
   padding-left: 10px;
@@ -103,32 +103,129 @@
   vertical-align: middle;
 }*/
 
-li.host:before {
-  font-family: FontAwesome;
-  content: "\f146";
+.jupyterserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+  font-weight: 900;
+	
+}
+
+.sshserver:before {
+	
+  font-family: "Font Awesome 5 Brands" !important; 
+  font-weight: 400 !important;
+  content: "\f17c" !important;
+}
+
+.jupyterhubserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+	
+}
+
+.jupyterlabserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+	
+}
+
+.geeserver:before {
+	
+  font-family: "Font Awesome 5 Free"  !important;
+  content: "\f57d"  !important;
   display: inline-block;
   padding-left: 20px;
   padding-right: 10px;
   vertical-align: middle;
+  font-weight: 900;
+	
 }
-.process:before {
-  font-family: FontAwesome;
-  content: "\f1c9";
+
+.shellfolder:before{
+	
+  font-family: "Font Awesome 5 Free"  !important;
+  content: "\f70e"  !important;
+  display: inline-block;
+  padding-left: 20px;
+  padding-right: 10px;
+  vertical-align: middle;
+  font-weight: 900;
+	
+}
+
+.pythonfolder:before{
+  
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+  display: inline-block;
+  padding-left: 20px;
+  padding-right: 10px;
+  vertical-align: middle;
+  font-weight: 900;
+	
+}
+
+.notebookfolder:before{
+	
+  font-family: "Font Awesome 5 Free"  !important;
+  content: "\f518"  !important;
+  display: inline-block;
+  padding-left: 20px;
+  padding-right: 10px;
+  vertical-align: middle;
+  font-weight: 900;
+	
+}
+
+.builtinfolder:before{
+	
+  font-family: "Font Awesome 5 Free"  !important;
+  content: "\f1ad"  !important;
+  display: inline-block;
+  padding-left: 20px;
+  padding-right: 10px;
+  vertical-align: middle;
+  font-weight: 900;
+	
+}
+
+
+.host:before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f233";
   display: inline-block;
   padding-left: 30px;
   padding-right: 10px;
   vertical-align: middle;
+  font-weight: 900;
 }
+
+.process:before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f121";
+  display: inline-block;
+  padding-left: 30px;
+  padding-right: 10px;
+  vertical-align: middle;
+  font-weight: 900;
+}
+
+
 .workflow:before {
-  font-family: FontAwesome;
+  font-family: "Font Awesome 5 Free";
   content: "\f2dd";
   display: inline-block;
   padding-left: 20px;
   padding-right: 10px;
   vertical-align: middle;
+  font-weight: 900;
 }
+
 .folder:before {
-  font-family: FontAwesome;
+  font-family: "Font Awesome 5 Free";
   content: "\f07b";
   display: inline-block;
   padding-left: 20px;

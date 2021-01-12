@@ -803,9 +803,9 @@ GW.host = {
 		
 		addMenuItem: function(one){
 			
-			$("#host_folder_"+one.type+"_target").append("<li class=\"host\" id=\"host-" + one.id + 
+			$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 					
-				"\"><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
+				"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
     				
 				one.name + "</a> "+
 				
