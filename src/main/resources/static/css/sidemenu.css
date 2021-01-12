@@ -215,8 +215,8 @@
 
 
 .workflow:before {
-  font-family: "Font Awesome 5 Free";
-  content: "\f2dd";
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f18c";
   display: inline-block;
   padding-left: 20px;
   padding-right: 10px;
