@@ -1126,7 +1126,7 @@ GW.host = {
 			
 			if( hosttype=="ssh" || hosttype == null || hosttype == "null" ){
 				
-				content += "<i class=\"fa fa-external-link-square subalignicon\" onclick=\"GW.host.openssh('"+
+				content += "<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openssh('"+
 				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
 					
@@ -1144,11 +1144,11 @@ GW.host = {
 				
 			}else if(hosttype=="jupyter"){
 				
-				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('" +
+				content += "<i class=\"fas fa-chart-line subalignicon\" onclick=\"GW.host.recent('" +
 				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>" + 
 					
-					"<i class=\"fa fa-external-link subalignicon\" onclick=\"GW.host.openJupyter('" + 
+					"<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openJupyter('" + 
 					
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Open Jupyter\"></i>";
 				
