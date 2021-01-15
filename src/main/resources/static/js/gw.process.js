@@ -1104,7 +1104,7 @@ GW.process = {
 			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 			
-			GW.process.editSwitch();
+			GW.process.editSwitch(true);
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
@@ -1260,11 +1260,17 @@ GW.process = {
 			
 		},
 		
-		editSwitch: function(){
+		editSwitch: function(isinitial){
 			
 			console.log("Turn on/off the fields");
 			
 			GW.process.editOn = !GW.process.editOn;
+			
+			if(GW.process.editOn && isinitial == null) {
+				
+//				GW.process.update();
+				
+			}
 			
 			$("#processcategory").prop( "disabled", GW.process.editOn );
 			
@@ -1416,29 +1422,29 @@ GW.process = {
 					
 			};
 			
-	    	$.ajax({
-	    		
-	    		url: "edit",
-	    		
-	    		method: "POST",
-	    		
-	    		data: req
-	    		
-	    	}).done(function(msg){
-	    		
-	    		msg = $.parseJSON(msg);
-	    		
-	    		console.log("Updated!!");
-	    		
-	    		GW.general.showToasts("Code updated.");
-	    		
-	    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
-	    		
-	    	}).fail(function(jqXHR, textStatus){
-	    		
-	    		alert("Fail to update the process.");
-	    		
-	    	});
+		    	$.ajax({
+		    		
+		    		url: "edit",
+		    		
+		    		method: "POST",
+		    		
+		    		data: req
+		    		
+		    	}).done(function(msg){
+		    		
+		    		msg = $.parseJSON(msg);
+		    		
+		    		console.log("Updated!!");
+		    		
+		    		GW.general.showToasts("Code updated.");
+		    		
+		    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
+		    		
+		    	}).fail(function(jqXHR, textStatus){
+		    		
+		    		alert("Fail to update the process.");
+		    		
+		    	});
 			
 			
 		},

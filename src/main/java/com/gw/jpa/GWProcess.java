@@ -1,5 +1,6 @@
 package com.gw.jpa;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,7 +18,11 @@ public class GWProcess {
 //	@GeneratedValue(strategy=GenerationType.AUTO)
 	String id;
 	
-	String name, description, code;
+	String name;
+	@Column(columnDefinition = "LONGTEXT")
+	String description;
+	@Column(columnDefinition = "LONGTEXT")
+	String code;
 
 	public String getId() {
 		return id;
