@@ -803,6 +803,8 @@ GW.host = {
 		
 		addMenuItem: function(one){
 			
+			console.log("Add host to the tree")
+			
 			$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 					
 				"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
@@ -1221,7 +1223,8 @@ GW.host = {
 			
 			var delbtn = "";
 			
-			if(hostip!="127.0.0.1")
+//			if(hostip!="127.0.0.1")
+			if(msg.name!="localhost")
 				delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 			
 			content += "</div>"+
@@ -1601,6 +1604,7 @@ GW.host = {
 		       '	 	<select class="form-control" id="hosttype"> '+
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
+			   '    		<option value="jupyter">JupyterHub</option> '+
 			   '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+
