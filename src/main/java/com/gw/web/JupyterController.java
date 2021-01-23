@@ -192,6 +192,11 @@ public class JupyterController {
 				//for jupyterhub
 				.replace("\"/hub", "\"/Geoweaver/jupyter-proxy/"+hostid+"/hub")
 				.replace("baseUrl: '/hub/static/js'", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/hub/static/js'")
+				.replace("href=\"/user", "href=\"/Geoweaver/jupyter-proxy/"+hostid+"/user")
+				.replace("src=\"/user", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/user")
+				.replace("src=\"/hub", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/hub")
+				.replace("href='/hub", "href='/Geoweaver/jupyter-proxy/"+hostid+"/hub")
+				.replace("baseUrl: '/user", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/user")
 				
 				;
 		
