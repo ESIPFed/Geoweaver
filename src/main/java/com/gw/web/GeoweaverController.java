@@ -1038,7 +1038,7 @@ public class GeoweaverController {
 				
 				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, null);
 				
-				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\" }";
+				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\", \"type\": \""+hosttype+"\" }";
 				
 			}else if(type.equals("process")) {
 				
@@ -1092,7 +1092,7 @@ public class GeoweaverController {
 				
 				String pid = pt.add(name, lang, code, desc);
 				
-				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\"}";
+				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"lang\": \""+lang+"\"}";
 				
 			}else if(type.equals("workflow")) {
 				

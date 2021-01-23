@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,14 +78,14 @@ public class JupyterController {
 	
 	public JupyterController(RestTemplateBuilder builder) {
 		
-//		restTemplate = new RestTemplate();
-		restTemplate = builder.build();
-		
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setConnectTimeout(TIMEOUT);
-		requestFactory.setReadTimeout(TIMEOUT);
-		
-		restTemplate.setRequestFactory(requestFactory);
+////		restTemplate = new RestTemplate();
+//		restTemplate = builder.build();
+//		
+//		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+//		requestFactory.setConnectTimeout(TIMEOUT);
+//		requestFactory.setReadTimeout(TIMEOUT);
+//		
+//		restTemplate.setRequestFactory(requestFactory);
 		
 	}
 	
@@ -96,7 +100,20 @@ public class JupyterController {
 		requestFactory.setConnectTimeout(TIMEOUT);
 		requestFactory.setReadTimeout(TIMEOUT);
 		
+		CloseableHttpClient httpClient = HttpClients.custom()
+	            .setDefaultRequestConfig(RequestConfig.custom()
+	            .setCookieSpec(CookieSpecs.STANDARD).build())
+	            .build();
+		
+		
+		
+		requestFactory.setHttpClient(httpClient);
+		
 		restTemplate1.setRequestFactory(requestFactory);
+		
+		
+		
+		logger.info("A new restTemplate is created");
 		
         return restTemplate1;
     }
