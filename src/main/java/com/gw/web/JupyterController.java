@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 
@@ -350,6 +351,23 @@ public class JupyterController {
 //		    	
 //		    }
 		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
 		}catch(Exception e) {
 			
 			e.printStackTrace();
@@ -454,6 +472,23 @@ public class JupyterController {
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
 		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
 		}catch(Exception e) {
 			
 			e.printStackTrace();
@@ -507,6 +542,23 @@ public class JupyterController {
 		    		addURLProxy(responseEntity.getBody(), hostid), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
 		    
 		}catch(Exception e) {
 			
@@ -568,6 +620,23 @@ public class JupyterController {
 		    		addURLProxy(responseEntity.getBody(), hostid), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
 		    
 		}catch(Exception e) {
 			
@@ -633,6 +702,23 @@ public class JupyterController {
 		    		addURLProxy(responseEntity.getBody(), hostid), 
 		    		responseEntity.getHeaders(), 
 		    		responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
 		    
 		}catch(Exception e) {
 			
@@ -788,6 +874,23 @@ public class JupyterController {
 			}
 			
 		    
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
 		    
 		}catch(Exception e) {
 			
@@ -977,6 +1080,23 @@ public class JupyterController {
 		    		responseEntity.getStatusCode());
 		    
 			
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
 		}catch(Exception e) {
 			
 			e.printStackTrace();
@@ -1125,6 +1245,23 @@ public class JupyterController {
 		    		responseEntity.getStatusCode());
 		    
 			
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
 		}catch(Exception e) {
 			
 			e.printStackTrace();
