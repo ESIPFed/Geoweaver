@@ -154,7 +154,7 @@ public class JupyterController {
 	}
 	
 	/**
-	 * Add URL Proxy
+	 * Add URL Proxy, this function should be the difference among jupyter notebook, jupyterhub, and jupyterlab
 	 * @param resp
 	 * @param hostid
 	 * @return
@@ -173,14 +173,25 @@ public class JupyterController {
 				.replace("/static/base/images/logo.png", "/Geoweaver/jupyter-proxy/"+hostid+"/static/base/images/logo.png")
 				.replace("baseUrl: '/static/',", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/static/',")
 				
-				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/jupyter-proxy/"+hostid+"/', 'api/config',")
-				.replace("this.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
-				.replace("that.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
+//				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/jupyter-proxy/"+hostid+"/', 'api/config',")
 				
-				.replace("'/Geoweaver/jupyter-proxy/"+hostid+"/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+				
+//				.replace("this.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
+//				.replace("that.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
+				.replace("data-base-url=\"/\"", "data-base-url=\"/Geoweaver/jupyter-proxy/"+hostid+"/\"")
+				
+				
+//				.replace("'/Geoweaver/jupyter-proxy/"+hostid+"/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+				
+				//for jupyter notebook websocket
+				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+				
 //				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/files/")
-				.replace("this.notebook.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
+				
+//				.replace("this.notebook.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
+				
 				.replace("nbextensions : '/nbextensions'", "nbextensions : '../nbextensions'")
 				.replace("custom : '/custom',", "custom : '../custom',")
 				.replace("kernelspecs : '/kernelspecs',", "kernelspecs : '../kernelspecs',")
@@ -198,6 +209,11 @@ public class JupyterController {
 				.replace("src=\"/hub", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/hub")
 				.replace("href='/hub", "href='/Geoweaver/jupyter-proxy/"+hostid+"/hub")
 				.replace("baseUrl: '/user", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/user")
+				.replace("'/user/", "'/Geoweaver/jupyter-proxy/"+hostid+"/user/")
+				.replace("data-base-url=\"/user/", "data-base-url=\"/Geoweaver/jupyter-proxy/"+hostid+"/user/")
+				//for jupyterhub websocket
+				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
 				
 				;
 		
@@ -262,7 +278,7 @@ public class JupyterController {
 	 */
 	private String getRealRequestURL(String requesturi) {
 		
-		String realurl =  requesturi.substring(requesturi.indexOf("jupyter-proxy") + 20);// /Geoweaver/web/jupyter-proxy/test
+		String realurl =  requesturi.substring(requesturi.indexOf("jupyter-proxy") + 20); // http://localhost:8070/Geoweaver/jupyter-proxy/bf0vd7/
 		
 		return realurl;
 		
@@ -809,7 +825,9 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-			String targeturl = getRealTargetURL(newheaders.get("referer").get(0));
+			String targeturl = getRealTargetURL(newheaders.get("referer").get(0)); //using referer as the target url is not right
+			
+			logger.info("New target url: " + targeturl);
 			
 			if(ishub)logger.info("New HTTP Headers: " + newheaders.toString());
 			
