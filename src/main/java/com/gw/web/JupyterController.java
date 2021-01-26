@@ -184,8 +184,12 @@ public class JupyterController {
 //				.replace("'/Geoweaver/jupyter-proxy/"+hostid+"/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
 				
 				//for jupyter notebook websocket
-				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+//				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+//				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
+
+				//for all jupyter websocket
+				.replace("this.base_url, \"api/kernels\"", "this.base_url.replace(\"jupyter-proxy\", \"jupyter-socket\"), \"api/kernels\"")
+				.replace("that.base_url, \"api/kernels\"", "that.base_url.replace(\"jupyter-proxy\", \"jupyter-socket\"), \"api/kernels\"")
 				
 //				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/files/")
@@ -211,9 +215,6 @@ public class JupyterController {
 				.replace("baseUrl: '/user", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/user")
 				.replace("'/user/", "'/Geoweaver/jupyter-proxy/"+hostid+"/user/")
 				.replace("data-base-url=\"/user/", "data-base-url=\"/Geoweaver/jupyter-proxy/"+hostid+"/user/")
-				//for jupyterhub websocket
-				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
 				
 				;
 		
@@ -229,7 +230,7 @@ public class JupyterController {
 	 */
 	private ResponseEntity errorControl(String message, String hostid) {
 		
-		logger.error(message);
+//		logger.error(message);
 		
 		HttpHeaders headers = new HttpHeaders();
 		
@@ -392,7 +393,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -513,7 +514,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -662,7 +663,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -744,7 +745,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -882,7 +883,7 @@ public class JupyterController {
 		    		
 			    	newbody = addURLProxy(responseEntity.getBody(), hostid);
 
-			    	if(ishub) logger.debug("Response Body: " + newbody);
+//			    	if(ishub) logger.debug("Response Body: " + newbody);
 			    	
 			    		
 //				    	if(responseEntity.getHeaders().getContentType().equals(MediaType.TEXT_HTML)
@@ -918,7 +919,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -1009,7 +1010,7 @@ public class JupyterController {
 			
 			logger.info("Query String: " + request.getQueryString());
 			
-			logger.info("Original Request String: " + request.getParameterMap());
+//			logger.info("Original Request String: " + request.getParameterMap());
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -1056,9 +1057,9 @@ public class JupyterController {
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-			logger.info("Body: " + requestentity.getBody());
+//			logger.info("Body: " + requestentity.getBody());
 			
-			logger.info("Headers: " + requestentity.getHeaders());
+//			logger.info("Headers: " + requestentity.getHeaders());
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
@@ -1104,7 +1105,7 @@ public class JupyterController {
 			    
 //			    Set ent = respheaders.entrySet();
 			    
-			    logger.info(respheaders.toString());
+//			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
@@ -1123,7 +1124,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -1221,9 +1222,9 @@ public class JupyterController {
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-			logger.info("Body: " + requestentity.getBody());
+//			logger.info("Body: " + requestentity.getBody());
 			
-			logger.info("New Headers: " + requestentity.getHeaders());
+//			logger.info("New Headers: " + requestentity.getHeaders());
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
@@ -1288,7 +1289,7 @@ public class JupyterController {
 		}catch (HttpStatusCodeException ex) {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
-		    logger.error(ex.getStatusCode().toString());
+//		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
