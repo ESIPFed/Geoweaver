@@ -41,7 +41,8 @@ public class WebsocketMessageHandler implements MessageHandler.Whole<String>{
 				
 //				logger.debug(String.valueOf(JupyterRedirectServlet.pairs.size()));
 				
-				throw new RuntimeException("The pair is null " + pairid);
+//				throw new RuntimeException("The pair is null " + pairid);
+				logger.debug("the pair is null " + pairid);
 				
 			}else {
 				
@@ -79,8 +80,10 @@ public class WebsocketMessageHandler implements MessageHandler.Whole<String>{
 			}
 			
 		} catch (Exception ex) {
+			
 			ex.printStackTrace();
-        	logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
+        	
+			logger.error("Fail to parse the returned message from Jupyter server" + ex.getLocalizedMessage());
         	
         	
         }

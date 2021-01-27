@@ -900,7 +900,7 @@ GW.host = {
 					
 				}
 				
-			}else if(hosttype=="jupyter"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub"){
 				
 				if($("#hostname").val()&&$("#jupyter_home_url").val()){
 					
@@ -1144,7 +1144,7 @@ GW.host = {
 		        				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
 				
-			}else if(hosttype=="jupyter"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" ){
 				
 				content += "<i class=\"fas fa-chart-line subalignicon\" onclick=\"GW.host.recent('" +
 				
@@ -1529,6 +1529,21 @@ GW.host = {
 				       '     </div>'+
 				       '   	</div>';
 				
+			}else if(host_type=="jupyterhub"){
+				
+				content = '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+			       '     </div>'+
+			       '   	</div>'+
+			       '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterHub URL </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8000/">'+
+			       '     </div>'+
+			       '   	</div>';
+				
 			}else if(host_type == "ssh") {
 				
 				content = '   	<div class="form-group row required">'+
@@ -1604,7 +1619,7 @@ GW.host = {
 		       '	 	<select class="form-control" id="hosttype"> '+
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
-			   '    		<option value="jupyter">JupyterHub</option> '+
+			   '    		<option value="jupyterhub">JupyterHub</option> '+
 			   '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+

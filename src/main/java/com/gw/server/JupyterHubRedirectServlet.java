@@ -22,21 +22,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gw.jpa.Host;
+import com.gw.server.JupyterRedirectServlet.SessionPair;
 import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 
 /**
  * 
- * This works for redirecting all the jupyter notebook traffic
+ * This works for redirecting all the jupyter hub traffic
  * 
  * @author JensenSun
  *
  */
-//ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c
-@ServerEndpoint(value = "/jupyter-socket/{hostid}/api/kernels/{uuid1}/channels", 
+//ws://localhost:8070/Geoweaver/jupyter-socket/gedv82/api/kernels/fc43c1dc-67b3-404c-824d-83db95f642cb/channels?session_id=e4144eb8945047aa84027cd9a2eeadc5
+//ws://localhost:8070/Geoweaver/jupyter-socket/4g75h7/user/zsun/api/kernels/eaa5f686-0df2-4f39-ae95-d6715d9f7fc5/channels?session_id=dda9fa014a25401894485df465ce90df
+@ServerEndpoint(value = "/jupyter-socket/{hostid}/user/{uname}/api/kernels/{uuid1}/channels", 
 	configurator = JupyterRedirectServerConfig.class)
-public class JupyterRedirectServlet {
+public class JupyterHubRedirectServlet{
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -53,9 +55,9 @@ public class JupyterRedirectServlet {
 //	@Autowired
 	BaseTool bt;
 	
-	public JupyterRedirectServlet() {
+	public JupyterHubRedirectServlet() {
 		
-		logger.debug("Initializing Jupyter Websocket Session...");
+		logger.debug("Initializing JupyterHub Websocket Session...");
 		
 	}
 	
@@ -223,9 +225,13 @@ public class JupyterRedirectServlet {
 //    private HttpSession httpSession;
 	
 	@OnOpen
-    public void open(Session session, @PathParam("hostid") String hostid, @PathParam("uuid1") String uuid1, EndpointConfig config) {
+    public void open(Session session, 
+    		@PathParam("hostid") String hostid, @PathParam("uname") String username, 
+    		@PathParam("uuid1") String uuid1, EndpointConfig config) {
 		
 		try {
+			
+			logger.debug("Enter...");
 			
 			init(session);
 			
@@ -412,6 +418,5 @@ public class JupyterRedirectServlet {
 		}
     	
     }
-
-
+    
 }
