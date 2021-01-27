@@ -34,7 +34,7 @@ import com.gw.utils.BeanTool;
  *
  */
 //ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c
-@ServerEndpoint(value = "/jupyter-socket/{hostid}/{:.*}/api/kernels/{uuid1}/channels", 
+@ServerEndpoint(value = "/jupyter-socket/{hostid}/api/kernels/{uuid1}/channels", 
 	configurator = JupyterRedirectServerConfig.class)
 public class JupyterRedirectServlet {
 	
