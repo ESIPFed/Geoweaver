@@ -102,11 +102,14 @@ public class JupyterController {
 		requestFactory.setReadTimeout(TIMEOUT);
 		
 		CloseableHttpClient httpClient = HttpClients.custom()
+				
 	            .setDefaultRequestConfig(RequestConfig.custom()
-	            .setCookieSpec(CookieSpecs.STANDARD).build())
+	            		.setCookieSpec(CookieSpecs.STANDARD)
+	            		.setCircularRedirectsAllowed(true)
+	            		.build())
 	            .build();
 		
-		
+//		httpClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true); 
 		
 		requestFactory.setHttpClient(httpClient);
 		
@@ -820,7 +823,7 @@ public class JupyterController {
 //			
 //			HttpHeaders newheaders = this.updateHeaderReferer(reqentity.getHeaders(), h, realurl, request.getQueryString());
 			
-			if(ishub)logger.info("Old HTTP Headers: " + reqentity.getHeaders().toString());
+//			if(ishub)logger.info("Old HTTP Headers: " + reqentity.getHeaders().toString());
 			
 			HttpHeaders newheaders = getHeaders(reqentity.getHeaders(), method, request, hostid);
 			
@@ -828,9 +831,9 @@ public class JupyterController {
 			
 			String targeturl = getRealTargetURL(newheaders.get("referer").get(0)); //using referer as the target url is not right
 			
-			logger.info("New target url: " + targeturl);
+//			logger.info("New target url: " + targeturl);
 			
-			if(ishub)logger.info("New HTTP Headers: " + newheaders.toString());
+//			if(ishub)logger.info("New HTTP Headers: " + newheaders.toString());
 			
 //			String sec_fetch_type = getHeaderProperty(reqentity.getHeaders(), "Sec-Fetch-Dest");
 			
@@ -857,9 +860,9 @@ public class JupyterController {
 				
 				ResponseEntity<String> responseEntity = restTemplate.exchange(targeturl, method, newentity, String.class);
 			    
-		    	if(ishub)logger.debug("Response Header: " + responseEntity.getHeaders());
-//		    	
-		    	if(ishub)logger.debug("Response HTTP Code: " + responseEntity.getStatusCode());
+//		    	if(ishub)logger.debug("Response Header: " + responseEntity.getHeaders());
+////		    	
+//		    	if(ishub)logger.debug("Response HTTP Code: " + responseEntity.getStatusCode());
 		    	
 		    	String newbody = responseEntity.getBody();
 		    	
@@ -1008,7 +1011,7 @@ public class JupyterController {
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
-			logger.info("Query String: " + request.getQueryString());
+//			logger.info("Query String: " + request.getQueryString());
 			
 //			logger.info("Original Request String: " + request.getParameterMap());
 			
@@ -1175,7 +1178,7 @@ public class JupyterController {
 			
 //			logger.info("Original Request String: " + request.getParameterMap());
 			
-			logger.info("Old Headers: " + httpheaders);
+//			logger.info("Old Headers: " + httpheaders);
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
