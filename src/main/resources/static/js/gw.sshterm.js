@@ -256,7 +256,7 @@ $(document).ready(function ($) {
 	
 //    ws = new SockJS("shell");
 	
-	ws = new WebSocket(getWsPrefixURL() + "terminal-socket")
+	ws = new WebSocket(getWsPrefixURL() + "Geoweaver/terminal-socket")
 	
     ws.onopen = function(e) { ws_onopen(e) };
     
