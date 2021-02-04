@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gw.jpa.Host;
-import com.gw.server.JupyterRedirectServlet.SessionPair;
 import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
@@ -226,8 +225,10 @@ public class JupyterHubRedirectServlet{
 	
 	@OnOpen
     public void open(Session session, 
-    		@PathParam("hostid") String hostid, @PathParam("uname") String username, 
-    		@PathParam("uuid1") String uuid1, EndpointConfig config) {
+    		@PathParam("hostid") String hostid, 
+    		@PathParam("uname") String username, 
+    		@PathParam("uuid1") String uuid1, 
+    		EndpointConfig config) {
 		
 		try {
 			
