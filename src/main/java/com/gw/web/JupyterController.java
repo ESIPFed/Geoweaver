@@ -1027,7 +1027,7 @@ public class JupyterController {
 //			
 //			logger.info("URL: " + uri.toString());
 //			
-//			logger.info("HTTP Method: " + method.toString());
+			logger.info("HTTP Method: " + method.toString());
 			
 			HttpHeaders newheaders = getHeaders(httpheaders, method, request, hostid);
 			
@@ -1060,9 +1060,9 @@ public class JupyterController {
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-//			logger.info("Body: " + requestentity.getBody());
+			logger.info("Body: " + requestentity.getBody());
 			
-//			logger.info("Headers: " + requestentity.getHeaders());
+			logger.info("Headers: " + requestentity.getHeaders());
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
@@ -1076,7 +1076,7 @@ public class JupyterController {
 		    	
 //		    	logger.info("Redirection: " + newresponseheaders);
 //			    
-//			    logger.info("Response: " + responseEntity.getBody());
+			    logger.info("Response: " + responseEntity.getBody());
 			    
 //			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
 			    
@@ -1108,7 +1108,7 @@ public class JupyterController {
 			    
 //			    Set ent = respheaders.entrySet();
 			    
-//			    logger.info(respheaders.toString());
+			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	
