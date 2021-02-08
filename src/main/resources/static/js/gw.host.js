@@ -1337,41 +1337,65 @@ GW.host = {
 			
 		},
 		
+		deleteSelectedJupyter: function(){
+			
+			if(confirm("Are you sure to remove all the selected history? This is permanent.")){
+				
+				$(".hist-checkbox:checked").each(function() {
+					
+					var histid = $(this).attr('id');
+					
+				    console.log("Removing "+histid);
+				    
+				    GW.host.deleteJupyterDirectly(histid.substring(9));
+				    
+				});
+				
+			}
+			
+		},
+		
+		deleteJupyterDirectly: function(history_id){
+			
+			$.ajax({
+				
+				url: "del",
+				
+				method: "POST",
+				
+				data: "type=history&id=" + history_id
+				
+			}).done(function(msg){
+				
+				if(msg==""){
+					
+					alert("Cannot find the host history in the database.");
+					
+					return;
+					
+				}else if(msg=="done"){
+					
+					console.log("The history " + history_id + " is removed")
+					
+					$("#host_history_row_" + history_id).remove()
+					
+				}else{
+					
+					alert("Fail to delete the jupyter notebook")
+					
+					console.error("Fail to delete jupyter: " + msg);
+					
+				}
+				
+			})
+			
+		},
+		
 		deleteJupyter: function(history_id){
 			
-			if(confirm("Are you sure to remove this history?")){
+			if(confirm("Are you sure to remove this history? This is permanent.")){
 				
-				$.ajax({
-					
-					url: "del",
-					
-					method: "POST",
-					
-					data: "type=history&id=" + history_id
-					
-				}).done(function(msg){
-					
-					if(msg==""){
-						
-						alert("Cannot find the host history in the database.");
-						
-						return;
-						
-					}else if(msg=="done"){
-						
-						console.log("The history " + history_id + " is removed")
-						
-						$("#host_history_row_" + history_id).remove()
-						
-					}else{
-						
-						alert("Fail to delete the jupyter notebook")
-						
-						console.error("Fail to delete jupyter: " + msg);
-						
-					}
-					
-				})
+				this.deleteJupyterDirectly(history_id);
 				
 			}
 			
@@ -1460,9 +1484,14 @@ GW.host = {
 				msg = $.parseJSON(msg);
 				
 				var content = "<h4 class=\"border-bottom\">Recent History  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHostHistoryBtn\" >close</button></h4>"+
-				"<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
+				"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+				
+				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryBtn\" >Delete Selected</button> "+
+				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"compareHistoryBtn\" >Compare</button> "+
+				"<table class=\"table\"> "+
 				"  <thead> "+
 				"    <tr> "+
+				"      <th scope=\"col\"><input type=\"checkbox\" id=\"all-selected\" ></th> "+
 				"      <th scope=\"col\">Process</th> "+
 				"      <th scope=\"col\">Begin Time</th> "+
 //				"      <th scope=\"col\">Status</th> "+
@@ -1481,6 +1510,7 @@ GW.host = {
 						msg[i].id+"')\">Delete</a></td> ";
 					
 					content += "    <tr id=\"host_history_row_"+msg[i].id+"\"> "+
+						"	   <td><input type=\"checkbox\" class=\"hist-checkbox\" id=\"selected_"+msg[i].id+"\" ></td>"+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 //						status_col +
@@ -1493,9 +1523,34 @@ GW.host = {
 				
 				$("#host-history-browser").html(content);
 				
+//				$("#all-selected").on("click", function(){});
+				
+				$('#all-selected').change(function(){
+			        if ($(this).is(':checked')) {
+			        	//check all the rows
+			        	$(".hist-checkbox").prop('checked', true);
+			        	
+			        }else {
+			        	$(".hist-checkbox").prop('checked', false);
+			        	
+			        }
+			    });
+				
 				$("#closeHostHistoryBtn").on("click", function(){
 					
 					$("#host-history-browser").html("");
+					
+				});
+				
+				$("#deleteHostHistoryBtn").on("click", function(){
+					
+					GW.host.deleteSelectedJupyter();
+					
+				});
+				
+				$("#compareHistoryBtn").on("click", function(){
+					
+					GW.comparison.show();
 					
 				});
 				
