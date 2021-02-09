@@ -1488,6 +1488,8 @@ GW.host = {
 				
 				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryBtn\" >Delete Selected</button> "+
 				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"compareHistoryBtn\" >Compare</button> "+
+				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"refreshHostHistoryBtn\" >Refresh</button> "+
+				
 				"<table class=\"table\"> "+
 				"  <thead> "+
 				"    <tr> "+
@@ -1551,6 +1553,12 @@ GW.host = {
 				$("#compareHistoryBtn").on("click", function(){
 					
 					GW.comparison.show();
+					
+				});
+				
+				$("#refreshHostHistoryBtn").on("click", function(){
+					
+					GW.host.recent(hid);
 					
 				});
 				

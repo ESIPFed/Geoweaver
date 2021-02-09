@@ -23,6 +23,7 @@ public class History {
 //	@GeneratedValue(strategy=GenerationType.AUTO)
     private String			 history_id;
 	
+	@Column(columnDefinition = "LONGTEXT")
     private String			 history_input;
     
     //maximum jupyter notebook 100mb

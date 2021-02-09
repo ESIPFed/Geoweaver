@@ -1157,6 +1157,12 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 				
+				if(typeof code != 'object'){
+					
+					code = $.parseJSON(code);
+				
+				}
+				
 				var notebook = nb.parse(code);
 				
 				var rendered = notebook.render();
