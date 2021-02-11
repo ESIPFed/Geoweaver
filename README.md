@@ -60,7 +60,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 (Recommended)
 
-* Step 1: Download the geoweaver.jar
+* Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
 
 * Step 2: Run the command: 
 
