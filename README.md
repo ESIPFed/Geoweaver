@@ -13,7 +13,7 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
 - [Project Goals](#project-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Quick Install (Recommended)](#quick-install-(Recommended))
+  * [Quick Install (Recommended)](#quick-install)
   * [Developer Install](#developer-install)
     + [Linux](#linux)
     + [Mac](#mac)
@@ -64,7 +64,9 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 !(only for install via docker) [Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ 
 
-## Quick Install (Recommended)
+## Quick Install
+
+(Recommended)
 
 * Step 1: Download the geoweaver.jar
 
