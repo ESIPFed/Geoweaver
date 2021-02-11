@@ -25,6 +25,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
     + [Cloud VM Template](#cloud-vm-template)
   * [Build from source](#build-from-source)
 - [Demo](#demo)
+- [Tutorial](#tutorial)
 - [Citation](#citation)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -244,7 +245,11 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 # Demo
 
-A live demo site is available in George Mason University: [I am a link, hit me](https://cloud.csiss.gmu.edu/Geoweaver).
+[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
+
+# Tutorial
+
+[Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
 
 # Citation
 
