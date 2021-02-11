@@ -60,15 +60,26 @@ If you choose "Quick Install", no need to install these dependencies separately.
 
 Java 1.8+ (OpenJDK 8 or higher)
 
-Tomcat 8.0+ 
+!(only for install via docker) [Docker](https://docs.docker.com/install/) 18.09.1+
 
-Apache Maven 3.5+ (optional for building from source)
-
-![Docker](https://docs.docker.com/install/) 18.09.1+ (for install via docker)
-
-![Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
+!(only for install via docker) [Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ 
 
 ## Quick Install
+
+* Step 1: Download the geoweaver.jar
+
+* Step 2: Run the command: 
+
+```shell
+java -jar geoweaver.jar 
+```
+
+* Step 3: Open browser and entry: http://localhost:8070/Geoweaver/ .That's it!
+
+## Developer Install
+
+This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
+
 
 ### Linux
 
@@ -130,10 +141,6 @@ cd Geoweaver
 * Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
-
-## Developer Install
-
-This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
 ### Docker
 
