@@ -13,7 +13,7 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
 - [Project Goals](#project-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Quick Install (Recommended)](#quick-install(Recommended))
+  * [Quick Install (Recommended)](#quick-install-(Recommended))
   * [Developer Install](#developer-install)
     + [Linux](#linux)
     + [Mac](#mac)
