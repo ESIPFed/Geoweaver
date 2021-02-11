@@ -5,24 +5,6 @@
 
 package com.gw.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.xml.namespace.QName;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
-
-import org.apache.log4j.Logger;
-
 /**
  * Class SOAPClient
  * @author ziheng
@@ -30,6 +12,15 @@ import org.apache.log4j.Logger;
  * aim to support igfds
  */
 public class SOAPClient {
+	
+	
+	public static void main(String[] args) {
+		
+		System.out.println("Test 123456");
+		
+		
+		
+	}
  
 //	static Logger  logger = Logger.getLogger(SOAPClient.class);
 //	

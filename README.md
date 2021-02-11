@@ -6,6 +6,8 @@
 
 Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It is a perfect alternative to SSH client (e.g., Putty), FTP client, and scientific workflow software. 
 
+GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
+
 [Geoweaver Online API](https://zihengsun.github.io/Geoweaver/)
 
 ##### Table of Contents
@@ -13,28 +15,20 @@ Geoweaver is a web system allowing users to easily compose and execute full-stac
 - [Project Goals](#project-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Quick Install](#quick-install)
+  * [Quick Install (Recommended)](#quick-install)
+  * [Developer Install](#developer-install)
     + [Linux](#linux)
     + [Mac](#mac)
     + [Windows](#windows)
-  * [Developer Install](#developer-install)
     + [Docker](#docker)
     + [Tomcat War](#tomcat-war)
     + [Cloud VM Template](#cloud-vm-template)
   * [Build from source](#build-from-source)
 - [Demo](#demo)
-- [Usage](#usage)
-  * [Add A Server](#add-a-server)
-  * [Create A Process](#create-a-process)
-  * [Create A Workflow](#create-a-workflow)
-  * [Run Workflow](#run-workflow)
-  * [Browse Provenance](#browse-provenance)
-  * [Retrieve and Display Results](#retrieve-and-display-results)
-  * [I/O workflows](#i-o-workflows)
-- [Documentation](#documentation)
+- [Tutorial](#tutorial)
+- [Citation](#citation)
 - [Dependencies](#dependencies)
 - [License](#license)
-- [Author](#author)
 
 
 # Project Goals
@@ -56,19 +50,30 @@ Landsat image time series.
 
 ## Dependencies
 
-If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.
-
 Java 1.8+ (OpenJDK 8 or higher)
 
-Tomcat 8.0+ 
+!(only for install via docker) [Docker](https://docs.docker.com/install/) 18.09.1+
 
-Apache Maven 3.5+ (optional for building from source)
-
-![Docker](https://docs.docker.com/install/) 18.09.1+ (for install via docker)
-
-![Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
+!(only for install via docker) [Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ 
 
 ## Quick Install
+
+(Recommended)
+
+* Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
+
+* Step 2: Run the command: 
+
+```shell
+java -jar geoweaver.jar 
+```
+
+* Step 3: Open browser and entry: http://localhost:8070/Geoweaver/ .That's it!
+
+## Developer Install
+
+This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
+
 
 ### Linux
 
@@ -130,10 +135,6 @@ cd Geoweaver
 * Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
-
-## Developer Install
-
-This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
 ### Docker
 
@@ -240,90 +241,21 @@ docker stop $(docker ps -aq)
 
 ## Build from source
 
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
+Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver jar package will be under the directory: `Geoweaver/target/Geoweaver-<version>.jar`. 
 
 # Demo
 
-A live demo site is available in George Mason University: [I am a link, hit me](https://cloud.csiss.gmu.edu/Geoweaver).
+[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
 
-Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
+# Tutorial
 
-![Result Demo](/docs/demo.png)
+[Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
 
-![LSTM-Crop concept](/docs/lstm.png)
+# Citation
 
-Animation demo:
+If you found Geoweaver helpful in your research, please cite us: 
 
-![AnimationDemo](/docs/geoweaver-demo.gif)
-
-
-# Usage
-
-## Add A Server
-
-Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
-
-![Add a host](docs/addhost.gif)
-
-## File Upload
-
-There is a uploading button after the name of the newly registered server. Using it people can upload files from local to remote server. 
-
-## File Browse & Download
-
-There is a browsing&downloading button for each host. People can free browse the files in the host and download it to local (if their credentials are authorized).
-
-![file browser](docs/filebrowser&download.gif)
-
-## Create A Process
-
-Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
-
-![Add a process](docs/addprocess.gif)
-
-## Create A Workflow
-
-Geoweaver can link the processes together to form a workflow. To connect two processes, press `shift` key while dragging from one process to another.
-
-![Create a workflow](docs/createworkflow.gif)
-
-## Run Workflow
-
-Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.
-
-![Run a workflow](docs/runworkflow.gif)
-
-## Browse Provenance
-
-Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.
-
-![Check provenance](docs/checkprovenance.gif)
-
-## Retrieve and Display Results
-
-Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).
-
-![Get result](docs/getresult.gif)
-
-## I/O workflows
-
-The workflows can be exported and move around and imported back.
-
-![Export workflow](docs/exportworkflow.gif)
-
-# Documentation
-
-[Project Proposal](docs/geoweaver-proposal-revised-v4.pdf)
-
-[August Report](docs/ESIP-Geoweaver-Report-1.docx)
-
-[September Report](docs/ESIP-Geoweaver-Report-2.docx)
-
-[October Report](docs/ESIP-Geoweaver-Report-3.docx)
-
-[November Report](docs/ESIP-Geoweaver-Report-4.docx)
-
-[December Report](docs/ESIP-Geoweaver-Report-5.docx)
+Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
 # Dependencies
 
@@ -343,7 +275,4 @@ This project is impossible without the support of several fantastic open source 
 
 MIT
 
-# Author
-
-[developer list](authors.md)
 

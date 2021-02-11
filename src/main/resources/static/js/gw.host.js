@@ -803,6 +803,8 @@ GW.host = {
 		
 		addMenuItem: function(one){
 			
+			console.log("Add host to the tree")
+			
 			$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 					
 				"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
@@ -898,7 +900,7 @@ GW.host = {
 					
 				}
 				
-			}else if(hosttype=="jupyter"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub"){
 				
 				if($("#hostname").val()&&$("#jupyter_home_url").val()){
 					
@@ -1142,7 +1144,7 @@ GW.host = {
 		        				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
 				
-			}else if(hosttype=="jupyter"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" ){
 				
 				content += "<i class=\"fas fa-chart-line subalignicon\" onclick=\"GW.host.recent('" +
 				
@@ -1221,7 +1223,8 @@ GW.host = {
 			
 			var delbtn = "";
 			
-			if(hostip!="127.0.0.1")
+//			if(hostip!="127.0.0.1")
+			if(msg.name!="localhost")
 				delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 			
 			content += "</div>"+
@@ -1334,41 +1337,65 @@ GW.host = {
 			
 		},
 		
+		deleteSelectedJupyter: function(){
+			
+			if(confirm("Are you sure to remove all the selected history? This is permanent.")){
+				
+				$(".hist-checkbox:checked").each(function() {
+					
+					var histid = $(this).attr('id');
+					
+				    console.log("Removing "+histid);
+				    
+				    GW.host.deleteJupyterDirectly(histid.substring(9));
+				    
+				});
+				
+			}
+			
+		},
+		
+		deleteJupyterDirectly: function(history_id){
+			
+			$.ajax({
+				
+				url: "del",
+				
+				method: "POST",
+				
+				data: "type=history&id=" + history_id
+				
+			}).done(function(msg){
+				
+				if(msg==""){
+					
+					alert("Cannot find the host history in the database.");
+					
+					return;
+					
+				}else if(msg=="done"){
+					
+					console.log("The history " + history_id + " is removed")
+					
+					$("#host_history_row_" + history_id).remove()
+					
+				}else{
+					
+					alert("Fail to delete the jupyter notebook")
+					
+					console.error("Fail to delete jupyter: " + msg);
+					
+				}
+				
+			})
+			
+		},
+		
 		deleteJupyter: function(history_id){
 			
-			if(confirm("Are you sure to remove this history?")){
+			if(confirm("Are you sure to remove this history? This is permanent.")){
 				
-				$.ajax({
-					
-					url: "del",
-					
-					method: "POST",
-					
-					data: "type=history&id=" + history_id
-					
-				}).done(function(msg){
-					
-					if(msg==""){
-						
-						alert("Cannot find the host history in the database.");
-						
-						return;
-						
-					}else if(msg=="done"){
-						
-						console.log("The history " + history_id + " is removed")
-						
-						$("#host_history_row_" + history_id).remove()
-						
-					}else{
-						
-						alert("Fail to delete the jupyter notebook")
-						
-						console.error("Fail to delete jupyter: " + msg);
-						
-					}
-					
-				})
+				this.deleteJupyterDirectly(history_id);
 				
 			}
 			
@@ -1457,9 +1484,16 @@ GW.host = {
 				msg = $.parseJSON(msg);
 				
 				var content = "<h4 class=\"border-bottom\">Recent History  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHostHistoryBtn\" >close</button></h4>"+
-				"<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
+				"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+				
+				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryBtn\" >Delete Selected</button> "+
+				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"compareHistoryBtn\" >Compare</button> "+
+				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"refreshHostHistoryBtn\" >Refresh</button> "+
+				
+				"<table class=\"table\"> "+
 				"  <thead> "+
 				"    <tr> "+
+				"      <th scope=\"col\"><input type=\"checkbox\" id=\"all-selected\" ></th> "+
 				"      <th scope=\"col\">Process</th> "+
 				"      <th scope=\"col\">Begin Time</th> "+
 //				"      <th scope=\"col\">Status</th> "+
@@ -1478,6 +1512,7 @@ GW.host = {
 						msg[i].id+"')\">Delete</a></td> ";
 					
 					content += "    <tr id=\"host_history_row_"+msg[i].id+"\"> "+
+						"	   <td><input type=\"checkbox\" class=\"hist-checkbox\" id=\"selected_"+msg[i].id+"\" ></td>"+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 //						status_col +
@@ -1490,9 +1525,40 @@ GW.host = {
 				
 				$("#host-history-browser").html(content);
 				
+//				$("#all-selected").on("click", function(){});
+				
+				$('#all-selected').change(function(){
+			        if ($(this).is(':checked')) {
+			        	//check all the rows
+			        	$(".hist-checkbox").prop('checked', true);
+			        	
+			        }else {
+			        	$(".hist-checkbox").prop('checked', false);
+			        	
+			        }
+			    });
+				
 				$("#closeHostHistoryBtn").on("click", function(){
 					
 					$("#host-history-browser").html("");
+					
+				});
+				
+				$("#deleteHostHistoryBtn").on("click", function(){
+					
+					GW.host.deleteSelectedJupyter();
+					
+				});
+				
+				$("#compareHistoryBtn").on("click", function(){
+					
+					GW.comparison.show();
+					
+				});
+				
+				$("#refreshHostHistoryBtn").on("click", function(){
+					
+					GW.host.recent(hid);
 					
 				});
 				
@@ -1525,6 +1591,21 @@ GW.host = {
 				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
 				       '     </div>'+
 				       '   	</div>';
+				
+			}else if(host_type=="jupyterhub"){
+				
+				content = '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+			       '     </div>'+
+			       '   	</div>'+
+			       '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterHub URL </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8000/">'+
+			       '     </div>'+
+			       '   	</div>';
 				
 			}else if(host_type == "ssh") {
 				
@@ -1601,6 +1682,7 @@ GW.host = {
 		       '	 	<select class="form-control" id="hosttype"> '+
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
+			   '    		<option value="jupyterhub">JupyterHub</option> '+
 			   '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+

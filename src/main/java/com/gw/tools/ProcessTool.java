@@ -240,17 +240,17 @@ public class ProcessTool {
 		
 		String code = p.getCode();
 
-		if(lang.equals("jupyter")) {
-			
-			resp.append("\"code\":").append(code).append(" ");
-			
-		}else {
+//		if(lang.equals("jupyter")) {
+//			
+//			resp.append("\"code\":").append(code).append(" ");
+//			
+//		}else {
 			
 //			code = escape(code); //it already escaped once
 			
 			resp.append("\"code\":\"").append(code).append("\" ");
 			
-		}
+//		}
 		
 		resp.append(" }");
 				
