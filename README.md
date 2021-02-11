@@ -25,18 +25,9 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
     + [Cloud VM Template](#cloud-vm-template)
   * [Build from source](#build-from-source)
 - [Demo](#demo)
-- [Usage](#usage)
-  * [Add A Server](#add-a-server)
-  * [Create A Process](#create-a-process)
-  * [Create A Workflow](#create-a-workflow)
-  * [Run Workflow](#run-workflow)
-  * [Browse Provenance](#browse-provenance)
-  * [Retrieve and Display Results](#retrieve-and-display-results)
-  * [I/O workflows](#i-o-workflows)
-- [Documentation](#documentation)
+- [Citation](#citation)
 - [Dependencies](#dependencies)
 - [License](#license)
-- [Author](#author)
 
 
 # Project Goals
