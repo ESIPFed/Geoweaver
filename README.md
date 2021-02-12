@@ -4,7 +4,9 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It is a perfect alternative to SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity including SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+
+It can be run from local machines.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
@@ -12,7 +14,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 
 ##### Table of Contents
 
-- [Project Goals](#project-goals)
+- [Software Goals](#software-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
   * [Quick Install (Recommended)](#quick-install)
@@ -31,7 +33,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 - [License](#license)
 
 
-# Project Goals
+# Software Goals
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
 
@@ -68,7 +70,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 java -jar geoweaver.jar 
 ```
 
-* Step 3: Open browser and entry: http://localhost:8070/Geoweaver/ .That's it!
+* Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
 
 ## Developer Install
 
