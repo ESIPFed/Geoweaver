@@ -244,9 +244,11 @@ public class JupyterHubRedirectServlet{
 			
 			String wsprotocol = "ws";
 			
-			String trueurl = wsprotocol + "://"+hh[1]+":"+hh[2]+"/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
+			String trueurl = wsprotocol + "://" + hh[1] + ":" + hh[2] + "/user/" + username +
+					
+					"/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
 			
-//			logger.debug("Query String: " + trueurl);
+			logger.debug("Query String: " + trueurl);
 			
 //			this.wsSession = session;
 			

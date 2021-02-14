@@ -24,6 +24,36 @@ GW.main = {
 	    return jsId;
 	},
 	
+	test_websocket: function(){
+	
+		var test1_url = GW.ssh.getWsPrefixURL() + "test-socket/xxxx/user/zsun/api/kernels/2eee232rsdfsweroeiwr/channels"
+		
+		var test1 = new WebSocket(test1_url);
+		
+		test1.onopen = function(e) { GW.ssh.ws_onopen(e) };
+        
+		test1.onclose = function(e) { GW.ssh.ws_onclose(e) };
+        
+		test1.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+        
+		test1.onerror = function(e) { GW.ssh.ws_onerror(e) };
+		
+		var test2_url = GW.ssh.getWsPrefixURL() + "test-socket"
+		
+		var test2 = new WebSocket(test2_url);
+		
+		test2.onopen = function(e) { GW.ssh.ws_onopen(e) };
+        
+		test2.onclose = function(e) { GW.ssh.ws_onclose(e) };
+        
+		test2.onmessage = function(e) { GW.ssh.ws_onmessage(e) };
+        
+		test2.onerror = function(e) { GW.ssh.ws_onerror(e) };
+		
+		
+		
+	},
+	
 	init: function(){
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
@@ -39,6 +69,8 @@ GW.main = {
 		GW.ssh.startLogSocket(GW.main.getJSessionId());
 		
 		introJs().start();
+		
+//		this.test_websocket()
 		
 	}
 		

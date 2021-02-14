@@ -111,7 +111,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
                 public void beforeRequest(Map<String, List<String>> nativeheaders) {
 //                	headers.put("Cookie", Arrays.asList("JSESSIONID=" + sessionID));
                 	
-//                	logger.debug("Original Native Headers: " + nativeheaders);
+                	logger.debug("Original Native Headers: " + nativeheaders);
                 	
                 	Map<String, List<String>> uppercaseheaders = new HashMap();
                 	
