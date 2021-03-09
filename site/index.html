@@ -166,7 +166,7 @@ chmod 755 install-linux.sh
 
 <ul>
 <li>
-<p>Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. </p>
+<p>Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it. </p>
 </li>
 <li>
 <p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
@@ -189,7 +189,7 @@ chmod 755 install-mac.sh
 
 <ul>
 <li>
-<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.</p>
+<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.</p>
 </li>
 <li>
 <p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
@@ -211,7 +211,7 @@ chmod 755 install-mac.sh
 
 <ul>
 <li>
-<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.</p>
+<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.</p>
 </li>
 <li>
 <p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.bat</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.bat</code></p>
@@ -243,8 +243,8 @@ wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war
 <pre><code class="html">http://your-ip:your-port/Geoweaver/web/geoweaver
 </code></pre>
 
-<p>Replace the <code>your-ip</code>, <code>your-port</code> with the real domain of your tomcat. For example, <code>localhost:8080</code>.</p>
-<p>Notice: Make sure the local services like mysql and tomcat are shut down before starting <code>docker-compose</code>. Otherwise there might be port conflict error on <code>3306</code> and <code>8080</code>. Or you can change the port to some other free ports in the docker-compose.yml.</p>
+<p>Replace the <code>your-ip</code>, <code>your-port</code> with the real domain of your tomcat. For example, <code>localhost:8070</code>.</p>
+<p>Notice: Make sure the local services like mysql and tomcat are shut down before starting <code>docker-compose</code>. Otherwise there might be port conflict error on <code>3306</code> and <code>8070</code>. Or you can change the port to some other free ports in the docker-compose.yml.</p>
 <p>If you don't have docker or docker-compose installed, these documents will help. <a href="https://docs.docker.com/install">docker</a> <a href="https://docs.docker.com/compose/install/">docker-compose</a></p>
 <h4 id="shutdown">Shutdown</h4>
 <p>To stop Geoweaver, type:</p>
@@ -360,5 +360,5 @@ nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2021-02-11 19:03:58.441818+00:00
+Build Date UTC : 2021-03-09 19:28:43.767084+00:00
 -->
