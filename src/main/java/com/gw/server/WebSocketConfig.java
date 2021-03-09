@@ -20,6 +20,12 @@ public class WebSocketConfig {
         return new CommandServlet();
     }
     
+//    @Bean
+//    public TestSocketServlet callTestWebSocketController()
+//    {
+//        return new TestSocketServlet();
+//    }
+    
     @Bean
     public TerminalServlet callTerminalWebSocketController()
     {
@@ -36,6 +42,13 @@ public class WebSocketConfig {
     public JupyterRedirectServlet callJupyterWebSocketController() {
     	
     	return new JupyterRedirectServlet();
+    	
+    }
+    
+    @Bean
+    public JupyterHubRedirectServlet callJupyterHubWebSocketController() {
+    	
+    	return new JupyterHubRedirectServlet();
     	
     }
     
