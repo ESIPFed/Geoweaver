@@ -901,7 +901,27 @@ public class ProcessTool {
 		
 	}
 	
-	
+	public String removeClob(String clob) {
+		
+		int fn = clob.indexOf("STRINGDECODE('");
+		
+		String substr = clob;
+		
+		if(fn!=-1) {
+			
+			fn += 14;
+			
+			substr = clob.substring(fn);
+			
+			substr = substr.substring(0, substr.length()-2);
+			
+			logger.info(substr);
+			
+		}
+		
+		return substr;
+		
+	}
 	
 	/**
 	 * get all details of one history
@@ -936,9 +956,13 @@ public class ProcessTool {
 				
 				resp.append("\"end_time\":\"").append(first_obj[2]).append("\", ");
 				
-				resp.append("\"input\":\"").append(escape(String.valueOf(first_obj[3]))).append("\", ");
+				String input_code = escape(String.valueOf(first_obj[3]));
 				
-				resp.append("\"output\":\"").append(escape(String.valueOf(first_obj[4]))).append("\", ");
+				resp.append("\"input\":\"").append(removeClob(input_code)).append("\", ");
+				
+				String output_code = escape(String.valueOf(first_obj[4]));
+				
+				resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
 				
 				resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[7]))).append("\", ");
 				
