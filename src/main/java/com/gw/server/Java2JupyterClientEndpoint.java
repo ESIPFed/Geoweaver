@@ -130,7 +130,8 @@ public class Java2JupyterClientEndpoint extends Endpoint
                         List<String> values = mapElement.getValue();
                         
 //                        if("Sec-WebSocket-Key".equals(newkey)) {
-                    	if("Host".equals(newkey) || "Origin".equals(newkey) || "Sec-WebSocket-Key".equals(newkey)) {
+                    	// if("Host".equals(newkey) || "Origin".equals(newkey) ) {
+						if("Host".equals(newkey) || "Origin".equals(newkey) || "Sec-WebSocket-Key".equals(newkey)) {
                         	
                         	continue;
                         	

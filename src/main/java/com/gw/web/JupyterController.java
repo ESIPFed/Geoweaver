@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
@@ -49,6 +53,7 @@ import com.gw.jpa.Host;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.LoggingRequestInterceptor;
 
 @Controller 
 //@RequestMapping("/Geoweaver/web")
@@ -869,7 +874,8 @@ public class JupyterController {
 		    	String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
 		    	
 //			    	
-		    	if(bt.isNull(newbody)||(!bt.isNull(contenttype)&&(contenttype.contains("image")||contenttype.contains("font")))) {
+		    	if(bt.isNull(newbody)|| ( !bt.isNull(contenttype) && (contenttype.contains("image")
+					|| contenttype.contains("font")) )) {
 		    		
 //			    	HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
 //			    	
@@ -966,7 +972,11 @@ public class JupyterController {
 		    		
 		    		newheaders.set(key, "/Geoweaver/jupyter-proxy/" + hostid + value.get(0));
 		    		
-		    	}else if (key.toLowerCase().equals("content-length")){
+		    	}else if(key.toLowerCase().equals("transfer-encoding") && value.get(0).equals("chunked")){
+
+					logger.info("skip the header property of transfer encoding and value is chunked");
+					
+				}else if (key.toLowerCase().equals("content-length")){
 		    		
 //		    		logger.debug("Old Content Length: " + value);
 		    		
@@ -1153,6 +1163,15 @@ public class JupyterController {
 	    
 	}
 	
+	/**
+	 * Login Jupyter Notebook
+	 * @param method
+	 * @param hostid
+	 * @param httpheaders
+	 * @param request
+	 * @return
+	 * @throws URISyntaxException
+	 */
 	@RequestMapping(value="/jupyter-proxy/{hostid}/login", method = RequestMethod.POST)
 	public ResponseEntity jupyter_login( HttpMethod method, @PathVariable("hostid") String hostid, 
 			@RequestHeader HttpHeaders httpheaders, HttpServletRequest request) throws URISyntaxException
@@ -1174,11 +1193,11 @@ public class JupyterController {
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
-//			logger.info("Query String: " + request.getQueryString());
+			logger.info("Query String: " + request.getQueryString());
 			
-//			logger.info("Original Request String: " + request.getParameterMap());
+			logger.info("Original Request String: " + request.getParameterMap());
 			
-//			logger.info("Old Headers: " + httpheaders);
+			logger.info("Old Headers: " + httpheaders);
 			
 //			String realurl =  this.getRealRequestURL(request.getRequestURI());
 //			
@@ -1192,11 +1211,11 @@ public class JupyterController {
 //			
 //			logger.info("URL: " + uri.toString());
 //			
-//			logger.info("HTTP Method: " + method.toString());
+			logger.info("HTTP Method: " + method.toString());
 			
 			HttpHeaders newheaders = getHeaders(httpheaders, method, request, hostid);
 			
-			MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+//			MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 			
 			Iterator hmIterator = request.getParameterMap().entrySet().iterator(); 
 			  
@@ -1208,28 +1227,42 @@ public class JupyterController {
 	            
 	        	Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
 	            
-	            map.add((String)mapElement.getKey(), ((String[])(mapElement.getValue()))[0]);
-	            
-	            if(!bt.isNull(reqstr.toString())) {
+	        	String key = (String)mapElement.getKey();
+	        	
+	        	String value = (((String[])(mapElement.getValue()))[0]);
+	        	
+	        	if(!bt.isNull(reqstr.toString())) {
 	            	
 	            	reqstr.append("&");
 	            	
 	            }
-	            
-	            reqstr.append((String)mapElement.getKey()).append("=").append(((String[])(mapElement.getValue()))[0]);
+
+	        	if(key.equals("_xsrf")) {
+	        		
+	        		newheaders.set("cookie", "_xsrf="+value);
+	        		
+	        		logger.info("Cookie XSRF: " + value);
+	        		
+	        	}
+	        	
+	        	reqstr.append(key).append("=").append(value);
 	            
 	        }
-
-			
+	        
 //			HttpHeaders newheaders = this.updateHeaderReferer(httpheaders, h, realurl, request.getQueryString());
 			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
 			
-//			logger.info("Body: " + requestentity.getBody());
+			logger.info("Body: " + requestentity.getBody());
 			
-//			logger.info("New Headers: " + requestentity.getHeaders());
+			logger.info("New Headers: " + requestentity.getHeaders());
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
+			RestTemplate restTemplate1 = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+			List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+			interceptors.add(new LoggingRequestInterceptor());
+			restTemplate1.setInterceptors(interceptors);
+			
+		    ResponseEntity<String> responseEntity = restTemplate1.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, requestentity, String.class);
 		    
 		    HttpHeaders respheaders = responseEntity.getHeaders();
 		    
@@ -1273,7 +1306,7 @@ public class JupyterController {
 			    
 //			    Set ent = respheaders.entrySet();
 			    
-//			    logger.info(respheaders.toString());
+			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
 		    	

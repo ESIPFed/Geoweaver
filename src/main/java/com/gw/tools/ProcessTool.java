@@ -879,7 +879,9 @@ public class ProcessTool {
 				
 				resp.append("{ \"id\": \"").append(process_obj[0]).append("\", ");
 				
-				resp.append("\"name\": \"").append(process_obj[11]).append("\", ");
+				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
+				
+				resp.append("\"notes\": \"").append(process_obj[8]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
 				
@@ -950,7 +952,9 @@ public class ProcessTool {
 				
 				resp.append("\"id\": \"").append(first_obj[5]).append("\", ");
 				
-				resp.append("\"name\": \"").append(first_obj[11]).append("\", ");
+				resp.append("\"name\": \"").append(first_obj[12]).append("\", ");
+				
+				resp.append("\"notes\": \"").append(first_obj[8]).append("\", ");
 				
 				resp.append("\"begin_time\":\"").append(first_obj[1]).append("\", ");
 				
@@ -1023,6 +1027,8 @@ public class ProcessTool {
 				resp.append("\", \"output\": \"").append(escape(String.valueOf(row[3])));
 				
 				resp.append("\", \"status\": \"").append(escape(String.valueOf(row[4])));
+				
+				resp.append("\", \"notes\": \"").append(escape(String.valueOf(row[8])));
 				
 				resp.append("\", \"host\": \"").append(escape(String.valueOf(row[5])));
 				

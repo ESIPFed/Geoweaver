@@ -153,6 +153,8 @@ public class HostTool {
 				resp.append("\"name\": \"").append(h.getHistory_process()).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(h.getHistory_end_time()).append("\", ");
+
+				resp.append("\"notes\": \"").append(h.getHistory_notes()).append("\", ");
 				
 				resp.append("\"status\": \"").append(h.getIndicator()).append("\", ");
 				
