@@ -4,38 +4,36 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It is a perfect alternative to SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity including SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+
+It can be run from local machines.
+
+GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
+
+[Geoweaver Online API](https://zihengsun.github.io/Geoweaver/)
 
 ##### Table of Contents
 
-- [1. Project Goals](#project-goals)
-- [2. Installation](#installation)
-  * [2.1 Dependencies](#dependencies)
-  * [2.2 Quick Install](#quick-install)
+- [Software Goals](#software-goals)
+- [Installation](#installation)
+  * [Dependencies](#dependencies)
+  * [Quick Install (Recommended)](#quick-install)
+  * [Developer Install](#developer-install)
     + [Linux](#linux)
     + [Mac](#mac)
     + [Windows](#windows)
-  * [2.3 Developer Install](#developer-install)
     + [Docker](#docker)
     + [Tomcat War](#tomcat-war)
     + [Cloud VM Template](#cloud-vm-template)
-  * [2.4 Build from source](#build-from-source)
-- [3. Demo](#demo)
-- [4. Usage](#usage)
-  * [4.1 Add A Server](#add-a-server)
-  * [4.2 Create A Process](#create-a-process)
-  * [4.3 Create A Workflow](#create-a-workflow)
-  * [4.4 Run Workflow](#run-workflow)
-  * [4.5 Browse Provenance](#browse-provenance)
-  * [4.6 Retrieve and Display Results](#retrieve-and-display-results)
-  * [4.7 I/O workflows](#i-o-workflows)
-- [5. Documentation](#documentation)
-- [6. Dependencies](#dependencies)
-- [7. License](#license)
-- [8. Author](#author)
+  * [Build from source](#build-from-source)
+- [Demo](#demo)
+- [Tutorial](#tutorial)
+- [Citation](#citation)
+- [Dependencies](#dependencies)
+- [License](#license)
 
 
-# 1. Project Goals
+# Software Goals
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
 
@@ -50,23 +48,34 @@ quality of the result maps;
 5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
 Landsat image time series.
 
-# 2. Installation
+# Installation
 
-## 2.1 Dependencies
-
-If you choose "Quick Install", no need to install these dependencies separately. The install scripts will retrieve these dependencies automatically.
+## Dependencies
 
 Java 1.8+ (OpenJDK 8 or higher)
 
-Tomcat 8.0+ 
+!(only for install via docker) [Docker](https://docs.docker.com/install/) 18.09.1+
 
-Apache Maven 3.5+ (optional for building from source)
+!(only for install via docker) [Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ 
 
-[Docker](https://docs.docker.com/install/) 18.09.1+ (for install via docker)
+## Quick Install
 
-[Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ (for install via docker)
+(Recommended)
 
-## 2.2 Quick Install
+* Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
+
+* Step 2: Run the command: 
+
+```shell
+java -jar geoweaver.jar 
+```
+
+* Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
+
+## Developer Install
+
+This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
+
 
 ### Linux
 
@@ -86,7 +95,7 @@ chmod 755 install-linux.sh
 ./install-linux.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
+* Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it. 
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -106,7 +115,7 @@ chmod 755 install-mac.sh
 ./install-mac.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -125,13 +134,9 @@ cd Geoweaver
 ./install-windows.bat
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
-
-## 2.3 Developer Install
-
-This section is dedicated for high-level users who have better background on web technologies and familiar with MySQL, Tomcat and Docker. If you are not familiar with either of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. 
 
 ### Docker
 
@@ -161,9 +166,9 @@ The address is:
 http://your-ip:your-port/Geoweaver/web/geoweaver
 ```
 
-Replace the `your-ip`, `your-port` with the real domain of your tomcat. For example, `localhost:8080`.
+Replace the `your-ip`, `your-port` with the real domain of your tomcat. For example, `localhost:8070`.
 
-Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
+Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8070`. Or you can change the port to some other free ports in the docker-compose.yml.
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 
@@ -198,7 +203,7 @@ nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
 
 Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and `WEB-INF/classes/cc_secret.properties` (database username and password: database_user=root database_password=xxxxxxxx). 
 
-(**Note: the database must be initiated by the SQL file under the folder Geoweaver/docker/db first.**)
+(**Note: the MySQL database must be initiated by the SQL file under the folder Geoweaver/docker/db first. If you are using H2 database, please copy the two files: geoweaver.mv.db and geoweaver.trace.db to your user home directory before you start tomcat. **)
 
 ```shell
 mysql -u root -p < docker/db/gw.sql
@@ -236,84 +241,25 @@ To stop Geoweaver, use:
 docker stop $(docker ps -aq)
 ```
 
-## 2.4 Build from source
+## Build from source
 
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver war package will be under the directory: `Geoweaver/target/Geoweaver-<version>.war`. 
+Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver jar package will be under the directory: `Geoweaver/target/Geoweaver-<version>.jar`. 
 
-# 3. Demo
+# Demo
 
-A live demo site is available in George Mason University: [I am a link, hit me](https://cloud.csiss.gmu.edu/Geoweaver).
+[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
 
-Here is a use case of Geoweaver, using deep neural network like LSTM RNN and SegNet to classify landsat images into agricultural land use maps. In this case, Geoweaver can help stakeholders get crop maps with better accuracy and high temporal resolution by providing a deep-learning-powered and distributed workflow system. 
+# Tutorial
 
-![Result Demo](demo.png)
+[Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
 
-![LSTM-Crop concept](lstm.png)
+# Citation
 
-Animation demo:
+If you found Geoweaver helpful in your research, please cite us: 
 
-![AnimationDemo](geoweaver-demo.gif)
+Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
-
-# 4. Usage
-
-## 4.1 Add A Server
-
-Enroll a server to Geoweaver is simple. The server must have SSH server installed and enabled. The server must be accessible from Geoweaver host server. 
-
-![Add a host](addhost.gif)
-
-## 4.2 Create A Process
-
-Geoweaver supports Bash Shell scripts as processes. You can write bash command lines in the code area. Note: the commands should exist on the target hosts.
-
-![Add a process](addprocess.gif)
-
-## 4.3 Create A Workflow
-
-Geoweaver can link the processes together to form a workflow. To connect two processes, press `shift` key while dragging from one process to another.
-
-![Create a workflow](createworkflow.gif)
-
-## 4.4 Run Workflow
-
-Geoweaver can run the created workflows on the enlisted servers. During the running, Geoweaver is monitoring the status of each process. The color of process text in their circles indicate the process status. Yellow means running, green means completed, and red means failure.
-
-![Run a workflow](runworkflow.gif)
-
-## 4.5 Browse Provenance
-
-Geoweaver stores all the inputs and outputs of each process run. Users can check the workflow provenance by simply clicking.
-
-![Check provenance](checkprovenance.gif)
-
-## 4.6 Retrieve and Display Results
-
-Geoweaver can retrieve the result files of the executed workflows and visualize them if the format is supported (png, jpg, bmp, etc. The list is expanding. I am on it.).
-
-![Get result](getresult.gif)
-
-## 4.7 I/O workflows
-
-The workflows can be exported and move around and imported back.
-
-![Export workflow](exportworkflow.gif)
-
-# 5. Documentation
-
-[Project Proposal](geoweaver-proposal-revised-v4.pdf)
-
-[August Report](ESIP-Geoweaver-Report-1.docx)
-
-[September Report](ESIP-Geoweaver-Report-2.docx)
-
-[October Report](ESIP-Geoweaver-Report-3.docx)
-
-[November Report](ESIP-Geoweaver-Report-4.docx)
-
-[December Report](ESIP-Geoweaver-Report-5.docx)
-
-# 6. Dependencies
+# Dependencies
 
 This project is impossible without the support of several fantastic open source libraries.
 
@@ -327,11 +273,8 @@ This project is impossible without the support of several fantastic open source 
 
 [JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
 
-# 7. License
+# License
 
 MIT
 
-# 8. Author
-
-[developer list](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 

@@ -1337,6 +1337,7 @@ GW.host = {
 			
 		},
 		
+		
 		deleteSelectedJupyter: function(){
 			
 			if(confirm("Are you sure to remove all the selected history? This is permanent.")){
@@ -1459,6 +1460,27 @@ GW.host = {
 			
 		},
 		
+		historyTableCellUpdateCallBack: function(updatedCell, updatedRow, oldValue){
+			
+			console.log("The new value for the cell is: " + updatedCell.data());
+		    console.log("The old value for that cell was: " + oldValue);
+		    console.log("The values for each cell in that row are: " + updatedRow.data());
+
+			// The values for each cell in that row are: <input type="checkbox" class="hist-checkbox" id="selected_3naxi3l8o52j">,http://localhost:8888/api/contents/work/GMU%20workspace/COVID/covid_win_laptop.ipynb,xyz,2021-03-03 22:00:32.913,<a href="javascript: GW.host.viewJupyter('3naxi3l8o52j')">View</a> <a href="javascript: GW.host.downloadJupyter('3naxi3l8o52j')">Download</a> <a href="javascript: GW.host.deleteJupyter('3naxi3l8o52j')">Delete</a>
+
+			var thecheckbox = updatedRow.data()[0]
+
+			var hisid = $(thecheckbox).attr("id").substring(9)
+
+			console.log("history id: " + hisid)
+
+			var newvalue = updatedRow.data()[2]
+
+			GW.history.updateNotesOfAHistory(hisid, newvalue);
+			
+		},
+
+		
 		recent: function(hid){
 			
 			console.log("Show the history of all previously executed scripts/jupyter notebok");
@@ -1486,15 +1508,18 @@ GW.host = {
 				var content = "<h4 class=\"border-bottom\">Recent History  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHostHistoryBtn\" >close</button></h4>"+
 				"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
 				
-				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryBtn\" >Delete Selected</button> "+
+				"<div class=\"row\"><button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryBtn\" >Delete Selected</button> "+
+				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryNoNoteBtn\" >Delete No-Notes</button> "+
+				"<button type=\"button\" class=\"btn btn-danger btn-sm\" id=\"deleteHostHistoryAllBtn\" >Delete All</button> "+
 				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"compareHistoryBtn\" >Compare</button> "+
-				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"refreshHostHistoryBtn\" >Refresh</button> "+
+				"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"refreshHostHistoryBtn\" >Refresh</button> </div>"+
 				
-				"<table class=\"table\"> "+
+				"<table class=\"table host_history_table\"> "+
 				"  <thead> "+
 				"    <tr> "+
 				"      <th scope=\"col\"><input type=\"checkbox\" id=\"all-selected\" ></th> "+
 				"      <th scope=\"col\">Process</th> "+
+				"      <th scope=\"col\" style=\"width:200px;\">Notes (Click to Edit)</th> "+
 				"      <th scope=\"col\">Begin Time</th> "+
 //				"      <th scope=\"col\">Status</th> "+
 				"      <th scope=\"col\">Action</th> "+
@@ -1512,8 +1537,9 @@ GW.host = {
 						msg[i].id+"')\">Delete</a></td> ";
 					
 					content += "    <tr id=\"host_history_row_"+msg[i].id+"\"> "+
-						"	   <td><input type=\"checkbox\" class=\"hist-checkbox\" id=\"selected_"+msg[i].id+"\" ></td>"+
+						"	   <td><input type=\"checkbox\" class=\"hist-checkbox\" id=\"selected_"+msg[i].id+"\" /></td>"+
 						"      <td>"+msg[i].name+"</td> "+
+						"      <td>"+msg[i].notes+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
 //						status_col +
 						detailbtn + 
@@ -1524,6 +1550,29 @@ GW.host = {
 				content += "</tbody></div>";
 				
 				$("#host-history-browser").html(content);
+				
+				// initialize the tab with editable cells
+				
+				var table = $('.host_history_table').DataTable();
+
+			    table.MakeCellsEditable({
+			        "onUpdate": GW.host.historyTableCellUpdateCallBack,
+			        "columns": [2],
+			        "allowNulls": {
+			            "columns": [2],
+			            "errorClass": 'error'
+			        },
+			        "confirmationButton": { // could also be true
+			            "confirmCss": 'my-confirm-class',
+			            "cancelCss": 'my-cancel-class'
+			        },
+			        "inputTypes": [
+			            {
+			                "column": 2,
+			                "type": "text",
+			                "options": null
+			            }]
+			    });
 				
 //				$("#all-selected").on("click", function(){});
 				
@@ -1549,6 +1598,18 @@ GW.host = {
 					GW.host.deleteSelectedJupyter();
 					
 				});
+				
+				$("#deleteHostHistoryNoNoteBtn").on("click", function(){
+					
+					GW.history.deleteNoNotesJupyter(hid, GW.host.recent);
+					
+				})
+
+				$("#deleteHostHistoryAllBtn").on("click", function(){
+
+					GW.history.deleteAllJupyter(hid, GW.host.recent);
+
+				})
 				
 				$("#compareHistoryBtn").on("click", function(){
 					

@@ -4,8 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Collection;
 import javax.annotation.PostConstruct;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,7 +399,102 @@ public class HistoryTool {
 //		return resp.toString();
 		
 	}
+
+	public String deleteAllHistoryByHost(String hostid){
+
+		String resp = null;
+
+		try{
+
+			Collection<History> historylist = historyrepository.findRecentHistory(hostid, 1000);
+
+			Iterator<History> hisint = historylist.iterator();
+
+			StringBuffer idlist = new StringBuffer();
+
+			while(hisint.hasNext()) {
+				
+				History h = hisint.next();
+				
+				idlist.append(h.getHistory_id()).append(",");
+
+				historyrepository.delete(h);
+
+			}
+
+			resp = "{ \"removed_history_ids\": \"" + idlist.toString() + "\"";
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
+	}
+
+	public String deleteNoNotesHistoryByHost(String hostid){
+
+		String resp = null;
+
+		try{
+
+			Collection<History> historylist = historyrepository.findRecentHistory(hostid, 1000);
+
+			Iterator<History> hisint = historylist.iterator();
+
+			StringBuffer idlist = new StringBuffer();
+
+			while(hisint.hasNext()) {
+				
+				History h = hisint.next();
+
+				if(bt.isNull(h.getHistory_notes())){
+
+					idlist.append(h.getHistory_id()).append(",");
+
+					historyrepository.delete(h);
+
+				}
+				
+			}
+
+			resp = "{ \"removed_history_ids\": \"" + idlist.toString() + "\"";
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
+	}
 	
+	/**
+	 * Update the notes of a history
+	 */
+	public void updateNotes(String hisid, String notes){
+
+		try{
+
+			logger.info("Updating history: " + hisid + " - " + notes);
+
+			History h = this.getHistoryById(hisid);
+
+			h.setHistory_notes(notes);
+
+			this.saveHistory(h);
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+	}
+
 	/**
 	 * Save Jupyter Notebook Checkpoints into the GW database
 	 */

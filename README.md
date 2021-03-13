@@ -4,7 +4,9 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a web system allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It is a perfect alternative to SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity including SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+
+It can be run from local machines.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
@@ -12,7 +14,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 
 ##### Table of Contents
 
-- [Project Goals](#project-goals)
+- [Software Goals](#software-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
   * [Quick Install (Recommended)](#quick-install)
@@ -31,7 +33,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 - [License](#license)
 
 
-# Project Goals
+# Software Goals
 
 1) turning large-scale distributed deep network into manageable modernized workflows;
 
@@ -68,7 +70,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 java -jar geoweaver.jar 
 ```
 
-* Step 3: Open browser and entry: http://localhost:8070/Geoweaver/ .That's it!
+* Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
 
 ## Developer Install
 
@@ -93,7 +95,7 @@ chmod 755 install-linux.sh
 ./install-linux.sh
 ```
 
-* Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it. 
+* Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it. 
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -113,7 +115,7 @@ chmod 755 install-mac.sh
 ./install-mac.sh
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.sh`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.sh`
 
@@ -132,7 +134,7 @@ cd Geoweaver
 ./install-windows.bat
 ```
 
-* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8080/Geoweaver/web/geoweaver in browser to open it.
+* Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.
 
 * Optional: To stop Geoweaver, type: `install/apache-tomcat-9.0.22/bin/shutdown.bat`. To start Geoweaver again, type: `install/apache-tomcat-9.0.22/bin/startup.bat`
 
@@ -164,9 +166,9 @@ The address is:
 http://your-ip:your-port/Geoweaver/web/geoweaver
 ```
 
-Replace the `your-ip`, `your-port` with the real domain of your tomcat. For example, `localhost:8080`.
+Replace the `your-ip`, `your-port` with the real domain of your tomcat. For example, `localhost:8070`.
 
-Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8080`. Or you can change the port to some other free ports in the docker-compose.yml.
+Notice: Make sure the local services like mysql and tomcat are shut down before starting `docker-compose`. Otherwise there might be port conflict error on `3306` and `8070`. Or you can change the port to some other free ports in the docker-compose.yml.
 
 If you don't have docker or docker-compose installed, these documents will help. [docker](https://docs.docker.com/install) [docker-compose](https://docs.docker.com/compose/install/)
 

@@ -879,7 +879,9 @@ public class ProcessTool {
 				
 				resp.append("{ \"id\": \"").append(process_obj[0]).append("\", ");
 				
-				resp.append("\"name\": \"").append(process_obj[11]).append("\", ");
+				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
+				
+				resp.append("\"notes\": \"").append(process_obj[8]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
 				
@@ -901,7 +903,27 @@ public class ProcessTool {
 		
 	}
 	
-	
+	public String removeClob(String clob) {
+		
+		int fn = clob.indexOf("STRINGDECODE('");
+		
+		String substr = clob;
+		
+		if(fn!=-1) {
+			
+			fn += 14;
+			
+			substr = clob.substring(fn);
+			
+			substr = substr.substring(0, substr.length()-2);
+			
+			logger.info(substr);
+			
+		}
+		
+		return substr;
+		
+	}
 	
 	/**
 	 * get all details of one history
@@ -930,15 +952,21 @@ public class ProcessTool {
 				
 				resp.append("\"id\": \"").append(first_obj[5]).append("\", ");
 				
-				resp.append("\"name\": \"").append(first_obj[11]).append("\", ");
+				resp.append("\"name\": \"").append(first_obj[12]).append("\", ");
+				
+				resp.append("\"notes\": \"").append(first_obj[8]).append("\", ");
 				
 				resp.append("\"begin_time\":\"").append(first_obj[1]).append("\", ");
 				
 				resp.append("\"end_time\":\"").append(first_obj[2]).append("\", ");
 				
-				resp.append("\"input\":\"").append(escape(String.valueOf(first_obj[3]))).append("\", ");
+				String input_code = escape(String.valueOf(first_obj[3]));
 				
-				resp.append("\"output\":\"").append(escape(String.valueOf(first_obj[4]))).append("\", ");
+				resp.append("\"input\":\"").append(removeClob(input_code)).append("\", ");
+				
+				String output_code = escape(String.valueOf(first_obj[4]));
+				
+				resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
 				
 				resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[7]))).append("\", ");
 				
@@ -999,6 +1027,8 @@ public class ProcessTool {
 				resp.append("\", \"output\": \"").append(escape(String.valueOf(row[3])));
 				
 				resp.append("\", \"status\": \"").append(escape(String.valueOf(row[4])));
+				
+				resp.append("\", \"notes\": \"").append(escape(String.valueOf(row[8])));
 				
 				resp.append("\", \"host\": \"").append(escape(String.valueOf(row[5])));
 				
