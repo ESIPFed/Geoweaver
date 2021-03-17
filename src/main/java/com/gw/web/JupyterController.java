@@ -225,6 +225,9 @@ public class JupyterController {
 				.replace("'/user/", "'/Geoweaver/jupyter-proxy/"+hostid+"/user/")
 				.replace("data-base-url=\"/user/", "data-base-url=\"/Geoweaver/jupyter-proxy/"+hostid+"/user/")
 				
+				//for jupyterlab
+				.replace("\"baseUrl\": \"/\"", "\"baseUrl\": \"/Geoweaver/jupyter-proxy/"+hostid+"/\"")
+
 				;
 		
 		return resp;
