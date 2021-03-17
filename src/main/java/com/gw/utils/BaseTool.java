@@ -527,14 +527,14 @@ public class BaseTool {
 			
 			URL aURL = new URL(url);
 
-//			logger.debug("protocol = " + aURL.getProtocol());
-//			logger.debug("authority = " + aURL.getAuthority());
-//			logger.debug("host = " + aURL.getHost());
-//			logger.debug("port = " + aURL.getPort());
-//			logger.debug("path = " + aURL.getPath());
-//			logger.debug("query = " + aURL.getQuery());
-//			logger.debug("filename = " + aURL.getFile());
-//			logger.debug("ref = " + aURL.getRef());
+			// logger.debug("protocol = " + aURL.getProtocol());
+			// logger.debug("authority = " + aURL.getAuthority());
+			// logger.debug("host = " + aURL.getHost());
+			// logger.debug("port = " + aURL.getPort());
+			// logger.debug("path = " + aURL.getPath());
+			// logger.debug("query = " + aURL.getQuery());
+			// logger.debug("filename = " + aURL.getFile());
+			// logger.debug("ref = " + aURL.getRef());
 			
 			cc[0] = aURL.getProtocol();
 			cc[1] = aURL.getHost();

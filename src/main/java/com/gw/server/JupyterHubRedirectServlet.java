@@ -20,9 +20,12 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
+import com.gw.tools.JupyterSessionPairTool;
+import com.gw.tools.SessionPair;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 
@@ -46,129 +49,18 @@ public class JupyterHubRedirectServlet{
 //	@Autowired
 //	Java2JupyterClientEndpoint client;
 	
-	public static List<SessionPair> pairs = new ArrayList();
+	// public static List<SessionPair> pairs = new ArrayList();
 	
-//	@Autowired
+	// @Autowired
 	HostTool ht;
 	
-//	@Autowired
+	// @Autowired
 	BaseTool bt;
+
 	
 	public JupyterHubRedirectServlet() {
 		
 		logger.debug("Initializing JupyterHub Websocket Session...");
-		
-	}
-	
-	/**
-	 * First session is between browser and geoweaver
-	 * @param b2gsession
-	 * @return
-	 */
-	public static SessionPair findPairBy1stSession(Session b2gsession) {
-		
-		SessionPair pair = null;
-		
-		for(SessionPair p : pairs) {
-			
-			if(p.getBrowse_geoweaver_session()==b2gsession) {
-				
-				pair = p;
-				
-				break;
-				
-			}
-			
-		}
-		
-		return pair;
-		
-	}
-	
-	public static SessionPair findPairByID(String pairid) {
-		
-		SessionPair pair = null;
-		
-		for(SessionPair p : pairs) {
-			
-			if(p.getId().equals(pairid)) {
-				
-				pair = p;
-				
-				break;
-				
-			}
-			
-		}
-		
-		return pair;
-		
-	}
-	
-	/**
-	 * 2nd session is between geoweaver and jupyter
-	 * @param b2gsession
-	 * @return
-	 */
-	public static SessionPair findPairBy2ndSession(Java2JupyterClientEndpoint g2jclient) {
-		
-		SessionPair pair = null;
-		
-		for(SessionPair p : pairs) {
-			
-			if(p.getGeoweaver_jupyter_client()==g2jclient) {
-				
-				pair = p;
-				
-				break;
-				
-			}
-			
-		}
-		
-		return pair;
-		
-	}
-	
-	public static void removeClosedPair() {
-		
-		for(SessionPair p : pairs) {
-			
-			if(!p.getBrowse_geoweaver_session().isOpen() ) {
-				
-				System.out.println("Detected one browser_geoweaver_session is closed. Removing it...");
-				
-				pairs.remove(p);
-				
-			}
-			
-			if(!p.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().isOpen()) {
-				
-				System.out.println("Detected one geoweaver jupyter session is closed. Removing it...");
-				
-				pairs.remove(p);
-				
-			}
-			
-		}
-		
-	}
-	
-	public static void removePairByID(String id) {
-		
-		for(SessionPair p : pairs) {
-			
-			if(p.getId().equals(id)) {
-				
-				System.out.println("Detected one session pair is closed on one of the websocket session. Removing it...");
-				
-				pairs.remove(p);
-				
-				break;
-				
-			}
-			
-		}
 		
 	}
 	
@@ -187,7 +79,7 @@ public class JupyterHubRedirectServlet{
 		}	
 		
 //		SessionPair pair = findPairBy1stSession(b2gsession);
-		SessionPair pair = this.findPairByID(b2gsession.getQueryString());
+		SessionPair pair = JupyterSessionPairTool.findPairByID(b2gsession.getQueryString());
 		
 		if(bt.isNull(pair)) {
 			
@@ -201,7 +93,7 @@ public class JupyterHubRedirectServlet{
 			
 			pair.setGeoweaver_jupyter_client(client);
 			
-			pairs.add(pair);
+			JupyterSessionPairTool.pairs.add(pair);
 			
 			logger.debug("New Pair is created: ID: " + pair.getId());
 			
@@ -258,7 +150,7 @@ public class JupyterHubRedirectServlet{
 			
 //			client = new Java2JupyterClientEndpoint(new URI(trueurl), session, headers, h);
 			
-			SessionPair pair = this.findPairByID(session.getQueryString());
+			SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
 //			
 			pair.getGeoweaver_jupyter_client().init(new URI(trueurl), session, headers, h, pair.getId());
 			
@@ -294,7 +186,7 @@ public class JupyterHubRedirectServlet{
     		
 //    		SessionPair pair = findPairBy1stSession(session);
     		
-    		SessionPair pair = this.findPairByID(session.getQueryString());
+    		SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
     		
     		if(bt.isNull(pair)) {
     			
@@ -333,13 +225,13 @@ public class JupyterHubRedirectServlet{
     		logger.error("Channel closed.");
     		
 //    		SessionPair pair = findPairBy1stSession(session);
-    		SessionPair pair = this.findPairByID(session.getQueryString());
+    		SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
         	
     		if(!bt.isNull(pair)) {
     			
     			pair.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().close(); //close websocket connection
         		
-        		pairs.remove(pair);
+        		JupyterSessionPairTool.pairs.remove(pair);
     			
 //    			client.getNew_ws_session_between_geoweaver_and_jupyterserver().close();
     			
@@ -357,69 +249,5 @@ public class JupyterHubRedirectServlet{
     
     
     
-    
-    public class SessionPair{
-    	
-    	String id;
-    	
-    	Session browse_geoweaver_session;
-    	
-    	Java2JupyterClientEndpoint geoweaver_jupyter_client;
-    	
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-		
-		public Session findOpenSession() {
-			
-			Set<Session> sessionset = browse_geoweaver_session.getOpenSessions();
-			
-			Iterator it = sessionset.iterator();
-			
-			Session session = browse_geoweaver_session;
-			
-		     while(it.hasNext()){
-//		        System.out.println(it.next());
-		    	 
-		    	 Session cs = (Session)it.next();
-		    	 
-		    	 if(id.equals(cs.getQueryString())) {
-		    		 
-		    		 session = cs;
-		    		 
-		    		 break;
-		    		 
-		    	 }
-		    	 
-		     }
-		     
-		     return session;
-			
-		}
-
-		public Session getBrowse_geoweaver_session() {
-			
-			return findOpenSession();
-		}
-
-		public void setBrowse_geoweaver_session(Session browse_geoweaver_session) {
-			
-			this.browse_geoweaver_session = browse_geoweaver_session;
-			
-		}
-
-		public Java2JupyterClientEndpoint getGeoweaver_jupyter_client() {
-			return geoweaver_jupyter_client;
-		}
-
-		public void setGeoweaver_jupyter_client(Java2JupyterClientEndpoint geoweaver_jupyter_client) {
-			this.geoweaver_jupyter_client = geoweaver_jupyter_client;
-		}
-    	
-    }
     
 }

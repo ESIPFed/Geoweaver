@@ -66,6 +66,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     	http.cors().and().csrf().disable();
     	
     	http.headers().frameOptions().disable();
+
+		http.headers().disable(); //this must be turned off to make the JupyterHub work
     	
         super.configure(http);
 //        http
