@@ -1,10 +1,2 @@
 language: java
-deploy:
-  provider: releases
-  file_glob: true
-  file: "**/*.war"
-  skip_cleanup: true
-  on:
-    repo: ESIPFed/Geoweaver
-    tags: true
 
