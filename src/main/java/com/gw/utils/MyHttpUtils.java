@@ -432,12 +432,6 @@ public class MyHttpUtils
 			// create a request
 			System.out.println("Testing JupyterHub Request..");
 
-			// username=zsun&password=Starwar0529
-			// java.util.Map values = new java.util.HashMap<String, String>() {{
-			// 	put("username", "zsun");
-			// 	put ("password", "Starwar0529");
-			// }};
-	
 			// ObjectMapper objectMapper = new ObjectMapper();
 			// String requestBody = objectMapper.writeValueAsString(values);
 			org.springframework.http.HttpHeaders headers = requestentity.getHeaders();
@@ -569,26 +563,7 @@ public class MyHttpUtils
 			// Upgrade-Insecure-Requests: 1
 			// create a request
 			System.out.println("Testing JupyterHub Request..");
-			// username=zsun&password=Starwar0529
-			// java.util.Map values = new java.util.HashMap<String, String>() {{
-			// 	put("username", "zsun");
-			// 	put ("password", "Starwar0529");
-			// }};
-	
-			// ObjectMapper objectMapper = new ObjectMapper();
-			// String requestBody = objectMapper.writeValueAsString(values);
-			// String[] headers = new String[]{"Cache-Control: max-age=0", 
-			// 	"Upgrade-Insecure-Requests: 1",
-			// 	"Content-Type: application/x-www-form-urlencoded",
-			// 	"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
-			// 	"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-			// 	"Sec-Fetch-Site: same-origin",
-			// 	"Sec-Fetch-Mode: navigate",
-			// 	"Sec-Fetch-User: ?1",
-			// 	"Sec-Fetch-Dest: document",
-			// 	"Cookie: _xsrf=2|c0891671|6a2f9feb3275ae40b57960c55db32f51|1615354056",
-			// 	"Upgrade-Insecure-Requests: 1"
-			// };
+
 			java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder(URI.create("http://geoweaver2.eastus.cloudapp.azure.com:8000/hub/login?next="))
 				// .headers(headers)
 				.header("Cache-Control", "max-age=1")
@@ -603,7 +578,7 @@ public class MyHttpUtils
 				.header("Cookie", "_xsrf=2|c0891671|6a2f9feb3275ae40b57960c55db32f51|1615354056")
 				.header("Upgrade-Insecure-Requests", "1")
 				.version(java.net.http.HttpClient.Version.HTTP_1_1)
-				.POST(java.net.http.HttpRequest.BodyPublishers.ofString("username=zsun&password=Starwar0529"))
+				.POST(java.net.http.HttpRequest.BodyPublishers.ofString("username=%%%%%%%%%%%%%&password=###########################"))
 				.build();
 
 			System.out.println(request.headers().map());
