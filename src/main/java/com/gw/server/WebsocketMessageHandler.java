@@ -5,7 +5,8 @@ import javax.websocket.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gw.server.JupyterRedirectServlet.SessionPair;
+import com.gw.tools.JupyterSessionPairTool;
+import com.gw.tools.SessionPair;
 
 /**
  * WebSocket Message Handler
@@ -35,7 +36,7 @@ public class WebsocketMessageHandler implements MessageHandler.Whole<String>{
 			
 //			logger.debug(pairid + "Message from Jupyter: " + message);
 			
-			SessionPair pair = JupyterRedirectServlet.findPairByID(pairid);
+			SessionPair pair = JupyterSessionPairTool.findPairByID(pairid);
 			
 			if(pair==null) {
 				
@@ -44,40 +45,40 @@ public class WebsocketMessageHandler implements MessageHandler.Whole<String>{
 //				throw new RuntimeException("The pair is null " + pairid);
 				logger.debug("the pair is null " + pairid);
 				
-			}else {
+				return;
+			}
 				
-				jssession = pair.getBrowse_geoweaver_session();
+			jssession = pair.getBrowse_geoweaver_session();
+			
+			synchronized(jssession) {
+			
 				
-				synchronized(jssession) {
-				
-	        		
-	        	
+			
 //	            	logger.debug("send this message back to the client");
-	            	
-	            	if(jssession!=null && jssession.isOpen() && message!=null) {
-	            		
-	            		jssession.getBasicRemote().sendText(message);
-	            		
+				
+				if(jssession!=null && jssession.isOpen() && message!=null) {
+					
+					jssession.getBasicRemote().sendText(message);
+					
 //	            		logger.debug(pair.getId() + " transferred to browser");
-	            		
-	            	}else {
-	            		
-	            		logger.warn(pair.getId() + "The websocket between browser and geoweaver is null or closed");
-	            		
-	            	}
-	            	
-	            	
+					
+				}else {
+					
+					logger.warn(pair.getId() + "The websocket between browser and geoweaver is null or closed");
+					
+				}
+				
+				
 //	            	if(!bt.isNull(window)) {
 //	            		
 //	            		window.writeServerMessage(message);
 //	            		
 //	            	}
 //	              session.getBasicRemote().sendText("Got message from " + session.getId() + "\n" + message);
-	        	
+			
 
-		    	}
-				
 			}
+			
 			
 		} catch (Exception ex) {
 			

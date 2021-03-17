@@ -26,7 +26,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.gw.jpa.Host;
-import com.gw.server.JupyterRedirectServlet.SessionPair;
+import com.gw.tools.JupyterSessionPairTool;
+import com.gw.tools.SessionPair;
 import com.gw.utils.BaseTool;
 
 /**
@@ -292,7 +293,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //	        this.new_ws_session_between_geoweaver_and_jupyterserver = null;
 //	    	logger.debug("The connection between Javascript and Geoweaver is closed. ");
 	    	
-	    	SessionPair pair = JupyterRedirectServlet.findPairByID(this.pairid);
+	    	SessionPair pair = JupyterSessionPairTool.findPairByID(this.pairid);
 	    	
 	    	if(!bt.isNull(pair)) {
 	    		
