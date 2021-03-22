@@ -1304,7 +1304,7 @@ public class GeoweaverController {
     		
     		e.printStackTrace();
     		
-    		throw new RuntimeException();
+    		throw new RuntimeException(e.getLocalizedMessage());
     		
     	}
     	
