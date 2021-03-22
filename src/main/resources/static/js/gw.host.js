@@ -659,7 +659,7 @@ GW.host = {
 		                			
 		                		}else{
 		                			
-		                			alert("Fail to open SSH session");
+		                			alert("Username or Password is wrong or the server is not accessible");
 		                			
 		                		}
 		                		try{
@@ -669,7 +669,7 @@ GW.host = {
 		                		
 		                	}).fail(function(status){
 		                		
-		                		alert("Fail to open SSH session" + status);
+		                		alert("Username or Password is wrong or the server is not accessible" + status);
 		                		
 		                		$("#ssh-connect-btn").prop("disabled", false);
 		                		
@@ -737,7 +737,7 @@ GW.host = {
 		                		
 	                		}else{
 	                			
-	                			alert("Fail to open SSH session");
+	                			alert("Username or Password is wrong or the server is not accessible");
 	                			
 	                			GW.host.setCache(hostid, null);
 	                			
@@ -745,7 +745,7 @@ GW.host = {
 	                		
 	                	}).fail(function(status){
 	                		
-	                		alert("Fail to open SSH session" + status);
+	                		alert("Username or Password is wrong or the server is not accessible" + status);
 	                		
 	                		GW.host.setCache(hostid, null);
 	                		//$("#ssh-connect-btn").prop("disabled", false);
