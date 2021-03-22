@@ -814,6 +814,13 @@ GW.host = {
 			" </li>");
 			
 		},
+
+		expand: function(one){
+			
+			console.log("EXPAND host type")
+			
+			$("#host_folder_"+one.type+"_target").collapse("show");
+		},
 		
 		list: function(msg){
 			
@@ -995,6 +1002,8 @@ GW.host = {
 		    		msg = $.parseJSON(msg);
 		    		
 		    		GW.host.addMenuItem(msg);
+
+					GW.host.expand(msg);
 		    		
 		    		callback();
 		    		
