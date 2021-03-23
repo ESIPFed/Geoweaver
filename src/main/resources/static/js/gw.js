@@ -1,6 +1,4 @@
 /**
-*
-* author: Ziheng Sun
 * 
 * date: 20180925
 * 
@@ -18,11 +16,11 @@ edu = {
 							
 					sponsor: "ESIPLab incubator project",
 					
-					version: "0.8.6",
+					version: "0.9.2",
 					
-					author: "Ziheng Sun",
+					author: "open source contributors",
 					
-					institute: "George Mason University"
+					institute: "NASA, NSF, George Mason University, ESIP, University of Texas Austin, University of Washington, University of Idaho, "
 					
 				}
 			}
