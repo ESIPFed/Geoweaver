@@ -233,6 +233,8 @@ GW.workflow = {
 					GW.workflow.addMenuItem(msg);
 					
 					console.log("the workflow is added");
+
+					GW.workflow.expand(msg);
 					
 					GW.workflow.loaded_workflow = msg.id;
 					
@@ -1423,6 +1425,13 @@ GW.workflow = {
 				"</li>");
 		
 	},
+	expand: function(one){
+			
+		console.log("EXPAND Workflow")
+		
+		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
+	},
+
 	
 	list: function(msg){
 		
