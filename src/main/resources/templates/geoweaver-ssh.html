@@ -8,16 +8,18 @@
     
     <title>Geoweaver-SSH-Web</title>
     
-    
+    <link rel="stylesheet" href="../css/xterm.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js" integrity="sha512-2PRgAav8Os8vLcOAh1gSaDoNLe1fAyq8/G3QSdyjFFD+OqNjLeHE/8q4+S4MEZgPsuo+itHopj+hJvqS8XUQ8A==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/fit/fit.min.js" integrity="sha512-+wh8VA1djpWk3Dj9/IJDu6Ufi4vVQ0zxLv9Vmfo70AbmYFJm0z3NLnV98vdRKBdPDV4Kwpi7EZdr8mDY9L8JIA==" crossorigin="anonymous"></script>
     <script src="../ssh/sockjs.js"  th:src="@{../geoweaver/ssh/sockjs.js}"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
     <script src="../js/jquery-3.2.1.min.js"></script>
     
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.23.2/js/jquery.terminal.min.js"></script>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.23.2/css/jquery.terminal.min.css" rel="stylesheet"/> -->
-    <script src="../ssh/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <!-- <script src="../ssh/jquery.terminal/js/jquery.terminal.min.js"></script>
 	<link href="../ssh/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet"/>
-	<script src="../ssh/jquery.terminal/js/unix_formatting.js"></script>
+	<script src="../ssh/jquery.terminal/js/unix_formatting.js"></script> -->
     <!-- <script src="jquery.min.js"></script>
     
     <script src="jquery.terminal/js/jquery.mousewheel-min.js"></script>
@@ -32,7 +34,7 @@
             color: yellow;
         }
         
-        #content.terminal {
+        /* #content.terminal {
         	
 	        font-size: calc(var(--size, 1) * 15px) !important;
 	        
@@ -50,7 +52,7 @@
 	        
 	        white-space: nowrap !important;
 	        
-	    }
+	    } */
 	    
     </style>
 </head>
@@ -73,8 +75,21 @@
     var user = [[${username}]], 
 	host = [[${host}]], 
 	port = [[${port}]], 
-	token = [[${token}]];
-      
+    token = [[${token}]];
+
+
+    var terminalContainer = document.getElementById("content");
+    var term = new Terminal({ cursorBlink: true });
+    term.open(terminalContainer);
+    // term.fit();
+    term.write("\r\n*** xTerm.js! ***\r\n");
+    term.on('key', (key, ev) => {
+        console.log(key.charCodeAt(0));
+        if (key.charCodeAt(0) == 13)
+            term.write('\n');
+        term.write(key);
+    });
+
     /*]]>*/
     </script> 
     <script src="../js/gw.sshterm.js" ></script>
