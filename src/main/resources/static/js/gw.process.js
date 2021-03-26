@@ -1363,6 +1363,15 @@ GW.process = {
 			var instanceid = GW.workspace.theGraph.addProcess(one.id, one.name);
 			
 		},
+
+		expand: function(folder){
+			
+			console.log("EXPAND Process type")
+			
+			$("#process_folder_"+folder+"_target").collapse("show");
+		//	$("#"+GW.menu.getPanelIdByType("process")).collapse("show");
+			
+		},
 		
 		list: function(msg){
 			
@@ -1513,6 +1522,8 @@ GW.process = {
 		    		msg.desc = req.desc;
 		    		
 		    		GW.process.addMenuItem(msg, req.desc);
+
+					GW.process.expand(req.desc);
 		    		
 		    		if(run)
 		    				
