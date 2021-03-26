@@ -79,6 +79,18 @@
 	port = [[${port}]], 
     token = [[${token}]];
 
+    function getWsPrefixURL (){
+	
+        var s = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/";
+        
+    //	s +=  "Geoweaver/";
+        
+        console.log("Ws URL Prefix: ", s)
+        
+        return s
+        
+    }
+
 
     var terminalContainer = document.getElementById("content");
     var term = new Terminal({ cursorBlink: true });
@@ -94,31 +106,32 @@
     });
 
     // // connecting to backend
-    socket = io.connect();
+    socket = io(getWsPrefixURL() + "Geoweaver/terminal-socket");
+    // socket = io.connect();
     socket.on("connect", function() {
-    term.write("\r\n*** Connected to backend***\r\n");
+        term.write("\r\n*** Connected to backend***\r\n");
 
-    // Browser -> Backend
-    term.on("data", function(data) {
-        //console.log(data);
-        socket.emit("data", data);
-    });
+        // Browser -> Backend
+        term.on("data", function(data) {
+            console.log(data);
+            socket.emit("data", data);
+        });
 
-    // Backend -> Browser
-    socket.on("data", function(data) {
-        term.write(data);
-    });
+        // Backend -> Browser
+        socket.on("data", function(data) {
+            term.write(data);
+        });
 
-    socket.on("disconnect", function() {
-        term.write("\r\n*** Disconnected from backend***\r\n");
-    });
+        socket.on("disconnect", function() {
+            term.write("\r\n*** Disconnected from backend***\r\n");
+        });
     });
 
 
 
     /*]]>*/
     </script> 
-    <script src="../js/gw.sshterm.js" ></script>
+    <!--<script src="../js/gw.sshterm.js" ></script>-->
     
     
 </body>
