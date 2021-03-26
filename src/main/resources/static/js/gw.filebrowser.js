@@ -249,18 +249,27 @@ GW.filebrowser = {
 			var patt1 = /\.([0-9a-z]+)(?:[\?#]|$)/i;
 			
 			var suffix = file_name.match(patt1);
-			
-			if(Number(file_size) < 10*1024*1024 && GW.filebrowser.isIn(suffix[1],["txt", "py", "sh", "java", "log", "js", "r", "c", "cpp", "f", "go", "sql", "php", "perl", "js"]) ){
+
+			if(suffix !== null){
+				if(Number(file_size) < 10*1024*1024 && GW.filebrowser.isIn(suffix[1],["txt", "py", "sh", "java", "log", "js", "r", "c", "cpp", "f", "go", "sql", "php", "perl", "js"]) ){
 				
-				//edit the file
-				GW.filebrowser.openFileEditor(file_name);
-				
+					//edit the file
+					GW.filebrowser.openFileEditor(file_name);
+					
+				}else{
+					
+					//directly download the file
+					GW.filebrowser.downloadFile(file_name);
+					
+				}
 			}else{
-				
+					
 				//directly download the file
 				GW.filebrowser.downloadFile(file_name);
 				
 			}
+			
+			
 			
 		},
 		

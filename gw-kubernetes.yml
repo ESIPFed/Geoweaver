@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: geoweaver
+  name: geoweaver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geoweaver
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: geoweaver
+    spec:
+      containers:
+      - image: jensensun/geoweaver
+        name: geoweaver
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: geoweaver
+  name: geoweaver
+spec:
+  ports:
+  - name: 8070-8070
+    port: 8070
+    protocol: TCP
+    targetPort: 8070
+  selector:
+    app: geoweaver
+  type: LoadBalancer
+status:
+  loadBalancer: {}

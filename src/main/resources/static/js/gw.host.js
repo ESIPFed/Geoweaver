@@ -659,7 +659,7 @@ GW.host = {
 		                			
 		                		}else{
 		                			
-		                			alert("Fail to open SSH session");
+		                			alert("Username or Password is wrong or the server is not accessible");
 		                			
 		                		}
 		                		try{
@@ -669,7 +669,7 @@ GW.host = {
 		                		
 		                	}).fail(function(status){
 		                		
-		                		alert("Fail to open SSH session" + status);
+		                		alert("Username or Password is wrong or the server is not accessible" + status);
 		                		
 		                		$("#ssh-connect-btn").prop("disabled", false);
 		                		
@@ -737,7 +737,7 @@ GW.host = {
 		                		
 	                		}else{
 	                			
-	                			alert("Fail to open SSH session");
+	                			alert("Username or Password is wrong or the server is not accessible");
 	                			
 	                			GW.host.setCache(hostid, null);
 	                			
@@ -745,7 +745,7 @@ GW.host = {
 	                		
 	                	}).fail(function(status){
 	                		
-	                		alert("Fail to open SSH session" + status);
+	                		alert("Username or Password is wrong or the server is not accessible" + status);
 	                		
 	                		GW.host.setCache(hostid, null);
 	                		//$("#ssh-connect-btn").prop("disabled", false);
@@ -813,6 +813,13 @@ GW.host = {
 				
 			" </li>");
 			
+		},
+
+		expand: function(one){
+			
+			console.log("EXPAND host type")
+			
+			$("#host_folder_"+one.type+"_target").collapse("show");
 		},
 		
 		list: function(msg){
@@ -995,6 +1002,8 @@ GW.host = {
 		    		msg = $.parseJSON(msg);
 		    		
 		    		GW.host.addMenuItem(msg);
+
+					GW.host.expand(msg);
 		    		
 		    		callback();
 		    		
