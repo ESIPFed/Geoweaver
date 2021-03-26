@@ -14,9 +14,9 @@ edu = {
 							"by taking advantage of the distributed online spatial data facilities, high-performance " +
 							"computation platforms, and open-source deep learning libraries. ",
 							
-					sponsor: "ESIPLab incubator project",
+					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project",
 					
-					version: "0.9.2",
+					version: "0.9.3",
 					
 					author: "open source contributors",
 					

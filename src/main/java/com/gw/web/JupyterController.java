@@ -571,6 +571,8 @@ public class JupyterController {
 		try {
 			
 			logger.debug("==============");
+
+			logger.debug("PUT request...");
 			
 			logger.debug("Request URI: " + request.getRequestURI());
 			
@@ -1460,7 +1462,9 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.DELETE)
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.DELETE,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
 	public ResponseEntity proxydelete( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = processDelete(reqentity, method, request, hostid);
@@ -1469,7 +1473,9 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PATCH)
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PATCH,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
 	public ResponseEntity proxypatch( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = processPatch(reqentity, method, request, hostid);
@@ -1478,7 +1484,9 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PUT)
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PUT,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
 	public ResponseEntity proxyput( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = processPut(reqentity, method, request, hostid);
