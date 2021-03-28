@@ -907,7 +907,7 @@ GW.host = {
 					
 				}
 				
-			}else if(hosttype=="jupyter" || hosttype=="jupyterhub"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" || hosttype=="jupyterlab"){
 				
 				if($("#hostname").val()&&$("#jupyter_home_url").val()){
 					
@@ -1153,7 +1153,7 @@ GW.host = {
 		        				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
 				
-			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" ){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" || hosttype=="jupyterlab" ){
 				
 				content += "<i class=\"fas fa-chart-line subalignicon\" onclick=\"GW.host.recent('" +
 				
@@ -1677,6 +1677,21 @@ GW.host = {
 			       '     </div>'+
 			       '   	</div>';
 				
+			}else if(host_type=="jupyterlab"){
+				
+				content = '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+			       '     </div>'+
+			       '   	</div>'+
+			       '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterLab URL </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+			       '     </div>'+
+			       '   	</div>';
+				
 			}else if(host_type == "ssh") {
 				
 				content = '   	<div class="form-group row required">'+
@@ -1753,6 +1768,7 @@ GW.host = {
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
 			   '    		<option value="jupyterhub">JupyterHub</option> '+
+			   '    		<option value="jupyterlab">Jupyter Lab</option> '+
 			   '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+

@@ -1,31 +1,26 @@
 package com.gw.tools;
 
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.database.HistoryRepository;
+import com.gw.database.ProcessRepository;
+import com.gw.jpa.ExecutionStatus;
+import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
+import com.gw.ssh.SSHSession;
+import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
+import com.gw.web.GeoweaverController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gw.database.DataBaseOperation;
-import com.gw.database.HistoryRepository;
-import com.gw.database.ProcessRepository;
-import com.gw.jpa.ExecutionStatus;
-import com.gw.jpa.History;
-import com.gw.jpa.Workflow;
-import com.gw.jpa.GWProcess;
-import com.gw.ssh.SSHSession;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
-import com.gw.web.GeoweaverController;
 
 @Service
 public class ProcessTool {
