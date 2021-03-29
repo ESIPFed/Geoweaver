@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../css/xterm.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js" integrity="sha512-2PRgAav8Os8vLcOAh1gSaDoNLe1fAyq8/G3QSdyjFFD+OqNjLeHE/8q4+S4MEZgPsuo+itHopj+hJvqS8XUQ8A==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/fit/fit.min.js" integrity="sha512-+wh8VA1djpWk3Dj9/IJDu6Ufi4vVQ0zxLv9Vmfo70AbmYFJm0z3NLnV98vdRKBdPDV4Kwpi7EZdr8mDY9L8JIA==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/addons/attach/attach.min.js" integrity="sha512-43J76SR5UijcuJTzs73z8NpkyWon8a8EoV+dX6obqXW7O26Yb268H2vP6EiJjD7sWXqxS3G/YOqPyyLF9fmqgA==" crossorigin="anonymous"></script>
 
     <!-- <script src="../ssh/sockjs.js"  th:src="@{../geoweaver/ssh/sockjs.js}"></script> -->
     <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> -->
@@ -55,7 +55,9 @@
 	        white-space: nowrap !important;
 	        
 	    } */
-	    
+	    /* .terminal {
+            height: 50%
+        } */
     </style>
 </head>
 
@@ -79,46 +81,86 @@
 	port = [[${port}]], 
     token = [[${token}]];
 
+    function getWsPrefixURL (){
+	
+        var s = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/";
+        
+    //	s +=  "Geoweaver/";
+        
+        console.log("Ws URL Prefix: ", s)
+        
+        return s
+        
+    }
 
+    // Get div, and initialize terminal object
     var terminalContainer = document.getElementById("content");
-    var term = new Terminal({ cursorBlink: true });
+    var term = new Terminal({ cursorBlink: true, rows:30});
     term.open(terminalContainer);
-    term.write("\r\n*** xTerm.js! ***\r\n");
+    // fit.fit(term);
+    // term.fit()
 
-    // This block is just for testing interactivity. can be deleted
-    term.on('key', (key, ev) => {
-        console.log(key.charCodeAt(0));
-        if (key.charCodeAt(0) == 13)
-            term.write('\n');
-        term.write(key);
-    });
+    // // connecting to backend socket
+    var socket = new WebSocket(getWsPrefixURL() + "Geoweaver/terminal-socket");
 
-    // // connecting to backend
-    socket = io.connect();
-    socket.on("connect", function() {
-    term.write("\r\n*** Connected to backend***\r\n");
+    // When connection is established
+    socket.onopen = function(event) {
 
-    // Browser -> Backend
-    term.on("data", function(data) {
-        //console.log(data);
-        socket.emit("data", data);
-    });
+        term.write(`\r\n*** Connected ${user}@${host}***\r\n`);
+        term.write(`\r\n Click here and press Enter\r\n`);
+        
+        // term.attach(socket);
+        console.log("Connected to.." + getWsPrefixURL() + "Geoweaver/terminal-socket");
 
-    // Backend -> Browser
-    socket.on("data", function(data) {
-        term.write(data);
-    });
+        // holds user input to send
+        var text = "";
 
-    socket.on("disconnect", function() {
-        term.write("\r\n*** Disconnected from backend***\r\n");
-    });
-    });
+        // When user starts typing...
+        term.on('key', (data, ev) => {
+
+            text += data
+
+            term.write(data);
+            // console.log(data)
+            
+            // if "Enter" key is pressed, send user input
+            if (ev.keyCode === 13){
+                socket.send(text);
+                 text = "";
+
+              // Backspace
+            } else if (ev.keyCode === 8) {
+                // Backspace
+                term.write("\b\b");
+
+            }
+        });
+
+        // Handle pasted text
+        term.on("paste", function(data) {
+
+            term.write(data);
+        });
+    };
+
+    // When message is received
+    socket.onmessage = function(event) {
+        // console.log(event.data);
+        term.write("\r\n"+event.data);
+        term.write('');
+    };
+
+    // if error occurs..
+    socket.onerror = function(error) {
+        console.log(`SSH-Terminal [error] ${error.message}`);
+    };
+
 
 
 
     /*]]>*/
     </script> 
-    <script src="../js/gw.sshterm.js" ></script>
+    <!--<script src="../js/gw.sshterm.js" ></script>-->
     
     
 </body>
