@@ -525,7 +525,7 @@ GW.host = {
 			var frame = "<h4 class=\"border-bottom\">SSH Terminal Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeSSHTerminal\" >close</button></h4>"+
 			
 			"<iframe src=\"geoweaver-ssh?token="+
-			token+"\" style=\"height: 700px; max-height:1000px;width:100%;\"></iframe>"
+			token+"\" style=\"height:700px; max-height:1000px;width:100%;\"></iframe>"
 			
 			$("#ssh-terminal-iframe").html(frame);
 			
