@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -68,6 +70,33 @@ public class BaseTool {
 		
 		
 	}
+
+	public String getBody(HttpServletRequest req) {
+		String body = "";
+		StringBuilder sb = new StringBuilder();
+		BufferedReader bufferedReader = null;
+	
+		try {
+		bufferedReader =  req.getReader();
+		char[] charBuffer = new char[128];
+		int bytesRead;
+		while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
+			sb.append(charBuffer, 0, bytesRead);
+		}
+		} catch (IOException ex) {
+		// swallow silently -- can't get body, won't
+		} finally {
+		if (bufferedReader != null) {
+			try {
+			bufferedReader.close();
+			} catch (IOException ex) {
+			// swallow silently -- can't get body, won't
+			}
+		}
+		}
+		body = sb.toString();
+		return body;
+	  }
 	
 	/**
 	 * Normalize the path
