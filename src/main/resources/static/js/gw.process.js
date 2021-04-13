@@ -814,8 +814,9 @@ GW.process = {
 			    return target.replace(new RegExp(search, 'g'), replacement);
 			};
 			
+			if(code!=null && typeof code != 'undefined'){
 			code = code.replaceAll("<br/>", "\n");
-			
+		}
 			return code;
 			
 		},
@@ -1076,6 +1077,8 @@ GW.process = {
 			code_type = msg.description;
 			
 			code = msg.code;
+			
+			//msg.input;
 			
 			process_id = msg.id;
 			

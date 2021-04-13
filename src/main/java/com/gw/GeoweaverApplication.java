@@ -13,9 +13,7 @@ import java.net.URISyntaxException;
 @ServletComponentScan
 public class GeoweaverApplication {
 
-	public static void main(String[] args) {
-		
-//		BasicConfigurator.configure();
+	public static void main(String[] args) {  
 		
 		SpringApplication.run(GeoweaverApplication.class, args);
         browse("http://localhost:8070/Geoweaver/");

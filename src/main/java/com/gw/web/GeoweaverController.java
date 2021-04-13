@@ -323,7 +323,8 @@ public class GeoweaverController {
 			
 			if(type.equals("process")) {
 				
-				resp = pt.one_history(hid);
+				 resp = pt.one_history(hid);
+			//	resp =  pt.all_history(hid);
 				
 			}else if(type.equals("workflow")) {
 				
