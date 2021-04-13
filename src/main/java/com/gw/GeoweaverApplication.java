@@ -22,6 +22,7 @@ public class GeoweaverApplication {
 
     
 	}
+	
     public static void browse(String url) {
         if(Desktop.isDesktopSupported()){
             Desktop desktop = Desktop.getDesktop();
