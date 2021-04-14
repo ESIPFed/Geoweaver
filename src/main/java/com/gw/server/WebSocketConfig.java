@@ -51,6 +51,13 @@ public class WebSocketConfig {
     	return new JupyterHubRedirectServlet();
     	
     }
+
+    @Bean
+    public JupyterLabRedirectServlet callJupyterLabWebSocketController() {
+    	
+    	return new JupyterLabRedirectServlet();
+    	
+    }
     
     
 }

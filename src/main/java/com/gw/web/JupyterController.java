@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -488,7 +489,7 @@ public class JupyterController {
 	 * @param hostid
 	 * @return
 	 */
-	private ResponseEntity processPatch(HttpEntity entity, HttpMethod method, HttpServletRequest request, String hostid) {
+	private ResponseEntity processPatch( HttpMethod method, HttpServletRequest request, String hostid) {
 		
 //		return processUtil(entity, method, request, hostid);
 		
@@ -514,9 +515,9 @@ public class JupyterController {
 //			
 //			HttpHeaders newheaders = this.updateHeaderReferer(entity.getHeaders(), h, realurl, request.getQueryString());
 			
-			HttpHeaders newheaders = getHeaders(entity.getHeaders(), method, request, hostid);
+			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
 			
-			HttpEntity newentity = new HttpEntity(entity.getBody(), newheaders);
+			HttpEntity newentity = new HttpEntity(bt.getBody(request), newheaders);
 			
 //			logger.debug("URL: " + newheaders.get("referer").get(0));
 			
@@ -531,6 +532,106 @@ public class JupyterController {
 		    
 		    // http status code e.g. `404 NOT_FOUND`
 //		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = errorControl(e.getLocalizedMessage(), hostid);
+			
+		}
+		
+	    return resp;
+		
+	}
+
+	/**
+	 * Get headers by request
+	 * @param request
+	 * @return
+	 */
+	private HttpHeaders getHeaderByRequest(HttpServletRequest request){
+
+		HttpHeaders header = new HttpHeaders();
+
+		Enumeration<String> hearderNames = request.getHeaderNames();
+
+		while(hearderNames.hasMoreElements())
+		{
+			String headerName = hearderNames.nextElement();
+
+			header.add(headerName, request.getHeader(headerName));
+
+		}
+
+		return header;
+
+	}
+
+	/**
+	 * Process PUT request
+	 * @param entity
+	 * @param method
+	 * @param request
+	 * @param hostid
+	 * @return
+	 */
+	private ResponseEntity processPut(HttpMethod method, HttpServletRequest request, String hostid) {
+		
+		ResponseEntity resp = null;
+		
+		try {
+			
+			logger.debug("==============");
+
+			logger.debug("PUT request without httpentity...");
+			
+			logger.debug("Request URI: " + request.getRequestURI());
+			
+//			logger.debug("Query String: " + request.getQueryString());
+			
+//			String body = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
+			
+			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
+
+			String body = bt.getBody(request);
+
+			//only save the content when the request content is jupyter notebook
+			logger.debug("PUT request received, body: " + body);
+
+			if(body.contains("\"type\":\"notebook\"")){
+				
+				history_tool.saveJupyterCheckpoints(hostid, body, newheaders);
+				
+			}
+			
+			HttpEntity newentity = new HttpEntity(body, newheaders);
+			
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(
+				getRealTargetURL(newheaders.get("referer").get(0)), 
+				method, newentity, String.class);
+		    
+		    resp = new ResponseEntity(
+				addURLProxy(responseEntity.getBody(), hostid), 
+				responseEntity.getHeaders(), 
+				responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -708,6 +809,63 @@ public class JupyterController {
 	    return resp;
 		
 	}
+
+	/**
+	 * Process POST Request
+	 * @param reqentity
+	 * @param method
+	 * @param request
+	 * @param hostid
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	private ResponseEntity processPost_415(HttpMethod method, HttpServletRequest request, String hostid) throws URISyntaxException
+	{
+		
+//		return processUtil(reqentity, method, request, hostid);
+		
+		ResponseEntity resp = null;
+		
+		try {
+			
+			logger.debug("==============");
+			
+			logger.debug("Request URI: " + request.getRequestURI());
+			
+			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
+			
+			HttpEntity newentity = new HttpEntity(bt.getBody(request), newheaders);
+
+			String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
+			
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(target_url, method, newentity, String.class);
+
+			String newbody = addURLProxy(responseEntity.getBody(), hostid);
+
+			HttpHeaders newrespheaders = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+
+		    resp = new ResponseEntity(
+					newbody, 
+					newrespheaders, 
+		    		responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = errorControl(e.getLocalizedMessage(), hostid);
+			
+		}
+		
+	    return resp;
+	    
+	}
 	
 	/**
 	 * Process POST Request
@@ -767,6 +925,104 @@ public class JupyterController {
 					newbody, 
 					newrespheaders, 
 		    		responseEntity.getStatusCode());
+		    
+		}catch (HttpStatusCodeException ex) {
+		    
+		    // http status code e.g. `404 NOT_FOUND`
+//		    logger.error(ex.getStatusCode().toString());
+		    
+		    // get response body
+//		    System.out.println(ex.getResponseBodyAsString());
+		    
+		    // get http headers
+//		    HttpHeaders headers = ex.getResponseHeaders();
+//		    System.out.println(headers.get("Content-Type"));
+//		    System.out.println(headers.get("Server"));
+		    
+		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+		    
+		    resp = errorControl(newbody, hostid);
+		    
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = errorControl(e.getLocalizedMessage(), hostid);
+			
+		}
+		
+	    return resp;
+	    
+	}
+
+	private <T> ResponseEntity<T> processGet_415(HttpMethod method, HttpServletRequest request, String hostid) throws URISyntaxException
+	{
+		
+		ResponseEntity resp = null;
+		
+		try {
+			
+			logger.debug("==============");
+			
+			// logger.debug("This is a GET request...");
+			
+			boolean ishub = false;
+			
+			if(request.getRequestURI().contains("user")) ishub = true;
+			
+			if(request.getRequestURI().contains("api/kernels")){
+
+				logger.info("URI: " + request.getRequestURI());
+
+				logger.info("Old Request HTTP Headers: " + this.getHeaderByRequest(request));
+
+			}
+			
+			
+			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
+			
+			HttpEntity newentity = new HttpEntity(bt.getBody(request), newheaders);
+			
+			String targeturl = getRealTargetURL(newheaders.get("target_url").get(0)); //using referer as the target url is not right
+			// String targeturl = getRealTargetURL(reqentity.getUrl().toString());
+			
+			// logger.info("New target url: " + targeturl);
+			
+			// if(ishub)logger.info("New Request HTTP Headers: " + newheaders.toString());
+			
+//			String sec_fetch_type = getHeaderProperty(reqentity.getHeaders(), "Sec-Fetch-Dest");
+			
+//			logger.debug(URLDecoder.decode(newheaders.get("referer").get(0),"UTF-8"));
+			
+//			((SimpleClientHttpRequestFactory)restTemplate.getRequestFactory()).setConnectTimeout(TIMEOUT);
+
+			ResponseEntity<byte[]> responseEntity = restTemplate.exchange(targeturl, method, newentity, byte[].class);
+
+			String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
+
+			byte[] newbody = null;
+
+			if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			 && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+
+				newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
+
+			}else{
+
+				newbody = responseEntity.getBody();
+
+			}
+
+			// if(ishub) logger.debug("Old Response Header: " + responseEntity.getHeaders().toString());
+			
+			HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+			
+			// if(ishub) logger.debug("New Response Header: " + headers.toString());
+
+			resp = new ResponseEntity<byte[]>(
+					newbody, 
+					headers, 
+					responseEntity.getStatusCode());
 		    
 		}catch (HttpStatusCodeException ex) {
 		    
@@ -1473,31 +1729,64 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PATCH,
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+		method = RequestMethod.PATCH,
 		consumes = MediaType.ALL_VALUE,
 		produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxypatch( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxypatch( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processPatch(reqentity, method, request, hostid);
+		ResponseEntity resp = processPatch(method, request, hostid);
+		
+	    return resp;
+	    
+	}
+
+	
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+	// 	method = RequestMethod.PUT,
+	// 	consumes = MediaType.ALL_VALUE,
+	// 	produces = MediaType.ALL_VALUE)
+	// public ResponseEntity proxyput( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	// {
+	// 	ResponseEntity resp = processPut(reqentity, method, request, hostid);
+		
+	//     return resp;
+	    
+	// }
+	// @RequestMapping(value="/jupyter-proxy/{hostid}/**/lab/api/workspaces/**",
+		method = RequestMethod.PUT,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
+	public ResponseEntity proxyput_415( @PathVariable("hostid") String hostid, HttpMethod method,  HttpServletRequest request) throws URISyntaxException
+	{
+
+		logger.info("Proxy Put 415 ");
+
+		ResponseEntity resp = processPut(method, request, hostid);
 		
 	    return resp;
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.PUT,
+	
+	
+
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**/api/sessions/**", 
+		method = RequestMethod.POST,
 		consumes = MediaType.ALL_VALUE,
 		produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxyput( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxypost( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processPut(reqentity, method, request, hostid);
+		ResponseEntity resp = processPost_415(method, request, hostid);
 		
 	    return resp;
 	    
 	}
-	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.POST,
-			consumes = MediaType.ALL_VALUE,
-			produces = MediaType.ALL_VALUE)
+
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+		method = RequestMethod.POST,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
 	public ResponseEntity proxypost( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = processPost(reqentity, method, request, hostid);
@@ -1506,20 +1795,34 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", method = RequestMethod.GET,
-			consumes = MediaType.ALL_VALUE,
-			produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxyget(RequestEntity reqentity, HttpMethod method, @PathVariable("hostid") String hostid, HttpServletRequest request) throws URISyntaxException
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+	// 	method = RequestMethod.GET,
+	// 	consumes = MediaType.ALL_VALUE,
+	// 	produces = MediaType.ALL_VALUE)
+	// public ResponseEntity proxyget(RequestEntity reqentity, HttpMethod method, @PathVariable("hostid") String hostid, HttpServletRequest request) throws URISyntaxException
+	// {
+	// 	ResponseEntity resp = processGET( reqentity, method, request, hostid);
+		
+	//     return resp;
+	    
+	// }
+
+	// @RequestMapping(value="/jupyter-proxy/{hostid}/**/api/sessions/**", 
+		method = RequestMethod.GET,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
+	public ResponseEntity proxyget( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET( reqentity, method, request, hostid);
+		ResponseEntity resp = processGet_415(method, request, hostid);
 		
 	    return resp;
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}", method = RequestMethod.GET,
-			consumes = MediaType.ALL_VALUE,
-			produces = MediaType.ALL_VALUE)
+	@RequestMapping(value="/jupyter-proxy/{hostid}", 
+		method = RequestMethod.GET,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
 	public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") String hostid, RequestEntity reqentity, HttpServletRequest request) throws URISyntaxException
 	{
 		ResponseEntity resp = processGET(reqentity, method, request, hostid);
@@ -1544,9 +1847,10 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value = "/jupyter-http", method = RequestMethod.GET,
-			consumes = MediaType.ALL_VALUE,
-			produces = MediaType.ALL_VALUE)
+	@RequestMapping(value = "/jupyter-http", 
+		method = RequestMethod.GET,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
     public @ResponseBody String jupyter_http(ModelMap model, WebRequest request){
 		
 		String resp = null;
@@ -1577,9 +1881,10 @@ public class JupyterController {
 		
 	}
 	
-	@RequestMapping(value = "/jupyter-https", method = RequestMethod.POST,
-			consumes = MediaType.ALL_VALUE,
-			produces = MediaType.ALL_VALUE)
+	@RequestMapping(value = "/jupyter-https", 
+		method = RequestMethod.POST,
+		consumes = MediaType.ALL_VALUE,
+		produces = MediaType.ALL_VALUE)
     public @ResponseBody String jupyter_https(ModelMap model, WebRequest request){
 		
 		String resp = null;
