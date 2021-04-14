@@ -607,6 +607,15 @@ public class JupyterController {
 			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
 
 			String body = bt.getBody(request);
+
+			//only save the content when the request content is jupyter notebook
+			logger.debug("PUT request received, body: " + body);
+
+			if(body.contains("\"type\":\"notebook\"")){
+				
+				history_tool.saveJupyterCheckpoints(hostid, body, newheaders);
+				
+			}
 			
 			HttpEntity newentity = new HttpEntity(body, newheaders);
 			
@@ -961,7 +970,14 @@ public class JupyterController {
 			
 			if(request.getRequestURI().contains("user")) ishub = true;
 			
-			// if(ishub)logger.info("Old Request HTTP Headers: " + reqentity.getHeaders().toString());
+			if(request.getRequestURI().contains("api/kernels")){
+
+				logger.info("URI: " + request.getRequestURI());
+
+				logger.info("Old Request HTTP Headers: " + this.getHeaderByRequest(request));
+
+			}
+			
 			
 			HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
 			
@@ -1725,7 +1741,19 @@ public class JupyterController {
 	    
 	}
 
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**/lab/api/workspaces/**",
+	
+	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+	// 	method = RequestMethod.PUT,
+	// 	consumes = MediaType.ALL_VALUE,
+	// 	produces = MediaType.ALL_VALUE)
+	// public ResponseEntity proxyput( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
+	// {
+	// 	ResponseEntity resp = processPut(reqentity, method, request, hostid);
+		
+	//     return resp;
+	    
+	// }
+	// @RequestMapping(value="/jupyter-proxy/{hostid}/**/lab/api/workspaces/**",
 		method = RequestMethod.PUT,
 		consumes = MediaType.ALL_VALUE,
 		produces = MediaType.ALL_VALUE)
@@ -1740,29 +1768,8 @@ public class JupyterController {
 	    
 	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
-		method = RequestMethod.PUT,
-		consumes = MediaType.ALL_VALUE,
-		produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxyput( RequestEntity reqentity, @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
-	{
-		ResponseEntity resp = processPut(reqentity, method, request, hostid);
-		
-	    return resp;
-	    
-	}
 	
-	@RequestMapping(value="/jupyter-proxy/{hostid}/**/api/sessions/**", 
-		method = RequestMethod.GET,
-		consumes = MediaType.ALL_VALUE,
-		produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxyget( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
-	{
-		ResponseEntity resp = processGet_415(method, request, hostid);
-		
-	    return resp;
-	    
-	}
+	
 
 	@RequestMapping(value="/jupyter-proxy/{hostid}/**/api/sessions/**", 
 		method = RequestMethod.POST,
@@ -1789,12 +1796,24 @@ public class JupyterController {
 	}
 	
 	@RequestMapping(value="/jupyter-proxy/{hostid}/**", 
+	// 	method = RequestMethod.GET,
+	// 	consumes = MediaType.ALL_VALUE,
+	// 	produces = MediaType.ALL_VALUE)
+	// public ResponseEntity proxyget(RequestEntity reqentity, HttpMethod method, @PathVariable("hostid") String hostid, HttpServletRequest request) throws URISyntaxException
+	// {
+	// 	ResponseEntity resp = processGET( reqentity, method, request, hostid);
+		
+	//     return resp;
+	    
+	// }
+
+	// @RequestMapping(value="/jupyter-proxy/{hostid}/**/api/sessions/**", 
 		method = RequestMethod.GET,
 		consumes = MediaType.ALL_VALUE,
 		produces = MediaType.ALL_VALUE)
-	public ResponseEntity proxyget(RequestEntity reqentity, HttpMethod method, @PathVariable("hostid") String hostid, HttpServletRequest request) throws URISyntaxException
+	public ResponseEntity proxyget( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
 	{
-		ResponseEntity resp = processGET( reqentity, method, request, hostid);
+		ResponseEntity resp = processGet_415(method, request, hostid);
 		
 	    return resp;
 	    
