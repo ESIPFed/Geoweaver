@@ -609,7 +609,7 @@ public class JupyterController {
 			String body = bt.getBody(request);
 
 			//only save the content when the request content is jupyter notebook
-			logger.debug("PUT request received, body: " + body);
+			// logger.debug("PUT request received, body: " + body);
 
 			if(body.contains("\"type\":\"notebook\"")){
 				

@@ -10,10 +10,9 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.3</version>
+	<version>0.9.4</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
-	
 	
 	<packaging>jar</packaging>
 
