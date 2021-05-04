@@ -18,7 +18,7 @@ public class GeoweaverApplication {
 //		BasicConfigurator.configure();
 		
 		SpringApplication.run(GeoweaverApplication.class, args);
-        browse("http://localhost:8070/Geoweaver/");
+        // browse("http://localhost:8070/Geoweaver/");
 
 
 //		openHomePage();	
