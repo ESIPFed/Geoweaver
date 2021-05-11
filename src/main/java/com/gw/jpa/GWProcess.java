@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import ch.qos.logback.core.status.Status;
+
 /**
  * Process POJO
  * @author jensensun
@@ -48,6 +50,7 @@ public class GWProcess {
 		this.description = description;
 	}
 
+	
 	public String getCode() {
 		return code;
 	}

@@ -28,7 +28,8 @@ public class GeoweaverApplication {
             Desktop desktop = Desktop.getDesktop();
             try {
                 desktop.browse(new URI(url));
-            } catch (IOException | URISyntaxException e) {
+            }
+             catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }else{

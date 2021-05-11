@@ -275,13 +275,12 @@ public class ProcessTool {
 		
 		if(!bt.isNull(code)) {
 
-			resp = code.replaceAll("\\\\", "\\\\\\\\")
+			resp = code.replaceAll("\\\\n", "")
+			          .replaceAll("\\\\", "\\\\\\\\")
 					.replaceAll("\"", "\\\\\"")
 					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
 					.replaceAll("	", "\\\\t");
-			
-		}
-			
+		}			
 		return resp;
 		
 	}
@@ -445,6 +444,9 @@ public class ProcessTool {
 		p.setName(name);
 		
 		p.setDescription(desc);
+
+		p.setIndicator(indicator);
+
 		
 		processrepository.save(p);
 		
@@ -881,11 +883,11 @@ public class ProcessTool {
 				
 				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
 				
-				resp.append("\"notes\": \"").append(process_obj[8]).append("\", ");
+				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
 				
-				resp.append("\"status\": \"").append(process_obj[7]).append("\", ");
+				resp.append("\"status\": \"").append(process_obj[8]).append("\", ");
 				
 				resp.append("\"begin_time\": \"").append(process_obj[1]).append("\"}");
 				
@@ -947,7 +949,11 @@ public class ProcessTool {
 			Object[] first_obj = one_history_process.get(0);
 			
 			if(!bt.isNull(first_obj)) {
-				
+
+				String id = (String) first_obj[9];
+
+				GWProcess p = getProcessById(id);
+
 				resp.append("{ \"hid\": \"").append(first_obj[0]).append("\", ");
 				
 				resp.append("\"id\": \"").append(first_obj[9]).append("\", ");
@@ -964,16 +970,18 @@ public class ProcessTool {
 				
 				resp.append("\"input\":\"").append(removeClob(input_code)).append("\", ");
 				//test adding
-				resp.append("\"code\":\"").append(removeClob(input_code)).append("\", ");
+				resp.append("\"code\":\"").append(p.getCode()).append("\", ");
+				
 				String output_code = escape(String.valueOf(first_obj[5]));
 				
 				resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
 				
-				//resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[7]))).append("\", ");
+				resp.append("\"description\":\"").append(p.getDescription()).append("\", ");
+
+				resp.append("\"status\":\"").append(String.valueOf(first_obj[8])).append("\", ");
 				
-				resp.append("\"host\":\"").append(escape(String.valueOf(first_obj[7]))).append("\" }");
+				resp.append("\"host\":\"").append(escape(String.valueOf(first_obj[7]))).append("\" }");				
 				
-				//resp.append("\"status\":\"").append(String.valueOf(first_obj[7])).append("\" }");
 				
 			}
 			

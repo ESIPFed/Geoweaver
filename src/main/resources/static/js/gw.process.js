@@ -701,13 +701,12 @@ GW.process = {
 				}
 				
 				msg = $.parseJSON(msg);
-				
+							
 				GW.process.display(msg);
-				
+
 				GW.process.displayOutput(msg);
 				
 			}).fail(function(){
-				
 				
 			});
 			
@@ -729,24 +728,27 @@ GW.process = {
 			console.log("Update the code with the old version")
 			
 			if(GW.process.editor)
-				GW.process.editor.setValue(GW.process.unescape(msg.input));
+				GW.process.editor.setValue(GW.process.unescape(msg.code));
 			
 			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
 			"<p> Execution started at " + msg.begin_time + "</p>"+ 
 			
-			"<p> Execution ended at " + msg.end_time + "</p>"+
+			//"<p> Execution ended at " + msg.end_time + "</p>"+
+			"<p> Execution ID is " + msg.hid + "</p>"+
 			
 			"<p> The old code used has been refreshed in the code editor.</p>"+
 			
-			"<div>" + 
+			 "<div>" + 
 			
-			output + "</div>";
+			 GW.process.unescape(msg.code) + "</div>"; 
 			
 			$("#console-output").html(output);
 			
 			$("#closeLog").click(function(){
 				
+
+				GW.process.display(msg);
 				$("#console-output").html("");
 				
 			});

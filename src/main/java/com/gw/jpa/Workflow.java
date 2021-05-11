@@ -1,5 +1,6 @@
 package com.gw.jpa;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,8 +13,11 @@ public class Workflow {
 //	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 	
-	private String name, description, nodes, edges, owner;
-	
+	private String name, description, nodes, owner;
+
+	//@Column(columnDefinition = "LONGTEXT")	
+	private String edges;
+
 	public String getDescription() {
 		return description;
 	}

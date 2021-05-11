@@ -128,7 +128,8 @@ GW.monitor = {
 	    		  percent = 30
 	    		  barcolor = "progress-bar-success progress-bar-striped active";
 	    		  
-	    	}else if(flag=="DONE"){
+	    	}
+			else if(flag=="DONE"){
 	    		  
 	    		  percent = 100;
 	    		  barcolor = "progress-bar-success progress-bar-striped";
