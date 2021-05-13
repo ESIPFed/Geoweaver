@@ -739,7 +739,7 @@ public class JupyterController {
 			
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-		    ResponseEntity<String> responseEntity = (getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = restTemplate.exchange(getRealTargetURL(newheaders.get("referer").get(0)), method, newentity, String.class);
 		    
 //		    if(realurl.indexOf("auth")!=-1)
 //		    
