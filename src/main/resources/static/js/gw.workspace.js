@@ -348,8 +348,37 @@ GW.workspace = {
     	    });
     	    
     	    d3.select("#upload-input").on("click", function(){
-    	    
+    	        var $file_input = document.querySelector("input#hidden-file-upload");
     	    	document.getElementById("hidden-file-upload").click();
+				$file_input.onchange = function (e) {
+					debugger;
+					var uploadFile = this.files[0];
+					var filereader = new window.FileReader();
+					
+					filereader.onload = function(){
+					  var txtRes = filereader.result;
+					  // TODO better error handling
+					  try{
+						var jsonObj = JSON.parse(txtRes);
+						thisGraph.deleteGraph(true);
+						thisGraph.nodes = jsonObj.nodes;
+						thisGraph.setIdCt(jsonObj.nodes.length + 1);
+						var newEdges = jsonObj.edges;
+						newEdges.forEach(function(e, i){
+						  newEdges[i] = {source: thisGraph.nodes.filter(function(n){return n.id == e.source;})[0],
+									  target: thisGraph.nodes.filter(function(n){return n.id == e.target;})[0]};
+						});
+						thisGraph.edges = newEdges;
+						thisGraph.updateGraph();
+					  }catch(err){
+						window.alert("Error parsing uploaded file\nerror message: " + err.message);
+						return;
+					  }
+					};
+					filereader.readAsText(uploadFile);
+					
+					///load_file(this.files[0]);
+				};
     	    
     	    });
     	    
@@ -397,8 +426,14 @@ GW.workspace = {
 //    	    	frame.show();
     	    	
     	    });
+
+			d3.select("#upload-input123").on("click", function(){
+				debugger;
+
+			});
     	    
-    	    d3.select("#hidden-file-upload").on("change", function(){
+    	    d3.select("#upload-input123").on("click", function(){
+				debugger;
     	      if (window.File && window.FileReader && window.FileList && window.Blob) {
     	        var uploadFile = this.files[0];
     	        var filereader = new window.FileReader();
