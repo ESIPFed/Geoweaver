@@ -779,7 +779,11 @@ GW.host = {
         		
         		console.log("Start to refresh the host list..");
         		
-        		$("#"+GW.menu.getPanelIdByType("host")).html("");
+        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
+        		$("#host_folder_ssh_target").html("");
+        		$("#host_folder_jupyter_target").html("");
+        		$("#host_folder_jupyterhub_target").html("");
+        		$("#host_folder_gee_target").html("");
         		
         		GW.host.list(msg);
         		
