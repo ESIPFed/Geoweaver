@@ -525,7 +525,7 @@ GW.host = {
 			var frame = "<h4 class=\"border-bottom\">SSH Terminal Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeSSHTerminal\" >close</button></h4>"+
 			
 			"<iframe src=\"geoweaver-ssh?token="+
-			token+"\" style=\"height: 500px; max-height:600px;width:100%;\"></iframe>"
+			token+"\" style=\"height:700px; max-height:1000px;width:100%;\"></iframe>"
 			
 			$("#ssh-terminal-iframe").html(frame);
 			
@@ -779,7 +779,11 @@ GW.host = {
         		
         		console.log("Start to refresh the host list..");
         		
-        		$("#"+GW.menu.getPanelIdByType("host")).html("");
+        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
+        		$("#host_folder_ssh_target").html("");
+        		$("#host_folder_jupyter_target").html("");
+        		$("#host_folder_jupyterhub_target").html("");
+        		$("#host_folder_gee_target").html("");
         		
         		GW.host.list(msg);
         		
