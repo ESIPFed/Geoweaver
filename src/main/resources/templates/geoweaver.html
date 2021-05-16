@@ -10,7 +10,9 @@
 		<link rel="stylesheet" href="../css/jquery.dataTables.min.css" />
 		
 		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
-		
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
 		
    		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
@@ -36,9 +38,11 @@
 		
 		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
     	<link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
-    	
+    	<link rel="stylesheet" href="../css/CustomeMain.css" />
    		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
    		<link rel="stylesheet" href="../css/main.css" />
+   		
+   		
    	
    		<link rel="stylesheet" href="../css/prism.css" />
     	
@@ -53,6 +57,77 @@
         <link href="../css/introjs.min.css" rel="stylesheet" />
         
         <style type="text/css">
+        
+  
+  
+  * {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+   padding: 2px 16px;
+}
+
+/* Float four columns side by side */
+.column {
+  float: left;
+  width: 25%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+	width:250px;
+  
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+  
+  
+ 
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
         	/* Style the tab */
 			.tab {
 			  overflow: hidden;
@@ -90,7 +165,8 @@
 			  border-top: none;
 			}
 			
-			#process-history-chart-container {
+			#process-
+-chart-container {
 			
 				width: 200px;
 				height: 100px;
@@ -162,48 +238,48 @@
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
 				
 				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
-				  <a  style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: gray; " href="javascript:void(0)">
-				  	<img src="../img/header.png" width="90px" height="40px" />
+				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:grey " href="javascript:void(0)">
+				  	<img src="../img/header.png" width="100px" height="50px" />
 				  </a>
 				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
 				  	Geoweaver
 				  </div> -->
 				  <a id="toolbar-search"  
 				  data-toggle="tooltip" title="Search Process/Workflow/Hosts"
-				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-search" alt="search" > Search</i>
 				  </a>
 				  <a id="toolbar-add" 
 				  data-toggle="tooltip" title="New Host/Process/Workflow"
-				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-plus"  alt="create" > Create</i>
 				  </a>
 				  <a id="toolbar-history" 
 				  data-toggle="tooltip" title="Process/Workflow History"
-				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-history" alt="List the recent execution history"> History</i>
 				  </a>
 				  <a id="toolbar-monitor" 
 				  data-toggle="tooltip" title="Monitor Running Process/Workflow"
-				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:4px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-film" alt="monitor" > Monitor</i>
 				  </a>
 				  <a id="toolbar-settings" 
 				  data-toggle="tooltip" title="Settings"
-				  style="float: left; width: 80px;text-align: center;margin-top:9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-cog" alt="settings"  > Settings</i>
 				  </a>
 				  <a id="toolbar-print" 
 				  data-toggle="tooltip" title="Print"
-				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:void(0)">
 				  	<i class="fa fa-print" alt="print" > Print</i>
 				  </a>
 				  <a  
 				  data-toggle="tooltip" title="Information"
-				  style="float: right; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
+				  style="float: right; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:GW.tutorial.showDialog()">
                   	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
                   </a>
-				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+				  <a style="float: right; width: 110px;text-align: center;margin:3px;padding-top:5px;transition: all 0.3s ease;color: white;font-size: 20px;" href="javascript:GW.about.showDialog()">
 				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
 				  </a>
 				</div>
@@ -245,55 +321,423 @@
 			
 			</div>
 			
-			<!-- tool box -->
-				
-			
-			
+			<!-- set site margin here -->
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-			<div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;">
+			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px;">
 				
 				
 			    <!-- Workspace -->
 			    
 			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
-					    <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-						  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
-						  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
-						  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-						  <button class="tablinks" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
-						  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
-						  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+					  <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px" class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px"class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px" class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px" class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px" class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
+						  <button style="font-size: 15px;padding-right:20px;padding-left:20px" class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
 						</div>
 						
-						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;"> 
+						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:10px;"> 
 							  <div id="main-general-content" style="height:100%;overflow-y: scroll; padding: 10px;">
-							  	<h2>Welcome to Geoweaver! </h2>
-							  	<p>Geoweaver is a community effort and we welcome any contributor from all spectrum of domains! </p>
+							  
+							  
+							  	<h2 style="color:black;font-weight: bold;font-size: 30px; font-family: 'Poppins', sans-serif;padding-top:5px;padding-left:5px" >Welcome to Geoweaver </h2>
+							  	<p style=" font-family: 'Poppins', sans-serif;font-size: 17px; text-align: justify;text-justify: inter-word;">Geoweaver is a online software which allows users to compose and execute full-stack deep learning workflows which uses open source deep learning libraries. It provides multiple modules like Jupyter Notebook Server, Jupyter Hub, Jupyter Lab, Google Earth Engine, Process and Workflows. It also includes FTP client, Shell scripts and SSH for running system-level programs. Geoweaver allows every user to record history and manage, share, track, replicate and reuse complicated scientific workflows.</p>
+							  	<p style=" font-family: 'Poppins', sans-serif;font-size: 14px"><p style=" font-family: 'Poppins', sans-serif;font-size: 14px"> </p>
+							  
+							  <hr>
+							 <!--  <h3>About Jupyter</h3>
+							  <p>
+							  
+							  <>
+							  
+							  JupyterLab: Jupyter’s Next-Generation Notebook Interface
+JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. JupyterLab is flexible: configure and arrange the user interface to support a wide range of workflows in data science, scientific computing, and machine learning. JupyterLab is extensible and modular: write plugins that add new components and integrate with existing ones.</p>
+							   -->
+							 
+							  	<br>
+						
+<div class="row">
+  <div class="column">
+    <div class="card" style="width:210px;margin-left:200px;height:350px">
+      <h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Host</h3>
+      
+      <div class="w3-section">
+      
+         
+        
+        <!--  <p style="font-size:11px">Turn great ideas from anywhere into great automations everywhere—with more control, faster implementation, and impact you can measure.</p> -->
+         
+       
+       
+      <!-- id="newprocess" -->
+         <button  style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px"  onClick="addsshHost()" ><span style="color:white">SSH Server</span></button>
+        
+        <button style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px"  onClick="addJuNo()" ><span style="font-size:12px;color:white">Jupyter Notebook</span></button>
+        
+         <button style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px" onClick="addJuHu()" ><span style="font-size:12px;color:white">Jupyter Hub</span></button>
+        
+        <button style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px"  onClick="addGoEE()"><span style="font-size:11px;color:white">Google Earth Engine</span></button>
+        
+        
+        
+        
+       
+       
+       
+       
+      </div>
+    </div>
+  </div>
+
+  <div class="column">
+    <div class="card" style="width:210px;margin-left:120px;height:350px">
+      <h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Process</h3>
+      
+      <div class="w3-section">
+       
+        <!--  <p style="font-size:11px">Metrics-based productivity analyses can be produced for individuals, groups. ActivTrak’s Activity Logs , Monitor your workFlows and Hosts</p> -->
+        
+       
+			
+			<button onclick="newShellPro()" id="shell" style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px" ><span style="color:white">Shell</span></button><br>
+			<button onclick="newNotePro()" style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px"  ><span style="color:white">Notebook</span></button>
+			<button onclick="newBuildPro()" style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px" ><span style="color:white">Built-in Process</span></button>
+			<button onclick="newPyPro()" style="color:black;margin-top: 20px;font-size:12px;font-family: 'Poppins', sans-serif;width:140px" ><span style="color:white">Python</span></button> 
+       
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="column">
+    <div class="card" style="width:210px;margin-left:50px;height:350px">
+       <h3  style="font-weight:bold;font-size:25px;color:black;font-family: 'Poppins', sans-serif" >WorkFlow</h3>
+      <div class="w3-section">
+       
+        <p style="font-size:12px;text-justify: inter-word;">
+         Geoweaver workflow effectively removes managing various scripts, code, libraries, Jupyter Notebooks, datasets, servers, and platforms, greatly reducing the time, cost, and effort researchers must spend on such AI-based workflows.</p>
+         
+          
+       
+       
+         <!-- <button style="margin-top:20px"  class="w3-button w3-green">Tutoriel</button> -->
+        <a  href="javascript:GW.about1.showDialog()" >
+				  	 <button style="color:white;margin-top:20px;margin-bottom:20px;width:140px;height:40px;font-size:14px"  class="cus-btn"><span style="color:white">Workflow</span></button>
+				  </a>
+        
+       <br><br>
+        
+      
+        
+      
+         
+         
+         
+       
+      </div>
+    </div>
+  </div>
+  
+  <div class="column">
+    <div class="card" style="width:210px;margin-right:40px;height:350px">
+     <h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >About</h3><h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif">Geoweaver</h3>
+     
+      <div class="w3-section">
+      
+         
+         
+         <!-- <button style="margin-top:20px"  class="w3-button w3-green">Tutoriel</button> -->
+        <a  href="javascript:GW.about.showDialog()" >
+				  	 <button style="color:white;margin-top:20px;width:140px;height:40px;font-size:14px"  ><span style="color:white">About</span></button>
+				  </a>
+        
+       <!--  <button style="margin-top:20px" class="w3-button w3-gray">help</button> -->
+       			<button onclick="myFun()" style="color:white;margin-top: 20px;font-size:14px;width:140px;height:40px"><span style="color:white">Settings</span></button>
+        
+        <a  
+				  data-toggle="tooltip" 
+				  style="font-size: 12px;" href="javascript:GW.tutorial.showDialog()">    <!-- javascript:GW.tutorial.showDialog() -->
+                  <button style="color:white;margin-top: 20px;font-size:14px;width:140px;height:40px"  ><span style="color:white">Tutorial</span></button>
+                  </a>
+      </div>
+    </div>
+  </div>
+</div>	  								  	
+							  
+							  	
+					 	<div class="accs-kontainer">       
+     
+      
+     
+      
+      <div>
+         <!-- <h2 style="color:black;font-weight: bold;font-size: 20px;  font-family:'Poppins', sans-serif;">Python Scipy intro : </h2> -->
+					
+
+
+<hr>
+
+
+	<section class="container">
+	<br>
+
+  <h1 style="color:black;font-weight: bold;font-size: 25px;font-family: 'Poppins', sans-serif;">GeoWeaver Services</h1>
+  <br>
+  
+  <div class="ac">
+    
+    <input class="ac-input" id="ac-1" name="ac-1" type="checkbox" />
+    <label class="ac-label" for="ac-1" style="font-weight:bold;" >Hosts</label>
+    
+    
+    <article class="ac-text">
+      
+      <div class="ac-sub">
+        <input class="ac-input" id="ac-2" name="ac-2" type="checkbox" />
+      
+        <label class="ac-label" for="ac-2" style="color:black" >SSH Server</label>
+        <br>
+        <article class="ac-sub-text">
+<p style="font-size:14px">SSH, or Secure Shell, is a remote administration protocol that allows users to control and modify their remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+
+
+        </article>
+      </div>
+      
+      <div class="ac-sub">
+        <input class="ac-input" id="ac-3" name="ac-3" type="checkbox" />
+        <label class="ac-label" for="ac-3" style="color:black">Jupyter NoteBook Server</label>
+        <br>
+        <article class="ac-sub-text">
+          <p>In Jupyter Notebook we can import and edit notebooks. The notebooks are created with unique names. We can create multiple notebooks and add them through panel. The file can be imported in two ways i.e. choosing file from localsystem or URL. We can edit the imported files and save the ediits  
+The exection is done by nbconvert.</p>
+<p>We are in the process of creating a new dashboard architecture for the Jupyter notebook, which will allow the user to navigate through multiple directory files to find desired notebooks.</p>
+        </article>
+      </div>
+      
+      
+      
+       <div class="ac-sub">
+        <input class="ac-input" id="ac-4" name="ac-4" type="checkbox" />
+        <label class="ac-label" for="ac-4" style="color:black">Jupyter Hub</label><br>
+        <article class="ac-sub-text">
+        
+<p>JupyterHub is a server-hosted distributed Jupyter notebook environment. JupyterHub allows users to log into a server and write Python code within a web browswer without any software installation on their local computer. Anywhere you have an internet connection, you can bring up a JupyterHub webpage and write/run Python code in a Jupyter notebook.</p>
+<p>Scientific concepts & complex computations are easier to process when they are visualized. Jupyter notebook is a powerful tool for digital scientists to support scientific workflows, data, code, and visualizations.  ..</p>
+        </article>
+      </div>
+      
+      
+      
+      
+      
+       <div class="ac-sub">
+        <input class="ac-input" id="ac-5" name="ac-5" type="checkbox" />
+        <label class="ac-label" for="ac-5" style="color:black">Google Earth Engine</label><br>
+        <article class="ac-sub-text">
+<p > Google Earth Engine is a cloud-based geospatial analysis platform that enables users to visualize and analyze satellite images of our planet.allows developers to interact with Google Earth Engine using the Python programming language.</p><p>
+
+Access to Google Earth Engine is currently only available to registered users. The API is in active development, and users should expect the API to change. 
+
+It allows anyone to visualize the data in the public data catalog.</p><p> Signed in Earth Engine users can also import data, run simple analyses, save, and export the results.
+
+You can use them to build custom applications and to develop Earth Engine code locally using a JavaScript or Python interpreter. The repository on GitHub includes a number of demos illustrating how to use the client libraries.</p>
+        </article>
+      </div>
+      
+    </article><!--/ac-text-->
+    
+  </div><!--/ac-->
+  
+  
+  
+  <div class="ac">
+    
+    <input class="ac-input" id="ac-6" name="ac-6" type="checkbox" />
+    <label class="ac-label" for="ac-6" style="font-weight:bold">Process</label>
+    
+    <article class="ac-text">
+      
+      <div class="ac-sub">
+        <input class="ac-input" id="ac-7" name="ac-7" type="checkbox" />
+        <label class="ac-label" for="ac-7" style="color:black">Shell</label><br>
+        <article class="ac-sub-text">
+<p>it reads the command, evaluates the command, prints the result, and loop it back to read the command again.
+to automate routine tasks like health checks and file backups with shell scripts. However, as those tasks become more complex, shell scripts may become harder to maintain.
+
+Fortunately, we can use Python instead of shell scripts for automation. Python provides methods to run shell commands, giving us the same functionality of those shells scripts.
+ </p>
+
+
+        </article>
+      </div>
+      
+      <div class="ac-sub">
+        <input class="ac-input" id="ac-8" name="ac-8" type="checkbox" />
+        <label class="ac-label" for="ac-8" style="color:black">NoteBook</label><br>
+        <article class="ac-sub-text">
+         <p> A process runner is responsible for binding via SSH channels and executing processes
+on assigned platforms. The execution needs to first transfer the latest code to the remote servers and
+trigger the code by sending commands. The process monitor can listen to all the events occurred during
+the execution and report the real-time status. Once the execution is over, the result messages together
+with the inputs and executed code shall be saved into the database for later inquiry.
+
+
+</p><p>Users can also customize JupyterLab to fit their workflow. Built-in viewers exist for image, text and CSV files, for instance, but users can build custom components as well. These could display things such as genomic alignments or geospatial data
+</p>
+        </article>
+      </div>
+      
+      
+       <div class="ac-sub">
+        <input class="ac-input" id="ac-9" name="ac-9" type="checkbox" />
+        <label class="ac-label" for="ac-9" style="color:black">Build In Process</label><br>
+        <article class="ac-sub-text">
+          <p> In Built In Process we can create a process with different names. We can choose a process from ShowResultMap and DownloadData. We can the previously creeated built in process and save them and execute.</p>
+        </article>
+      </div>
+      
+      
+      
+      
+       <div class="ac-sub">
+        <input class="ac-input" id="ac-10" name="ac-10" type="checkbox" />
+        <label class="ac-label" for="ac-10" style="color:black">Python</label><br>
+        <article class="ac-sub-text">
+          <p>Python has become the dominant language and environment for AI workflows [68]. AI workflows
+written in Python involve many calls of python libraries and distributed Jupyter Notebooks. </p><p>
+
+Computing with Python can be used as a course book for absolute beginners on Python with guidance and support from a teacher. It is also suitable as a self study book for more advanced students with some programming knowledge and an interest in the mathematical or scientific disciplines. </p>
+        </article>
+      </div>
+      
+    </article><!--/ac-text-->
+    
+  </div><!--/ac-->
+  
+  
+  
+  
+  
+  
+  
+  <div class="ac">
+    
+    <input class="ac-input" id="ac-11" name="ac-11" type="checkbox" />
+    <label class="ac-label" for="ac-11" style="font-weight:bold">WorkFlows</label>
+  
+    <article class="ac-text">
+      
+      <div class="ac-sub">
+      <p>The created workflows represent An interface should be developed to allow users to compose workflow. There are many recent the knowledge of large-scale data processing and are stored in the database. A toolbar should be developments in JavaScript frameworks, namely React, Angular, and Vue.js, as well as JavaScript developed to manage the workflows, including searching the existing workflows, running and libraries such as D3.js and CodeMirror, that can aid in building websites to provide a rich user monitoring the workflows, and checking the history of workflow execution. The workflow module experience through fully feature user interfaces. Via the interfaces, people can drag and drop the provides real-time feedbacks of the member process statuses by indicating with different colors or atomic processes and draw lines to connect them into workflows. The created workflows represent the showing progress bars. To make the workflow knowledge sharable, this module should also allow knowledge of large-scale data processing and are stored in the database.</p>
+       
+        <article class="ac-sub-text">
+
+        </article>
+      </div>
+      
+  
+      
+      
+  
+  
+  
+  
+</section>
+							  	
+							  	<!-- 
+							  	<br><br>
+							  	
+							  	
+							 <h3 style="color:black;font-weight:bold"> PlayGround to run python,c,c++ functions</h3>
+							 <p style="color:black;font-size:18px">you can compile your python and c functions without installing any compiler in your machine</p>  	
+							  	
+							   <a  
+				  data-toggle="tooltip" title="PlayGround"
+				  style="font-size: 12px;" href="./code.html">    javascript:GW.tutorial.showDialog()
+				 
+                  <button style="color:white;margin-top:20px;width:150px;font-weight:bold;font-size:15px"  class="w3-button w3-grey">Code</button>
+                  </a>
+							  	
+							  	<br><br> -->
+							  	
+							  	<br><br>
+<!--  <h1 style="color:black;font-weight: bold;font-size: 40px;font-family: 'Poppins', sans-serif;">  Footer area for GeoWeaver</h1><br>
+							 <p style="font-size:20px">You can use this scripts without manually install deependency libs for deepLearning python libs, </p> -->
+					<!-- 
+						<div class="course">
+		<div class="course-preview">
+			<h6>Platform</h6>
+			<h2>Linux OS</h2>
+			<a href="#">Python3.9 <i class="fas fa-chevron-right"></i></a>
+		</div>
+		<div class="course-info">
+			<div class="progress-container">
+				<div class="progress"></div>
+				<span class="progress-text">
+					Modules Included
+				</span>
+			</div>
+			<h6>For DeepLearning Linux</h6>
+			<h2>TensorFlow ,Keras ,caffe ,PyTorch</h2>
+			
+			
+			
+			<form method="get" action="../static/Scripts/Linux_Python_ins.sh">
+				<button class="btn btn-grey" type="submit">Linux bash here</button>
+		 </form>
+			
+		</div>
+	</div>	  	
+							 -->
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
+      </div>
+     
+  </div>
+			  	
+							  	
 							  </div> 
 						</div>
 						
 						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							  	<h2>Please select a host on the right panel! </h2>
+							  	<h2 style="color:black">Please select a host on the right panel! </h2>
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
+							  	
 							  </div>
 						</div>
 						 
 						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 10px;">
-							  	<h2>Please select a process on the right panel!</h2>
+							  	<h2 style="color:black">Please select a process on the right panel!</h2>
 							  </div>
 						</div>
 						
 						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-workflow-content" style="height:100%; overflow-y: scroll; padding: 10px;">
-							  	<h2>Please select a workflow on the right panel!</h2>
+							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
 							  </div>
 						</div>
 							
 						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
 							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
-							  <h2>logging information and errors</h2>
+							  <h2 style="color:black">logging information and errors</h2>
 							  <div id="log-window">
 							  	
 							  </div>
@@ -301,17 +745,7 @@
 						</div>
 				
 			    			<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
-					
-							<!-- log window right top -->
-							
-							<!-- <div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
-								
-								<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
-								
-								<div id="log-window-2" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
-							
-							</div> -->
-							
+				
 							
 					
 							<!-- status indicator right bottom -->
@@ -338,7 +772,7 @@
 						    	
 						    </div>
 						    
-						    <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
+				   <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
 					  	
 							  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
 							  
@@ -394,7 +828,7 @@
 					                </li> -->
 					
 					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Googel Earth Engine. You can add and manage multiple hosts in one place. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span data-toggle="collapse" data-target="#hosts" class="arrow collapsed active"></span></a>
+					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost" onClick="host()"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
 					                </li>
 					                <ul   class="sub-menu collapse" id="hosts">
 					                    <li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
@@ -411,6 +845,11 @@
 											<a href="javascript:void(0)">Jupyter Hub</a>
 									    </li>
 										<ul class="sub-menu collapse" id="host_folder_jupyterhub_target"></ul>
+
+										<li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
+											<a href="javascript:void(0)">Jupyter Lab</a>
+									    </li>
+										<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
 										
 										<li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
 											<a href="javascript:void(0)">Google Earth Engine</a>
@@ -477,11 +916,7 @@
 					     </div>
 					     
 					</div>
-					
-				</div>
-			
-				
-				
+					</div>
 				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">
 				    <div class="modal-content">              
@@ -510,6 +945,7 @@
 	    <script src="../js/gw.general.js"></script>
 	    <script src="../js/gw.tutorial.js"></script>
 	    <script src="../js/gw.about.js"></script>
+	    <script src="../js/gw.about1.js"></script>
 	    <script src="../js/gw.chart.js"></script>
 	    <script src="../js/gw.workspace.js"></script>
 	    <script src="../js/gw.ssh.js"></script>
@@ -528,7 +964,7 @@
 	    <script src="../js/gw.menu.js"></script>
 	    <script src="../js/gw.main.js"></script>
 	    
-	    <script>
+	      <script>
 	    
 	    	function switchTab(ele, name){
 	    		
@@ -559,6 +995,1389 @@
 				
 			});
 			
+			
+			
+			 function getNewDialogContentByHostType(host_type){
+				
+				var content = ""
+				
+				if(host_type=="jupyter") {
+					
+					content = '   	<div class="form-group row required">'+
+					       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+					       '     </div>'+
+					       '   	</div>'+
+					       '   	<div class="form-group row required">'+
+					       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+					       '     </div>'+
+					       '   	</div>';
+					
+				}else if(host_type=="jupyterhub"){
+					
+					content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterHub URL </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8000/">'+
+				       '     </div>'+
+				       '   	</div>';
+					
+				}else if(host_type=="jupyterlab"){
+					
+					content = '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+				       '     </div>'+
+				       '   	</div>'+
+				       '   	<div class="form-group row required">'+
+				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterLab URL </label>'+
+				       '     <div class="col-sm-10">'+
+				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+				       '     </div>'+
+				       '   	</div>';
+					
+				}else if(host_type == "ssh") {
+					
+					content = '   	<div class="form-group row required">'+
+					       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+					       '     </div>'+
+					       '   	</div>'+
+					       '   	<div class="form-group row required">'+
+					       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
+					       '     </div>'+
+					       '   	</div>'+
+					       '   	<div class="form-group row required">'+
+					       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
+					       '     </div>'+
+					       '   	</div>'+
+					       '   	<div class="form-group row required">'+
+					       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="username" placeholder="">'+
+					       '     </div>'+
+					       '   	</div>';
+					
+				}else if(host_type == "gee") {
+					
+					content = '   	<div class="form-group row required">'+
+					       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+					       '     </div>'+
+					       '   	</div>'+
+					       '   	<div class="form-group row required">'+
+					       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Client ID </label>'+
+					       '     <div class="col-sm-10">'+
+					       '       <input type="text" class="form-control" id="client_id" placeholder="ee.Authenticate client ID..">'+
+					       '     </div>'+
+					       '   	</div>';
+					
+				}
+				
+				return content;
+				
+			}
+			
+			
+			
+		
+			function addsshHost(){
+				
+				if(GW.host.new_host_frame!=null){
+					
+					try{
+						
+						GW.host.new_host_frame.closeFrame();
+						
+					}catch(e){
+						
+						console.error("Fail to close old frame. Maybe it is already closed.");
+						
+					}
+					
+					GW.host.new_host_frame = null;
+					
+				}
+				
+				var content = '<div class="modal-body" style=\"font-size: 14px;\">'+
+				   '<form>'+
+				   '   <div class="form-group row required">'+
+			       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
+			       '     <div class="col-sm-10">'+
+//			       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
+			       '	 	<select class="form-control" id="hosttype"> '+
+				   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+			/* 	   '    		<option value="jupyter">Jupyter Notebook</option> '+
+				   '    		<option value="jupyterhub">JupyterHub</option> '+
+				   '    		<option value="jupyterlab">Jupyter Lab</option> '+
+				   '			<option value="gee">Google Earth ENGINE</option>'+ */
+				   '  		</select> '+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div id="host_dynamic_form">'+
+			       this.getNewDialogContentByHostType("ssh")+
+			       '   </div>'+
+			       ' </form>'+
+			       '</div>';
+				
+				content += '<div class="modal-footer">' +
+					"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+					"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+					'</div>';
+				
+				GW.host.new_host_frame = GW.process.createJSFrameDialog(600, 550, content, "Add Ssh Server")
+				
+				$("#hosttype").change(function(){
+					
+				    var op = $( "#hosttype option:selected" ).val()
+				    
+					$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
+					
+				})
+						
+				$("#host-add-btn").click(function(){
+					
+	            	GW.host.add(function(){
+	        		
+	            		try{GW.host.new_host_frame.closeFrame();}catch(e){}
+		                
+		        	});
+					
+				});
+				
+				$("#host-cancel-btn").click(function(){
+					
+					GW.host.new_host_frame.closeFrame();
+					
+				});
+				
+				
+			}
+			
+			
+			
+			 
+			
+			
+			
+function addJuNo(){
+				
+				if(GW.host.new_host_frame!=null){
+					
+					try{
+						
+						GW.host.new_host_frame.closeFrame();
+						
+					}catch(e){
+						
+						console.error("Fail to close old frame. Maybe it is already closed.");
+						
+					}
+					
+					GW.host.new_host_frame = null;
+					
+				}
+				
+				var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+				   '<form>'+
+				   '   <div class="form-group row required">'+
+			       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
+			       '     <div class="col-sm-10">'+
+//			       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
+			       '	 	<select class="form-control" id="hosttype"> '+
+				/*    '    		<option value="ssh">Jupyter Notebook </option> '+ */
+				   '    		<option value="jupyter">Jupyter Notebook</option> '+
+		/* 		   '    		<option value="jupyterhub">JupyterHub</option> '+
+				   '    		<option value="jupyterlab">Jupyter Lab</option> '+
+				   '			<option value="gee">Google Earth ENGINE</option>'+ */
+				   '  		</select> '+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div id="host_dynamic_form">'+
+			       this.getNewDialogContentByHostType("jupyter")+
+			       '   </div>'+
+			       ' </form>'+
+			       '</div>';
+				
+				content += '<div class="modal-footer">' +
+					"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+					"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+					'</div>';
+				
+				GW.host.new_host_frame = GW.process.createJSFrameDialog(600, 550, content, "Add Jupyter")
+				
+				$("#hosttype").change(function(){
+					
+				    var op = $( "#hosttype option:selected" ).val()
+				    
+					$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
+					
+				})
+						
+				$("#host-add-btn").click(function(){
+					
+	            	GW.host.add(function(){
+	        		
+	            		try{GW.host.new_host_frame.closeFrame();}catch(e){}
+		                
+		        	});
+					
+				});
+				
+				$("#host-cancel-btn").click(function(){
+					
+					GW.host.new_host_frame.closeFrame();
+					
+				});
+				
+				
+			}
+			
+			
+			
+function addJuHu(){
+	
+	if(GW.host.new_host_frame!=null){
+		
+		try{
+			
+			GW.host.new_host_frame.closeFrame();
+			
+		}catch(e){
+			
+			console.error("Fail to close old frame. Maybe it is already closed.");
+			
+		}
+		
+		GW.host.new_host_frame = null;
+		
+	}
+	
+	var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+	   '<form>'+
+	   '   <div class="form-group row required">'+
+       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
+       '     <div class="col-sm-10">'+
+//       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
+       '	 	<select class="form-control" id="hosttype"> '+
+	/*    '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+	   '    		<option value="jupyter">Jupyter Notebook</option> '+
+	   '    		<option value="jupyterhub">JupyterHub</option> '+ */
+	   '    		<option value="jupyterlab">Jupyter Hub</option> '+
+/* 	   '			<option value="gee">Google Earth ENGINE</option>'+ */
+	   '  		</select> '+
+       '     </div>'+
+       '   </div>'+
+       '   <div id="host_dynamic_form">'+
+       this.getNewDialogContentByHostType("jupyterlab")+
+       '   </div>'+
+       ' </form>'+
+       '</div>';
+	
+	content += '<div class="modal-footer">' +
+		"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+		"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+		'</div>';
+	
+	GW.host.new_host_frame = GW.process.createJSFrameDialog(600, 550, content, "Add New Jupyter Lab")
+	
+	$("#hosttype").change(function(){
+		
+	    var op = $( "#hosttype option:selected" ).val()
+	    
+		$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
+		
+	})
+			
+	$("#host-add-btn").click(function(){
+		
+    	GW.host.add(function(){
+		
+    		try{GW.host.new_host_frame.closeFrame();}catch(e){}
+            
+    	});
+		
+	});
+	
+	$("#host-cancel-btn").click(function(){
+		
+		GW.host.new_host_frame.closeFrame();
+		
+	});
+	
+	
+}
+
+
+
+
+
+function addGoEE(){
+	
+	if(GW.host.new_host_frame!=null){
+		
+		try{
+			
+			GW.host.new_host_frame.closeFrame();
+			
+		}catch(e){
+			
+			console.error("Fail to close old frame. Maybe it is already closed.");
+			
+		}
+		
+		GW.host.new_host_frame = null;
+		
+	}
+	
+	var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+	   '<form>'+
+	   '   <div class="form-group row required">'+
+       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
+       '     <div class="col-sm-10">'+
+//       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
+       '	 	<select class="form-control" id="hosttype"> '+
+	/*    '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+	   '    		<option value="jupyter">Jupyter Notebook</option> '+
+	   '    		<option value="jupyterhub">JupyterHub</option> '+
+	   '    		<option value="jupyterlab">Jupyter Lab</option> '+ */
+	   '			<option value="gee">Google Earth Engine</option>'+
+	   '  		</select> '+
+       '     </div>'+
+       '   </div>'+
+       '   <div id="host_dynamic_form">'+
+       this.getNewDialogContentByHostType("gee")+
+       '   </div>'+
+       ' </form>'+
+       '</div>';
+	
+	content += '<div class="modal-footer">' +
+		"	<button type=\"button\" id=\"host-add-btn\" class=\"btn btn-outline-primary\">Add</button> "+
+		"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+		'</div>';
+	
+	GW.host.new_host_frame = GW.process.createJSFrameDialog(600, 550, content, "Add new Google Earth Engine")
+	
+	$("#hosttype").change(function(){
+		
+	    var op = $( "#hosttype option:selected" ).val()
+	    
+		$("#host_dynamic_form").html(GW.host.getNewDialogContentByHostType(op));
+		
+	})
+			
+	$("#host-add-btn").click(function(){
+		
+    	GW.host.add(function(){
+		
+    		try{GW.host.new_host_frame.closeFrame();}catch(e){}
+            
+    	});
+		
+	});
+	
+	$("#host-cancel-btn").click(function(){
+		
+		GW.host.new_host_frame.closeFrame();
+		
+	});
+	
+	
+}
+			
+			
+
+			
+			function myFunction() {
+				var content = "<div class=\"modal-body\"><div class=\"btn-group\" role=\"group\" >"+
+				"  <button type=\"button\" class=\"btn btn-secondary\" id=\"history-process-d\">Processers</button>"+
+				"  <button type=\"button\" class=\"btn btn-secondary\"  id=\"history-workflow-d\">Workflows</button>"+
+				"</div></div>"
+				
+				var frame = GW.process.createJSFrameDialog(500, 250, content, "Recent History");
+				
+	            frame.on('#history-process-d', 'click', (_frame, evt) => {
+	            	GW.process.recent(20, true);
+	            	_frame.closeFrame();
+	            });
+	            
+	            frame.on('#history-workflow-d', 'click', (_frame, evt) => {
+	            	GW.workflow.recent(20, true);
+	            	_frame.closeFrame();
+	            });
+			}
+			
+			
+	
+			
+ function addShellProcess(){
+	 
+	var dialogid = GW.process.getRandomId();
+	
+	var content = "<div style=\"padding:100px 70px 70px 70px; text-align:center;\" class=\"btn-group\" role=\"group\" >"+
+	
+	"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">New Shell Process</button>"+
+
+	"</div>"
+	
+	var frame = GW.process.createJSFrameDialog(320, 250, content, "PROCESS");
+	
+	
+	$("#newprocess-d").click(function(){
+		
+		GW.process.newDialog();
+		
+		frame.closeFrame();
+		
+	});
+	
+
+	
+}
+			
+			
+			
+			
+ function addNoteProcess(){
+	 
+		var dialogid = GW.process.getRandomId();
+		
+		var content = "<div style=\"padding:100px 70px 70px 70px; text-align:center;\" class=\"btn-group\" role=\"group\" >"+
+		
+		"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\">New Notebook Process</button>"+
+		
+		"</div>"
+		
+		var frame = GW.process.createJSFrameDialog(320, 250, content, "NOTE PROCESS");
+		
+	/* 	$("#newhost-d").click(function(){
+			
+			GW.host.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		 */
+		$("#newprocess-d").click(function(){
+			
+			GW.process.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		
+	/* 	$("#newworkflow-d").click(function(){
+			
+			GW.workflow.newDialog();
+			
+			frame.closeFrame();
+			
+		}); */
+		
+	}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ function addBuildInProcess(){
+	 
+		var dialogid = GW.process.getRandomId();
+		
+		var content = "<div style=\"padding:100px 70px 70px 70px; text-align:center;\" class=\"btn-group\" role=\"group\" >"+
+		
+		"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\"> BuildIn Process </button>"+
+		
+		"</div>"
+		
+		var frame = GW.process.createJSFrameDialog(320, 250, content, "BUILD IN PROS");
+		
+		/* $("#newhost-d").click(function(){
+			
+			GW.host.newDialog();
+			
+			frame.closeFrame();
+			
+		}); */
+		
+		$("#newprocess-d").click(function(){
+			
+			GW.process.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		
+		/* $("#newworkflow-d").click(function(){
+			
+			GW.workflow.newDialog();
+			
+			frame.closeFrame();
+			
+		}); */
+		
+	}
+ 
+ 
+ 
+ 
+ 
+ function addPythonProcess(){
+	 
+		var dialogid = GW.process.getRandomId();
+		
+		var content = "<div style=\"padding:100px 70px 70px 70px; text-align:center;\" class=\"btn-group\" role=\"group\" >"+
+		
+		"  <button type=\"button\" class=\"btn btn-secondary\" id=\"newprocess-d\"> Python Process</button>"+
+		
+		"</div>"
+		
+		var frame = GW.process.createJSFrameDialog(320, 250, content, "PYTHON PROS");
+		
+		$("#newhost-d").click(function(){
+			
+			GW.host.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		
+		$("#newprocess-d").click(function(){
+			
+			GW.process.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		
+		$("#newworkflow-d").click(function(){
+			
+			GW.workflow.newDialog();
+			
+			frame.closeFrame();
+			
+		});
+		
+	}
+			
+
+			
+			
+			function myFunction1(){
+				
+				if(this.monitor_switch){
+					
+					GW.monitor.closeProgressIndicator();
+					
+					GW.monitor.closeWorkspaceIndicator();
+					
+				}else{
+					
+					GW.monitor.openProgressIndicator();
+					
+					GW.monitor.openWorkspaceIndicator();
+					
+				}
+
+				//show the running processes and workflows
+
+				GW.monitor.showDialog();
+				
+				this.monitor_switch = !this.monitor_switch;
+				
+			}
+			
+			
+			
+			function myFun(){
+				
+				GW.settings.showDialog();
+				
+			}
+			
+			 function print(){
+				
+				window.print();
+				
+			}
+			
+	 
+			 
+			 /* Process JS Function */
+			 
+			 
+			 function ProShell(){
+				
+				var content = '<div class="modal-body">'+
+					GW.process.getProcessDialogTemplate()+
+					'</div>';
+				
+				content += '<div class="modal-footer">' +
+					"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+					"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+					'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
+				
+		    	GW.process.showShell(null, GW.process.cmid);
+	        	
+	        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	        		
+	        		console.log(this.id);
+	        		
+	        		$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( this.value == "shell"){
+	        			
+	        			GW.process.showShell(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "jupyter"){
+	        			
+	        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+	        			
+	        		}else if(this.value == "python"){
+	        			
+	        			GW.process.showPython(null, GW.process.cmid);
+	        			
+	        		}
+	        		
+	        	});
+	        	
+	        	$("#add-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(false,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+	        	
+	        	$("#run-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(true,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+				
+			}
+			 
+			 
+			 
+			 
+			 
+			 function ProNote(){
+					
+					var content = '<div class="modal-body">'+
+						GW.process.getProcessDialogTemplate()+
+						'</div>';
+					
+					content += '<div class="modal-footer">' +
+						"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+						"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+						'</div>';
+					
+					var frame = GW.process.createJSFrameDialog(720, 640, content, "NoteBook Process")
+					
+			    	GW.process.showShell(null, GW.process.cmid);
+		        	
+		        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+		        		
+		        		console.log(this.id);
+		        		
+		        		$("#codearea-"+GW.process.cmid).empty();
+		        		
+		        		if( this.value == "shell"){
+		        			
+		        			GW.process.showShell(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "builtin"){
+		        			
+		        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "jupyter"){
+		        			
+		        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+		        			
+		        		}else if(this.value == "python"){
+		        			
+		        			GW.process.showPython(null, GW.process.cmid);
+		        			
+		        		}
+		        		
+		        	});
+		        	
+		        	$("#add-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(false,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+		        	
+		        	$("#run-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(true,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+					
+				}
+				 
+			 
+			 
+			 
+			 
+			 function ProBuild(){
+					
+					var content = '<div class="modal-body">'+
+						GW.process.getProcessDialogTemplate()+
+						'</div>';
+					
+					content += '<div class="modal-footer">' +
+						"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+						"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+						'</div>';
+					
+					var frame = GW.process.createJSFrameDialog(720, 640, content, "new Build In process")
+					
+			    	GW.process.showShell(null, GW.process.cmid);
+		        	
+		        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+		        		
+		        		console.log(this.id);
+		        		
+		        		$("#codearea-"+GW.process.cmid).empty();
+		        		
+		        		if( this.value == "shell"){
+		        			
+		        			GW.process.showShell(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "builtin"){
+		        			
+		        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "jupyter"){
+		        			
+		        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+		        			
+		        		}else if(this.value == "python"){
+		        			
+		        			GW.process.showPython(null, GW.process.cmid);
+		        			
+		        		}
+		        		
+		        	});
+		        	
+		        	$("#add-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(false,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+		        	
+		        	$("#run-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(true,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+					
+				}
+				 
+			 
+			 
+			 
+			 
+			 function ProPython(){
+					
+					var content = '<div class="modal-body">'+
+						GW.process.getProcessDialogTemplate()+
+						'</div>';
+					
+					content += '<div class="modal-footer">' +
+						"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+						"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+						'</div>';
+					
+					var frame = GW.process.createJSFrameDialog(720, 640, content, "Python Process")
+					
+			    	GW.process.showShell(null, GW.process.cmid);
+		        	
+		        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+		        		
+		        		console.log(this.id);
+		        		
+		        		$("#codearea-"+GW.process.cmid).empty();
+		        		
+		        		if( this.value == "shell"){
+		        			
+		        			GW.process.showShell(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "builtin"){
+		        			
+		        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+		        			  
+		        		}else if(this.value == "jupyter"){
+		        			
+		        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+		        			
+		        		}else if(this.value == "python"){
+		        			
+		        			GW.process.showPython(null, GW.process.cmid);
+		        			
+		        		}
+		        		
+		        	});
+		        	
+		        	$("#add-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(false,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+		        	
+		        	$("#run-process-" + GW.process.cmid).click(function(){
+		        		
+		        		GW.process.add(true,GW.process.cmid);
+		        		
+		        		frame.closeFrame();
+		        		
+		        	});
+					
+				}
+				 
+
+			 /* Process custom buttons functions : */
+			 
+			 
+			 	 function getProcessDialogTemplate(){
+			
+			GW.process.cmid = Math.floor(Math.random() * 1000);
+			
+			var content = '<div><form>'+
+		       '   <div class="form-group row required">'+
+		       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">LANGUAGE</label>'+
+		       '     <div class="col-sm-4">'+
+		       '			<select class="form-control form-control-sm" id="processcategory-'+GW.process.cmid+'">'+
+			   '    			<option value="shell">Shell</option>'+
+			   '    			<option value="builtin">Built-In Process</option>'+
+			   '    			<option value="jupyter">Jupyter Notebook</option>'+
+			   '    			<option value="python">Python</option>'+
+			   /*'    		<option value="python">Python</option>'+
+			   '    			<option value="r">R</option>'+
+			   '    			<option value="matlab">Matlab</option>'+*/
+			   '  		</select>'+
+		       '     </div>'+
+//		       '   </div>'+
+//		       '   <div class="form-group row required">'+
+		       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
+		       '     <div class="col-sm-4">'+
+		       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
+//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+		       '     </div>'+
+		       '   </div>'+
+		       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> you can enable edit. </p>'+
+		       ' </form></div>';
+			
+			return content;
+			
+		}
+		
+		 function createJSFrameDialog(width, height, content, title){
+			
+			var frame = GW.workspace.jsFrame.create({
+	    		title: title,
+	    	    left: 0, 
+	    	    top: 10, 
+	    	    width: width, 
+	    	    height: height,
+	    	    appearanceName: 'yosemite',
+	    	    style: {
+                    backgroundColor: 'rgb(255,255,255)',
+		    	    fontSize: 14,
+                    overflow:'auto'
+                },
+	    	    html: "<div style=\"font-size:12px; padding: 1px;\">" + content + "</div>"
+	    	});
+	    	
+			frame.setControl({
+                styleDisplay:'inline',
+                maximizeButton: 'zoomButton',
+                demaximizeButton: 'dezoomButton',
+                minimizeButton: 'minimizeButton',
+                deminimizeButton: 'deminimizeButton',
+                hideButton: 'closeButton',
+                animation: true,
+                animationDuration: 150,
+
+            });
+	    	
+            frame.on('closeButton', 'click', (_frame, evt) => {
+                _frame.closeFrame();
+                
+            });
+            
+	    	//Show the window
+	    	frame.show();
+	    	
+	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+	    	
+	    	return frame;
+			
+		}
+		
+			 
+			 
+		 function getShellLab(){
+				
+				GW.process.cmid = Math.floor(Math.random() * 1000);
+				
+				var content = '<div><form>'+
+			       '   <div class="form-group row required">'+
+			       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">LANGUAGE</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<select class="form-control form-control-sm" id="processcategory-'+GW.process.cmid+'">'+
+				   '    			<option value="shell">Shell</option>'+
+				 /*   '    			<option value="builtin">Built-In Process</option>'+
+				   '    			<option value="jupyter">Jupyter Notebook</option>'+
+				   '    			<option value="python">Python</option>'+ */
+				   /*'    		<option value="python">Python</option>'+
+				   '    			<option value="r">R</option>'+
+				   '    			<option value="matlab">Matlab</option>'+*/
+				   '  		</select>'+
+			       '     </div>'+
+//			       '   </div>'+
+//			       '   <div class="form-group row required">'+
+			       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
+//			       '			<input type="text" class="form-control form-control-sm" ></input>'+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
+			       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> you can enable edit. </p>'+
+			       ' </form></div>';
+				
+				return content;
+				
+			}
+			 
+		 
+		 
+		 function getNoteLab(){
+				
+				GW.process.cmid = Math.floor(Math.random() * 1000);
+				
+				var content = '<div><form>'+
+			       '   <div class="form-group row required">'+
+			       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">LANGUAGE</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<select class="form-control form-control-sm" id="processcategory-'+GW.process.cmid+'">'+
+				  /*  '    			<option value="shell">Shell</option>'+
+				   '    			<option value="builtin">Built-In Process</option>'+ */
+				   '    			<option value="jupyter">Jupyter Notebook</option>'+
+				/*    '    			<option value="python">Python</option>'+ */
+				   /*'    		<option value="python">Python</option>'+
+				   '    			<option value="r">R</option>'+
+				   '    			<option value="matlab">Matlab</option>'+*/
+				   '  		</select>'+
+			       '     </div>'+
+//			       '   </div>'+
+//			       '   <div class="form-group row required">'+
+			       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
+//			       '			<input type="text" class="form-control form-control-sm" ></input>'+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
+			       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> you can enable edit. </p>'+
+			       ' </form></div>';
+				
+				return content;
+				
+			}
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 function getBuildLab(){
+				
+				GW.process.cmid = Math.floor(Math.random() * 1000);
+				
+				var content = '<div><form>'+
+			       '   <div class="form-group row required">'+
+			       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">LANGUAGE</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<select class="form-control form-control-sm" id="processcategory-'+GW.process.cmid+'">'+
+				  /*  '    			<option value="shell">Shell</option>'+ */
+				   '    			<option value="builtin">Built-In Process</option>'+
+				/*    '    			<option value="jupyter">Jupyter Notebook</option>'+ */
+				  /*  '    			<option value="python">Python</option>'+ */
+				   /*'    		<option value="python">Python</option>'+
+				   '    			<option value="r">R</option>'+
+				   '    			<option value="matlab">Matlab</option>'+*/
+				   '  		</select>'+
+			       '     </div>'+
+//			       '   </div>'+
+//			       '   <div class="form-group row required">'+
+			       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
+//			       '			<input type="text" class="form-control form-control-sm" ></input>'+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
+			       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> you can enable edit. </p>'+
+			       ' </form></div>';
+				
+				return content;
+				
+			}
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 function getPyLab(){
+				
+				GW.process.cmid = Math.floor(Math.random() * 1000);
+				
+				var content = '<div><form>'+
+			       '   <div class="form-group row required">'+
+			       '     <label for="processcategory" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">LANGUAGE</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<select class="form-control form-control-sm" id="processcategory-'+GW.process.cmid+'">'+
+				  /*  '    			<option value="shell">Shell</option>'+
+				   '    			<option value="builtin">Built-In Process</option>'+
+				   '    			<option value="jupyter">Jupyter Notebook</option>'+ */
+				   '    			<option value="python">Python</option>'+
+				   /*'    		<option value="python">Python</option>'+
+				   '    			<option value="r">R</option>'+
+				   '    			<option value="matlab">Matlab</option>'+*/
+				   '  		</select>'+
+			       '     </div>'+
+//			       '   </div>'+
+//			       '   <div class="form-group row required">'+
+			       '     <label for="processname" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</label>'+
+			       '     <div class="col-sm-4">'+
+			       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
+//			       '			<input type="text" class="form-control form-control-sm" ></input>'+
+			       '     </div>'+
+			       '   </div>'+
+			       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
+			       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> you can enable edit. </p>'+
+			       ' </form></div>';
+				
+				return content;
+				
+			}
+		 
+		 /* working functions for custom buttons js code was extractedwitout distubing */
+		 
+		 
+		 function  newShellPro(){
+				
+				var content = '<div class="modal-body">'+
+					getShellLab()+
+					'</div>';
+				
+				content += '<div class="modal-footer">' +
+					"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">add</button> "+
+					"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+					'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
+				
+		    	GW.process.showShell(null, GW.process.cmid);
+	        	
+	        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	        		
+	        		console.log(this.id);
+	        		
+	        		$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( this.value == "shell"){
+	        			
+	        			GW.process.showShell(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "jupyter"){
+	        			
+	        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+	        			
+	        		}else if(this.value == "python"){
+	        			
+	        			GW.process.showPython(null, GW.process.cmid);
+	        			
+	        		}
+	        		
+	        	});
+	        	
+	        	$("#add-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(false,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+	        	
+	        	$("#run-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(true,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+				
+			}
+			 
+			 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 function  newNotePro(){
+				
+				var content = '<div class="modal-body">'+
+					getNoteLab()+
+					'</div>';
+				
+				content += '<div class="modal-footer">' +
+					"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">add</button> "+
+					"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+					'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
+				
+		    	GW.process.showJupyter(null, GW.process.cmid);
+	        	
+	        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	        		
+	        		console.log(this.id);
+	        		
+	        		$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( this.value == "shell"){
+	        			
+	        			GW.process.showShell(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "jupyter"){
+	        			
+	        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+	        			
+	        		}else if(this.value == "python"){
+	        			
+	        			GW.process.showPython(null, GW.process.cmid);
+	        			
+	        		}
+	        		
+	        	});
+	        	
+	        	$("#add-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(false,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+	        	
+	        	$("#run-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(true,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+				
+			}
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 function  newBuildPro(){
+				
+				var content = '<div class="modal-body">'+
+					getBuildLab()+
+					'</div>';
+				
+				content += '<div class="modal-footer">' +
+					"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">add</button> "+
+					"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+					'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
+				
+		    	GW.process.showBuiltinProcess(null, GW.process.cmid);
+	        	
+	        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	        		
+	        		console.log(this.id);
+	        		
+	        		$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( this.value == "shell"){
+	        			
+	        			GW.process.showShell(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "jupyter"){
+	        			
+	        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+	        			
+	        		}else if(this.value == "python"){
+	        			
+	        			GW.process.showPython(null, GW.process.cmid);
+	        			
+	        		}
+	        		
+	        	});
+	        	
+	        	$("#add-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(false,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+	        	
+	        	$("#run-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(true,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+				
+			}
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 function  newPyPro(){
+				
+				var content = '<div class="modal-body">'+
+					getPyLab()+
+					'</div>';
+				
+				content += '<div class="modal-footer">' +
+					"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">add</button> "+
+					"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+					'</div>';
+				
+				var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
+				
+		    	GW.process.showPython(null, GW.process.cmid);
+	        	
+	        	$("#processcategory-"+GW.process.cmid).on('change', function() {
+	        		
+	        		console.log(this.id);
+	        		
+	        		$("#codearea-"+GW.process.cmid).empty();
+	        		
+	        		if( this.value == "shell"){
+	        			
+	        			GW.process.showShell(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "builtin"){
+	        			
+	        			GW.process.showBuiltinProcess(null,GW.process.cmid);
+	        			  
+	        		}else if(this.value == "jupyter"){
+	        			
+	        			GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
+	        			
+	        		}else if(this.value == "python"){
+	        			
+	        			GW.process.showPython(null, GW.process.cmid);
+	        			
+	        		}
+	        		
+	        	});
+	        	
+	        	$("#add-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(false,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+	        	
+	        	$("#run-process-" + GW.process.cmid).click(function(){
+	        		
+	        		GW.process.add(true,GW.process.cmid);
+	        		
+	        		frame.closeFrame();
+	        		
+	        	});
+				
+			}
 		
 		</script>
 	    
