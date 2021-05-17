@@ -17,7 +17,7 @@ import ch.qos.logback.core.status.Status;
 public class GWProcess {
 
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	String id;
 	
 	String name;

@@ -15,7 +15,7 @@ public class Workflow {
 	
 	private String name, description, nodes, owner;
 
-	//@Column(columnDefinition = "LONGTEXT")	
+	@Column(columnDefinition = "LONGTEXT")	
 	private String edges;
 
 	public String getDescription() {
