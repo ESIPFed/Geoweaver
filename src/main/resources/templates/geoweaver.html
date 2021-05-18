@@ -10,7 +10,6 @@
 		<link rel="stylesheet" href="../css/jquery.dataTables.min.css" />
 		
 		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
-		
 		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
 		
    		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
@@ -36,10 +35,9 @@
 		
 		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
     	<link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
-    	
    		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
    		<link rel="stylesheet" href="../css/main.css" />
-   	
+   		
    		<link rel="stylesheet" href="../css/prism.css" />
     	
         <link rel="stylesheet" href="../css/notebook.css" />
@@ -51,55 +49,6 @@
         <link rel="stylesheet" href="../css/Chart.min.css" />
         
         <link href="../css/introjs.min.css" rel="stylesheet" />
-        
-        <style type="text/css">
-        	/* Style the tab */
-			.tab {
-			  overflow: hidden;
-			  border: 1px solid #ccc;
-			  background-color: #f1f1f1;
-			}
-			
-			/* Style the buttons inside the tab */
-			.tab button {
-			  background-color: inherit;
-			  float: left;
-			  border: none;
-			  outline: none;
-			  cursor: pointer;
-			  padding: 3px 3px;
-			  transition: 0.3s;
-			  font-size: 12px;
-			}
-			
-			/* Change background color of buttons on hover */
-			.tab button:hover {
-			  background-color: #ddd;
-			}
-			
-			/* Create an active/current tablink class */
-			.tab button.active {
-			  background-color: #ccc;
-			}
-			
-			/* Style the tab content */
-			.tabcontent {
-			  display: none;
-			  padding: 6px 12px;
-			  /* border: 1px solid #ccc; */
-			  border-top: none;
-			}
-			
-			#process-history-chart-container {
-			
-				width: 200px;
-				height: 100px;
-			
-			}
-        
-        </style>
-        
-        
         
 		<script type="text/javascript" src="../js/FileSaver.min.js"></script>
 		
@@ -162,8 +111,8 @@
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
 				
 				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
-				  <a  style="float: left; width: 100px;text-align: center; padding: 5px;transition: all 0.3s ease;background-color: gray; " href="javascript:void(0)">
-				  	<img src="../img/header.png" width="90px" height="40px" />
+				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:grey " href="javascript:void(0)">
+				  	<img src="../img/header.png" width="100px" height="50px" />
 				  </a>
 				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
 				  	Geoweaver
@@ -190,7 +139,7 @@
 				  </a>
 				  <a id="toolbar-settings" 
 				  data-toggle="tooltip" title="Settings"
-				  style="float: left; width: 80px;text-align: center;margin-top:9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
 				  	<i class="fa fa-cog" alt="settings"  > Settings</i>
 				  </a>
 				  <a id="toolbar-print" 
@@ -200,10 +149,10 @@
 				  </a>
 				  <a  
 				  data-toggle="tooltip" title="Information"
-				  style="float: right; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
+				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
                   	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
                   </a>
-				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+				  <a style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
 				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
 				  </a>
 				</div>
@@ -245,75 +194,203 @@
 			
 			</div>
 			
-			<!-- tool box -->
-				
-			
-			
+			<!-- set site margin here -->
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-			<div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;">
+			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px;">
 				
 				
 			    <!-- Workspace -->
 			    
 			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
-					    <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-						  <button class="tablinks" id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
-						  <button class="tablinks" id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
-						  <button class="tablinks" id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-						  <button class="tablinks" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
-						  <button class="tablinks" id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
-						  <button class="tablinks" id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+					  	<div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
+						  <button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+						  <button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
+						  <button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
+						  <button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+						  <button class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
+						  <button class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
 						</div>
 						
 						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;"> 
-							  <div id="main-general-content" style="height:100%;overflow-y: scroll; padding: 10px;">
-							  	<h2>Welcome to Geoweaver! </h2>
-							  	<p>Geoweaver is a community effort and we welcome any contributor from all spectrum of domains! </p>
-							  </div> 
+							<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
+								
+								<h2 style="color:black;font-weight: bold;font-size: 30px; font-family: 'Poppins', sans-serif;padding-top:5px;padding-left:5px" >Welcome to Geoweaver! <a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"><i class="fab fa-github"></i></a></h2>
+							  	
+							  	<div class="row">
+									<div class="col col-md-12">
+
+										<p class="p-3 mb-2 bg-light text-dark">Geoweaver is an open source web-based scientific experiment management software. It allows users to compose and execute full-stack scientific experiments on distributed platforms. It can be installed on Linux, Mac, and Windows.</p>
+										
+										<p>It provides some very useful features like: 
+
+											<ul>
+
+												<li>proxying and recording provenance of Jupyter Notebook Server, Jupyter Hub, Jupyter Lab, Google Earth Engine;</li>
+
+												<li>It also provides essential functionality like FTP client, Shell scripts and SSH for running system-level programs</li>
+
+												<li>It allows every user to record history and manage, share, track, replicate and reuse complicated scientific workflows</li>
+
+											</ul>
+										
+										</p>
+
+									</div>
+									
+								</div>
+						
+								<div class="row">
+									<div class="col col-md-3">
+										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Host</h3>
+										<div class="list-group" style="width: 100%">
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >SSH Server</button>
+											
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Notebook</button>
+											
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Hub</button>
+											
+											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog()">Google Earth Engine</button>
+
+										</div>
+										
+											
+											
+									</div>
+
+									<div class="col col-md-3">
+
+										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Process</h3>
+										
+										<div class="list-group" style="width: 100%">
+											
+											<button onclick="GW.process.newDialog()" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
+											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Notebook</button>
+											<button onclick="GW.process.newDialog()"type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
+											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Python</button> 
+											
+										</div>
+									</div>
+									
+									<div class="col col-md-3">
+										<h3  style="font-weight:bold;font-size:25px;color:black;font-family: 'Poppins', sans-serif" >Workflow</h3>
+										
+										<div class="list-group"  style="width: 100%">
+											<button type="button" class="list-group-item list-group-item-action " onclick="GW.home.showDialog()" >Workflow</button>
+											
+										</div>
+									</div>
+									
+									<div class="col col-md-3">
+										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >About</h3>
+										
+										<div class="btn-group-vertical"  style="width: 100%">
+											
+											<button onclick="GW.about.showDialog()" type="button" class="list-group-item list-group-item-action ">About</button>
+									
+											<button onclick="GW.settings.showDialog()" type="button" class="list-group-item list-group-item-action ">Settings</button>
+									
+											<button onclick="GW.tutorial.showDialog()" type="button" class="list-group-item list-group-item-action " >Tutorial</button>
+										</div>
+									</div>
+								</div>	  								  	
+							  
+							  	
+								<div class="row">       
+									<div  class="col col-md-12">
+
+										<h1 style="color:black;font-weight: bold;font-size: 25px;font-family: 'Poppins', sans-serif;">GeoWeaver Services</h1>
+											
+										<h2>Hosts</h2>
+										
+										<h3>SSH Server</h3>
+										<p style="font-size:14px">SSH, or Secure Shell, is a remote administration protocol that allows users to control and modify their remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+										<h3>Jupyter NoteBook Server</h3>
+														
+										<p>In Jupyter Notebook we can import and edit notebooks. The notebooks are created with unique names. We can create multiple notebooks and add them through panel. The file can be imported in two ways i.e. choosing file from localsystem or URL. We can edit the imported files and save the ediits. The exection is done by nbconvert.</p>
+										<p>We are in the process of creating a new dashboard architecture for the Jupyter notebook, which will allow the user to navigate through multiple directory files to find desired notebooks.</p>
+										
+										<h3>Jupyter Hub</h3>
+														
+										<p>JupyterHub is a server-hosted distributed Jupyter notebook environment. JupyterHub allows users to log into a server and write Python code within a web browswer without any software installation on their local computer. Anywhere you have an internet connection, you can bring up a JupyterHub webpage and write/run Python code in a Jupyter notebook.</p>
+										
+										<p>Scientific concepts & complex computations are easier to process when they are visualized. Jupyter notebook is a powerful tool for digital scientists to support scientific workflows, data, code, and visualizations.  ..</p>
+										
+										<h3>Google Earth Engine</h3>
+										
+										<p > Google Earth Engine is a cloud-based geospatial analysis platform that enables users to visualize and analyze satellite images of our planet.allows developers to interact with Google Earth Engine using the Python programming language.</p>
+										
+										<p>Access to Google Earth Engine is currently only available to registered users. The API is in active development, and users should expect the API to change. It allows anyone to visualize the data in the public data catalog.</p><p> Signed in Earth Engine users can also import data, run simple analyses, save, and export the results.
+										You can use them to build custom applications and to develop Earth Engine code locally using a JavaScript or Python interpreter. The repository on GitHub includes a number of demos illustrating how to use the client libraries.</p>
+										
+										<h2>Process</h2>
+													
+										<h3>Shell</h3>
+										
+										<p>it reads the command, evaluates the command, prints the result, and loop it back to read the command again.
+										to automate routine tasks like health checks and file backups with shell scripts. However, as those tasks become more complex, shell scripts may become harder to maintain.
+
+										Fortunately, we can use Python instead of shell scripts for automation. Python provides methods to run shell commands, giving us the same functionality of those shells scripts.</p>
+											
+										<h3>NoteBook</h3>
+										<p> A process runner is responsible for binding via SSH channels and executing processes
+										on assigned platforms. The execution needs to first transfer the latest code to the remote servers and
+										trigger the code by sending commands. The process monitor can listen to all the events occurred during
+										the execution and report the real-time status. Once the execution is over, the result messages together
+										with the inputs and executed code shall be saved into the database for later inquiry.</p>
+										<p>Users can also customize JupyterLab to fit their workflow. Built-in viewers exist for image, text and CSV files, for instance, but users can build custom components as well. These could display things such as genomic alignments or geospatial data</p>
+										
+										<h3>Build In Process</h3>
+										<p> In Built In Process we can create a process with different names. We can choose a process from ShowResultMap and DownloadData. We can the previously creeated built in process and save them and execute.</p>
+										
+										<h3>Python</h3>
+										<p>Python has become the dominant language and environment for AI workflows [68]. AI workflows written in Python involve many calls of python libraries and distributed Jupyter Notebooks. </p>
+										<p>Computing with Python can be used as a course book for absolute beginners on Python with guidance and support from a teacher. It is also suitable as a self study book for more advanced students with some programming knowledge and an interest in the mathematical or scientific disciplines. </p>
+												
+										<h2>Workflow</h2>
+													
+													
+										<p>An interface should be developed to allow users to compose workflow. A toolbar should be developments in JavaScript frameworks, namely React, Angular, and Vue.js, as well as JavaScript developed to manage the workflows, including searching the existing workflows, running and libraries such as D3.js and CodeMirror, that can aid in building websites to provide a rich user monitoring the workflows, and checking the history of workflow execution. The workflow module experience through fully feature user interfaces. Via the interfaces, people can drag and drop the provides real-time feedbacks of the member process statuses by indicating with different colors or atomic processes and draw lines to connect them into workflows. The created workflows represent the showing progress bars. To make the workflow knowledge sharable, this module should also allow knowledge of large-scale data processing and are stored in the database.</p>
+
+									</div>
+									
+												
+			
+								</div>
+			  	
+							  	
+							</div> 
 						</div>
 						
 						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							  	<h2>Please select a host on the right panel! </h2>
+							  	<h2 style="color:black">Please select a host on the right panel! </h2>
 							  </div>
 						</div>
 						 
 						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 10px;">
-							  	<h2>Please select a process on the right panel!</h2>
+							  	<h2 style="color:black">Please select a process on the right panel!</h2>
 							  </div>
 						</div>
 						
 						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-workflow-content" style="height:100%; overflow-y: scroll; padding: 10px;">
-							  	<h2>Please select a workflow on the right panel!</h2>
+							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
 							  </div>
 						</div>
 							
 						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
 							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
-							  <h2>logging information and errors</h2>
+							  <h2 style="color:black">logging information and errors</h2>
 							  <div id="log-window">
 							  	
 							  </div>
 							</div>
 						</div>
 				
-			    			<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
-					
-							<!-- log window right top -->
+						<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
 							
-							<!-- <div id="log_area" style="position: absolute; top: 10px; right: 30px; height: 5px; z-index:1;">
-								
-								<button class="btn btn-default btn-minimize pull-right toolbar-btn red" id="toolbar-minimize"><i class="fa fa-minus" alt="show log window"></i></button>
-								
-								<div id="log-window-2" style="background-color: white; padding: 3px; width: 500px; height: 400px; border:1px solid #000; overflow-y: scroll;" ></div>
-							
-							</div> -->
-							
-							
-					
 							<!-- status indicator right bottom -->
 							
 							<div id="workspace_status_indicator" style="position: absolute; bottom: 10px; right: 10px; height: 50px; z-index:1;">
@@ -326,19 +403,10 @@
 							
 							<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; bottom: 80px; left: 10px; width:100px; z-index:1; overflow-y: scroll;">
 							
-							<!-- <div id="bar-1">
-								Task1
-								<div class="progress">
-								  <div class="progress-bar progress-bar-striped active" role="progressbar"
-								  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%">
-								    40%
-								  </div>
-								</div>
-							</div> -->
 						    	
 						    </div>
 						    
-						    <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
+				   			<div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
 					  	
 							  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
 							  
@@ -393,8 +461,9 @@
 					                  </a>
 					                </li> -->
 					
-					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span data-toggle="collapse" data-target="#hosts" class="arrow collapsed active"></span></a>
+					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Googel Earth Engine. You can add and manage multiple hosts in one place. ">
+					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost" onClick="host()"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
+
 					                </li>
 					                <ul   class="sub-menu collapse" id="hosts">
 					                    <li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
@@ -482,11 +551,7 @@
 					     </div>
 					     
 					</div>
-					
-				</div>
-			
-				
-				
+					</div>
 				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">
 				    <div class="modal-content">              
@@ -531,9 +596,10 @@
 	    <script src="../js/gw.settings.js"></script>
 	    <script src="../js/gw.toolbar.js"></script>
 	    <script src="../js/gw.menu.js"></script>
+		<script src="../js/gw.home.js"></script>
 	    <script src="../js/gw.main.js"></script>
 	    
-	    <script>
+	      <script>
 	    
 	    	function switchTab(ele, name){
 	    		
@@ -563,6 +629,7 @@
 				switchTab(document.getElementById("main-general-tab"), "main-general");
 				
 			});
+			
 			
 		
 		</script>
