@@ -679,6 +679,10 @@ GW.process = {
 			
 		},
 		
+		/**
+		 * This function is called after people click on "Details" in the process history table
+		 * @param {*} history_id 
+		 */
 		showHistoryDetails: function(history_id){
 			
 
@@ -701,6 +705,8 @@ GW.process = {
 				}
 				
 				msg = $.parseJSON(msg);
+
+				msg.code = msg.input;
 				
 				GW.process.display(msg);
 				
@@ -809,12 +815,11 @@ GW.process = {
 		
 		unescape: function(code){
 			
-			String.prototype.replaceAll = function(search, replacement) {
-			    var target = this;
-			    return target.replace(new RegExp(search, 'g'), replacement);
-			};
+			if(code != null){
+
+				code = code.replaceAll("<br/>", "\n");
 			
-			code = code.replaceAll("<br/>", "\n");
+			}
 			
 			return code;
 			
@@ -1073,7 +1078,7 @@ GW.process = {
 				msg = $.parseJSON(msg);
 			}
 			
-			code_type = msg.description;
+			code_type = msg.category==null?msg.description: msg.category;
 			
 			code = msg.code;
 			
