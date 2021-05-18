@@ -29,3 +29,9 @@ edu = {
 
 // GW will be the short name of the package
 var GW = edu.gmu.csiss.geoweaver
+
+//put all the shared added function here as global depenedency
+String.prototype.replaceAll = function(search, replacement) {
+	var target = this;
+	return target.replace(new RegExp(search, 'g'), replacement);
+};

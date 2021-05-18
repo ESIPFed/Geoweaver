@@ -963,7 +963,7 @@ public class ProcessTool {
 				
 				resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
 				
-				resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[7]))).append("\", ");
+				resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[11]))).append("\", ");
 				
 				resp.append("\"host\":\"").append(escape(String.valueOf(first_obj[6]))).append("\", ");
 				
