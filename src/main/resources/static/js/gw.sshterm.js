@@ -239,7 +239,7 @@ function getContextURLPath() {
     rootUrl = rootUrl+"/"+tempStr[1];
     return rootUrl;
 }
-
+ 
 function getWsPrefixURL (){
 	
 	var s = ((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/";

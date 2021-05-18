@@ -2,6 +2,7 @@ package com.gw.jpa;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class Workflow {
@@ -10,7 +11,14 @@ public class Workflow {
 //	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 	
-	private String name, description, nodes, edges, owner;
+	private String name, description, owner;
+
+
+	@Column(columnDefinition = "LONGTEXT")
+	private String edges;
+
+	@Column(columnDefinition = "LONGTEXT")
+	private String nodes;
 	
 	public String getDescription() {
 		return description;

@@ -130,7 +130,8 @@ public class TerminalServlet {
             	
                 logger.debug("message in " + session.getId() + message);
                 
-                sshSession.getSSHOutput().write((message + '\n').getBytes());
+                sshSession.getSSHOutput().write((message).getBytes()); 
+                
                 
                 sshSession.getSSHOutput().flush();
                 

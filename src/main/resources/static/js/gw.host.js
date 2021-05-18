@@ -525,7 +525,7 @@ GW.host = {
 			var frame = "<h4 class=\"border-bottom\">SSH Terminal Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeSSHTerminal\" >close</button></h4>"+
 			
 			"<iframe src=\"geoweaver-ssh?token="+
-			token+"\" style=\"height: 500px; max-height:600px;width:100%;\"></iframe>"
+			token+"\" style=\"height:700px; max-height:1000px;width:100%;\"></iframe>"
 			
 			$("#ssh-terminal-iframe").html(frame);
 			
@@ -659,7 +659,7 @@ GW.host = {
 		                			
 		                		}else{
 		                			
-		                			alert("Fail to open SSH session");
+		                			alert("Username or Password is wrong or the server is not accessible");
 		                			
 		                		}
 		                		try{
@@ -669,7 +669,7 @@ GW.host = {
 		                		
 		                	}).fail(function(status){
 		                		
-		                		alert("Fail to open SSH session" + status);
+		                		alert("Username or Password is wrong or the server is not accessible" + status);
 		                		
 		                		$("#ssh-connect-btn").prop("disabled", false);
 		                		
@@ -737,7 +737,7 @@ GW.host = {
 		                		
 	                		}else{
 	                			
-	                			alert("Fail to open SSH session");
+	                			alert("Username or Password is wrong or the server is not accessible");
 	                			
 	                			GW.host.setCache(hostid, null);
 	                			
@@ -745,7 +745,7 @@ GW.host = {
 	                		
 	                	}).fail(function(status){
 	                		
-	                		alert("Fail to open SSH session" + status);
+	                		alert("Username or Password is wrong or the server is not accessible" + status);
 	                		
 	                		GW.host.setCache(hostid, null);
 	                		//$("#ssh-connect-btn").prop("disabled", false);
@@ -779,7 +779,11 @@ GW.host = {
         		
         		console.log("Start to refresh the host list..");
         		
-        		$("#"+GW.menu.getPanelIdByType("host")).html("");
+        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
+        		$("#host_folder_ssh_target").html("");
+        		$("#host_folder_jupyter_target").html("");
+        		$("#host_folder_jupyterhub_target").html("");
+        		$("#host_folder_gee_target").html("");
         		
         		GW.host.list(msg);
         		
@@ -813,6 +817,13 @@ GW.host = {
 				
 			" </li>");
 			
+		},
+
+		expand: function(one){
+			
+			console.log("EXPAND host type")
+			
+			$("#host_folder_"+one.type+"_target").collapse("show");
 		},
 		
 		list: function(msg){
@@ -900,7 +911,7 @@ GW.host = {
 					
 				}
 				
-			}else if(hosttype=="jupyter" || hosttype=="jupyterhub"){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" || hosttype=="jupyterlab"){
 				
 				if($("#hostname").val()&&$("#jupyter_home_url").val()){
 					
@@ -995,6 +1006,8 @@ GW.host = {
 		    		msg = $.parseJSON(msg);
 		    		
 		    		GW.host.addMenuItem(msg);
+
+					GW.host.expand(msg);
 		    		
 		    		callback();
 		    		
@@ -1144,7 +1157,7 @@ GW.host = {
 		        				
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Browser File Hierarchy\"></i>";
 				
-			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" ){
+			}else if(hosttype=="jupyter" || hosttype=="jupyterhub" || hosttype=="jupyterlab" ){
 				
 				content += "<i class=\"fas fa-chart-line subalignicon\" onclick=\"GW.host.recent('" +
 				
@@ -1668,6 +1681,21 @@ GW.host = {
 			       '     </div>'+
 			       '   	</div>';
 				
+			}else if(host_type=="jupyterlab"){
+				
+				content = '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
+			       '     </div>'+
+			       '   	</div>'+
+			       '   	<div class="form-group row required">'+
+			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterLab URL </label>'+
+			       '     <div class="col-sm-10">'+
+			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
+			       '     </div>'+
+			       '   	</div>';
+				
 			}else if(host_type == "ssh") {
 				
 				content = '   	<div class="form-group row required">'+
@@ -1744,6 +1772,7 @@ GW.host = {
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
 			   '    		<option value="jupyterhub">JupyterHub</option> '+
+			   '    		<option value="jupyterlab">Jupyter Lab</option> '+
 			   '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+
