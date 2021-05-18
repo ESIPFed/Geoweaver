@@ -1,6 +1,5 @@
-/* 
-	First: A couple styles to make the demo page look good
- */
+
+
 body {
 	padding-bottom: 2rem;
 }
@@ -78,7 +77,7 @@ form .progress {
   visibility: hidden; /* Hidden by default. Visible on click */
   min-width: 250px; /* Set a default minimum width */
   margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: #333; /* Black background color */
+  background-color: grey; /* Black background color */
   color: #fff; /* White text color */
   text-align: center; /* Centered text */
   border-radius: 2px; /* Rounded borders */
@@ -119,3 +118,46 @@ form .progress {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
 } 
+
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 3px 3px;
+  transition: 0.3s;
+  font-size: 12px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  /* border: 1px solid #ccc; */
+  border-top: none;
+}
+
+#process-history-chart-container {
+
+  width: 200px;
+  height: 100px;
+
+}
