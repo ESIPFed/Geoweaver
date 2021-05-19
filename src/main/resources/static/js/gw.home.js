@@ -44,7 +44,7 @@ GW.home = {
                 "<p>Figure 6. View your workflow details , id edge nodes</p>"+
                 "</div>"+
                 "</div>"+
-                
+                "</div>";
         GW.process.createJSFrameDialog(720, 640, content, "Workflow");
         
     }
