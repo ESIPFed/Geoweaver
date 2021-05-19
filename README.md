@@ -17,7 +17,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 - [Software Goals](#software-goals)
 - [Installation](#installation)
   * [Dependencies](#dependencies)
-  * [Quick Install (Recommended)](#quick-install)
+  * [Quick Install (Recommended Linux, Mac, Windows)](#quick-install)
   * [Developer Install](#developer-install)
     + [Linux](#linux)
     + [Mac](#mac)
@@ -60,7 +60,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 ## Quick Install
 
-(Recommended)
+(Recommended for Linux, Mac, and Windows)
 
 * Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
 

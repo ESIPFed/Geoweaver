@@ -348,8 +348,10 @@ GW.workspace = {
     	    });
     	    
     	    d3.select("#upload-input").on("click", function(){
+
+				console.log("upload-input clicked")
     	    
-    	    	document.getElementById("hidden-file-upload").click();
+    	    	$("#hidden-file-upload").click();
     	    
     	    });
     	    
@@ -399,6 +401,7 @@ GW.workspace = {
     	    });
     	    
     	    d3.select("#hidden-file-upload").on("change", function(){
+				console.log("hidden-file-upload is changed")
     	      if (window.File && window.FileReader && window.FileList && window.Blob) {
     	        var uploadFile = this.files[0];
     	        var filereader = new window.FileReader();
