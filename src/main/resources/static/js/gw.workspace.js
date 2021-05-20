@@ -996,6 +996,8 @@ GW.workspace = {
 		  			thisGraph.updateGraph();
 		  			
 		  			console.log("new process added: " + insid);
+
+					GW.general.switchTab("workspace");
 		  			
 		  			return insid;
 		  			
