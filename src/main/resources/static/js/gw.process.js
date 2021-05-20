@@ -89,7 +89,7 @@ GW.process = {
 		precheck: function(){
 			
 			var valid = false;
-			
+
 			if($("#processname-"+GW.process.cmid).val()){
 					
 //					&&this.editor.getValue()){
@@ -333,15 +333,15 @@ GW.process = {
 			
 		},
 		
-		getCode: function(cmid){
+		getCode: function(){
 			
 			var code = null;
 			
-			if($("#processcategory-"+cmid).val()=="shell"){
+			if($("#processcategory").val()=="shell"){
 				
 				code = GW.process.editor.getValue();
 				
-			}else if($("#processcategory-"+cmid).val()=="builtin"){
+			}else if($("#processcategory").val()=="builtin"){
 				
 				var params = [];
 				
@@ -367,11 +367,11 @@ GW.process = {
 						
 				}
 				
-			}else if($("#processcategory-"+cmid).val()=="jupyter"){
+			}else if($("#processcategory").val()=="jupyter"){
 				
 				code = GW.process.jupytercode;
 				
-			}else if($("#processcategory-"+cmid).val()=="python"){
+			}else if($("#processcategory").val()=="python"){
 				
 				code = GW.process.editor.getValue();
 //				code = $("#codeeditor-" + cmid).val();
@@ -1272,9 +1272,13 @@ GW.process = {
 			
 			GW.process.editOn = !GW.process.editOn;
 			
+
+			
 			if(GW.process.editOn && isinitial == null) {
 				
-//				GW.process.update();
+				GW.process.current_pid = $("#processid").val();
+				
+				GW.process.update(GW.process.current_pid);
 				
 			}
 			
@@ -1301,6 +1305,48 @@ GW.process = {
 				$(".builtin-parameter").prop( "disabled", GW.process.editOn );
 				
 			}
+			
+		},
+
+		refreshProcessList: function(){
+			
+			$.ajax({
+        		
+        		url: "list",
+        		
+        		method: "POST",
+        		
+        		data: "type=process"
+        		
+        	}).done(function(msg){
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		console.log("Start to refresh the process list..");
+        		
+        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
+        		$("#process_folder_shell_target").html("");
+        		$("#process_folder_jupyter_target").html("");
+        		$("#process_folder_builtin_target").html("");
+        		$("#process_folder_python_target").html("");
+        		
+        		GW.process.list(msg);
+        		
+        		// if($(".processselector")) {
+
+            	// 	for(var i=0;i<msg.length;i++){
+            			
+            	// 		$(".processselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+            			
+            	// 	}
+        			
+        		// }
+        		
+        	}).fail(function(jxr, status){
+				
+				console.error("fail to list process");
+				
+			});
 			
 		},
 		
@@ -1445,37 +1491,41 @@ GW.process = {
 		    		GW.general.showToasts("Code updated.");
 		    		
 		    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
-		    		
+					
+					GW.process.refreshProcessList()
+					
 		    	}).fail(function(jqXHR, textStatus){
 		    		
 		    		alert("Fail to update the process.");
 		    		
 		    	});
 			
-			
+				
 		},
 		
 		update: function(pid, cmid){
 			
 			console.log("update process id: " + pid);
 			
-			if(this.precheck()){
+			// if(this.precheck()){
 				
-				var plang = $("#processcategory-"+cmid).val();
+			var plang = $("#processcategory").val();
+			
+			var pname = $("#processname").val();
+
+			var pdesc = $("#processcategory").val();
+			
+			var pcode =  GW.process.getCode();
+			
+			this.updateRaw(pid, pname, plang, pdesc, pcode);
 				
-				var pname = $("#processname-"+cmid).val();
+			
+			
+			// }else{
 				
-				var pdesc = $("#processcategory-"+cmid).val();
+			// 	alert("Process name and code must be non-empty!");
 				
-				var pcode =  GW.process.getCode(cmid);
-				
-				this.updateRaw(pid, pname, plang, pdesc, pcode);
-				
-			}else{
-				
-				alert("Process name and code must be non-empty!");
-				
-			}
+			// }
 		},
 		
 		add: function(run, cmid){
