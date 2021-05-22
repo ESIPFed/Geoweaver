@@ -299,38 +299,47 @@
 								<div class="row">       
 									<div  class="col col-md-12">
 
-										<h1 style="color:black;font-weight: bold;font-size: 25px;font-family: 'Poppins', sans-serif;">GeoWeaver Services</h1>
+										<h1 style="color:black;font-weight: bold;font-size: 25px;font-family: 'Poppins', sans-serif;">Geoweaver Services</h1>
 											
 										<h2>Hosts</h2>
 										
 										<h3>SSH Server</h3>
-										<p style="font-size:14px">SSH, or Secure Shell, is a remote administration protocol that allows users to control and modify their remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+										
+										<p>SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+										
+										<p>Geoweaver provides a Host category called <b>SSH Server</b> to manage all the remote servers with SSH enabled. There is a builtin SSH console to login and type command lines to directly run scripts. Geoweaver also provides a file browser and uploader for users to transfer the files from/to remote servers. Geoweaver can be considered as two-in-one alternative for SSH client and FTP client. </p>
+
 										<h3>Jupyter NoteBook Server</h3>
 														
-										<p>In Jupyter Notebook we can import and edit notebooks. The notebooks are created with unique names. We can create multiple notebooks and add them through panel. The file can be imported in two ways i.e. choosing file from localsystem or URL. We can edit the imported files and save the ediits. The exection is done by nbconvert.</p>
-										<p>We are in the process of creating a new dashboard architecture for the Jupyter notebook, which will allow the user to navigate through multiple directory files to find desired notebooks.</p>
+										<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text. </p>
+										
+										<p>In Geoweaver, you can manage multiple Jupyter Notebook server in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver. </p>
 										
 										<h3>Jupyter Hub</h3>
-														
-										<p>JupyterHub is a server-hosted distributed Jupyter notebook environment. JupyterHub allows users to log into a server and write Python code within a web browswer without any software installation on their local computer. Anywhere you have an internet connection, you can bring up a JupyterHub webpage and write/run Python code in a Jupyter notebook.</p>
 										
-										<p>Scientific concepts & complex computations are easier to process when they are visualized. Jupyter notebook is a powerful tool for digital scientists to support scientific workflows, data, code, and visualizations.  ..</p>
+										<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs. </p>
+										
+										<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
+
+										<h3>Jupyter Lab</h3>
+										
+										<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
+										
+										<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
 										
 										<h3>Google Earth Engine</h3>
 										
-										<p > Google Earth Engine is a cloud-based geospatial analysis platform that enables users to visualize and analyze satellite images of our planet.allows developers to interact with Google Earth Engine using the Python programming language.</p>
+										<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
 										
-										<p>Access to Google Earth Engine is currently only available to registered users. The API is in active development, and users should expect the API to change. It allows anyone to visualize the data in the public data catalog.</p><p> Signed in Earth Engine users can also import data, run simple analyses, save, and export the results.
-										You can use them to build custom applications and to develop Earth Engine code locally using a JavaScript or Python interpreter. The repository on GitHub includes a number of demos illustrating how to use the client libraries.</p>
+										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p>
 										
 										<h2>Process</h2>
-													
+										
+										<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
+
 										<h3>Shell</h3>
 										
-										<p>it reads the command, evaluates the command, prints the result, and loop it back to read the command again.
-										to automate routine tasks like health checks and file backups with shell scripts. However, as those tasks become more complex, shell scripts may become harder to maintain.
-
-										Fortunately, we can use Python instead of shell scripts for automation. Python provides methods to run shell commands, giving us the same functionality of those shells scripts.</p>
+										<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
 											
 										<h3>NoteBook</h3>
 										<p> A process runner is responsible for binding via SSH channels and executing processes
@@ -338,7 +347,7 @@
 										trigger the code by sending commands. The process monitor can listen to all the events occurred during
 										the execution and report the real-time status. Once the execution is over, the result messages together
 										with the inputs and executed code shall be saved into the database for later inquiry.</p>
-										<p>Users can also customize JupyterLab to fit their workflow. Built-in viewers exist for image, text and CSV files, for instance, but users can build custom components as well. These could display things such as genomic alignments or geospatial data</p>
+										
 										
 										<h3>Build In Process</h3>
 										<p> In Built In Process we can create a process with different names. We can choose a process from ShowResultMap and DownloadData. We can the previously creeated built in process and save them and execute.</p>
