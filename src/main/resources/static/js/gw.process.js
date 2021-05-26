@@ -6,6 +6,19 @@
 *
 */ 
 
+
+$(window).bind('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 's':
+			event.preventDefault();
+			GW.process.editSwitch();
+            // alert('ctrl-s');
+            break;
+        }
+    }
+});
+
 GW.process = {
 		
 		editor: null,
@@ -1023,7 +1036,7 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\">";
 			
-			content += '   <div class="row" style="padding:0px;margin:0px;">'+
+			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory">'+
@@ -1051,7 +1064,7 @@ GW.process = {
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class="toast align-items-right position-absolute p-3 text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing is enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
@@ -1266,21 +1279,22 @@ GW.process = {
 			
 		},
 		
-		editSwitch: function(isinitial){
+		editSwitch: function(){
 			
 			console.log("Turn on/off the fields");
 			
-			GW.process.editOn = !GW.process.editOn;
+			// Uncomment if editing should be disabled by default [Currently enabled]
+			// GW.process.editOn = !GW.process.editOn;
 			
 
 			
-			if(GW.process.editOn && isinitial == null) {
+			// if(GW.process.editOn && isinitial == null) {
 				
-				GW.process.current_pid = $("#processid").val();
+			GW.process.current_pid = $("#processid").val();
+			
+			GW.process.update(GW.process.current_pid);
 				
-				GW.process.update(GW.process.current_pid);
-				
-			}
+			// }
 			
 			$("#processcategory").prop( "disabled", GW.process.editOn );
 			
