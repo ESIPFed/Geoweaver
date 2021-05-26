@@ -20,7 +20,6 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
@@ -31,16 +30,16 @@ import com.gw.utils.BeanTool;
 
 /**
  * 
- * This works for redirecting all the jupyter hub traffic
+ * This works for redirecting all the jupyter notebook traffic
  * 
  * @author JensenSun
  *
  */
-//ws://localhost:8070/Geoweaver/jupyter-socket/gedv82/api/kernels/fc43c1dc-67b3-404c-824d-83db95f642cb/channels?session_id=e4144eb8945047aa84027cd9a2eeadc5
-//ws://localhost:8070/Geoweaver/jupyter-socket/4g75h7/user/zsun/api/kernels/eaa5f686-0df2-4f39-ae95-d6715d9f7fc5/channels?session_id=dda9fa014a25401894485df465ce90df
-@ServerEndpoint(value = "/jupyter-socket/{hostid}/user/{uname}/api/kernels/{uuid1}/channels", 
+//ws://localhost:8080/Geoweaver/jupyter-socket/api/kernels/884447f1-bac6-4913-be86-99da11b2a78a/channels?session_id=42b8261488884e869213604975141d8c
+
+@ServerEndpoint(value = "/jupyter-proxy/{hostid}/api/kernels/{uuid1}/channels", 
 	configurator = JupyterRedirectServerConfig.class)
-public class JupyterHubRedirectServlet{
+public class JupyterLabRedirectServlet {
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -56,15 +55,16 @@ public class JupyterHubRedirectServlet{
 	
 	// @Autowired
 	BaseTool bt;
-
 	
-	public JupyterHubRedirectServlet() {
+	public JupyterLabRedirectServlet() {
 		
-		logger.debug("Initializing JupyterHub Websocket Session...");
+		logger.debug("Initializing Jupyter Lab Websocket Session...");
 		
 	}
 	
 	private void init(Session b2gsession) {
+
+		logger.debug("WebSocket ServerEndpoint receives " + b2gsession.getRequestURI().toString());
 		
 		if(ht==null) {
 			
@@ -103,28 +103,15 @@ public class JupyterHubRedirectServlet{
 			
 		}
 		
-//		if(client==null) {
-//			
-//			Java2JupyterClientEndpoint client = BeanTool.getBean(Java2JupyterClientEndpoint.class);
-//			
-//		}
-		
-		
 		
 	}
 	
 //    private HttpSession httpSession;
 	
 	@OnOpen
-    public void open(Session session, 
-    		@PathParam("hostid") String hostid, 
-    		@PathParam("uname") String username, 
-    		@PathParam("uuid1") String uuid1, 
-    		EndpointConfig config) {
+    public void open(Session session, @PathParam("hostid") String hostid, @PathParam("uuid1") String uuid1, EndpointConfig config) {
 		
 		try {
-			
-			logger.debug("Enter...");
 			
 			init(session);
 			
@@ -136,11 +123,9 @@ public class JupyterHubRedirectServlet{
 			
 			String wsprotocol = "ws";
 			
-			String trueurl = wsprotocol + "://" + hh[1] + ":" + hh[2] + "/user/" + username +
-					
-					"/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
+			String trueurl = wsprotocol + "://"+hh[1]+":"+hh[2]+"/api/kernels/"+uuid1+"/channels?" + session.getQueryString();
 			
-			logger.debug("Query String: " + trueurl);
+//			logger.debug("Query String: " + trueurl);
 			
 //			this.wsSession = session;
 			
@@ -250,4 +235,69 @@ public class JupyterHubRedirectServlet{
     
     
     
+//     public class SessionPair{
+    	
+//     	String id;
+    	
+//     	Session browse_geoweaver_session;
+    	
+//     	Java2JupyterClientEndpoint geoweaver_jupyter_client;
+    	
+// 		public String getId() {
+// 			return id;
+// 		}
+
+// 		public void setId(String id) {
+// 			this.id = id;
+// 		}
+		
+// 		public Session findOpenSession() {
+			
+// 			Set<Session> sessionset = browse_geoweaver_session.getOpenSessions();
+			
+// 			Iterator it = sessionset.iterator();
+			
+// 			Session session = browse_geoweaver_session;
+			
+// 		     while(it.hasNext()){
+// //		        System.out.println(it.next());
+		    	 
+// 		    	 Session cs = (Session)it.next();
+		    	 
+// 		    	 if(id.equals(cs.getQueryString())) {
+		    		 
+// 		    		 session = cs;
+		    		 
+// 		    		 break;
+		    		 
+// 		    	 }
+		    	 
+// 		     }
+		     
+// 		     return session;
+			
+// 		}
+
+// 		public Session getBrowse_geoweaver_session() {
+			
+// 			return findOpenSession();
+// 		}
+
+// 		public void setBrowse_geoweaver_session(Session browse_geoweaver_session) {
+			
+// 			this.browse_geoweaver_session = browse_geoweaver_session;
+			
+// 		}
+
+// 		public Java2JupyterClientEndpoint getGeoweaver_jupyter_client() {
+// 			return geoweaver_jupyter_client;
+// 		}
+
+// 		public void setGeoweaver_jupyter_client(Java2JupyterClientEndpoint geoweaver_jupyter_client) {
+// 			this.geoweaver_jupyter_client = geoweaver_jupyter_client;
+// 		}
+    	
+//     }
+
+
 }

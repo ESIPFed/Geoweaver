@@ -7,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,19 +26,14 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.persistence.Lob;
-import javax.xml.soap.SOAPException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
@@ -48,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 /**
@@ -77,6 +70,33 @@ public class BaseTool {
 		
 		
 	}
+
+	public String getBody(HttpServletRequest req) {
+		String body = "";
+		StringBuilder sb = new StringBuilder();
+		BufferedReader bufferedReader = null;
+	
+		try {
+		bufferedReader =  req.getReader();
+		char[] charBuffer = new char[128];
+		int bytesRead;
+		while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
+			sb.append(charBuffer, 0, bytesRead);
+		}
+		} catch (IOException ex) {
+		// swallow silently -- can't get body, won't
+		} finally {
+		if (bufferedReader != null) {
+			try {
+			bufferedReader.close();
+			} catch (IOException ex) {
+			// swallow silently -- can't get body, won't
+			}
+		}
+		}
+		body = sb.toString();
+		return body;
+	  }
 	
 	/**
 	 * Normalize the path
@@ -527,14 +547,14 @@ public class BaseTool {
 			
 			URL aURL = new URL(url);
 
-//			logger.debug("protocol = " + aURL.getProtocol());
-//			logger.debug("authority = " + aURL.getAuthority());
-//			logger.debug("host = " + aURL.getHost());
-//			logger.debug("port = " + aURL.getPort());
-//			logger.debug("path = " + aURL.getPath());
-//			logger.debug("query = " + aURL.getQuery());
-//			logger.debug("filename = " + aURL.getFile());
-//			logger.debug("ref = " + aURL.getRef());
+			// logger.debug("protocol = " + aURL.getProtocol());
+			// logger.debug("authority = " + aURL.getAuthority());
+			// logger.debug("host = " + aURL.getHost());
+			// logger.debug("port = " + aURL.getPort());
+			// logger.debug("path = " + aURL.getPath());
+			// logger.debug("query = " + aURL.getQuery());
+			// logger.debug("filename = " + aURL.getFile());
+			// logger.debug("ref = " + aURL.getRef());
 			
 			cc[0] = aURL.getProtocol();
 			cc[1] = aURL.getHost();

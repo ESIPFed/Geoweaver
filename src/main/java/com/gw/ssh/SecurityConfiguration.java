@@ -33,6 +33,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		SSHAuthenticationProvider sshAuthentication = new SSHAuthenticationProvider();
 		return sshAuthentication;
 	}
+	
 
 	/*
 	 * TODO - use 'registerAuthentication' in 3.2.0.RC1 and 'configure' in 3.2.0.RELEASE
@@ -66,6 +67,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     	http.cors().and().csrf().disable();
     	
     	http.headers().frameOptions().disable();
+
+		http.headers().disable(); //this must be turned off to make the JupyterHub work
     	
         super.configure(http);
 //        http

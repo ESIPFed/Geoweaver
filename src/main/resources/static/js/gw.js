@@ -1,6 +1,4 @@
 /**
-*
-* author: Ziheng Sun
 * 
 * date: 20180925
 * 
@@ -16,13 +14,13 @@ edu = {
 							"by taking advantage of the distributed online spatial data facilities, high-performance " +
 							"computation platforms, and open-source deep learning libraries. ",
 							
-					sponsor: "ESIPLab incubator project",
+					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project",
 					
-					version: "0.8.6",
+					version: "0.9.3",
 					
-					author: "Ziheng Sun",
+					author: "open source contributors",
 					
-					institute: "George Mason University"
+					institute: "NASA, NSF, George Mason University, ESIP, University of Texas Austin, University of Washington, University of Idaho, "
 					
 				}
 			}
@@ -31,3 +29,9 @@ edu = {
 
 // GW will be the short name of the package
 var GW = edu.gmu.csiss.geoweaver
+
+//put all the shared added function here as global depenedency
+String.prototype.replaceAll = function(search, replacement) {
+	var target = this;
+	return target.replace(new RegExp(search, 'g'), replacement);
+};

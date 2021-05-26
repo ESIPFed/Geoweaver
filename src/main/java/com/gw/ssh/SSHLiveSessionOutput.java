@@ -27,16 +27,15 @@ import java.io.BufferedReader;
 
 import javax.websocket.Session;
 
+import  com.gw.server.TerminalServlet;
+import com.gw.utils.BaseTool;
+import com.gw.web.GeoweaverController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
-
-import com.gw.utils.BaseTool;
-import com.gw.web.GeoweaverController;
-import  com.gw.server.TerminalServlet;
 /**
  * 
  * This class is used for monitoring the traffic from SSH session/Terminal console

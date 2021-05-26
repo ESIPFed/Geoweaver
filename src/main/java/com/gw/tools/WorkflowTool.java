@@ -1,13 +1,21 @@
 package com.gw.tools;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.database.HistoryRepository;
+import com.gw.database.WorkflowRepository;
+import com.gw.jpa.History;
+import com.gw.jpa.Workflow;
+import com.gw.tasks.GeoweaverWorkflowTask;
+import com.gw.tasks.TaskManager;
+import com.gw.utils.RandomString;
+import com.gw.utils.STATUS;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -16,20 +24,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gw.database.DataBaseOperation;
-import com.gw.database.HistoryRepository;
-import com.gw.database.WorkflowRepository;
-import com.gw.jpa.History;
-import com.gw.jpa.Host;
-import com.gw.jpa.Workflow;
-import com.gw.tasks.GeoweaverWorkflowTask;
-import com.gw.tasks.TaskManager;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
-import com.gw.web.GeoweaverController;
 
 /**
  * 
@@ -680,11 +674,11 @@ public class WorkflowTool {
 				
 				resp.append("{ \"id\": \"").append(recent_his[0]).append("\", "); //history id
 				
-				resp.append("\"name\": \"").append(recent_his[1]).append("\", ");
+				resp.append("\"name\": \"").append(recent_his[12]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(recent_his[2]).append("\", ");
 				
-				resp.append("\"begin_time\": \"").append(recent_his[3]).append("\"}");
+				resp.append("\"begin_time\": \"").append(recent_his[1]).append("\"}");
 				
 			}
 			
