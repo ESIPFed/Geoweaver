@@ -6,6 +6,19 @@
 *
 */ 
 
+
+$(window).bind('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+        switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 's':
+			event.preventDefault();
+			GW.process.editSwitch();
+            // alert('ctrl-s');
+            break;
+        }
+    }
+});
+
 GW.process = {
 		
 		editor: null,
@@ -89,7 +102,7 @@ GW.process = {
 		precheck: function(){
 			
 			var valid = false;
-			
+
 			if($("#processname-"+GW.process.cmid).val()){
 					
 //					&&this.editor.getValue()){
@@ -333,15 +346,15 @@ GW.process = {
 			
 		},
 		
-		getCode: function(cmid){
+		getCode: function(){
 			
 			var code = null;
 			
-			if($("#processcategory-"+cmid).val()=="shell"){
+			if($("#processcategory").val()=="shell"){
 				
 				code = GW.process.editor.getValue();
 				
-			}else if($("#processcategory-"+cmid).val()=="builtin"){
+			}else if($("#processcategory").val()=="builtin"){
 				
 				var params = [];
 				
@@ -367,11 +380,11 @@ GW.process = {
 						
 				}
 				
-			}else if($("#processcategory-"+cmid).val()=="jupyter"){
+			}else if($("#processcategory").val()=="jupyter"){
 				
 				code = GW.process.jupytercode;
 				
-			}else if($("#processcategory-"+cmid).val()=="python"){
+			}else if($("#processcategory").val()=="python"){
 				
 				code = GW.process.editor.getValue();
 //				code = $("#codeeditor-" + cmid).val();
@@ -1028,7 +1041,7 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\">";
 			
-			content += '   <div class="row" style="padding:0px;margin:0px;">'+
+			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory">'+
@@ -1050,13 +1063,13 @@ GW.process = {
 		       '   <div class="row" style="padding:0px;margin:0px;">'+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
-		       '			<input type="text" class="form-control form-control-sm" id="processid"></input>'+
+		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
 	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
@@ -1109,7 +1122,7 @@ GW.process = {
 			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 			
-			GW.process.editSwitch(true);
+			// GW.process.editSwitch(true);
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
@@ -1271,17 +1284,23 @@ GW.process = {
 			
 		},
 		
-		editSwitch: function(isinitial){
+		editSwitch: function(){
 			
 			console.log("Turn on/off the fields");
 			
-			GW.process.editOn = !GW.process.editOn;
+			// Uncomment if editing should be disabled by default [Currently enabled]
+			// GW.process.editOn = !GW.process.editOn;
 			
-			if(GW.process.editOn && isinitial == null) {
+
+			
+			// if(GW.process.editOn && isinitial == null) {
+
 				
-//				GW.process.update();
+			GW.process.current_pid = $("#processid").val();
+			
+			GW.process.update(GW.process.current_pid);
 				
-			}
+			// }
 			
 			$("#processcategory").prop( "disabled", GW.process.editOn );
 			
@@ -1306,6 +1325,48 @@ GW.process = {
 				$(".builtin-parameter").prop( "disabled", GW.process.editOn );
 				
 			}
+			
+		},
+
+		refreshProcessList: function(){
+			
+			$.ajax({
+        		
+        		url: "list",
+        		
+        		method: "POST",
+        		
+        		data: "type=process"
+        		
+        	}).done(function(msg){
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		console.log("Start to refresh the process list..");
+        		
+        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
+        		$("#process_folder_shell_target").html("");
+        		$("#process_folder_jupyter_target").html("");
+        		$("#process_folder_builtin_target").html("");
+        		$("#process_folder_python_target").html("");
+        		
+        		GW.process.list(msg);
+        		
+        		// if($(".processselector")) {
+
+            	// 	for(var i=0;i<msg.length;i++){
+            			
+            	// 		$(".processselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+            			
+            	// 	}
+        			
+        		// }
+        		
+        	}).fail(function(jxr, status){
+				
+				console.error("fail to list process");
+				
+			});
 			
 		},
 		
@@ -1459,37 +1520,41 @@ GW.process = {
 		    		GW.general.showToasts("Code updated.");
 		    		
 		    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
-		    		
+					
+					GW.process.refreshProcessList()
+					
 		    	}).fail(function(jqXHR, textStatus){
 		    		
 		    		alert("Fail to update the process.");
 		    		
 		    	});
 			
-			
+				
 		},
 		
 		update: function(pid, cmid){
 			
 			console.log("update process id: " + pid);
 			
-			if(this.precheck()){
+			// if(this.precheck()){
 				
-				var plang = $("#processcategory-"+cmid).val();
+			var plang = $("#processcategory").val();
+			
+			var pname = $("#processname").val();
+
+			var pdesc = $("#processcategory").val();
+			
+			var pcode =  GW.process.getCode();
+			
+			this.updateRaw(pid, pname, plang, pdesc, pcode);
 				
-				var pname = $("#processname-"+cmid).val();
+			
+			
+			// }else{
 				
-				var pdesc = $("#processcategory-"+cmid).val();
+			// 	alert("Process name and code must be non-empty!");
 				
-				var pcode =  GW.process.getCode(cmid);
-				
-				this.updateRaw(pid, pname, plang, pdesc, pcode);
-				
-			}else{
-				
-				alert("Process name and code must be non-empty!");
-				
-			}
+			// }
 		},
 		
 		add: function(run, cmid){
