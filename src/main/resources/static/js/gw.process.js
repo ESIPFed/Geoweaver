@@ -1063,13 +1063,13 @@ GW.process = {
 		       '   <div class="row" style="padding:0px;margin:0px;">'+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
-		       '			<input type="text" class="form-control form-control-sm" id="processid"></input>'+
+		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
 	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class="toast align-items-right position-absolute p-3 text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing is enabled! </div> </div> </div></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
@@ -1122,7 +1122,7 @@ GW.process = {
 			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 			
-			GW.process.editSwitch(true);
+			// GW.process.editSwitch(true);
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
@@ -1294,6 +1294,7 @@ GW.process = {
 
 			
 			// if(GW.process.editOn && isinitial == null) {
+
 				
 			GW.process.current_pid = $("#processid").val();
 			
