@@ -296,8 +296,8 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir,
-			String token) {
+	public void runPython(String python, String processid, boolean isjoin, String bin, 
+			String pyenv, String basedir, String token) {
 		
 		this.initHistory(python, processid, isjoin, token);
 		
@@ -308,8 +308,12 @@ public class LocalSessionWinImpl implements LocalSession {
     		GWProcess pro = pt.getProcessById(processid);
     		
     		ProcessBuilder builder = new ProcessBuilder();
+
+			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
     		
-    		builder.directory(new File(workspace_folder_path + "/" + token));
+			log.info("Setting the working directory to " + realpath);
+
+    		builder.directory(new File(realpath));
     		
     		String pythonfilename = pro.getName();
     		

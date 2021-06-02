@@ -62,7 +62,6 @@ public class LocalSessionOutput  implements Runnable{
     @Override
     public void run() {
         
-
     	log.info("Local session output thread started");
     	
     	StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
