@@ -971,40 +971,6 @@ public class ProcessTool {
 				
 			}
 			
-			// List<Object[]> one_history_process = historyrepository.findOneHistoryofProcess(hid);
-			
-			// Object[] first_obj = one_history_process.get(0);
-			
-			// if(!bt.isNull(first_obj)) {
-				
-			// 	resp.append("{ \"hid\": \"").append(first_obj[0]).append("\", ");
-				
-			// 	resp.append("\"id\": \"").append(first_obj[5]).append("\", ");
-				
-			// 	resp.append("\"name\": \"").append(first_obj[12]).append("\", ");
-				
-			// 	resp.append("\"notes\": \"").append(first_obj[8]).append("\", ");
-				
-			// 	resp.append("\"begin_time\":\"").append(first_obj[1]).append("\", ");
-				
-			// 	resp.append("\"end_time\":\"").append(first_obj[2]).append("\", ");
-				
-			// 	// String input_code = escape(String.valueOf(first_obj[3]));
-				
-			// 	// resp.append("\"input\":\"").append(removeClob(input_code)).append("\", ");
-				
-			// 	// String output_code = escape(String.valueOf(first_obj[4]));
-				
-			// 	// resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
-				
-			// 	resp.append("\"category\":\"").append(escape(String.valueOf(first_obj[11]))).append("\", ");
-				
-			// 	resp.append("\"host\":\"").append(escape(String.valueOf(first_obj[6]))).append("\", ");
-				
-			// 	resp.append("\"status\":\"").append(String.valueOf(first_obj[7])).append("\" }");
-				
-			// }
-			
 		} catch (Exception e) {
 		
 			e.printStackTrace();

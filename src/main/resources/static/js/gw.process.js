@@ -152,9 +152,9 @@ GW.process = {
 			
 			$(".CodeMirror").css('font-size',"10pt");
 			
-			$(".CodeMirror").css('height',"auto");
+			//$(".CodeMirror").css('height',"auto");
 			
-			GW.process.editor.setSize(null, 360);
+			// GW.process.editor.setSize(null, 360);
 			
 			if(code!=null){
 				
@@ -165,7 +165,17 @@ GW.process = {
 				GW.process.editor.setValue("#!/bin/bash\n#write your bash script\n");
 				
 			}
+
+			this.refreshCodeEditor();
         	
+		},
+
+		refreshCodeEditor: function(){
+
+			// console.log("Process Code Editor is refreshed..");
+			
+			GW.process.editor.refresh();
+
 		},
 		
 		load_jupyter: function(){
@@ -261,19 +271,21 @@ GW.process = {
 				
 			$(".CodeMirror").css('font-size',"10pt");
 
-			$(".CodeMirror").css('height',"auto");
+			// $(".CodeMirror").css('height',"auto");
 			
-			GW.process.editor.setSize(null, 360);
+			// GW.process.editor.setSize(null, 360);
 			
 			if(code!=null){
 				
-            		GW.process.editor.setValue(GW.process.unescape(code));
+            	GW.process.editor.setValue(GW.process.unescape(code));
             	
 			}else {
 			
 				GW.process.editor.setValue("# Write first python in Geoweaver");
 				
 			}
+
+			GW.process.refreshCodeEditor();
 			
 		},
 		
@@ -747,8 +759,13 @@ GW.process = {
 			
 			console.log("Update the code with the old version")
 			
-			if(GW.process.editor)
+			if(GW.process.editor){
+
 				GW.process.editor.setValue(GW.process.unescape(msg.input));
+
+				GW.process.refreshCodeEditor();
+
+			}
 			
 			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
@@ -1280,6 +1297,7 @@ GW.process = {
 				$(".CodeMirror").css('height',"auto");
 				$(".CodeMirror").css('max-height',"none");
 				
+				GW.process.refreshCodeEditor();
 			}
 			
 		},
