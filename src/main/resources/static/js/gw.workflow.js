@@ -11,6 +11,9 @@ GW.workflow = {
 	loaded_workflow: null,
 	
 	new_frame: null,
+
+	token:null,
+
 	
 	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
 	
@@ -860,6 +863,7 @@ GW.workflow = {
 		}
 		
 	},
+
 	
 	
 	execute_callback: function(req, dialogItself, button){

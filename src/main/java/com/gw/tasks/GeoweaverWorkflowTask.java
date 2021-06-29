@@ -24,6 +24,7 @@ import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
+import com.gw.server.WorkflowServlet;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
@@ -122,6 +123,8 @@ public class GeoweaverWorkflowTask extends Task {
 		this.name = "GW-Workflow-Run-" + token;
 		
 		this.history_id = new RandomString(11).nextString();
+
+		this.startMonitor(token);
 		
 	}
 	
@@ -168,11 +171,13 @@ public class GeoweaverWorkflowTask extends Task {
 	 * Start the monitoring of the task
 	 * @param socketsession
 	 */
-	public void startMonitor(Session socketsession) {
+	public void startMonitor(String token) {
 		
-		monitor = socketsession;
+		Session se = WorkflowServlet.findSessionById(token);
+
+		monitor = se;
 		
-		wt.token2ws.put(token, socketsession.getId());
+		// wt.token2ws.put(token, socketsession.getId());
 		
 	}
 	
@@ -204,7 +209,7 @@ public class GeoweaverWorkflowTask extends Task {
 				}
 				
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
-				monitor.getAsyncRemote().sendText(array.toJSONString());
+				monitor.getBasicRemote().sendText(array.toJSONString());
 				
 			}
 			
@@ -224,10 +229,11 @@ public class GeoweaverWorkflowTask extends Task {
 		try {
 			log.info("close the websocket session from server side");
 			
-			if(!bt.isNull(monitor))
-				monitor.close();
+			monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
+			// if(!bt.isNull(monitor))
+			// 	monitor.close();
 			
-			wt.token2ws.remove(token);
+			// wt.token2ws.remove(token);
 			
 		} catch (IOException e) {
 			
