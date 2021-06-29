@@ -1,5 +1,8 @@
 package com.gw.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -9,6 +12,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.websocket.WsSession;
 
 /**
  * 
@@ -24,6 +28,8 @@ public class WorkflowServlet {
 	Logger logger = Logger.getLogger(WorkflowServlet.class);
 	
 	private Session wsSession;
+
+	static Map<String, Session> peers = new HashMap();
 	
 //    private HttpSession httpSession;
 	
@@ -35,6 +41,12 @@ public class WorkflowServlet {
 			logger.debug("websocket channel openned");
 			
 			this.wsSession = session;
+
+			WsSession wss = (WsSession) session;
+			
+			logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+			
+			peers.put(wss.getHttpSessionId(), session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -62,8 +74,6 @@ public class WorkflowServlet {
         	
         	logger.debug(" - Session ID: " + session.getQueryString());
         	
-        	logger.debug("Transfer message to Jupyter Notebook server..");
-        	
     	}catch(Exception e) {
     		
     		e.printStackTrace();
@@ -85,6 +95,14 @@ public class WorkflowServlet {
 			
 		}
     	
+    }
+
+	public static javax.websocket.Session findSessionById(String sessionid) {
+    	javax.websocket.Session se = null;
+        if (peers.containsKey(sessionid)) {
+        	se = peers.get(sessionid);
+        }
+        return se;
     }
 
 }

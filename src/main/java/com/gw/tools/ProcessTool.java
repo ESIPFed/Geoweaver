@@ -957,11 +957,11 @@ public class ProcessTool {
 				
 				String input_code = escape(String.valueOf(hist.getHistory_input()));
 				
-				resp.append("\"input\":\"").append(removeClob(input_code)).append("\", ");
+				resp.append("\"input\":\"").append(input_code).append("\", ");
 				
 				String output_code = escape(String.valueOf(hist.getHistory_output()));
 				
-				resp.append("\"output\":\"").append(removeClob(output_code)).append("\", ");
+				resp.append("\"output\":\"").append(output_code).append("\", ");
 				
 				resp.append("\"category\":\"").append(escape(String.valueOf(thep.getDescription()))).append("\", ");
 				
