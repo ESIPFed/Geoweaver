@@ -1,6 +1,6 @@
 /**
  * 
- * workflow monitor
+ * Workflow monitor
  * 
  * @author Ziheng Sun
  * 
@@ -13,86 +13,159 @@ GW.monitor = {
 		current_name: null, //current workflow or process name
 		
 		historyid: null,
+
+		all_ws: null,
 		
-		send: function (data) {
+// 		send: function (data) {
 	    	
-	        if(this.ws != null){
+// 	        if(this.ws != null){
 	      	
-	        	this.ws.send(data);
+// 	        	this.ws.send(data);
 	        
-	        } else {
+// 	        } else {
 	        
-	        	this.error('not connected!');
+// 	        	this.error('not connected!');
 	        
-	        }
-	    },
+// 	        }
+// 	    },
 		
-		ws_onopen: function(e){
+// 		ws_onopen: function(e){
 			
-			this.send(this.historyid);
+// 			this.send(this.historyid);
 			
-		},
+// 		},
 		
-		ws_onclose: function(e){
+// 		ws_onclose: function(e){
 			
-			this.ws = null;
+// 			this.ws = null;
 			
-			GW.workspace.currentmode = 1;
+// 			GW.workspace.currentmode = 1;
 			
-			console.log("this workflow monitor websocket has been closed");
+// 			console.log("this workflow monitor websocket has been closed");
 			
-			GW.monitor.closeWorkspaceIndicator();
+// 			GW.monitor.closeWorkspaceIndicator();
 			
-			GW.monitor.closeProgressIndicator();
+// 			GW.monitor.closeProgressIndicator();
 			
-		},
+// 		},
 		
-		ws_onmessage: function(e){
+// 		ws_onmessage: function(e){
 			
-			try {
+// 			try {
 		    	
-//		        if(e.data.indexOf(GW.ssh.special.prompt) == -1 && 
-//		        		
-//		        		e.data.indexOf(GW.ssh.special.ready) == -1) {
+// //		        if(e.data.indexOf(GW.ssh.special.prompt) == -1 && 
+// //		        		
+// //		        		e.data.indexOf(GW.ssh.special.ready) == -1) {
 				
-		        	var returnmsg = $.parseJSON(e.data);
+// 		        	var returnmsg = $.parseJSON(e.data);
 		        	
-		        	console.log(returnmsg);
+// 		        	console.log(returnmsg);
 		        	
-		        	if(returnmsg.builtin){
+// 		        	if(returnmsg.builtin){
 		        		
-		        		GW.process.callback(returnmsg);
+// 		        		GW.process.callback(returnmsg);
 		        		
-		        	}else{
+// 		        	}else{
 		        		
-		        		GW.workspace.updateStatus(returnmsg);
+// 		        		GW.workspace.updateStatus(returnmsg);
 		        		
-		        	}
+// 		        	}
 		        	
-//		        }else{
-//		        	
-//		        	//the websocket is already closed. try the history query
-//		        	
-//		        	console.error("It ends too quickly. Go to history to check the logs out.");
-//		        	
-//		        }
+// //		        }else{
+// //		        	
+// //		        	//the websocket is already closed. try the history query
+// //		        	
+// //		        	console.error("It ends too quickly. Go to history to check the logs out.");
+// //		        	
+// //		        }
 		        
-		      } catch(err) {
+// 		      } catch(err) {
 		    	
-		    	console.error("** Invalid server response : " + err); 
+// 		    	console.error("** Invalid server response : " + err); 
 		        
-		      }
+// 		      }
+			
+// 		},
+		
+// 		ws_onerror: function(e){
+			
+// 			console.error("error in monitoring workflow " + e );
+			
+// 			GW.monitor.closeWorkspaceIndicator();
+			
+// 			GW.monitor.closeProgressIndicator();
+			
+// 		},
+
+
+		ws_onopen: function(e){
+
+			//shell.echo(special.white + "connected" + special.reset);
+			console.log("workflow websocket is connected");
+			// link the SSH session established with spring security logon to the websocket session...
+			GW.monitor.all_ws.send(this.token);
 			
 		},
-		
+
+		ws_onclose: function(e){
+
+			console.log("workflow websocket is closed");
+
+		},
+
+		ws_onmessage: function(e){
+
+			console.log(e.data); //print out everything back from server
+
+			if(GW.monitor.IsJsonString(e.data)){
+
+				var returnmsg = $.parseJSON(e.data)
+
+				if(returnmsg.workflow_status=="completed"){
+
+					GW.monitor.stopMonitor();
+
+				}else{
+
+					GW.workspace.updateStatus(returnmsg);
+
+				}
+				
+			}
+
+		},
+
+		IsJsonString: function (str) {
+			try {
+				JSON.parse(str);
+			} catch (e) {
+				return false;
+			}
+			return true;
+		},
+
 		ws_onerror: function(e){
+
+			console.error(e.data);
+
+		},
+
+		startSocket: function(token){
+
+			console.log("WebSocket Channel is Openned");
+				
+			GW.monitor.all_ws = new WebSocket(GW.ssh.getWsPrefixURL() + "workflow-socket");
 			
-			console.error("error in monitoring workflow " + e );
+			GW.monitor.token = token; //token is the jsession id
 			
-			GW.monitor.closeWorkspaceIndicator();
+			GW.monitor.all_ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
 			
-			GW.monitor.closeProgressIndicator();
+			GW.monitor.all_ws.onclose = function(e) { GW.monitor.ws_onclose(e) };
 			
+			GW.monitor.all_ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
+			
+			GW.monitor.all_ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
+
 		},
 		
 		clearProgressIndicator: function(){
@@ -230,15 +303,19 @@ GW.monitor = {
 		
 		stopMonitor: function(){
 			
-			if(this.ws != null){
+			// if(this.ws != null){
 				
-				this.ws.close();
+				// this.ws.close();
 				
-				this.ws = null;
+				// this.ws = null;
 				
 				GW.workspace.currentmode = 1;
+
+				GW.monitor.closeProgressIndicator();
+
+				GW.monitor.closeWorkspaceIndicator();
 				
-			}
+			// }
 			
 		},
 		

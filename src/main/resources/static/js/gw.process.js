@@ -1563,8 +1563,12 @@ GW.process = {
 			var pdesc = $("#processcategory").val();
 			
 			var pcode =  GW.process.getCode();
+
+			if(pid!=null){
+				this.updateRaw(pid, pname, plang, pdesc, pcode);
+			}
 			
-			this.updateRaw(pid, pname, plang, pdesc, pcode);
+			
 				
 			
 			

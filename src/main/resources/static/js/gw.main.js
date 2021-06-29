@@ -67,6 +67,8 @@ GW.main = {
 		GW.menu.init();
 		
 		GW.ssh.startLogSocket(GW.main.getJSessionId());
+
+		GW.monitor.startSocket(GW.main.getJSessionId());
 		
 		introJs().start();
 		

@@ -241,6 +241,8 @@ GW.ssh = {
 	    	console.log("WebSocket Channel is Openned");
 	    	
 	    	GW.ssh.all_ws = new WebSocket(this.getWsPrefixURL() + "command-socket");
+
+			GW.ssh.ws = GW.ssh.all_ws;
 	        
 			GW.ssh.output_div_id = "log_box_id";
 	        
@@ -274,7 +276,7 @@ GW.ssh = {
 			
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
-			GW.general.switchTab("console");
+			// GW.general.switchTab("console");
 			
 			this.addlog("=======\nStart to process " + msg.history_id);
 			
