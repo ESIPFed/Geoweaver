@@ -1023,60 +1023,6 @@ GW.workflow = {
 			
 			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
 			
-//			var width = 800; var height = 640;
-//			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'History',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	    
-//	    	});
-//	    	
-//			frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
-//			BootstrapDialog.show({
-//				
-//				title: "History",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
-			
 		}).fail(function(jxr, status){
 			
 			console.error(status);

@@ -271,6 +271,12 @@ GW.monitor = {
 		 * 
 		 */
 		startMonitor: function(historyid){
+
+			if ( GW.monitor.all_ws == null || GW.monitor.all_ws.readyState === WebSocket.CLOSED ) {
+
+				GW.monitor.startSocket();
+			
+			}
 			
 //			//only start when the mode is in monitor mode
 //			
