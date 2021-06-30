@@ -440,4 +440,10 @@ public class GeoweaverWorkflowTask extends Task {
 		return name;
 	}
 
+	@Override
+	public void startMonitor(Session session) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

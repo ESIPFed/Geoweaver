@@ -1092,7 +1092,7 @@ GW.process = {
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
 		    '   </div>';
 			
-			content += "<div class=\"row\" style=\"font-size: 12px;\">"+
+			content += "<div class=\"row\" style=\"font-size: 12px;\" id=\"process-code-history-section\">"+
 				"<div class=\"col col-md-12\" ><h4 class=\"border-bottom\">Code Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> </div>";
 			
 			var code = null;
