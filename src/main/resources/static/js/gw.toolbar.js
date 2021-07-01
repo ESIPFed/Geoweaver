@@ -67,19 +67,19 @@ GW.toolbar = {
 		
 		monitor: function(){
 			
-			if(this.monitor_switch){
+			// if(this.monitor_switch){
 				
-				GW.monitor.closeProgressIndicator();
+			// 	GW.monitor.closeProgressIndicator();
 				
-				GW.monitor.closeWorkspaceIndicator();
+			// 	GW.monitor.closeWorkspaceIndicator();
 				
-			}else{
+			// }else{
 				
-				GW.monitor.openProgressIndicator();
+			// 	GW.monitor.openProgressIndicator();
 				
-				GW.monitor.openWorkspaceIndicator();
+			// 	GW.monitor.openWorkspaceIndicator();
 				
-			}
+			// }
 
 			//show the running processes and workflows
 
