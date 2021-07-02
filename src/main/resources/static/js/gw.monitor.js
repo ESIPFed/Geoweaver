@@ -153,8 +153,12 @@ GW.monitor = {
 		startSocket: function(token){
 
 			console.log("WebSocket Channel is Openned");
-				
+			
+			GW.monitor.token = token; //token is the jsession id
+			
+			
 			GW.monitor.all_ws = new WebSocket(GW.ssh.getWsPrefixURL() + "workflow-socket");
+			
 			
 			GW.monitor.all_ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
 			
@@ -164,11 +168,10 @@ GW.monitor = {
 			
 			GW.monitor.all_ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
 
-			GW.monitor.token = token; //token is the jsession id
 
-			setTimeout(function () {
-				GW.monitor.all_ws.send("token:"+token);
-			}, 3000);
+			// setTimeout(function () {
+			// 	GW.monitor.all_ws.send("token:"+token);
+			// }, 3000);
 
 			console.log("token has been sent to server");
 

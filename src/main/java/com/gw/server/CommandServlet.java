@@ -90,6 +90,7 @@ public class CommandServlet {
         	
 //        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
         	
+            //the session should never be managed by their session id because the js session id could change after a while of stale
             SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
             
             if (sshSession == null) {
