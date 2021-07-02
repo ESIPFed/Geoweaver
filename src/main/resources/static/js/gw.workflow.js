@@ -949,12 +949,19 @@ GW.workflow = {
 	 * Start to execute the workflow directly
 	 */
 	execute: function(wid, mode, hosts){
+
+		var current_token = GW.main.getJSessionId();
+
+		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+			current_token = GW.monitor.token;
 		
 		var req = {
  				
  				id: wid, // workflow id
  				
- 				mode: mode
+ 				mode: mode,
+
+				token: current_token
  				
  		};
 		

@@ -27,7 +27,7 @@ public class WorkflowServlet {
 	
 	Logger logger = Logger.getLogger(WorkflowServlet.class);
 	
-	private Session wsSession;
+	// private Session wsSession;
 
 	static Map<String, Session> peers = new HashMap();
 	
@@ -40,13 +40,9 @@ public class WorkflowServlet {
 			
 			logger.debug("websocket channel openned");
 			
-			this.wsSession = session;
+			// this.wsSession = session;
 
-			WsSession wss = (WsSession) session;
 			
-			logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-			
-			peers.put(wss.getHttpSessionId(), session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -71,8 +67,23 @@ public class WorkflowServlet {
     	try {
     		
 			logger.debug("Received message: " + message);
+
+			// String received = session.getQueryString();
         	
-        	logger.debug(" - Session ID: " + session.getQueryString());
+			if(message!=null && message.startsWith("token:")){
+
+				message = message.substring(6);
+
+				logger.debug(" - Token: " + message);
+
+				WsSession wss = (WsSession) session;
+				
+				logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+				
+				peers.put(message, session);
+
+			}
+
         	
     	}catch(Exception e) {
     		
@@ -97,10 +108,10 @@ public class WorkflowServlet {
     	
     }
 
-	public static javax.websocket.Session findSessionById(String sessionid) {
+	public static javax.websocket.Session findSessionByToken(String token) {
     	javax.websocket.Session se = null;
-        if (peers.containsKey(sessionid)) {
-        	se = peers.get(sessionid);
+        if (peers.containsKey(token)) {
+        	se = peers.get(token);
         }
         return se;
     }

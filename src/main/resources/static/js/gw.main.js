@@ -65,10 +65,19 @@ GW.main = {
 		GW.general.init();
 		
 		GW.menu.init();
-		
-		GW.ssh.startLogSocket(GW.main.getJSessionId());
 
-		GW.monitor.startSocket(GW.main.getJSessionId());
+		//session id is a server side thing and it is not reasonable to get it on the client
+		// var current_jssessionid = GW.main.getJSessionId();
+
+		// console.log("Current JS Session ID: " + current_jssessionid);
+
+		var current_token = GW.general.makeid(40);
+
+		console.log("Current token is: " + current_token);
+		
+		GW.ssh.startLogSocket(current_token);
+
+		GW.monitor.startSocket(current_token); //this token will be saved as GW.monitor.token and can be used everywhere
 		
 		introJs().start();
 		

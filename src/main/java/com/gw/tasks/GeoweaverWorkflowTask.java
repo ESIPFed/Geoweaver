@@ -173,7 +173,7 @@ public class GeoweaverWorkflowTask extends Task {
 	 */
 	public void startMonitor(String token) {
 		
-		Session se = WorkflowServlet.findSessionById(token);
+		Session se = WorkflowServlet.findSessionByToken(token);
 
 		monitor = se;
 		
