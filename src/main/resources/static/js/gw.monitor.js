@@ -103,7 +103,7 @@ GW.monitor = {
 			//shell.echo(special.white + "connected" + special.reset);
 			console.log("workflow websocket is connected");
 			// link the SSH session established with spring security logon to the websocket session...
-			GW.monitor.all_ws.send(this.token);
+			GW.monitor.all_ws.send("token:" + this.token);
 			
 		},
 
