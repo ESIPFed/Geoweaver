@@ -177,8 +177,9 @@ GW.menu = {
     						//remove the workspace object
     						GW.workspace.theGraph.removeNodes(id);
     						
+
     					}
-    					
+    					$("#main-"+type+"-content").empty()
     					console.log("the element is removed " + type + "-" + id);
     					
     				}else{
