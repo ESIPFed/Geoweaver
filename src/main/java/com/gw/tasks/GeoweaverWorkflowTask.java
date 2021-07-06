@@ -173,7 +173,7 @@ public class GeoweaverWorkflowTask extends Task {
 	 */
 	public void startMonitor(String token) {
 		
-		Session se = WorkflowServlet.findSessionById(token);
+		Session se = WorkflowServlet.findSessionByToken(token);
 
 		monitor = se;
 		
@@ -229,7 +229,8 @@ public class GeoweaverWorkflowTask extends Task {
 		try {
 			log.info("close the websocket session from server side");
 			
-			monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
+			if(!bt.isNull(monitor))
+				monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
 			// if(!bt.isNull(monitor))
 			// 	monitor.close();
 			
@@ -438,6 +439,12 @@ public class GeoweaverWorkflowTask extends Task {
 	public String getName() {
 		// TODO Auto-generated method stub
 		return name;
+	}
+
+	@Override
+	public void startMonitor(Session session) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

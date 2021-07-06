@@ -103,7 +103,7 @@ GW.monitor = {
 			//shell.echo(special.white + "connected" + special.reset);
 			console.log("workflow websocket is connected");
 			// link the SSH session established with spring security logon to the websocket session...
-			GW.monitor.all_ws.send(this.token);
+			GW.monitor.all_ws.send("token:" + this.token);
 			
 		},
 
@@ -153,10 +153,12 @@ GW.monitor = {
 		startSocket: function(token){
 
 			console.log("WebSocket Channel is Openned");
-				
-			GW.monitor.all_ws = new WebSocket(GW.ssh.getWsPrefixURL() + "workflow-socket");
 			
 			GW.monitor.token = token; //token is the jsession id
+			
+			
+			GW.monitor.all_ws = new WebSocket(GW.ssh.getWsPrefixURL() + "workflow-socket");
+			
 			
 			GW.monitor.all_ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
 			
@@ -165,6 +167,13 @@ GW.monitor = {
 			GW.monitor.all_ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
 			
 			GW.monitor.all_ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
+
+
+			// setTimeout(function () {
+			// 	GW.monitor.all_ws.send("token:"+token);
+			// }, 3000);
+
+			console.log("token has been sent to server");
 
 		},
 		
@@ -187,6 +196,8 @@ GW.monitor = {
 			$("#workspace_progress_indicator").removeClass("visible");
 			
 			$("#workspace_progress_indicator").addClass("invisible");
+
+			this.clearProgressIndicator(); //after the workflow is done, clear the progress bar. 
 			
 		},
 		
@@ -271,6 +282,12 @@ GW.monitor = {
 		 * 
 		 */
 		startMonitor: function(historyid){
+
+			if ( GW.monitor.all_ws == null || GW.monitor.all_ws.readyState === WebSocket.CLOSED ) {
+
+				GW.monitor.startSocket();
+			
+			}
 			
 //			//only start when the mode is in monitor mode
 //			

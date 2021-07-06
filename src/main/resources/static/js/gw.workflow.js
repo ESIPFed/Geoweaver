@@ -392,7 +392,8 @@ GW.workflow = {
 				
 			}).done(function(msg){
 				
-				alert("Saved!!!");
+				GW.workspace.showSaved();
+				// alert("Saved!!!");
 				
 			}).fail(function(jxr, status){
 				
@@ -949,12 +950,19 @@ GW.workflow = {
 	 * Start to execute the workflow directly
 	 */
 	execute: function(wid, mode, hosts){
+
+		var current_token = GW.main.getJSessionId();
+
+		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+			current_token = GW.monitor.token;
 		
 		var req = {
  				
  				id: wid, // workflow id
  				
- 				mode: mode
+ 				mode: mode,
+
+				token: current_token
  				
  		};
 		
@@ -1022,60 +1030,6 @@ GW.workflow = {
 			content += "</tbody></table></div>";
 			
 			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
-			
-//			var width = 800; var height = 640;
-//			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'History',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	    
-//	    	});
-//	    	
-//			frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
-//			BootstrapDialog.show({
-//				
-//				title: "History",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
 			
 		}).fail(function(jxr, status){
 			

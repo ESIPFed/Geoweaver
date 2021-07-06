@@ -113,7 +113,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			Session wsout = CommandServlet.findSessionById(token);
 			
-			synchronized(wsout) {
+			// synchronized(wsout) {
 
 				if(!bt.isNull(wsout) && wsout.isOpen()) {
 					
@@ -125,7 +125,7 @@ public class LocalSessionWinImpl implements LocalSession {
 					
 				}
 				
-			}
+			// }
 			
 		} catch (IOException e1) {
 			
