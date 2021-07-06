@@ -1105,7 +1105,16 @@ GW.process = {
 		    '   </div>';
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\" id=\"process-code-history-section\">"+
-				"<div class=\"row\"><div class=\"col col-md-6\" ><h4 class=\"border-bottom\">Code Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> <div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; \" ></div></div> <div id=\"main-console-content\" style=\"height:100%; overflow-y: scroll; margin:0; padding: 10px;\"> <h4 style=\"color:black\">logging information and errors</h4> <div id=\"log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word;\"> </div> </div></div>";
+				"<div class=\"row\">"+
+				"	<div class=\"col col-md-6\" >"+
+				"		<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"		<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; \" ></div>"+
+				"	</div> "+
+				"	<div id=\"single-console-content\" class=\"col col-md-6\"> "+
+				"		<h4 style=\"color:black\">Logging</h4> "+
+				"		<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word;\"> </div> "+
+				"	</div>"+
+				"</div>";
 
 			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
 			
