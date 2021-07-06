@@ -427,6 +427,7 @@ GW.process = {
 			content += '<div class="modal-footer">' +
 				"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
 				"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+				"<button type=\"button\" id=\"cancel-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 			
 			var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
@@ -472,6 +473,12 @@ GW.process = {
         		GW.process.add(true,GW.process.cmid);
         		
         		frame.closeFrame();
+        		
+        	});
+
+			$("#cancel-process-" + GW.process.cmid).click(function(){
+        		
+				frame.closeFrame();
         		
         	});
 			
