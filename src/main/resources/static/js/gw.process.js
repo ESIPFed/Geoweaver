@@ -2057,17 +2057,22 @@ GW.process = {
 	            		
 	            		for(var i=0;i<msg.length;i++){
 	            			
-	            			if(GW.host.isLocal(msg[i])){
+							if(msg[i].type=="ssh"){
+								
+								if(GW.host.isLocal(msg[i])){
 	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-	            						"\" selected=\"selected\">"+msg[i].name+"</option>");
-	            				
-	            			}else{
-	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-	            						"\" >"+msg[i].name+"</option>");
-	            				
-	            			}
+									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+											"\" selected=\"selected\">"+msg[i].name+"</option>");
+									
+								}else{
+									
+									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+											"\" >"+msg[i].name+"</option>");
+									
+								}
+
+							}
+	            			
 	            			
 	            		}
 	            		
