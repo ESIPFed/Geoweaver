@@ -219,8 +219,16 @@ GW.ssh = {
 	    addlog: function(content){
 	    	var dt = new Date();
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-	    	$("#log-window").append("<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
-	    			+ time + "</span> " + content + "</p>");
+
+			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
+			+ time + "</span> " + content + "</p>";
+
+	    	$("#log-window").append(newline);
+
+			if($("#process-log-window").length){
+
+				$("#process-log-window").append(newline);
+			}
 //	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
 	    },
 	    

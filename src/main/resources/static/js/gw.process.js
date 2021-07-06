@@ -427,6 +427,7 @@ GW.process = {
 			content += '<div class="modal-footer">' +
 				"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
 				"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+				"<button type=\"button\" id=\"cancel-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 				'</div>';
 			
 			var frame = GW.process.createJSFrameDialog(720, 640, content, "Add new process")
@@ -472,6 +473,12 @@ GW.process = {
         		GW.process.add(true,GW.process.cmid);
         		
         		frame.closeFrame();
+        		
+        	});
+
+			$("#cancel-process-" + GW.process.cmid).click(function(){
+        		
+				frame.closeFrame();
         		
         	});
 			
@@ -1105,7 +1112,16 @@ GW.process = {
 		    '   </div>';
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\" id=\"process-code-history-section\">"+
-				"<div class=\"row\"><div class=\"col col-md-6\" ><h4 class=\"border-bottom\">Code Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> <div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; \" ></div></div> <div id=\"main-console-content\" style=\"height:100%; overflow-y: scroll; margin:0; padding: 10px;\"> <h4 style=\"color:black\">logging information and errors</h4> <div id=\"log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word;\"> </div> </div></div>";
+				"<div class=\"row\">"+
+				"	<div class=\"col col-md-6\" >"+
+				"		<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"		<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; \" ></div>"+
+				"	</div> "+
+				"	<div id=\"single-console-content\" class=\"col col-md-6\"> "+
+				"		<h4 style=\"color:black\">Logging</h4> "+
+				"		<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word;\"> </div> "+
+				"	</div>"+
+				"</div>";
 
 			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
 			
@@ -2041,17 +2057,22 @@ GW.process = {
 	            		
 	            		for(var i=0;i<msg.length;i++){
 	            			
-	            			if(GW.host.isLocal(msg[i])){
+							if(msg[i].type=="ssh"){
+								
+								if(GW.host.isLocal(msg[i])){
 	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-	            						"\" selected=\"selected\">"+msg[i].name+"</option>");
-	            				
-	            			}else{
-	            				
-	            				$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-	            						"\" >"+msg[i].name+"</option>");
-	            				
-	            			}
+									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+											"\" selected=\"selected\">"+msg[i].name+"</option>");
+									
+								}else{
+									
+									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+											"\" >"+msg[i].name+"</option>");
+									
+								}
+
+							}
+	            			
 	            			
 	            		}
 	            		
