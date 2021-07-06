@@ -196,6 +196,8 @@ GW.monitor = {
 			$("#workspace_progress_indicator").removeClass("visible");
 			
 			$("#workspace_progress_indicator").addClass("invisible");
+
+			this.clearProgressIndicator(); //after the workflow is done, clear the progress bar. 
 			
 		},
 		

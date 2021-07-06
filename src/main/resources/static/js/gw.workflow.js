@@ -392,7 +392,8 @@ GW.workflow = {
 				
 			}).done(function(msg){
 				
-				alert("Saved!!!");
+				GW.workspace.showSaved();
+				// alert("Saved!!!");
 				
 			}).fail(function(jxr, status){
 				

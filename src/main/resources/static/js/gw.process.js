@@ -126,7 +126,7 @@ GW.process = {
 	        		lineNumbers: true,
 	        		
 	        		lineWrapping: true,
-	        		
+
 	        		extraKeys: {
 	        			
 		    		    "Ctrl-S": function(instance) { 
@@ -137,6 +137,12 @@ GW.process = {
 		    		}
 				
 	        	});
+
+			// GW.process.editor.on('change', function(instance, event){
+
+			// 	GW.process.showNonSaved();
+
+			// });
 			
 			GW.process.editor.on('focus', function(instance, event) {
 				
@@ -257,7 +263,7 @@ GW.process = {
         		lineWrapping: true,
         		
         		theme: "yonce",
-        		
+
         		extraKeys: {
         			
 	    		    "Ctrl-S": function(instance) { 
@@ -268,6 +274,12 @@ GW.process = {
         		}
         		
         	});
+
+			// GW.process.editor.on("change", function(instance, event){
+
+			// 	GW.process.showNonSaved();
+
+			// });
 				
 			$(".CodeMirror").css('font-size',"10pt");
 
@@ -1172,10 +1184,6 @@ GW.process = {
         	
 			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> "+
 			
-//			"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
-//        	
-//			process_id+"','"+process_name+"')\"></i>"+
-			
 			"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
         	
 			process_id+"','process')\"></i>"+
@@ -1192,19 +1200,23 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 				
-				if(typeof code != 'object'){
+				if(code != null && code != "null"){
+
+					if(typeof code != 'object'){
 					
-					code = $.parseJSON(code);
-				
+						code = $.parseJSON(code);
+					
+					}
+					
+					var notebook = nb.parse(code);
+					
+					var rendered = notebook.render();
+					
+					code = rendered;
+					
+					$("#code-embed").append(code);
+
 				}
-				
-				var notebook = nb.parse(code);
-				
-				var rendered = notebook.render();
-				
-				code = rendered;
-				
-				$("#code-embed").append(code);
 				
 			}else if(code_type=="builtin"){
 				
@@ -1272,6 +1284,7 @@ GW.process = {
 		      		  readOnly: false,
 //			          viewportMargin: Infinity,
 			          value: code,
+					  
 			          extraKeys: {
 			        			
 				    		    "Ctrl-S": function(instance) { 
@@ -1281,6 +1294,8 @@ GW.process = {
 					    		    		var process_code = GW.process.editor.getValue()
 					    		    	
 					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
+
+											
 					    		    	
 				    		    		}else{
 				    		    			
@@ -1292,7 +1307,11 @@ GW.process = {
 				    	  }
 			    });
 				
+				GW.process.editor.on("change", function(instance, event){
 
+					GW.process.showNonSaved();
+
+			  	});
 //				$(".CodeMirror").css('font-size',"10pt");
 				$(".CodeMirror").css('height',"auto");
 				$(".CodeMirror").css('max-height',"none");
@@ -1300,6 +1319,29 @@ GW.process = {
 				GW.process.refreshCodeEditor();
 			}
 			
+		},
+
+		clearCodeEditorListener: function(){
+
+			if(GW.process.editor!=null){
+
+				GW.process.editor.off("change");
+
+			}
+
+		},
+
+		showNonSaved:function(){
+
+			console.log("change event called")
+			$("#main-process-tab").html("Process*");
+
+		},
+
+		showSaved: function(){
+			console.log("save event called")
+			$("#main-process-tab").html("Process");
+
 		},
 		
 		editSwitch: function(){
@@ -1539,7 +1581,9 @@ GW.process = {
 		    		
 		    		console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
 					
-					GW.process.refreshProcessList()
+					GW.process.refreshProcessList();
+
+					GW.process.showSaved();
 					
 		    	}).fail(function(jqXHR, textStatus){
 		    		
@@ -1568,7 +1612,7 @@ GW.process = {
 				this.updateRaw(pid, pname, plang, pdesc, pcode);
 			}
 			
-			
+			// GW.process.showSaved();
 				
 			
 			

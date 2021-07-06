@@ -9,6 +9,20 @@ GW.workspace = {
 		currentmode: 1, //1: normal; 2: monitor
 		
 		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
+
+		showNonSaved: function(){
+
+			console.trace("changes happened")
+
+			$("#main-workspace-tab").html("Weaver *");
+
+		}, 
+
+		showSaved: function(){
+
+			$("#main-workspace-tab").html("Weaver")
+
+		},
 		
 		resizeIframe: function(obj){
 			
@@ -474,6 +488,7 @@ GW.workspace = {
 	    	      d.y +=  d3.event.dy;
 	    	      thisGraph.updateGraph();
 	    	    }
+				GW.workspace.showNonSaved();
 	    	  };
 	
 	    	  GW.workspace.GraphCreator.prototype.deleteGraph = function(skipPrompt){
@@ -509,6 +524,8 @@ GW.workspace = {
 	  	    	    }
 	    	    	
 	    	    }
+
+				GW.workspace.showNonSaved();
 	    	    
 	    	    
 	    	  };
@@ -519,11 +536,13 @@ GW.workspace = {
 	    		  try{
 	    			  
 	    			console.log("Start to load workflow..");
-	    			
+
     	            var jsonObj = workflow;
     	            
     	            this.deleteGraph(true);
     	            
+					GW.workspace.showSaved();
+	    			
     	            var newNodes = $.parseJSON(jsonObj.nodes);
     	            
     	            //remove the old color status - load a brand new workflow
@@ -631,6 +650,7 @@ GW.workspace = {
 	    	      return cd.id === thisGraph.state.selectedNode.id;
 	    	    }).classed(thisGraph.consts.selectedClass, false);
 	    	    thisGraph.state.selectedNode = null;
+				GW.workspace.showNonSaved();
 	    	    
 	    	  };
 	
@@ -640,6 +660,7 @@ GW.workspace = {
 	    	      return cd === thisGraph.state.selectedEdge;
 	    	    }).classed(thisGraph.consts.selectedClass, false);
 	    	    thisGraph.state.selectedEdge = null;
+				GW.workspace.showNonSaved();
 	    	  };
 	
 	    	  GW.workspace.GraphCreator.prototype.pathMouseDown = function(d3path, d){
@@ -831,6 +852,7 @@ GW.workspace = {
     			thisGraph.spliceLinksForNode(selectedNode);
   	    		thisGraph.state.selectedNode = null;
   	    		thisGraph.updateGraph();
+				GW.workspace.showNonSaved();
 	    	  }
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.removeNodes = function(pid) {
@@ -843,6 +865,7 @@ GW.workspace = {
     	    		}
     	    		thisGraph.state.selectedNode = null;
     	    		thisGraph.updateGraph();
+					GW.workspace.showNonSaved();
 	    	  }
 	
 	    	  // keydown on main svg
@@ -876,6 +899,7 @@ GW.workspace = {
 		    	    	//removing an edge is much easier than removing a process
 		    	        thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
 		    	        state.selectedEdge = null;
+						GW.workspace.showNonSaved();
 		    	        thisGraph.updateGraph();
 		    	        
 		    	      }
@@ -996,6 +1020,8 @@ GW.workspace = {
 		  			thisGraph.updateGraph();
 		  			
 		  			console.log("new process added: " + insid);
+
+					GW.workspace.showNonSaved();
 
 					GW.general.switchTab("workspace");
 		  			
