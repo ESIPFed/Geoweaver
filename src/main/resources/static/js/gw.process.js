@@ -1177,8 +1177,6 @@ GW.process = {
 
 			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
 			
-			
-			
 //			switchTab(document.getElementById("main-process-tab"), "main-process-info");
 			GW.general.switchTab("process");
 			
