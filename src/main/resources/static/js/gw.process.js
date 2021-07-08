@@ -1205,6 +1205,8 @@ GW.process = {
 				if($("#closeLog")) $("#closeLog").trigger("click");
 				
 				GW.process.editSwitch();
+
+				GW.process.clearProcessLogging();
 				
 			});
 			
