@@ -1196,15 +1196,19 @@ GW.process = {
 			
 			$("#showCurrent").click(function(){
 				
-				GW.process.displayCodeArea(process_id, process_name, code_type,  code);
-				
-				if($("#closeHistory")) $("#closeHistory").trigger( "click" );
-				
-				if($("#closeLog")) $("#closeLog").trigger("click");
-				
-				GW.process.editSwitch();
+				GW.menu.details(process_id, "process");
 
-				GW.process.clearProcessLogging();
+				GW.process.showSaved();
+
+				// GW.process.displayCodeArea(process_id, process_name, code_type,  code);
+				
+				// if($("#closeHistory")) $("#closeHistory").trigger( "click" );
+				
+				// if($("#closeLog")) $("#closeLog").trigger("click");
+				
+				// GW.process.editSwitch();
+
+				// GW.process.clearProcessLogging();
 				
 			});
 			
