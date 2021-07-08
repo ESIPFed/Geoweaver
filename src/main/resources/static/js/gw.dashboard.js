@@ -4,6 +4,7 @@ GW.board = {
 
     init: function(){
 
+        this.display();
 
     },
 
