@@ -159,6 +159,10 @@ public class CommandServlet {
     	
     }
 
+    /**
+     * Close session
+     * @param session
+     */
     @OnClose
     public void close(final Session session) {
     	
@@ -188,7 +192,11 @@ public class CommandServlet {
     	
     }
     
-    
+    /**
+     * Find session by id
+     * @param sessionid
+     * @return
+     */
     public static javax.websocket.Session findSessionById(String sessionid) {
     	javax.websocket.Session se = null;
         if (peers.containsKey(sessionid)) {

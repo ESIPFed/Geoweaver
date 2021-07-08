@@ -215,7 +215,7 @@ GW.ssh = {
 	      }
 	      
 	    },
-	    
+		
 	    addlog: function(content){
 	    	var dt = new Date();
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
