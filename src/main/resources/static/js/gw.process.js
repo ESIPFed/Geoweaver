@@ -790,9 +790,9 @@ GW.process = {
 
 			}
 			
-			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+			// output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
-			"<p> Execution started at " + msg.begin_time + "</p>"+ 
+			output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
 			
 			"<p> Execution ended at " + msg.end_time + "</p>"+
 			
@@ -802,7 +802,8 @@ GW.process = {
 			
 			output + "</div>";
 			
-			$("#console-output").html(output);
+			// $("#console-output").html(output);
+			$("#process-log-window").html(output);
 			
 			$("#closeLog").click(function(){
 				
@@ -835,8 +836,6 @@ GW.process = {
 
 			GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 
-			GW.process.clearProcessLogging();
-			
 		},
 		
 		getHistoryDetails: function(history_id){
