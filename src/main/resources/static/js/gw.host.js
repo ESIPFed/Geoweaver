@@ -791,7 +791,12 @@ GW.host = {
 
             		for(var i=0;i<msg.length;i++){
             			
-            			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+						//right now only SSH host can run processes
+            			if(msg[i].type == "ssh"){
+
+							$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+
+						}
             			
             		}
         			
