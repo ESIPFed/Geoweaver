@@ -84,13 +84,7 @@ public class GeoweaverProcessTask  extends Task {
     	
     }
 	
-	public GeoweaverProcessTask(String name) {
-		
-		this.name = name;
-		
-	}
-	
-	public void initialize(String pid, String host, String pswd, String token, boolean isjoin) {
+	public void initialize(String pid, String host, String pswd, String token, boolean isjoin, String name) {
 		
 		this.pid = pid;
 		
@@ -99,6 +93,8 @@ public class GeoweaverProcessTask  extends Task {
 		this.pswd = pswd;
 		
 		this.token = token;
+
+		this.name = name;
 		
 		this.history_id = new RandomString(11).nextString();
 		
@@ -106,6 +102,8 @@ public class GeoweaverProcessTask  extends Task {
 		
 		Session ws = CommandServlet.findSessionById(token);
 		
+		// if(bt==null) bt = new BaseTool();
+
 		if(!bt.isNull(ws)) this.startMonitor(ws);
 		
 		

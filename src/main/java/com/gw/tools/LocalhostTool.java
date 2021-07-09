@@ -57,6 +57,9 @@ public class LocalhostTool {
 	@Autowired
 	LocalSessionWinImpl winsession;
 
+	@Autowired
+	GeoweaverProcessTask t ;
+
 	/**
 	 * Execute Shell Script on Localhost
 	 * @param id
@@ -177,9 +180,9 @@ public class LocalhostTool {
 			
 //			String historyid = session.getHistory_id();
 			
-			GeoweaverProcessTask t = new GeoweaverProcessTask(token);
+			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(id, hid, pswd, token, isjoin);
+			t.initialize(id, hid, pswd, token, isjoin, token);
 			
 			// find active websocket for this builtin process when it is running as a member process in a workflow
 			// If this builtin process is running solo, the TaskSocket will take care of the problem.
@@ -204,7 +207,7 @@ public class LocalhostTool {
 					
 					"\", \"token\": \""+token+
 					
-					"\", \"ret\": \"success\"}";
+					"\", \"ret\": \"success\"}"; 
 			
 //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
 			

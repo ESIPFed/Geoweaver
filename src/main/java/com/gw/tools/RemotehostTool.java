@@ -59,6 +59,9 @@ public class RemotehostTool {
 	
 	@Autowired
 	ProcessRepository processrepository;
+
+	@Autowired
+	GeoweaverProcessTask t ;
 	
 	/**
 	 * Execute shell scripts
@@ -233,9 +236,9 @@ public class RemotehostTool {
 				
 			}
 			
-			GeoweaverProcessTask t = new GeoweaverProcessTask(token);
+			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(id, hid, pswd, token, isjoin);
+			t.initialize(id, hid, pswd, token, isjoin, token);
 			
 			// find active websocket for this builtin process when it is running as a member process in a workflow
 			// If this builtin process is running solo, the TaskSocket will take care of the problem.
