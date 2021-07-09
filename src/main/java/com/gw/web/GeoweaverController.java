@@ -209,6 +209,25 @@ public class GeoweaverController {
 		
 	}
 	
+	@RequestMapping(value = "/dashboard", method = RequestMethod.POST)
+    public @ResponseBody String dashboard(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			
+			
+		}catch(Exception e) {
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
     public @ResponseBody String detail(ModelMap model, WebRequest request){
 		
@@ -617,6 +636,8 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+
 	
 	@RequestMapping(value = "/download/{tempfolder}/{filename}", method = RequestMethod.GET)
 	public ResponseEntity<Resource> fileGetter(ModelMap model, @PathVariable(value="tempfolder") String tempfolder, 

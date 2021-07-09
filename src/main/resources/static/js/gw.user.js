@@ -17,7 +17,7 @@ GW.user = {
      */
     login_dialog: function(){
 
-
+        
 
     },
 
