@@ -347,7 +347,7 @@ GW.process = {
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
 				GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-				GW.process.builtin_processes[0].params[i].name+'"></input>';
+				GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
 				cont += '</div>';
 				
 			}
@@ -362,7 +362,7 @@ GW.process = {
 				
 				for(var i=0;i<code.params.length;i++){
 					
-					$("#param_" + code.params[i].name).val(code.params[i].value);
+					$("#param_" + code.params[i].name + "-" + cmid).val(code.params[i].value);
 					
 				}
 				
@@ -370,15 +370,19 @@ GW.process = {
 			
 		},
 		
-		getCode: function(){
+		getCode: function(cmid){
+
+			cmid = cmid!=null?"-"+cmid:"";
+
+			console.log("Get code cmid:" + cmid);
 			
 			var code = null;
 			
-			if($("#processcategory").val()=="shell"){
+			if($("#processcategory"+cmid).val()=="shell"){
 				
 				code = GW.process.editor.getValue();
 				
-			}else if($("#processcategory").val()=="builtin"){
+			}else if($("#processcategory"+cmid).val()=="builtin"){
 				
 				var params = [];
 				
@@ -386,7 +390,7 @@ GW.process = {
 					
 					var newparam = {
 							
-							name: $(this).attr('id').split("param_")[1],
+							name: $(this).attr('id').split("param_")[1].split(cmid)[0],
 							
 							value: $(this).val()
 							
@@ -404,11 +408,11 @@ GW.process = {
 						
 				}
 				
-			}else if($("#processcategory").val()=="jupyter"){
+			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
 				code = GW.process.jupytercode;
 				
-			}else if($("#processcategory").val()=="python"){
+			}else if($("#processcategory"+cmid).val()=="python"){
 				
 				code = GW.process.editor.getValue();
 //				code = $("#codeeditor-" + cmid).val();
