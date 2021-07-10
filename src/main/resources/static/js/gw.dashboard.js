@@ -37,13 +37,55 @@ GW.board = {
             
             if(!msg.length){
                 
-                alert("no history found");
+                console.error("no dashboard info found");
                 
                 return;
                 
             }
             
             msg = $.parseJSON(msg);
+
+            console.log(msg);
+
+            // { "process_num":12,"history_num":99,"host_num":1,"workflow_num":4,"environment_num":39,"process_shell_num":3,"process_notebook_num":0,"process_python_num":4,"process_builtin_num":3,"host_ssh_num":1,"host_jupyter_num":0,"host_jupyterlab_num":0,"host_jupyterhub_num":0,"host_gee_num":0,"running_process_num":2,"failed_process_num":15,"success_process_num":47,"running_workflow_num":0,"failed_workflow_num":0,"success_workflow_num":0}
+
+            $("#host_num").html(msg.host_num)
+
+            $("#host_ssh_num").html(msg.host_ssh_num)
+
+            $("#host_jupyter_num").html(msg.host_jupyter_num)
+
+            $("#host_jupyterlab_num").html(msg.host_jupyterlab_num)
+
+            $("#host_jupyterhub_num").html(msg.host_jupyterhub_num)
+
+            $("#host_gee_num").html(msg.host_gee_num)
+
+            $("#process_num").html(msg.process_num)
+
+            $("#process_shell_num").html(msg.process_shell_num)
+
+            $("#process_notebook_num").html(msg.process_notebook_num)
+
+            $("#process_python_num").html(msg.process_python_num)
+
+            $("#process_builtin_num").html(msg.process_builtin_num)
+
+            $("#workflow_num").html(msg.workflow_num);
+
+            $("#running_workflow_num").html(msg.running_workflow_num)
+
+            $("#failed_workflow_num").html(msg.failed_workflow_num)
+
+            $("#success_workflow_num").html(msg.success_workflow_num)
+
+            GW.board.real_time_status_chart.data.datasets[0].data = [
+                msg.running_process_num, msg.failed_process_num, msg.success_process_num,
+                msg.running_workflow_num, msg.failed_workflow_num, msg.success_workflow_num
+            ]
+
+            GW.board.real_time_status_chart.update();
+
         }).fail(function(jxr, status){
 				
             console.error(status);
@@ -54,15 +96,14 @@ GW.board = {
 
     renderRealTimeStatusChart: function(){
 
-        
         var ctx = document.getElementById('real_time_status_canvas').getContext('2d');
         this.real_time_status_chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: ['Running Process', 'Failed Process', 'Done Process', 'Running Workflow', 'Failed Workflow', 'Done Workflow'],
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    label: '# of Processes/Workflows',
+                    data: [0, 0, 0, 0, 0, 0],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -137,11 +178,11 @@ GW.board = {
         '               <h3 class="panel-title">Host</h3>'+
         '           </div>'+
         '           <div class="panel-body" style="height:200px;"><ul>'+
-        '               <li><p class="panel-text"><span id="host_all_num"></span> hosts</p></li>'+
+        '               <li><p class="panel-text"><span id="host_num"></span> hosts</p></li>'+
         '               <li><p class="panel-text"><span id="host_ssh_num"></span> SSH hosts</p></li>'+
-        '               <li><p class="panel-text"><span id="host_notebook_num"></span> Jupyter Notebook hosts</p></li>'+
-        '               <li><p class="panel-text"><span id="host_hub_num"></span> JupyterHub hosts</p></li>'+
-        '               <li><p class="panel-text"><span id="host_lab_num"></span> JupyterLab hosts</p></li>'+
+        '               <li><p class="panel-text"><span id="host_jupyter_num"></span> Jupyter Notebook hosts</p></li>'+
+        '               <li><p class="panel-text"><span id="host_jupyterhub_num"></span> JupyterHub hosts</p></li>'+
+        '               <li><p class="panel-text"><span id="host_jupyterlab_num"></span> JupyterLab hosts</p></li>'+
         '               <li><p class="panel-text"><span id="host_gee_num"></span> Earth Engine hosts</p></li>'+
         '           </ul></div>'+
         '       </div>'+
@@ -153,7 +194,7 @@ GW.board = {
         '               <h3 class="panel-title">Process</h3>'+
         '           </div>'+
         '           <div class="panel-body" style="height:200px;"><ul>'+
-        '               <li><p class="panel-text"><span id="process_all_num"></span> processes</p></li>'+
+        '               <li><p class="panel-text"><span id="process_num"></span> processes</p></li>'+
         '               <li><p class="panel-text"><span id="process_shell_num"></span> Shell processes</p></li>'+
         '               <li><p class="panel-text"><span id="process_notebook_num"></span> Jupyter notebooks</p></li>'+
         '               <li><p class="panel-text"><span id="process_builtin_num"></span> builtin processes</p></li>'+
@@ -177,11 +218,10 @@ GW.board = {
         '               <h3 class="panel-title">Workflows</h3>'+
         '           </div>'+
         '           <div class="panel-body" style="height:200px;"><ul>'+
-        '               <li><p class="panel-text"><span id="process_all_num"></span> workflows</p></li>'+
-        '               <li><p class="panel-text"><span id="process_shell_num"></span> Shell processes</p></li>'+
-        '               <li><p class="panel-text"><span id="process_notebook_num"></span> Jupyter notebooks</p></li>'+
-        '               <li><p class="panel-text"><span id="process_builtin_num"></span> builtin processes</p></li>'+
-        '               <li><p class="panel-text"><span id="process_python_num"></span> python processes</p></li>'+
+        '               <li><p class="panel-text"><span id="workflow_num"></span> workflows</p></li>'+
+        '               <li><p class="panel-text"><span id="running_workflow_num"></span> running workflows</p></li>'+
+        '               <li><p class="panel-text"><span id="failed_workflow_num"></span> failed workflows</p></li>'+
+        '               <li><p class="panel-text"><span id="success_workflow_num"></span> success workflows</p></li>'+
         '           </ul></div>'+
         '       </div>'+
         '   </div>'+

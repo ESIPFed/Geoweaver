@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
+import com.gw.tools.DashboardTool;
 import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
@@ -81,6 +82,9 @@ public class GeoweaverController {
 	
 	@Autowired
 	HistoryTool hist;
+
+	@Autowired
+	DashboardTool dbt;
 	
 	@Autowired
 	SSHSession sshSession;
@@ -216,7 +220,7 @@ public class GeoweaverController {
 		
 		try {
 			
-			
+			resp = dbt.getJSON();
 			
 		}catch(Exception e) {
 			
