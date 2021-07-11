@@ -86,11 +86,93 @@ GW.board = {
 
             GW.board.real_time_status_chart.update();
 
+            var time_costs = msg.time_costs.map(x=>+x);
+
+            time_costs = GW.board.removeMinusOne(time_costs);
+
+            var maxmin = GW.board.findMaxMin(time_costs);
+
+            var max_value = maxmin[0];
+
+            var min_value = maxmin[1];
+
+            var first_splitter = (max_value-min_value)/3 + min_value;
+
+            var second_splitter = (max_value-min_value)*2/3 + min_value;
+
+            GW.board.time_cost_chart.data.labels = [min_value + " - " + first_splitter + " ms", first_splitter + " - " + second_splitter + " ms", second_splitter + " - " + max_value + " ms"]
+
+            GW.board.time_cost_chart.data.datasets[0].data = GW.board.calculateFrequency(time_costs, first_splitter, second_splitter);
+
+            GW.board.time_cost_chart.options.plugins.title.text = "Time Cost (unit: milliseconds)";
+
+            GW.board.time_cost_chart.update();
+
         }).fail(function(jxr, status){
 				
             console.error(status);
             
         });;
+
+    },
+
+    calculateFrequency: function(thearr, first_splitter, second_splitter){
+
+        var lvl1 = 0;
+        var lvl2 = 0; 
+        var lvl3 = 0;
+
+        for(var i=0;i<thearr.length;i+=1){
+
+            if(thearr[i]<=first_splitter){
+
+                lvl1 += 1
+
+            }else if(thearr[i]>first_splitter && thearr[i]<=second_splitter){
+
+                lvl2 += 1
+
+            }else if(thearr[i]>second_splitter){
+
+                lvl3 += 1
+
+            }
+
+        }
+
+        return [lvl1, lvl2, lvl3]
+
+    },
+
+    findMaxMin: function(thearr){
+
+        var maxv = thearr[0], minv = thearr[0];
+
+        for(var i=0;i<thearr.length;i+=1){
+
+            if(maxv < thearr[i]) maxv = thearr[i];
+
+            if(minv > thearr[i]) minv = thearr[i];
+
+        }
+
+        return [maxv, minv];
+
+    },
+
+    removeMinusOne: function(thearr){
+
+        var newarr = []
+
+        for (var i = 0; i < thearr.length; i++) {
+
+            if (Number(thearr[i]) != -1) {
+                newarr.push(Number(thearr[i]))
+            }
+        }
+        
+
+        return newarr;
 
     },
 

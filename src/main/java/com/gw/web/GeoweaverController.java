@@ -223,7 +223,7 @@ public class GeoweaverController {
 			resp = dbt.getJSON();
 			
 		}catch(Exception e) {
-			
+			e.printStackTrace();
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
 			
 		}

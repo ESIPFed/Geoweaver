@@ -1,10 +1,15 @@
 package com.gw.tools;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import com.gw.database.EnvironmentRepository;
 import com.gw.database.HistoryRepository;
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
+import com.gw.utils.BaseTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,90 @@ public class DashboardTool {
 
     @Autowired
     EnvironmentRepository environmentrepository;
+
+    @Autowired
+    BaseTool bt;
+
+    public int[] getAllProcessTimeCosts(){
+
+        List failed_processes = historyrepository.findFailedProcess();
+
+        List success_processes = historyrepository.findSuccessProcess();
+
+        int[] costs = new int[failed_processes.size()+success_processes.size()];
+
+        int num = 0;
+
+        for(int i=0;i<failed_processes.size();i++){
+
+            System.out.println("=========");
+
+            Object[] cols = (Object[])failed_processes.get(i);
+
+            if(cols[1]!=null && cols[2] != null){
+
+                Date begin_time = bt.parseSQLDateStr(String.valueOf(cols[1]));
+                Date end_time = bt.parseSQLDateStr(String.valueOf(cols[2]));
+
+                int diffInMillies = ((Long)Math.abs(end_time.getTime() - begin_time.getTime())).intValue();
+
+                costs[num++] = diffInMillies;
+            }else{
+
+                costs[num++] = -1;
+
+            }
+            
+            
+
+        }
+
+        for(int i=0;i<success_processes.size();i++){
+
+            System.out.println("=========");
+
+            Object[] cols = (Object[])success_processes.get(i);
+
+            if(cols[1]!=null && cols[2] != null){
+
+                Date begin_time = bt.parseSQLDateStr(String.valueOf(cols[1]));
+            
+                Date end_time = bt.parseSQLDateStr(String.valueOf(cols[2]));
+                
+                int diffInMillies = ((Long)Math.abs(end_time.getTime() - begin_time.getTime())).intValue();
+
+                costs[num++] = diffInMillies;
+            }else{
+
+                costs[num++] = -1;
+
+            }
+        
+        }
+
+        return costs;
+
+    }
+
+    String getAllProcessTimeCostsJSON(){
+
+        int[] costs = getAllProcessTimeCosts();
+
+        StringBuffer costbuf = new StringBuffer("[");
+
+        for(int i=0;i<costs.length;i++){
+
+            if(i!=0)costbuf.append(",");
+            
+            costbuf.append(costs[i]);
+            
+        }
+
+        costbuf.append("]");
+        
+        return costbuf.toString();
+
+    }
 
     public String getJSON(){
 
@@ -107,8 +196,10 @@ public class DashboardTool {
 
         jsonbuf.append("\"failed_workflow_num\":").append(failed_workflow_num).append(",");
 
-        jsonbuf.append("\"success_workflow_num\":").append(success_workflow_num).append("}");
+        jsonbuf.append("\"success_workflow_num\":").append(success_workflow_num).append(",");
         
+        jsonbuf.append("\"time_costs\": ").append(getAllProcessTimeCostsJSON()).append(" }");
+
         return jsonbuf.toString();
 
     }
