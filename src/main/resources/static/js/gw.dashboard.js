@@ -104,7 +104,7 @@ GW.board = {
 
             GW.board.time_cost_chart.data.datasets[0].data = GW.board.calculateFrequency(time_costs, first_splitter, second_splitter);
 
-            GW.board.time_cost_chart.options.plugins.title.text = "Time Cost (unit: milliseconds)";
+            // GW.board.time_cost_chart.title.text = "Time Cost (unit: milliseconds)";
 
             GW.board.time_cost_chart.update();
 
