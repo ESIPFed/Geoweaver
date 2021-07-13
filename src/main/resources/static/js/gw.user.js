@@ -17,7 +17,11 @@ GW.user = {
      */
     login_dialog: function(){
 
+        var content = "<div class=\"modal-body\" style=\"font-size: 12px;\">";
+				
+        content += "</div>";
         
+        var frame = GW.process.createJSFrameDialog(300, 300, content, "Login")
 
     },
 
