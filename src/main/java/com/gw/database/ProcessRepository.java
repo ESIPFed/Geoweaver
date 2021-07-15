@@ -18,7 +18,19 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String>{
 	@Query(value="select * from gwprocess where description = 'python'",
 		nativeQuery = true)
 	Collection<GWProcess> findPythonProcess();
+
+	@Query(value="select * from gwprocess where description = 'shell'",
+		nativeQuery = true)
+	Collection<GWProcess> findShellProcess();
 	
-	
+	@Query(value="select * from gwprocess where description = 'builtin'",
+		nativeQuery = true)
+	Collection<GWProcess> findBuiltinProcess();
+
+	@Query(value="select * from gwprocess where description = 'jupyter'",
+		nativeQuery = true)
+	Collection<GWProcess> findNotebookProcess();
+
+
 	
 }

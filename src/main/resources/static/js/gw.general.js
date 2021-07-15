@@ -102,6 +102,10 @@ GW.general = {
 				
 				switchTab(document.getElementById("main-console-tab"), "main-console");
 				
+			}else if(name=="dashboard"){
+				
+				switchTab(document.getElementById("main-dashboard-tab"), "main-dashboard");
+				
 			}else if(name=="general" || name == null){
 				
 				switchTab(document.getElementById("main-general-tab"), "main-general");

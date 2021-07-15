@@ -1,6 +1,6 @@
 /**
  * 
- * Workflow monitor
+ * Workspace monitor
  * 
  * @author Ziheng Sun
  * 

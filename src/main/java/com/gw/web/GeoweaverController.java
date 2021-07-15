@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
+import com.gw.tools.DashboardTool;
 import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
@@ -81,6 +82,9 @@ public class GeoweaverController {
 	
 	@Autowired
 	HistoryTool hist;
+
+	@Autowired
+	DashboardTool dbt;
 	
 	@Autowired
 	SSHSession sshSession;
@@ -209,6 +213,25 @@ public class GeoweaverController {
 		
 	}
 	
+	@RequestMapping(value = "/dashboard", method = RequestMethod.POST)
+    public @ResponseBody String dashboard(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			resp = dbt.getJSON();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
     public @ResponseBody String detail(ModelMap model, WebRequest request){
 		
@@ -617,6 +640,8 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+
 	
 	@RequestMapping(value = "/download/{tempfolder}/{filename}", method = RequestMethod.GET)
 	public ResponseEntity<Resource> fileGetter(ModelMap model, @PathVariable(value="tempfolder") String tempfolder, 

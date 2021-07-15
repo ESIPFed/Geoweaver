@@ -347,7 +347,7 @@ GW.process = {
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
 				GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-				GW.process.builtin_processes[0].params[i].name+'"></input>';
+				GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
 				cont += '</div>';
 				
 			}
@@ -362,7 +362,7 @@ GW.process = {
 				
 				for(var i=0;i<code.params.length;i++){
 					
-					$("#param_" + code.params[i].name).val(code.params[i].value);
+					$("#param_" + code.params[i].name + "-" + cmid).val(code.params[i].value);
 					
 				}
 				
@@ -370,15 +370,19 @@ GW.process = {
 			
 		},
 		
-		getCode: function(){
+		getCode: function(cmid){
+
+			cmid = cmid!=null?"-"+cmid:"";
+
+			console.log("Get code cmid:" + cmid);
 			
 			var code = null;
 			
-			if($("#processcategory").val()=="shell"){
+			if($("#processcategory"+cmid).val()=="shell"){
 				
 				code = GW.process.editor.getValue();
 				
-			}else if($("#processcategory").val()=="builtin"){
+			}else if($("#processcategory"+cmid).val()=="builtin"){
 				
 				var params = [];
 				
@@ -386,7 +390,7 @@ GW.process = {
 					
 					var newparam = {
 							
-							name: $(this).attr('id').split("param_")[1],
+							name: $(this).attr('id').split("param_")[1].split(cmid)[0],
 							
 							value: $(this).val()
 							
@@ -404,11 +408,11 @@ GW.process = {
 						
 				}
 				
-			}else if($("#processcategory").val()=="jupyter"){
+			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
 				code = GW.process.jupytercode;
 				
-			}else if($("#processcategory").val()=="python"){
+			}else if($("#processcategory"+cmid).val()=="python"){
 				
 				code = GW.process.editor.getValue();
 //				code = $("#codeeditor-" + cmid).val();
@@ -790,9 +794,9 @@ GW.process = {
 
 			}
 			
-			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+			// output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
-			"<p> Execution started at " + msg.begin_time + "</p>"+ 
+			output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
 			
 			"<p> Execution ended at " + msg.end_time + "</p>"+
 			
@@ -802,7 +806,8 @@ GW.process = {
 			
 			output + "</div>";
 			
-			$("#console-output").html(output);
+			// $("#console-output").html(output);
+			$("#process-log-window").html(output);
 			
 			$("#closeLog").click(function(){
 				
@@ -835,8 +840,6 @@ GW.process = {
 
 			GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 
-			GW.process.clearProcessLogging();
-			
 		},
 		
 		getHistoryDetails: function(history_id){
@@ -1178,8 +1181,6 @@ GW.process = {
 
 			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
 			
-			
-			
 //			switchTab(document.getElementById("main-process-tab"), "main-process-info");
 			GW.general.switchTab("process");
 			
@@ -1199,13 +1200,19 @@ GW.process = {
 			
 			$("#showCurrent").click(function(){
 				
-				GW.process.displayCodeArea(process_id, process_name, code_type,  code);
+				GW.menu.details(process_id, "process");
+
+				GW.process.showSaved();
+
+				// GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 				
-				if($("#closeHistory")) $("#closeHistory").trigger( "click" );
+				// if($("#closeHistory")) $("#closeHistory").trigger( "click" );
 				
-				if($("#closeLog")) $("#closeLog").trigger("click");
+				// if($("#closeLog")) $("#closeLog").trigger("click");
 				
-				GW.process.editSwitch();
+				// GW.process.editSwitch();
+
+				// GW.process.clearProcessLogging();
 				
 			});
 			

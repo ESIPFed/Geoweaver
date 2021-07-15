@@ -21,10 +21,26 @@ public interface HistoryRepository extends CrudRepository<History, String>{
 	@Query(value="select * from history, workflow where history.history_process = workflow.id and history.indicator = 'Running' ORDER BY history_begin_time DESC;",
 		nativeQuery = true)
 	List<Object[]> findRunningWorkflow();
+
+	@Query(value="select * from history, workflow where history.history_process = workflow.id and history.indicator = 'Failed' ORDER BY history_begin_time DESC;",
+		nativeQuery = true)
+	List<Object[]> findFailedWorkflow();
+
+	@Query(value="select * from history, workflow where history.history_process = workflow.id and history.indicator = 'Done' ORDER BY history_begin_time DESC;",
+		nativeQuery = true)
+	List<Object[]> findSuccessWorkflow();
 	
 	@Query(value="select * from history, gwprocess where history.history_process = gwprocess.id and history.indicator = 'Running' ORDER BY history_begin_time DESC;",
 		nativeQuery = true)
 	List<Object[]> findRunningProcess();
+
+	@Query(value="select * from history, gwprocess where history.history_process = gwprocess.id and history.indicator = 'Failed' ORDER BY history_begin_time DESC;",
+		nativeQuery = true)
+	List<Object[]> findFailedProcess();
+
+	@Query(value="select * from history, gwprocess where history.history_process = gwprocess.id and history.indicator = 'Done' ORDER BY history_begin_time DESC;",
+		nativeQuery = true)
+	List<Object[]> findSuccessProcess();
 	
 	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
 			nativeQuery = true)

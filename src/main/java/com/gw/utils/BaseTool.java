@@ -1067,6 +1067,23 @@ public class BaseTool {
     	return newdate;
     	
     }
+
+	public Date parseSQLDateStr(String datestr){
+
+		// 2021-07-06 20:35:11.535
+
+		Date date1 = null;
+		try {
+			if(!this.isNull(datestr))
+				date1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(datestr);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		
+		return date1;
+
+	}
     
     
     /**

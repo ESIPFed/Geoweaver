@@ -79,6 +79,8 @@ GW.main = {
 
 		GW.monitor.startSocket(current_token); //this token will be saved as GW.monitor.token and can be used everywhere
 		
+		GW.board.init();
+
 		introJs().start();
 		
 //		this.test_websocket()
