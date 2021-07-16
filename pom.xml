@@ -15,7 +15,7 @@
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		
