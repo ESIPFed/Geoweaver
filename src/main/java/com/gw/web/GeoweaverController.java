@@ -1426,6 +1426,12 @@ public class GeoweaverController {
     	return resp;
     	
     }
+
+	@RequestMapping("/error")
+    public String handleError() {
+        //do something like logging
+        return "error";
+    }
     
     void checkID(String id) {
     	
@@ -1434,6 +1440,8 @@ public class GeoweaverController {
     		throw new RuntimeException("No ID found");
     	
     }
+
+
 
     public static void main(String[] args) {
     	

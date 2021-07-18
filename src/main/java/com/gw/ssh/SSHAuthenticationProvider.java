@@ -62,7 +62,7 @@ public class SSHAuthenticationProvider implements AuthenticationProvider {
         //UsernamePasswordAuthenticationToken request = (UsernamePasswordAuthenticationToken) authentication;
         String username = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
-        //log.info("{}:{}", username, password);
+        log.info("SSH Authentication Provider is called: {}:{}", username, password);
         boolean success = sshSession.login("", "", username, password, "", false);
         log.info("SSH login: {}={}", username, success);
         Authentication result = new UsernamePasswordAuthenticationToken(username, password, authorities);

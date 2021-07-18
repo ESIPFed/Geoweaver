@@ -47,7 +47,7 @@ public class DashboardTool {
 
         for(int i=0;i<failed_processes.size();i++){
 
-            System.out.println("=========");
+            // System.out.println("=========");
 
             Object[] cols = (Object[])failed_processes.get(i);
 
@@ -71,7 +71,7 @@ public class DashboardTool {
 
         for(int i=0;i<success_processes.size();i++){
 
-            System.out.println("=========");
+            // System.out.println("=========");
 
             Object[] cols = (Object[])success_processes.get(i);
 
