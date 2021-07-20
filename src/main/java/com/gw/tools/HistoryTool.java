@@ -558,16 +558,24 @@ public class HistoryTool {
 				session.getSsh().close(); //this line close the shell session and the associated command is stopped
 				
 			}
-			
-			String history_end_time = bt.getCurrentMySQLDatetime();
 
-			StringBuffer sql = new StringBuffer("update history set end_time = '");
+			History oldh = historyrepository.findById(history_id).get();
 			
-			sql.append(history_end_time);
+			// String history_end_time = bt.getCurrentMySQLDatetime();
+
+			// StringBuffer sql = new StringBuffer("update history set end_time = '");
 			
-			sql.append("', indicator = 'Stopped' where id = '");
+			// sql.append(history_end_time);
 			
-			sql.append(history_id).append("';");
+			// sql.append("', indicator = 'Stopped' where id = '");
+			
+			// sql.append(history_id).append("';");
+
+			oldh.setHistory_end_time(bt.getCurrentSQLDate());
+
+			oldh.setIndicator("Stopped");
+
+			historyrepository.save(oldh);
 			
 //			DataBaseOperation.execute(sql.toString());
 			

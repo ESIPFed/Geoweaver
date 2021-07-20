@@ -152,8 +152,12 @@
 				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
                   	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
                   </a>
-				  <a style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
 				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
+				  </a>
+
+				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.user.login_dialog()">
+					<i class="fa fa-user" alt="info" id="toolbar-info"> Login</i>
 				  </a>
 				</div>
 				
@@ -204,7 +208,8 @@
 			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
 					  	<div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-						  <button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">General</button>
+						  <button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
+						  <button class="tablinks " id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">Dashboard</button>
 						  <button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
 						  <button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
 						  <button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
@@ -353,13 +358,12 @@
 										<p> In Built In Process we can create a process with different names. We can choose a process from ShowResultMap and DownloadData. We can the previously creeated built in process and save them and execute.</p>
 										
 										<h3>Python</h3>
-										<p>Python has become the dominant language and environment for AI workflows [68]. AI workflows written in Python involve many calls of python libraries and distributed Jupyter Notebooks. </p>
 										<p>Computing with Python can be used as a course book for absolute beginners on Python with guidance and support from a teacher. It is also suitable as a self study book for more advanced students with some programming knowledge and an interest in the mathematical or scientific disciplines. </p>
 												
 										<h2>Workflow</h2>
 													
 													
-										<p>An interface should be developed to allow users to compose workflow. A toolbar should be developments in JavaScript frameworks, namely React, Angular, and Vue.js, as well as JavaScript developed to manage the workflows, including searching the existing workflows, running and libraries such as D3.js and CodeMirror, that can aid in building websites to provide a rich user monitoring the workflows, and checking the history of workflow execution. The workflow module experience through fully feature user interfaces. Via the interfaces, people can drag and drop the provides real-time feedbacks of the member process statuses by indicating with different colors or atomic processes and draw lines to connect them into workflows. The created workflows represent the showing progress bars. To make the workflow knowledge sharable, this module should also allow knowledge of large-scale data processing and are stored in the database.</p>
+										<p>The workflow module allows users to compose workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
 
 									</div>
 									
@@ -370,6 +374,12 @@
 							  	
 							</div> 
 						</div>
+
+						<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+							<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+								
+							</div>
+					  	</div>
 						
 						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
 							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
@@ -423,6 +433,9 @@
 							      
 							    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
 							    	style="color:gray; padding:0; margin:0; margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
+
+								<i id="new-workflow" title="new graph" class="btn fa fa-plus-square fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
 							      
 							    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
 							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
@@ -601,6 +614,8 @@
 	    <script src="../js/gw.process.js"></script>
 	    <script src="../js/gw.workflow.js"></script>
 	    <script src="../js/gw.monitor.js"></script>
+		<script src="../js/gw.dashboard.js"></script>
+		<script src="../js/gw.user.js"></script>
 	    <script src="../js/gw.search.js"></script>
 	    <script src="../js/gw.settings.js"></script>
 	    <script src="../js/gw.toolbar.js"></script>
@@ -625,6 +640,12 @@
 			  }
 			  document.getElementById(name).style.display = "block";
 			  ele.className += " active";
+
+			  if(name=="main-dashboard"){
+
+				GW.board.refresh();
+
+			  }
 	    		
 	    	}
 	    	

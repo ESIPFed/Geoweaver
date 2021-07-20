@@ -269,6 +269,14 @@ GW.workspace = {
     	      }
     	      
     	    });
+
+			d3.select("#new-workflow").on("click", function(){
+
+				thisGraph.deleteGraph(false);
+
+				GW.workflow.loaded_workflow = null;
+
+			});
     	    
     	    d3.select("#save-workflow").on("click", function(){
     	    	

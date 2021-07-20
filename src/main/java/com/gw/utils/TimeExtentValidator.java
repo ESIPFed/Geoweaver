@@ -31,7 +31,7 @@ public class TimeExtentValidator {
 		Date ed = null;
 		Date currentd = new Date();
 		boolean valid = false;
-		BaseTool tool = new BaseTool();
+		// BaseTool tool = new BaseTool();
 		if((bd=bt.parseVCIDate(begintime))==null||
 				(ed=bt.parseVCIDate(endtime))==null){
 			
@@ -45,7 +45,7 @@ public class TimeExtentValidator {
 			
 		}
 		//check if the days between the begin and end dates are more than 16
-		else if(tool.getDaysBetweenTwoDates(bd, ed)>16){
+		else if(bt.getDaysBetweenTwoDates(bd, ed)>16){
 			throw new RuntimeException("The days between the begin and end dates are more than 16.");
 		}else {
 			valid = true;

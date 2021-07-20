@@ -347,7 +347,7 @@ GW.process = {
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
 				GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-				GW.process.builtin_processes[0].params[i].name+'"></input>';
+				GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
 				cont += '</div>';
 				
 			}
@@ -362,7 +362,7 @@ GW.process = {
 				
 				for(var i=0;i<code.params.length;i++){
 					
-					$("#param_" + code.params[i].name).val(code.params[i].value);
+					$("#param_" + code.params[i].name + "-" + cmid).val(code.params[i].value);
 					
 				}
 				
@@ -370,15 +370,19 @@ GW.process = {
 			
 		},
 		
-		getCode: function(){
+		getCode: function(cmid){
+
+			cmid = cmid!=null?"-"+cmid:"";
+
+			console.log("Get code cmid:" + cmid);
 			
 			var code = null;
 			
-			if($("#processcategory").val()=="shell"){
+			if($("#processcategory"+cmid).val()=="shell"){
 				
 				code = GW.process.editor.getValue();
 				
-			}else if($("#processcategory").val()=="builtin"){
+			}else if($("#processcategory"+cmid).val()=="builtin"){
 				
 				var params = [];
 				
@@ -386,7 +390,7 @@ GW.process = {
 					
 					var newparam = {
 							
-							name: $(this).attr('id').split("param_")[1],
+							name: $(this).attr('id').split("param_")[1].split(cmid)[0],
 							
 							value: $(this).val()
 							
@@ -404,11 +408,11 @@ GW.process = {
 						
 				}
 				
-			}else if($("#processcategory").val()=="jupyter"){
+			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
 				code = GW.process.jupytercode;
 				
-			}else if($("#processcategory").val()=="python"){
+			}else if($("#processcategory"+cmid).val()=="python"){
 				
 				code = GW.process.editor.getValue();
 //				code = $("#codeeditor-" + cmid).val();
@@ -671,6 +675,8 @@ GW.process = {
 				});
 				
 				console.log("Scroll to the history section.")
+
+				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
 				
 				//the code has bug, when it scrolls to the location, the header toolbar is gone. Reason unknown.
 //				var elmnt = document.getElementById("process-history-container");
@@ -755,6 +761,8 @@ GW.process = {
 				GW.process.display(msg);
 				
 				GW.process.displayOutput(msg);
+
+				GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 				
 			}).fail(function(){
 				
@@ -786,9 +794,9 @@ GW.process = {
 
 			}
 			
-			output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
+			// output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
 			
-			"<p> Execution started at " + msg.begin_time + "</p>"+ 
+			output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
 			
 			"<p> Execution ended at " + msg.end_time + "</p>"+
 			
@@ -798,7 +806,8 @@ GW.process = {
 			
 			output + "</div>";
 			
-			$("#console-output").html(output);
+			// $("#console-output").html(output);
+			$("#process-log-window").html(output);
 			
 			$("#closeLog").click(function(){
 				
@@ -806,14 +815,14 @@ GW.process = {
 				
 			});
 			
-		    	$("#retrieve-result").click(function(){
-		    		
-		    		GW.result.showDialog(history_id);
-		    		
-		    	});
-		    	
-		    	if(msg.output=="logfile"){
-					
+			$("#retrieve-result").click(function(){
+				
+				GW.result.showDialog(history_id);
+				
+			});
+			
+			if(msg.output=="logfile"){
+				
 				$.get("../temp/" + msg.id + ".log" ).success(function(data){
 					
 					if(data!=null)
@@ -828,7 +837,9 @@ GW.process = {
 				});
 				
 			}
-			
+
+			GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+
 		},
 		
 		getHistoryDetails: function(history_id){
@@ -1074,6 +1085,27 @@ GW.process = {
 		display: function(msg){
 			
 			GW.process.editOn = false;
+
+			var code = null;
+			
+			var code_type = null;
+			
+			var process_id = null;
+			
+			var process_name = null;
+			
+			if(typeof msg !='object'){
+				
+				msg = $.parseJSON(msg);
+			}
+			
+			code_type = msg.category==null?msg.description: msg.category;
+			
+			code = msg.code;
+			
+			process_id = msg.id;
+			
+			process_name = msg.name;
 			
 			var content = "<div class=\"modal-body\">";
 			
@@ -1108,52 +1140,46 @@ GW.process = {
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
-			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
-		    '   </div>';
+			content += "<div class=\"tab\" data-intro=\"this is a tab inside the process tab panel\">"+
+			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
+			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
+        	
+			process_id+"', '" + process_name+"')\">History</button>"+
+		 	" </div>";
 			
-			content += "<div class=\"row\" style=\"font-size: 12px;\" id=\"process-code-history-section\">"+
-				"<div class=\"row\">"+
-				"	<div class=\"col col-md-6\" >"+
-				"		<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"		<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; \" ></div>"+
-				"	</div> "+
-				"	<div id=\"single-console-content\" class=\"col col-md-6\"> "+
-				"		<h4 style=\"color:black\">Logging</h4> "+
-				"		<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word;\"> </div> "+
-				"	</div>"+
-				"</div>";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			
+			content += "<div class=\"row\" style=\"font-size: 12px; margin:0;\" id=\"process-code-history-section\">"+
+				"			<div class=\"row\">"+
+				"				<div class=\"col col-md-6\" >"+
+				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding: 0px;\" ></div>"+
+				"				</div> "+
+				"				<div id=\"single-console-content\" class=\"col col-md-6\"> "+
+				"					<h4 style=\"color:black\">Logging</h4> "+
+				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
+				'   				<div class="row" style="padding:0px; margin:0px;" >'+
+				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px;" ></div>'+
+				'   				</div>'+
+				"				</div>"+
+				"			</div>";
 
-			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
-			
-			var code = null;
-			
-			var code_type = null;
-			
-			var process_id = null;
-			
-			var process_name = null;
-			
-			if(typeof msg !='object'){
-				
-				msg = $.parseJSON(msg);
-			}
-			
-			code_type = msg.category==null?msg.description: msg.category;
-			
-			code = msg.code;
-			
-			process_id = msg.id;
-			
-			process_name = msg.name;
-			
-			
 			content += '</div>'+
-			'   <div class="row" style="padding:0px;margin:0px;" >'+
-			'		<div class="col col-md-12" id="console-output"  style="width:100%;" ></div>'+
-		    '   </div>'+
-			'</div>';
+				
+				'</div>';
+
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">";
+
+			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
+			'   </div>';
+			
+			content += "</div>";
 			
 			$("#main-process-content").html(content);
+
+			switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+
+			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
 			
 //			switchTab(document.getElementById("main-process-tab"), "main-process-info");
 			GW.general.switchTab("process");
@@ -1174,19 +1200,50 @@ GW.process = {
 			
 			$("#showCurrent").click(function(){
 				
-				GW.process.displayCodeArea(process_id, process_name, code_type,  code);
+				GW.menu.details(process_id, "process");
+
+				GW.process.showSaved();
+
+				// GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 				
-				if($("#closeHistory")) $("#closeHistory").trigger( "click" );
+				// if($("#closeHistory")) $("#closeHistory").trigger( "click" );
 				
-				if($("#closeLog")) $("#closeLog").trigger("click");
+				// if($("#closeLog")) $("#closeLog").trigger("click");
 				
-				GW.process.editSwitch();
+				// GW.process.editSwitch();
+
+				// GW.process.clearProcessLogging();
 				
 			});
 			
 		},
 		
+		openCity: function(evt, name){
+
+			GW.process.switchTab(evt.currentTarget, name);
+
+		},
 		
+		switchTab: function (ele, name){
+	    		
+			console.log("Turn on the tab " + name)
+			  
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent-process");
+			for (i = 0; i < tabcontent.length; i++) {
+			  tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks-process");
+			for (i = 0; i < tablinks.length; i++) {
+			  tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(name).style.display = "block";
+			ele.className += " active";
+
+			GW.process.refreshCodeEditor();
+			  
+		},
+
 		displayToolbar: function(process_id, process_name, code_type){
 			
 			var menuItem = " <p align=\"right\">"+
@@ -1705,6 +1762,16 @@ GW.process = {
 			GW.ssh.openLog(msg);
 			
 		},
+
+		clearProcessLogging: function(){
+
+			if($("#process-log-window").length){
+
+				$("#process-log-window").html("");
+
+			}
+
+		},
 		
 		/**
 		 * after the server side is done, this callback is called on each builtin process
@@ -1731,6 +1798,8 @@ GW.process = {
 		
 		sendExecuteRequest: function(req, dialog, button){
 			
+			GW.process.clearProcessLogging();
+
 			$.ajax({
 				
 				url: "executeProcess",
@@ -1752,6 +1821,8 @@ GW.process = {
 						console.log("history id: " + msg.history_id);
 						
 						GW.process.showSSHOutputLog(msg);
+
+						
 						
 //						if(req.desc == "builtin"){
 //							
@@ -1803,7 +1874,7 @@ GW.process = {
 		},
 		
 		/**
-		 * Execute one process
+		 * This function is to directly execute one process
 		 */
 		executeProcess: function(pid, hid, desc){
 			
@@ -2003,6 +2074,12 @@ GW.process = {
 			
 		},
 		
+		/**
+		 * Show a Run process dialog
+		 * @param {*} pid 
+		 * @param {*} pname 
+		 * @param {*} desc 
+		 */
 		runProcess: function(pid, pname, desc){
 			
 			var h = this.findCache(pid);
@@ -2058,7 +2135,7 @@ GW.process = {
 	            		for(var i=0;i<msg.length;i++){
 	            			
 							if(msg[i].type=="ssh"){
-								
+
 								if(GW.host.isLocal(msg[i])){
 	            				
 									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+

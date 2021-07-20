@@ -19,6 +19,24 @@ public interface HostRepository extends CrudRepository<Host, String>{
 		nativeQuery = true)
 	Collection<Host> findHostsByNameAlike(@Param("keyword") String keyword);
 	
+	@Query(value="select * from HOST where type = 'ssh'",
+		nativeQuery = true)
+	Collection<Host> findSSHHosts();
+
+	@Query(value="select * from HOST where type = 'jupyter'",
+		nativeQuery = true)
+	Collection<Host> findJupyterNotebookHosts();
 	
-	
+	@Query(value="select * from HOST where type = 'jupyterhub'",
+	nativeQuery = true)
+	Collection<Host> findJupyterHubHosts();
+
+	@Query(value="select * from HOST where type = 'jupyterlab'",
+	nativeQuery = true)
+	Collection<Host> findJupyterLabHosts();
+
+	@Query(value="select * from HOST where type = 'gee'",
+	nativeQuery = true)
+	Collection<Host> findGEEHosts();
+
 }

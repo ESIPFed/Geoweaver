@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -49,16 +51,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// SSHUserDetailsManagerConfigurer<AuthenticationManagerBuilder>());
 	}
 	
+	/**
+	 * WebSecurity is used to ask Spring Security to bypass the following resources
+	 * WebSecurity is based on HttpSecurity
+	 */
 	@Override
 	public void configure(WebSecurity builder) throws Exception {
 		// builder.ignoring().antMatchers("/ssh/**").antMatchers("/static/**");
-		builder.ignoring().antMatchers("/Geoweaver/**");
+		// builder.ignoring().antMatchers("/Geoweaver/**");
 	}
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	
-    	http.authorizeRequests().antMatchers("/**").permitAll().and();
+    	http.authorizeRequests()
+			.antMatchers("/Geoweaver/**")
+			.permitAll()
+			.and()
+			.formLogin()
+			.loginProcessingUrl("/Geoweaver/users/login")
+			.and()
+			.logout()
+			.and();
     	
 //    	http.authorizeRequests().anyRequest().authenticated();
     	
@@ -70,7 +84,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		http.headers().disable(); //this must be turned off to make the JupyterHub work
     	
-        super.configure(http);
+        // super.configure(http);
 //        http
 //            .authorizeRequests()
 //                .antMatchers("/Geoweaver/web/ssh/**").permitAll()
@@ -97,5 +111,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+	@Bean 
+	public PasswordEncoder passwordEncoder() { 
+		return new BCryptPasswordEncoder(); 
+	}
     
 }
