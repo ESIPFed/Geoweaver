@@ -110,7 +110,7 @@ public class GoogleEarthController {
         
             .setDefaultRequestConfig(RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
-                    .setRedirectsEnabled(false)
+                    .setRedirectsEnabled(true)
                     .build())
             .build();
 
@@ -128,32 +128,85 @@ public class GoogleEarthController {
 	 * @param oldheaders
 	 * @param h
 	 * @param realurl
+	 * the suffix after the host ip and port
 	 * @param querystr
+	 * the query string after question mark ?
 	 * @return
 	 */
-	private HttpHeaders updateHeaderReferer(HttpHeaders oldheaders, Host h, String realurl, String querystr) {
+	private HttpHeaders updateRequestHeader(HttpHeaders oldheaders, Host h, String realurl, String querystr) {
 		
 		HttpHeaders newheaders = oldheaders;
 		
 		try {
 		
-			String[] ss = bt.parseGoogleEarthURL(h.getUrl());
+			// String[] ss = bt.parseGoogleEarthURL(h.getUrl());
 			
             // URI uri = new URI(ss[0], null, ss[1], Integer.parseInt(ss[2]), realurl, querystr, null);
-            URI uri = new URI("https", null, "https://code.earthengine.google.com/", 443, realurl, querystr, null);
+            // URI uri = new URI("https", null, "code.earthengine.google.com", 443, realurl, querystr, null);
 			
-			String hosturl = ss[0] + "://" + ss[1] + ":" + ss[2];
+			// String hosturl = ss[0] + "://" + ss[1] + ":" + ss[2];
 			
 			newheaders =  HttpHeaders.writableHttpHeaders(oldheaders);
 			
-			// newheaders.set("host", ss[1] + ":" + ss[2]);
+			newheaders.set("Host", "code.earthengine.google.com");
 			
 			// newheaders.set("origin", hosturl);
 			
 			// newheaders.set("target_url", URLDecoder.decode(uri.toString(), "utf-8"));
 
-			newheaders.set("referer", URLDecoder.decode(uri.toString(), "utf-8"));
+			newheaders.set("Referer", "https://www.google.com/");
+
+			newheaders.set("Cookie", "1P_JAR=2021-08-05-12; NID=220=u-LNrAEPFdeVsyrsuNGH0vrMJ3evUk4slFvTlkocypTzT91hRtopv46iZRpMlHcZCQZKYHOvBsE14Zr4MFMvQHOZYTCwM4Di4V75jbOW4wpblD7T2x6foy0mk4iPtZ8N8YAP8yxNdccj1fuHjGZUY7bs14qiDEajPtdNj_5bHYYvKKpUdhOnP-gKN_3ltFNWYM7xiz7syIwSkr9POusMykTmAIHX; ANID=AHWqTUmyDLiPVRBJu2uzjfg53HwdKlMzJyUKA78SFMsPVc5xhGvmznup-DkrB7ly; SID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pM5lbwRABPhYyf97rjEu_PQ.; __Secure-1PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pNoN0Y-J4WbYq4-0NfLkhDw.; __Secure-3PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14p2TsQpztYwrUoyDtmWBOygw.; HSID=AVCbW41BibNQwwfpw; SSID=AeVfYx3QAMXuH7u8m; APISID=kM8fFOubCVp2wktp/A_1AQLK1Lw9OfqLag; SAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-1PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-3PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; SIDCC=AJi4QfFZ52seUH9wZwqciRVHmOF7HTjCIzBINyb9SdHkGMCt2kDzCanVu21iW-1XQAHaJhQg9w; __Secure-3PSIDCC=AJi4QfHU0Uq-zpB51tNkPzL_d0aSIcF9JVt50sc_PFwjpDIQ2iR1PUZXnESASB0VmehJ6VOMhg; SACSID=~AJKiYcH5eS4ox9v2GZNDXKqNpP5N32RNiI6_DozJSJ1cS8-rUcS0QFLh8PJBEwXtyxBl5YVZbtytOL06aKPJ9jL5zSCALiYLqJPr-7Y4Ywg_Q539EBJs9j_kqdlsJi3HLovBkBVLkjz5q0Q1sKGmD7CmRQ98q9owAtfUTWyRB4cGPkIm0gfTOi-hhJQ7JJhyCqtoH-vuCCa8StcS9q7M-CpezzG4qBZwrDfKCibpbVja12q-UwTQs8v-VN4-Gf3U9qVNL4NibaTva0dqwc7J8nVBnS8YTpRmmjM2j96OBQsXbLFMhJm9tG4m8FqtaNoSbwVwclXQh1BB");
 			
+			newheaders.set("Upgrade-Insecure-Requests", "1");
+
+			newheaders.set("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0");
+
+			newheaders.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+
+			newheaders.set("Accept-Language", "en-US,en;q=0.5");
+
+			newheaders.set("Accept-Encoding", "gzip, deflate, br");
+
+			newheaders.set("Alt-Used", "code.earthengine.google.com");
+
+			newheaders.set("Connection", "keep-alive");
+
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return newheaders;
+		
+	}
+
+	/**
+	 * Update response header
+	 * @param oldheaders
+	 * @param h
+	 * @param realurl
+	 * @param querystr
+	 * @return
+	 */
+	private HttpHeaders updateResponseHeader(HttpHeaders oldheaders, byte[] body, String hostid) {
+		
+		HttpHeaders newheaders = oldheaders;
+		
+		try {
+		
+			// String[] ss = bt.parseGoogleEarthURL(h.getUrl());
+			
+            // URI uri = new URI(ss[0], null, ss[1], Integer.parseInt(ss[2]), realurl, querystr, null);
+            // URI uri = new URI("https", null, "code.earthengine.google.com", 443, realurl, querystr, null);
+			
+			// String hosturl = ss[0] + "://" + ss[1] + ":" + ss[2];
+			
+			newheaders =  HttpHeaders.writableHttpHeaders(oldheaders);
+			
+			newheaders.set("Host", "code.earthengine.google.com");
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -173,9 +226,9 @@ public class GoogleEarthController {
 
 			// String realurl =  this.getRealRequestURL(request.getRequestURI());
 			
-			// Host h = ht.getHostById(hostid);
+			Host h = ht.getHostById(hostid);
 			
-            // newheaders = this.updateHeaderReferer(headers, h, realurl, request.getQueryString());
+            newheaders = this.updateRequestHeader(headers, h, "", request.getQueryString());
 
 			
 		} catch (Exception e) {
@@ -199,7 +252,7 @@ public class GoogleEarthController {
 	 * @return
 	 * @throws URISyntaxException
 	 */
-	private <T> ResponseEntity<T> processGET(RequestEntity reqentity, HttpMethod method, HttpServletRequest request, String hostid) throws URISyntaxException
+	private ResponseEntity processGET(RequestEntity reqentity, HttpMethod method, HttpServletRequest request, String hostid) throws URISyntaxException
 	{
 				
 		ResponseEntity resp = null;
@@ -214,7 +267,7 @@ public class GoogleEarthController {
 						
 			
 			HttpHeaders newheaders = getHeaders(reqentity.getHeaders(), method, request, hostid);
-			
+
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
 			// String targeturl = getRealTargetURL(newheaders.get("target_url").get(0)); //using referer as the target url is not right
@@ -226,10 +279,23 @@ public class GoogleEarthController {
 
             // URI uri = new URI("https", null, "https://code.earthengine.google.com/", 443, request.getRequestURI(), request.getQueryString(), null);
 
-            ResponseEntity<ResponseEntity> responseEntity =
-                restTemplate.exchange("https://code.earthengine.google.com/", HttpMethod.GET, newentity, ResponseEntity.class);
+			logger.debug(newentity.toString());
+
+
+
+            ResponseEntity<byte[]> responseEntity =
+                restTemplate.exchange("https://code.earthengine.google.com/", HttpMethod.GET, newentity, byte[].class);
         
-            return responseEntity.getBody();
+			logger.debug("response entity: " + responseEntity.toString());
+
+			HttpHeaders headers = updateResponseHeader(responseEntity.getHeaders(), responseEntity.getBody(), hostid);
+
+			resp = new ResponseEntity<byte[]>(
+					responseEntity.getBody(), 
+					headers, 
+					responseEntity.getStatusCode());
+
+            return responseEntity;
 			// String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
 
 			// byte[] newbody = null;
@@ -325,8 +391,9 @@ public class GoogleEarthController {
 		    
 		}catch (HttpStatusCodeException ex) {
 		    
+			ex.printStackTrace();
 		    // http status code e.g. `404 NOT_FOUND`
-//		    logger.error(ex.getStatusCode().toString());
+		    logger.error(ex.getStatusCode().toString());
 		    
 		    // get response body
 //		    System.out.println(ex.getResponseBodyAsString());
@@ -366,6 +433,7 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
     logger.info(request.toString());
     logger.info(hostid.toString());
     ResponseEntity resp = processGET(reqentity, method, request, hostid);
+	logger.debug("response status code: " + resp.getStatusCode());
     // URI yahoo = new URI("https://code.earthengine.google.com/");
     // HttpHeaders httpHeaders = new HttpHeaders();
     // httpHeaders.setLocation(yahoo);
