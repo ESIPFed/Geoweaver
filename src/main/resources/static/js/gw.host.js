@@ -1139,6 +1139,12 @@ GW.host = {
 			window.open("/Geoweaver/jupyter-proxy/"+hostid+"/", "_blank");
 			
 		},
+
+		openGoogleEarth: function(hostid){
+			
+			window.open("/Geoweaver/GoogleEarth-proxy/"+hostid+"/", "_blank");
+			
+		},
 		
 		getToolbar: function(hostid, hosttype){
 			
@@ -1176,7 +1182,11 @@ GW.host = {
 				
 				content += "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
 				
-					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>";
+					hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>" + 
+					
+					"<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openGoogleEarth('" + 
+					
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Open Google Earth\"></i>";
 				
 			}
 			

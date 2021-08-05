@@ -1354,7 +1354,7 @@ GW.process = {
 			          lineNumbers: true,
 		      		  lineWrapping: true,
 		      		  theme: "yonce",
-		      		  mode: "text/x-sh",
+		      		  mode: "python",
 		      		  readOnly: false,
 //			          viewportMargin: Infinity,
 			          value: code,
@@ -1377,7 +1377,8 @@ GW.process = {
 				    		    			
 				    		    		}
 				    		    	
-				    		    }
+								},
+								"Ctrl-Space": "autocomplete"
 				    	  }
 			    });
 				

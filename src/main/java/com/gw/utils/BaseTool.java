@@ -610,6 +610,78 @@ public class BaseTool {
 		
 	}
 	
+	public String[] parseGoogleEarthURL(String url) {
+		
+		String[] cc = new String[4];
+		
+		try {
+			
+			URL aURL = new URL(url);
+
+			// logger.debug("protocol = " + aURL.getProtocol());
+			// logger.debug("authority = " + aURL.getAuthority());
+			// logger.debug("host = " + aURL.getHost());
+			// logger.debug("port = " + aURL.getPort());
+			// logger.debug("path = " + aURL.getPath());
+			// logger.debug("query = " + aURL.getQuery());
+			// logger.debug("filename = " + aURL.getFile());
+			// logger.debug("ref = " + aURL.getRef());
+			
+			cc[0] = aURL.getProtocol();
+			cc[1] = aURL.getHost();
+			
+			if(aURL.getPort()!=-1) {
+
+				cc[2] = String.valueOf(aURL.getPort());
+				
+			}else {
+				
+				cc[2] = "443";
+				
+			}
+			
+			cc[3] = aURL.getPath();
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		
+//		if(url!=null) {
+//			
+//			String[] ss = url.split(":");
+//			
+//			String current_scheme = ss[0];
+//			
+//			String current_ip = ss[1].substring(2);
+//			
+////			int current_port = Integer.parseInt(ss[2].replaceAll("\\D", ""));
+//			
+//			cc[0] = current_scheme;
+//			
+//			cc[1] = current_ip;
+//			
+//			if(ss.length<2) {
+//				
+//				cc[2] = "80";
+//				
+//			}else {
+//				
+//				System.out.println(ss[2]);
+//				
+//				cc[2] = ss[2].replaceAll("\\D", "");
+//				
+//			}
+//			
+//		}
+		
+		return cc;
+		
+	}
+
+
 	/**
 	 * Run Local Command
 	 * @param command
