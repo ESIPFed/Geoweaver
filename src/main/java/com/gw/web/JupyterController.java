@@ -34,10 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
@@ -55,7 +52,6 @@ import com.gw.jpa.Host;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.LoggingRequestInterceptor;
 
 @Controller 
 //@RequestMapping("/Geoweaver/web")

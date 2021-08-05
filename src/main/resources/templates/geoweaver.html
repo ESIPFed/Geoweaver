@@ -347,24 +347,25 @@
 										<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
 											
 										<h3>NoteBook</h3>
-										<p> A process runner is responsible for binding via SSH channels and executing processes
-										on assigned platforms. The execution needs to first transfer the latest code to the remote servers and
-										trigger the code by sending commands. The process monitor can listen to all the events occurred during
-										the execution and report the real-time status. Once the execution is over, the result messages together
-										with the inputs and executed code shall be saved into the database for later inquiry.</p>
+										<p> Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database. </p>
 										
 										
 										<h3>Build In Process</h3>
-										<p> In Built In Process we can create a process with different names. We can choose a process from ShowResultMap and DownloadData. We can the previously creeated built in process and save them and execute.</p>
+										<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
+											These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. 
+											Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. 
+											This section is under intensive development right and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.  
+										</p>
 										
 										<h3>Python</h3>
-										<p>Python has become the dominant language and environment for AI workflows [68]. AI workflows written in Python involve many calls of python libraries and distributed Jupyter Notebooks. </p>
-										<p>Computing with Python can be used as a course book for absolute beginners on Python with guidance and support from a teacher. It is also suitable as a self study book for more advanced students with some programming knowledge and an interest in the mathematical or scientific disciplines. </p>
+										<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. 
+											Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
+										All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
 												
 										<h2>Workflow</h2>
 													
 													
-										<p>An interface should be developed to allow users to compose workflow. A toolbar should be developments in JavaScript frameworks, namely React, Angular, and Vue.js, as well as JavaScript developed to manage the workflows, including searching the existing workflows, running and libraries such as D3.js and CodeMirror, that can aid in building websites to provide a rich user monitoring the workflows, and checking the history of workflow execution. The workflow module experience through fully feature user interfaces. Via the interfaces, people can drag and drop the provides real-time feedbacks of the member process statuses by indicating with different colors or atomic processes and draw lines to connect them into workflows. The created workflows represent the showing progress bars. To make the workflow knowledge sharable, this module should also allow knowledge of large-scale data processing and are stored in the database.</p>
+										<p>The workflow module allows users to compose workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
 
 									</div>
 									
@@ -484,7 +485,7 @@
 					                  </a>
 					                </li> -->
 					
-					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Googel Earth Engine. You can add and manage multiple hosts in one place. ">
+					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. ">
 					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost" onClick="host()"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
 
 					                </li>
