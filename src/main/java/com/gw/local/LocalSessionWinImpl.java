@@ -319,7 +319,8 @@ public class LocalSessionWinImpl implements LocalSession {
 			log.info("Setting the working directory to " + realpath);
 
     		builder.directory(new File(realpath));
-    		
+
+			
     		String pythonfilename = pro.getName();
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
