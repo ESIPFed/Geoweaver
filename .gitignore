@@ -15,3 +15,4 @@
 .project
 .settings
 sync.ffs_db
+.vscode/launch.json
