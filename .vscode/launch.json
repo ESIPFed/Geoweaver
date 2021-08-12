@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch GeoweaverController",
+            "request": "launch",
+            "mainClass": "com.gw.web.GeoweaverController",
+            "projectName": "geoweaver"
+        },
+        {
+            "type": "java",
             "name": "Launch SpatialExtentValidator",
             "request": "launch",
             "mainClass": "com.gw.utils.SpatialExtentValidator",
