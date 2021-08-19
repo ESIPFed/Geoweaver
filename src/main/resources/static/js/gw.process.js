@@ -252,7 +252,7 @@ GW.process = {
 			
 //			var cmid = Math.floor(Math.random() * 100);
 			
-			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
+			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" style="height:200px;" placeholder="Code goes here..."></textarea>');
 			
 			//initiate the code editor
 			
@@ -270,7 +270,9 @@ GW.process = {
 	    		    	
 	    		    	GW.process.update(GW.process.current_pid, cmid);
 	    		    	
-	    		     }
+	    		     },
+
+					 "Ctrl-Space": "autocomplete"
         		}
         		
         	});

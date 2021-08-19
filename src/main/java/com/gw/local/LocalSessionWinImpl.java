@@ -303,7 +303,7 @@ public class LocalSessionWinImpl implements LocalSession {
 		
     	try {
     		
-    		log.info("save to local file: " + python);
+    		// log.info("save to local file: " + python);
 
     		GWProcess pro = pt.getProcessById(processid);
     		
@@ -314,7 +314,6 @@ public class LocalSessionWinImpl implements LocalSession {
 			log.info("Setting the working directory to " + realpath);
 
     		builder.directory(new File(realpath));
-
 			
     		String pythonfilename = pro.getName();
     		
