@@ -124,7 +124,7 @@ GW.workflow = {
 		"	</div>"+
 		"</div>"+
 		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
-		'   <div class="col-md-12" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
+		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
 		"</div>"+
@@ -141,7 +141,7 @@ GW.workflow = {
 		
 	},
 
-	openCity: function(name){
+	openCity: function(evt, name){
 
 		GW.workflow.switchTab(evt.currentTarget, name);
 
