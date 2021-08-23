@@ -117,72 +117,6 @@ public class HistoryTool {
 		
 		historyrepository.save(history);
 		
-//    	try {
-//    		
-//    		log.info("save history status: " + history.getIndicator());
-//    		
-//    		history.setHistory_end_time(bt.getCurrentSQLDate());
-//    		
-//    		String logs = history.getHistory_output();
-//    		
-//    		//the log is more than 65500 characters, write it into a log file
-//    		if(logs.length()>65500) {
-//    			
-//    			String logfile = upload_file_path + "/" + history.getHistory_id() + ".log";
-//    			
-//    			bt.writeString2File(logs, bt.getWebAppRootPath() + logfile);
-//    			
-//    			history.setHistory_output("logfile");
-//    			
-//    		}else {
-//    			
-//    			history.setHistory_output(logs);
-//    			
-//    		}
-//    		
-//    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(history.getHistory_id()).append("'; ");
-//    		
-//    		ResultSet rs = DataBaseOperation.query(sql.toString());
-//    		
-//			if(!rs.next()) {
-//				
-//				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
-//				
-//				sql.append(history.getHistory_id()).append("','");
-//				
-//				sql.append(history.getHistory_process()).append("','");
-//				
-//				sql.append(history.getHistory_begin_time()).append("', ?, ?, '");
-//				
-//				sql.append(history.getHost_id()).append("', '");
-//				
-//				sql.append(history.getIndicator()).append("' )");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {history.getHistory_input(), history.getHistory_output()});
-//				
-//			}else {
-//				
-//				sql = new StringBuffer("update history set end_time = '");
-//				
-//				sql.append(history.getHistory_end_time());
-//				
-//				sql.append("', output = ?, indicator = '").append(history.getIndicator()).append("' where id = '");
-//				
-//				sql.append(history.getHistory_id()).append("';");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {history.getHistory_output()});
-//				
-//			}
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
     	
 	}
 	
@@ -235,67 +169,7 @@ public class HistoryTool {
 		
 		StringBuffer resp = new StringBuffer() ;
 		
-		StringBuffer sql = new StringBuffer("select * from history where process = '").append(workflow_id).append("'  ORDER BY begin_time DESC;");
-		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		try {
-//			
-//			resp.append("[");
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				if(num!=0) {
-//					
-//					resp.append(", ");
-//					
-//				}
-//				
-//				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
-//				
-//				resp.append("\"begin_time\": \"").append(rs.getString("begin_time")).append("\", ");
-//				
-//				resp.append("\"end_time\": \"").append(rs.getString("end_time")).append("\", ");
-//				
-//				resp.append("\"status\": \"").append(pt.escape(rs.getString("indicator"))).append("\", ");
-//				
-//				resp.append("\"output\": \"").append(rs.getString("output")).append("\"}");
-//				
-//				num++;
-//				
-//			}
-//			
-//			resp.append("]");
-//			
-//			if(num==0)
-//				
-//				resp = new StringBuffer();
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-		
-		return resp.toString();
-		
-	}
-	
-	public String process_all_history(String pid) {
-		
-		StringBuffer resp = new StringBuffer();
-		
-		List<History> active_processes = historyrepository.findByProcessId(pid);
-		
-//		StringBuffer sql = new StringBuffer("select * from history where indicator='Running'  ORDER BY begin_time DESC;");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
+		List<History> active_processes = historyrepository.findByProcessId(workflow_id);
 		
 		try {
 			
@@ -339,57 +213,56 @@ public class HistoryTool {
 		
 		return resp.toString();
 		
-//		StringBuffer resp = new StringBuffer() ;
-//		
-//		StringBuffer sql = new StringBuffer("select * from history where process = '").append(pid).append("'  ORDER BY begin_time DESC;");
+	}
+	
+	public String process_all_history(String pid) {
 		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		try {
-//			
-//			resp.append("[");
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				if(num!=0) {
-//					
-//					resp.append(", ");
-//					
-//				}
-//				
-//				resp.append("{ \"id\": \"").append(rs.getString("id")).append("\", ");
-//				
-//				resp.append("\"begin_time\": \"").append(rs.getString("begin_time"));
-//				
-//				resp.append("\", \"end_time\": \"").append(rs.getString("end_time"));
-//				
-//				resp.append("\", \"output\": \"").append(escape(rs.getString("output")));
-//				
-//				resp.append("\", \"status\": \"").append(escape(rs.getString("indicator")));
-//				
-//				resp.append("\", \"host\": \"").append(escape(rs.getString("host")));
-//				
-//				resp.append("\"}");
-//				
-//				num++;
-//				
-//			}
-//			
-//			resp.append("]");
-//			
-//			if(num==0)
-//				
-//				resp = new StringBuffer();
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
+		StringBuffer resp = new StringBuffer();
 		
-//		return resp.toString();
+		List<History> active_processes = historyrepository.findByProcessId(pid);
+		
+		try {
+			
+			resp.append("[");
+			
+			int num = 0;
+			
+			for(;num<active_processes.size();num++) {
+				
+				if(num!=0) {
+					
+					resp.append(", ");
+					
+				}
+				
+				History h = active_processes.get(num);
+				
+				resp.append("{ \"id\": \"").append(h.getHistory_id()).append("\", ");
+				
+				resp.append("\"begin_time\": \"").append(h.getHistory_begin_time());
+				
+				resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
+				
+				resp.append("\", \"output\": \"").append(escape(String.valueOf(h.getHistory_output())));
+				
+				resp.append("\", \"status\": \"").append(escape(String.valueOf(h.getIndicator())));
+				
+				resp.append("\", \"host\": \"").append(escape(String.valueOf(h.getHost_id())));
+				
+				resp.append("\"}");
+				
+			}
+			
+			resp.append("]");
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+		
+		return resp.toString();
+		
 		
 	}
 
@@ -514,17 +387,6 @@ public class HistoryTool {
 			historyrepository.save(h);
 			
 			
-//			StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
-//			
-//			sql.append(new RandomString(12).nextString()).append("','NA','");
-//			
-//			sql.append(bt.getCurrentMySQLDatetime()).append("', '").append(headers.get("referer").get(0)).append("', ?, '");
-//			
-//			sql.append(hostid).append("', '");
-//			
-//			sql.append(ExecutionStatus.DONE).append("' )");
-			
-//			DataBaseOperation.preexecute(sql.toString(), new String[] {jupyterbody});
 			
 		}catch(Exception e) {
 			

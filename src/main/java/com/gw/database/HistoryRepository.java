@@ -45,6 +45,10 @@ public interface HistoryRepository extends CrudRepository<History, String>{
 	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
 			nativeQuery = true)
 	List<History> findByProcessId(String pid);
+
+	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
+			nativeQuery = true)
+	List<History> findByWorkflowId(String wid);
 	
 	
 	@Query(value="select * from history, workflow where workflow.id = history.history_process ORDER BY history_begin_time DESC limit ?1",

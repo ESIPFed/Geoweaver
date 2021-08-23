@@ -59,6 +59,8 @@ GW.workflow = {
 		var workflowid = null;
 		
 		var workflowname = null;
+
+		var info_body = "";
 		
 		jQuery.each(msg, function(i, val) {
 			
@@ -72,16 +74,20 @@ GW.workflow = {
 					if(i=="id"){
 						
 						workflowid = val;
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\">"+val+"</div>";
 						
 					}else if(i=="name"){
 						
 						workflowname = val;
-						
-					}
-					
-					
-					content += "<div class=\"col col-md-3\">"+i+"</div>"+
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
 					"<div class=\"col col-md-7\">"+val+"</div>";
+						
+					}else{
+
+						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
+						"<div class=\"col col-md-7\">"+val+"</div>";
+					}
 					
 			}
 
@@ -104,10 +110,27 @@ GW.workflow = {
 		workflowid+"','workflow')\"></i>"+
 		
 		"</p></div>"+
+
+		// tab panel of workflow
+		"<div class=\"tab\" data-intro=\"this is a tab inside the workflow tab panel\">"+
+		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-code-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-code')\">Info</button>"+
+		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 		
-		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
+		workflowid+"', '" + workflowname+"')\">History</button>"+
+		" </div>"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
+		"	<div class=\"row\">"+
+			info_body+
+		"	</div>"+
+		"</div>"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
+		'   <div class="col-md-12" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
+		"</div>"+
+		//end of tab panel
+		
+		
 		
 		"</div>";
 		
@@ -116,6 +139,32 @@ GW.workflow = {
 //		switchTab(document.getElementById("main-workflow-tab"), "main-workflow-info");
 		GW.general.switchTab("workflow")
 		
+	},
+
+	openCity: function(name){
+
+		GW.workflow.switchTab(evt.currentTarget, name);
+
+	},
+
+	switchTab: function (ele, name){
+	    		
+		console.log("Turn on the tab " + name)
+		  
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent-workflow");
+		for (i = 0; i < tabcontent.length; i++) {
+		  tabcontent[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablinks-workflow");
+		for (i = 0; i < tablinks.length; i++) {
+		  tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		document.getElementById(name).style.display = "block";
+		ele.className += " active";
+
+		// GW.process.refreshCodeEditor();
+		  
 	},
 
 	findCache: function(wid){
@@ -1135,99 +1184,6 @@ GW.workflow = {
 
 			GW.chart.renderWorkflowHistoryChart(msg);
 			
-			
-//			var frame = GW.process.createJSFrameDialog(600, 360, content, "History")
-			
-//			var width = 600; var height = 360;
-//			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'History',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	    
-//	    	});
-//	    	
-//			frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
-//			var content = "<table class=\"table\"> "+
-//			"  <thead> "+
-//			"    <tr> "+
-//			"      <th scope=\"col\">Execution Id</th> "+
-//			"      <th scope=\"col\">Begin Time</th> "+
-//			"      <th scope=\"col\">Status</th> "+
-//			"      <th scope=\"col\">Action</th> "+
-//			"    </tr> "+
-//			"  </thead> "+
-//			"  <tbody> ";
-//
-//			
-//			for(var i=0;i<msg.length;i++){
-//				
-//				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-//				
-//				if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
-//					
-//					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-//					
-//				}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
-//					
-//					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-//					
-//				}
-//				
-//				content += "    <tr> "+
-//					"      <td>"+msg[i].id+"</td> "+
-//					"      <td>"+msg[i].begin_time+"</td> "+
-//					status_col+
-//					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
-//					"    </tr>";
-//				
-//			}
-//			
-//			content += "</tbody>";
-			
-//			BootstrapDialog.show({
-//				
-//				title: "History",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
 			
 		}).fail(function(jxr, status){
 			
