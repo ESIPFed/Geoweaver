@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.gw.database.DataBaseOperation;
 import com.gw.jpa.History;
 import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
@@ -21,7 +20,6 @@ import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
 import  com.gw.server.CommandServlet;
 
 /**

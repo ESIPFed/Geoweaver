@@ -47,6 +47,12 @@ public class GeoweaverWorkflowTask extends Task {
 	
 	@Autowired
 	WorkflowTool wt;
+
+	@Autowired
+	GeoweaverProcessTask process_task;
+
+	@Autowired
+	TaskManager tm;
 	
 	String name;
 	
@@ -151,20 +157,6 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		hist.saveHistory(history);
     	
-//    	StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, end_time, input, output, host) values ('");
-//    	
-//    	sql.append(this.history_id).append("','");
-//    	
-//    	sql.append(this.history_process).append("','");
-//    	
-//    	sql.append(this.history_begin_time).append("','");
-//    	
-//    	sql.append(this.history_end_time).append("',?, ?,'");
-//    	
-//    	sql.append(bt.array2String(hosts, ";")).append("' )");
-//    	
-//    	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
-		
 	}
 	
 	/**
@@ -370,6 +362,8 @@ public class GeoweaverWorkflowTask extends Task {
 				String member_historyid = null;
 				
 				try {
+
+					process_task.initialize(processTypeId, hid, password, token, true, null); //what is token?
 					
 					String resp = pt.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
 					
