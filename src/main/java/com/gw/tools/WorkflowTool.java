@@ -77,76 +77,6 @@ public class WorkflowTool {
         	
         }
 
-//        StringBuffer sql = new StringBuffer("select input, output from history where id = '").append(history_id).append("';");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//	
-//                pids.append("(");
-//
-//                for (String id: rs.getString("output").split(";")) {
-//
-//                    resp.append("\"").append(id).append("\"").append(", ");
-//
-//                }
-//
-//                pids.append(")");
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//        } finally {
-//	
-//            DataBaseOperation.closeConnection();
-//
-//        }
-
-//        sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//
-//                String pid = rs.getString("id");
-//
-//                pt.stop(pid);
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//		} finally {
-//
-//            DataBaseOperation.closeConnection();
-//
-//        }
-
-//        sql = new StringBuffer("update history set end_time = '");
-//
-//        String history_end_time = BaseTool.getCurrentMySQLDatetime();
-//
-//        sql.append(history_end_time);
-//
-//        sql.append("', indicator = 'Stopped' where id = '");
-//
-//        sql.append(history_id).append("';");
-//
-//        DataBaseOperation.execute(sql.toString());
-
         return null;
 	}
 	
@@ -189,46 +119,6 @@ public class WorkflowTool {
 		
 		return json.toString();
 		
-//		StringBuffer json = new StringBuffer("[");
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query("select * from abstract_model where length(identifier) < 30 ; ");
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				if(num!=0) {
-//					
-//					json.append(",");
-//					
-//				}
-//				
-//				json.append("{ \"id\": \"")
-//					.append(rs.getString("identifier"))
-//					.append("\", \"name\": \"")
-//					.append(rs.getString("name"))
-//					.append("\" }");
-//				
-//				num++;
-//				
-//			}
-//			
-//			json.append("]");
-//			
-//		} catch (SQLException e) {
-//
-//			e.printStackTrace();
-//			
-//		}finally {
-//
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-//		
-//		return json.toString();
-		
 	}
 	
 	public Workflow getById(String id) {
@@ -242,40 +132,6 @@ public class WorkflowTool {
 	public String detail(String id) {
 		
 		Workflow wf = workflowrepository.findById(id).get();
-		
-//		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = '").append(id).append("';");
-//		
-//		StringBuffer resp = new StringBuffer();
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-//			
-//			if(rs.next()) {
-//				
-//				resp.append("{ \"name\":\"");
-//				
-//				resp.append(rs.getString("name")).append("\", \"id\": \"");
-//				
-//				resp.append(id).append("\", \"nodes\":");
-//				
-//				resp.append(rs.getString("process_connection")).append(", \"edges\":");
-//				
-//				resp.append(rs.getString("param_connection")).append(" }");
-//				
-//			}
-//			
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//			throw new RuntimeException(e.getLocalizedMessage());
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
 		
 		return toJSON(wf);
 		
