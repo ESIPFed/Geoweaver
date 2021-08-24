@@ -363,18 +363,15 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				try {
 
-					process_task.initialize(processTypeId, hid, password, token, true, null, null, null); //what is token?
+					process_task.initialize(processTypeId, hid, password, token, true, null); //what is token?
 					
-					tm.addANewTask(process_task);
-
-					// String resp = pt.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
+					String resp = pt.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
 					
-					// JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
+					JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
 					
-					// member_historyid = (String)respobj.get("history_id");
-					member_historyid = process_task.getHistory_id();
+					member_historyid = (String)respobj.get("history_id");
 					
-					stat = STATUS.READY;
+					stat = STATUS.DONE;
 					
 				}catch(Exception e) {
 					

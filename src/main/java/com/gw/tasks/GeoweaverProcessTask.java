@@ -47,8 +47,6 @@ public class GeoweaverProcessTask  extends Task {
 	@Autowired
 	HistoryTool hist;
 	
-	String 	   name;
-			
 	String	   pid;
 		   
 	String	   host;
@@ -68,6 +66,12 @@ public class GeoweaverProcessTask  extends Task {
     Date	   history_end_time;
     
     String 	   history_id;
+
+	String     bin;
+
+	String     pyenv;
+
+	String     basedir;
     
     @Value("${geoweaver.upload_file_path}")
     String     upload_file_path;
@@ -82,7 +86,7 @@ public class GeoweaverProcessTask  extends Task {
     	
     }
 	
-	public void initialize(String pid, String host, String pswd, String token, boolean isjoin, String name) {
+	public void initialize(String pid, String host, String pswd, String token, boolean isjoin, String bin, String pyenv, String basedir) {
 		
 		this.pid = pid;
 		
@@ -91,12 +95,16 @@ public class GeoweaverProcessTask  extends Task {
 		this.pswd = pswd;
 		
 		this.token = token;
-
-		this.name = name;
 		
 		this.history_id = new RandomString(11).nextString();
 		
 		this.isjoin = isjoin;
+
+		this.bin = bin;
+
+		this.pyenv = pyenv;
+
+		this.basedir = basedir;
 		
 		Session ws = CommandServlet.findSessionById(token);
 		
@@ -163,65 +171,21 @@ public class GeoweaverProcessTask  extends Task {
 			this.history_begin_time = bt.getCurrentSQLDate();
 			
 			this.history_output = "";
-			
-			String code = pt.getCodeById(pid);
-			
-			this.history_input = code;
-			
-			JSONObject obj = (JSONObject)new JSONParser().parse(code);
-			
-			String operation = (String)obj.get("operation");
-			
-			JSONArray params = (JSONArray)obj.get("params");
-			
-			if(operation.equals("ShowResultMap") || operation.equals("DownloadData") ) {
-				
-				String filepath = (String)((JSONObject)params.get(0)).get("value");
-				
-				logger.debug("get result file path : " + filepath);
-				
-//				String filename = new RandomString(8).nextString();
-				
-				String filename = new File(filepath).getName();
-				
-//				String dest = BaseTool.getGeoweaverRootPath() + SysDir.upload_file_path + "/" + filename;
-				
-				File folder = new File(bt.getFileTransferFolder());
-				
-				if(!folder.exists()) {
-					folder.mkdir();
-				}
-				
-				String fileloc = bt.getFileTransferFolder() + "/" + filename;
-				
-				if(ht.islocal(host)) {
-					
-					ft.download_local(filepath, fileloc);
-					
-				}else {
 
-					ft.scp_download(host, pswd, filepath, fileloc);
-					
-				}
-				
-				
-				logger.debug("result info: " + fileloc);
-				
-				String ret = "{\"builtin\": true, \"history_id\": \"" + this.history_id + 
-						"\", \"operation\":\""+operation+"\", \"filename\": \"" + filename + "\"}";
-				
-				if(monitor!=null) {
-					
-					monitor.getAsyncRemote().sendText(ret);
+			pt.execute(pid, host, pswd, token, isjoin, bin, pyenv, basedir);
+			
+			if(monitor!=null) {
+                
+                monitor.getAsyncRemote().sendText("");
 //					monitor.sendMessage(new TextMessage(ret));
-					
-				}
-				else
-					logger.warn("Monitor websocket session should not be null!");
-				
-				this.history_output = filename;
-				
-			}
+                
+            }
+            else
+                logger.warn("Monitor websocket session should not be null!");
+            
+            
+			
+			
 			
 		}catch(Exception e) {
 			
@@ -278,7 +242,7 @@ public class GeoweaverProcessTask  extends Task {
 	@Override
 	public void responseCallback() {
 
-		logger.debug("Process "+ name +" is finished!");
+		logger.debug("Process "+ this.history_id +" is finished!");
 		
 	}
 
@@ -291,7 +255,8 @@ public class GeoweaverProcessTask  extends Task {
 
 	@Override
 	public String getName() {
-		return name;
+		return this.getName();
 	}
+
 
 }

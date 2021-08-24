@@ -12,6 +12,8 @@ import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.ssh.SSHSession;
+import com.gw.tasks.GeoweaverProcessTask;
+import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
@@ -47,6 +49,12 @@ public class ProcessTool {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	GeoweaverProcessTask process_task;
+
+	@Autowired
+	TaskManager tm;
 	
 	@Value("${geoweaver.workspace}")
 	String workspace;
@@ -766,19 +774,46 @@ public class ProcessTool {
 		return resp;
 		
 	}
-	
+
 	/**
-	 * Execute one process on a host
+	 * Execute the process using workers
+	 * This should be the method called by the controller
 	 * @param id
-	 * process Id
 	 * @param hid
-	 * host Id
 	 * @param pswd
-	 * password
+	 * @param httpsessionid
+	 * @param isjoin
+	 * @param bin
+	 * @param pyenv
+	 * @param basedir
 	 * @return
 	 */
-	public String execute(String id, String hid, String pswd, String token, 
+	public String executeByWorker(String id, String hid, String pswd, String httpsessionid, 
 			boolean isjoin, String bin, String pyenv, String basedir) {
+
+			process_task.initialize(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+			tm.addANewTask(process_task);
+
+			return null;
+	
+	}
+	
+	/**
+	 * Execute the process directly
+	 * This method should be only called by a worker
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param httpsessionid
+	 * @param isjoin
+	 * @param bin
+	 * @param pyenv
+	 * @param basedir
+	 * @return
+	 */
+	public String execute(String id, String hid, String pswd, String httpsessionid, 
+			boolean isjoin, String bin, String pyenv, String basedir) {
+
 		
 		String category = getTypeById(id);
 		
@@ -791,19 +826,19 @@ public class ProcessTool {
 			//localhost
 			if("shell".equals(category)) {
 				
-				resp = lt.executeShell(id, hid, pswd, token, isjoin);
+				resp = lt.executeShell(id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("builtin".equals(category)) {
 				
-				resp = lt.executeBuiltInProcess(id, hid, pswd, token, isjoin);
+				resp = lt.executeBuiltInProcess(id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("jupyter".equals(category)){
 				
-				resp = lt.executeJupyterProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
+				resp = lt.executeJupyterProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else if("python".equals(category)) {
 				
-				resp = lt.executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
+				resp = lt.executePythonProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else{
 				
@@ -818,19 +853,19 @@ public class ProcessTool {
 
 			if("shell".equals(category)) {
 				
-				resp = rt.executeShell(id, hid, pswd, token, isjoin);
+				resp = rt.executeShell(id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("builtin".equals(category)) {
 				
-				resp = rt.executeBuiltInProcess(id, hid, pswd, token, isjoin);
+				resp = rt.executeBuiltInProcess(id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("jupyter".equals(category)){
 				
-				resp = rt.executeJupyterProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
+				resp = rt.executeJupyterProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else if("python".equals(category)) {
 				
-				resp = rt.executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
+				resp = rt.executePythonProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else{
 				

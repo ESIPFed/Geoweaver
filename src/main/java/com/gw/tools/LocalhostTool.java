@@ -41,6 +41,9 @@ public class LocalhostTool {
 	
 	@Autowired
 	HostTool ht;
+
+	@Autowired
+	BuiltinTool bint;
 	
 	@Value("${geoweaver.workspace}")
 	String workspace_folder_path;
@@ -66,6 +69,7 @@ public class LocalhostTool {
 	 * @param hid
 	 * @param pswd
 	 * @param token
+	 * http session id
 	 * @param isjoin
 	 * @return
 	 */
@@ -161,9 +165,8 @@ public class LocalhostTool {
 			
 			//get code of the process
 			
-			String code = pt.getCodeById(id);
 			
-			logger.debug(code);
+			resp = bint.executeCommonTasks(id, hid, pswd, token, null, isjoin);
 			
 			//get host ip, port, user name and password
 			
@@ -182,32 +185,29 @@ public class LocalhostTool {
 			
 			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(id, hid, pswd, token, isjoin, token);
+			// t.initialize(id, hid, pswd, token, isjoin, token);
 			
-			// find active websocket for this builtin process when it is running as a member process in a workflow
-			// If this builtin process is running solo, the TaskSocket will take care of the problem.
+			// // find active websocket for this builtin process when it is running as a member process in a workflow
+			// // If this builtin process is running solo, the TaskSocket will take care of the problem.
 			
-			javax.websocket.Session ws = CommandServlet.findSessionById(token);
+			// javax.websocket.Session ws = CommandServlet.findSessionById(token);
 			
-			if(!bt.isNull(ws)) t.startMonitor(ws);
+			// if(!bt.isNull(ws)) t.startMonitor(ws);
 			
-			if(isjoin) {
+			// if(isjoin) {
 			
-				tm.runDirectly(t);
+			// 	tm.runDirectly(t);
 				
-			}else {
+			// }else {
 			
-				tm.addANewTask(t);
+			// 	tm.addANewTask(t);
 				
-			}
+			// }
+
+			// this.history_input = code;
 			
-			String historyid = t.getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
-					
-					"\", \"token\": \""+token+
-					
-					"\", \"ret\": \"success\"}"; 
+			
 			
 //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
 			

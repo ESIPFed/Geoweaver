@@ -301,7 +301,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String id, String mode, String[] hosts, String[] pswds, String token) {
+	public String execute(String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
 		
 		//use multiple threads to execute the processes
 		
@@ -311,13 +311,17 @@ public class WorkflowTool {
 			
 //			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask("GW-Workflow-Run-" + token);
 			
-			task.initialize(id, mode, hosts, pswds, token);
+			// task.initialize(id, mode, hosts, pswds, token);
 			
-			tm.addANewTask(task);
+			// tm.addANewTask(task);
 
-			resp = "{\"history_id\": \""+task.getHistory_id()+
+			String workflow_history_id = new RandomString(11).nextString();
+
+			
+
+			resp = "{\"history_id\": \""+workflow_history_id+
 					
-					"\", \"token\": \""+token+
+					"\", \"token\": \""+httpsessionid+
 					
 					"\", \"ret\": \"success\"}";
 			
