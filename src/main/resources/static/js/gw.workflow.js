@@ -825,41 +825,43 @@ GW.workflow = {
 
 	getStatusCol: function(single_msg){
 
-		var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-				
-		if(single_msg.end_time!=null && single_msg.end_time != single_msg.begin_time){
-			
-			status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-			
-		}else if(single_msg.end_time == single_msg.begin_time && single_msg.output != null){
-			
-			status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-			
-		}
-
 		// var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-			
-		// if(msg[i].status == "Done"){
+				
+		// if(single_msg.end_time!=null && single_msg.end_time != single_msg.begin_time){
 			
 		// 	status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
 			
-		// }else if(msg[i].status == "Failed"){
+		// }else if(single_msg.end_time == single_msg.begin_time && single_msg.output != null){
 			
 		// 	status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
 			
-		// }else if(msg[i].status == "Running"){
-			
-		// 	status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
-			
-		// }else if(msg[i].status == "Stopped"){
-			
-		// 	status_col = "      <td><span class=\"label label-primary\">Stopped</span></td> ";
-			
-		// }else{
-			
-		// 	status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
-			
 		// }
+
+		var status_col = "      <td id=\"status_"+single_msg.id+"\">";
+			
+		if(single_msg.status == "Done"){
+			
+			status_col += "       <span class=\"label label-success\">Done</span>  ";
+			
+		}else if(single_msg.status == "Failed"){
+			
+			status_col += "       <span class=\"label label-danger\">Failed</span>  ";
+			
+		}else if(single_msg.status == "Running"){
+			
+			status_col += "       <span class=\"label label-warning\">Running</span>  ";
+			
+		}else if(single_msg.status == "Stopped"){
+			
+			status_col += "       <span class=\"label label-default\">Stopped</span>  ";
+			
+		}else{
+			
+			status_col += "       <span class=\"label label-primary\">Unknown</span>  ";
+			
+		}
+
+		status_col += "</td>";
 
 		return status_col;
 
@@ -961,7 +963,7 @@ GW.workflow = {
 			
 			if(msg[i].status == "Running"){
 				
-				content += "		<a href=\"javascript: GW.workflow.stop('"+msg[i].id+"'), 'workflow'\">Stop</a> ";
+				content += "		<a href=\"javascript:void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.workflow.stop('"+msg[i].id+"')\">Stop</a> ";
 			}
 				
 			content += "   </td> </tr>";
@@ -979,6 +981,45 @@ GW.workflow = {
 		
 		return content;
 		
+	},
+
+	stop: function(workflow_history_id){
+
+		console.log("Send stop request to stop the running workflow");
+			
+		$.ajax({
+			
+			url: "stop",
+			
+			method: "POST",
+			
+			data: {type: "workflow", id: workflow_history_id}
+			
+		}).done(function(msg){
+			
+			msg = $.parseJSON(msg);
+			
+			console.log("stopping workflow is called");
+
+			if(msg.ret=="stopped"){
+				
+				$("#stopbtn_" + workflow_history_id).html("<span class=\"text-success\">Stopped</span>");
+				
+				$("#stopbtn_" + workflow_history_id).prop("onclick", null).off("click");
+				
+//					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
+				
+				$("#status_" + workflow_history_id).html("<span class=\"label label-default\">Stopped</span>");
+				
+			}else{
+
+				alert("Fail to stop.");
+
+			}
+			
+		});
+		
+
 	},
 	
 	history: function(wid, name){
@@ -1008,6 +1049,8 @@ GW.workflow = {
 			$("#workflow-history-container").html(content);
 
 			GW.chart.renderWorkflowHistoryChart(msg);
+
+			GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history");
 			
 			
 		}).fail(function(jxr, status){

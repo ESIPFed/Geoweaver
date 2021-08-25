@@ -225,6 +225,17 @@ public class GeoweaverProcessTask  extends Task {
 		monitor = socketsession;
 		
 	}
+
+	/**
+	 * This function is called when the task is not loaded by a worker
+	 */
+	public void endPrematurely(){
+
+		this.curstatus = ExecutionStatus.STOPPED;
+
+		updateEverything();
+
+	}
 	
 	/**
 	 * Stop the monitoring of the task
@@ -370,7 +381,9 @@ public class GeoweaverProcessTask  extends Task {
 				wf.setIndicator(workflow_status);
 
 				hist.saveHistory(wf);
-				if(ExecutionStatus.DONE.equals(workflow_status) || ExecutionStatus.FAILED.equals(workflow_status)){
+				if(ExecutionStatus.DONE.equals(workflow_status) 
+					|| ExecutionStatus.FAILED.equals(workflow_status) 
+					|| ExecutionStatus.STOPPED.equals(workflow_status)){
 					this.workflow_monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
 				}
 				

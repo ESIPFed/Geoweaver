@@ -63,21 +63,33 @@ public class WorkflowTool {
 	 */
 	public String stop(String history_id) {
         
-        Optional<History> whis = historyrepository.findById(history_id);
+        History whis = historyrepository.findById(history_id).get();
         
-        String childprocesses = whis.get().getHistory_output();
+        String childprocesses = whis.getHistory_output();
         
         String[] child_process_ids = childprocesses.split(";");
         
         for(String cid : child_process_ids) {
         	
-        	Optional<History> phis = historyrepository.findById(cid);
+        	History phis = historyrepository.findById(cid).get();
         	
-        	pt.stop(phis.get().getHistory_id());
+        	// pt.stop(phis.getHistory_id());
+
+			tm.stopTask(phis.getHistory_id());
         	
         }
 
-        return null;
+		whis.setIndicator(ExecutionStatus.STOPPED);
+
+		historyrepository.save(whis);
+
+		String resp = "{\"history_id\": \""+history_id+
+//					
+//					"\", \"token\": \""+token+
+//					
+					"\", \"ret\": \"stopped\"}";
+
+        return resp;
 	}
 	
 	public String toJSON(Workflow w) {

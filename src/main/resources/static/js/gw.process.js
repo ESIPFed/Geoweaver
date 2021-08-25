@@ -695,7 +695,7 @@ GW.process = {
 		
 		stop: function(history_id){
 			
-			console.log("Send stop request to stop the running task");
+			console.log("Send stop request to stop the running process");
 			
 			$.ajax({
 				

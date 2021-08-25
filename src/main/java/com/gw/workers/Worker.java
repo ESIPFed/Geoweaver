@@ -39,7 +39,7 @@ public class Worker extends Thread{
 		
 		is_temp = temporary;
 		
-		name = new RandomString(5).nextString();
+		name = "Worker-" + new RandomString(5).nextString();
 		
 	}
 	

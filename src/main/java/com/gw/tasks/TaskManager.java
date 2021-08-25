@@ -276,5 +276,38 @@ public class TaskManager {
 	public void arrive(Task t){
 		notifyWaitinglist();
 	}
+
+	/**
+	 * This method should only be called by WorkflowTool to avoid potential messup in the workflow history table
+	 * @param history_id
+	 */
+    public void stopTask(String history_id) {
+
+		for(Task runningtask: runninglist){
+
+			GeoweaverProcessTask thet = (GeoweaverProcessTask) runningtask;
+
+			if(thet.getHistory_id().equals(history_id)){
+				//to avoid mess of the thread, we currently don't kill the running workers
+				// do nothing
+			}
+
+		}
+
+		for(Task waitingtask: waitinglist){
+
+			GeoweaverProcessTask thet = (GeoweaverProcessTask)waitingtask;
+
+			if(thet.getHistory_id().equals(history_id)){
+
+				thet.endPrematurely();
+
+				waitinglist.remove(thet); //remove from waiting list
+
+			}
+
+		}
+
+    }
 	
 }
