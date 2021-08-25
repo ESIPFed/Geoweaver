@@ -23,7 +23,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.protocol.HTTP;
 import org.glassfish.grizzly.http.HttpHeader;
-import org.hibernate.annotations.common.util.impl.Log_.logger;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,7 +170,20 @@ public class GoogleEarthController {
                 .replace("\"/cloud/projects", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/cloud/projects")
                 .replace("\"/versions/script_manager", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/versions/script_manager")
                 .replace("\"/repo/list?only_default=true", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/repo/list")
-                .replace("\"/docs/get", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/docs/get");
+                .replace("\"/scripts/load", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"scripts/load")
+				.replace("\"/docs/get", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/docs/get")
+
+				// gStatic Domain (www.gstatic.com)
+				.replace("https://www.gstatic.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://www.gstatic.com")
+
+
+				// content-earthengine Domain (https://content-earthengine.googleapis.com)
+				.replace("https://content-earthengine.googleapis.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://content-earthengine.googleapis.com")
+				
+
+				// earthengine.googleapis.com Domain (https://earthengine.googleapis.com)
+				.replace("https://earthengine.googleapis.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://earthengine.googleapis.com");
+
         return resp;
     }
 
@@ -248,6 +260,30 @@ public class GoogleEarthController {
 
 	}
 	
+
+	    /**
+     * Get headers by request
+     * @param request
+     * @return
+     */
+    private HttpHeaders getHeaderByRequest(HttpServletRequest request){
+
+        HttpHeaders header = new HttpHeaders();
+
+        Enumeration<String> hearderNames = request.getHeaderNames();
+
+        while(hearderNames.hasMoreElements())
+        {
+            String headerName = hearderNames.nextElement();
+
+            header.add(headerName, request.getHeader(headerName));
+
+        }
+
+        return header;
+
+    }
+
     
 
     /**
@@ -286,7 +322,7 @@ public class GoogleEarthController {
 
 
 			// newheaders.set("Cookie", "1P_JAR=2021-08-05-12; NID=220=u-LNrAEPFdeVsyrsuNGH0vrMJ3evUk4slFvTlkocypTzT91hRtopv46iZRpMlHcZCQZKYHOvBsE14Zr4MFMvQHOZYTCwM4Di4V75jbOW4wpblD7T2x6foy0mk4iPtZ8N8YAP8yxNdccj1fuHjGZUY7bs14qiDEajPtdNj_5bHYYvKKpUdhOnP-gKN_3ltFNWYM7xiz7syIwSkr9POusMykTmAIHX; ANID=AHWqTUmyDLiPVRBJu2uzjfg53HwdKlMzJyUKA78SFMsPVc5xhGvmznup-DkrB7ly; SID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pM5lbwRABPhYyf97rjEu_PQ.; __Secure-1PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pNoN0Y-J4WbYq4-0NfLkhDw.; __Secure-3PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14p2TsQpztYwrUoyDtmWBOygw.; HSID=AVCbW41BibNQwwfpw; SSID=AeVfYx3QAMXuH7u8m; APISID=kM8fFOubCVp2wktp/A_1AQLK1Lw9OfqLag; SAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-1PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-3PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; SIDCC=AJi4QfFZ52seUH9wZwqciRVHmOF7HTjCIzBINyb9SdHkGMCt2kDzCanVu21iW-1XQAHaJhQg9w; __Secure-3PSIDCC=AJi4QfHU0Uq-zpB51tNkPzL_d0aSIcF9JVt50sc_PFwjpDIQ2iR1PUZXnESASB0VmehJ6VOMhg; SACSID=~AJKiYcH5eS4ox9v2GZNDXKqNpP5N32RNiI6_DozJSJ1cS8-rUcS0QFLh8PJBEwXtyxBl5YVZbtytOL06aKPJ9jL5zSCALiYLqJPr-7Y4Ywg_Q539EBJs9j_kqdlsJi3HLovBkBVLkjz5q0Q1sKGmD7CmRQ98q9owAtfUTWyRB4cGPkIm0gfTOi-hhJQ7JJhyCqtoH-vuCCa8StcS9q7M-CpezzG4qBZwrDfKCibpbVja12q-UwTQs8v-VN4-Gf3U9qVNL4NibaTva0dqwc7J8nVBnS8YTpRmmjM2j96OBQsXbLFMhJm9tG4m8FqtaNoSbwVwclXQh1BB");
-			newheaders.set("Cookie", "ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW; SEARCH_SAMESITE=CgQInZIB; S=billing-ui-v3=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj:billing-ui-v3-efe=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj; _ga=GA1.3.1816945197.1622058868; HSID=AYMx7e7laiBhGMDVE; SSID=Ak-l61fPxGhwTz84Q; APISID=_WKcVAlBAjN9gkZY/AkGgMcGepddzGasJK; SAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2; __Secure-3PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2; OGPC=19025037-1:19022552-1:; SID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1q7mc-TTH9klo_A7BtVU7LA.; __Secure-3PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1r8Hz4RUgKwlDxjnC_iQN0A.; __Secure-1PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1_qZB4LRJn6B4uwAyGd5drQ.; __Secure-1PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2; __Secure-1PSIDCC=AJi4QfHmuLLfZC-IG98BMi1pXYjA4NNFAa7VaRfX4oEHLfU0bqhjWP7Qfr11pS8VJ1I90LSOMHQ; _gid=GA1.3.2141970838.1629377526; 1P_JAR=2021-08-19-13; NID=221=gs77G5RrU9YasubvYfDG192a42VeO4Zm5xchyiPnAzJV2AcT-IqF8zVSQbj2xIbZ4N_E3pTPSEm65wY2z98jFUSSiCQ0ecSjK63ZvyKi1lxrSoDqRhMxX1EIaRC7NLjz646kXQkW_KSvLdf1fjZzHSZ9l0n2tI2nccdE6_RUlpvZLhhlWAHZRpYu6g4Ous1f1x6adKxDnmezKlztDzrR3Qc12dGSHVtLEmPH; SACSID=~AJKiYcE8FZQh7yEzCOKj3rF_RCEWXSU20dlh9H-LrseTx6Xs8h9JJsKdhrDjeJ5Oeejme_jKMOU0QuGpHWBOK3dtX-2idgvkvhwAhC6-lEHpKGVHCMR9kqbeHbjOxIYB929o9hiFruQ8BdHcmrDc5EtsQTDSCRq284njW3oU-eG4SGo8zNB9M3L2OEYMdgcCddiOj9_-CDVZMO9XIvkCl1hek6LihnPqujzID2zzS5wPooF-tHLOHOIwZI93cMLSmrh_S3V9Z4DpZTxaIaq1WOhX6vs-S_3c9C_MlXAvsnVB7ZenrGx_UQYmn8a3gfzIqqRtrLHlBA-cPK73PoaSTS7CnoHycYPnbA; SIDCC=AJi4QfF4UL-1-fjfJV7SweHVGt8vVjjqB1Se_U_C6uSI25LVf655PG5AChAwn9knuR3aeYeCwQ; __Secure-3PSIDCC=AJi4QfFYPuRmkL-0sKDA8NHNhpt5QGqcjsdnX0CWXdkiS7H0sxcxR7JF8VLDEVi98Ocz_D1vIZk");
+			newheaders.set("Cookie", "ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW; SEARCH_SAMESITE=CgQInZIB; S=billing-ui-v3=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj:billing-ui-v3-efe=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj; _ga=GA1.3.1816945197.1622058868; OGPC=19025037-1:19022552-1:; SID=BAhxcMhMTY5ukmmG2Q4eZpPUvKsP0jqebY45oLlZZu2eq0fNHeiA9Kd-zc1khThMNbxykQ.; __Secure-1PSID=BAhxcMhMTY5ukmmG2Q4eZpPUvKsP0jqebY45oLlZZu2eq0fNMHy_yyj1iwgeopoMg3n7wQ.; __Secure-3PSID=BAhxcMhMTY5ukmmG2Q4eZpPUvKsP0jqebY45oLlZZu2eq0fNfWHrMSAs-Q4Tv7io3xzLFA.; HSID=ATp4mlpeSAqGndTSQ; SSID=Ai-_RLuHF6FWslD8Q; APISID=Df6cAaxqzL_yeklr/AxZiqoSJljYcg-4mU; SAPISID=X5tKe1yRqsRazdO6/ApAIZPjpE6-5McNoC; __Secure-1PAPISID=X5tKe1yRqsRazdO6/ApAIZPjpE6-5McNoC; __Secure-3PAPISID=X5tKe1yRqsRazdO6/ApAIZPjpE6-5McNoC; NID=222=bMo2z4XrLJy6z_kiu7Qzrhem3yC-qrxz24EekZp1VX7kbmz69B8X87jWmlWhpb2skCSmAMctCjA04YSlQTh7RmtRD2CkoVfVNl-LUE4ZKcJu9FlNy8CA17UFUDJUB6f_m_oa1LX47vdOFWDaehjo4J15Ah4OV6uBCkaRa7rdN3k; SIDCC=AJi4QfGzNo1Ch35NFNsHij6ipe_L_Bowc5nlaEWGC-oCAxbUGD9bBT0BJusmly4NWhPkqt4k; __Secure-3PSIDCC=AJi4QfGrfKhfNqumCDEzlprJ7gp-w71gxEvp4nKNi3NyESy5sEMArmVQGJ0FDOW8gKED5ZIMTw; SACSID=~AJKiYcENlRPRjEBygSuN779QnZACPugor4s0CyENqIZoDpqTGxCUgGZqXtYI-IbNHjlH1rHUBZv1XMgQRaHGGRUjVHmO0ewW-j1LjNZkiIEOYHgpXUZEYkKTP1sUqkYPBtmY0u96DGbouzqca40bUvoiJ7JTruEoSXUAddMFa1QkAgzpyX5OWGD4rHT93d6b7Um-9gn322cxI_Zyrcmup8eWraJHER2WI9Cm1TaIBWgxKIb4apWYYJzd9fCAy0CJKI150tXITa-fxBvsdlvGnL2ydKo41hQ65Q3vr7XefPBF5UH5gc9wLp64tt-OYnFT4ZCGVFDQR8inuWhaK3iAldseX9sL1xP22g");
 			// newheaders.set("Cookie", oldheaders.get("Set-Cookie").tostring());
 			// 1P_JAR=2021-08-12-01; NID=221=gs77G5RrU9YasubvYfDG192a42VeO4Zm5xchyiPnAzJV2AcT-IqF8zVSQbj2xIbZ4N_E3pTPSEm65wY2z98jFUSSiCQ0ecSjK63ZvyKi1lxrSoDqRhMxX1EIaRC7NLjz646kXQkW_KSvLdf1fjZzHSZ9l0n2tI2nccdE6_RUlpvZLhhlWAHZRpYu6g4Ous1f1x6adKxDnmezKlztDzrR3Qc12dGSHVtLEmPH; ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW; SID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1q7mc-TTH9klo_A7BtVU7LA.; __Secure-1PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1_qZB4LRJn6B4uwAyGd5drQ.; __Secure-3PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1r8Hz4RUgKwlDxjnC_iQN0A.; HSID=AYMx7e7laiBhGMDVE; SSID=Ak-l61fPxGhwTz84Q; APISID=
 			// newheaders.set("Upgrade-Insecure-Requests", "1");
@@ -501,7 +537,15 @@ public class GoogleEarthController {
 
 			HttpEntity newentity = new HttpEntity(reqentity.getBody(), newheaders);
 			
-			String targeturl = getRealTargetURL(newheaders.get("target_url").get(0)); //using referer as the target url is not right
+			String targeturl = "";
+			if (bt.isNull(request.getParameter("gee_proxy_url"))) {
+				targeturl = getRealTargetURL(newheaders.get("target_url").get(0)); //using referer as the target url is not right
+			
+			} else {
+
+				targeturl = request.getParameter("gee_proxy_url");
+			}
+
 			logger.debug("[Target URL GoogleEarth]: "+targeturl);
 			// logger.info("New target url: " + targeturl);
 			
@@ -592,7 +636,8 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
     // logger.info(reqentity.toString());
     // logger.info(method.toString());
     // logger.info(request.toString());
-    // logger.info(hostid.toString());
+	// logger.info(hostid.toString());
+
     ResponseEntity resp = processGET(reqentity, method, request, hostid);
 	logger.debug("response status code: " + resp.getStatusCode());
 
@@ -618,6 +663,18 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
     return resp;
     
 }
+
+    @RequestMapping(value="/GoogleEarth-proxy/{hostid}/preferences/set", 
+    method = RequestMethod.POST,
+    consumes = MediaType.ALL_VALUE,
+    produces = MediaType.ALL_VALUE)
+    public ResponseEntity proxypost_415( @PathVariable("hostid") String hostid, HttpMethod method, HttpServletRequest request) throws URISyntaxException
+    {
+     ResponseEntity resp = processPost_415(method, request, hostid);
+
+     return resp;
+
+    }
 
 	@RequestMapping(value="/GoogleEarth-proxy/{hostid}/**", 
 	method = RequestMethod.POST,
@@ -725,6 +782,53 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
 	}
 
 
+	private ResponseEntity processPost_415(HttpMethod method, HttpServletRequest request, String hostid) throws URISyntaxException
+    {
+        
+//      return processUtil(reqentity, method, request, hostid);
+        
+        ResponseEntity resp = null;
+        
+        try {
+            
+            logger.debug("==============");
+            
+            logger.debug("Request URI: " + request.getRequestURI());
+            
+            HttpHeaders newheaders = getHeaders(this.getHeaderByRequest(request), method, request, hostid);
+            
+            HttpEntity newentity = new HttpEntity(bt.getBody(request), newheaders);
+
+            String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
+            
+            ResponseEntity<String> responseEntity = restTemplate.exchange(target_url, method, newentity, String.class);
+
+            String newbody = addURLProxy(responseEntity.getBody(), hostid);
+
+            HttpHeaders newrespheaders = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+
+            resp = new ResponseEntity(
+                    newbody, 
+                    newrespheaders, 
+                    responseEntity.getStatusCode());
+            
+        }catch (HttpStatusCodeException ex) {
+            
+            String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
+            
+            resp = errorControl(newbody, hostid);
+            
+        }catch(Exception e) {
+            
+            e.printStackTrace();
+            
+            resp = errorControl(e.getLocalizedMessage(), hostid);
+            
+        }
+        
+        return resp;
+        
+    }
 
 
 
