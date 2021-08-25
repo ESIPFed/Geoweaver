@@ -7,31 +7,27 @@ import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.jpa.History;
+import com.gw.jpa.Workflow;
+import com.gw.server.WorkflowServlet;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.ProcessTool;
+import com.gw.tools.WorkflowTool;
+import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
+import com.gw.utils.RandomString;
+import com.gw.utils.STATUS;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-
-import com.gw.database.DataBaseOperation;
-import com.gw.ssh.SSHSession;
-import com.gw.ssh.SSHSessionImpl;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
-import com.gw.tools.ProcessTool;
-import com.gw.jpa.History;
-import com.gw.jpa.Workflow;
-import com.gw.server.WorkflowServlet;
-import com.gw.tools.WorkflowTool;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
-import com.gw.web.GeoweaverController;
 
 @Service
+@Scope("prototype")
 public class GeoweaverWorkflowTask extends Task {
 	
 	Logger log = Logger.getLogger(this.getClass());
@@ -47,9 +43,6 @@ public class GeoweaverWorkflowTask extends Task {
 	
 	@Autowired
 	WorkflowTool wt;
-
-	@Autowired
-	GeoweaverProcessTask process_task;
 
 	@Autowired
 	TaskManager tm;
@@ -98,15 +91,13 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		this.name = name;
 		
-		this.history_id = new RandomString(11).nextString();
-		
 	}
 	
 	public String getHistory_id() {
 		return history_id;
 	}
 	
-
+	
 
 	@Override
 	public void initialize() {
@@ -114,8 +105,10 @@ public class GeoweaverWorkflowTask extends Task {
 //		notifyObservers(this);
 	}
 	
-	public void initialize(String wid, String mode, String[] hosts, String[] pswds, String token) {
+	public void initialize(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
 		
+		this.history_id = history_id;
+
 		this.wid = wid;
 		
 		this.mode = mode;
@@ -128,8 +121,6 @@ public class GeoweaverWorkflowTask extends Task {
 		
 		this.name = "GW-Workflow-Run-" + token;
 		
-		this.history_id = new RandomString(11).nextString();
-
 		this.startMonitor(token);
 		
 	}
@@ -173,6 +164,39 @@ public class GeoweaverWorkflowTask extends Task {
 		
 	}
 	
+	public void sendSingleTaskStatus(JSONObject node, STATUS flag) {
+		
+		try {
+			
+			if(monitor!=null) {
+				
+				String id = (String)node.get("id");
+
+				String history_id = (String)node.get("history_id");
+				
+				JSONObject obj = new JSONObject();
+
+				obj.put("message", "workflow member process update");
+				
+				obj.put("id", id);
+
+				obj.put("history_id", history_id);
+				
+				obj.put("status", flag.toString());
+				
+//				monitor.sendMessage(new TextMessage(array.toJSONString()));
+				monitor.getBasicRemote().sendText(obj.toJSONString());
+				
+			}
+			
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			
+		}
+		
+	}
+
 	/**
 	 * Send status message back to websocket end
 	 * @param nodes
@@ -189,10 +213,14 @@ public class GeoweaverWorkflowTask extends Task {
 				for(int i=0;i<nodes.size();i++) {
 					
 					String id = (String)((JSONObject)nodes.get(i)).get("id");
+
+					String history_id = (String)((JSONObject)nodes.get(i)).get("history_id");
 					
 					JSONObject obj = new JSONObject();
 					
 					obj.put("id", id);
+
+					obj.put("history_id", history_id);
 					
 					obj.put("status", flags[i].toString());
 					
@@ -240,8 +268,6 @@ public class GeoweaverWorkflowTask extends Task {
 	public void execute() {
 		// TODO Auto-generated method stub
 		
-//		hid = new RandomString(15).nextString();
-		
 		log.debug(" + + + start Geoweaver workflow " + wid );
 		
 		try {
@@ -278,16 +304,27 @@ public class GeoweaverWorkflowTask extends Task {
 				flags [i] = STATUS.READY;
 				
 			}
+
+			for(int i=0;i<nodes.size();i++){
+
+				((JSONObject)nodes.get(i)).put("history_id", new RandomString(11).nextString()); //generate history id before call the execution function
+			}
 			
+			// all the ids in this map is history id
 			Map<String, List> node2condition = wt.getNodeConditionMap(nodes, edges);
 			
-			while(executed_process < (nodes.size())) {
+			// while(executed_process < (nodes.size())) {
+			for(int i=0;i< nodes.size();i++){
 				
 				//find next process to execute - the id has two parts: process type id - process object id
 				
-				String[] idnum = wt.findNextProcess(node2condition, flags, nodes);
+				// String[] idnum = wt.findNextProcess(node2condition, flags, nodes);
 				
-				String nextid = idnum[0];
+				// String nextid = idnum[0];
+
+				String nextid = (String)((JSONObject)nodes.get(i)).get("id");
+
+				String nexthistoryid = (String)((JSONObject)nodes.get(i)).get("history_id");
 				
 				log.debug("this round is : " + nextid);
 				
@@ -299,7 +336,7 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				String processTypeId = nextid.split("-")[0];
 				
-				int num = Integer.parseInt(idnum[1]);
+				int num = i;
 				
 				String hid = mode.equals("one")?hosts[0]:hosts[num];
 				
@@ -311,68 +348,24 @@ public class GeoweaverWorkflowTask extends Task {
 				//edges
 //				[{"source":{"title":"sleep5s","id":"ac4724-jL0Ep","x":342.67081451416016,"y":268.8715720176697},"target":{"title":"testbash","id":"199vsg-Xr6FZ","x":465.2892303466797,"y":41.6651611328125}},{"source":{"title":"testbash","id":"199vsg-oAq2d","x":-7.481706619262695,"y":180.70700073242188},"target":{"title":"sleep5s","id":"ac4724-jL0Ep","x":342.67081451416016,"y":268.8715720176697}}]
 				
-				//get code of the process
-				
-//				String code = ProcessTool.getCodeById(processTypeId);
-//				
-//				log.info("Ready to run process : " + processTypeId);
-//				
-//				log.info(code);
-//				
-//				//establish SSH session and generate a token for it
-//				
-//				if(token == null) {
-//					
-//					token = new RandomString(12).nextString();
-//					
-//				}
-//				
-//				//If the mode is one, reuse the same SSHSession object for all processes. 
-//				//If the mode is different, create new SSHSession object for each process
-//				//see if SSHJ allows this operation
-//				
-//				String historyid = null;
-//				
-//				try {
-//					
-//					SSHSession session = new SSHSessionImpl();
-//					
-//					//get host ip, port, user name and password
-//					
-////					String[] hostdetails = HostTool.getHostDetailsById(hid);
-////					
-////					session.login(hostdetails[1], hostdetails[2], hostdetails[3], password, token, false);
-//					
-//					session.login(hid, password, token, false);
-//					
-//					GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
-//					
-//					session.runBash(code, nextid, true);  //every task only has no more than one active SSH session at a time
-//					
-//					historyid = session.getHistory_id();
-//					
-//					stat = STATUS.DONE;
-//					
-//				}catch(Exception e) {
-//					
-//					stat = STATUS.FAILED;
-//					
-//				}
-				
-				String member_historyid = null;
-				
 				try {
 
-					process_task.initialize(processTypeId, hid, password, token, true, null, null, null); //what is token?
+					GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
+
+					new_task.initialize(nexthistoryid, processTypeId, hid, password, token, true, null, null, null); //what is token?
+
+					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
+
+					log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
 					
-					tm.addANewTask(process_task);
+					tm.addANewTask(new_task);
 
 					// String resp = pt.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
 					
 					// JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
 					
 					// member_historyid = (String)respobj.get("history_id");
-					member_historyid = process_task.getHistory_id();
+					
 					
 					stat = STATUS.READY;
 					
@@ -385,7 +378,7 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				this.history_input += nextid + ";";
 				
-				this.history_output += member_historyid + ";";
+				this.history_output += nexthistoryid + ";";
 				
 //				pid2hid.put(nextid, historyid); //save the mapping between process id and history id
 				
@@ -407,9 +400,9 @@ public class GeoweaverWorkflowTask extends Task {
 			
 		} finally {
 			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close ssh output transferring websocket at the end
+			// GeoweaverController.sessionManager.closeWebSocketByToken(token); //close ssh output transferring websocket at the end
 			
-			stopMonitor(); //shut down workflow status monitor websocket
+			// stopMonitor(); //shut down workflow status monitor websocket
 			
 		}
 

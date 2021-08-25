@@ -9,20 +9,19 @@ import java.io.OutputStream;
 
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.gw.jpa.ExecutionStatus;
-import com.gw.jpa.History;
 import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
+import  com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
-import  com.gw.server.CommandServlet;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -152,13 +151,13 @@ public class LocalSessionWinImpl implements LocalSession {
 	 * @param isjoin
 	 * @param token
 	 */
-	public void initHistory(String script, String processid, boolean isjoin, String token) {
+	public void initHistory(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 		this.token = token;
 		
 		this.isTerminal = isjoin;
 		
-		history = history_tool.initProcessHistory(processid, script);
+		history = history_tool.initProcessHistory(history_id, processid, script);
 		
 	}
 	
@@ -178,9 +177,9 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 	
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
 		
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
     	
     	try {
     		
@@ -238,10 +237,10 @@ public class LocalSessionWinImpl implements LocalSession {
 	
 
 	@Override
-	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir,
+	public void runJupyter(String history_id, String script, String processid, boolean isjoin, String bin, String env, String basedir,
 			String token) {
 
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
 		
     	try {
     		
@@ -296,10 +295,10 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, 
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, 
 			String pyenv, String basedir, String token) {
 		
-		this.initHistory(python, processid, isjoin, token);
+		this.initHistory(history_id, python, processid, isjoin, token);
 		
     	try {
     		
@@ -359,7 +358,7 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		
 		throw new RuntimeException("Not Supported Yet");
 		

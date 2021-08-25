@@ -29,7 +29,7 @@ public class BuiltinTool {
 
     Logger logger = Logger.getLogger(this.getClass());
 
-    public String executeCommonTasks(String pid, String host, String pswd, String httpsessionid, String history_id, boolean isjoin){
+    public String executeCommonTasks(String history_id, String pid, String host, String pswd, String httpsessionid, boolean isjoin){
 
         String resp = null;
 
@@ -48,8 +48,6 @@ public class BuiltinTool {
                 String filepath = (String)((JSONObject)params.get(0)).get("value");
                 
                 logger.debug("get result file path : " + filepath);
-                
-    //				String filename = new RandomString(8).nextString();
                 
                 String filename = new File(filepath).getName();
                 

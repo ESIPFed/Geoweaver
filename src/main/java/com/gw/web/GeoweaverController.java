@@ -34,7 +34,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -849,7 +848,9 @@ public class GeoweaverController {
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 			
-			resp = pt.execute(pid, hid, password, session.getId(), false, bin, pyenv, basedir);
+			String history_id = new RandomString(12).nextString();
+
+			resp = pt.execute(history_id, pid, hid, password, session.getId(), false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			

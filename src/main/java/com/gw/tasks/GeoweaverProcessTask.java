@@ -1,26 +1,25 @@
 package com.gw.tasks;
 
-import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.gw.jpa.History;
+import  com.gw.server.CommandServlet;
 import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
-import  com.gw.server.CommandServlet;
+import com.gw.utils.STATUS;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -30,6 +29,7 @@ import  com.gw.server.CommandServlet;
  *
  */
 @Service
+@Scope("prototype")
 public class GeoweaverProcessTask  extends Task {
 	
 	@Autowired
@@ -46,8 +46,13 @@ public class GeoweaverProcessTask  extends Task {
 	
 	@Autowired
 	HistoryTool hist;
+
+	@Autowired
+	TaskManager tm;
 	
 	String	   pid;
+
+	String     workflow_pid;
 		   
 	String	   host;
 		   
@@ -72,6 +77,16 @@ public class GeoweaverProcessTask  extends Task {
 	String     pyenv;
 
 	String     basedir;
+
+	STATUS     curstatus;
+
+	// A list of history id
+	// only run this process when all the listed history_id is finished or failed
+	List       precondition_processes; //only for workflow's member process
+
+	boolean    isReady;
+
+	String     workflow_history_id;
     
     @Value("${geoweaver.upload_file_path}")
     String     upload_file_path;
@@ -85,10 +100,62 @@ public class GeoweaverProcessTask  extends Task {
     	//for spring
     	
     }
+
+	public String getWorkflowHistoryId(){
+
+		return this.workflow_history_id;
+	}
+
+	public void setWorkflowHistoryId(String workflow_history_id){
+
+		this.workflow_history_id = workflow_history_id;
+
+	}
+
+	public void setIsReady(boolean isReady){
+
+		this.isReady = isReady;
+
+	}
+
+	public boolean getIsReady(){
+
+		return this.isReady;
+	}
+
+	public List getPreconditionProcesses(){
+
+		return this.precondition_processes;
+
+	}
+
+	public void setPreconditionProcesses(List precondition_processes){
+
+		this.precondition_processes = precondition_processes;
+	}
+
+	/**
+	 * This is a temporary solution, history id should be one of the initialized parameter
+	 */
+	public void setHistoryID(String newid){
+
+		this.history_id = newid;
+
+	}
 	
-	public void initialize(String pid, String host, String pswd, String token, boolean isjoin, String bin, String pyenv, String basedir) {
+	public void initialize(String history_id, String pid, String host, String pswd, String token, boolean isjoin, String bin, String pyenv, String basedir) {
 		
-		this.pid = pid;
+		if(pid.contains("-")){
+			
+			this.workflow_pid = pid;
+
+			this.pid = this.workflow_pid.split("-")[0];
+
+		}else{
+
+			this.pid = pid;
+		}
+
 		
 		this.host = host;
 		
@@ -96,7 +163,7 @@ public class GeoweaverProcessTask  extends Task {
 		
 		this.token = token;
 		
-		this.history_id = new RandomString(11).nextString();
+		this.history_id = history_id;
 		
 		this.isjoin = isjoin;
 
@@ -112,7 +179,8 @@ public class GeoweaverProcessTask  extends Task {
 
 		if(!bt.isNull(ws)) this.startMonitor(ws);
 		
-		
+		this.curstatus = STATUS.READY;
+
 	}
 	
 	public String getHistory_id() {
@@ -172,7 +240,11 @@ public class GeoweaverProcessTask  extends Task {
 			
 			this.history_output = "";
 
-			pt.execute(pid, host, pswd, token, isjoin, bin, pyenv, basedir);
+			
+
+			pt.execute(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
+
+			this.curstatus = STATUS.DONE;
 			
 			if(monitor!=null) {
                 
@@ -186,12 +258,14 @@ public class GeoweaverProcessTask  extends Task {
             
 			
 			
-			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
+
+			this.curstatus = STATUS.FAILED;
 			
 			this.history_output = e.getLocalizedMessage();
+
 			
 		}finally {
 			
@@ -199,8 +273,7 @@ public class GeoweaverProcessTask  extends Task {
 			
 		}
 		
-		saveHistory();
-		
+			
 	}
 	
 	public void saveHistory() {
@@ -215,9 +288,9 @@ public class GeoweaverProcessTask  extends Task {
 		
 		history.setHistory_process(this.pid);
 		
-		history.setHistory_input(this.history_input);
+		if(!bt.isNull(this.history_input)) history.setHistory_input(this.history_input);
 		
-		history.setHistory_output(this.history_output);
+		if(!bt.isNull(this.history_output)) history.setHistory_output(this.history_output);
 		
 		history.setHost_id(this.host);
 		
@@ -243,6 +316,14 @@ public class GeoweaverProcessTask  extends Task {
 	public void responseCallback() {
 
 		logger.debug("Process "+ this.history_id +" is finished!");
+
+		saveHistory();
+
+		tm.done(this);
+
+		//notify the task list observer
+		// setChanged();
+		// notifyObservers(this);
 		
 	}
 
@@ -250,12 +331,20 @@ public class GeoweaverProcessTask  extends Task {
 	public void failureCallback(Exception e) {
 		
 		logger.error("Process execution is failed " + e.getLocalizedMessage());
+
+		saveHistory();
+
+		tm.done(this);
+		//notify the task list observer
+		// setChanged();
+		// notifyObservers(this);
+		
 		
 	}
 
 	@Override
 	public String getName() {
-		return this.getName();
+		return "New-Process-Task-" + this.pid + "-" + this.history_id;
 	}
 
 

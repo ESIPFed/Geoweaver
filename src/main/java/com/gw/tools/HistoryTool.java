@@ -71,11 +71,11 @@ public class HistoryTool {
 	 * @param script
 	 * @return
 	 */
-	public History initProcessHistory(String processid, String script) {
+	public History initProcessHistory(String history_id, String processid, String script) {
 		
 		History history = new History();
 		
-		history.setHistory_id(new RandomString(12).nextString());
+		history.setHistory_id(history_id);
 		
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		

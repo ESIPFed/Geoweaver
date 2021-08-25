@@ -811,7 +811,7 @@ public class ProcessTool {
 	 * @param basedir
 	 * @return
 	 */
-	public String execute(String id, String hid, String pswd, String httpsessionid, 
+	public String execute(String history_id, String id, String hid, String pswd, String httpsessionid, 
 			boolean isjoin, String bin, String pyenv, String basedir) {
 
 		
@@ -826,19 +826,19 @@ public class ProcessTool {
 			//localhost
 			if("shell".equals(category)) {
 				
-				resp = lt.executeShell(id, hid, pswd, httpsessionid, isjoin);
+				resp = lt.executeShell(history_id, id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("builtin".equals(category)) {
 				
-				resp = lt.executeBuiltInProcess(id, hid, pswd, httpsessionid, isjoin);
+				resp = lt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("jupyter".equals(category)){
 				
-				resp = lt.executeJupyterProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+				resp = lt.executeJupyterProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else if("python".equals(category)) {
 				
-				resp = lt.executePythonProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+				resp = lt.executePythonProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else{
 				
@@ -853,19 +853,19 @@ public class ProcessTool {
 
 			if("shell".equals(category)) {
 				
-				resp = rt.executeShell(id, hid, pswd, httpsessionid, isjoin);
+				resp = rt.executeShell(history_id, id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("builtin".equals(category)) {
 				
-				resp = rt.executeBuiltInProcess(id, hid, pswd, httpsessionid, isjoin);
+				resp = rt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
 				
 			}else if("jupyter".equals(category)){
 				
-				resp = rt.executeJupyterProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+				resp = rt.executeJupyterProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else if("python".equals(category)) {
 				
-				resp = rt.executePythonProcess(id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+				resp = rt.executePythonProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
 				
 			}else{
 				

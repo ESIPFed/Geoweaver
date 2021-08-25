@@ -4,22 +4,21 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.GWProcess;
 import com.gw.local.LocalSession;
 import com.gw.local.LocalSessionNixImpl;
 import com.gw.local.LocalSessionWinImpl;
-import  com.gw.server.CommandServlet;
 import com.gw.tasks.GeoweaverProcessTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.OSValidator;
 import com.gw.web.GeoweaverController;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -73,7 +72,7 @@ public class LocalhostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeShell(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeShell(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
@@ -93,7 +92,7 @@ public class LocalhostTool {
 			
 			LocalSession session = getLocalSession();
 			
-			session.runBash(code, id, isjoin, token); 
+			session.runBash(history_id, code, id, isjoin, token); 
 			
 			String historyid = session.getHistory().getHistory_id();
 			
@@ -157,7 +156,7 @@ public class LocalhostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeBuiltInProcess(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
@@ -166,7 +165,7 @@ public class LocalhostTool {
 			//get code of the process
 			
 			
-			resp = bint.executeCommonTasks(id, hid, pswd, token, null, isjoin);
+			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 			
 			//get host ip, port, user name and password
 			
@@ -241,7 +240,7 @@ public class LocalhostTool {
 	 * @param basedir
 	 * @return
 	 */
-	public String executeJupyterProcess(String id, String hid, 
+	public String executeJupyterProcess(String history_id, String id, String hid, 
 			String pswd, String token, boolean isjoin,
 			String bin, String pyenv, String basedir) {
 
@@ -261,7 +260,7 @@ public class LocalhostTool {
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
-			session.runJupyter(process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
+			session.runJupyter(history_id, process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
 			
 			String historyid = session.getHistory().getHistory_id();
 			
@@ -306,7 +305,7 @@ public class LocalhostTool {
 	 * @param basedir
 	 * @return
 	 */
-	public String executePythonProcess(String id, String hid, String pswd, 
+	public String executePythonProcess(String history_id, String id, String hid, String pswd, 
 			String token, boolean isjoin, String bin, String pyenv, String basedir) {
 
 		String resp = null;
@@ -324,7 +323,7 @@ public class LocalhostTool {
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
-			session.runPython(code, id, isjoin, bin, pyenv, basedir, token); 
+			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			String historyid = session.getHistory().getHistory_id();
 			
@@ -335,8 +334,8 @@ public class LocalhostTool {
 					"\", \"ret\": \"success\"}";
 			
 			//save environment
-			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
+				ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			

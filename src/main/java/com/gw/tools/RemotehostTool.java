@@ -72,7 +72,7 @@ public class RemotehostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeShell(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeShell(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
@@ -100,7 +100,7 @@ public class RemotehostTool {
 			
 			session.login(hid, pswd, token, false);
 			
-			session.runBash(code, id, isjoin, token); 
+			session.runBash(history_id, code, id, isjoin, token); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -142,7 +142,7 @@ public class RemotehostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeJupyterProcess(String id, String hid, String pswd, String token, 
+	public String executeJupyterProcess(String history_id, String id, String hid, String pswd, String token, 
 			boolean isjoin, String bin, String pyenv, String basedir) {
 		
 		String resp = null;
@@ -173,7 +173,7 @@ public class RemotehostTool {
 			
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
-			session.runJupyter(code, id, isjoin, bin, pyenv, basedir, token); 
+			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			String historyid = session.getHistory_id();
 			
@@ -212,7 +212,7 @@ public class RemotehostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeBuiltInProcess(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
@@ -363,7 +363,7 @@ public class RemotehostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executePythonProcess(String id, String hid, String pswd, 
+	public String executePythonProcess(String history_id, String id, String hid, String pswd, 
 			String token, boolean isjoin, String bin, String pyenv, String basedir) {
 
 		String resp = null;
@@ -407,7 +407,7 @@ public class RemotehostTool {
 			
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
-			session.runPython(code, id, isjoin, bin, pyenv, basedir, token); 
+			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			String historyid = session.getHistory_id();
 			

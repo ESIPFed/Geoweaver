@@ -29,6 +29,12 @@ import java.io.OutputStream;
 import java.security.PublicKey;
 import java.text.Normalizer;
 
+import com.gw.jpa.History;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
+import com.gw.tools.ProcessTool;
+import com.gw.utils.BaseTool;
+
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +43,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import com.gw.jpa.History;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
-import com.gw.tools.ProcessTool;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
@@ -124,7 +124,8 @@ public class SSHSessionImpl implements SSHSession {
     
     public SSHSessionImpl() {
     	
-    	this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
+        // this id should be passed into this class in the initilizer
+    	// this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
     	
     }
     
@@ -138,10 +139,6 @@ public class SSHSessionImpl implements SSHSession {
 
 	public String getHistory_id() {
 		return history.getHistory_id();
-	}
-
-	public void setHistory_id(String history_id) {
-		history.setHistory_id(history_id);
 	}
 	
     public SSHClient getSsh() {
@@ -379,10 +376,8 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
 		history.setHistory_begin_time(bt.getCurrentSQLDate());
@@ -495,10 +490,8 @@ public class SSHSessionImpl implements SSHSession {
 	}
     
     @Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
+	public void runJupyter(String history_id, String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
 		history.setHistory_begin_time(bt.getCurrentSQLDate());
@@ -611,10 +604,8 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
     	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
 		history.setHistory_begin_time(bt.getCurrentSQLDate());
@@ -708,7 +699,7 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		// TODO Auto-generated method stub
 		
 		

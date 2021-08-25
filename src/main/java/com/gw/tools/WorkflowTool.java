@@ -136,6 +136,27 @@ public class WorkflowTool {
 		return toJSON(wf);
 		
 	}
+
+	public JSONObject getNodeByID(JSONArray nodes, String id){
+
+		JSONObject theobj = null;
+
+		for(int i=0;i<nodes.size();i++){
+
+			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			if(current_id.equals(id)){
+
+				theobj = (JSONObject)nodes.get(i);
+				break;
+
+			}
+
+		}
+
+		return theobj;
+
+	}
 	
 	public Map<String, List> getNodeConditionMap(JSONArray nodes, JSONArray edges) throws ParseException{
 		
@@ -146,6 +167,8 @@ public class WorkflowTool {
 		for(int i=0;i<nodes.size();i++) {
 			
 			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			String current_history_id = (String)((JSONObject)nodes.get(i)).get("history_id");
 			
 			List preids = new ArrayList();
 			
@@ -158,21 +181,25 @@ public class WorkflowTool {
 				String targetid = (String)((JSONObject)eobj.get("target")).get("id");
 				
 				if(current_id.equals(targetid)) {
+
+					preids.add(getNodeByID(nodes, sourceid).get("history_id"));
 					
-					preids.add(sourceid);
+					// preids.add(sourceid);
 					
 				}
 				
 				
 			}
 
-			node2condition.put(current_id, preids);
+			node2condition.put(current_history_id, preids);
 			
 		}
 		
 		return node2condition;
 		
 	}
+
+	
 	
 	/**
 	 * Find a process whose status is not executed, while all of its condition nodes are satisfied. 
@@ -315,11 +342,11 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			String workflow_history_id = new RandomString(11).nextString();
+			task.initialize(wid, mode, hosts, pswds, httpsessionid);
 
-			
+			task.execute();
 
-			resp = "{\"history_id\": \""+workflow_history_id+
+			resp = "{\"history_id\": \""+task.getHistory_id()+
 					
 					"\", \"token\": \""+httpsessionid+
 					
