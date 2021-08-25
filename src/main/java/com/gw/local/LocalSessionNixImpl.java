@@ -55,6 +55,9 @@ public class LocalSessionNixImpl implements LocalSession {
     
     private Thread           thread;
     
+	/**
+	 * Http Session Id
+	 */
     private String           token;
     
     private History          history;

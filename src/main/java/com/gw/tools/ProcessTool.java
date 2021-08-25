@@ -791,7 +791,7 @@ public class ProcessTool {
 	public String executeByWorker(String history_id, String id, String hid, String pswd, String httpsessionid, 
 			boolean isjoin, String bin, String pyenv, String basedir) {
 
-			process_task.initialize(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+			process_task.initialize(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir,null);
 			tm.addANewTask(process_task);
 
 			return null;

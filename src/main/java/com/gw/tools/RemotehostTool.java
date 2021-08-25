@@ -238,7 +238,7 @@ public class RemotehostTool {
 			
 			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(history_id, id, hid, pswd, token, isjoin,  null, null, null);
+			t.initialize(history_id, id, hid, pswd, token, isjoin,  null, null, null, null);
 			
 			// find active websocket for this builtin process when it is running as a member process in a workflow
 			// If this builtin process is running solo, the TaskSocket will take care of the problem.

@@ -966,7 +966,9 @@ GW.workspace = {
 	    	    // update existing nodes
 	    	    thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 	    	    thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; });
+	    	      .style("fill", function (d) { 
+					//   console.log("current color "+ d.id + " - " + d.color); 
+					  return d.color; });
 	
 	    	    // add new nodes
 	    	    var newGs= thisGraph.circles.enter()
@@ -1052,48 +1054,89 @@ GW.workspace = {
 		      GW.workspace.GraphCreator.prototype.renderStatus = function(statusList){
 		    	  
 		    	  	console.log("monitor workflow status called");
-		    	  	
-		    	  	var newnodes = [];
+
+					if(statusList.message_type == "single_process"){
+
+						var id = statusList.id;
+						
+						var history_id = statusList.history_id;
+
+						var flag = statusList.status; //true or false
+						
+						var num = this.getNodeNumById(id);
+
+						if(flag=="Ready"){
+								
+							GW.workspace.theGraph.nodes[num].color = "";
+							
+						}else if(flag=="Running"){
+								
+							GW.workspace.theGraph.nodes[num].color = "orange";
+								
+						}else if(flag=="Done"){
+								
+							GW.workspace.theGraph.nodes[num].color = "green";
+								
+						}else if(flag=="Failed"){
+								
+							GW.workspace.theGraph.nodes[num].color = "red";
+								
+						}
+						
+						// newnodes.push(node);
+						
+						GW.monitor.updateProgress(id, flag);
+
+						// GW.workspace.theGraph.nodes = newnodes;
+						
+						GW.workspace.theGraph.updateGraph();
+
+					}else{
+
+						var newnodes = [];
 		    	  
-					for(var i=0;i<statusList.length;i++){
-		        		
-		        		//single node
-		        		
-		        		var id = statusList[i].id;
-		        		
-		        		var flag = statusList[i].status; //true or false
-		        		
-		        		var node = this.getNodeById(id);
-		        		
-		        		if(flag=="READY"){
-		        			
-		        			  node.color = "";
-				    		  
-				    	}else if(flag=="RUNNING"){
-				    		  
-				    		  node.color = "orange";
-				    		  
-				    	}else if(flag=="DONE"){
-				    		  
-				    		  node.color = "green";
-				    		  
-				    	}else if(flag=="FAILED"){
-				    		  
-				    		  node.color = "red";
-				    		  
-				    	}
-		        		
-		        		newnodes.push(node);
-		        		
-		        		GW.monitor.updateProgress(id, flag);
-		        		
-		        	}
-					
-					GW.workspace.theGraph.nodes = newnodes;
-					
-					GW.workspace.theGraph.updateGraph();
-					
-					console.log("circle should change its color");
+						for(var i=0;i<statusList.length;i++){
+							
+							//single node
+							
+							var id = statusList[i].id;
+							
+							var flag = statusList[i].status; //true or false
+							
+							var node = this.getNodeById(id);
+							
+							if(flag=="Ready"){
+								
+								  node.color = "blue";
+								  
+							}else if(flag=="Running"){
+								  
+								  node.color = "orange";
+								  
+							}else if(flag=="Done"){
+								  
+								  node.color = "green";
+								  
+							}else if(flag=="Failed"){
+								  
+								  node.color = "red";
+								  
+							}
+							
+							newnodes.push(node);
+							
+							GW.monitor.updateProgress(id, flag);
+							
+						}
+						
+						GW.workspace.theGraph.nodes = newnodes;
+						
+						GW.workspace.theGraph.updateGraph();
+						
+						// console.log("circle should change its color");
+
+					}
+		    	  	
 					
 		      }
 	    	  /**
@@ -1118,6 +1161,9 @@ GW.workspace = {
 	  			return thenodes;
 		    	  
 		      };
+
+
+
 		      /**
 		       * Node
 		       */
@@ -1142,6 +1188,28 @@ GW.workspace = {
 	  			return thenode;
 	  			
 	  		  };
+
+				GW.workspace.GraphCreator.prototype.getNodeNumById = function(id){
+			
+					var thisGraph = this;
+				
+					var thenum = -1;
+					
+					for(var i=0;i<thisGraph.nodes.length;i++){
+						
+						if(thisGraph.nodes[i].id == id){
+
+							thenum = i;
+							
+							break;
+							
+						}
+							
+					}
+					
+					return thenum;
+					
+				};
 	
 	    	  GW.workspace.GraphCreator.prototype.updateWindow = function(svg){
 	    	    var docEl = document.documentElement,

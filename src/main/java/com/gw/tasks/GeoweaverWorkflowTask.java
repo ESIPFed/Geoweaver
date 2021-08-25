@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.server.WorkflowServlet;
@@ -16,7 +17,6 @@ import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Scope("prototype")
-public class GeoweaverWorkflowTask extends Task {
+public class GeoweaverWorkflowTask{
 	
 	Logger log = Logger.getLogger(this.getClass());
 	
@@ -76,6 +76,8 @@ public class GeoweaverWorkflowTask extends Task {
     String			 history_process;
     
     String			 history_id;
+
+	String           history_indicator;
     
     /**********************************************/
     /** end of history section **/
@@ -97,13 +99,6 @@ public class GeoweaverWorkflowTask extends Task {
 		return history_id;
 	}
 	
-	
-
-	@Override
-	public void initialize() {
-//		setChanged();
-//		notifyObservers(this);
-	}
 	
 	public void initialize(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
 		
@@ -145,6 +140,8 @@ public class GeoweaverWorkflowTask extends Task {
 		history.setHistory_output(this.history_output);
 		
 		history.setHost_id(bt.array2String(hosts, ";"));
+
+		history.setIndicator(this.history_indicator.toString());
 		
 		hist.saveHistory(history);
     	
@@ -164,45 +161,13 @@ public class GeoweaverWorkflowTask extends Task {
 		
 	}
 	
-	public void sendSingleTaskStatus(JSONObject node, STATUS flag) {
-		
-		try {
-			
-			if(monitor!=null) {
-				
-				String id = (String)node.get("id");
-
-				String history_id = (String)node.get("history_id");
-				
-				JSONObject obj = new JSONObject();
-
-				obj.put("message", "workflow member process update");
-				
-				obj.put("id", id);
-
-				obj.put("history_id", history_id);
-				
-				obj.put("status", flag.toString());
-				
-//				monitor.sendMessage(new TextMessage(array.toJSONString()));
-				monitor.getBasicRemote().sendText(obj.toJSONString());
-				
-			}
-			
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			
-		}
-		
-	}
 
 	/**
 	 * Send status message back to websocket end
 	 * @param nodes
 	 * @param flags
 	 */
-	public void sendStatus(JSONArray nodes, STATUS[] flags) {
+	public void sendStatus(JSONArray nodes, String[] flags) {
 		
 		try {
 			
@@ -264,11 +229,10 @@ public class GeoweaverWorkflowTask extends Task {
 		
 	}
 
-	@Override
 	public void execute() {
 		// TODO Auto-generated method stub
 		
-		log.debug(" + + + start Geoweaver workflow " + wid );
+		log.debug(" + + + start Geoweaver workflow " + wid + " - history id : " + this.history_id);
 		
 		try {
 			
@@ -297,11 +261,11 @@ public class GeoweaverWorkflowTask extends Task {
 			
 			JSONArray nodes = (JSONArray)parser.parse(w.getNodes());
 			
-			STATUS[] flags = new STATUS[nodes.size()];
+			String[] flags = new String[nodes.size()];
 			
 			for(int i=0;i<flags.length; i++ ) {
 				
-				flags [i] = STATUS.READY;
+				flags [i] = ExecutionStatus.READY;
 				
 			}
 
@@ -328,13 +292,15 @@ public class GeoweaverWorkflowTask extends Task {
 				
 				log.debug("this round is : " + nextid);
 				
-				STATUS stat = STATUS.RUNNING;
+				String stat = ExecutionStatus.READY;
 				
 				wt.updateNodeStatus(nextid, flags, nodes, stat);
 				
 				sendStatus(nodes, flags);
+
+				this.history_indicator = ExecutionStatus.READY;
 				
-				String processTypeId = nextid.split("-")[0];
+				// String processTypeId = nextid.split("-")[0];
 				
 				int num = i;
 				
@@ -352,9 +318,11 @@ public class GeoweaverWorkflowTask extends Task {
 
 					GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
 
-					new_task.initialize(nexthistoryid, processTypeId, hid, password, token, true, null, null, null); //what is token?
+					new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
 
 					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
+
+					new_task.setWorkflowHistoryId(this.history_id);
 
 					log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
 					
@@ -367,11 +335,13 @@ public class GeoweaverWorkflowTask extends Task {
 					// member_historyid = (String)respobj.get("history_id");
 					
 					
-					stat = STATUS.READY;
-					
 				}catch(Exception e) {
 					
-					stat = STATUS.FAILED;
+					stat = ExecutionStatus.FAILED;
+
+					wt.updateNodeStatus(nextid, flags, nodes, stat);
+				
+					sendStatus(nodes, flags);
 					
 					e.printStackTrace();
 				}
@@ -382,7 +352,7 @@ public class GeoweaverWorkflowTask extends Task {
 				
 //				pid2hid.put(nextid, historyid); //save the mapping between process id and history id
 				
-				wt.updateNodeStatus(nextid, flags, nodes, stat); //once the process is finished, updated its status
+				// wt.updateNodeStatus(nextid, flags, nodes, stat); //once the process is finished, updated its status
 				
 				executed_process++;
 				
@@ -390,7 +360,9 @@ public class GeoweaverWorkflowTask extends Task {
 			
 			sendStatus(nodes, flags); //last message
 			
-			log.info("workflow execution is finished.");
+			log.info("workflow execution is triggered.");
+
+			this.history_indicator = ExecutionStatus.RUNNING;
 			
 			saveWorkflowHistory();
 			
@@ -406,35 +378,6 @@ public class GeoweaverWorkflowTask extends Task {
 			
 		}
 
-	}
-
-	@Override
-	public void responseCallback() {
-		// TODO Auto-generated method stub
-		//notify the task list observer
-//		setChanged();
-//		notifyObservers(this);
-	}
-
-	@Override
-	public void failureCallback(Exception e) {
-		// TODO Auto-generated method stub
-		//notify the task list observer
-//		setChanged();
-//		notifyObservers(this);
-
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return name;
-	}
-
-	@Override
-	public void startMonitor(Session session) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

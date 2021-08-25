@@ -64,12 +64,17 @@ public class LocalhostTool {
 
 	/**
 	 * Execute Shell Script on Localhost
+	 * @param history_id
 	 * @param id
+	 * process id
 	 * @param hid
+	 * host id
 	 * @param pswd
+	 * password
 	 * @param token
 	 * http session id
 	 * @param isjoin
+	 * if wait for the process to end
 	 * @return
 	 */
 	public String executeShell(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
@@ -94,11 +99,9 @@ public class LocalhostTool {
 			
 			session.runBash(history_id, code, id, isjoin, token); 
 			
-			String historyid = session.getHistory().getHistory_id();
-			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
@@ -109,10 +112,6 @@ public class LocalhostTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			if(isjoin) GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -218,10 +217,6 @@ public class LocalhostTool {
 			
 			throw new RuntimeException(e.getLocalizedMessage());
 			
-		}  finally {
-			
-			if(isjoin)GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
-			
 		}
         		
 		return resp;
@@ -279,10 +274,6 @@ public class LocalhostTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			if(isjoin) GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -342,10 +333,6 @@ public class LocalhostTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		

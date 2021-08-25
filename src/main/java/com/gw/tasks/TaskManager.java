@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.gw.database.HistoryRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.utils.BaseTool;
-import com.gw.utils.STATUS;
 import com.gw.workers.Worker;
 import com.gw.workers.WorkerManager;
 
@@ -214,7 +214,7 @@ public class TaskManager {
 
 					String current_status = ho.get().getIndicator();
 
-					if(bt.isNull(current_status) || current_status.equals(STATUS.RUNNING) || current_status.equals(STATUS.READY)){
+					if(bt.isNull(current_status) || current_status.equals(ExecutionStatus.RUNNING) || current_status.equals(ExecutionStatus.READY)){
 			
 						check = 1;
 						break;

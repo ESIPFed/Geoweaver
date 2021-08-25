@@ -730,6 +730,12 @@ public class GeoweaverController {
 			String mode = request.getParameter("mode");
 
 			String token = request.getParameter("token");
+
+			if(bt.isNull(token)){
+
+				token = session.getId();
+
+			}
 			
 			String[] hosts = request.getParameterValues("hosts[]");
 			

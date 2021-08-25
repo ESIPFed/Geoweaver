@@ -12,7 +12,7 @@ GW.workflow = {
 	
 	new_frame: null,
 
-	token:null,
+	current_token:null,
 
 	
 	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
@@ -747,7 +747,7 @@ GW.workflow = {
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
-    					GW.monitor.startMonitor(msg.history_id);
+    					GW.monitor.startMonitor(msg.token);
     					
 					}
 					

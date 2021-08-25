@@ -10,12 +10,12 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.database.WorkflowRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -208,7 +208,7 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	public String[] findNextProcess(Map<String, List> nodemap, STATUS[] flags, JSONArray nodes) {
+	public String[] findNextProcess(Map<String, List> nodemap, ExecutionStatus[] flags, JSONArray nodes) {
 		
 		String id = null;
 		
@@ -218,7 +218,7 @@ public class WorkflowTool {
 			
 			String currentid = (String)((JSONObject)nodes.get(i)).get("id");
 			
-			if(checkNodeStatus(currentid, flags, nodes)!=STATUS.READY) {
+			if(checkNodeStatus(currentid, flags, nodes).equals(ExecutionStatus.READY)) {
 				
 				continue;
 				
@@ -236,8 +236,8 @@ public class WorkflowTool {
 				
 				//if any of the pre- nodes is not satisfied, this node is passed. 
 				
-				if(checkNodeStatus(prenodeid, flags, nodes)!=STATUS.DONE
-						&&checkNodeStatus(prenodeid, flags, nodes)!=STATUS.FAILED) {
+				if(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
+						&&checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)) {
 					
 					satisfied = false;
 					
@@ -272,7 +272,7 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @param status
 	 */
-	public void updateNodeStatus(String id, STATUS[] flags, JSONArray nodes, STATUS status) {
+	public void updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
 		
 		for(int j=0;j<nodes.size();j++) {
 			
@@ -297,9 +297,9 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	private STATUS checkNodeStatus(String id, STATUS[] flags, JSONArray nodes) {
+	private ExecutionStatus checkNodeStatus(String id, ExecutionStatus[] flags, JSONArray nodes) {
 		
-		STATUS status = null;
+		ExecutionStatus status = null;
 		
 		for(int j=0;j<nodes.size();j++) {
 			
@@ -342,7 +342,7 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			String history_id = new RandomString(16).nextString();
+			String history_id = new RandomString(18).nextString();
 
 			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
 
