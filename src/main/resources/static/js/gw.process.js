@@ -252,7 +252,7 @@ GW.process = {
 			
 //			var cmid = Math.floor(Math.random() * 100);
 			
-			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
+			$("#codearea-"+cmid).append('<textarea id="codeeditor-'+cmid+'" style="height:200px;" placeholder="Code goes here..."></textarea>');
 			
 			//initiate the code editor
 			
@@ -270,7 +270,9 @@ GW.process = {
 	    		    	
 	    		    	GW.process.update(GW.process.current_pid, cmid);
 	    		    	
-	    		     }
+	    		     },
+
+					 "Ctrl-Space": "autocomplete"
         		}
         		
         	});
@@ -466,17 +468,17 @@ GW.process = {
         	
         	$("#add-process-" + GW.process.cmid).click(function(){
         		
-        		GW.process.add(false,GW.process.cmid);
+        		if(GW.process.add(false,GW.process.cmid))
         		
-        		frame.closeFrame();
+        			frame.closeFrame();
         		
         	});
         	
         	$("#run-process-" + GW.process.cmid).click(function(){
         		
-        		GW.process.add(true,GW.process.cmid);
+        		if(GW.process.add(true,GW.process.cmid))
         		
-        		frame.closeFrame();
+        			frame.closeFrame();
         		
         	});
 
@@ -693,7 +695,7 @@ GW.process = {
 		
 		stop: function(history_id){
 			
-			console.log("Send stop request to stop the running task");
+			console.log("Send stop request to stop the running process");
 			
 			$.ajax({
 				
@@ -1745,10 +1747,14 @@ GW.process = {
 		    		alert("Fail to add the process.");
 		    		
 		    	});
+
+				return true;
 				
 			}else{
 				
 				alert("Process name and code must be non-empty!");
+
+				return false;
 				
 			}
 			

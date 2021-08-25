@@ -65,7 +65,7 @@ public interface SSHSession {
 
 	public String getHistory_id();
 
-	public void setHistory_id(String history_id);
+	// public void setHistory_id(String history_id);
 
 	public BufferedReader getSSHInput();
 
@@ -73,13 +73,13 @@ public interface SSHSession {
     
 	public void setWebSocketSession(WebSocketSession session);
 	
-	public void runBash(String script, String processid, boolean isjoin, String token);
+	public void runBash(String history_id,String script, String processid, boolean isjoin, String token);
 	
-	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir, String token);
+	public void runJupyter(String history_id,String script, String processid, boolean isjoin, String bin, String env, String basedir, String token);
 	
-	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token);
+	public void runPython(String history_id, String script, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token);
 	
-	public void runMultipleBashes(String[] script, String processid);
+	public void runMultipleBashes(String history_id, String[] script, String processid);
 	
 	public void saveHistory(String logs, String status);
 	

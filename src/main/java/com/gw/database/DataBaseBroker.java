@@ -1,18 +1,5 @@
 package com.gw.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-
 /**
  *Class DataBaseBroker.java
  *@author ziheng

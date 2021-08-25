@@ -5,17 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.websocket.Session;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
@@ -24,6 +17,11 @@ import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -57,6 +55,9 @@ public class LocalSessionNixImpl implements LocalSession {
     
     private Thread           thread;
     
+	/**
+	 * Http Session Id
+	 */
     private String           token;
     
     private History          history;
@@ -85,13 +86,13 @@ public class LocalSessionNixImpl implements LocalSession {
 	 * @param isjoin
 	 * @param token
 	 */
-	public void initHistory(String script, String processid, boolean isjoin, String token) {
+	public void initHistory(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 		this.token = token;
 		
 		this.isTerminal = isjoin;
 		
-		history = history_tool.initProcessHistory(processid, script);
+		history = history_tool.initProcessHistory(history_id, processid, script);
 		
 	}
 	
@@ -135,11 +136,11 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
     
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 //		this.history = history_tool.initProcessHistory(history, processid, script);
 		
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
     	
     	try {
     		
@@ -193,10 +194,11 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String env, String basedir,
+	public void runJupyter(String history_id, String notebookjson, String processid, 
+			boolean isjoin, String bin, String env, String basedir,
 			String token) {
 		
-		this.initHistory(notebookjson, processid, isjoin, token);
+		this.initHistory(history_id, notebookjson, processid, isjoin, token);
 		
     	try {
     		
@@ -274,9 +276,9 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
 		
-		this.initHistory(python, processid, isjoin, token);
+		this.initHistory(history_id, python, processid, isjoin, token);
     	
     	try {
     		
@@ -334,7 +336,7 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		
 		
 		

@@ -10,12 +10,12 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.database.WorkflowRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -63,91 +63,33 @@ public class WorkflowTool {
 	 */
 	public String stop(String history_id) {
         
-        Optional<History> whis = historyrepository.findById(history_id);
+        History whis = historyrepository.findById(history_id).get();
         
-        String childprocesses = whis.get().getHistory_output();
+        String childprocesses = whis.getHistory_output();
         
         String[] child_process_ids = childprocesses.split(";");
         
         for(String cid : child_process_ids) {
         	
-        	Optional<History> phis = historyrepository.findById(cid);
+        	History phis = historyrepository.findById(cid).get();
         	
-        	pt.stop(phis.get().getHistory_id());
+        	// pt.stop(phis.getHistory_id());
+
+			tm.stopTask(phis.getHistory_id());
         	
         }
 
-//        StringBuffer sql = new StringBuffer("select input, output from history where id = '").append(history_id).append("';");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//	
-//                pids.append("(");
-//
-//                for (String id: rs.getString("output").split(";")) {
-//
-//                    resp.append("\"").append(id).append("\"").append(", ");
-//
-//                }
-//
-//                pids.append(")");
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//        } finally {
-//	
-//            DataBaseOperation.closeConnection();
-//
-//        }
+		whis.setIndicator(ExecutionStatus.STOPPED);
 
-//        sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//
-//                String pid = rs.getString("id");
-//
-//                pt.stop(pid);
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//		} finally {
-//
-//            DataBaseOperation.closeConnection();
-//
-//        }
+		historyrepository.save(whis);
 
-//        sql = new StringBuffer("update history set end_time = '");
-//
-//        String history_end_time = BaseTool.getCurrentMySQLDatetime();
-//
-//        sql.append(history_end_time);
-//
-//        sql.append("', indicator = 'Stopped' where id = '");
-//
-//        sql.append(history_id).append("';");
-//
-//        DataBaseOperation.execute(sql.toString());
+		String resp = "{\"history_id\": \""+history_id+
+//					
+//					"\", \"token\": \""+token+
+//					
+					"\", \"ret\": \"stopped\"}";
 
-        return null;
+        return resp;
 	}
 	
 	public String toJSON(Workflow w) {
@@ -189,46 +131,6 @@ public class WorkflowTool {
 		
 		return json.toString();
 		
-//		StringBuffer json = new StringBuffer("[");
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query("select * from abstract_model where length(identifier) < 30 ; ");
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				if(num!=0) {
-//					
-//					json.append(",");
-//					
-//				}
-//				
-//				json.append("{ \"id\": \"")
-//					.append(rs.getString("identifier"))
-//					.append("\", \"name\": \"")
-//					.append(rs.getString("name"))
-//					.append("\" }");
-//				
-//				num++;
-//				
-//			}
-//			
-//			json.append("]");
-//			
-//		} catch (SQLException e) {
-//
-//			e.printStackTrace();
-//			
-//		}finally {
-//
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-//		
-//		return json.toString();
-		
 	}
 	
 	public Workflow getById(String id) {
@@ -243,42 +145,29 @@ public class WorkflowTool {
 		
 		Workflow wf = workflowrepository.findById(id).get();
 		
-//		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = '").append(id).append("';");
-//		
-//		StringBuffer resp = new StringBuffer();
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-//			
-//			if(rs.next()) {
-//				
-//				resp.append("{ \"name\":\"");
-//				
-//				resp.append(rs.getString("name")).append("\", \"id\": \"");
-//				
-//				resp.append(id).append("\", \"nodes\":");
-//				
-//				resp.append(rs.getString("process_connection")).append(", \"edges\":");
-//				
-//				resp.append(rs.getString("param_connection")).append(" }");
-//				
-//			}
-//			
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//			throw new RuntimeException(e.getLocalizedMessage());
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-		
 		return toJSON(wf);
 		
+	}
+
+	public JSONObject getNodeByID(JSONArray nodes, String id){
+
+		JSONObject theobj = null;
+
+		for(int i=0;i<nodes.size();i++){
+
+			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			if(current_id.equals(id)){
+
+				theobj = (JSONObject)nodes.get(i);
+				break;
+
+			}
+
+		}
+
+		return theobj;
+
 	}
 	
 	public Map<String, List> getNodeConditionMap(JSONArray nodes, JSONArray edges) throws ParseException{
@@ -290,6 +179,8 @@ public class WorkflowTool {
 		for(int i=0;i<nodes.size();i++) {
 			
 			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			String current_history_id = (String)((JSONObject)nodes.get(i)).get("history_id");
 			
 			List preids = new ArrayList();
 			
@@ -302,21 +193,25 @@ public class WorkflowTool {
 				String targetid = (String)((JSONObject)eobj.get("target")).get("id");
 				
 				if(current_id.equals(targetid)) {
+
+					preids.add(getNodeByID(nodes, sourceid).get("history_id"));
 					
-					preids.add(sourceid);
+					// preids.add(sourceid);
 					
 				}
 				
 				
 			}
 
-			node2condition.put(current_id, preids);
+			node2condition.put(current_history_id, preids);
 			
 		}
 		
 		return node2condition;
 		
 	}
+
+	
 	
 	/**
 	 * Find a process whose status is not executed, while all of its condition nodes are satisfied. 
@@ -325,7 +220,7 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	public String[] findNextProcess(Map<String, List> nodemap, STATUS[] flags, JSONArray nodes) {
+	public String[] findNextProcess(Map<String, List> nodemap, ExecutionStatus[] flags, JSONArray nodes) {
 		
 		String id = null;
 		
@@ -335,7 +230,7 @@ public class WorkflowTool {
 			
 			String currentid = (String)((JSONObject)nodes.get(i)).get("id");
 			
-			if(checkNodeStatus(currentid, flags, nodes)!=STATUS.READY) {
+			if(checkNodeStatus(currentid, flags, nodes).equals(ExecutionStatus.READY)) {
 				
 				continue;
 				
@@ -353,8 +248,8 @@ public class WorkflowTool {
 				
 				//if any of the pre- nodes is not satisfied, this node is passed. 
 				
-				if(checkNodeStatus(prenodeid, flags, nodes)!=STATUS.DONE
-						&&checkNodeStatus(prenodeid, flags, nodes)!=STATUS.FAILED) {
+				if(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
+						&&checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)) {
 					
 					satisfied = false;
 					
@@ -389,7 +284,7 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @param status
 	 */
-	public void updateNodeStatus(String id, STATUS[] flags, JSONArray nodes, STATUS status) {
+	public void updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
 		
 		for(int j=0;j<nodes.size();j++) {
 			
@@ -414,9 +309,9 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	private STATUS checkNodeStatus(String id, STATUS[] flags, JSONArray nodes) {
+	private ExecutionStatus checkNodeStatus(String id, ExecutionStatus[] flags, JSONArray nodes) {
 		
-		STATUS status = null;
+		ExecutionStatus status = null;
 		
 		for(int j=0;j<nodes.size();j++) {
 			
@@ -445,7 +340,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String id, String mode, String[] hosts, String[] pswds, String token) {
+	public String execute(String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
 		
 		//use multiple threads to execute the processes
 		
@@ -455,13 +350,19 @@ public class WorkflowTool {
 			
 //			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask("GW-Workflow-Run-" + token);
 			
-			task.initialize(id, mode, hosts, pswds, token);
+			// task.initialize(id, mode, hosts, pswds, token);
 			
-			tm.addANewTask(task);
+			// tm.addANewTask(task);
+
+			String history_id = new RandomString(18).nextString();
+
+			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
+
+			task.execute();
 
 			resp = "{\"history_id\": \""+task.getHistory_id()+
 					
-					"\", \"token\": \""+token+
+					"\", \"token\": \""+httpsessionid+
 					
 					"\", \"ret\": \"success\"}";
 			

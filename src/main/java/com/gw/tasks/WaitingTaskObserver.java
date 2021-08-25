@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
  *@time Aug 11, 2015 12:19:04 PM
  *Original aim is to support Geoweaver.
  */
+@Deprecated
 @Service
 public class WaitingTaskObserver implements Observer {
 	

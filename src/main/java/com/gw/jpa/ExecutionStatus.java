@@ -9,6 +9,8 @@ public class ExecutionStatus {
 			RUNNING = "Running",
 			
 			UNKOWN = "Unknown",
+
+			STOPPED = "Stopped",
 			
 			READY = "Ready";
 	

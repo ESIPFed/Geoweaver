@@ -11,11 +11,11 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.6</version>
+	<version>0.9.7</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		
@@ -65,8 +65,7 @@
 		<dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
-	         <scope>runtime</scope><!-- -->
-	        <optional>true</optional>
+	        <optional>false</optional>
 	    </dependency>
 		
 		

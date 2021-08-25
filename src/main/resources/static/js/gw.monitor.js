@@ -16,92 +16,11 @@ GW.monitor = {
 
 		all_ws: null,
 		
-// 		send: function (data) {
-	    	
-// 	        if(this.ws != null){
-	      	
-// 	        	this.ws.send(data);
-	        
-// 	        } else {
-	        
-// 	        	this.error('not connected!');
-	        
-// 	        }
-// 	    },
-		
-// 		ws_onopen: function(e){
-			
-// 			this.send(this.historyid);
-			
-// 		},
-		
-// 		ws_onclose: function(e){
-			
-// 			this.ws = null;
-			
-// 			GW.workspace.currentmode = 1;
-			
-// 			console.log("this workflow monitor websocket has been closed");
-			
-// 			GW.monitor.closeWorkspaceIndicator();
-			
-// 			GW.monitor.closeProgressIndicator();
-			
-// 		},
-		
-// 		ws_onmessage: function(e){
-			
-// 			try {
-		    	
-// //		        if(e.data.indexOf(GW.ssh.special.prompt) == -1 && 
-// //		        		
-// //		        		e.data.indexOf(GW.ssh.special.ready) == -1) {
-				
-// 		        	var returnmsg = $.parseJSON(e.data);
-		        	
-// 		        	console.log(returnmsg);
-		        	
-// 		        	if(returnmsg.builtin){
-		        		
-// 		        		GW.process.callback(returnmsg);
-		        		
-// 		        	}else{
-		        		
-// 		        		GW.workspace.updateStatus(returnmsg);
-		        		
-// 		        	}
-		        	
-// //		        }else{
-// //		        	
-// //		        	//the websocket is already closed. try the history query
-// //		        	
-// //		        	console.error("It ends too quickly. Go to history to check the logs out.");
-// //		        	
-// //		        }
-		        
-// 		      } catch(err) {
-		    	
-// 		    	console.error("** Invalid server response : " + err); 
-		        
-// 		      }
-			
-// 		},
-		
-// 		ws_onerror: function(e){
-			
-// 			console.error("error in monitoring workflow " + e );
-			
-// 			GW.monitor.closeWorkspaceIndicator();
-			
-// 			GW.monitor.closeProgressIndicator();
-			
-// 		},
-
-
 		ws_onopen: function(e){
 
 			//shell.echo(special.white + "connected" + special.reset);
 			console.log("workflow websocket is connected");
+			if(this.token==null || this.token == "null") this.token = GW.main.getJSessionId();
 			// link the SSH session established with spring security logon to the websocket session...
 			GW.monitor.all_ws.send("token:" + this.token);
 			
@@ -115,7 +34,7 @@ GW.monitor = {
 
 		ws_onmessage: function(e){
 
-			console.log(e.data); //print out everything back from server
+			// console.log(e.data); //print out everything back from server
 
 			if(GW.monitor.IsJsonString(e.data)){
 
@@ -155,7 +74,6 @@ GW.monitor = {
 			console.log("WebSocket Channel is Openned");
 			
 			GW.monitor.token = token; //token is the jsession id
-			
 			
 			GW.monitor.all_ws = new WebSocket(GW.ssh.getWsPrefixURL() + "workflow-socket");
 			
@@ -281,11 +199,13 @@ GW.monitor = {
 		 * connect with the websocket session and get message to update the workflow status in the workspace
 		 * 
 		 */
-		startMonitor: function(historyid){
+		startMonitor: function(token){
 
 			if ( GW.monitor.all_ws == null || GW.monitor.all_ws.readyState === WebSocket.CLOSED ) {
 
-				GW.monitor.startSocket();
+				console.log("Detect there is no workflow websocket or the current one is closed, restarting..");
+
+				GW.monitor.startSocket(token);
 			
 			}
 			
@@ -299,21 +219,6 @@ GW.monitor = {
 				
 				GW.monitor.openProgressIndicator();
 
-				
-				//not used any more
-				
-//				GW.monitor.ws = new SockJS("task");
-//		        
-//				GW.monitor.historyid = historyid;
-//		        
-//				GW.monitor.ws.onopen = function(e) { GW.monitor.ws_onopen(e) };
-//		        
-//				GW.monitor.ws.onclose = function(e) { GW.monitor.ws_onclose(e) };
-//		        
-//				GW.monitor.ws.onmessage = function(e) { GW.monitor.ws_onmessage(e) };
-//		        
-//				GW.monitor.ws.onerror = function(e) { GW.monitor.ws_onerror(e) };
-				
 //			}
 			
 		},

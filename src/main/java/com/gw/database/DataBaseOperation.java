@@ -1,25 +1,8 @@
 package com.gw.database;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
-
-import com.gw.utils.BaseTool;
-import com.gw.utils.SysDir;
 
 /**
  * Class DataBaseOperation contains a seires of functions which operate on a mysql database.
