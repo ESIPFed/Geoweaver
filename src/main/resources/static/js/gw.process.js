@@ -468,17 +468,17 @@ GW.process = {
         	
         	$("#add-process-" + GW.process.cmid).click(function(){
         		
-        		GW.process.add(false,GW.process.cmid);
+        		if(GW.process.add(false,GW.process.cmid))
         		
-        		frame.closeFrame();
+        			frame.closeFrame();
         		
         	});
         	
         	$("#run-process-" + GW.process.cmid).click(function(){
         		
-        		GW.process.add(true,GW.process.cmid);
+        		if(GW.process.add(true,GW.process.cmid))
         		
-        		frame.closeFrame();
+        			frame.closeFrame();
         		
         	});
 
@@ -1747,10 +1747,14 @@ GW.process = {
 		    		alert("Fail to add the process.");
 		    		
 		    	});
+
+				return true;
 				
 			}else{
 				
 				alert("Process name and code must be non-empty!");
+
+				return false;
 				
 			}
 			

@@ -342,7 +342,9 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			task.initialize(wid, mode, hosts, pswds, httpsessionid);
+			String history_id = new RandomString(16).nextString();
+
+			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
 
 			task.execute();
 
