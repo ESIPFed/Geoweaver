@@ -103,7 +103,7 @@ GW.workflow = {
 		
 		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
-		workflowid+"')\"></i> "+
+		workflowid+"', '"+workflowname+"')\"></i> "+
 		
 		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
     	
@@ -455,7 +455,7 @@ GW.workflow = {
 	 * Allow users to choose how to add the workflow into the workspace in two ways: 
 	 * one process or the original workflow of processes
 	 */
-	add: function(wid){
+	add: function(wid, wname){
 		
 		//pop up a dialog to ask which they would like to show it
 		
@@ -505,6 +505,8 @@ GW.workflow = {
 //			switchTab(document.getElementById("main-workspace-tab"), "workspace");
 			
 			GW.general.switchTab("workspace")
+
+			GW.workflow.setCurrentWorkflowName(wname);
 			
         	_frame.closeFrame();
         	
@@ -518,6 +520,13 @@ GW.workflow = {
 		
 	},
 	
+
+	setCurrentWorkflowName: function(name){
+
+		$("#current_workflow_na").html(name);
+
+	},
+
 	/**
 	 * Start to collect information to run the workflow
 	 */

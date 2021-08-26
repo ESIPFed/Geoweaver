@@ -125,19 +125,20 @@ GW.monitor = {
 			
 			var barcolor = "";
 			
-			if(flag=="RUNNING"){
+			if(flag=="Running"){
 	    		  
 	    		  percent = 30
 	    		  barcolor = "progress-bar-success progress-bar-striped active";
 	    		  
-	    	}else if(flag=="DONE"){
+	    	}else if(flag=="Done"){
 	    		  
 	    		  percent = 100;
 	    		  barcolor = "progress-bar-success progress-bar-striped";
 	    		  
-	    	}else if(flag=="FAILED"){
+	    	}else if(flag=="Failed"){
 	    		  
 	    		  percent = 100;
+				  
 	    		  barcolor = "progress-bar-danger progress-bar-striped";
 	    		  
 	    	}

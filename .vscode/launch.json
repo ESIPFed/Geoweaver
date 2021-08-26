@@ -6,24 +6,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch SpatialExtentValidator",
-            "request": "launch",
-            "mainClass": "com.gw.utils.SpatialExtentValidator",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
             "name": "Launch GeoweaverApplication",
             "request": "launch",
             "mainClass": "com.gw.GeoweaverApplication",
             "projectName": "geoweaver"
-        },
-        {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
         }
     ]
 }
