@@ -12,7 +12,7 @@ GW.workspace = {
 
 		showNonSaved: function(){
 
-			console.trace("changes happened")
+			console.log("changes happened")
 
 			$("#main-workspace-tab").html("Weaver *");
 
