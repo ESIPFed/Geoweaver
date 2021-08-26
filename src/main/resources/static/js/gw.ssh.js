@@ -276,7 +276,7 @@ GW.ssh = {
 				
 				console.log("The command websocket connection is detected to be closed. Try to reconnect...");
 				
-				GW.ssh.startLogSocket(GW.main.getJSessionId());
+				GW.ssh.startLogSocket(msg.token);
 				
 				console.log("The console websocket connection is restored..");
 				

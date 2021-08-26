@@ -747,7 +747,9 @@ GW.workflow = {
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
-    					GW.monitor.startMonitor(msg.token);
+						GW.ssh.openLog(msg); //for logging
+
+    					GW.monitor.startMonitor(msg.token); //for workspace refreshing
     					
 					}
 					
