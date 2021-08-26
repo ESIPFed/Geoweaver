@@ -1007,7 +1007,9 @@ GW.workspace = {
 	    	    newGs.append("circle")
 	    	      .attr("r", String(consts.nodeRadius))
 //	    	      .attr("r", function(d) { return d.r; })
-	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; }); //add color
+	    	      .style("fill", function (d) { 
+					//   console.log("current color "+ d.id + " - " + d.color); 
+					  return d.color; }); //add color
 	
 	    	    newGs.each(function(d){
 	    	      thisGraph.insertTitleLinebreaks(d3.select(this), d.title);

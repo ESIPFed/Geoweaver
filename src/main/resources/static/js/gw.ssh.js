@@ -134,7 +134,7 @@ GW.ssh = {
 	      //shell.echo(special.white + "connected" + special.reset);
 	      this.echo("connected");
 	      // link the SSH session established with spring security logon to the websocket session...
-	      this.send(this.token);
+	      this.send("token:" + this.token);
 	      
 	      
 	    },

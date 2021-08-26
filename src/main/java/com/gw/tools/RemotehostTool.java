@@ -195,7 +195,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			// GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -269,7 +269,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			// GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -429,7 +429,7 @@ public class RemotehostTool {
 			
 		}  finally {
 			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
+			// GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end - don't close - the websocket channel should stay on
 			
 		}
 		
