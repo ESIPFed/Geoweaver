@@ -81,7 +81,7 @@ public class GoogleEarthController {
     private String scheme = "https";
 
     @Autowired
-	RestTemplate restTemplate;
+	RestTemplate GErestTemplate;
 	
 	HttpHeaders headers = new HttpHeaders();
 	
@@ -116,7 +116,7 @@ public class GoogleEarthController {
         
             .setDefaultRequestConfig(RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
-                    .setRedirectsEnabled(true)
+                    .setRedirectsEnabled(false)
                     .build())
             .build();
 
@@ -515,7 +515,7 @@ public class GoogleEarthController {
 
 
             ResponseEntity<byte[]> responseEntity =
-                restTemplate.exchange(targeturl, HttpMethod.GET, newentity, byte[].class);
+                GErestTemplate.exchange(targeturl, HttpMethod.GET, newentity, byte[].class);
 		
 				
 			String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
@@ -678,7 +678,7 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
 
 			String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
 			
-		    ResponseEntity<String> responseEntity = restTemplate.exchange(target_url, method, newentity, String.class);
+		    ResponseEntity<String> responseEntity = GErestTemplate.exchange(target_url, method, newentity, String.class);
 		    
 //		    if(realurl.indexOf("auth")!=-1)
 //		    
