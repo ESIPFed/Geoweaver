@@ -190,7 +190,7 @@ public class GoogleEarthController {
 				.replace("https://code.earthengine.google.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://code.earthengine.google.com")
 
 				.replace("this.aa.send", "console.log(this.aa), console.log('find content-earthengine - ' + a), this.aa.send")
-				.replace("this.aa.open(b,String(a)", "this.aa.open(b,'/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url='+encodeURI(String(a))")
+				.replace("this.aa.open(b,String(a)", "this.aa.open(b,'/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url='+encodeURI(String(a))") //this should only escape the content-earthengine url, the second parameter could be something else which should not be proxied. More code is required here. 
 
 				// earthengine.googleapis.com Domain (https://earthengine.googleapis.com)
 				.replace("https://www.earthengine.googleapis.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://www.earthengine.googleapis.com");
