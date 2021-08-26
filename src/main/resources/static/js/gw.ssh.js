@@ -134,7 +134,7 @@ GW.ssh = {
 	      //shell.echo(special.white + "connected" + special.reset);
 	      this.echo("connected");
 	      // link the SSH session established with spring security logon to the websocket session...
-	      this.send(this.token);
+	      this.send("token:" + this.token);
 	      
 	      
 	    },
@@ -166,7 +166,7 @@ GW.ssh = {
 	        	
 	        }
 	        
-	        console.log("the websocket has been closed");
+	        console.log("the logging out websocket has been closed");
 	        //trigger the event to close the dialog
 	        
 //	    	document.forms['logout'].submit();

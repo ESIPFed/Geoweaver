@@ -83,6 +83,22 @@ public class CommandServlet {
     	try {
     		
 			logger.debug("Received message: " + message);
+
+            String tokenfromclient = null;
+
+            if(message!=null && message.startsWith("token:")){
+
+				tokenfromclient = message.substring(6);
+
+                logger.debug(" - Token: " + message);
+
+				WsSession wss = (WsSession) session;
+				
+				logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+				
+				peers.put(tokenfromclient, session);
+
+            }
         	
         	logger.debug(" Session ID: " + session.getQueryString());
         	
@@ -95,11 +111,11 @@ public class CommandServlet {
             
             if (sshSession == null) {
                 
-            	logger.debug("linking " + session.getId() + message);
-                
+            	logger.debug("linking " + session.getId() + " - " + tokenfromclient);
+
                 // TODO is there a better way to do this?
                 // Can the client send the websocket session id and username in a REST call to link them up?
-                sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(message);
+                sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(tokenfromclient);
                 
 //                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
                 if(sshSession!=null) {
@@ -114,7 +130,7 @@ public class CommandServlet {
                 	
                 	if(session.isOpen()) {
                 		
-                		session.getAsyncRemote().sendText("No SSH connection is active");
+                		session.getBasicRemote().sendText("No SSH connection is active");
                 		
                 	}
                 	

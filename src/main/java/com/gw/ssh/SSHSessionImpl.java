@@ -263,15 +263,15 @@ public class SSHSessionImpl implements SSHSession {
         	e.printStackTrace();
         }
         try {
-            shell.close();
+            shell.close(); //sshj shell
         } catch (Throwable e) {
         }
         try {
-            session.close();
+            session.close(); //sshj session
         } catch (Throwable e) {
         }
         try {
-            ssh.disconnect();
+            ssh.disconnect(); //sshj client
             
         } catch (Throwable e) {
         }
