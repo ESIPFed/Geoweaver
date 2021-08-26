@@ -20,6 +20,7 @@ import org.springframework.web.socket.WebSocketSession;
  * @author jensensun
  *
  */
+@Deprecated
 public class TaskSocket  implements WebSocketHandler {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());

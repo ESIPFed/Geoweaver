@@ -45,12 +45,14 @@ public class LocalSessionOutput  implements Runnable{
     	//this is for spring
     }
     
-    public void init(BufferedReader in, String token) {
+    public void init(BufferedReader in, String token, String history_id) {
         log.info("created");
         this.in = in;
         this.token = token;
         this.run = true;
-        wsout = CommandServlet.findSessionById(token);
+		this.history_id = history_id;
+		
+        refreshLogMonitor();
     }
     
     
@@ -74,149 +76,162 @@ public class LocalSessionOutput  implements Runnable{
 		}
 
 	}
+
+	public void refreshLogMonitor(){
+
+		if(bt.isNull(wsout)){
+
+			wsout = CommandServlet.findSessionById(token);
+
+		}
+	}
     
     @Override
     public void run() {
         
-			try{
-				log.info("Local session output thread started");
+		try{
+			log.info("Local session output thread started");
+		
+			StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
 			
-				StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
-				
-				StringBuffer logs = new StringBuffer();
-				
-				int linenumber = 0;
-				
-				int startrecorder = -1;
-				
-				int nullnumber = 0;
-				
-				LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
-				
-				if(!bt.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
+			StringBuffer logs = new StringBuffer();
+			
+			int linenumber = 0;
+			
+			int startrecorder = -1;
+			
+			int nullnumber = 0;
+			
+			LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
+			
+			if(!bt.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
 
-				sendMessage2WebSocket("Process "+this.history_id+" Started");
-				
-				while (run) {
+			sendMessage2WebSocket("Process "+this.history_id+" Started");
+			
+			while (run) {
+
+				try {
+
+					refreshLogMonitor();
 					
-					try {
+					// readLine will block if nothing to send
+					
+					if(bt.isNull(in)) { 
+					
+						log.debug("Local Session Output Reader is close prematurely.");
 						
-						// readLine will block if nothing to send
-						
-						if(bt.isNull(in)) { 
-						
-							log.debug("Local Session Output Reader is close prematurely.");
-							
-							break;
-							
-						}
-						
-						String line = in.readLine();
-						
-						linenumber++;
-						
-						//when detected the command is finished, end this process
-						if(bt.isNull(line)) {
-							
-							//if ten consective output lines are null, break this loop
-							
-							if(startrecorder==-1) 
-								startrecorder = linenumber;
-							else
-								nullnumber++;
-							
-							if(nullnumber==10) {
-								
-								if((startrecorder+nullnumber)==linenumber) {
-									
-									log.debug("null output lines exceed 10. Disconnected.");
-									
-									if(!bt.isNull(session)) 
-										
-										session.saveHistory(logs.toString(), "Done");
-									
-									break;
-									
-								}else {
-									
-									startrecorder = -1;
-									
-									nullnumber = 0;
-									
-								}
-								
-							}
-							
-						}else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-							
-		//                	session.saveHistory(logs.toString()); //complete the record
-							
-							if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Done");
-							
-							sendMessage2WebSocket("The process "+session.getHistory().getHistory_id()+" is finished.");
-								
-							break;
-							
-						}else {
-							
-							log.info("Local thread output >> " + line);
-							
-							logs.append(line).append("\n");
-							
-							if(!bt.isNull(wsout) && wsout.isOpen()) {
-								
-								if(prelog.toString()!=null) {
-									
-									line = prelog.toString() + line;
-									
-									prelog = new StringBuffer();
-									
-								}
-								
-								this.sendMessage2WebSocket(line);
-								
-							}else {
-								
-								prelog.append(line).append("\n");
-								
-							}
-							
-						}
-						
-					} catch (Exception e) {
-						
-						e.printStackTrace();
-						
-						
-						if(!bt.isNull(session)) 
-							
-							session.saveHistory(logs.toString(), "Failed");
-
 						break;
-						
-					}finally {
-						
-		//                session.saveHistory(logs.toString()); //write the failed record
 						
 					}
 					
+					String line = in.readLine();
+					
+					linenumber++;
+					
+					//when detected the command is finished, end this process
+					if(bt.isNull(line)) {
+						
+						//if ten consective output lines are null, break this loop
+						
+						if(startrecorder==-1) 
+							startrecorder = linenumber;
+						else
+							nullnumber++;
+						
+						if(nullnumber==10) {
+							
+							if((startrecorder+nullnumber)==linenumber) {
+								
+								log.debug("null output lines exceed 10. Disconnected.");
+								
+								if(!bt.isNull(session)) 
+									
+									session.saveHistory(logs.toString(), "Done");
+								
+								break;
+								
+							}else {
+								
+								startrecorder = -1;
+								
+								nullnumber = 0;
+								
+							}
+							
+						}
+						
+					}else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
+						
+	//                	session.saveHistory(logs.toString()); //complete the record
+						
+						if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Done");
+						
+						sendMessage2WebSocket("The process "+session.getHistory().getHistory_id()+" is finished.");
+							
+						break;
+						
+					}else {
+						
+						log.info("Local thread output >> " + line);
+						
+						logs.append(line).append("\n");
+						
+						if(!bt.isNull(wsout) && wsout.isOpen()) {
+							
+							if(prelog.toString()!=null) {
+								
+								line = prelog.toString() + line;
+								
+								prelog = new StringBuffer();
+								
+							}
+							
+							this.sendMessage2WebSocket(line);
+							
+						}else {
+							
+							prelog.append(line).append("\n");
+							
+						}
+						
+					}
+					
+				} catch (Exception e) {
+					
+					e.printStackTrace();
+					
+					
+					if(!bt.isNull(session)) 
+						
+						session.saveHistory(logs.toString(), "Failed");
+
+					break;
+					
+				}finally {
+					
+	//                session.saveHistory(logs.toString()); //write the failed record
+					
 				}
 				
-				GeoweaverController.sessionManager.closeByToken(token);
-				
-				log.info("Local session output thread ended");
-
-			}catch(Exception e){
-
-				e.printStackTrace();
-			
-			}finally{
-				
-						 
-				sendMessage2WebSocket("Process " + this.history_id + " ended");
-				
-
 			}
+			
+			//this thread will end by itself when the task is finished, you don't have to close it manually
+
+			GeoweaverController.sessionManager.closeByToken(token);
+			
+			log.info("Local session output thread ended");
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+		
+		}finally{
+			
+						
+			sendMessage2WebSocket("Process " + this.history_id + " ended");
+			
+
+		}
 
     }
     

@@ -166,7 +166,7 @@ GW.ssh = {
 	        	
 	        }
 	        
-	        console.log("the websocket has been closed");
+	        console.log("the logging out websocket has been closed");
 	        //trigger the event to close the dialog
 	        
 //	    	document.forms['logout'].submit();

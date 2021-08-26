@@ -206,13 +206,13 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token);
+    		sender.init(input, token, history_id);
     		
     		thread = new Thread(sender);
             
@@ -268,7 +268,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             thread = new Thread(sender);
             
@@ -322,7 +322,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
@@ -330,7 +330,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -368,28 +368,36 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Override
 	public boolean stop() {
+
+		// log.debug("Is process alive? " + process.isAlive());
+
+		// log.debug("Is thread alive? " + thread.isAlive()); //this thread will stop by itself after the task is finished.
+
+		// if(thread.isAlive()) thread.interrupt();
+
+		log.debug("for localhost session, there is nothing to manually stop. Just wait for the process to finish. That is all.");
 		
-		if(!bt.isNull(process)) {
+		// if(!bt.isNull(process)) {
 			
-			process.destroy();
+		// 	process.destroy();
 			
-		}
+		// }
 		
-		if(!bt.isNull(thread)) {
+		// if(!bt.isNull(thread)) {
 			
-			thread.interrupt();
+		// 	thread.interrupt();
 			
-		}
+		// }
 		
-		if(!bt.isNull(input)) {
+		// if(!bt.isNull(input)) {
 			
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		// 	try {
+		// 		input.close();
+		// 	} catch (IOException e) {
+		// 		e.printStackTrace();
+		// 	}
 			
-		}
+		// }
 		
 		return true;
 		
