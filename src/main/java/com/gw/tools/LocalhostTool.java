@@ -313,20 +313,21 @@ public class LocalhostTool {
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			//save environment
+			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
+				ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory().getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
-			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
-				ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			
 			
 		}catch(Exception e) {
 			

@@ -406,20 +406,18 @@ public class RemotehostTool {
 			session.login(hid, pswd, token, false);
 			
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+			//save environment
+			
+			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory_id();
-			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
-			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			

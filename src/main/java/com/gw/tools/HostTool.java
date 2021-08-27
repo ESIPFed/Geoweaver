@@ -550,36 +550,45 @@ public class HostTool {
 		try {
 			
 //			String enviroment = getEnvironmentByBEB(hostid, bin, env, basedir);
-			
-			Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
-			
-			Environment newenv = new Environment();
-			
-			if(eit.hasNext()) {
+
+			if(!bt.isNull(bin) && !bt.isNull(env) && !bt.isNull(basedir) && !bt.isNull(settings)){
 				
-				newenv = eit.next();
+				Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
 				
-			}else {
+				Environment newenv = new Environment();
 				
-				newenv.setId(historyid);
-				
-				newenv.setName(bin+"-"+env+"-"+basedir);
-				
-				newenv.setType(type);
-				
-				newenv.setBin(bin);
-				
-				newenv.setPyenv(env);
-				
-				newenv.setBasedir(basedir);
-				
-				newenv.setSettings(settings);
-				
-				newenv.setHost(hostid);
-				
-				environmentrepository.save(newenv);
-				
+				if(eit.hasNext()) {
+					
+					newenv = eit.next();
+					
+				}else {
+					
+					newenv.setId(historyid);
+					
+					newenv.setName(bin+"-"+env+"-"+basedir);
+					
+					newenv.setType(type);
+					
+					newenv.setBin(bin);
+					
+					newenv.setPyenv(env);
+					
+					newenv.setBasedir(basedir);
+					
+					newenv.setSettings(settings);
+					
+					newenv.setHost(hostid);
+					
+					environmentrepository.save(newenv);
+					
+				}
+
+			}else{
+
+				logger.debug("one of the bin, env, basedir, settings is null and the environment will not be saved into database.");
+
 			}
+			
 			
 			
 			
