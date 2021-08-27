@@ -20,6 +20,7 @@ import org.springframework.web.socket.WebSocketSession;
 import com.gw.database.DataBaseOperation;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
 import com.gw.ssh.SSHSession;
 import com.gw.ssh.SSHSessionImpl;
 import com.gw.tasks.GeoweaverProcessTask;
@@ -53,6 +54,9 @@ public class RemotehostTool {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HistoryTool histool;
 	
 	@Autowired
 	SSHSession session;
@@ -83,6 +87,8 @@ public class RemotehostTool {
 			String code = pt.getCodeById(id);
 			
 			logger.debug(code);
+
+			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
 			
@@ -102,11 +108,9 @@ public class RemotehostTool {
 			
 			session.runBash(history_id, code, id, isjoin, token); 
 			
-			String historyid = session.getHistory_id();
-			
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
@@ -154,6 +158,8 @@ public class RemotehostTool {
 			String code = pt.getCodeById(id);
 			
 			logger.debug(code);
+
+			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
 			
@@ -175,9 +181,8 @@ public class RemotehostTool {
 			
 			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
@@ -185,7 +190,7 @@ public class RemotehostTool {
 			
 			//save environment
 			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
@@ -223,6 +228,8 @@ public class RemotehostTool {
 			String code = pt.getCodeById(id);
 			
 			logger.debug(code);
+
+			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
 			
@@ -276,7 +283,7 @@ public class RemotehostTool {
 		return resp;
 		
 	}
-	
+
 	/**
 	 * Package all python files into one zip file
 	 */
@@ -352,6 +359,32 @@ public class RemotehostTool {
 		return resp;
 		
 	}
+
+
+	public void saveHistory(String processid, String script, String history_id){
+
+		History history = histool.getHistoryById(history_id);
+
+		if(bt.isNull(history)){
+
+			history = new History();
+
+			history.setHistory_id(history_id);
+
+		}
+
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+		
+		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		
+		history.setHistory_input(script);
+
+        history.setHistory_id(history_id);
+
+		histool.saveHistory(history);
+
+	}
+	
 	
 	/**
 	 * Execute Python process
@@ -392,6 +425,8 @@ public class RemotehostTool {
 			//get code of the process
 			
 			String code = pt.getCodeById(id);
+
+			this.saveHistory(id, code, history_id);
 			
 //			logger.info(code);
 			

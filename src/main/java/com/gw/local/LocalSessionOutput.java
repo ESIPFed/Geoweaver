@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.tools.HistoryTool;
 import com.gw.tools.LocalhostTool;
 import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
@@ -24,6 +26,9 @@ public class LocalSessionOutput  implements Runnable{
 	
 	@Autowired
 	LocalhostTool lt;
+
+	@Autowired
+	HistoryTool ht;
 	
     protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -90,6 +95,29 @@ public class LocalSessionOutput  implements Runnable{
 
 		}
 	}
+
+	
+	public void updateStatus(String logs, String status){
+
+		History h = ht.getHistoryById(this.history_id);
+
+		if(bt.isNull(h)){
+
+			h = new History();
+
+			h.setHistory_id(history_id);
+
+			log.debug("This is very unlikely");
+		}
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
+
+		ht.saveHistory(h);
+
+	}
+    
     
     @Override
     public void run() {
@@ -109,7 +137,7 @@ public class LocalSessionOutput  implements Runnable{
 			
 			LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
 			
-			if(!bt.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
+			this.updateStatus("Running", "Running"); //initiate the history record
 
 			sendMessage2WebSocket("Process "+this.history_id+" Started");
 			
@@ -149,9 +177,7 @@ public class LocalSessionOutput  implements Runnable{
 								
 								log.debug("null output lines exceed 10. Disconnected.");
 								
-								if(!bt.isNull(session)) 
-									
-									session.saveHistory(logs.toString(), "Done");
+								this.updateStatus(logs.toString(), "Done");
 								
 								break;
 								
@@ -169,9 +195,9 @@ public class LocalSessionOutput  implements Runnable{
 						
 	//                	session.saveHistory(logs.toString()); //complete the record
 						
-						if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Done");
+						this.updateStatus(logs.toString(), "Done");
 						
-						sendMessage2WebSocket("The process "+session.getHistory().getHistory_id()+" is finished.");
+						sendMessage2WebSocket("The process "+history_id+" is finished.");
 							
 						break;
 						
@@ -205,10 +231,7 @@ public class LocalSessionOutput  implements Runnable{
 					
 					e.printStackTrace();
 					
-					
-					if(!bt.isNull(session)) 
-						
-						session.saveHistory(logs.toString(), "Failed");
+					this.updateStatus(logs.toString(), "Failed");
 
 					break;
 					
@@ -232,7 +255,6 @@ public class LocalSessionOutput  implements Runnable{
 		
 		}finally{
 			
-						
 			sendMessage2WebSocket("Process " + this.history_id + " ended");
 			
 

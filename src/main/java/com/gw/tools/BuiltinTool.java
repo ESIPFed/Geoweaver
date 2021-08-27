@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.gw.jpa.History;
 
 @Service
 public class BuiltinTool {
@@ -17,7 +18,6 @@ public class BuiltinTool {
     @Autowired
     ProcessTool pt;
 
-    
 	@Autowired
 	BaseTool bt;
 	
@@ -27,7 +27,33 @@ public class BuiltinTool {
     @Autowired
 	HostTool ht;
 
+    @Autowired
+    HistoryTool histool;
+
     Logger logger = Logger.getLogger(this.getClass());
+
+    
+	public void saveHistory(String processid, String script, String history_id){
+
+		History history = histool.getHistoryById(history_id);
+
+		if(bt.isNull(history)){
+
+			history = new History();
+
+		}
+
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+		
+		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		
+		history.setHistory_input(script);
+
+        history.setHistory_id(history_id);
+
+		histool.saveHistory(history);
+
+	}
 
     public String executeCommonTasks(String history_id, String pid, String host, String pswd, String httpsessionid, boolean isjoin){
 
@@ -36,6 +62,8 @@ public class BuiltinTool {
         try{
             
             String code = pt.getCodeById(pid);
+
+            this.saveHistory(pid, code, history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
                 

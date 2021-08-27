@@ -637,10 +637,16 @@ GW.workflow = {
 				    
 				    } else {
 				    
+						
+						nodes = $.parseJSON(nodes);
+
 				    	for(var i=0;i<nodes.length;i++){
-							
+
+
 				    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+
+							   nodes[i].title+ " (" + nodes[i].id + ")"+
+							   '</mark> on: </label>'+
 						       '     <div class="col-sm-8">'+
 						       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
 						       '  		</select>'+

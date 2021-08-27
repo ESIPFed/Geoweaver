@@ -511,19 +511,20 @@ public class GeoweaverProcessTask  extends Task {
 
 	void sendMessage2WorkflowWebsocket(String msg){
 
-		synchronized(workflow_monitor){
+		if(workflow_monitor!=null){
+			
+			synchronized(workflow_monitor){
 
-			if(workflow_monitor!=null){
-				try {
-					workflow_monitor.getBasicRemote().sendText(msg);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					try {
+						workflow_monitor.getBasicRemote().sendText(msg);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
 
 			}
 
 		}
-
 	}
 
 	void sendMessage2LogoutWebsocket(String msg){
