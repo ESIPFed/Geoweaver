@@ -220,8 +220,16 @@ GW.ssh = {
 	    	var dt = new Date();
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
+			var style1 = "";
+			if(content.includes("Start to process") || content.includes("=======")){
+
+				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+
+			}else{
+
+			}
 			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
-			+ time + "</span> " + content + "</p>";
+			+ time + "</span> <span style=\""+style1+"\">" + content + "</span></p>";
 
 	    	$("#log-window").append(newline);
 
@@ -229,7 +237,7 @@ GW.ssh = {
 
 				$("#process-log-window").append(newline);
 			}
-//	    	$("#log-window").animate({ scrollTop: $('#log-window').prop("scrollHeight")}, 1);
+
 	    },
 	    
 	    getWsPrefixURL: function(){

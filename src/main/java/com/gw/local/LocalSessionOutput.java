@@ -255,7 +255,7 @@ public class LocalSessionOutput  implements Runnable{
 		
 		}finally{
 			
-			sendMessage2WebSocket("Process " + this.history_id + " ended");
+			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
 			
 
 		}

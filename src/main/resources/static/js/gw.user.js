@@ -30,7 +30,7 @@ GW.user = {
         "<div class=\"row\">"+
         
         "   <div class=\"col-md-12\">"+
-        '       <input type="text" id="login"  name="login" placeholder="login">'+
+        '       <input type="text" id="username"  name="username" placeholder="username">'+
         "   </div>"+
         "   <div class=\"col-md-12\">"+
         '       <input type="text" id="password" name="password" placeholder="password">'+
@@ -73,6 +73,48 @@ GW.user = {
      */
     signup: function(){
 
+        GW.user.closeOtherFrames();
+
+        var content = "<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+        
+        "<div class=\"row\">"+
+        
+        "   <div class=\"col-md-12\">"+
+        '       User Name: <input type="text" id="username"  name="username" placeholder="username">'+
+        "   </div>"+
+        "   <div class=\"col-md-12\">"+
+        '       Enter Password: <input type="text" id="password" name="password" placeholder="new password">'+
+        "   </div>"+
+        "   <div class=\"col-md-12\">"+
+        '       Re-enter Password: <input type="text" id="rpassword" name="rpassword" placeholder="re-enter password">'+
+        "   </div>"+
+        "   <div class=\"col-md-12\">"+
+        '       Email: <input type="text" id="email" name="email" placeholder="email">'+
+        "   </div>"+
+        "   <div class=\"col-md-12\">"+
+        '       Agree terms: <input type="text" id="email" name="email" placeholder="email">'+
+        "   </div>"+
+        "</div>"+
+
+        "<div class=\"row\">"+
+        "   <div class=\"col-md-12\" >"+
+        "       <button click=\"GW.user.register()\">Register</button>"+
+        "       <button click=\"GW.user.closeOtherFrames()\">Cancel</button>"+
+        '   </div>'+
+        "</div>"+
+
+        "<div class=\"row\">"+
+        '   <div class=\"col-md-12\">'+
+        
+        "       <button click=\"GW.user.forgetpassdialog()\">Forgot Password?</button>"+
+
+        "   </div>"+
+        "</div>"+
+        
+        
+        "</div>";
+        
+        var frame = GW.process.createJSFrameDialog(300, 300, content, "Login")
 
     },
 
