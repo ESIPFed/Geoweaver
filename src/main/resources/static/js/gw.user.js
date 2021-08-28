@@ -94,17 +94,30 @@ GW.user = {
 
             $.ajax({
 
-                url: "signin",
+                url: "../user/login",
 				
                 method: "POST",
+
+                headers: { 
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json' 
+                },
             
-                data: { usename: $("#username").val(), password: $("#password").val()}
+                data: "{ \"username\": \""+$("#username").val()+"\", \"password\": \""+$("#password").val()+"\"}"
 
             }).done(function(msg){
 
                 msg = $.parseJSON(msg);
 
+                if(msg.status=="success"){
 
+                    console.log("Logged in successfully.");
+
+                }else{
+
+                    console.log("Login failed");
+
+                }
 
             }).fail(function(jxr, status){
 
@@ -116,22 +129,18 @@ GW.user = {
 
     },
 
-    /**
-     * Sign up a new user
-     */
-    signup: function(){
-
-
-
-    },
-
     closeOtherFrames: function(){
+        try{
+            if(GW.user.login_frame!=null) GW.user.login_frame.closeFrame();
 
-        if(GW.user.login_frame!=null) GW.user.login_frame.closeFrame();
+            if(GW.user.signup_frame!=null) GW.user.signup_frame.closeFrame();
 
-        if(GW.user.signup_frame!=null) GW.user.signup_frame.closeFrame();
+            if(GW.user.forget_password_frame!=null) GW.user.forget_password_frame.closeFrame();
 
-        if(GW.user.forget_password_frame!=null) GW.user.forget_password_frame.closeFrame();
+        }catch(error){
+            console.error(error);
+        }
+        
 
     },
 
@@ -158,7 +167,7 @@ GW.user = {
         '       <input type="text" id="email" class=\"input-lg\" name="email" placeholder="email"/>'+
         "   </div>"+
         "   <div class=\"col-md-12\">"+
-        '       Agree terms: <input type="text" id="email" class=\"input-lg\" name="email" placeholder="email"/>'+
+        '       Do you agree our <a href=\"\">User Terms</a>: <input class="form-check-input" type="radio" name="term_agree" id="agree_yes"> yes <input class="form-check-input" type="radio" name="term_agree" id="agree_no"> no '+
         "   </div>"+
         "</div>"+
 
@@ -190,19 +199,41 @@ GW.user = {
 
             $.ajax({
 
-                url: "forgetpassword",
+                url: "../user/register",
 				
                 method: "POST",
+
+                headers: { 
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json' 
+                },
             
-                data: { recover_email: $("#recover_email").val()}
+                data: "{"+
+
+                "    \"username\": \""+$("#username").val()+"\","+
+                "    \"password\": \""+$("#password").val()+"\","+
+                "    \"email\": \""+$("#email").val()+"\""+
+
+                "}"
 
             }).done(function(msg){
     
-    
+                msg = $.parseJSON(msg);
+
+                if(msg.status == "success"){
+
+                    console.log("Registration success");
+
+                }else{
+
+                    console.log("Registration failed.");
+
+                }
     
             }).fail(function(jxr, status){
     
-    
+                console.log("Registration failed.");
+
             });
 
         }

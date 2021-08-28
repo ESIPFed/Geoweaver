@@ -106,9 +106,11 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     	int nullnumber = 0;
     	
-    	SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
+    	// SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
     	
     	updateStatus("Running", "Running"); //initiate the history record
+
+		sendMessage2WebSocket("Process "+this.history_id+" Started");
     	
         while (run) {
         	
@@ -156,8 +158,7 @@ public class SSHCmdSessionOutput  implements Runnable {
                 	
                 	this.updateStatus(logs.toString(), "Done");
                 	
-                	if(!bt.isNull(wsout) && wsout.isOpen())
-                		wsout.getBasicRemote().sendText("The process "+this.history_id+" is finished.");
+                	sendMessage2WebSocket("The process "+this.history_id+" is finished.");
                 	
                 	break;
                 	
@@ -180,7 +181,7 @@ public class SSHCmdSessionOutput  implements Runnable {
                 	log.info("wsout message {}:{}", wsout.getId(), line);
                 	
 //                    out.sendMessage(new TextMessage(line));
-                	wsout.getBasicRemote().sendText(line);
+					sendMessage2WebSocket(line);
                     
                 }else {
                 	
@@ -196,6 +197,7 @@ public class SSHCmdSessionOutput  implements Runnable {
                 
             }finally {
             	
+				sendMessage2WebSocket("======= Process " + this.history_id + " ended");
 //                session.saveHistory(logs.toString()); //write the failed record
                 
             }
@@ -207,6 +209,21 @@ public class SSHCmdSessionOutput  implements Runnable {
         log.info("SSH session output thread ended");
 
     }
+
+	public void sendMessage2WebSocket(String msg){
+
+		synchronized(wsout){
+
+			try {
+				if(!bt.isNull(wsout) && wsout.isOpen())
+					wsout.getBasicRemote().sendText(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
     
     public void setWebSocketSession(WebSocketSession session) {
         log.info("received websocket session");

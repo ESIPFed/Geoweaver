@@ -120,7 +120,7 @@ public class LocalSessionWinImpl implements LocalSession {
 					
 					wsout.getBasicRemote().sendText(message);
 					
-					wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+					wsout.getBasicRemote().sendText("======= Process " + this.history.getHistory_id() + " ended.");
 					
 				}
 				
