@@ -179,10 +179,10 @@ GW.user = {
         "<div class=\"row\">"+
         
         "   <div class=\"col-md-12\">"+
-        '       User Name: <input type="text" id="username" class=\"input-lg\" name="username" value="'+message.username+'" placeholder="username">'+
+        '       User Name: <input type="text" id="username" class=\"input-lg\" name="username" value="'+message.username+'" disabled="disabled"  placeholder="username">'+
         "   </div>"+
         "   <div class=\"col-md-12\">"+
-        '       Email: <input type="text" id="email" class=\"input-lg\" name="email" value="'+message.email+'" placeholder="email">'+
+        '       Email: <input type="text" id="email" class=\"input-lg\" name="email" value="'+message.email+'" disabled="disabled" placeholder="email">'+
         "   </div>"+
         "</div>"+
 
@@ -262,45 +262,49 @@ GW.user = {
 
     logout: function(){
 
-        $.ajax({
+        var r = confirm("Do you want to logout?");
+        if (r == true) {
+            $.ajax({
 
-            url: "../user/logout",
-				
-            method: "POST",
-
-            headers: { 
-                'Accept': 'application/json',
-                'Content-Type': 'application/json' 
-            },
+                url: "../user/logout",
+                    
+                method: "POST",
+    
+                headers: { 
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json' 
+                },
+            
+                data: "{ \"id\": \""+ GW.user.current_userid + "\"}"
+    
+            }).done(function(msg){
+    
+                if(msg.status=="success"){
+    
+    
+                    document.getElementById("toolbar-profile-a").style.visibility = "hidden"; 
+    
+                    $("#toolbar-loginout-a").html("Login");
+    
+                    $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logindialog()"); 
+    
+                    GW.user.current_username = null;
+    
+                    GW.user.current_userid = null;
+    
+                }else{
+    
+                    console.log("Fail to logout");
+    
+                }
+    
+            }).fail(function(jxr, status){
+    
+                console.log("Fail to logout " + jxr.message);
+    
+            });
+        }
         
-            data: "{ \"id\": \""+ GW.user.current_userid + "\"}"
-
-        }).done(function(msg){
-
-            if(msg.status=="success"){
-
-
-                document.getElementById("toolbar-profile-a").style.visibility = "hidden"; 
-
-                $("#toolbar-loginout-a").html("Login");
-
-                $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logindialog()"); 
-
-                GW.user.current_username = null;
-
-                GW.user.current_userid = null;
-
-            }else{
-
-                console.log("Fail to logout");
-
-            }
-
-        }).fail(function(jxr, status){
-
-            console.log("Fail to logout " + jxr.message);
-
-        });
 
     },
 
