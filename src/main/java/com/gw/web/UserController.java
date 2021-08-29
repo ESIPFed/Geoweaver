@@ -1,17 +1,18 @@
 package com.gw.web;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
-import com.gw.utils.UserStatus;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 @Controller 
 @RequestMapping(value="/user")  
 public class UserController {
@@ -23,6 +24,70 @@ public class UserController {
     
     @Autowired
     UserRepository userRepository;
+
+    @PostMapping("/profile")
+    public @ResponseBody String profile(@Validated @RequestBody GWUser newUser) {
+        
+        String resp = "";
+
+        try{
+
+            Iterable<GWUser> users = userRepository.findAll();
+            for (GWUser user : users) {
+                if (user.getId().equals(newUser.getId())) {
+                    
+                    System.out.println("User  exists!");
+                    //send out password reset email
+
+                    resp = "{\"status\":\"success\", \"username\":\""+user.getUsername()+"\", \"email\": \""+user.getEmail()+"\" }";
+
+                }
+            }
+
+            if(bt.isNull(resp)){
+
+                resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
+            }
+
+        }catch(Exception e){
+
+            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+
+        }
+        
+        return resp;
+    }
+
+    @PostMapping("/forgetpassword")
+    public @ResponseBody String resetpassword(@Validated @RequestBody GWUser newUser) {
+        
+        String resp = "";
+
+        try{
+
+            Iterable<GWUser> users = userRepository.findAll();
+            for (GWUser user : users) {
+                if (user.getEmail().equals(newUser.getEmail())) {
+                    System.out.println("User  exists!");
+                    //send out password reset email
+
+                    resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
+                }
+            }
+
+            if(bt.isNull(resp)){
+
+                resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
+            }
+
+        }catch(Exception e){
+
+            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+
+        }
+        
+        return resp;
+    }
 
     @PostMapping("/register")
     public @ResponseBody String registerUser(@Validated @RequestBody GWUser newUser) {
@@ -74,7 +139,7 @@ public class UserController {
 
                         other.setLoggedIn(true);
                         userRepository.save(other);
-                        resp = "{\"status\":\"success\", \"message\":\"You are logged in!\"}";
+                        resp = "{\"status\":\"success\", \"username\":\""+other.getUsername()+"\", \"id\":\""+other.getId()+"\", \"message\":\"You are logged in!\"}";
                         break;
                     
                     }
@@ -105,7 +170,8 @@ public class UserController {
 
             Iterable<GWUser> users = userRepository.findAll();
             for (GWUser other : users) {
-                if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername())) {
+                if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername()) 
+                || other.getId().equals(user.getId())) {
                     
                         other.setLoggedIn(false);
                         userRepository.save(other);
