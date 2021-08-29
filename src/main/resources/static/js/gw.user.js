@@ -67,7 +67,7 @@ GW.user = {
 
     login: function(){
 
-        if(this.precheck()){
+        if(this.precheck("login")){
 
             //password need to be encrypted first
 
@@ -116,11 +116,15 @@ GW.user = {
 
                     console.log("Login failed");
 
+                    $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3 class="text-danger">Failed to log in. </h3><p>'+msg.message+'</p><p><a href="javascript:GW.user.logindialog()">Try Again</a></p></div></div>');
+
                 }
 
             }).fail(function(jxr, status){
 
                 console.error("Sign In Failed");
+
+                $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3 class="text-danger">Failed to log in. </h3><p>'+msg.message+'</p><p><a href="javascript:GW.user.logindialog()">Try Again</a></p></div></div>');
 
             });
 
@@ -141,7 +145,7 @@ GW.user = {
 
             }
 
-        }else{
+        }else if(type=="login"){
 
             if(!$("#username").val()){
 
@@ -153,14 +157,49 @@ GW.user = {
     
             }
 
+            if(!isvalid){
+
+                alert("Either usename or password is missing. ");
+    
+            }
+
+        }else if(type=="signup"){
+
+            console.log("agree yes " + $("#agree_yes"));
+
+            if(!$("#username").val()){
+
+                isvalid = false;
+
+                alert("User name is missing!");
+    
+            }else if(!$("#password").val()){
+
+                alert("Password is missing!");
+    
+                isvalid = false;
+    
+            }else if($("#password").val()!=$("#rpassword").val()){
+
+                isvalid = false;
+
+                alert("The reentered password doesn't match!");
+
+            }else if(!$("#email").val()){
+
+                isvalid = false;
+
+                alert("Email is missing!");
+
+            }else if($("#agree_yes").attr("checked")){
+
+
+            }
+
         }
 
 
-        if(!isvalid){
-
-            alert("Either usename or password is missing. ");
-
-        }
+        
 
         return isvalid;
 
@@ -361,7 +400,7 @@ GW.user = {
 
     register: function(){
 
-        if(this.precheck()){
+        if(this.precheck("signup")){
 
             $.ajax({
 
