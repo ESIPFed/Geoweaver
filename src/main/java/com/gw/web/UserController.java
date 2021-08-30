@@ -40,7 +40,6 @@ public class UserController {
                 if (user.getId().equals(newUser.getId())) {
                     
                     System.out.println("User  exists!");
-                    //send out password reset email
 
                     resp = "{\"status\":\"success\", \"username\":\""+user.getUsername()+"\", \"email\": \""+user.getEmail()+"\" }";
 
