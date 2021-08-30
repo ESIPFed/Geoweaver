@@ -1,7 +1,10 @@
 package com.gw.web;
 
+import javax.servlet.http.HttpSession;
+
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
+import com.gw.ssh.RSAEncryptTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
@@ -90,7 +93,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public @ResponseBody String registerUser(@Validated @RequestBody GWUser newUser) {
+    public @ResponseBody String registerUser(@Validated @RequestBody GWUser newUser, HttpSession session) {
         
         String resp = "";
 
@@ -107,10 +110,25 @@ public class UserController {
             }
 
             if(bt.isNull(resp)){
-                newUser.setId(new RandomString(10).nextString());
-                userRepository.save(newUser);
 
-                resp = "{\"status\":\"success\", \"message\":\"You are registered!\"}";
+                //validate the email
+                if(bt.validate(newUser.getEmail())){
+
+                    newUser.setId(new RandomString(10).nextString());
+                    String o = RSAEncryptTool.getPassword(newUser.getPassword(), session.getId());
+                    String new512str = bt.get_SHA_512_SecurePassword(o, newUser.getId());
+                    newUser.setPassword(new512str);
+                    userRepository.save(newUser);
+
+                    resp = "{\"status\":\"success\", \"message\":\"You are registered!\"}";
+                
+                }else{
+
+                    resp = "{\"status\":\"failed\", \"message\":\"Invalid Email\"}";
+
+                }
+
+                
             }
 
         }catch(Exception e){
@@ -122,7 +140,7 @@ public class UserController {
         return resp;
     }
     @PostMapping("/login")
-    public @ResponseBody String loginUser(@Validated @RequestBody GWUser user) {
+    public @ResponseBody String loginUser(@Validated @RequestBody GWUser user, HttpSession session) {
 
         String resp = "";
 
@@ -134,8 +152,13 @@ public class UserController {
             for (GWUser other : users) {
                 if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername())) {
                     logger.info("Found username match");
+
+                    //decrypt the password into plain text
+                    String password = RSAEncryptTool.getPassword(user.getPassword(), session.getId());
+
+                    String new512str = bt.get_SHA_512_SecurePassword(password, other.getId());
                     
-                    if(other.getPassword().equals(user.getPassword())){
+                    if(other.getPassword().equals(new512str)){
 
                         other.setLoggedIn(true);
                         userRepository.save(other);

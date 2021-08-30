@@ -43,6 +43,8 @@ GW.user = {
         "   </div>"+
         "</div>"+
 
+        "<p class=\"text-danger\" id=\"server_response_msg\"></p>"+
+
         "<div class=\"row\">"+
         "   <div class=\"col-md-12\" >"+
         "       <button onclick=\"GW.user.login()\" class=\"btn btn-lg btn-primary\" >Sign In</button>"+
@@ -72,61 +74,89 @@ GW.user = {
             //password need to be encrypted first
 
             $.ajax({
-
-                url: "../user/login",
-				
-                method: "POST",
-
-                headers: { 
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json' 
-                },
             
-                data: "{ \"username\": \""+$("#username").val()+"\", \"password\": \""+$("#password").val()+"\"}"
-
+                url: "key",
+                
+                type: "POST",
+                
+                data: ""
+                
             }).done(function(msg){
+                
+                //encrypt the password using the received rsa key
+                
+                msg = $.parseJSON(msg);
+                
+                var encrypt = new JSEncrypt();
+                
+                encrypt.setPublicKey(msg.rsa_public);
 
-                // msg = $.parseJSON(msg);
+                var o = $("#password").val();
+                
+                var encrypted = encrypt.encrypt(o);
+                
+                $.ajax({
 
-                if(msg.status=="success"){
+                    url: "../user/login",
+                    
+                    method: "POST",
 
-                    console.log("Logged in successfully.");
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    },
+                
+                    data: "{ \"username\": \""+$("#username").val()+"\", \"password\": \""+encrypted+"\"}"
 
-                    $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3>You have logged in successfully!</h3><p>This window will automatically close in 3 seconds..</p></div></div>');
+                }).done(function(msg){
 
-                    $("#toolbar-loginout-a").html("Logout");
+                    // msg = $.parseJSON(msg);
 
-                    $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logout()"); 
+                    if(msg.status=="success"){
 
-                    $("#toolbar-profile").html(" "+ msg.username);
+                        console.log("Logged in successfully.");
 
-                    document.getElementById("toolbar-profile-a").style.visibility = "visible"; 
+                        $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3>You have logged in successfully!</h3><p>This window will automatically close in 3 seconds..</p></div></div>');
 
-                    GW.user.current_username = msg.username;
+                        $("#toolbar-loginout-a").html("Logout");
 
-                    GW.user.current_userid = msg.id;
+                        $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logout()"); 
 
-                    // $("#toolbar-login").html($("#username").val() + " " + Logout);
+                        $("#toolbar-profile").html(" "+ msg.username);
 
-                    setTimeout(function(){
-                        GW.user.closeOtherFrames();
-                    }, 3000);
+                        document.getElementById("toolbar-profile-a").style.visibility = "visible"; 
 
-                }else{
+                        GW.user.current_username = msg.username;
 
-                    console.log("Login failed");
+                        GW.user.current_userid = msg.id;
+
+                        // $("#toolbar-login").html($("#username").val() + " " + Logout);
+
+                        setTimeout(function(){
+                            GW.user.closeOtherFrames();
+                        }, 3000);
+
+                    }else{
+
+                        console.log("Login failed");
+
+                        $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3 class="text-danger">Failed to log in. </h3><p>'+msg.message+'</p><p><a href="javascript:GW.user.logindialog()">Try Again</a></p></div></div>');
+
+                    }
+
+                }).fail(function(jxr, status){
+
+                    console.error("Sign In Failed");
 
                     $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3 class="text-danger">Failed to log in. </h3><p>'+msg.message+'</p><p><a href="javascript:GW.user.logindialog()">Try Again</a></p></div></div>');
 
-                }
-
+                });
+                
             }).fail(function(jxr, status){
-
-                console.error("Sign In Failed");
-
-                $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3 class="text-danger">Failed to log in. </h3><p>'+msg.message+'</p><p><a href="javascript:GW.user.logindialog()">Try Again</a></p></div></div>');
-
+                
             });
+
+            
 
         }
 
@@ -159,7 +189,7 @@ GW.user = {
 
             if(!isvalid){
 
-                alert("Either usename or password is missing. ");
+                $("#server_response_msg").html("Either usename or password is missing. ");
     
             }
 
@@ -171,31 +201,37 @@ GW.user = {
 
                 isvalid = false;
 
-                alert("User name is missing!");
+                $("#server_response_msg").html("User name is missing!");
     
             }else if(!$("#password").val()){
 
-                alert("Password is missing!");
+                $("#server_response_msg").html("Password is missing!");
     
                 isvalid = false;
     
+            }else if(!GW.user.checkPassword($("#password").val())){
+
+                $("#server_response_msg").html("Password should be between 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter");
+    
+                isvalid = false;
+                
             }else if($("#password").val()!=$("#rpassword").val()){
 
                 isvalid = false;
 
-                alert("The reentered password doesn't match!");
+                $("#server_response_msg").html("The reentered password doesn't match!");
 
             }else if(!$("#email").val()){
 
                 isvalid = false;
 
-                alert("Email is missing!");
+                $("#server_response_msg").html("Email is missing!");
 
             }else if($('#agree_yes:checked').length <= 0){
 
                 isvalid = false;
 
-                alert("You have to agree the terms to register an account");
+                $("#server_response_msg").html("You have to agree the terms to register an account");
 
             }
 
@@ -206,6 +242,21 @@ GW.user = {
 
         return isvalid;
 
+    },
+
+    checkPassword: function (inputtxt) 
+    { 
+        var passw = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
+        if(inputtxt.match(passw))
+        { 
+            // alert('Correct, try another...')
+            return true;
+        }
+        else
+        { 
+            // alert('Wrong...!')
+            return false;
+        }
     },
 
     /**
@@ -406,50 +457,75 @@ GW.user = {
         if(this.precheck("signup")){
 
             $.ajax({
-
-                url: "../user/register",
-				
-                method: "POST",
-
-                headers: { 
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json' 
-                },
             
-                data: "{"+
-
-                "    \"username\": \""+$("#username").val()+"\","+
-                "    \"password\": \""+$("#password").val()+"\","+
-                "    \"email\": \""+$("#email").val()+"\""+
-
-                "}"
-
+                url: "key",
+                
+                type: "POST",
+                
+                data: ""
+                
             }).done(function(msg){
-    
-                // msg = $.parseJSON(msg);
+                
+                //encrypt the password using the received rsa key
+                
+                msg = $.parseJSON(msg);
+                
+                var encrypt = new JSEncrypt();
+                
+                encrypt.setPublicKey(msg.rsa_public);
 
-                if(msg.status == "success"){
+                var o = $("#password").val();
+                
+                var encrypted = encrypt.encrypt(o);
 
-                    console.log("Registration success");
+                $.ajax({
 
-                    GW.user.logindialog();
+                    url: "../user/register",
+                    
+                    method: "POST",
 
-                }else{
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    },
+                
+                    data: "{"+
 
+                    "    \"username\": \""+$("#username").val()+"\","+
+                    "    \"password\": \""+encrypted+"\","+
+                    "    \"email\": \""+$("#email").val()+"\""+
+
+                    "}"
+
+                }).done(function(msg){
+        
+                    // msg = $.parseJSON(msg);
+
+                    if(msg.status == "success"){
+
+                        console.log("Registration success");
+
+                        GW.user.logindialog();
+
+                    }else{
+
+                        console.log("Registration failed.");
+
+                        $("#server_response_msg").html(msg.message);
+
+                    }
+        
+                }).fail(function(jxr, status){
+        
                     console.log("Registration failed.");
 
-                    $("#server_response_msg").html(msg.message);
+                    $("#server_response_msg").html(jxr.message);
 
-                }
-    
+                });
+
             }).fail(function(jxr, status){
-    
-                console.log("Registration failed.");
-
-                $("#server_response_msg").html(jxr.message);
-
+                
             });
-
         }
 
     },
