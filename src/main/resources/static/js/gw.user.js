@@ -191,8 +191,11 @@ GW.user = {
 
                 alert("Email is missing!");
 
-            }else if($("#agree_yes").attr("checked")){
+            }else if($('#agree_yes:checked').length <= 0){
 
+                isvalid = false;
+
+                alert("You have to agree the terms to register an account");
 
             }
 
