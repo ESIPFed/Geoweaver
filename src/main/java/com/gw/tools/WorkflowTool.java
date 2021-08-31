@@ -301,6 +301,22 @@ public class WorkflowTool {
 		}
 		
 	}
+
+	public List<Workflow> getAllWorkflow(){
+
+		List<Workflow> wlist = new ArrayList();
+
+		workflowrepository.findAll().forEach(w->wlist.add(w));
+
+		return wlist;
+
+	}
+
+	public void save(Workflow w){
+
+		workflowrepository.save(w);
+
+	}
 	
 	/**
 	 * Check the status of a node

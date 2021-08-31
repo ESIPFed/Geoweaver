@@ -2,8 +2,10 @@ package com.gw.tools;
 
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.EnvironmentRepository;
@@ -533,6 +535,22 @@ public class HostTool {
 		
 		return "done";
 		
+	}
+
+	public void save(Host h){
+
+		hostrepository.save(h);
+
+	}
+
+	public List<Host> getAllHosts(){
+
+		List<Host> hostlist = new ArrayList();
+
+		hostrepository.findAll().forEach(h->hostlist.add(h));
+
+		return hostlist;
+
 	}
 
 	/**

@@ -2,6 +2,7 @@ package com.gw.tools;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,7 +67,28 @@ public class ProcessTool {
 		
 		
 	}
+
+	public void save(GWProcess p){
+
+		processrepository.save(p);
+
+	}
 	
+	public List<GWProcess> getAllProcesses(){
+
+		Iterable<GWProcess> pit = processrepository.findAll();
+
+		List<GWProcess> plist = new ArrayList();
+
+		pit.forEach(p->{
+
+			plist.add(p);
+
+		});
+
+		return plist;
+
+	}
 	
 	public String toJSON(GWProcess p) {
 		
