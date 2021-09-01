@@ -1120,6 +1120,39 @@ GW.process = {
 			process_id = msg.id;
 			
 			process_name = msg.name;
+
+			var confidential_field = '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential </div>'+
+			'     <div class="col-sm-3" style="padding-left:30px;">';
+			if(msg.confidential=="FALSE"){
+
+				confidential_field += '       <input type="radio" name="confidential" value="FALSE" checked> ';
+
+			}else{
+
+				confidential_field += '       <input type="radio" name="confidential" value="FALSE"> ';
+
+			}
+			
+			confidential_field += '		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid!=null && GW.user.current_userid!="111111"){
+
+				if(msg.confidential=="TRUE"){
+
+					confidential_field += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+						'		<label for="confidential">Private</label>';
+
+				}else{
+
+					confidential_field += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+						'		<label for="confidential">Private</label>';
+					
+				}
+
+			}
+				
+			
+			confidential_field += '     </div>';
 			
 			var content = "<div class=\"modal-body\">";
 			
@@ -1148,6 +1181,7 @@ GW.process = {
 		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
 	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
+			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+

@@ -14,5 +14,8 @@ public interface WorkflowRepository extends CrudRepository<Workflow, String>{
 	@Query(value="select * from workflow where name like CONCAT('%',:keyword,'%')",
 		nativeQuery=true)
 	Collection<Workflow> findProcessesByNameAlike(@Param("keyword") String keyword);
-	
+
+	@Query(value="select * from workflow where owner in ('111111', ?1)",
+		nativeQuery=true)
+	Collection<Workflow> findAllPublicPrivateByOwner(String owner);
 }

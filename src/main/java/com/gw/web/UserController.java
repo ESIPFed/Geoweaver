@@ -1,16 +1,22 @@
 package com.gw.web;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
 import com.gw.ssh.RSAEncryptTool;
+import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +30,13 @@ public class UserController {
 
     @Autowired
     BaseTool bt;
+
+    @Autowired
+    UserTool ut;
     
     @Autowired
     UserRepository userRepository;
+
 
     @PostMapping("/profile")
     public @ResponseBody String profile(@Validated @RequestBody GWUser newUser) {
@@ -138,8 +148,10 @@ public class UserController {
         
         return resp;
     }
+
+
     @PostMapping("/login")
-    public @ResponseBody String loginUser(@Validated @RequestBody GWUser user, HttpSession session) {
+    public @ResponseBody String loginUser(@Validated @RequestBody GWUser user, HttpSession session, HttpServletRequest request) {
 
         String resp = "";
 
@@ -161,6 +173,11 @@ public class UserController {
 
                         other.setLoggedIn(true);
                         userRepository.save(other);
+
+                        String ipaddress = ut.getClientIp(request);
+
+                        ut.bindSessionUser(session.getId(), other.getId(), ipaddress);
+
                         resp = "{\"status\":\"success\", \"username\":\""+other.getUsername()+"\", \"id\":\""+other.getId()+"\", \"message\":\"You are logged in!\"}";
                         break;
                     
@@ -180,9 +197,40 @@ public class UserController {
         return resp;
     }
 
+    
+    @PostMapping("/logbackin")
+    public @ResponseBody String logbackonafterrefresh(HttpSession session, HttpServletRequest request) {
+
+        String resp = "";
+
+        try{
+            
+            resp = "{\"status\":\"FALSE\", \"message\":\"no active session\"}";
+
+            if(ut.isAuth(session.getId(), ut.getClientIp(request))){
+
+                String id = ut.getAuthUserId(session.getId(), ut.getClientIp(request));
+
+                GWUser u = ut.getUserById(id);
+
+                resp = "{\"status\":\"TRUE\", \"id\":\""+id+"\", \"name\": \""+u.getUsername()+"\"}";
+
+            }
+
+        }catch(Exception e){
+        
+            e.printStackTrace();
+        
+            resp = "{\"status\":\"FALSE\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+
+        }
+
+        return resp;
+
+    }
 
     @PostMapping("/logout")
-    public @ResponseBody String logUserOut(@Validated @RequestBody GWUser user) {
+    public @ResponseBody String logUserOut(@Validated @RequestBody GWUser user, HttpSession session) {
 
         String resp = "";
 
@@ -197,6 +245,7 @@ public class UserController {
                     
                         other.setLoggedIn(false);
                         userRepository.save(other);
+                        ut.removeSessionById(session.getId());
                         resp = "{\"status\":\"success\", \"message\":\"You are logged out!\"}";
                         break;
                     

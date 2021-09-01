@@ -22,6 +22,17 @@ GW.menu = {
 			$('[data-toggle="tooltip"]').tooltip();
 			
 		},
+
+		refresh: function(){
+
+			GW.host.refreshHostList();
+
+			GW.process.refreshProcessList();
+
+			GW.workflow.refreshWorkflowList();
+
+
+		},
 		
 		getPanelIdByType: function(type){
 			

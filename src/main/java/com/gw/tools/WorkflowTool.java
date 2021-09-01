@@ -107,7 +107,9 @@ public class WorkflowTool {
 	
 	public String list(String owner){
 		
-		Iterator<Workflow> wit = workflowrepository.findAll().iterator();
+		// Iterator<Workflow> wit = workflowrepository.findAll().iterator();
+		
+		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(owner).iterator();
 		
 		StringBuffer json = new StringBuffer("[");
 		

@@ -392,7 +392,9 @@ public class HostTool {
 		
 //		List<Host> hostlist =  hostrepository.findByOwner(owner);
 		
-		Iterator<Host> hostit = hostrepository.findAll().iterator();
+		// Iterator<Host> hostit = hostrepository.findAll().iterator();
+		
+		Iterator<Host> hostit = hostrepository.findAllPublicAndPrivateByOwner(owner).iterator();
 		
 		StringBuffer json = new StringBuffer("[");
 		

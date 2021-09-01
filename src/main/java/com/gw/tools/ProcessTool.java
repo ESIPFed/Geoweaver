@@ -115,7 +115,9 @@ public class ProcessTool {
 		
 //		history_tool.process_all_history(pid)
 		
-		Iterator<GWProcess> pit = processrepository.findAll().iterator();
+		// Iterator<GWProcess> pit = processrepository.findAll().iterator();
+
+		Iterator<GWProcess> pit = processrepository.findAllPublicPrivateByOwner(owner).iterator();
 		
 		StringBuffer json = new StringBuffer("[");
 		
@@ -273,7 +275,11 @@ public class ProcessTool {
 			
 //			code = escape(code); //it already escaped once
 			
-			resp.append("\"code\":\"").append(code).append("\" ");
+			resp.append("\"code\":\"").append(code).append("\", ");
+
+			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
+
+			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
 			
 //		}
 		

@@ -1205,6 +1205,44 @@ GW.workflow = {
 		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
 	},
 
+	refreshWorkflowList: function(){
+
+		$.ajax({
+        		
+			url: "list",
+			
+			method: "POST",
+			
+			data: "type=workflow"
+			
+		}).done(function(msg){
+			
+			msg = $.parseJSON(msg);
+			
+			console.log("Start to refresh the workflow list..");
+			
+			// $("#"+GW.menu.getPanelIdByType("host")).html("");
+			$("#workflows").html("");
+			
+			GW.workflow.list(msg);
+			
+			// if($(".processselector")) {
+
+			// 	for(var i=0;i<msg.length;i++){
+					
+			// 		$(".processselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+					
+			// 	}
+				
+			// }
+			
+		}).fail(function(jxr, status){
+			
+			console.error("fail to list process");
+			
+		});
+
+	},
 	
 	list: function(msg){
 		

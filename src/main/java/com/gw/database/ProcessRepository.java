@@ -19,6 +19,10 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String>{
 		nativeQuery = true)
 	Collection<GWProcess> findPythonProcess();
 
+	@Query(value="select * from gwprocess where owner in ('111111', ?1)",
+		nativeQuery = true)
+	Collection<GWProcess> findAllPublicPrivateByOwner(String owner);
+
 	@Query(value="select * from gwprocess where description = 'shell'",
 		nativeQuery = true)
 	Collection<GWProcess> findShellProcess();

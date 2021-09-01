@@ -82,6 +82,8 @@ GW.main = {
 		GW.board.init();
 
 		introJs().start();
+
+		GW.user.loggedInafterrefresh();
 		
 //		this.test_websocket()
 		

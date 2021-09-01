@@ -67,6 +67,37 @@ GW.user = {
 
     },
 
+    refreshthetopbar: function(name, id, isloggedin){
+
+        if(isloggedin){
+
+            $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3>You have logged in successfully!</h3><p>This window will automatically close in 3 seconds..</p></div></div>');
+
+            $("#toolbar-loginout-a").html("Logout");
+    
+            $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logout()"); 
+    
+            $("#toolbar-profile").html(" "+ name);
+    
+            document.getElementById("toolbar-profile-a").style.visibility = "visible"; 
+    
+            GW.user.current_username = name;
+    
+            GW.user.current_userid = id;
+
+        }else{
+
+            document.getElementById("toolbar-profile-a").style.visibility = "hidden"; 
+    
+            $("#toolbar-loginout-a").html("Login");
+
+            $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logindialog()"); 
+
+        }
+
+
+    },
+
     login: function(){
 
         if(this.precheck("login")){
@@ -116,19 +147,9 @@ GW.user = {
 
                         console.log("Logged in successfully.");
 
-                        $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3>You have logged in successfully!</h3><p>This window will automatically close in 3 seconds..</p></div></div>');
+                        GW.user.refreshthetopbar(msg.username, msg.id, true);
 
-                        $("#toolbar-loginout-a").html("Logout");
-
-                        $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logout()"); 
-
-                        $("#toolbar-profile").html(" "+ msg.username);
-
-                        document.getElementById("toolbar-profile-a").style.visibility = "visible"; 
-
-                        GW.user.current_username = msg.username;
-
-                        GW.user.current_userid = msg.id;
+                        GW.menu.refresh();
 
                         // $("#toolbar-login").html($("#username").val() + " " + Logout);
 
@@ -241,6 +262,38 @@ GW.user = {
         
 
         return isvalid;
+
+    },
+
+    loggedInafterrefresh: function(){
+
+        $.ajax({
+
+            url: "../user/logbackin",
+                    
+            method: "POST",
+
+            headers: { 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json' 
+            },
+
+        }).done(function(msg){
+
+            if(msg.status == "TRUE"){
+
+                
+                GW.user.current_userid = msg.id;
+                GW.user.current_username = msg.name;
+
+                GW.user.refreshthetopbar(msg.name, msg.id, true);
+
+            }
+
+        }).fail(function(jxr, status){
+
+
+        });
 
     },
 
@@ -374,12 +427,9 @@ GW.user = {
     
                 if(msg.status=="success"){
     
-    
-                    document.getElementById("toolbar-profile-a").style.visibility = "hidden"; 
-    
-                    $("#toolbar-loginout-a").html("Login");
-    
-                    $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logindialog()"); 
+                    GW.user.refreshthetopbar(null, null, false);
+
+                    GW.menu.refresh();
     
                     GW.user.current_username = null;
     
