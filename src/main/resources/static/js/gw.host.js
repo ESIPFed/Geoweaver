@@ -1744,6 +1744,16 @@ GW.host = {
 				       '   	</div>';
 				
 			}
+
+			content += '   	<div class="form-group row required">'+
+			'     <label for="hostname" class="col-sm-2 col-form-label control-label">Confidential </label>'+
+			'     <div class="col-sm-10" style="padding-left: 30px;">'+
+			'       <input type="radio" name="confidential" value="FALSE" checked> '+
+	 		'		<label for="confidential">Public</label>'+
+			'       <input type="radio" name="confidential" value="TRUE"> '+
+	 		'		<label for="confidential">Private</label>'+ 
+			'     </div>'+
+			'   	</div>';
 			
 			return content;
 			
