@@ -1124,8 +1124,12 @@ public class GeoweaverController {
 				String hosttype = request.getParameter("hosttype");
 				
 				String url = request.getParameter("url");
+
+				String confidential = request.getParameter("confidential");
+
+				String ownerid = request.getParameter("ownerid");
 				
-				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, null);
+				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
 				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\", \"type\": \""+hosttype+"\" }";
 				
@@ -1136,6 +1140,10 @@ public class GeoweaverController {
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
+
+				String ownerid = request.getParameter("ownerid");
+
+				String confidential = request.getParameter("confidential");
 				
 				String code = null;
 				
@@ -1179,7 +1187,7 @@ public class GeoweaverController {
 					
 				}
 				
-				String pid = pt.add(name, lang, code, desc);
+				String pid = pt.add(name, lang, code, desc, ownerid, confidential);
 				
 				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"lang\": \""+lang+"\"}";
 				

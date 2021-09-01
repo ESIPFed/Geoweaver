@@ -485,7 +485,7 @@ public class ProcessTool {
 	 * @param description
 	 * @return
 	 */
-	public String add_database(String name, String lang, String code, String desc) {
+	public String add_database(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		GWProcess p = new GWProcess();
 		
@@ -498,6 +498,10 @@ public class ProcessTool {
 		p.setId(newid);
 		
 		p.setName(name);
+
+		p.setOwner(ownerid);
+
+		p.setConfidential(confidential);
 		
 		processrepository.save(p);
 
@@ -528,7 +532,7 @@ public class ProcessTool {
 	 * @param hid
 	 * @return
 	 */
-	public String add_database(String name, String type, String code, String filepath, String hid) {
+	public String add_database(String name, String type, String code, String filepath, String hid, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -591,7 +595,7 @@ public class ProcessTool {
 	 * @param desc
 	 * @return
 	 */
-	public String add(String name, String lang, String code, String desc) {
+	public String add(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -601,7 +605,7 @@ public class ProcessTool {
 //			
 //		}else {
 			
-			newid = add_database(name, lang, code, desc);
+			newid = add_database(name, lang, code, desc, ownerid, confidential);
 			
 //		}
 		

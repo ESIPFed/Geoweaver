@@ -900,6 +900,17 @@ GW.process = {
 		getProcessDialogTemplate: function(){
 			
 			GW.process.cmid = Math.floor(Math.random() * 1000);
+
+			var confidential_field  = '     <label for="confidential" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential</label>'+
+			'     <div class="col-sm-4">'+
+			'       <input type="radio" name="confidential-'+GW.process.cmid+'" value="FALSE" checked> '+
+	 		'		<label for="confidential-'+GW.process.cmid+'">Public</label>';
+			
+			if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+				confidential_field += '       <input type="radio" name="confidential-'+GW.process.cmid+'" value="TRUE"> '+
+				'		<label for="confidential-'+GW.process.cmid+'">Private</label>';
+//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
+			confidential_field += '     </div>';
 			
 			var content = '<div><form>'+
 		       '   <div class="form-group row required">'+
@@ -922,6 +933,7 @@ GW.process = {
 		       '			<input type="text" class="form-control form-control-sm" id="processname-'+GW.process.cmid+'"></input>'+
 //		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
+			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
 		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit. </p>'+
@@ -1704,6 +1716,14 @@ GW.process = {
 			this.current_pid = null;
 			
 			if(this.precheck()){
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential-'+cmid+'"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential-'+cmid+'"]:checked').val()
+					
+				}
 				
 				var req = { 
 					
@@ -1715,7 +1735,11 @@ GW.process = {
 				
 					name: $("#processname-"+cmid).val(), 
 	    			
-					code: GW.process.getCode(cmid)
+					code: GW.process.getCode(cmid),
+
+					ownerid: GW.user.current_userid,
+
+					confidential: confidential
 					
 				};
 		    		

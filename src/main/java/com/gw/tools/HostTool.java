@@ -480,11 +480,13 @@ public class HostTool {
 	 * @param username
 	 * @param owner
 	 */
-	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner) {
+	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner, String confidential) {
 		
 		String newhostid = new RandomString(6).nextString();
 		
 		Host h = new Host();
+
+		if(bt.isNull(owner)) owner = "111111"; //default to be the public user
 		
 		h.setId(newhostid);
 		h.setIp(hostip);
@@ -494,6 +496,7 @@ public class HostTool {
 		h.setType(type);
 		h.setUrl(url);
 		h.setUsername(username);
+		h.setConfidential(confidential);
 		
 		hostrepository.save(h);
 		
