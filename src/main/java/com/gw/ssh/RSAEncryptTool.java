@@ -64,10 +64,16 @@ public class RSAEncryptTool {
 		try {
 			
 			byte[] pswdbytes = base642Byte(encrypted);
+			KeyPair kp = token2KeyPair.get(sessionid);
+
+			if(kp!=null){
+
+				PrivateKey pk = kp.getPrivate();
 			
-			PrivateKey pk = token2KeyPair.get(sessionid).getPrivate();
+				password = new String(decrypt(pk, pswdbytes));
+
+			}
 			
-			password = new String(decrypt(pk, pswdbytes));
 			
 		}finally {
 			

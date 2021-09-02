@@ -1204,7 +1204,7 @@ GW.host = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null, hostip = null, hosttype = null;
+			var hostid = null, hostip = null, hosttype = null, confidential = null, owner = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -1232,6 +1232,18 @@ GW.host = {
 						hosttype = val;
 						
 					}
+
+					if(i=="confidential"){
+
+						confidential = val;
+						return;
+
+					}else if(i=="owner"){
+
+						owner = val;
+						return;
+
+					}
 					
 					content += "<div class=\"col col-md-3\">"+i+"</div>";
 					
@@ -1250,6 +1262,29 @@ GW.host = {
 				}
 
 			});
+
+			content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+			if(confidential=="FALSE"){
+
+				content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner && GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE"> '+
+					'		<label for="confidential">Private</label>';
+
+			}else{
+
+				content  += '       <input type="radio" name="confidential" value="FALSE"> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner&& GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+					'		<label for="confidential">Private</label>';
+
+			}
 			
 			var delbtn = "";
 			

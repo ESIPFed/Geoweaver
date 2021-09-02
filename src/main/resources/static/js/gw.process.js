@@ -1121,8 +1121,11 @@ GW.process = {
 			
 			process_name = msg.name;
 
+			owner = msg.owner;
+
 			var confidential_field = '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential </div>'+
 			'     <div class="col-sm-3" style="padding-left:30px;">';
+			
 			if(msg.confidential=="FALSE"){
 
 				confidential_field += '       <input type="radio" name="confidential" value="FALSE" checked> ';
@@ -1135,7 +1138,7 @@ GW.process = {
 			
 			confidential_field += '		<label for="confidential">Public</label>';
 			
-			if(GW.user.current_userid!=null && GW.user.current_userid!="111111"){
+			if(GW.user.current_userid==owner && GW.user.current_userid!="111111"){
 
 				if(msg.confidential=="TRUE"){
 

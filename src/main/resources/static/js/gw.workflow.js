@@ -60,6 +60,10 @@ GW.workflow = {
 		
 		var workflowname = null;
 
+		var confidential = null;
+
+		var owner = null;
+
 		var info_body = "";
 		
 		jQuery.each(msg, function(i, val) {
@@ -75,14 +79,22 @@ GW.workflow = {
 						
 						workflowid = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\">"+val+"</div>";
 						
 					}else if(i=="name"){
 						
 						workflowname = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\">"+val+"</div>";
 						
+					}else if(i=="confidential"){
+						
+						confidential = val;
+
+					}else if(i=="owner"){
+
+						owner = val;
+
 					}else{
 
 						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
@@ -92,6 +104,31 @@ GW.workflow = {
 			}
 
 		});
+
+		content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+		if(confidential=="FALSE"){
+
+			content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
+			'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential" value="TRUE"> '+
+				'		<label for="confidential">Private</label>';
+
+		}else{
+
+			content  += '       <input type="radio" name="confidential" value="FALSE"> '+
+			'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+				'		<label for="confidential">Private</label>';
+
+		}
+
+		content += "</div>";
 		
 		content += "</div><div>"+
 		

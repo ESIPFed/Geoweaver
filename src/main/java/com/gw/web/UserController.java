@@ -159,13 +159,13 @@ public class UserController {
             
             resp = "{\"status\":\"failed\", \"message\":\"not found\"}";
 
+            //decrypt the password into plain text
+            String password = RSAEncryptTool.getPassword(user.getPassword(), session.getId());
+
             Iterable<GWUser> users = userRepository.findAll();
             for (GWUser other : users) {
                 if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername())) {
                     logger.info("Found username match");
-
-                    //decrypt the password into plain text
-                    String password = RSAEncryptTool.getPassword(user.getPassword(), session.getId());
 
                     String new512str = bt.get_SHA_512_SecurePassword(password, other.getId());
                     
