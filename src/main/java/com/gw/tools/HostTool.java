@@ -359,7 +359,7 @@ public class HostTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(h);
-            logger.debug("ResultingJSONstring = " + json);
+            // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -374,7 +374,7 @@ public class HostTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(env);
-            logger.debug("ResultingJSONstring = " + json);
+            // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();

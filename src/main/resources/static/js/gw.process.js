@@ -30,6 +30,8 @@ GW.process = {
 		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 		
 		env_frame: null,
+
+		isSaved: true,
 		
 		envlist: {},
 		
@@ -1125,7 +1127,7 @@ GW.process = {
 
 			var confidential_field = '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential </div>'+
 			'     <div class="col-sm-3" style="padding-left:30px;">';
-			
+
 			if(msg.confidential=="FALSE"){
 
 				confidential_field += '       <input type="radio" name="confidential" value="FALSE" checked> ';
@@ -1457,13 +1459,14 @@ GW.process = {
 		},
 
 		showNonSaved:function(){
-
+			this.isSaved = false;
 			console.log("change event called")
 			$("#main-process-tab").html("Process*");
 
 		},
 
 		showSaved: function(){
+			this.isSaved = true;
 			console.log("save event called")
 			$("#main-process-tab").html("Process");
 
@@ -2148,6 +2151,20 @@ GW.process = {
 		 * @param {*} desc 
 		 */
 		runProcess: function(pid, pname, desc){
+
+			if(!this.isSaved){
+
+				if(confirm("You have non-saved changes in this process. Do you want to continue?")){
+
+					//continue
+
+				}else{
+
+					return;
+
+				}
+
+			}
 			
 			var h = this.findCache(pid);
 			
