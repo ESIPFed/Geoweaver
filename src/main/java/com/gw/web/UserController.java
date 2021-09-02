@@ -11,6 +11,8 @@ import com.gw.jpa.GWUser;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.EmailMessage;
+import com.gw.utils.EmailService;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
@@ -36,6 +38,9 @@ public class UserController {
     
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    EmailService et;
 
 
     @PostMapping("/profile")
@@ -82,7 +87,7 @@ public class UserController {
                 if (user.getEmail().equals(newUser.getEmail())) {
                     System.out.println("User  exists!");
                     //send out password reset email
-
+                    et.send_resetpassword(user);
                     resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
                 }
             }

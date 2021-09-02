@@ -611,25 +611,20 @@ GW.user = {
 
                 if(msg.status == "success"){
 
-                    console.log("Reset success");
-
                     $("#reset-password-form").html("<h3>A password reset email has been sent to you!</h3> <p>Please check your email to set new passwords.</p>" +
                     "<p>Didn't receive an email? Please try <a href=\"javascript:GW.user.forgetpassdialog()\">resend</a>.</p>");
 
                 }else{
 
-                    console.log("Reset failed.");
-
-                    $("#reset-password-form").html("<h3>Attempt failed</h3>" +
+                    $("#reset-password-form").html("<h3>Failed</h3>" +
+                    "<p>"+ msg.message + "</p>"+
                     "<p>Please try again: <a href=\"javascript:GW.user.forgetpassdialog()\">resend</a>.</p>");
 
                 }
     
             }).fail(function(jxr, status){
     
-                console.log("Reset failed.");
-
-                $("#reset-password-form").html("<h2>Attempt failed</h2>" +
+                $("#reset-password-form").html("<h2>Failed</h2>" +
                     "<p>Please try again: <a href=\"javascript:GW.user.forgetpassdialog()\">resend</a>.</p>");
 
             });

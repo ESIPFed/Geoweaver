@@ -21,10 +21,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.api.services.gmail.Gmail;
+import com.gw.jpa.GWUser;
 
 @Component
 public class EmailService {
 
+	public void send_resetpassword(GWUser user){
+
+
+
+	}
 	
 	public void sendmail(EmailMessage emailmessage)   {
 		try {
