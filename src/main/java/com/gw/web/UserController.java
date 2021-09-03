@@ -2,6 +2,7 @@ package com.gw.web;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -13,13 +14,17 @@ import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.EmailMessage;
 import com.gw.utils.EmailService;
+import com.gw.utils.HttpUtil;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,8 +80,84 @@ public class UserController {
         return resp;
     }
 
+    /**
+     * This is the password reset callback url
+     * @param token
+     * @param model
+     * @return
+     */
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
+    	System.err.print(token);
+        // User user = userService.getByResetPasswordToken(token);
+        String userid = ut.token2userid.get(token);
+        Date created_date = ut.token2date.get(token);
+
+        if(!bt.isNull(userid)){
+
+            long time_difference =  new Date().getTime() - created_date.getTime();
+
+            //if the token is one hour old
+            if(time_difference<60*60*1000){
+
+                GWUser user = ut.getUserById(userid);
+
+                model.addAttribute("token", token);
+                
+                if (user == null) {
+                    model.addAttribute("message", "Invalid Token");
+                    return "message";
+                }
+
+            }
+
+        }
+
+         
+        return "reset_password_form";
+    }
+    
+    /**
+     * The post request comes from the password reset callback url
+     * @param request
+     * @param model
+     * @return
+     */
+    @PostMapping("/reset_password")
+    public @ResponseBody String processResetPassword(HttpServletRequest request, Model model) {
+        String token = request.getParameter("token");
+        String password = request.getParameter("password");
+         
+        String userid = ut.token2userid.get(token);
+
+        String resp = "{\"status\": \"failed\"}";
+
+        if(!bt.isNull(userid)){
+
+            GWUser user = ut.getUserById(userid);
+
+            Date created_date = ut.token2date.get(token);
+
+            long time_difference =  new Date().getTime() - created_date.getTime();
+
+            //if the token is one hour old
+            if(time_difference<60*60*1000){
+
+                // userService.updatePassword(user, password);
+
+
+            
+            }
+                
+
+        }
+        
+         
+        return "index";
+    }
+
     @PostMapping("/forgetpassword")
-    public @ResponseBody String resetpassword(@Validated @RequestBody GWUser newUser) {
+    public @ResponseBody String resetpassword(@Validated @RequestBody GWUser newUser, HttpServletRequest request) {
         
         String resp = "";
 
@@ -85,9 +166,11 @@ public class UserController {
             Iterable<GWUser> users = userRepository.findAll();
             for (GWUser user : users) {
                 if (user.getEmail().equals(newUser.getEmail())) {
+                    HttpUtil httpUtil = new HttpUtil();
+    	            String siteUrl = httpUtil.getSiteURL(request);
                     System.out.println("User  exists!");
                     //send out password reset email
-                    et.send_resetpassword(user);
+                    et.send_resetpassword(user, siteUrl);
                     resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
                 }
             }
