@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.gw.jpa.History;
 import  com.gw.server.CommandServlet;
+import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 /**
@@ -39,6 +41,9 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HistoryTool ht;
 	
 	public SSHCmdSessionOutput() {
 		
@@ -48,12 +53,13 @@ public class SSHCmdSessionOutput  implements Runnable {
 	
     
 	
-    public void init(BufferedReader in, String token) {
+    public void init(BufferedReader in, String token, String history_id) {
     	
     	log.info("created");
         this.in = in;
         this.token = token;
         this.run = true;
+		this.history_id = history_id;
     	wsout = CommandServlet.findSessionById(token);
     	
     }
@@ -63,6 +69,27 @@ public class SSHCmdSessionOutput  implements Runnable {
     	run = false;
     	
     }
+
+	public void updateStatus(String logs, String status){
+
+		History h = ht.getHistoryById(this.history_id);
+
+		if(bt.isNull(h)){
+
+			h = new History();
+
+			h.setHistory_id(history_id);
+
+			log.debug("This is very unlikely");
+		}
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
+
+		ht.saveHistory(h);
+
+	}
     
     @Override
     public void run() {
@@ -79,9 +106,11 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     	int nullnumber = 0;
     	
-    	SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
+    	// SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
     	
-    	if(!bt.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
+    	updateStatus("Running", "Running"); //initiate the history record
+
+		sendMessage2WebSocket("Process "+this.history_id+" Started");
     	
         while (run) {
         	
@@ -109,9 +138,7 @@ public class SSHCmdSessionOutput  implements Runnable {
                 			
                 			log.debug("null output lines exceed 10. Disconnected.");
                 			
-                			if(!bt.isNull(session)) 
-                				
-                				session.saveHistory(logs.toString(), "Done");
+                			this.updateStatus(logs.toString(), "Done");
                 			
                 			break;
                 			
@@ -129,10 +156,9 @@ public class SSHCmdSessionOutput  implements Runnable {
                 	
 //                	session.saveHistory(logs.toString()); //complete the record
                 	
-                	if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Done");
+                	this.updateStatus(logs.toString(), "Done");
                 	
-                	if(!bt.isNull(wsout) && wsout.isOpen())
-                		wsout.getBasicRemote().sendText("The process "+session.getHistory_id()+" is finished.");
+                	sendMessage2WebSocket("The process "+this.history_id+" is finished.");
                 	
                 	break;
                 	
@@ -155,7 +181,7 @@ public class SSHCmdSessionOutput  implements Runnable {
                 	log.info("wsout message {}:{}", wsout.getId(), line);
                 	
 //                    out.sendMessage(new TextMessage(line));
-                	wsout.getBasicRemote().sendText(line);
+					sendMessage2WebSocket(line);
                     
                 }else {
                 	
@@ -167,10 +193,11 @@ public class SSHCmdSessionOutput  implements Runnable {
             	
                 e.printStackTrace();
                 
-                if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Failed");
+                updateStatus(logs.toString(), "Failed");
                 
             }finally {
             	
+				sendMessage2WebSocket("======= Process " + this.history_id + " ended");
 //                session.saveHistory(logs.toString()); //write the failed record
                 
             }
@@ -182,6 +209,21 @@ public class SSHCmdSessionOutput  implements Runnable {
         log.info("SSH session output thread ended");
 
     }
+
+	public void sendMessage2WebSocket(String msg){
+
+		synchronized(wsout){
+
+			try {
+				if(!bt.isNull(wsout) && wsout.isOpen())
+					wsout.getBasicRemote().sendText(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
     
     public void setWebSocketSession(WebSocketSession session) {
         log.info("received websocket session");

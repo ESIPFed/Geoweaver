@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.tools.HistoryTool;
 import com.gw.tools.LocalhostTool;
 import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
@@ -24,6 +26,9 @@ public class LocalSessionOutput  implements Runnable{
 	
 	@Autowired
 	LocalhostTool lt;
+
+	@Autowired
+	HistoryTool ht;
 	
     protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -45,12 +50,14 @@ public class LocalSessionOutput  implements Runnable{
     	//this is for spring
     }
     
-    public void init(BufferedReader in, String token) {
+    public void init(BufferedReader in, String token, String history_id) {
         log.info("created");
         this.in = in;
         this.token = token;
         this.run = true;
-        wsout = CommandServlet.findSessionById(token);
+		this.history_id = history_id;
+		
+        refreshLogMonitor();
     }
     
     
@@ -59,14 +66,65 @@ public class LocalSessionOutput  implements Runnable{
     	run = false;
     	
     }
+
+	public void sendMessage2WebSocket(String msg){
+
+		synchronized(wsout){
+
+			try {
+				if(!bt.isNull(wsout) && wsout.isOpen())
+					wsout.getBasicRemote().sendText(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public void refreshLogMonitor(){
+
+		if(bt.isNull(wsout)){
+
+			wsout = CommandServlet.findSessionById(token);
+
+			if(bt.isNull(wsout)){
+
+				wsout = CommandServlet.findSessionById(history_id);
+			}
+
+		}
+	}
+
+	
+	public void updateStatus(String logs, String status){
+
+		History h = ht.getHistoryById(this.history_id);
+
+		if(bt.isNull(h)){
+
+			h = new History();
+
+			h.setHistory_id(history_id);
+
+			log.debug("This is very unlikely");
+		}
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
+
+		ht.saveHistory(h);
+
+	}
+    
     
     @Override
     public void run() {
         
 		try{
-
 			log.info("Local session output thread started");
-    	
+		
 			StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
 			
 			StringBuffer logs = new StringBuffer();
@@ -79,15 +137,15 @@ public class LocalSessionOutput  implements Runnable{
 			
 			LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
 			
-			if(!bt.isNull(session))session.saveHistory("Running", "Running"); //initiate the history record
+			this.updateStatus("Running", "Running"); //initiate the history record
 
-			if(!bt.isNull(wsout) && wsout.isOpen())
-				
-				wsout.getBasicRemote().sendText("Process "+this.history_id+" Started");
+			sendMessage2WebSocket("Process "+this.history_id+" Started");
 			
 			while (run) {
-				
+
 				try {
+
+					refreshLogMonitor();
 					
 					// readLine will block if nothing to send
 					
@@ -119,9 +177,7 @@ public class LocalSessionOutput  implements Runnable{
 								
 								log.debug("null output lines exceed 10. Disconnected.");
 								
-								if(!bt.isNull(session)) 
-									
-									session.saveHistory(logs.toString(), "Done");
+								this.updateStatus(logs.toString(), "Done");
 								
 								break;
 								
@@ -139,18 +195,10 @@ public class LocalSessionOutput  implements Runnable{
 						
 	//                	session.saveHistory(logs.toString()); //complete the record
 						
-						if(!bt.isNull(session)) session.saveHistory(logs.toString(), "Done");
+						this.updateStatus(logs.toString(), "Done");
 						
-						if(!bt.isNull(wsout) && wsout.isOpen()) {
+						sendMessage2WebSocket("The process "+history_id+" is finished.");
 							
-							synchronized(wsout){
-							
-								wsout.getBasicRemote().sendText("The process "+session.getHistory().getHistory_id()+" is finished.");
-							
-							}
-						
-						}
-						
 						break;
 						
 					}else {
@@ -169,23 +217,7 @@ public class LocalSessionOutput  implements Runnable{
 								
 							}
 							
-	//                    	log.info("wsout message {}:{}", wsout.getId(), line);
-							
-	//                        out.sendMessage(new TextMessage(line));
-	//                    		wsout.getBasicRemote().sendText(line);
-							synchronized(wsout) {
-								
-								try {
-									
-									wsout.getBasicRemote().sendText(line);
-									
-								}catch(Exception e) {
-									
-									System.err.println("Fail to write the line into the remote websocket channel because of thread confliction.. " + e.getLocalizedMessage());
-									
-								}
-								
-							}
+							this.sendMessage2WebSocket(line);
 							
 						}else {
 							
@@ -199,10 +231,7 @@ public class LocalSessionOutput  implements Runnable{
 					
 					e.printStackTrace();
 					
-					
-					if(!bt.isNull(session)) 
-						
-						session.saveHistory(logs.toString(), "Failed");
+					this.updateStatus(logs.toString(), "Failed");
 
 					break;
 					
@@ -214,6 +243,8 @@ public class LocalSessionOutput  implements Runnable{
 				
 			}
 			
+			//this thread will end by itself when the task is finished, you don't have to close it manually
+
 			GeoweaverController.sessionManager.closeByToken(token);
 			
 			log.info("Local session output thread ended");
@@ -223,16 +254,11 @@ public class LocalSessionOutput  implements Runnable{
 			e.printStackTrace();
 		
 		}finally{
-
-			try {
-				if(!bt.isNull(wsout) && wsout.isOpen()) 
-					wsout.getBasicRemote().sendText("Process " + this.history_id + " ended");
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			
+			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+			
 
 		}
-    	
 
     }
     

@@ -970,6 +970,14 @@ GW.host = {
 					
 				}
 				
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential"]:checked').val()
+					
+				}
+				
 //				var req = "type=host&hostname="+$("#hostname").val() + 
 //	    		
 //		    		"&hostip=" + hostip +
@@ -994,7 +1002,11 @@ GW.host = {
 					
 					hosttype: hosttype,
 					
-					username: $("#username").val()
+					username: $("#username").val(),
+
+					confidential: confidential,
+
+					ownerid: GW.user.current_userid
 					
 				}
 		    	
@@ -1192,7 +1204,7 @@ GW.host = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null, hostip = null, hosttype = null;
+			var hostid = null, hostip = null, hosttype = null, confidential = null, owner = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -1220,6 +1232,18 @@ GW.host = {
 						hosttype = val;
 						
 					}
+
+					if(i=="confidential"){
+
+						confidential = val;
+						return;
+
+					}else if(i=="owner"){
+
+						owner = val;
+						return;
+
+					}
 					
 					content += "<div class=\"col col-md-3\">"+i+"</div>";
 					
@@ -1238,6 +1262,29 @@ GW.host = {
 				}
 
 			});
+
+			content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+			if(confidential=="FALSE"){
+
+				content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner && GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE"> '+
+					'		<label for="confidential">Private</label>';
+
+			}else{
+
+				content  += '       <input type="radio" name="confidential" value="FALSE"> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner&& GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+					'		<label for="confidential">Private</label>';
+
+			}
 			
 			var delbtn = "";
 			
@@ -1659,14 +1706,14 @@ GW.host = {
 			if(host_type=="jupyter") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Jupyter URL </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
 				       '     </div>'+
 				       '   	</div>';
@@ -1674,14 +1721,14 @@ GW.host = {
 			}else if(host_type=="jupyterhub"){
 				
 				content = '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 			       '     </div>'+
 			       '   	</div>'+
 			       '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterHub URL </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">JupyterHub URL </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8000/">'+
 			       '     </div>'+
 			       '   	</div>';
@@ -1689,14 +1736,14 @@ GW.host = {
 			}else if(host_type=="jupyterlab"){
 				
 				content = '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 			       '     </div>'+
 			       '   	</div>'+
 			       '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterLab URL </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">JupyterLab URL </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
 			       '     </div>'+
 			       '   	</div>';
@@ -1704,26 +1751,26 @@ GW.host = {
 			}else if(host_type == "ssh") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostip" class="col-sm-3 col-form-label control-label">Hose IP</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostport" class="col-sm-3 col-form-label control-label">Port</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="username" class="col-sm-3 col-form-label control-label">User Name</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="username" placeholder="">'+
 				       '     </div>'+
 				       '   	</div>';
@@ -1731,19 +1778,32 @@ GW.host = {
 			}else if(host_type == "gee") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Client ID </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Client ID </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="client_id" placeholder="ee.Authenticate client ID..">'+
 				       '     </div>'+
 				       '   	</div>';
 				
 			}
+
+			content += '   	<div class="form-group row required">'+
+			'     <label for="hostname" class="col-sm-3 col-form-label control-label">Confidential </label>'+
+			'     <div class="col-sm-9" style="padding-left: 30px;">'+
+			'       <input type="radio" name="confidential" value="FALSE" checked> '+
+	 		'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+				content += '       <input type="radio" name="confidential" value="TRUE"> '+
+				'		<label for="confidential">Private</label>';
+			
+			content += '     </div>'+
+			'   	</div>';
 			
 			return content;
 			
@@ -1770,8 +1830,8 @@ GW.host = {
 			var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
 			   '<form>'+
 			   '   <div class="form-group row required">'+
-		       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
-		       '     <div class="col-sm-10">'+
+		       '     <label for="hosttype" class="col-sm-3 col-form-label control-label">Host Type </label>'+
+		       '     <div class="col-sm-9">'+
 //		       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
 		       '	 	<select class="form-control" id="hosttype"> '+
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+

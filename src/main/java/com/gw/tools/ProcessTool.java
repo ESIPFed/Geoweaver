@@ -2,6 +2,7 @@ package com.gw.tools;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,7 +67,28 @@ public class ProcessTool {
 		
 		
 	}
+
+	public void save(GWProcess p){
+
+		processrepository.save(p);
+
+	}
 	
+	public List<GWProcess> getAllProcesses(){
+
+		Iterable<GWProcess> pit = processrepository.findAll();
+
+		List<GWProcess> plist = new ArrayList();
+
+		pit.forEach(p->{
+
+			plist.add(p);
+
+		});
+
+		return plist;
+
+	}
 	
 	public String toJSON(GWProcess p) {
 		
@@ -93,7 +115,9 @@ public class ProcessTool {
 		
 //		history_tool.process_all_history(pid)
 		
-		Iterator<GWProcess> pit = processrepository.findAll().iterator();
+		// Iterator<GWProcess> pit = processrepository.findAll().iterator();
+
+		Iterator<GWProcess> pit = processrepository.findAllPublicPrivateByOwner(owner).iterator();
 		
 		StringBuffer json = new StringBuffer("[");
 		
@@ -251,7 +275,11 @@ public class ProcessTool {
 			
 //			code = escape(code); //it already escaped once
 			
-			resp.append("\"code\":\"").append(code).append("\" ");
+			resp.append("\"code\":\"").append(code).append("\", ");
+
+			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
+
+			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
 			
 //		}
 		
@@ -463,7 +491,7 @@ public class ProcessTool {
 	 * @param description
 	 * @return
 	 */
-	public String add_database(String name, String lang, String code, String desc) {
+	public String add_database(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		GWProcess p = new GWProcess();
 		
@@ -476,6 +504,10 @@ public class ProcessTool {
 		p.setId(newid);
 		
 		p.setName(name);
+
+		p.setOwner(ownerid);
+
+		p.setConfidential(confidential);
 		
 		processrepository.save(p);
 
@@ -506,7 +538,7 @@ public class ProcessTool {
 	 * @param hid
 	 * @return
 	 */
-	public String add_database(String name, String type, String code, String filepath, String hid) {
+	public String add_database(String name, String type, String code, String filepath, String hid, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -569,7 +601,7 @@ public class ProcessTool {
 	 * @param desc
 	 * @return
 	 */
-	public String add(String name, String lang, String code, String desc) {
+	public String add(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -579,7 +611,7 @@ public class ProcessTool {
 //			
 //		}else {
 			
-			newid = add_database(name, lang, code, desc);
+			newid = add_database(name, lang, code, desc, ownerid, confidential);
 			
 //		}
 		

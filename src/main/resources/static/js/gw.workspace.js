@@ -12,7 +12,7 @@ GW.workspace = {
 
 		showNonSaved: function(){
 
-			console.trace("changes happened")
+			console.log("changes happened")
 
 			$("#main-workspace-tab").html("Weaver *");
 
@@ -500,40 +500,48 @@ GW.workspace = {
 	    	  };
 	
 	    	  GW.workspace.GraphCreator.prototype.deleteGraph = function(skipPrompt){
-	    	    var thisGraph = this,
-	    	        doDelete = true;
+	    	    var thisGraph = this;
 	    	    
-	    	    //if some objects are selected, delete the selected only. If nothing selected, delete all.
-	    	    if(thisGraph.state.selectedEdge){
-	    	    	
-	    	    	//removing an edge is much easier than removing a process
-	    	        thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-	    	        state.selectedEdge = null;
-	    	        thisGraph.updateGraph();
-	    	        
-	    	    }else if(thisGraph.state.selectedNode){
-	    	    	
-	    	    	var pid = thisGraph.state.selectedNode.id;
-	    	    	console.log("going to remove process: " + pid);
-	    	    	thisGraph.removeNode(pid);
-	    	    	
-	    	    }else{
-	    	    	
-	    	    	if (!skipPrompt){
-	    	    		
-	  	    	      doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
-	  	    	    }
-	  	    	    if(doDelete){
-	  	    	      
-	  	    	      thisGraph.nodes = [];
-	  	    	      thisGraph.edges = [];
-	  	    	      thisGraph.updateGraph();
-	  	    	      
-	  	    	    }
-	    	    	
-	    	    }
+				//first check if the current view is in the workspace
+				if(document.getElementById("workspace").style.display=="block"){
 
-				GW.workspace.showNonSaved();
+					//if some objects are selected, delete the selected only. If nothing selected, delete all.
+					
+					if (!skipPrompt){
+						
+						doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
+
+						if(doDelete){
+					
+							thisGraph.nodes = [];
+							thisGraph.edges = [];
+							thisGraph.updateGraph();
+							GW.workflow.setCurrentWorkflowName("");
+						}
+						
+					}else{
+
+						if(thisGraph.state.selectedEdge){
+					
+							//removing an edge is much easier than removing a process
+							thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+							state.selectedEdge = null;
+							thisGraph.updateGraph();
+							
+						}else if(thisGraph.state.selectedNode){
+							
+							var pid = thisGraph.state.selectedNode.id;
+							console.log("going to remove process: " + pid);
+							thisGraph.removeNode(pid);
+							
+						}
+					}
+					
+
+					GW.workspace.showNonSaved();
+
+				}
+
 	    	    
 	    	    
 	    	  };
@@ -895,22 +903,25 @@ GW.workspace = {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
 		    	      d3.event.preventDefault();
-		    	      if (selectedNode){
+					  if(document.getElementById("workspace").style.display=="block"){
+						if (selectedNode){
 		    	        
-		    	    	var pid = selectedNode.id;
-		    	    	console.log("going to remove process: " + pid);
-	//	    	    	GW.menu.del(pid, "process");
-		    	    	thisGraph.removeNode(pid);
-		    	    	
-		    	      } else if (selectedEdge){
-		    	    	
-		    	    	//removing an edge is much easier than removing a process
-		    	        thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-		    	        state.selectedEdge = null;
-						GW.workspace.showNonSaved();
-		    	        thisGraph.updateGraph();
-		    	        
-		    	      }
+							var pid = selectedNode.id;
+							console.log("going to remove process: " + pid);
+		//	    	    	GW.menu.del(pid, "process");
+							thisGraph.removeNode(pid);
+						
+						} else if (selectedEdge){
+						
+							//removing an edge is much easier than removing a process
+							thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+							state.selectedEdge = null;
+							GW.workspace.showNonSaved();
+							thisGraph.updateGraph();
+						
+						}
+					  }
+		    	      
 		    	      break;
 	    	    }
 	    	  };
@@ -996,7 +1007,9 @@ GW.workspace = {
 	    	    newGs.append("circle")
 	    	      .attr("r", String(consts.nodeRadius))
 //	    	      .attr("r", function(d) { return d.r; })
-	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; }); //add color
+	    	      .style("fill", function (d) { 
+					//   console.log("current color "+ d.id + " - " + d.color); 
+					  return d.color; }); //add color
 	
 	    	    newGs.each(function(d){
 	    	      thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
@@ -1220,6 +1233,7 @@ GW.workspace = {
 	    	  };
 			
 		},
+
 		
 		updateStatus: function(statusList){
 			

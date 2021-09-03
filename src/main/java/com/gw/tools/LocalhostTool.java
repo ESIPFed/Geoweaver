@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
 import com.gw.local.LocalSession;
 import com.gw.local.LocalSessionNixImpl;
 import com.gw.local.LocalSessionWinImpl;
@@ -49,6 +50,9 @@ public class LocalhostTool {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HistoryTool histool;
 	
 	@Autowired
 	ProcessRepository processrepository;
@@ -61,6 +65,30 @@ public class LocalhostTool {
 
 	@Autowired
 	GeoweaverProcessTask t ;
+
+	public void saveHistory(String processid, String script, String history_id){
+
+		History history = histool.getHistoryById(history_id);
+
+		if(bt.isNull(history)){
+
+			history = new History();
+
+			history.setHistory_id(history_id);
+
+		}
+
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+		
+		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		
+		history.setHistory_input(script);
+
+        history.setHistory_id(history_id);
+
+		histool.saveHistory(history);
+
+	}
 
 	/**
 	 * Execute Shell Script on Localhost
@@ -90,6 +118,8 @@ public class LocalhostTool {
 			code = pt.unescape(code);
 			
 			logger.debug(code);
+
+			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
 			
@@ -248,6 +278,8 @@ public class LocalhostTool {
 //			String code = ProcessTool.getCodeById(id);
 			
 			GWProcess process = pt.getProcessById(id);
+
+			this.saveHistory(id, process.getCode(), history_id);
 			
 			localizeJupyter(process.getCode(), process.getName(), token);
 			
@@ -255,19 +287,18 @@ public class LocalhostTool {
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
+			//save environment
+			
+			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			
 			session.runJupyter(history_id, process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory().getHistory_id();
-			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
-			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
@@ -309,24 +340,27 @@ public class LocalhostTool {
 			//get code of the process
 			
 			String code = pt.getCodeById(id);
+
+			this.saveHistory(id, code, history_id);
 			
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			//save environment
+			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
+				ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory().getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
-			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
-				ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
+			
 			
 		}catch(Exception e) {
 			

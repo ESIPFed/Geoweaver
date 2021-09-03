@@ -1,13 +1,7 @@
 package com.gw.jpa;
 
-import java.net.URL;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Host {
@@ -18,6 +12,18 @@ public class Host {
 	String id;
 	
 	String name, ip, port, username, owner, type, url;
+
+	String confidential;
+
+	public String getConfidential() {
+		return this.confidential;
+	}
+
+	public void setConfidential(String confidential) {
+		this.confidential = confidential;
+	}
+
+	
 	
 	public String getId() {
 		return id;

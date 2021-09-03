@@ -2,8 +2,10 @@ package com.gw.tools;
 
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.EnvironmentRepository;
@@ -357,7 +359,7 @@ public class HostTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(h);
-            logger.debug("ResultingJSONstring = " + json);
+            // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -372,7 +374,7 @@ public class HostTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(env);
-            logger.debug("ResultingJSONstring = " + json);
+            // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -390,7 +392,9 @@ public class HostTool {
 		
 //		List<Host> hostlist =  hostrepository.findByOwner(owner);
 		
-		Iterator<Host> hostit = hostrepository.findAll().iterator();
+		// Iterator<Host> hostit = hostrepository.findAll().iterator();
+		
+		Iterator<Host> hostit = hostrepository.findAllPublicAndPrivateByOwner(owner).iterator();
 		
 		StringBuffer json = new StringBuffer("[");
 		
@@ -478,11 +482,13 @@ public class HostTool {
 	 * @param username
 	 * @param owner
 	 */
-	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner) {
+	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner, String confidential) {
 		
 		String newhostid = new RandomString(6).nextString();
 		
 		Host h = new Host();
+
+		if(bt.isNull(owner)) owner = "111111"; //default to be the public user
 		
 		h.setId(newhostid);
 		h.setIp(hostip);
@@ -492,6 +498,7 @@ public class HostTool {
 		h.setType(type);
 		h.setUrl(url);
 		h.setUsername(username);
+		h.setConfidential(confidential);
 		
 		hostrepository.save(h);
 		
@@ -535,6 +542,22 @@ public class HostTool {
 		
 	}
 
+	public void save(Host h){
+
+		hostrepository.save(h);
+
+	}
+
+	public List<Host> getAllHosts(){
+
+		List<Host> hostlist = new ArrayList();
+
+		hostrepository.findAll().forEach(h->hostlist.add(h));
+
+		return hostlist;
+
+	}
+
 	/**
 	 * Add environment to database
 	 * @param historyid
@@ -550,36 +573,45 @@ public class HostTool {
 		try {
 			
 //			String enviroment = getEnvironmentByBEB(hostid, bin, env, basedir);
-			
-			Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
-			
-			Environment newenv = new Environment();
-			
-			if(eit.hasNext()) {
+
+			if(!bt.isNull(bin) && !bt.isNull(env) && !bt.isNull(basedir) && !bt.isNull(settings)){
 				
-				newenv = eit.next();
+				Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
 				
-			}else {
+				Environment newenv = new Environment();
 				
-				newenv.setId(historyid);
-				
-				newenv.setName(bin+"-"+env+"-"+basedir);
-				
-				newenv.setType(type);
-				
-				newenv.setBin(bin);
-				
-				newenv.setPyenv(env);
-				
-				newenv.setBasedir(basedir);
-				
-				newenv.setSettings(settings);
-				
-				newenv.setHost(hostid);
-				
-				environmentrepository.save(newenv);
-				
+				if(eit.hasNext()) {
+					
+					newenv = eit.next();
+					
+				}else {
+					
+					newenv.setId(historyid);
+					
+					newenv.setName(bin+"-"+env+"-"+basedir);
+					
+					newenv.setType(type);
+					
+					newenv.setBin(bin);
+					
+					newenv.setPyenv(env);
+					
+					newenv.setBasedir(basedir);
+					
+					newenv.setSettings(settings);
+					
+					newenv.setHost(hostid);
+					
+					environmentrepository.save(newenv);
+					
+				}
+
+			}else{
+
+				logger.debug("one of the bin, env, basedir, settings is null and the environment will not be saved into database.");
+
 			}
+			
 			
 			
 			

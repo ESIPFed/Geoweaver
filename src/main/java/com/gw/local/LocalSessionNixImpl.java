@@ -170,7 +170,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token);
+    		sender.init(input, token, history_id);
     		
     		thread = new Thread(sender);
             
@@ -248,7 +248,7 @@ public class LocalSessionNixImpl implements LocalSession {
             input = new BufferedReader(new InputStreamReader(stdout));
             
 //            sender = new SSHSessionOutput(input, token);
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -308,7 +308,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
     		
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread

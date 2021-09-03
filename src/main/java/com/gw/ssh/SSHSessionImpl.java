@@ -111,9 +111,8 @@ public class SSHSessionImpl implements SSHSession {
 //    
 //    private String			 history_process;
 //    
-//    private String			 history_id;
     
-    private History          history = new History();
+    private History          history;
     
     @Autowired
     private HistoryTool      history_tool;
@@ -263,15 +262,15 @@ public class SSHSessionImpl implements SSHSession {
         	e.printStackTrace();
         }
         try {
-            shell.close();
+            shell.close(); //sshj shell
         } catch (Throwable e) {
         }
         try {
-            session.close();
+            session.close(); //sshj session
         } catch (Throwable e) {
         }
         try {
-            ssh.disconnect();
+            ssh.disconnect(); //sshj client
             
         } catch (Throwable e) {
         }
@@ -284,71 +283,6 @@ public class SSHSessionImpl implements SSHSession {
 		history.setHistory_output(logs);
 		history.setIndicator(status);
     	this.history_tool.saveHistory(history);
-    	
-//    	try {
-//    		
-//    		log.info("save history " + status);
-//    		
-//    		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
-//    		
-//    		//the log is more than 65500 characters, write it into a log file
-//    		if(logs.length()>65500) {
-//    			
-//    			String logfile = SysDir.upload_file_path + "/" + this.history_id + ".log";
-//    			
-//    			BaseTool.writeString2File(logs, BaseTool.getGeoweaverRootPath() + logfile);
-//    			
-//    			this.history_output = "logfile";
-//    			
-//    		}else {
-//    			
-//    			this.history_output = logs;
-//    			
-//    		}
-//    		
-//    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
-//    		
-//    		ResultSet rs = DataBaseOperation.query(sql.toString());
-//    		
-//			if(!rs.next()) {
-//				
-//				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
-//				
-//				sql.append(this.history_id).append("','");
-//				
-//				sql.append(this.history_process).append("','");
-//				
-//				sql.append(this.history_begin_time).append("', ?, ?, '");
-//				
-//				sql.append(this.hostid).append("', '");
-//				
-//				sql.append(status).append("' )");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
-//				
-//			}else {
-//				
-//				sql = new StringBuffer("update history set end_time = '");
-//				
-//				sql.append(this.history_end_time);
-//				
-//				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
-//				
-//				sql.append(this.history_id).append("';");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
-//				
-//			}
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
     	
 	}
     
@@ -377,12 +311,6 @@ public class SSHSessionImpl implements SSHSession {
     
     @Override
 	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(python);
     	
     	try {
     		
@@ -449,7 +377,7 @@ public class SSHSessionImpl implements SSHSession {
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -491,12 +419,6 @@ public class SSHSessionImpl implements SSHSession {
     
     @Override
 	public void runJupyter(String history_id, String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(notebookjson);
     	
     	try {
     		
@@ -563,7 +485,7 @@ public class SSHSessionImpl implements SSHSession {
             
 //            sender = new SSHSessionOutput(input, token);
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -606,12 +528,6 @@ public class SSHSessionImpl implements SSHSession {
 	@Override
 	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
     	
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(script);
-    	
     	try {
     		
     		log.info("starting command");
@@ -641,7 +557,7 @@ public class SSHSessionImpl implements SSHSession {
             
 //            sender = new SSHSessionOutput(input, token);
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread

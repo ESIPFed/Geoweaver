@@ -1,5 +1,6 @@
 package com.gw.tasks;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -367,7 +368,7 @@ public class GeoweaverProcessTask  extends Task {
 
 
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
-				this.workflow_monitor.getBasicRemote().sendText(array.toJSONString());
+				sendMessage2WorkflowWebsocket(array.toJSONString());
 
 				if(errorcheck==1 && ExecutionStatus.DONE.equals(workflow_status)){
 
@@ -384,7 +385,7 @@ public class GeoweaverProcessTask  extends Task {
 				if(ExecutionStatus.DONE.equals(workflow_status) 
 					|| ExecutionStatus.FAILED.equals(workflow_status) 
 					|| ExecutionStatus.STOPPED.equals(workflow_status)){
-					this.workflow_monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
+						sendMessage2WorkflowWebsocket("{\"workflow_status\": \"completed\"}");
 				}
 				
 				
@@ -421,7 +422,7 @@ public class GeoweaverProcessTask  extends Task {
 				obj.put("status", flag);
 				
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
-				this.workflow_monitor.getBasicRemote().sendText(obj.toJSONString());
+				sendMessage2WorkflowWebsocket(obj.toJSONString());
 				
 			}
 			
@@ -498,22 +499,49 @@ public class GeoweaverProcessTask  extends Task {
 		this.updateEverything();
 
 		tm.done(this);
-
-		if(monitor!=null) {
-                
-			monitor.getAsyncRemote().sendText("Process " + pid + " - History ID - " + history_id + " finished.");
-//					monitor.sendMessage(new TextMessage(ret));
-			
-		}
-		else
-			logger.warn("Monitor websocket session should not be null!");
 		
+		//this is optional to avoid thread conflict
+		// sendMessage2LogoutWebsocket("Process " + pid + " - History ID - " + history_id + " finished.");
 		
-
 		//notify the task list observer
 		// setChanged();
 		// notifyObservers(this);
 		
+	}
+
+	void sendMessage2WorkflowWebsocket(String msg){
+
+		if(workflow_monitor!=null){
+			
+			synchronized(workflow_monitor){
+
+					try {
+						workflow_monitor.getBasicRemote().sendText(msg);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+
+			}
+
+		}
+	}
+
+	void sendMessage2LogoutWebsocket(String msg){
+
+		synchronized(monitor){
+
+			if(monitor!=null){
+				try {
+					monitor.getBasicRemote().sendText(msg);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
+
+		}
+
 	}
 
 	@Override
@@ -530,14 +558,8 @@ public class GeoweaverProcessTask  extends Task {
 		// setChanged();
 		// notifyObservers(this);
 
-		if(monitor!=null) {
-                
-			monitor.getAsyncRemote().sendText("Process " + pid + " - History ID - " + history_id + " failed.");
-//					monitor.sendMessage(new TextMessage(ret));
-			
-		}
-		else
-			logger.warn("Monitor websocket session should not be null!");
+		//this is optional to avoid thread conflict
+		// sendMessage2LogoutWebsocket("Process " + pid + " - History ID - " + history_id + " failed.");
 		
 		
 	}

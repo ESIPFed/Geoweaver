@@ -23,6 +23,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -213,6 +215,45 @@ public class BaseTool {
 		
 	}
 	
+	/**
+	 * add on 10/31/2018
+	 * @param passwordToHash
+	 * @param salt
+	 * @return
+	 */
+	public String get_SHA_512_SecurePassword(String passwordToHash, String salt){
+		String generatedPassword = null;
+	   try {
+		   if(passwordToHash!=null){
+				MessageDigest md = MessageDigest.getInstance("SHA-512");
+				md.update(salt.getBytes(StandardCharsets.UTF_8));
+				byte[] bytes = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8));
+				StringBuilder sb = new StringBuilder();
+				for(int i=0; i< bytes.length ;i++){
+					sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+				}
+				generatedPassword = sb.toString();
+		   }
+	       
+       } 
+       catch (NoSuchAlgorithmException e){
+    	   
+         e.printStackTrace();
+       }
+	    return generatedPassword;
+	}
+
+	/**
+	 * Match Email string
+	 * @param email
+	 * @return
+	 */
+	public static boolean validate(String email){
+		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+	}
 
 //	public String toJSONString(Object value) {
 //		String json = null;

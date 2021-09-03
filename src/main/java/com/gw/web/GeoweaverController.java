@@ -23,6 +23,7 @@ import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
+import com.gw.tools.UserTool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 /**
  * 
  * Controller for SSH related activities, including all the handlers for Geoweaver.
@@ -90,6 +92,9 @@ public class GeoweaverController {
 	
 	@Value("${geoweaver.upload_file_path}")
 	String upload_file_path;
+
+	@Autowired
+	UserTool ut;
 	
 	public static SessionManager sessionManager;
 	
@@ -496,25 +501,27 @@ public class GeoweaverController {
 	}
 	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-    public @ResponseBody String list(ModelMap model, WebRequest request){
+    public @ResponseBody String list(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
 		
 		String resp = null;
 		
 		try {
 			
 			String type = request.getParameter("type");
+
+			String ownerid = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
 			
 			if(type.equals("host")) {
 
-				resp = ht.list("");
+				resp = ht.list(ownerid);
 				
 			}else if(type.equals("process")) {
 				
-				resp = pt.list("");
+				resp = pt.list(ownerid);
 				
 			}else if(type.equals("workflow")) {
 				
-				resp = wt.list("");
+				resp = wt.list(ownerid);
 				
 			}
 			
@@ -781,8 +788,12 @@ public class GeoweaverController {
 			String content = request.getParameter("content");
 			
 			String name = request.getParameter("name");
+
+			String ownerid = request.getParameter("ownerid");
+
+			String confidential = request.getParameter("confidential");
 			
-			String pid = pt.add_database(name, type, content, filepath, hid);
+			String pid = pt.add_database(name, type, content, filepath, hid, ownerid, confidential);
 			
 			resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"desc\" : \""+ type +"\" }";
 			
@@ -1124,8 +1135,12 @@ public class GeoweaverController {
 				String hosttype = request.getParameter("hosttype");
 				
 				String url = request.getParameter("url");
+
+				String confidential = request.getParameter("confidential");
+
+				String ownerid = request.getParameter("ownerid");
 				
-				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, null);
+				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
 				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\", \"type\": \""+hosttype+"\" }";
 				
@@ -1136,6 +1151,10 @@ public class GeoweaverController {
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
+
+				String ownerid = request.getParameter("ownerid");
+
+				String confidential = request.getParameter("confidential");
 				
 				String code = null;
 				
@@ -1179,7 +1198,7 @@ public class GeoweaverController {
 					
 				}
 				
-				String pid = pt.add(name, lang, code, desc);
+				String pid = pt.add(name, lang, code, desc, ownerid, confidential);
 				
 				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"lang\": \""+lang+"\"}";
 				

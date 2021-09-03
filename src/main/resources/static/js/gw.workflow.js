@@ -60,6 +60,10 @@ GW.workflow = {
 		
 		var workflowname = null;
 
+		var confidential = null;
+
+		var owner = null;
+
 		var info_body = "";
 		
 		jQuery.each(msg, function(i, val) {
@@ -75,14 +79,22 @@ GW.workflow = {
 						
 						workflowid = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\">"+val+"</div>";
 						
 					}else if(i=="name"){
 						
 						workflowname = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\">"+val+"</div>";
 						
+					}else if(i=="confidential"){
+						
+						confidential = val;
+
+					}else if(i=="owner"){
+
+						owner = val;
+
 					}else{
 
 						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
@@ -92,6 +104,31 @@ GW.workflow = {
 			}
 
 		});
+
+		content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+		if(confidential=="FALSE"){
+
+			content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
+			'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential" value="TRUE"> '+
+				'		<label for="confidential">Private</label>';
+
+		}else{
+
+			content  += '       <input type="radio" name="confidential" value="FALSE"> '+
+			'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+				'		<label for="confidential">Private</label>';
+
+		}
+
+		content += "</div>";
 		
 		content += "</div><div>"+
 		
@@ -103,7 +140,7 @@ GW.workflow = {
 		
 		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
-		workflowid+"')\"></i> "+
+		workflowid+"', '"+workflowname+"')\"></i> "+
 		
 		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
     	
@@ -455,7 +492,7 @@ GW.workflow = {
 	 * Allow users to choose how to add the workflow into the workspace in two ways: 
 	 * one process or the original workflow of processes
 	 */
-	add: function(wid){
+	add: function(wid, wname){
 		
 		//pop up a dialog to ask which they would like to show it
 		
@@ -505,6 +542,8 @@ GW.workflow = {
 //			switchTab(document.getElementById("main-workspace-tab"), "workspace");
 			
 			GW.general.switchTab("workspace")
+
+			GW.workflow.setCurrentWorkflowName(wname);
 			
         	_frame.closeFrame();
         	
@@ -518,6 +557,13 @@ GW.workflow = {
 		
 	},
 	
+
+	setCurrentWorkflowName: function(name){
+
+		$("#current_workflow_na").html(name);
+
+	},
+
 	/**
 	 * Start to collect information to run the workflow
 	 */
@@ -628,10 +674,16 @@ GW.workflow = {
 				    
 				    } else {
 				    
+						
+						nodes = $.parseJSON(nodes);
+
 				    	for(var i=0;i<nodes.length;i++){
-							
+
+
 				    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
+						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+
+							   nodes[i].title+ " (" + nodes[i].id + ")"+
+							   '</mark> on: </label>'+
 						       '     <div class="col-sm-8">'+
 						       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
 						       '  		</select>'+
@@ -747,7 +799,9 @@ GW.workflow = {
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
-    					GW.monitor.startMonitor(msg.token);
+						GW.ssh.openLog(msg); //for logging
+
+    					GW.monitor.startMonitor(msg.token); //for workspace refreshing
     					
 					}
 					
@@ -1188,6 +1242,44 @@ GW.workflow = {
 		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
 	},
 
+	refreshWorkflowList: function(){
+
+		$.ajax({
+        		
+			url: "list",
+			
+			method: "POST",
+			
+			data: "type=workflow"
+			
+		}).done(function(msg){
+			
+			msg = $.parseJSON(msg);
+			
+			console.log("Start to refresh the workflow list..");
+			
+			// $("#"+GW.menu.getPanelIdByType("host")).html("");
+			$("#workflows").html("");
+			
+			GW.workflow.list(msg);
+			
+			// if($(".processselector")) {
+
+			// 	for(var i=0;i<msg.length;i++){
+					
+			// 		$(".processselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+					
+			// 	}
+				
+			// }
+			
+		}).fail(function(jxr, status){
+			
+			console.error("fail to list process");
+			
+		});
+
+	},
 	
 	list: function(msg){
 		
