@@ -105,8 +105,8 @@ public class UserController {
                 model.addAttribute("token", token);
                 
                 if (user == null) {
-                    model.addAttribute("message", "Invalid Token");
-                    return "message";
+                    // model.addAttribute("message", "Invalid Token");
+                    return "Invalid Token";
                 }
 
             }
@@ -130,6 +130,9 @@ public class UserController {
          
         String userid = ut.token2userid.get(token);
 
+        //invalidate the toke right away
+        ut.token2userid.remove(token);
+
         String resp = "{\"status\": \"failed\"}";
 
         if(!bt.isNull(userid)){
@@ -137,6 +140,8 @@ public class UserController {
             GWUser user = ut.getUserById(userid);
 
             Date created_date = ut.token2date.get(token);
+            
+            ut.token2date.remove(token);
 
             long time_difference =  new Date().getTime() - created_date.getTime();
 
@@ -144,16 +149,16 @@ public class UserController {
             if(time_difference<60*60*1000){
 
                 // userService.updatePassword(user, password);
+                ut.updatePassword(user, password);
 
-
-            
+                resp = "{\"status\": \"success\"}";
             }
                 
 
         }
         
          
-        return "index";
+        return resp;
     }
 
     @PostMapping("/forgetpassword")
