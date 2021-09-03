@@ -164,6 +164,8 @@ GW.user = {
 
     },
 
+    
+
     /**
      * Send logout request
      */
