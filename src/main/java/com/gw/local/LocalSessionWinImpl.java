@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.websocket.Session;
 
@@ -307,6 +308,10 @@ public class LocalSessionWinImpl implements LocalSession {
     		GWProcess pro = pt.getProcessById(processid);
     		
     		ProcessBuilder builder = new ProcessBuilder();
+			
+			Map<String, String> env = builder.environment();
+
+			env.put("Path", env.get("Path")+";C://Users//didar//AppData//Local//Programs//Python//Python39");
 
 			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
     		
@@ -320,6 +325,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.command(new String[] {"python", pythonfilename} );
     		
+			log.info(builder.environment());
     		builder.redirectErrorStream(true);
     		
     		process = builder.start();
