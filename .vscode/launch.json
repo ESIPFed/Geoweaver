@@ -6,13 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch GmailAPI",
-            "request": "launch",
-            "mainClass": "com.gw.utils.GmailAPI",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
             "name": "Launch GeoweaverApplication",
             "request": "launch",
             "mainClass": "com.gw.GeoweaverApplication",
