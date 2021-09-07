@@ -295,7 +295,52 @@ public class GeoweaverController {
 		
 	}
 
-	
+	/**
+     * This is the password reset callback url
+     * @param token
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/reset_password", method = RequestMethod.GET)
+    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
+
+        if(!bt.isNull(token)){
+
+            System.err.print(token);
+            // User user = userService.getByResetPasswordToken(token);
+            String userid = ut.token2userid.get(token);
+            Date created_date = ut.token2date.get(token);
+    
+            if(!bt.isNull(userid)){
+    
+                long time_difference =  new Date().getTime() - created_date.getTime();
+    
+                //if the token is one hour old
+                if(time_difference<60*60*1000){
+    
+                    GWUser user = ut.getUserById(userid);
+    
+                    model.addAttribute("token", token);
+                    
+                    if (user == null) {
+                        // model.addAttribute("message", "Invalid Token");
+                        return "Invalid Token";
+                    }
+    
+                }
+    
+            }
+
+        }else{
+
+            model.addAttribute("error", "No Token. Invalid Link. ");
+            
+        }
+
+
+         
+        return "reset_password_form";
+    }
 	
 	@RequestMapping(value = "/recent", method = RequestMethod.POST)
     public @ResponseBody String recent_history(ModelMap model, WebRequest request){
