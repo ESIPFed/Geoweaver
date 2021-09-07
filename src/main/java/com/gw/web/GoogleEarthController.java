@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -116,6 +118,7 @@ public class GoogleEarthController {
             .setDefaultRequestConfig(RequestConfig.custom()
                 .setCookieSpec(CookieSpecs.STANDARD)
                     .setRedirectsEnabled(false)
+					
                     .build())
             .build();
 
@@ -370,6 +373,28 @@ public class GoogleEarthController {
 
 			// newheaders.set("Connection", "keep-alive");
 
+			//add another copy of uppercase keys
+			// Iterator headerit = newheaders.keySet().iterator();
+
+			// while(headerit.hasNext()){
+
+			// 	String key = String.valueOf(headerit.next());
+
+			// 	if(key.equals("x-xsrf-token")){
+
+			// 		List newvalue = new ArrayList();
+			// 		newvalue.add(newheaders.get(key));
+			// 		newheaders.set("X-XSRF-Token", String.valueOf(newheaders.get(key)));
+
+			// 	}else{
+
+			// 		String newkey = key.substring(0, 1).toUpperCase() + key.substring(1);
+			// 		newheaders.set(newkey, String.valueOf(newheaders.get(key)));
+
+			// 	}
+
+			// }
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -455,7 +480,7 @@ public class GoogleEarthController {
 				if(lowkey.equals("location")) {
 
 					logger.debug("Location Header: " + lowkey);
-					newHeaders.set(lowkey, "/Geoweaver/GoogleEarth-proxy/" + hostid + value.get(0));
+					newHeaders.set(lowkey, "/Geoweaver/GoogleEarth-proxy/" + hostid + "/?gee_proxy_url=" + URLEncoder.encode(value.get(0), StandardCharsets.UTF_8.toString()));
 				
 				}else if(lowkey.equals("transfer-encoding") && value.get(0).equals("chunky")){
 					
@@ -576,7 +601,7 @@ public class GoogleEarthController {
 			
 			} else {
 
-				targeturl = request.getParameter("gee_proxy_url");
+				targeturl = URLDecoder.decode(request.getParameter("gee_proxy_url"), StandardCharsets.UTF_8);
 
 				if (targeturl.contains("https://www.googleapis.com/oauth2/v3/userinfo")) {
 					
