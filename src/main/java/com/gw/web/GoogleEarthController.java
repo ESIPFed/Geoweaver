@@ -173,6 +173,7 @@ public class GoogleEarthController {
                 .replace("\"/cloud/projects", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/cloud/projects")
                 .replace("\"/versions/script_manager", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/versions/script_manager")
                 .replace("\"/repo/list?only_default=true", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/repo/list?only_default=true")
+                .replace("\"/repo/load", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/repo/load")
                 .replace("\"/scripts/load", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/scripts/load")
 				.replace("\"/docs/get", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/docs/get")
 				.replace("\"/auth/refresh", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/auth/refresh")
@@ -196,7 +197,7 @@ public class GoogleEarthController {
 				// Maps Resources domain (www.maps.gstatic.com)
 				// .replace("https://www.maps.gstatic.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://www.maps.gstatic.com")
 
-				// .replace("https://code.earthengine.google.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://code.earthengine.google.com")
+				.replace("https://code.earthengine.google.com", "/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url=https://code.earthengine.google.com")
 
 				// .replace("this.aa.send", "console.log(this.aa), console.log('find content-earthengine - ' + a), this.aa.send")
 				// .replace("this.aa.open(b,String(a)", "this.aa.open(b,'/Geoweaver/GoogleEarth-proxy/"+hostID + "/?gee_proxy_url='+ String(a)") 
@@ -565,7 +566,7 @@ public class GoogleEarthController {
 			
 			HttpHeaders newheaders = getHeaders(reqentity.getHeaders(), method, request, hostid);
 			
-			HttpEntity newentity = new HttpEntity(bt.isNull(reqentity.getBody())?"":reqentity.getBody(), newheaders);
+
 			
 			String targeturl = "";
 
@@ -591,6 +592,9 @@ public class GoogleEarthController {
 					newheaders.set("Referer", "https://code.earthengine.google.com/");
 				}
 			}
+
+			HttpEntity newentity = new HttpEntity(bt.isNull(reqentity.getBody())?"":reqentity.getBody(), newheaders);
+			
 			logger.debug("NEW HEADERS for /userInfo: "+newheaders.toString());
 
 			logger.debug("[Target URL GoogleEarth]: "+targeturl);
