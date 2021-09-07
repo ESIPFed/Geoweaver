@@ -107,11 +107,11 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			Session wsout = CommandServlet.findSessionById(token);
 			
-			if(!bt.isNull(wsout) && wsout.isOpen()) {
+			if(!bt.isNull(wsout) && wsout.isOpen() ) {
 				
 				log.info("The failed message has been sent to client");
-				
-				wsout.getBasicRemote().sendText(message);
+				if(!bt.isNull(message))
+					wsout.getBasicRemote().sendText(message);
 				
 				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
 				

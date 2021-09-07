@@ -229,7 +229,7 @@ public class UserTool {
 
         Optional<GWUser> og = userRepository.findById(id);
 
-        if(!og.isEmpty()){
+        if(og.isPresent()){
 
             u = og.get();
 

@@ -79,9 +79,11 @@ public class SessionManager {
     		
     		LocalSession localSession = localSessionByToken.get(token);
     		
-    		localSession.stop();
+    		if(localSession!=null){
+				localSession.stop();
     		
-    		localSessionByToken.remove(token);
+    			localSessionByToken.remove(token);
+			}
     		
     	}
     	
