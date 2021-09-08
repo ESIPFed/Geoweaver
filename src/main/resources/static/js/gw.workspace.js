@@ -131,23 +131,28 @@ GW.workspace = {
 
 	    },
 
-		saveWorkflow: function(thisGraph){
+		saveWorkflow: function(){
 
-			if(thisGraph.nodes.length!=0){
+			if(GW.workspace.checkIfWorkflow()){
+
+				if(GW.workspace.thisGraph.nodes.length!=0){
       	    	  
-				var saveEdges = [];
-				
-				thisGraph.edges.forEach(function(val, i){
-				  saveEdges.push({source: val.source, target: val.target});
-				});
-				
-				GW.workflow.save(thisGraph.nodes, saveEdges);
-//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-//          	    		  {type: "text/plain;charset=utf-8"});
-//          	      window.saveAs(blob, "geoweaver.json");
-			}else{
-				alert("No nodes are present!");
+					var saveEdges = [];
+					
+					GW.workspace.thisGraph.edges.forEach(function(val, i){
+					  saveEdges.push({source: val.source, target: val.target});
+					});
+					
+					GW.workflow.save(GW.workspace.thisGraph.nodes, saveEdges);
+	//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+	//          	    		  {type: "text/plain;charset=utf-8"});
+	//          	      window.saveAs(blob, "geoweaver.json");
+				}else{
+					alert("No nodes are present!");
+				}
+
 			}
+
 
 		},
 		
@@ -245,11 +250,11 @@ GW.workspace = {
 					  
 	    	   }
 
-			   if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
-					console.log("Ctrl+s event detected: " + d3.event.keyCode);
-					GW.workspace.saveWorkflow(thisGraph); //trigger save button
+			//    if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
+			// 		console.log("Ctrl+s event detected: " + d3.event.keyCode);
+			// 		GW.workspace.saveWorkflow(thisGraph); //trigger save button
 
-			   }
+			//    }
 
     	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
@@ -313,7 +318,7 @@ GW.workspace = {
     	    
     	    d3.select("#save-workflow").on("click", function(){
     	    	
-      	      GW.workspace.saveWorkflow(thisGraph);
+      	      GW.workspace.saveWorkflow();
       	      
       	    });
     	    
@@ -1259,6 +1264,12 @@ GW.workspace = {
 			GW.workspace.theGraph.renderStatus(statusList);
 			
 		},
+
+		checkIfWorkspacePanelActive: function(){
+
+			return document.getElementById("workspace").style.display=="block";
+
+		},
 		
 		/**
 		 * check if the workspace has more than one processes
@@ -1321,9 +1332,9 @@ GW.workspace = {
 	    	  
 	    	  var format = d3.format(",d");
 	    	  
-	    	  this.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
+	    	  GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
 	    	  
-	    	  this.theGraph.updateGraph();
+	    	  GW.workspace.theGraph.updateGraph();
 			
 		}
 		

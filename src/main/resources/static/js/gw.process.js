@@ -7,17 +7,7 @@
 */ 
 
 
-$(window).bind('keydown', function(event) {
-    if (event.ctrlKey || event.metaKey) {
-        switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 's':
-			event.preventDefault();
-			GW.process.editSwitch();
-            // alert('ctrl-s');
-            break;
-        }
-    }
-});
+
 
 GW.process = {
 		
@@ -46,6 +36,19 @@ GW.process = {
 		],
 		
 		connection_cache: [{"p":"xxxx", "h": "yyyyy"}],
+
+		init: function(){
+
+			
+
+		},
+
+		
+		checkIfProcessPanelActive: function(){
+
+			return document.getElementById("main-process-info").style.display=="block";
+
+		},
 		
 		clearCache: function(){
 			
@@ -131,11 +134,11 @@ GW.process = {
 
 	        		extraKeys: {
 	        			
-		    		    "Ctrl-S": function(instance) { 
+		    		    // "Ctrl-S": function(instance) { 
 		    		    	
-		    		    		GW.process.update(GW.process.current_pid, cmid);
+		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
-		    		    }
+		    		    // }
 		    		}
 				
 	        	});
@@ -1474,45 +1477,55 @@ GW.process = {
 		
 		editSwitch: function(){
 			
-			console.log("Turn on/off the fields");
-			
-			// Uncomment if editing should be disabled by default [Currently enabled]
-			// GW.process.editOn = !GW.process.editOn;
-			
+			if(GW.process.checkIfProcessPanelActive()){
 
+				console.log("Turn on/off the fields");
 			
-			// if(GW.process.editOn && isinitial == null) {
+				// Uncomment if editing should be disabled by default [Currently enabled]
+				// GW.process.editOn = !GW.process.editOn;
+				
 
 				
-			GW.process.current_pid = $("#processid").val();
-			
-			GW.process.update(GW.process.current_pid);
+				// if(GW.process.editOn && isinitial == null) {
+
+					
 				
-			// }
-			
-			$("#processcategory").prop( "disabled", GW.process.editOn );
-			
-			$("#processname").prop( "disabled", GW.process.editOn );
-			
-			$("#processid").prop( "disabled", true ); //always cannot edit id
-			
-			if(GW.process.editor){
+
+				if(typeof $("#processid").val() != undefined){
+
+					GW.process.current_pid = $("#processid").val();
+					GW.process.update(GW.process.current_pid);
+					
 				
-				GW.process.editor.setOption("readOnly", GW.process.editOn)
+					$("#processcategory").prop( "disabled", GW.process.editOn );
+					
+					$("#processname").prop( "disabled", GW.process.editOn );
+					
+					$("#processid").prop( "disabled", true ); //always cannot edit id
+					
+					if(GW.process.editor){
+						
+						GW.process.editor.setOption("readOnly", GW.process.editOn)
+						
+					}
+					
+					if($(".builtin-process")){
+						
+						$(".builtin-process").prop( "disabled", GW.process.editOn );
+						
+					}
+					
+					if($(".builtin-parameter")){
+						
+						$(".builtin-parameter").prop( "disabled", GW.process.editOn );
+						
+					}
+				}
 				
+				
+
 			}
 			
-			if($(".builtin-process")){
-				
-				$(".builtin-process").prop( "disabled", GW.process.editOn );
-				
-			}
-			
-			if($(".builtin-parameter")){
-				
-				$(".builtin-parameter").prop( "disabled", GW.process.editOn );
-				
-			}
 			
 		},
 

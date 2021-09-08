@@ -58,6 +58,8 @@ GW.main = {
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		
+		GW.process.init();
+
 		GW.workspace.init();
 		
 		GW.toolbar.init();

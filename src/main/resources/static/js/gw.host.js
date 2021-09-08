@@ -22,6 +22,12 @@ GW.host = {
 			this.cred_cache = [];
 			
 		},
+
+		checkIfHostPanelActive: function(){
+
+			return document.getElementById("main-host-info").style.display=="block";
+
+		},
 		
 		setEnvCache: function(hid, env){
 			
@@ -1130,19 +1136,23 @@ GW.host = {
 		
 		editSwitch: function(){
 			
-			console.log("Turn on/off the fields");
+			if(GW.host.checkIfHostPanelActive()){
+
+				console.log("Turn on/off the fields");
 			
-			$(".host-value-field").prop( "disabled", GW.process.editOn );
-			
-			GW.process.editOn = !GW.process.editOn;
-			
-			if(!GW.process.editOn){
+				$(".host-value-field").prop( "disabled", GW.process.editOn );
 				
-				console.log("Save the changes if any")
+				GW.process.editOn = !GW.process.editOn;
 				
-				this.edit()
-				
+				if(!GW.process.editOn){
+					
+					console.log("Save the changes if any")
+					
+					this.edit()
+					
+				}
 			}
+			
 			
 		},
 		
@@ -1294,7 +1304,7 @@ GW.host = {
 			
 			content += "</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\">"+
+				"<div class=\"col-md-12\">"+
 				
 				"<p align=\"right\">"+
 				
@@ -1304,23 +1314,23 @@ GW.host = {
 				
 				"</p>"+
 				
-				"</div></div>"+
+				"</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:600px;\" id=\"ssh-terminal-iframe\">"+
+				"<div class=\"col-md-12\" style=\"max-height:600px;margin:0;\" id=\"ssh-terminal-iframe\">"+
 				
-				"</div></div>"+
+				"</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" id=\"host-file-uploader\">"+
+				"<div class=\"col-md-12\" style=\"margin:0;\" id=\"host-file-uploader\">"+
 				
-				"</div></div>"+
+				"</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-file-browser\">"+
+				"<div class=\"col-md-12\" style=\"max-height:800px;margin:0;\" id=\"host-file-browser\">"+
 				
-				"</div></div>"+
+				"</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-history-browser\">"+
+				"<div class=\"col-md-12\" style=\"max-height:800px;margin:0;\" id=\"host-history-browser\">"+
 				
-				"</div></div>"+
+				"</div>"+
 				
 				"</div>";
 			

@@ -13,7 +13,21 @@ GW.general = {
 		
 		init: function(){
 			
-			
+			//add hot keys for the entire app
+			$(window).bind('keydown', function(event) {
+				if (event.ctrlKey || event.metaKey) {
+					switch (String.fromCharCode(event.which).toLowerCase()) {
+						case 's':
+							//need to check if the current page to call the correct method
+							event.preventDefault();
+							GW.host.editSwitch();
+							GW.process.editSwitch();
+							GW.workspace.saveWorkflow();
+							// alert('ctrl-s');
+							break;
+					}
+				}
+			});
 			
 		},
 
