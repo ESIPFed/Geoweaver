@@ -70,13 +70,13 @@ public class EmailService {
 			GmailOperations gmailOperations = new GmailOperations();
 
 			MimeMessage Mimemessage = gmailOperations.createEmail(emailmessage.getTo_address(),
-					"Geoweaver App",
+					"geoweaver.app@gmail.com",
 					emailmessage.getSubject(), 
 					emailmessage.getBody());
 
 			com.google.api.services.gmail.model.Message msg = gmailOperations.createMessageWithEmail(Mimemessage);
 
-			service.users().messages().send("Geoweaver App", msg).execute();
+			service.users().messages().send("Geoweaver Service Team", msg).execute();
 			
 		}catch(Exception e) {
 			

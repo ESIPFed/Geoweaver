@@ -95,6 +95,9 @@ public class GmailAPI {
 
     public static Gmail getGmailService() throws IOException, GeneralSecurityException {
 
+        //client id: 471690502756-7inelnnpit9mp4dofk5sda2op0105d9u.apps.googleusercontent.com
+        //key: fmqHZjd4H9VOeOymUfwY-O6V
+
         String credentials = "{\"web\":{\"client_id\":\"81951272659-866jnt9ggh7ro1pirq9p1ckcaiq646h8.apps.googleusercontent.com\",\"project_id\":\"watersmart-1614386745314\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"Mdlf7qs-peR7QQPipE0vFIM5\",\"redirect_uris\":[\"http://localhost:8071/ids\"]}}";
         InputStream in = new ByteArrayInputStream(credentials.getBytes());
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
