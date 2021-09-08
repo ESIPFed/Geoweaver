@@ -10,6 +10,8 @@ GW.workspace = {
 		
 		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
 
+		keymap : {},
+
 		showNonSaved: function(){
 
 			console.log("changes happened")
@@ -128,6 +130,26 @@ GW.workspace = {
 
 
 	    },
+
+		saveWorkflow: function(thisGraph){
+
+			if(thisGraph.nodes.length!=0){
+      	    	  
+				var saveEdges = [];
+				
+				thisGraph.edges.forEach(function(val, i){
+				  saveEdges.push({source: val.source, target: val.target});
+				});
+				
+				GW.workflow.save(thisGraph.nodes, saveEdges);
+//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+//          	    		  {type: "text/plain;charset=utf-8"});
+//          	      window.saveAs(blob, "geoweaver.json");
+			}else{
+				alert("No nodes are present!");
+			}
+
+		},
 		
 		/**
 		 * Create a new GraphCreator object
@@ -153,6 +175,8 @@ GW.workspace = {
     	      shiftNodeDrag: false,
     	      selectedText: null
     	    };
+
+			GW.workspace.keymap = {};
 
     	    // define arrow markers for graph links
     	    var defs = svg.append('svg:defs');
@@ -206,6 +230,8 @@ GW.workspace = {
     	    
     	    // listen for key events
     	    d3.select(window).on("keydown", function(){
+
+				GW.workspace.keymap[d3.event.keyCode] = 'keydown';
     	    	
     	    	switch (d3.event.keyCode) {
 	    	        case 8: //backspace = 8
@@ -213,15 +239,22 @@ GW.workspace = {
 	    	          // BACKSPACE_KEY was fired in <input id="textbox">
 	    	          if(d3.event.target.nodeName.toLowerCase() === 'input') {
 
-		    	          event.stopPropagation();
+						d3.event.stopPropagation();
 		    	          return;
-	    	          }    
-	    	          
+	    	          };
+					  
 	    	   }
-    	    	
+
+			   if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
+					console.log("Ctrl+s event detected: " + d3.event.keyCode);
+					GW.workspace.saveWorkflow(thisGraph); //trigger save button
+
+			   }
+
     	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
     	    .on("keyup", function(){
+				GW.workspace.keymap[d3.event.keyCode] = 'keyup';
     	      thisGraph.svgKeyUp.call(thisGraph);
     	    });
     	    svg.on("mousedown", function(d){thisGraph.svgMouseDown.call(thisGraph, d);});
@@ -280,21 +313,7 @@ GW.workspace = {
     	    
     	    d3.select("#save-workflow").on("click", function(){
     	    	
-      	      if(thisGraph.nodes.length!=0){
-      	    	  
-      	    	  var saveEdges = [];
-      	    	  
-          	      thisGraph.edges.forEach(function(val, i){
-          	        saveEdges.push({source: val.source, target: val.target});
-          	      });
-          	      
-          	      GW.workflow.save(thisGraph.nodes, saveEdges);
-//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-//          	    		  {type: "text/plain;charset=utf-8"});
-//          	      window.saveAs(blob, "geoweaver.json");
-      	      }else{
-      	    	  alert("No nodes are present!");
-      	      }
+      	      GW.workspace.saveWorkflow(thisGraph);
       	      
       	    });
     	    
