@@ -122,7 +122,7 @@ GW.process = {
 		
 		showShell: function(code, cmid){
 			
-			$("#codearea-"+GW.process.cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
+			$("#codearea-"+GW.process.cmid).append('<textarea id="codeeditor-'+cmid+'" class=\"CodeMirror\" placeholder="Code goes here..." ></textarea>');
 			
         	//initiate the code editor
 			
@@ -162,10 +162,12 @@ GW.process = {
 			});
 			
 			$(".CodeMirror").css('font-size',"10pt");
+
+			$(".CodeMirror").css('height',"100%");
 			
 			//$(".CodeMirror").css('height',"auto");
 			
-			// GW.process.editor.setSize(null, 360);
+			// GW.process.editor.setSize("100%", "100%");
 			
 			if(code!=null){
 				
@@ -1162,7 +1164,7 @@ GW.process = {
 			
 			confidential_field += '     </div>';
 			
-			var content = "<div class=\"modal-body\">";
+			var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 			
 			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
@@ -1203,28 +1205,28 @@ GW.process = {
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
 			
-			content += "<div class=\"row\" style=\"font-size: 12px; margin:0;\" id=\"process-code-history-section\">"+
-				"			<div class=\"row\">"+
-				"				<div class=\"col col-md-6\" >"+
+			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
+				// "			<div class=\"row\">"+
+				"				<div class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
 				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding: 0px;\" ></div>"+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%;  padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
-				"				<div id=\"single-console-content\" class=\"col col-md-6\"> "+
+				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
 				"					<h4 style=\"color:black\">Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
-				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px;" ></div>'+
+				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
 				'   				</div>'+
-				"				</div>"+
-				"			</div>";
+				"				</div>";
+				// "			</div>";
 
 			content += '</div>'+
 				
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">";
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); overflow-y: scroll;left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">";
 
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
 			'   </div>';
@@ -1443,8 +1445,8 @@ GW.process = {
 
 			  	});
 //				$(".CodeMirror").css('font-size',"10pt");
-				$(".CodeMirror").css('height',"auto");
-				$(".CodeMirror").css('max-height',"none");
+				$(".CodeMirror").css('height',"100%");
+				$(".CodeMirror").css('max-height',"100%");
 				
 				GW.process.refreshCodeEditor();
 			}
