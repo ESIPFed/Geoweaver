@@ -273,11 +273,11 @@ GW.process = {
 
         		extraKeys: {
         			
-	    		    "Ctrl-S": function(instance) { 
+	    		    // "Ctrl-S": function(instance) { 
 	    		    	
-	    		    	GW.process.update(GW.process.current_pid, cmid);
+	    		    // 	GW.process.update(GW.process.current_pid, cmid);
 	    		    	
-	    		     },
+	    		    //  },
 
 					 "Ctrl-Space": "autocomplete"
         		}
@@ -1419,23 +1419,23 @@ GW.process = {
 					  
 			          extraKeys: {
 			        			
-				    		    "Ctrl-S": function(instance) { 
+				    		    // "Ctrl-S": function(instance) { 
 				    		    	
-				    		    		if(!GW.process.editOn){
+				    		    // 		if(!GW.process.editOn){
 				    		    			
-					    		    		var process_code = GW.process.editor.getValue()
+					    		//     		var process_code = GW.process.editor.getValue()
 					    		    	
-					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
+					    		//     		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
 
 											
 					    		    	
-				    		    		}else{
+				    		    // 		}else{
 				    		    			
-				    		    			alert("Please turn on edit mode!");
+				    		    // 			alert("Please turn on edit mode!");
 				    		    			
-				    		    		}
+				    		    // 		}
 				    		    	
-				    		    }
+				    		    // }
 				    	  }
 			    });
 				
