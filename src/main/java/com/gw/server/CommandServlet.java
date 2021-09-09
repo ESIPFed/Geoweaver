@@ -86,17 +86,35 @@ public class CommandServlet {
 
             String tokenfromclient = null;
 
-            if(message!=null && message.startsWith("history_id:")){
+            if(message!=null ){
 
-				tokenfromclient = message.substring(11);
+                if(message.startsWith("history_id:")){
+                    
+                    tokenfromclient = message.substring(11);
 
-                logger.debug(" - History ID: " + message);
+                    logger.debug(" - History ID: " + message);
 
-				WsSession wss = (WsSession) session;
+                    WsSession wss = (WsSession) session;
+                    
+                    // logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+                    
+                    peers.put(tokenfromclient, session);
+
+                }else if(message.startsWith("token:")){
+
+                    tokenfromclient = message.substring(6);
+
+                    logger.debug(" - Token: " + message);
+
+                    WsSession wss = (WsSession) session;
+                    
+                    logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+                    
+                    peers.put(tokenfromclient, session);
+
+                }
+
 				
-				logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-				
-				peers.put(tokenfromclient, session);
 
             }
         	

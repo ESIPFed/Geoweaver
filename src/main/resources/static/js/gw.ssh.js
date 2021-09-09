@@ -295,6 +295,8 @@ GW.ssh = {
 			// GW.general.switchTab("console");
 
 			this.send("history_id:" + msg.history_id);
+
+			this.send("token:" + msg.token);
 			
 			this.addlog("=======\nStart to process " + msg.history_id);
 			
