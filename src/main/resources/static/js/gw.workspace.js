@@ -67,15 +67,15 @@ GW.workspace = {
 
 			if(GW.workspace.checkIfWorkflow()){
 
-				if(GW.workspace.thisGraph.nodes.length!=0){
+				if(GW.workspace.theGraph.nodes.length!=0){
       	    	  
 					var saveEdges = [];
 					
-					GW.workspace.thisGraph.edges.forEach(function(val, i){
+					GW.workspace.theGraph.edges.forEach(function(val, i){
 					  saveEdges.push({source: val.source, target: val.target});
 					});
 					
-					GW.workflow.save(GW.workspace.thisGraph.nodes, saveEdges);
+					GW.workflow.save(GW.workspace.theGraph.nodes, saveEdges);
 	//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
 	//          	    		  {type: "text/plain;charset=utf-8"});
 	//          	      window.saveAs(blob, "geoweaver.json");
