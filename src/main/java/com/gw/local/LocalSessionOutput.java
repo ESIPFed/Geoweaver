@@ -86,11 +86,12 @@ public class LocalSessionOutput  implements Runnable{
 
 		if(bt.isNull(wsout)){
 
-			wsout = CommandServlet.findSessionById(token);
+			wsout = CommandServlet.findSessionById(history_id);
 
 			if(bt.isNull(wsout)){
-
-				wsout = CommandServlet.findSessionById(history_id);
+				
+				wsout = CommandServlet.findSessionById(token);
+				
 			}
 
 		}
