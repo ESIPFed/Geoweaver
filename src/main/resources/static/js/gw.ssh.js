@@ -134,7 +134,7 @@ GW.ssh = {
 	      //shell.echo(special.white + "connected" + special.reset);
 	      this.echo("connected");
 	      // link the SSH session established with spring security logon to the websocket session...
-	      this.send("token:" + this.token);
+	    //   this.send("token:" + this.token);
 	      
 	      
 	    },
@@ -196,7 +196,7 @@ GW.ssh = {
 	        	
 	        	//the websocket is already closed. try the history query
 	        	
-	        	this.echo("It ends too quickly. Go to history to check the logs out.");
+	        	// this.echo("It ends too quickly. Go to history to check the logs out.");
 	        	
 	        }
 	        
@@ -293,6 +293,8 @@ GW.ssh = {
 //			$("#log-window").slideToggle(true);
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
 			// GW.general.switchTab("console");
+
+			this.send("history_id:" + msg.history_id);
 			
 			this.addlog("=======\nStart to process " + msg.history_id);
 			

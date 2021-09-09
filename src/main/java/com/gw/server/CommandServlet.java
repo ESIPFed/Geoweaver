@@ -86,11 +86,11 @@ public class CommandServlet {
 
             String tokenfromclient = null;
 
-            if(message!=null && message.startsWith("token:")){
+            if(message!=null && message.startsWith("history_id:")){
 
-				tokenfromclient = message.substring(6);
+				tokenfromclient = message.substring(11);
 
-                logger.debug(" - Token: " + message);
+                logger.debug(" - History ID: " + message);
 
 				WsSession wss = (WsSession) session;
 				
@@ -219,6 +219,18 @@ public class CommandServlet {
         	se = peers.get(sessionid);
         }
         return se;
+    }
+
+    public static void removeSessionById(String sessionid){
+
+        peers.remove(sessionid);
+
+    }
+
+    public static void cleanAll(){
+
+        peers.clear();
+        
     }
 
 }

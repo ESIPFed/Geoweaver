@@ -87,14 +87,35 @@ public class LocalSessionOutput  implements Runnable{
 		if(bt.isNull(wsout)){
 
 			wsout = CommandServlet.findSessionById(history_id);
-
+			
 			if(bt.isNull(wsout)){
 				
 				wsout = CommandServlet.findSessionById(token);
-				
+
 			}
 
+			// if(!wsout.isOpen()){
+
+			// 	CommandServlet.removeSessionById(history_id);
+
+			// 	CommandServlet.removeSessionById(token);
+			
+			// }
+
 		}
+	}
+
+	public void cleanLogMonitor(){
+
+			CommandServlet.removeSessionById(history_id);
+			
+			// if(bt.isNull(wsout)){
+				
+			// 	wsout = CommandServlet.findSessionById(token);
+
+			// }
+
+
 	}
 
 	
@@ -257,6 +278,8 @@ public class LocalSessionOutput  implements Runnable{
 		}finally{
 			
 			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+
+			cleanLogMonitor();
 			
 
 		}

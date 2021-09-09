@@ -325,7 +325,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.command(new String[] {"python", pythonfilename} );
     		
-			log.info(builder.environment());
+			// log.info(builder.environment());
     		builder.redirectErrorStream(true);
     		
     		process = builder.start();
