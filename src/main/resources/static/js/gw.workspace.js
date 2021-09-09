@@ -60,74 +60,6 @@ GW.workspace = {
 //			});
 			
 			GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
-			
-//	        const jsFrame = new JSFrame({parentElement: $('#jsframe-container')[0]});
-////	        const innerHTML = '<div class="modal-header">' +
-////	            '<h6 class="modal-title">Do want to save ?</h6>' +
-////	            '</div>' +
-////	            '<div class="modal-footer">' +
-////	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
-////	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
-////	            '</div>';
-//	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
-//
-//	        const modalFrame = jsFrame.create({
-//	            name: 'my-modal-window',
-//	            title: 'Confirmation',
-//	            appearanceName: 'yosemite',
-//	            left: 0, top: 0, width: 320, height: 150,
-//	            style: {
-//                    backgroundColor: 'rgb(255,255,255)',
-//                    overflow:'auto'
-//
-//                },
-//	            movable: true,
-//	            resizable: true,
-//	            html: innerHTML
-//	        });
-//	        modalFrame.setControl({
-//                styleDisplay:'inline',
-//                maximizeButton: 'zoomButton',
-//                demaximizeButton: 'dezoomButton',
-//                minimizeButton: 'minimizeButton',
-//                deminimizeButton: 'deminimizeButton',
-//                hideButton: 'closeButton',
-//                animation: true,
-//                animationDuration: 150,
-//
-//            });
-//	        //Place window in the center
-//	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
-//
-//
-//	        //Handling the button's click event
-//	        modalFrame.on('#bt_submit', 'click', (_frame, e) => {
-//	            _frame.extra = {
-//	                result: 'submitted'
-//	            }
-//	            _frame.closeFrame();
-//	        });
-//	        modalFrame.on('#bt_cancel', 'click', (frame, e) => {
-//	            //You can also get frame object from JSFrame object.
-//	            var _frame = jsFrame.getWindowByName('my-modal-window');
-//	            _frame.extra = {
-//	                result: 'canceled'
-//	            }
-//	            _frame.closeFrame();
-//	        });
-//
-////	        //Open as modal window
-////	        modalFrame.showModal(_frame => {
-////	            //You can get callback when closing the modal window
-////	            jsFrame.showToast({
-////	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
-////	                align: 'center',
-////	                duration: 2000
-////	            });
-////	        });
-//	        
-//	        modalFrame.show()
-
 
 	    },
 
@@ -482,7 +414,8 @@ GW.workspace = {
 
     	    // handle delete graph
     	    d3.select("#delete-graph").on("click", function(){
-    	      thisGraph.deleteGraph(false);
+    	    //   thisGraph.deleteGraph(false);
+				GW.workspace.theGraph.deleteSelectedOrAll();
     	    });
     	    
     	
@@ -907,6 +840,45 @@ GW.workspace = {
     	    		thisGraph.updateGraph();
 					GW.workspace.showNonSaved();
 	    	  }
+
+			  GW.workspace.GraphCreator.prototype.deleteSelectedOrAll = function(){
+
+				if(Object.keys(BootstrapDialog.dialogs).length){
+	    			return; //if there are shown dialogs, key activity will be disconnected from svg
+	    		}
+	    	    var thisGraph = this,
+	    	        state = thisGraph.state,
+	    	        consts = thisGraph.consts;
+	
+	    	    var selectedNode = state.selectedNode,
+	    	        selectedEdge = state.selectedEdge;
+	
+				if(document.getElementById("workspace").style.display=="block"){
+
+					if (selectedNode){
+					
+						var pid = selectedNode.id;
+						console.log("going to remove process: " + pid);
+	//	    	    	GW.menu.del(pid, "process");
+						thisGraph.removeNode(pid);
+					
+					} else if (selectedEdge){
+					
+						//removing an edge is much easier than removing a process
+						thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+						state.selectedEdge = null;
+						GW.workspace.showNonSaved();
+						thisGraph.updateGraph();
+					
+					}else{
+
+						this.deleteGraph(false);
+
+					}
+				}
+		    	      
+
+			  }
 	
 	    	  // keydown on main svg
 	    	  GW.workspace.GraphCreator.prototype.svgKeyDown = function() {
@@ -920,31 +892,32 @@ GW.workspace = {
 	    	    if(state.lastKeyDown !== -1) return;
 	
 	    	    state.lastKeyDown = d3.event.keyCode;
-	    	    var selectedNode = state.selectedNode,
-	    	        selectedEdge = state.selectedEdge;
+	    	    // var selectedNode = state.selectedNode,
+	    	    //     selectedEdge = state.selectedEdge;
 	
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
 		    	      d3.event.preventDefault();
-					  if(document.getElementById("workspace").style.display=="block"){
-						if (selectedNode){
+					  this.deleteSelectedOrAll();
+		// 			  if(document.getElementById("workspace").style.display=="block"){
+		// 				if (selectedNode){
 		    	        
-							var pid = selectedNode.id;
-							console.log("going to remove process: " + pid);
-		//	    	    	GW.menu.del(pid, "process");
-							thisGraph.removeNode(pid);
+		// 					var pid = selectedNode.id;
+		// 					console.log("going to remove process: " + pid);
+		// //	    	    	GW.menu.del(pid, "process");
+		// 					thisGraph.removeNode(pid);
 						
-						} else if (selectedEdge){
+		// 				} else if (selectedEdge){
 						
-							//removing an edge is much easier than removing a process
-							thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-							state.selectedEdge = null;
-							GW.workspace.showNonSaved();
-							thisGraph.updateGraph();
+		// 					//removing an edge is much easier than removing a process
+		// 					thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+		// 					state.selectedEdge = null;
+		// 					GW.workspace.showNonSaved();
+		// 					thisGraph.updateGraph();
 						
-						}
-					  }
+		// 				}
+		// 			  }
 		    	      
 		    	      break;
 	    	    }
