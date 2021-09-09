@@ -52,7 +52,7 @@ GW.workflow = {
 	
 	display: function(msg){
 		
-		var content = "<div class=\"modal-body\">";
+		var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 		
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
 		
@@ -155,12 +155,12 @@ GW.workflow = {
 		
 		workflowid+"', '" + workflowname+"')\">History</button>"+
 		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
-		"	<div class=\"row\">"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
+		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
 			info_body+
 		"	</div>"+
 		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll;  left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
