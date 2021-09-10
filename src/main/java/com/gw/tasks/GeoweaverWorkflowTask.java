@@ -215,7 +215,7 @@ public class GeoweaverWorkflowTask{
 			log.info("close the websocket session from server side");
 			
 			if(!bt.isNull(monitor))
-				monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\"}");
+				monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\", \"workflow_history_id\":\""+this.history_id+"\"}");
 			// if(!bt.isNull(monitor))
 			// 	monitor.close();
 			

@@ -385,7 +385,7 @@ public class GeoweaverProcessTask  extends Task {
 				if(ExecutionStatus.DONE.equals(workflow_status) 
 					|| ExecutionStatus.FAILED.equals(workflow_status) 
 					|| ExecutionStatus.STOPPED.equals(workflow_status)){
-						sendMessage2WorkflowWebsocket("{\"workflow_status\": \"completed\"}");
+						sendMessage2WorkflowWebsocket("{\"workflow_status\": \"completed\", \"workflow_history_id\": \""+workflow_history_id+"\"}");
 				}
 				
 				
