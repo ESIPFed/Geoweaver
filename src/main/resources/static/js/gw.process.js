@@ -187,7 +187,7 @@ GW.process = {
 
 			// console.log("Process Code Editor is refreshed..");
 			
-			GW.process.editor.refresh();
+			if(GW.process.editor!=null)GW.process.editor.refresh();
 
 		},
 		

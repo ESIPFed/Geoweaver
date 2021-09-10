@@ -771,6 +771,10 @@ GW.workflow = {
 	
 	
 	execute_callback: function(req, dialogItself, button){
+
+		var history_id = GW.general.makeid(18);
+
+		req.history_id = history_id;
 		
  		$.ajax({
 				

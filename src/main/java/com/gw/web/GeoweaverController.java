@@ -793,6 +793,9 @@ public class GeoweaverController {
 				token = session.getId();
 
 			}
+
+			String history_id = bt.isNull(request.getParameter("history_id"))? 
+				new RandomString(18).nextString(): request.getParameter("history_id");
 			
 			String[] hosts = request.getParameterValues("hosts[]");
 			
@@ -801,7 +804,7 @@ public class GeoweaverController {
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
-			resp = wt.execute(id, mode, hosts, passwords, token);
+			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
 			
 		}catch(Exception e) {
 			

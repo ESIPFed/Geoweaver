@@ -189,7 +189,6 @@ public class LocalhostTool {
 		
 		try {
 			
-			//get code of the process
 			
 			
 			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
