@@ -914,8 +914,8 @@ public class GeoweaverController {
 			String basedir = request.getParameter("env[basedir]");
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
-			
-			String history_id = new RandomString(12).nextString();
+
+			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
 			resp = pt.execute(history_id, pid, hid, password, session.getId(), false, bin, pyenv, basedir);
 			

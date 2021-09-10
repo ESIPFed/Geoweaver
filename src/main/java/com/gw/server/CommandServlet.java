@@ -86,37 +86,37 @@ public class CommandServlet {
 
             String tokenfromclient = null;
 
-            if(message!=null ){
+            // if(message!=null ){
 
-                if(message.startsWith("history_id:")){
+            //     if(message.startsWith("history_id:")){
                     
-                    tokenfromclient = message.substring(11);
+            //         tokenfromclient = message.substring(11);
 
-                    logger.debug(" - History ID: " + tokenfromclient);
+            //         logger.debug(" - History ID: " + tokenfromclient);
 
-                    WsSession wss = (WsSession) session;
+            //         WsSession wss = (WsSession) session;
                     
-                    // logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+            //         // logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
                     
-                    peers.put(tokenfromclient, session);
+            //         peers.put(tokenfromclient, session);
 
-                }else if(message.startsWith("token:")){
+            //     }else if(message.startsWith("token:")){
 
-                    tokenfromclient = message.substring(6);
+            //         tokenfromclient = message.substring(6);
 
-                    logger.debug(" - Token: " + tokenfromclient);
+            //         logger.debug(" - Token: " + tokenfromclient);
 
-                    WsSession wss = (WsSession) session;
+            //         WsSession wss = (WsSession) session;
                     
-                    logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+            //         logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
                     
-                    peers.put(tokenfromclient, session);
+            //         peers.put(tokenfromclient, session);
 
-                }
+            //     }
 
 				
 
-            }
+            // }
         	
         	logger.debug(" Session ID: " + session.getQueryString());
         	
@@ -248,7 +248,7 @@ public class CommandServlet {
     public static void cleanAll(){
 
         peers.clear();
-        
+
     }
 
 }

@@ -179,6 +179,8 @@ public class LocalSessionNixImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -263,7 +265,9 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			
@@ -323,7 +327,8 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			

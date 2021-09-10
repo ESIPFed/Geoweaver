@@ -886,7 +886,7 @@ GW.process = {
 			
 			if(code != null){
 
-				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils
+				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils, should remove in v1.0
 			
 			}
 			
@@ -1885,6 +1885,12 @@ GW.process = {
 			
 			GW.process.clearProcessLogging();
 
+			var newhistid = GW.general.makeid(12);
+
+			req.history_id = newhistid;
+
+			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
+
 			$.ajax({
 				
 				url: "executeProcess",
@@ -1905,10 +1911,8 @@ GW.process = {
 						
 						console.log("history id: " + msg.history_id);
 						
-						GW.process.showSSHOutputLog(msg);
+						// GW.process.showSSHOutputLog(msg);
 
-						
-						
 //						if(req.desc == "builtin"){
 //							
 //							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client

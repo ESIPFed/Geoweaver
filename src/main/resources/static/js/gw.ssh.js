@@ -221,7 +221,7 @@ GW.ssh = {
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
 			var style1 = "";
-			if(content.includes("Start to process") || content.includes("=======")){
+			if(content.includes("Start to process") || content.includes("===== Process")){
 
 				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
 
@@ -276,6 +276,12 @@ GW.ssh = {
 	    	
 	    },
 
+		connectWsSessionWithExecution: function(msg){
+
+
+
+		},
+
 		openLog: function(msg){
 			
 			//check if the websocket session is alive, otherwise, restore the connection
@@ -294,7 +300,7 @@ GW.ssh = {
 //			switchTab(document.getElementById("main-console-tab"), "main-console");
 			// GW.general.switchTab("console");
 
-			this.send("history_id:" + msg.history_id);
+			// this.send("history_id:" + msg.history_id);
 
 			this.send("token:" + msg.token);
 			

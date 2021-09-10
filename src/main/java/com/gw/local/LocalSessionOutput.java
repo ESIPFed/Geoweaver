@@ -94,13 +94,15 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void refreshLogMonitor(){
 
+		log.debug("Refreshing monitor..token: " + token);
+
 		if(bt.isNull(wsout)){
 
-			wsout = CommandServlet.findSessionById(history_id);
+			wsout = CommandServlet.findSessionById(token);
 			
 			if(bt.isNull(wsout)){
 				
-				wsout = CommandServlet.findSessionById(token);
+				wsout = CommandServlet.findSessionById(history_id);
 
 			}
 			
@@ -113,7 +115,8 @@ public class LocalSessionOutput  implements Runnable{
 			// }
 
 		}
-		// if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
+		if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
+		else log.debug("Command-socket session  is missing ");
 	}
 
 	public void cleanLogMonitor(){
@@ -174,7 +177,10 @@ public class LocalSessionOutput  implements Runnable{
 
 			sendMessage2WebSocket("Process "+this.history_id+" Started");
 			
-			while (run) {
+			String line = null; //in.readLine();
+
+			// while (run) {
+			while((line = in.readLine()) != null){
 
 				try {
 
@@ -189,8 +195,6 @@ public class LocalSessionOutput  implements Runnable{
 						break;
 						
 					}
-					
-					String line = in.readLine();
 					
 					linenumber++;
 					
@@ -228,11 +232,11 @@ public class LocalSessionOutput  implements Runnable{
 						
 	//                	session.saveHistory(logs.toString()); //complete the record
 						
-						this.updateStatus(logs.toString(), "Done");
+						// this.updateStatus(logs.toString(), "Done");
 						
-						sendMessage2WebSocket("The process "+history_id+" is finished.");
+						// sendMessage2WebSocket("The process "+history_id+" is finished.");
 							
-						break;
+						// break;
 						
 					}else {
 						
@@ -275,6 +279,10 @@ public class LocalSessionOutput  implements Runnable{
 				}
 				
 			}
+
+			this.updateStatus(logs.toString(), "Done");
+						
+			sendMessage2WebSocket("The process "+history_id+" is finished.");
 			
 			//this thread will end by itself when the task is finished, you don't have to close it manually
 

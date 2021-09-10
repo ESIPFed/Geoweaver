@@ -190,7 +190,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		tempfile = workspace_folder_path + "/gw-" + token + "-" + rand + ".sh";
 
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		
@@ -222,6 +222,8 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -281,7 +283,8 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
             log.info("Local Session Windows Implementation is done.");
             
@@ -351,7 +354,9 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
 		} catch (Exception e) {
 			
