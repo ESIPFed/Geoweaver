@@ -290,7 +290,7 @@ public class LocalSessionOutput  implements Runnable{
 			
 			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
 
-			cleanLogMonitor();
+			// cleanLogMonitor();
 			
 
 		}
