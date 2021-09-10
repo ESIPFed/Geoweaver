@@ -1188,7 +1188,7 @@ public class GeoweaverController {
 
 				String confidential = request.getParameter("confidential");
 
-				String ownerid = request.getParameter("ownerid");
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 				
 				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
@@ -1202,7 +1202,7 @@ public class GeoweaverController {
 				
 				String desc = request.getParameter("desc");
 
-				String ownerid = request.getParameter("ownerid");
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 
 				String confidential = request.getParameter("confidential");
 				
@@ -1260,7 +1260,9 @@ public class GeoweaverController {
 				
 				String edges = request.getParameter("edges");
 				
-				String wid = wt.add(name, nodes, edges);
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+
+				String wid = wt.add(name, nodes, edges, ownerid);
 				
 				resp = "{\"id\" : \"" + wid + "\", \"name\":\"" + name + "\"}";
 				

@@ -424,7 +424,7 @@ public class WorkflowTool {
 	}
 
 	
-	public String add(String name, String nodes, String edges) {
+	public String add(String name, String nodes, String edges, String ownerid) {
 		
 		String newid = new RandomString(20).nextString();
 		
@@ -438,7 +438,7 @@ public class WorkflowTool {
 		
 		wf.setNodes(nodes);
 		
-		wf.setOwner("");
+		wf.setOwner(ownerid);
 		
 		workflowrepository.save(wf);
 		
