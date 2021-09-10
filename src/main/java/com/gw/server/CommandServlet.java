@@ -92,7 +92,7 @@ public class CommandServlet {
                     
                     tokenfromclient = message.substring(11);
 
-                    logger.debug(" - History ID: " + message);
+                    logger.debug(" - History ID: " + tokenfromclient);
 
                     WsSession wss = (WsSession) session;
                     
@@ -104,7 +104,7 @@ public class CommandServlet {
 
                     tokenfromclient = message.substring(6);
 
-                    logger.debug(" - Token: " + message);
+                    logger.debug(" - Token: " + tokenfromclient);
 
                     WsSession wss = (WsSession) session;
                     

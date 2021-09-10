@@ -19,6 +19,7 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -306,10 +307,11 @@ public class ProcessTool {
 		
 		if(!bt.isNull(code)) {
 
-			resp = code.replaceAll("\\\\", "\\\\\\\\")
-					.replaceAll("\"", "\\\\\"")
-					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
-					.replaceAll("	", "\\\\t");
+			// resp = code.replaceAll("\\\\", "\\\\\\\\")
+			// 		.replaceAll("\"", "\\\\\"")
+			// 		.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
+			// 		.replaceAll("	", "\\\\t");
+			resp = StringEscapeUtils.escapeJson(code);
 			
 		}
 			
@@ -323,10 +325,11 @@ public class ProcessTool {
 		
 		if(!bt.isNull(code)) {
 			
-			resp = code.replace("\\\\", "\\")
-					.replace("\\\"", "\"")
-					.replace("<br/>", "\n")
-					.replaceAll("\t", "	");
+			// resp = code.replace("\\\\", "\\")
+			// 		.replace("\\\"", "\"")
+			// 		.replace("<br/>", "\n")
+			// 		.replace("\t", "	");
+			resp = StringEscapeUtils.unescapeJson(code);
 			
 		}
 		

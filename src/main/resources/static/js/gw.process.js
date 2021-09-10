@@ -886,7 +886,7 @@ GW.process = {
 			
 			if(code != null){
 
-				code = code.replaceAll("<br/>", "\n");
+				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils
 			
 			}
 			

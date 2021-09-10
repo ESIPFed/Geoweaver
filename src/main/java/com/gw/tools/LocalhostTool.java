@@ -115,8 +115,6 @@ public class LocalhostTool {
 			
 			String code = pt.getCodeById(id);
 			
-			code = pt.unescape(code);
-			
 			logger.debug(code);
 
 			this.saveHistory(id, code, history_id);

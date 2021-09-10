@@ -138,7 +138,7 @@ GW.workflow = {
     	
 		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 		
-		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
 		workflowid+"', '"+workflowname+"')\"></i> "+
 		
@@ -498,7 +498,7 @@ GW.workflow = {
 		
 		var req = "<div class=\"modal-body\"><div class=\"row\"> "+
 		"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
-		"		      <label class=\"labeltext\">How do you want to load the workflow?</label><br/>"+
+		"		      <label class=\"labeltext\">You have to load the workflow into the weaver view first to execute it. Do you want to proceed?</label><br/>"+
 		"		      <div class=\"form-check-inline\">"+
 		"					<label class=\"customradio\"><span class=\"radiotextsty\">show all child processes and edges</span>"+
 		"					  <input type=\"radio\" checked=\"checked\" name=\"addway\" value=\"all\">"+
