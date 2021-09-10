@@ -311,7 +311,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			Map<String, String> env = builder.environment();
 
-			env.put("Path", env.get("Path")+";C://Users//didar//AppData//Local//Programs//Python//Python39");
+			env.put("Path", env.get("Path")+";");
 
 			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
     		

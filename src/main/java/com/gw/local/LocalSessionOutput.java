@@ -69,16 +69,26 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void sendMessage2WebSocket(String msg){
 
-		synchronized(wsout){
+		if(!bt.isNull(wsout)){
+			synchronized(wsout){
 
-			try {
-				if(!bt.isNull(wsout) && wsout.isOpen())
-					wsout.getBasicRemote().sendText(msg);
-			} catch (Exception e) {
-				e.printStackTrace();
+				try {
+					if(wsout.isOpen())
+						wsout.getBasicRemote().sendText(msg);
+					else
+						log.debug("Websocket is closed, message didn't send: " + msg);
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.debug("Exception happens, message didn't send: " + msg);
+				}
+	
 			}
+		}else{
+
+			log.debug("Websocket is null, message didn't send: " + msg);
 
 		}
+		
 
 	}
 
@@ -93,7 +103,7 @@ public class LocalSessionOutput  implements Runnable{
 				wsout = CommandServlet.findSessionById(token);
 
 			}
-
+			
 			// if(!wsout.isOpen()){
 
 			// 	CommandServlet.removeSessionById(history_id);
@@ -103,6 +113,7 @@ public class LocalSessionOutput  implements Runnable{
 			// }
 
 		}
+		// if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
 	}
 
 	public void cleanLogMonitor(){
