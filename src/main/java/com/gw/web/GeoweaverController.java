@@ -788,11 +788,11 @@ public class GeoweaverController {
 
 			String token = request.getParameter("token");
 
-			if(bt.isNull(token)){
+			// if(bt.isNull(token)){
 
-				token = session.getId();
+			token = session.getId(); // the token from client is useless
 
-			}
+			// }
 			
 			String[] hosts = request.getParameterValues("hosts[]");
 			

@@ -155,8 +155,18 @@ public class GeoweaverWorkflowTask{
 		
 		Session se = WorkflowServlet.findSessionByToken(token);
 
-		monitor = se;
-		
+		if(bt.isNull(se)){
+
+			log.error("The monitor should never be empty");
+
+		}else{
+
+			log.debug("Find workflow-socket session - " + se.getId());
+
+			monitor = se;
+			
+		}
+
 		// wt.token2ws.put(token, socketsession.getId());
 		
 	}

@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 
 @Service
@@ -59,11 +61,15 @@ public class BuiltinTool {
 
         String resp = null;
 
+        History his = null;
+
         try{
             
             String code = pt.getCodeById(pid);
 
             this.saveHistory(pid, code, history_id);
+
+            his = histool.getHistoryById(history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
                 
@@ -117,10 +123,20 @@ public class BuiltinTool {
                     
                     "\", \"ret\": \"success\"}"; 
 
+            his.setIndicator(ExecutionStatus.DONE);
+            his.setHistory_end_time(bt.getCurrentSQLDate());
+            his.setHistory_output(resp);
+            histool.saveHistory(his);
+
         }catch(Exception e){
             e.printStackTrace();
-
+            his.setIndicator(ExecutionStatus.FAILED);
+            his.setHistory_end_time(bt.getCurrentSQLDate());
+            his.setHistory_output(e.getLocalizedMessage());
+            histool.saveHistory(his);
         }
+
+        
         
 
         return resp;

@@ -856,10 +856,10 @@ GW.workflow = {
 	 */
 	execute: function(wid, mode, hosts){
 
-		var current_token = GW.main.getJSessionId();
+		// var current_token = GW.main.getJSessionId();
 
-		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
-			current_token = GW.monitor.token;
+		// if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+		// 	current_token = GW.monitor.token;
 		
 		var req = {
  				
@@ -867,7 +867,7 @@ GW.workflow = {
  				
  				mode: mode,
 
-				token: current_token
+				// token: current_token
  				
  		};
 		

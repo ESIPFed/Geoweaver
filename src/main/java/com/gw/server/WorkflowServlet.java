@@ -42,7 +42,11 @@ public class WorkflowServlet {
 			
 			// this.wsSession = session;
 
+			WsSession wss = (WsSession) session;
 			
+			logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+			
+			peers.put(wss.getHttpSessionId(), session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -70,19 +74,19 @@ public class WorkflowServlet {
 
 			// String received = session.getQueryString();
         	
-			if(message!=null && message.startsWith("token:")){
+			// if(message!=null && message.startsWith("token:")){
 
-				message = message.substring(6);
+			// 	message = message.substring(6);
 
-				logger.debug(" - Token: " + message);
+			// 	logger.debug(" - Token: " + message);
 
-				WsSession wss = (WsSession) session;
+			// 	WsSession wss = (WsSession) session;
 				
-				logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+			// 	logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
 				
-				peers.put(message, session);
+			// 	peers.put(message, session);
 
-			}
+			// }
 
         	
     	}catch(Exception e) {
