@@ -38,7 +38,7 @@ public class WorkflowServlet {
 		
 		try {
 			
-			logger.debug("websocket channel openned");
+			logger.debug("Workflow-Socket websocket channel openned");
 			
 			// this.wsSession = session;
 

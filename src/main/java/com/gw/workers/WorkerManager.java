@@ -85,6 +85,8 @@ public class WorkerManager {
 	
 	public Worker getNextAvailableWorker() {
 		
+		logger.debug("Get next available worker..");
+		
 		Worker w = null;
 		
 		for(int i=0;i<worknumber;i++) {
@@ -144,6 +146,7 @@ public class WorkerManager {
 	public Worker createANewWorker(Task t){
 		//add the task to a empty worker
 		Worker w = getNextAvailableWorker();
+		logger.debug("Load task into worker.." + t.getName());
 		w.setTask(t);
 //		w.start();
 //		workerlist.add(w);

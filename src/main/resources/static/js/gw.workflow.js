@@ -794,15 +794,15 @@ GW.workflow = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					GW.process.showSSHOutputLog(msg); //use the same method as the single process
+					// GW.process.showSSHOutputLog(msg); //use the same method as the single process
 					
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
+						GW.monitor.startMonitor(msg.token); //for workspace refreshing
+    					
 						GW.ssh.openLog(msg); //for logging
 
-    					GW.monitor.startMonitor(msg.token); //for workspace refreshing
-    					
 					}
 					
 				}else if(msg.ret == "fail"){

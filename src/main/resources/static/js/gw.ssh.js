@@ -132,6 +132,7 @@ GW.ssh = {
 //	      GW.monitor.openWorkspaceIndicator();
 	      
 	      //shell.echo(special.white + "connected" + special.reset);
+		  console.log("WebSocket Channel is Openned");
 	      this.echo("connected");
 	      // link the SSH session established with spring security logon to the websocket session...
 	    //   this.send("token:" + this.token);
@@ -221,7 +222,7 @@ GW.ssh = {
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
 			var style1 = "";
-			if(content.includes("Start to process") || content.includes("===== Process")){
+			if(content.includes("Start to execute") || content.includes("===== Process")){
 
 				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
 
@@ -233,12 +234,25 @@ GW.ssh = {
 
 	    	$("#log-window").append(newline);
 
-			if($("#process-log-window").length){
+			//don't output log to process log if the current executed is workflow
+			if($("#process-log-window").length && GW.workspace.currentmode == 1){
 
 				$("#process-log-window").append(newline);
 			}
 
 	    },
+
+		clearProcessLog: function(){
+
+			$("#process-log-window").html("");
+
+		},
+
+		clearMain: function(){
+
+			$("#log-window").html("");
+
+		},
 	    
 	    getWsPrefixURL: function(){
 	    	
@@ -254,7 +268,7 @@ GW.ssh = {
 	    
 	    startLogSocket: function(token){
 	    	
-	    	console.log("WebSocket Channel is Openned");
+	    	
 	    	
 	    	GW.ssh.all_ws = new WebSocket(this.getWsPrefixURL() + "command-socket");
 
@@ -302,9 +316,11 @@ GW.ssh = {
 
 			// this.send("history_id:" + msg.history_id);
 
-			this.send("token:" + msg.token);
-			
-			this.addlog("=======\nStart to process " + msg.history_id);
+			// this.send("token:" + msg.token); //the websocket is still in connecting state
+			if(msg.history_id.length==12)
+				this.addlog("=======\nStart to execute Process " + msg.history_id);
+			else
+				this.addlog("=======\nStart to execute Workflow " + msg.history_id);
 			
 	    },
 	    

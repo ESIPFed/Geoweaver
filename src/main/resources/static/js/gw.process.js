@@ -1169,7 +1169,7 @@ GW.process = {
 			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
-		       '			<select class="form-control form-control-sm" id="processcategory">'+
+		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
 			   '    			<option value="shell">Shell</option>'+
 			   '    			<option value="builtin">Built-In Process</option>'+
 			   '    			<option value="jupyter">Jupyter Notebook</option>'+
@@ -1210,11 +1210,11 @@ GW.process = {
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
 				"				<div class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
-				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%;  padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
+				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
-				"					<h4 style=\"color:black\">Logging</h4> "+
+				"					<h4 style=\"color:black\">Logging <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"clearProcessLog\">Clear</button></h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
@@ -1273,6 +1273,8 @@ GW.process = {
 				// GW.process.clearProcessLogging();
 				
 			});
+
+			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
 			
 		},
 		

@@ -76,7 +76,7 @@ public class LocalSessionOutput  implements Runnable{
 					if(wsout.isOpen())
 						wsout.getBasicRemote().sendText(msg);
 					else
-						log.debug("Websocket is closed, message didn't send: " + msg);
+						log.debug("Websocket is closed, message didn't send: " + msg );
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.debug("Exception happens, message didn't send: " + msg);

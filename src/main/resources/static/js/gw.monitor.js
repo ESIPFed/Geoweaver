@@ -202,6 +202,8 @@ GW.monitor = {
 		 */
 		startMonitor: function(token){
 
+			GW.workspace.currentmode = 2;
+
 			if ( GW.monitor.all_ws == null || GW.monitor.all_ws.readyState === WebSocket.CLOSED ) {
 
 				console.log("Detect there is no workflow websocket or the current one is closed, restarting..");
@@ -214,8 +216,6 @@ GW.monitor = {
 //			
 //			if(GW.workspace.currentmode == GW.workspace.MONITOR){
 			
-				GW.workspace.currentmode = 2;
-				
 				GW.monitor.openWorkspaceIndicator();
 				
 				GW.monitor.openProgressIndicator();

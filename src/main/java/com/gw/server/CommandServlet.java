@@ -50,7 +50,7 @@ public class CommandServlet {
 		
 		try {
 			
-			logger.debug("websocket channel openned");
+			logger.debug("Command-socket websocket channel openned");
 			
 			this.wsSession = session;
 			
@@ -193,6 +193,16 @@ public class CommandServlet {
     	
     }
 
+    public void printoutCallStack(){
+
+        System.out.println("Printing stack trace:");
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < elements.length; i++) {
+            StackTraceElement s = elements[i];
+            System.out.println("\tnull websocket trace at " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+        }
+    }
+
     /**
      * Close session
      * @param session
@@ -201,6 +211,8 @@ public class CommandServlet {
     public void close(final Session session) {
     	
 		try {
+
+            printoutCallStack();
 			
     		logger.debug("Geoweaver Shell Channel closed.");
     		

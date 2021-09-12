@@ -170,6 +170,17 @@ public class GeoweaverWorkflowTask{
 		// wt.token2ws.put(token, socketsession.getId());
 		
 	}
+
+	public void refreshMonitor(){
+
+		if(bt.isNull(monitor)){
+
+			monitor = WorkflowServlet.findSessionByToken(token); 
+			
+		}
+		
+
+	}
 	
 
 	/**
@@ -203,6 +214,7 @@ public class GeoweaverWorkflowTask{
 					
 				}
 				
+				this.refreshMonitor();
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
 				monitor.getBasicRemote().sendText(array.toJSONString());
 				
