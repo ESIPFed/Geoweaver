@@ -518,7 +518,7 @@ GW.workflow = {
 		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 		'</div>';
 		
-		var frame = GW.process.createJSFrameDialog(320, 210, req, "Show a Way");
+		var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
 		
 		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 			

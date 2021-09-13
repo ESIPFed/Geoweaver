@@ -1,6 +1,7 @@
 package com.gw.server;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.EndpointConfig;
@@ -42,11 +43,9 @@ public class WorkflowServlet {
 			
 			// this.wsSession = session;
 
-			WsSession wss = (WsSession) session;
-			
-			logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-			
-			peers.put(wss.getHttpSessionId(), session);
+			// session.setMaxIdleTimeout(0);
+
+			this.registerSession(session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -55,6 +54,34 @@ public class WorkflowServlet {
 		}
 		
     }
+
+	public void registerSession(Session session){
+
+
+		WsSession wss = (WsSession) session;
+			
+		logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+
+		// List<String> originHeader = (List<String>)session.getUserProperties()
+		// .get("TheUpgradeOrigin");
+
+		if(wss.getHttpSessionId()==null){
+			throw new RuntimeException("The HTTP Session ID shouldn't be null.");
+		}else{
+
+			// logger.debug("Websocket original headers: " + originHeader);
+
+			Session existingsession = WorkflowServlet.findSessionByToken(wss.getHttpSessionId());
+
+			if(existingsession==null || !existingsession.isOpen()){
+
+				peers.put(wss.getHttpSessionId(), session);
+
+			}
+		}
+
+
+	}
 
     @OnError
     public void error(final Session session, final Throwable throwable) throws Throwable {
@@ -71,6 +98,8 @@ public class WorkflowServlet {
     	try {
     		
 			logger.debug("Received message: " + message);
+
+			this.registerSession(session);
 
 			// String received = session.getQueryString();
         	
@@ -102,7 +131,13 @@ public class WorkflowServlet {
     	
 		try {
 			
+			// session.getBasicRemote().sendText("Warning: Websocket Channel is going to close"); 
+
     		logger.error("Channel closed.");
+
+			WsSession wss = (WsSession) session;
+
+			peers.remove(wss.getHttpSessionId());
         	
 		} catch (Exception e) {
 			

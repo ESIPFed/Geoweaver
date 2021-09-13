@@ -215,6 +215,7 @@ public class GeoweaverWorkflowTask{
 				}
 				
 				this.refreshMonitor();
+				log.debug("Send workflow process status back to the client: " + array);
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
 				monitor.getBasicRemote().sendText(array.toJSONString());
 				

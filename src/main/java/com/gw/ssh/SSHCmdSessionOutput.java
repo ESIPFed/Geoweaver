@@ -7,6 +7,7 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -22,6 +23,7 @@ import com.gw.web.GeoweaverController;
  *
  */
 @Service
+@Scope("prototype")
 //@Qualifier("SSHCmdSessionOutput")
 public class SSHCmdSessionOutput  implements Runnable {
 	

@@ -42,6 +42,8 @@ GW.ssh = {
 	    password_cout: 0,
 	    
 		key : '',
+
+		checker_swich: false,
 		
 		username : '<sec:authentication property="principal" />',
 		
@@ -62,6 +64,12 @@ GW.ssh = {
 	    echo: function(content){
 		
 			if(content!=null){
+
+				// if(content.indexOf("Warning: Websocket Channel is going to close")!=-1){
+
+				// 	console.error("The WebSocket is going to close..");
+
+				// }
 				
 		    	content = content.replace(/\n/g,'<br/>')
 		    	
@@ -125,6 +133,28 @@ GW.ssh = {
 	        	
 	        }
 	    },
+
+		checkSessionStatus: function(){
+			// console.log("Current WS status: " + GW.ssh.all_ws.readyState);
+			// return GW.ssh.all_ws.readyState;
+
+			GW.ssh.checker_swich = true;
+
+			GW.ssh.send("token:testactive");
+
+			setTimeout(() => {  
+				
+				if(GW.ssh.checker_swich){
+
+					//restart the websocket if the switch is still true two seconds later
+					GW.ssh.startLogSocket(GW.ssh.token);
+					GW.ssh.checker_swich = false;
+
+				}
+
+			}, 2000);
+
+		},
 	    
 	    ws_onopen: function (e) {
 	    	
@@ -134,6 +164,8 @@ GW.ssh = {
 	      //shell.echo(special.white + "connected" + special.reset);
 		  console.log("WebSocket Channel is Openned");
 	      this.echo("connected");
+
+		  setTimeout(() => {  GW.ssh.send("token:" + GW.ssh.token) }, 1000); //create a chance for the server side to register the session if it didn't when it is openned
 	      // link the SSH session established with spring security logon to the websocket session...
 	    //   this.send("token:" + this.token);
 	      
@@ -148,6 +180,10 @@ GW.ssh = {
 //	        	GW.monitor.closeWorkspaceIndicator();
 	        	
 	        	this.echo("disconnected");
+
+				GW.ssh.all_ws = null;
+				GW.ssh.ws = null;
+				GW.ssh.token = null;
 	        	
 //	        	this.echo("Try to reconnecting..");
 //	        	
@@ -184,8 +220,9 @@ GW.ssh = {
 	    ws_onmessage: function (e) {
 	      
 	      try {
-	    	  
-	        if(e.data.indexOf(this.special.prompt) == -1 && 
+	    	if(e.data.indexOf("Session_Status:Active")!=-1){
+				GW.ssh.checker_swich = false;
+			}else if(e.data.indexOf(this.special.prompt) == -1 && 
 	        		
 	        		e.data.indexOf(this.special.ready) == -1 && 
 	        		
@@ -198,8 +235,10 @@ GW.ssh = {
 	        	//the websocket is already closed. try the history query
 	        	
 	        	// this.echo("It ends too quickly. Go to history to check the logs out.");
-	        	
+				
 	        }
+
+			
 	        
 	        //if (e.data.indexOf(special.ready) != -1) {
 	        
@@ -268,7 +307,7 @@ GW.ssh = {
 	    
 	    startLogSocket: function(token){
 	    	
-	    	
+			if(GW.ssh.all_ws) GW.ssh.all_ws.close();
 	    	
 	    	GW.ssh.all_ws = new WebSocket(this.getWsPrefixURL() + "command-socket");
 
@@ -299,8 +338,10 @@ GW.ssh = {
 		openLog: function(msg){
 			
 			//check if the websocket session is alive, otherwise, restore the connection
-			
-			if (GW.ssh.all_ws!=null && GW.ssh.all_ws.readyState === WebSocket.CLOSED) {
+
+			if (GW.ssh.all_ws!=null && (GW.ssh.all_ws.readyState === WebSocket.CLOSED || GW.ssh.all_ws.readyState === WebSocket.CLOSING) ) {
+
+				// GW.ssh.all_ws.close();
 				
 				console.log("The command websocket connection is detected to be closed. Try to reconnect...");
 				
@@ -308,6 +349,10 @@ GW.ssh = {
 				
 				console.log("The console websocket connection is restored..");
 				
+			}else{
+				
+				GW.ssh.checkSessionStatus();
+			
 			}
 			
 //			$("#log-window").slideToggle(true);

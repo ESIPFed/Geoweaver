@@ -244,6 +244,8 @@ public class GeoweaverProcessTask  extends Task {
 	public void stopMonitor() {
 		
 		//no closing anymore, the websocket session between client and server should be always active
+		this.monitor = null;
+		this.workflow_monitor = null;
 		
 //		try {
 //			

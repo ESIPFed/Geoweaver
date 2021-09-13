@@ -52,13 +52,7 @@ public class CommandServlet {
 			
 			logger.debug("Command-socket websocket channel openned");
 			
-			this.wsSession = session;
-			
-			WsSession wss = (WsSession) session;
-			
-			logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-			
-			peers.put(wss.getHttpSessionId(), session);
+            this.registerSession(session);
 			
 		} catch (Exception e) {
 			
@@ -66,6 +60,34 @@ public class CommandServlet {
 			
 		}
 		
+    }
+
+    public void registerSession(Session session){
+
+        WsSession wss = (WsSession) session;
+			
+		logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+
+		// List<String> originHeader = (List<String>)session.getUserProperties()
+		// .get("TheUpgradeOrigin");
+
+		if(wss.getHttpSessionId()==null){
+			throw new RuntimeException("The HTTP Session ID shouldn't be null.");
+		}else{
+
+			// logger.debug("Websocket original headers: " + originHeader);
+
+			// Session existingsession = CommandServlet.findSessionById(wss.getHttpSessionId());
+
+			// if(existingsession==null || !existingsession.isOpen()){
+
+            logger.debug("New Command WebSocket ID is: " + session.getId());
+
+			peers.put(wss.getHttpSessionId(), session);
+
+			// }
+		}
+
     }
 
     @OnError
@@ -86,104 +108,104 @@ public class CommandServlet {
 
             String tokenfromclient = null;
 
-            // if(message!=null ){
+            this.registerSession(session);
 
-            //     if(message.startsWith("history_id:")){
+            if(message!=null ){
+
+                if(message.startsWith("history_id:")){
                     
-            //         tokenfromclient = message.substring(11);
+                    tokenfromclient = message.substring(11);
 
-            //         logger.debug(" - History ID: " + tokenfromclient);
+                    logger.debug(" - History ID: " + tokenfromclient);
 
-            //         WsSession wss = (WsSession) session;
-                    
-            //         // logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-                    
-            //         peers.put(tokenfromclient, session);
+                }else if(message.startsWith("token:")){
 
-            //     }else if(message.startsWith("token:")){
+                    tokenfromclient = message.substring(6);
 
-            //         tokenfromclient = message.substring(6);
+                    logger.debug(" - Token: " + tokenfromclient);
 
-            //         logger.debug(" - Token: " + tokenfromclient);
-
-            //         WsSession wss = (WsSession) session;
-                    
-            //         logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-                    
-            //         peers.put(tokenfromclient, session);
-
-            //     }
+                }
 
 				
 
-            // }
-        	
-        	logger.debug(" Session ID: " + session.getQueryString());
-        	
-        	logger.debug("Transfer message to Jupyter Notebook server..");
-        	
-//        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
-        	
-            //the session should never be managed by their session id because the js session id could change after a while of stale
-            SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
-            
-            if (sshSession == null) {
-                
-            	logger.debug("linking " + session.getId() + " - " + tokenfromclient);
-
-                // TODO is there a better way to do this?
-                // Can the client send the websocket session id and username in a REST call to link them up?
-                sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(tokenfromclient);
-                
-//                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
-                if(sshSession!=null) {
-                	
-//                	sshSession.setWebSocketSession(session);
-                    
-                	GeoweaverController.sessionManager.sshSessionByToken.put(session.getId(), sshSession);
-                	
-//                	GeoweaverController.sessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
-                    
-                }else {
-                	
-                	if(session.isOpen()) {
-                		
-                		session.getBasicRemote().sendText("No SSH connection is active");
-                		
-                	}
-                	
-//                	session.close();
-                	
-                }
-                
-            } else {
-            	
-                logger.debug("message in " + session.getId() + message);
-                
-                sshSession.getSSHOutput().write((message + '\n').getBytes());
-                
-                sshSession.getSSHOutput().flush();
-                
-//    			//send Ctrl + C command to the SSH to close the connection
-//    			
-//    			cmd.getOutputStream().write(3);
-//    			
-//    		    cmd.getOutputStream().flush();
-                
-                // if we receive a valid logout command, then close the websocket session.
-                // the system will logout and tidy itself up...
-                
-                if (logoutCommands.contains(message.trim().toLowerCase())) {
-                    
-                	logger.debug("valid logout command received " +  message);
-                	
-                	sshSession.logout();
-                	
-//                	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
-                	
-                }
-                
             }
+        	
+            if(tokenfromclient==null){
+
+                logger.debug(" Session ID: " + session.getQueryString());
+        	
+                //        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
+                
+                //the session should never be managed by their session id because the js session id could change after a while of stale
+                SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
+                
+                if (sshSession == null ) {
+
+                    logger.debug("linking " + session.getId() + " - " + tokenfromclient);
+
+                    // TODO is there a better way to do this?
+                    // Can the client send the websocket session id and username in a REST call to link them up?
+                    sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(tokenfromclient);
+                    
+    //                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
+                    if(sshSession!=null) {
+                        
+    //                	sshSession.setWebSocketSession(session);
+                        
+                        GeoweaverController.sessionManager.sshSessionByToken.put(session.getId(), sshSession);
+                        
+    //                	GeoweaverController.sessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
+                        
+                    }else {
+                        
+                        if(session.isOpen()) {
+                            
+                            session.getBasicRemote().sendText("No SSH connection is active");
+                            
+                        }
+                        
+    //                	session.close();
+                        
+                    }
+                    
+                } else {
+                    
+                    logger.debug("message in " + session.getId() + message);
+                    
+                    sshSession.getSSHOutput().write((message + '\n').getBytes());
+                    
+                    sshSession.getSSHOutput().flush();
+                    
+    //    			//send Ctrl + C command to the SSH to close the connection
+    //    			
+    //    			cmd.getOutputStream().write(3);
+    //    			
+    //    		    cmd.getOutputStream().flush();
+                    
+                    // if we receive a valid logout command, then close the websocket session.
+                    // the system will logout and tidy itself up...
+                    
+                    if (logoutCommands.contains(message.trim().toLowerCase())) {
+                        
+                        logger.debug("valid logout command received " +  message);
+                        
+                        sshSession.logout();
+                        
+    //                	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
+                        
+                    }
+                    
+                }
+
+            }else{
+
+                //send back a message to confirm the session is active
+                session.getBasicRemote().sendText("Session_Status:Active");
+                
+
+            }
+
+        	
             
     	}catch(Exception e) {
     		
@@ -212,7 +234,9 @@ public class CommandServlet {
     	
 		try {
 
-            printoutCallStack();
+            printoutCallStack(); 
+
+            // session.getBasicRemote().sendText("Warning: Websocket Channel is going to close");
 			
     		logger.debug("Geoweaver Shell Channel closed.");
     		
@@ -228,7 +252,10 @@ public class CommandServlet {
                 GeoweaverController.sessionManager.sshSessionByToken.remove(session.getId());
             	
             }
-            peers.remove(session.getId());
+
+            WsSession wss = (WsSession) session;
+
+            peers.remove(wss.getHttpSessionId());
         	
 		} catch (Exception e) {
 			
