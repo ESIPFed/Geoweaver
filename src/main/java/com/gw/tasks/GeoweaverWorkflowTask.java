@@ -155,10 +155,31 @@ public class GeoweaverWorkflowTask{
 		
 		Session se = WorkflowServlet.findSessionByToken(token);
 
-		monitor = se;
-		
+		if(bt.isNull(se)){
+
+			log.error("The monitor should never be empty");
+
+		}else{
+
+			log.debug("Find workflow-socket session - " + se.getId());
+
+			monitor = se;
+			
+		}
+
 		// wt.token2ws.put(token, socketsession.getId());
 		
+	}
+
+	public void refreshMonitor(){
+
+		if(bt.isNull(monitor)){
+
+			monitor = WorkflowServlet.findSessionByToken(token); 
+			
+		}
+		
+
 	}
 	
 
@@ -193,6 +214,8 @@ public class GeoweaverWorkflowTask{
 					
 				}
 				
+				this.refreshMonitor();
+				log.debug("Send workflow process status back to the client: " + array);
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
 				monitor.getBasicRemote().sendText(array.toJSONString());
 				

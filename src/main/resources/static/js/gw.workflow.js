@@ -518,7 +518,7 @@ GW.workflow = {
 		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 		'</div>';
 		
-		var frame = GW.process.createJSFrameDialog(320, 210, req, "Show a Way");
+		var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
 		
 		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 			
@@ -798,15 +798,15 @@ GW.workflow = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					GW.process.showSSHOutputLog(msg); //use the same method as the single process
+					// GW.process.showSSHOutputLog(msg); //use the same method as the single process
 					
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
+						GW.monitor.startMonitor(msg.token); //for workspace refreshing
+    					
 						GW.ssh.openLog(msg); //for logging
 
-    					GW.monitor.startMonitor(msg.token); //for workspace refreshing
-    					
 					}
 					
 				}else if(msg.ret == "fail"){
@@ -860,10 +860,10 @@ GW.workflow = {
 	 */
 	execute: function(wid, mode, hosts){
 
-		var current_token = GW.main.getJSessionId();
+		// var current_token = GW.main.getJSessionId();
 
-		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
-			current_token = GW.monitor.token;
+		// if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+		// 	current_token = GW.monitor.token;
 		
 		var req = {
  				
@@ -871,7 +871,7 @@ GW.workflow = {
  				
  				mode: mode,
 
-				token: current_token
+				// token: current_token
  				
  		};
 		

@@ -788,11 +788,9 @@ public class GeoweaverController {
 
 			String token = request.getParameter("token");
 
-			if(bt.isNull(token)){
+			// if(bt.isNull(token)){
 
-				token = session.getId();
-
-			}
+			token = session.getId(); // the token from client is useless
 
 			String history_id = bt.isNull(request.getParameter("history_id"))? 
 				new RandomString(18).nextString(): request.getParameter("history_id");

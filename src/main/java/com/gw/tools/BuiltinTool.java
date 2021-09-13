@@ -98,6 +98,8 @@ public class BuiltinTool {
 
             
 
+            his = histool.getHistoryById(history_id);
+
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
                 
             String operation = (String)obj.get("operation");
@@ -175,6 +177,11 @@ public class BuiltinTool {
 
             }
 
+            his.setIndicator(ExecutionStatus.DONE);
+            his.setHistory_end_time(bt.getCurrentSQLDate());
+            his.setHistory_output(resp);
+            histool.saveHistory(his);
+
         }catch(Exception e){
             
             e.printStackTrace();
@@ -200,7 +207,7 @@ public class BuiltinTool {
             histool.saveHistory(his);
         
         }
-        
+
         sendMessageWebSocket(history_id, httpsessionid, "====== Process " + history_id + " ended");
 
         return resp;
