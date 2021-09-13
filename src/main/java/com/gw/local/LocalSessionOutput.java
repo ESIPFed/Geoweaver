@@ -96,7 +96,7 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void refreshLogMonitor(){
 
-		log.debug("Refreshing monitor..token: " + token);
+		// log.debug("Refreshing monitor..token: " + token);
 
 		if(bt.isNull(wsout) || !wsout.isOpen()){
 
@@ -117,8 +117,8 @@ public class LocalSessionOutput  implements Runnable{
 			// }
 
 		}
-		if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
-		else log.debug("Command-socket session  is missing ");
+		// if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
+		// else log.debug("Command-socket session  is missing ");
 	}
 
 	public void cleanLogMonitor(){
