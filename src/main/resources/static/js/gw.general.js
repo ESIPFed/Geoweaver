@@ -133,16 +133,23 @@ GW.general = {
 		isJSON: function(text){
 			
 			var isjson = false;
-			
-			if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
-				replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-				replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 
-			  //the json is ok
-						
-			 isjson = true;
+			if(text !=null){
+
+				text = text.trim();
+			
+				if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
+					replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+					replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+	
+				  //the json is ok
+							
+					isjson = true;
+	
+				}
 
 			}
+			
 		
 			return isjson;
 			

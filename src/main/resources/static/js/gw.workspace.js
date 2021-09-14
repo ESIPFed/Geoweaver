@@ -1139,9 +1139,19 @@ GW.workspace = {
 							
 						}
 						
-						GW.workspace.theGraph.nodes = newnodes;
+						if(newnodes.length==0){
+
+							console.error("Lost all the nodes");
+
+						}else{
+
+							GW.workspace.theGraph.nodes = newnodes;
 						
-						GW.workspace.theGraph.updateGraph();
+							GW.workspace.theGraph.updateGraph();
+
+						}
+
+						
 						
 						// console.log("circle should change its color");
 
