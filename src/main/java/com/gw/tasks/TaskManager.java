@@ -248,9 +248,8 @@ public class TaskManager {
 			for(int i=0;i< waitinglist.size();i++){
 				GeoweaverProcessTask newtask = (GeoweaverProcessTask)waitinglist.get(i);
 				if(newtask.getIsReady()){
-
-					waitinglist.remove(newtask);
 		//			newtask.deleteObserver(wto);
+					waitinglist.remove(newtask);
 					executeATask(newtask);
 
 				}

@@ -358,7 +358,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
+	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
 		
 		//use multiple threads to execute the processes
 		
@@ -372,7 +372,7 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			String history_id = new RandomString(18).nextString();
+			
 
 			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
 
@@ -424,7 +424,7 @@ public class WorkflowTool {
 	}
 
 	
-	public String add(String name, String nodes, String edges) {
+	public String add(String name, String nodes, String edges, String ownerid) {
 		
 		String newid = new RandomString(20).nextString();
 		
@@ -438,7 +438,7 @@ public class WorkflowTool {
 		
 		wf.setNodes(nodes);
 		
-		wf.setOwner("");
+		wf.setOwner(ownerid);
 		
 		workflowrepository.save(wf);
 		

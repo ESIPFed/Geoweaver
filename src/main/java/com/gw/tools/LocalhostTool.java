@@ -115,8 +115,6 @@ public class LocalhostTool {
 			
 			String code = pt.getCodeById(id);
 			
-			code = pt.unescape(code);
-			
 			logger.debug(code);
 
 			this.saveHistory(id, code, history_id);
@@ -191,7 +189,6 @@ public class LocalhostTool {
 		
 		try {
 			
-			//get code of the process
 			
 			
 			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);

@@ -8,6 +8,7 @@ import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -19,6 +20,7 @@ import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
 @Service
+@Scope("prototype")
 public class LocalSessionOutput  implements Runnable{
 
 	@Autowired
@@ -69,31 +71,67 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void sendMessage2WebSocket(String msg){
 
-		synchronized(wsout){
+		if(!bt.isNull(wsout)){
+			synchronized(wsout){
 
-			try {
-				if(!bt.isNull(wsout) && wsout.isOpen())
-					wsout.getBasicRemote().sendText(msg);
-			} catch (Exception e) {
-				e.printStackTrace();
+				try {
+					if(wsout.isOpen())
+						wsout.getBasicRemote().sendText(msg);
+					else
+						log.debug("Websocket is closed, message didn't send: " + msg );
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.debug("Exception happens, message didn't send: " + msg);
+				}
+	
 			}
+		}else{
+
+			log.debug("Websocket is null, message didn't send: " + msg);
 
 		}
+		
 
 	}
 
 	public void refreshLogMonitor(){
 
-		if(bt.isNull(wsout)){
+		// log.debug("Refreshing monitor..token: " + token);
+
+		if(bt.isNull(wsout) || !wsout.isOpen()){
 
 			wsout = CommandServlet.findSessionById(token);
+			
+			// if(bt.isNull(wsout) && !wsout.isOpen()){
+				
+			// 	wsout = CommandServlet.findSessionById(history_id);
 
-			if(bt.isNull(wsout)){
+			// }
+			
+			// if(!wsout.isOpen()){
 
-				wsout = CommandServlet.findSessionById(history_id);
-			}
+			// 	CommandServlet.removeSessionById(history_id);
+
+			// 	CommandServlet.removeSessionById(token);
+			
+			// }
 
 		}
+		// if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
+		// else log.debug("Command-socket session  is missing ");
+	}
+
+	public void cleanLogMonitor(){
+
+			CommandServlet.removeSessionById(history_id);
+			
+			// if(bt.isNull(wsout)){
+				
+			// 	wsout = CommandServlet.findSessionById(token);
+
+			// }
+
+
 	}
 
 	
@@ -141,7 +179,10 @@ public class LocalSessionOutput  implements Runnable{
 
 			sendMessage2WebSocket("Process "+this.history_id+" Started");
 			
-			while (run) {
+			String line = null; //in.readLine();
+
+			// while (run) {
+			while((line = in.readLine()) != null){
 
 				try {
 
@@ -156,8 +197,6 @@ public class LocalSessionOutput  implements Runnable{
 						break;
 						
 					}
-					
-					String line = in.readLine();
 					
 					linenumber++;
 					
@@ -195,11 +234,11 @@ public class LocalSessionOutput  implements Runnable{
 						
 	//                	session.saveHistory(logs.toString()); //complete the record
 						
-						this.updateStatus(logs.toString(), "Done");
+						// this.updateStatus(logs.toString(), "Done");
 						
-						sendMessage2WebSocket("The process "+history_id+" is finished.");
+						// sendMessage2WebSocket("The process "+history_id+" is finished.");
 							
-						break;
+						// break;
 						
 					}else {
 						
@@ -242,6 +281,10 @@ public class LocalSessionOutput  implements Runnable{
 				}
 				
 			}
+
+			this.updateStatus(logs.toString(), "Done");
+						
+			sendMessage2WebSocket("The process "+history_id+" is finished.");
 			
 			//this thread will end by itself when the task is finished, you don't have to close it manually
 
@@ -256,6 +299,8 @@ public class LocalSessionOutput  implements Runnable{
 		}finally{
 			
 			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+
+			// cleanLogMonitor();
 			
 
 		}

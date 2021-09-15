@@ -14,7 +14,7 @@ GW.user = {
 
     current_username: null,
 
-    current_userid: null,
+    current_userid: "111111",
 
     /**
      * Initialization

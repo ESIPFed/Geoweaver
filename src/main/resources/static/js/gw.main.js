@@ -58,6 +58,8 @@ GW.main = {
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		
+		GW.process.init();
+
 		GW.workspace.init();
 		
 		GW.toolbar.init();
@@ -71,7 +73,7 @@ GW.main = {
 
 		// console.log("Current JS Session ID: " + current_jssessionid);
 
-		var current_token = GW.general.makeid(40);
+		var current_token = GW.general.makeid(40); // this is no longer used
 
 		console.log("Current token is: " + current_token);
 		

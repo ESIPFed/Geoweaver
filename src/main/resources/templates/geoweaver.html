@@ -394,21 +394,21 @@
 							  </div>
 						</div>
 						 
-						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0;">
-							  <div id="main-process-content" style="height:100%; overflow-y: scroll; padding: 10px;">
+						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+							  <div id="main-process-content" style="height:100%;  padding: 10px;">
 							  	<h2 style="color:black">Please select a process on the right panel!</h2>
 							  </div>
 						</div>
 						
 						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-							  <div id="main-workflow-content" style="height:100%; overflow-y: scroll; padding: 10px;">
+							  <div id="main-workflow-content" style="height:100%; padding: 10px;">
 							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
 							  </div>
 						</div>
 							
 						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
 							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
-							  <h2 style="color:black">Logging</h2>
+							  <h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
 							  <div id="log-window">
 							  	
 							  </div>
@@ -553,7 +553,7 @@
 					
 					
 					                <li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <i class="fa fa-plus" id="newworkflow"></i> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
+					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <!--<i class="fa fa-plus" id="newworkflow"></i>--> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
 					                </li>  
 					                <ul  class="sub-menu collapse" id="workflows">
 					                  

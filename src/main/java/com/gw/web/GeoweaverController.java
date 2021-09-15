@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.jpa.GWUser;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -291,6 +294,53 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	/**
+     * This is the password reset callback url
+     * @param token
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/reset_password", method = RequestMethod.GET)
+    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
+
+        if(!bt.isNull(token)){
+
+            System.err.print(token);
+            // User user = userService.getByResetPasswordToken(token);
+            String userid = ut.token2userid.get(token);
+            Date created_date = ut.token2date.get(token);
+    
+            if(!bt.isNull(userid)){
+    
+                long time_difference =  new Date().getTime() - created_date.getTime();
+    
+                //if the token is one hour old
+                if(time_difference<60*60*1000){
+    
+                    GWUser user = ut.getUserById(userid);
+    
+                    model.addAttribute("token", token);
+                    
+                    if (user == null) {
+                        // model.addAttribute("message", "Invalid Token");
+                        return "Invalid Token";
+                    }
+    
+                }
+    
+            }
+
+        }else{
+
+            model.addAttribute("error", "No Token. Invalid Link. ");
+            
+        }
+
+
+         
+        return "reset_password_form";
+    }
 	
 	@RequestMapping(value = "/recent", method = RequestMethod.POST)
     public @ResponseBody String recent_history(ModelMap model, WebRequest request){
@@ -738,11 +788,12 @@ public class GeoweaverController {
 
 			String token = request.getParameter("token");
 
-			if(bt.isNull(token)){
+			// if(bt.isNull(token)){
 
-				token = session.getId();
+			token = session.getId(); // the token from client is useless
 
-			}
+			String history_id = bt.isNull(request.getParameter("history_id"))? 
+				new RandomString(18).nextString(): request.getParameter("history_id");
 			
 			String[] hosts = request.getParameterValues("hosts[]");
 			
@@ -751,7 +802,7 @@ public class GeoweaverController {
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
-			resp = wt.execute(id, mode, hosts, passwords, token);
+			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
 			
 		}catch(Exception e) {
 			
@@ -864,8 +915,8 @@ public class GeoweaverController {
 			String basedir = request.getParameter("env[basedir]");
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
-			
-			String history_id = new RandomString(12).nextString();
+
+			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
 			resp = pt.execute(history_id, pid, hid, password, session.getId(), false, bin, pyenv, basedir);
 			
@@ -1138,7 +1189,7 @@ public class GeoweaverController {
 
 				String confidential = request.getParameter("confidential");
 
-				String ownerid = request.getParameter("ownerid");
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 				
 				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
@@ -1152,7 +1203,7 @@ public class GeoweaverController {
 				
 				String desc = request.getParameter("desc");
 
-				String ownerid = request.getParameter("ownerid");
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 
 				String confidential = request.getParameter("confidential");
 				
@@ -1210,7 +1261,9 @@ public class GeoweaverController {
 				
 				String edges = request.getParameter("edges");
 				
-				String wid = wt.add(name, nodes, edges);
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+
+				String wid = wt.add(name, nodes, edges, ownerid);
 				
 				resp = "{\"id\" : \"" + wid + "\", \"name\":\"" + name + "\"}";
 				

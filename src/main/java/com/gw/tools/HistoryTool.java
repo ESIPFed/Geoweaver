@@ -114,6 +114,11 @@ public class HistoryTool {
 	 * @param history
 	 */
 	public void saveHistory(History history) {
+
+		if(bt.isNull(history.getIndicator())){
+
+			logger.error("This indicator shouldn't be null at all");
+		}
 		
 		historyrepository.save(history);
 		

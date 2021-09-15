@@ -7,17 +7,7 @@
 */ 
 
 
-$(window).bind('keydown', function(event) {
-    if (event.ctrlKey || event.metaKey) {
-        switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 's':
-			event.preventDefault();
-			GW.process.editSwitch();
-            // alert('ctrl-s');
-            break;
-        }
-    }
-});
+
 
 GW.process = {
 		
@@ -46,6 +36,19 @@ GW.process = {
 		],
 		
 		connection_cache: [{"p":"xxxx", "h": "yyyyy"}],
+
+		init: function(){
+
+			
+
+		},
+
+		
+		checkIfProcessPanelActive: function(){
+
+			return document.getElementById("main-process-info").style.display=="block";
+
+		},
 		
 		clearCache: function(){
 			
@@ -119,7 +122,7 @@ GW.process = {
 		
 		showShell: function(code, cmid){
 			
-			$("#codearea-"+GW.process.cmid).append('<textarea id="codeeditor-'+cmid+'" placeholder="Code goes here..."></textarea>');
+			$("#codearea-"+GW.process.cmid).append('<textarea id="codeeditor-'+cmid+'" class=\"CodeMirror\" placeholder="Code goes here..." ></textarea>');
 			
         	//initiate the code editor
 			
@@ -131,11 +134,11 @@ GW.process = {
 
 	        		extraKeys: {
 	        			
-		    		    "Ctrl-S": function(instance) { 
+		    		    // "Ctrl-S": function(instance) { 
 		    		    	
-		    		    		GW.process.update(GW.process.current_pid, cmid);
+		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
-		    		    }
+		    		    // }
 		    		}
 				
 	        	});
@@ -159,10 +162,12 @@ GW.process = {
 			});
 			
 			$(".CodeMirror").css('font-size',"10pt");
+
+			$(".CodeMirror").css('height',"100%");
 			
 			//$(".CodeMirror").css('height',"auto");
 			
-			// GW.process.editor.setSize(null, 360);
+			// GW.process.editor.setSize("100%", "100%");
 			
 			if(code!=null){
 				
@@ -182,7 +187,7 @@ GW.process = {
 
 			// console.log("Process Code Editor is refreshed..");
 			
-			GW.process.editor.refresh();
+			if(GW.process.editor!=null)GW.process.editor.refresh();
 
 		},
 		
@@ -268,11 +273,11 @@ GW.process = {
 
         		extraKeys: {
         			
-	    		    "Ctrl-S": function(instance) { 
+	    		    // "Ctrl-S": function(instance) { 
 	    		    	
-	    		    	GW.process.update(GW.process.current_pid, cmid);
+	    		    // 	GW.process.update(GW.process.current_pid, cmid);
 	    		    	
-	    		     },
+	    		    //  },
 
 					 "Ctrl-Space": "autocomplete"
         		}
@@ -881,7 +886,7 @@ GW.process = {
 			
 			if(code != null){
 
-				code = code.replaceAll("<br/>", "\n");
+				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils, should remove in v1.0
 			
 			}
 			
@@ -1159,12 +1164,12 @@ GW.process = {
 			
 			confidential_field += '     </div>';
 			
-			var content = "<div class=\"modal-body\">";
+			var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 			
 			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
 		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-3" style="padding:0;">'+
-		       '			<select class="form-control form-control-sm" id="processcategory">'+
+		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
 			   '    			<option value="shell">Shell</option>'+
 			   '    			<option value="builtin">Built-In Process</option>'+
 			   '    			<option value="jupyter">Jupyter Notebook</option>'+
@@ -1200,28 +1205,28 @@ GW.process = {
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
 			
-			content += "<div class=\"row\" style=\"font-size: 12px; margin:0;\" id=\"process-code-history-section\">"+
-				"			<div class=\"row\">"+
-				"				<div class=\"col col-md-6\" >"+
-				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding: 0px;\" ></div>"+
+			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
+				// "			<div class=\"row\">"+
+				"				<div class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
+				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
-				"				<div id=\"single-console-content\" class=\"col col-md-6\"> "+
-				"					<h4 style=\"color:black\">Logging</h4> "+
+				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
+				"					<h4 style=\"color:black\">Logging <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"clearProcessLog\">Clear</button></h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
-				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px;" ></div>'+
+				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
 				'   				</div>'+
-				"				</div>"+
-				"			</div>";
+				"				</div>";
+				// "			</div>";
 
 			content += '</div>'+
 				
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">";
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); overflow-y: scroll;left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">";
 
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
 			'   </div>';
@@ -1268,6 +1273,8 @@ GW.process = {
 				// GW.process.clearProcessLogging();
 				
 			});
+
+			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
 			
 		},
 		
@@ -1414,23 +1421,23 @@ GW.process = {
 					  
 			          extraKeys: {
 			        			
-				    		    "Ctrl-S": function(instance) { 
+				    		    // "Ctrl-S": function(instance) { 
 				    		    	
-				    		    		if(!GW.process.editOn){
+				    		    // 		if(!GW.process.editOn){
 				    		    			
-					    		    		var process_code = GW.process.editor.getValue()
+					    		//     		var process_code = GW.process.editor.getValue()
 					    		    	
-					    		    		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
+					    		//     		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
 
 											
 					    		    	
-				    		    		}else{
+				    		    // 		}else{
 				    		    			
-				    		    			alert("Please turn on edit mode!");
+				    		    // 			alert("Please turn on edit mode!");
 				    		    			
-				    		    		}
+				    		    // 		}
 				    		    	
-				    		    }
+				    		    // }
 				    	  }
 			    });
 				
@@ -1440,8 +1447,8 @@ GW.process = {
 
 			  	});
 //				$(".CodeMirror").css('font-size',"10pt");
-				$(".CodeMirror").css('height',"auto");
-				$(".CodeMirror").css('max-height',"none");
+				$(".CodeMirror").css('height',"100%");
+				$(".CodeMirror").css('max-height',"100%");
 				
 				GW.process.refreshCodeEditor();
 			}
@@ -1474,45 +1481,55 @@ GW.process = {
 		
 		editSwitch: function(){
 			
-			console.log("Turn on/off the fields");
-			
-			// Uncomment if editing should be disabled by default [Currently enabled]
-			// GW.process.editOn = !GW.process.editOn;
-			
+			if(GW.process.checkIfProcessPanelActive()){
 
+				console.log("Turn on/off the fields");
 			
-			// if(GW.process.editOn && isinitial == null) {
+				// Uncomment if editing should be disabled by default [Currently enabled]
+				// GW.process.editOn = !GW.process.editOn;
+				
 
 				
-			GW.process.current_pid = $("#processid").val();
-			
-			GW.process.update(GW.process.current_pid);
+				// if(GW.process.editOn && isinitial == null) {
+
+					
 				
-			// }
-			
-			$("#processcategory").prop( "disabled", GW.process.editOn );
-			
-			$("#processname").prop( "disabled", GW.process.editOn );
-			
-			$("#processid").prop( "disabled", true ); //always cannot edit id
-			
-			if(GW.process.editor){
+
+				if(typeof $("#processid").val() != undefined){
+
+					GW.process.current_pid = $("#processid").val();
+					GW.process.update(GW.process.current_pid);
+					
 				
-				GW.process.editor.setOption("readOnly", GW.process.editOn)
+					$("#processcategory").prop( "disabled", GW.process.editOn );
+					
+					$("#processname").prop( "disabled", GW.process.editOn );
+					
+					$("#processid").prop( "disabled", true ); //always cannot edit id
+					
+					if(GW.process.editor){
+						
+						GW.process.editor.setOption("readOnly", GW.process.editOn)
+						
+					}
+					
+					if($(".builtin-process")){
+						
+						$(".builtin-process").prop( "disabled", GW.process.editOn );
+						
+					}
+					
+					if($(".builtin-parameter")){
+						
+						$(".builtin-parameter").prop( "disabled", GW.process.editOn );
+						
+					}
+				}
 				
+				
+
 			}
 			
-			if($(".builtin-process")){
-				
-				$(".builtin-process").prop( "disabled", GW.process.editOn );
-				
-			}
-			
-			if($(".builtin-parameter")){
-				
-				$(".builtin-parameter").prop( "disabled", GW.process.editOn );
-				
-			}
 			
 		},
 
@@ -1870,6 +1887,12 @@ GW.process = {
 			
 			GW.process.clearProcessLogging();
 
+			var newhistid = GW.general.makeid(12);
+
+			req.history_id = newhistid;
+
+			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
+
 			$.ajax({
 				
 				url: "executeProcess",
@@ -1890,10 +1913,8 @@ GW.process = {
 						
 						console.log("history id: " + msg.history_id);
 						
-						GW.process.showSSHOutputLog(msg);
+						// GW.process.showSSHOutputLog(msg);
 
-						
-						
 //						if(req.desc == "builtin"){
 //							
 //							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client

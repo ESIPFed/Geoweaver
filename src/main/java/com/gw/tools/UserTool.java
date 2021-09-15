@@ -43,7 +43,11 @@ public class UserTool {
     private final String LOCALHOST_IPV4 = "127.0.0.1";
 	private final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
 
-    List<UserSession> authsession2user = new ArrayList();;
+    List<UserSession> authsession2user = new ArrayList();
+
+    public Map<String, String> token2userid = new HashMap();
+
+    public Map<String, Date> token2date = new HashMap();
 
     long TIMEOUT_THRESHOLD = 24*60*60*1000;
 
@@ -135,15 +139,15 @@ public class UserTool {
     
     public String getClientIp(HttpServletRequest request) {
 		String ipAddress = request.getHeader("X-Forwarded-For");
-		if(StringUtils.isEmpty(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("Proxy-Client-IP");
 		}
 		
-		if(StringUtils.isEmpty(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("WL-Proxy-Client-IP");
 		}
 		
-		if(StringUtils.isEmpty(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getRemoteAddr();
 			if(LOCALHOST_IPV4.equals(ipAddress) || LOCALHOST_IPV6.equals(ipAddress)) {
 				try {
@@ -155,7 +159,7 @@ public class UserTool {
 			}
 		}
 		
-		if(!StringUtils.isEmpty(ipAddress) 
+		if(!bt.isNull(ipAddress) 
 				&& ipAddress.length() > 15
 				&& ipAddress.indexOf(",") > 0) {
 			ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
@@ -202,13 +206,30 @@ public class UserTool {
 
     }
 
+    public void updatePassword(GWUser user, String password){
+
+        String newpassword = bt.get_SHA_512_SecurePassword(password, user.getId());
+
+        user.setPassword(newpassword);
+
+        this.save(user);
+
+
+    }
+
+    public GWUser getUserByToken(String token){
+
+        return null;
+
+    }
+
     public GWUser getUserById(String id){
 
         GWUser u = null;
 
         Optional<GWUser> og = userRepository.findById(id);
 
-        if(!og.isEmpty()){
+        if(og.isPresent()){
 
             u = og.get();
 

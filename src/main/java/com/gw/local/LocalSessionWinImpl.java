@@ -190,7 +190,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		tempfile = workspace_folder_path + "/gw-" + token + "-" + rand + ".sh";
 
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		
@@ -222,6 +222,8 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -281,7 +283,8 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
             log.info("Local Session Windows Implementation is done.");
             
@@ -311,7 +314,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			Map<String, String> env = builder.environment();
 
-			env.put("Path", env.get("Path")+";C://Users//didar//AppData//Local//Programs//Python//Python39");
+			env.put("Path", env.get("Path")+";");
 
 			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
     		
@@ -325,7 +328,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.command(new String[] {"python", pythonfilename} );
     		
-			log.info(builder.environment());
+			// log.info(builder.environment());
     		builder.redirectErrorStream(true);
     		
     		process = builder.start();
@@ -351,7 +354,9 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
 		} catch (Exception e) {
 			

@@ -21,6 +21,7 @@ import com.gw.utils.BaseTool;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalSessionNixImpl implements LocalSession {
 
 	Logger log  = Logger.getLogger(this.getClass());
@@ -107,11 +109,11 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			Session wsout = CommandServlet.findSessionById(token);
 			
-			if(!bt.isNull(wsout) && wsout.isOpen()) {
+			if(!bt.isNull(wsout) && wsout.isOpen() ) {
 				
 				log.info("The failed message has been sent to client");
-				
-				wsout.getBasicRemote().sendText(message);
+				if(!bt.isNull(message))
+					wsout.getBasicRemote().sendText(message);
 				
 				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
 				
@@ -179,6 +181,8 @@ public class LocalSessionNixImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -263,7 +267,9 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			
@@ -323,7 +329,8 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			

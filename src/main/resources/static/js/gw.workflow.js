@@ -52,7 +52,7 @@ GW.workflow = {
 	
 	display: function(msg){
 		
-		var content = "<div class=\"modal-body\">";
+		var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 		
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
 		
@@ -138,7 +138,7 @@ GW.workflow = {
     	
 		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 		
-		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
 		workflowid+"', '"+workflowname+"')\"></i> "+
 		
@@ -155,12 +155,12 @@ GW.workflow = {
 		
 		workflowid+"', '" + workflowname+"')\">History</button>"+
 		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
-		"	<div class=\"row\">"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
+		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
 			info_body+
 		"	</div>"+
 		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:100%; left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll;  left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
@@ -498,7 +498,7 @@ GW.workflow = {
 		
 		var req = "<div class=\"modal-body\"><div class=\"row\"> "+
 		"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
-		"		      <label class=\"labeltext\">How do you want to load the workflow?</label><br/>"+
+		"		      <label class=\"labeltext\">You have to load the workflow into the weaver view first to execute it. Do you want to proceed?</label><br/>"+
 		"		      <div class=\"form-check-inline\">"+
 		"					<label class=\"customradio\"><span class=\"radiotextsty\">show all child processes and edges</span>"+
 		"					  <input type=\"radio\" checked=\"checked\" name=\"addway\" value=\"all\">"+
@@ -518,7 +518,7 @@ GW.workflow = {
 		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 		'</div>';
 		
-		var frame = GW.process.createJSFrameDialog(320, 210, req, "Show a Way");
+		var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
 		
 		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 			
@@ -771,6 +771,10 @@ GW.workflow = {
 	
 	
 	execute_callback: function(req, dialogItself, button){
+
+		var history_id = GW.general.makeid(18);
+
+		req.history_id = history_id;
 		
  		$.ajax({
 				
@@ -794,15 +798,15 @@ GW.workflow = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					GW.process.showSSHOutputLog(msg); //use the same method as the single process
+					// GW.process.showSSHOutputLog(msg); //use the same method as the single process
 					
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
+						GW.monitor.startMonitor(msg.token); //for workspace refreshing
+    					
 						GW.ssh.openLog(msg); //for logging
 
-    					GW.monitor.startMonitor(msg.token); //for workspace refreshing
-    					
 					}
 					
 				}else if(msg.ret == "fail"){
@@ -856,10 +860,10 @@ GW.workflow = {
 	 */
 	execute: function(wid, mode, hosts){
 
-		var current_token = GW.main.getJSessionId();
+		// var current_token = GW.main.getJSessionId();
 
-		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
-			current_token = GW.monitor.token;
+		// if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+		// 	current_token = GW.monitor.token;
 		
 		var req = {
  				
@@ -867,7 +871,7 @@ GW.workflow = {
  				
  				mode: mode,
 
-				token: current_token
+				// token: current_token
  				
  		};
 		
