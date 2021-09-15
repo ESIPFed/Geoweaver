@@ -183,7 +183,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 						
 					}
 					
-					log.info("wsout message {}:{}", wsout.getId(), line);
+					log.debug("wsout message {}:{}", wsout.getId(), line);
 					
 //                    out.sendMessage(new TextMessage(line));
 					sendMessage2WebSocket(line);
@@ -222,16 +222,20 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 	public void sendMessage2WebSocket(String msg){
 
-		synchronized(wsout){
+		if(!bt.isNull(wsout)){
+		
+			synchronized(wsout){
 
-			try {
-				if(!bt.isNull(wsout) && wsout.isOpen())
-					wsout.getBasicRemote().sendText(msg);
-			} catch (Exception e) {
-				e.printStackTrace();
+				try {
+					if(wsout.isOpen())
+						wsout.getBasicRemote().sendText(msg);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	
 			}
-
 		}
+		
 
 	}
     

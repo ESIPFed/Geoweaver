@@ -152,7 +152,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		tempfile = workspace_folder_path + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
 
-    		script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		

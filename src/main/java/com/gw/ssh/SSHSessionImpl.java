@@ -364,7 +364,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		cmdline += "cd ..; rm -R " + token + "*;";
     		
@@ -462,7 +462,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "rm ./jupyter-" + history.getHistory_id() + ".ipynb; "; // remove the script finally, leave no trace behind
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
 //    		cmdline += "./geoweaver-" + token + ".sh;";
     		
@@ -532,7 +532,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		String cmdline = "echo \"" 
     				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
