@@ -21,6 +21,7 @@ import com.gw.utils.BaseTool;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalSessionNixImpl implements LocalSession {
 
 	Logger log  = Logger.getLogger(this.getClass());
