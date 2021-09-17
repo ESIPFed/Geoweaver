@@ -1083,6 +1083,14 @@ GW.host = {
 					jupyter_url = $("#_host_url").val()
 					
 				}
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential"]:checked').val()
+					
+				}
 				
 				var req = {
 					
@@ -1100,7 +1108,9 @@ GW.host = {
 					
 					username: hostusername,
 					
-					hostid: hostid
+					hostid: hostid,
+
+					confidential: confidential
 					
 				}
 		    	

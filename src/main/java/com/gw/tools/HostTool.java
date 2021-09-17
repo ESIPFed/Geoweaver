@@ -850,15 +850,15 @@ public class HostTool {
 	 * @param object
 	 * @return
 	 */
-	public String update(String hostid, String hostname, String hostip, String hostport, String username, String type, String owner, String url) {
+	public String update(String hostid, String hostname, String hostip, String hostport, String username, String type, String owner, String url, String confidential) {
 
 		String resp = null;
 		
 		try {
 			
-			Host h = new Host();
+			Host h = this.getHostById(hostid);
 			
-			h.setId(hostid);
+			// h.setId(hostid);
 			
 			h.setName(hostname);
 			
@@ -866,13 +866,15 @@ public class HostTool {
 			
 			if(!bt.isNull(hostport)) h.setPort(hostport);
 			
-			h.setUsername(username);
+			if(!bt.isNull(username)) h.setUsername(username);
 			
-			h.setType(type);
+			if(!bt.isNull(type)) h.setType(type);
 			
-			h.setOwner(owner);
+			if(!bt.isNull(owner)) h.setOwner(owner);
 			
-			h.setUrl(url);
+			if(!bt.isNull(url)) h.setUrl(url);
+
+			if(!bt.isNull(confidential)) h.setConfidential(confidential);
 			
 			hostrepository.save(h);
 			

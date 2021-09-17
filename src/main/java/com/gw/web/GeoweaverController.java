@@ -956,12 +956,14 @@ public class GeoweaverController {
 				String username = request.getParameter("username");
 				
 				String hosttype = request.getParameter("hosttype");
+
+				String confidential = request.getParameter("confidential");
 				
 				String url = request.getParameter("url");
 				
 //				String owner = request.getParameter("owner");
 				
-				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url);
+				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url, confidential);
 				
 				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
 				
