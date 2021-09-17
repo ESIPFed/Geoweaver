@@ -238,6 +238,15 @@ GW.workflow = {
 		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
 		       '     </div>'+
 		       '   </div>'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="confidential" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   '       <input type="radio" name="confidential" value="FALSE" checked> '+
+			   '		<label for="confidential">Public</label>'+
+			   '       <input type="radio" name="confidential" value="TRUE"> '+
+			   '		<label for="confidential">Private</label>'+
+			   '     </div>'+
+		       '   </div>'+
 		       '</form></div>';
 			
 			content += '<div class="modal-footer">' +
@@ -249,6 +258,14 @@ GW.workflow = {
 			$("#new-workflow-confirm").click(function(){
 				
             	$("#new-workflow-confirm").prop('disabled', true);
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential"]:checked').val()
+					
+				}
 				
 				//save the new workflow
 				
@@ -257,6 +274,8 @@ GW.workflow = {
 					"name": $("#workflow_name").val(), 
 					
 					"type": "workflow",
+
+					"confidential": confidential,
 					
 					"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
 					
