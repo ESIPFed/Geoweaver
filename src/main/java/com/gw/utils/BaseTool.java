@@ -287,6 +287,20 @@ public class BaseTool {
 		
 	}
 
+	public void sleep(long timelen){
+
+		try {
+			
+			Thread.sleep(timelen);                 //1000 milliseconds is one second.
+
+		} catch(InterruptedException ex) {
+			
+			// Thread.currentThread().interrupt();
+			ex.printStackTrace();
+
+		}
+	}
+
 	/**
 	 * Write string to file
 	 * @param content

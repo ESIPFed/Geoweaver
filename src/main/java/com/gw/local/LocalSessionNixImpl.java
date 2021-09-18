@@ -156,7 +156,9 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		bt.writeString2File(script, tempfile);
     		
-    		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile});
+    		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
+
+			bt.sleep(1000);
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
@@ -229,7 +231,7 @@ public class LocalSessionNixImpl implements LocalSession {
     			
 //    			cmdline += "source activate " + env + "; "; //for demo only
     			
-    			Runtime.getRuntime().exec(new String[] {"source", "activate", env});
+    			Runtime.getRuntime().exec(new String[] {"source", "activate", env}).waitFor();
     			
 //    			cmdline += bin + " " + filename + "; ";
     			
