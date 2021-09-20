@@ -107,6 +107,7 @@ public class UserTool {
 
     }
 
+
     public boolean isAuth(String jssessionid, String ipaddress){
 
         boolean isauth = false;

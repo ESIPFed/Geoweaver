@@ -16,6 +16,7 @@ import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.RandomString;
+import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -52,6 +53,12 @@ public class WorkflowTool {
 	
 	@Autowired
 	HistoryTool tool;
+
+	@Autowired
+	UserTool ut;
+
+	@Autowired
+	BaseTool bt;
 	
 	@Autowired
 	GeoweaverWorkflowTask task;
@@ -659,17 +666,27 @@ public class WorkflowTool {
 		
 	}
 	
-	public static void main(String[] args) throws ParseException {
+	// public static void main(String[] args) throws ParseException {
 		
-		String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
+	// 	String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
 		
-		JSONParser parser = new JSONParser();
+	// 	JSONParser parser = new JSONParser();
 		
-		JSONArray obj = (JSONArray)parser.parse(jsonarray);
+	// 	JSONArray obj = (JSONArray)parser.parse(jsonarray);
 		
-		System.out.println("parsed json objects: " + obj.size());
+	// 	System.out.println("parsed json objects: " + obj.size());
 		
 		
-	}
+	// }
+
+    public String getOwnerNameByID(String ownerid) {
+
+		String ownername = "Public User";
+		
+		if(!bt.isNull(ownerid)) 
+			ownername = ut.getUserById(ownerid).getUsername();
+
+        return ownername;
+    }
 
 }
