@@ -841,6 +841,41 @@ GW.workspace = {
 					GW.workspace.showNonSaved();
 	    	  }
 
+			  GW.workspace.GraphCreator.prototype.deleteSelected = function(){
+
+				if(Object.keys(BootstrapDialog.dialogs).length){
+	    			return; //if there are shown dialogs, key activity will be disconnected from svg
+	    		}
+	    	    var thisGraph = this,
+	    	        state = thisGraph.state,
+	    	        consts = thisGraph.consts;
+	
+	    	    var selectedNode = state.selectedNode,
+	    	        selectedEdge = state.selectedEdge;
+	
+				if(document.getElementById("workspace").style.display=="block"){
+
+					if (selectedNode){
+					
+						var pid = selectedNode.id;
+						console.log("going to remove process: " + pid);
+	//	    	    	GW.menu.del(pid, "process");
+						thisGraph.removeNode(pid);
+					
+					} else if (selectedEdge){
+					
+						//removing an edge is much easier than removing a process
+						thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+						state.selectedEdge = null;
+						GW.workspace.showNonSaved();
+						thisGraph.updateGraph();
+					
+					}
+				}
+		    	      
+
+			  }
+
 			  GW.workspace.GraphCreator.prototype.deleteSelectedOrAll = function(){
 
 				if(Object.keys(BootstrapDialog.dialogs).length){
@@ -898,8 +933,8 @@ GW.workspace = {
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
-		    	      d3.event.preventDefault();
-					  this.deleteSelectedOrAll();
+		    	    //   d3.event.preventDefault();
+					  this.deleteSelected();
 		// 			  if(document.getElementById("workspace").style.display=="block"){
 		// 				if (selectedNode){
 		    	        

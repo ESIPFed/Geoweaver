@@ -233,8 +233,8 @@ GW.workflow = {
 			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
 			   '<form>'+
 		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Input Workflow Name : </label>'+
-		       '     <div class="col-sm-8">'+
+		       '     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
+		       '     <div class="col-sm-9" style="padding-left: 30px;">'+
 		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
 		       '     </div>'+
 		       '   </div>'+
@@ -242,9 +242,18 @@ GW.workflow = {
 		       '     <label for="confidential" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
 			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
 			   '       <input type="radio" name="confidential" value="FALSE" checked> '+
-			   '		<label for="confidential">Public</label>'+
-			   '       <input type="radio" name="confidential" value="TRUE"> '+
-			   '		<label for="confidential">Private</label>'+
+			   '		<label for="confidential">Public</label>';
+
+			   if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+			   		content += '       <input type="radio" name="confidential" value="TRUE"> '+
+			   		'		<label for="confidential">Private</label>';
+
+			   content += '     </div>'+
+		       '   </div>'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
+			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   '       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
 			   '     </div>'+
 		       '   </div>'+
 		       '</form></div>';
