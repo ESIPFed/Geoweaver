@@ -1805,8 +1805,12 @@ GW.process = {
 		    		url: "add",
 		    		
 		    		method: "POST",
+
+					contentType: 'application/json',
+
+					dataType: 'json',
 		    		
-		    		data: req
+		    		data: JSON.stringify(req)
 		    		
 		    	}).done(function(msg){
 		    		
