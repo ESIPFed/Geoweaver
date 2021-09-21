@@ -277,8 +277,10 @@ public class LocalhostTool {
 			GWProcess process = pt.getProcessById(id);
 
 			this.saveHistory(id, process.getCode(), history_id);
+
+			String code = pt.getCodeById(id);
 			
-			localizeJupyter(process.getCode(), process.getName(), token);
+			localizeJupyter(code, process.getName(), token);
 			
 			LocalSession session = getLocalSession();
 			
@@ -288,7 +290,7 @@ public class LocalhostTool {
 			
 			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
-			session.runJupyter(history_id, process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
+			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			resp = "{\"history_id\": \""+history_id+
 					

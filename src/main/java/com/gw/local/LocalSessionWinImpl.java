@@ -251,13 +251,17 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path + "/" + token));
+    		builder.directory(new File(workspace_folder_path + "/" + token)); // this folder is only used to find data files, not the execution command
     		
     		String pythonfilename = pro.getName();
     		
     		log.info("Start to execute jupyter notebook: " + pythonfilename);
     		
     		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
+
+			
+
+			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
     		
     		builder.command(new String[] {"jupyter", "nbconvert", "--to", "notebook", "--execute", pythonfilename} );
     		
