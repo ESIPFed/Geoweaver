@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
@@ -248,45 +249,54 @@ public class ProcessTool {
 		
 	}
 	
-	public String detail(String id) {
+	public String detail(String id) throws JsonProcessingException {
 		
 		GWProcess p = getProcessById(id);
-		
-		StringBuffer resp = new StringBuffer();
-		
-		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
-		
-		resp.append("\"name\":\"").append(p.getName()).append("\", ");
-		
-		String lang = "shell";
-		
-		if(!bt.isNull(p.getDescription()))
-		
-			lang = p.getDescription();
-		
-		resp.append("\"description\":\"").append(lang).append("\", ");
-		
-		String code = p.getCode();
 
-//		if(lang.equals("jupyter")) {
-//			
-//			resp.append("\"code\":").append(code).append(" ");
-//			
-//		}else {
-			
-//			code = escape(code); //it already escaped once
-			
-			resp.append("\"code\":\"").append(code).append("\", ");
+		ObjectMapper mapper = new ObjectMapper();
 
-			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
-
-			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
-			
-//		}
+		String jsonString = mapper.writeValueAsString(p);
 		
-		resp.append(" }");
+// 		StringBuffer resp = new StringBuffer();
+		
+// 		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
+		
+// 		resp.append("\"name\":\"").append(p.getName()).append("\", ");
+		
+// 		String lang = "shell";
+		
+// 		if(bt.isNull(p.getLang())){
+
+// 			if(!bt.isNull(p.getDescription()))
+		
+// 			lang = p.getDescription();
+// 		}
+		
+// 		resp.append("\"lang\":\"").append(lang).append("\", ");
+
+// 		resp.append("\"description\":\"").append(p.getDescription()).append("\", ");
+		
+// 		String code = p.getCode();
+
+// //		if(lang.equals("jupyter")) {
+// //			
+// //			resp.append("\"code\":").append(code).append(" ");
+// //			
+// //		}else {
+			
+// //			code = escape(code); //it already escaped once
+			
+// 			resp.append("\"code\":\"").append(code).append("\", ");
+
+// 			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
+
+// 			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
+			
+// //		}
+		
+// 		resp.append(" }");
 				
-		return resp.toString();
+		return jsonString;
 		
 	}
 	

@@ -26,6 +26,10 @@ public class GWProcess {
 	@Column(columnDefinition = "LONGTEXT")
 	String code;
 
+	String lang;
+
+	
+
 	String owner;
 
 	//true: private; false: public
@@ -47,7 +51,13 @@ public class GWProcess {
 		this.confidential = confidential;
 	}
 	
+	public String getLang() {
+		return this.lang;
+	}
 
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
 
 
 	public String getId() {

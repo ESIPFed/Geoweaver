@@ -2,9 +2,15 @@ package com.gw;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.gw.jpa.GWUser;
 import com.gw.tools.UserTool;
+import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
 import org.apache.log4j.Logger;
@@ -36,6 +42,9 @@ class GeoweaverApplicationTests {
 	@Autowired
 	UserTool ut;
 
+	@Autowired
+	BaseTool bt;
+
 	@Test
 	void contextLoads() {
 		
@@ -55,6 +64,85 @@ class GeoweaverApplicationTests {
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("[");
+
+	}
+
+	@Test
+	String testResourceFiles(){
+
+		Path resourceDirectory = Paths.get("src","test","resources");
+		String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+
+		logger.debug(absolutePath);
+		assertTrue(absolutePath.contains("resources"));
+		return absolutePath;
+	}
+
+	@Test
+	@DisplayName("Testing adding jupyter process...")
+	void testAddJupyterProcess(){
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String jupyterjson = bt.readStringFromFile(this.testResourceFiles()+ "/add_jupyter_process.json" );
+    	HttpEntity request = new HttpEntity<>(jupyterjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
+
+	}
+
+	@Test
+	@DisplayName("Test adding builtin process")
+	void testAddBuiltinProcess(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String bultinjson = bt.readStringFromFile(this.testResourceFiles()+ "/add_builtin_process.json" );
+    	HttpEntity request = new HttpEntity<>(bultinjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
+
+	}
+
+	@Test
+	@DisplayName("Test adding python process")
+	void testAddPythonProcess(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String pythonjson = bt.readStringFromFile(this.testResourceFiles()+ "/add_python_process.json" );
+    	HttpEntity request = new HttpEntity<>(pythonjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
+
+	}
+
+	@Test
+	@DisplayName("Test adding shell process")
+	void testAddShellProcess(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String shelljson = bt.readStringFromFile(this.testResourceFiles()+ "/add_shell_process.json" );
+    	HttpEntity request = new HttpEntity<>(shelljson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
 
 	}
 

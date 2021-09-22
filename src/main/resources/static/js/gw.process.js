@@ -416,6 +416,8 @@ GW.process = {
 						"params": params
 						
 				}
+
+				code = JSON.stringify(code);
 				
 			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
@@ -887,7 +889,14 @@ GW.process = {
 			if(code != null){
 
 				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils, should remove in v1.0
-			
+				// var code = code.replace(/\\n/g, "\\n")
+				// 				.replace(/\\'/g, "\\'")
+				// 				.replace(/\\"/g, '\\"')
+				// 				.replace(/\\&/g, "\\&")
+				// 				.replace(/\\r/g, "\\r")
+				// 				.replace(/\\t/g, "\\t")
+				// 				.replace(/\\b/g, "\\b")
+				// 				.replace(/\\f/g, "\\f");
 			}
 			
 			return code;
@@ -1120,9 +1129,11 @@ GW.process = {
 				msg = $.parseJSON(msg);
 			}
 			
-			code_type = msg.category==null?msg.description: msg.category;
+			code_type = msg.lang==null?msg.description: msg.lang;
 			
 			code = msg.code;
+
+			
 			
 			process_id = msg.id;
 			
@@ -1710,11 +1721,15 @@ GW.process = {
 			
 		    	$.ajax({
 		    		
-		    		url: "edit",
+		    		url: "edit/process",
 		    		
 		    		method: "POST",
 		    		
-		    		data: req
+		    		contentType: 'application/json',
+
+					dataType: 'json',
+		    		
+		    		data: JSON.stringify(req)
 		    		
 		    	}).done(function(msg){
 		    		
@@ -1788,13 +1803,13 @@ GW.process = {
 					
 					lang: $("#processcategory-"+cmid).val(),
 					
-					desc: $("#processcategory-"+cmid).val(), //use the description column to store the process type
+					description: $("#processcategory-"+cmid).val(), //use the description column to store the process type
 				
 					name: $("#processname-"+cmid).val(), 
 	    			
 					code: GW.process.getCode(cmid),
 
-					ownerid: GW.user.current_userid,
+					owner: GW.user.current_userid,
 
 					confidential: confidential
 					
@@ -1802,15 +1817,15 @@ GW.process = {
 		    		
 		    	$.ajax({
 		    		
-		    		url: "add",
+		    		url: "add/process",
 		    		
 		    		method: "POST",
 
-					// contentType: 'application/json',
+					contentType: 'application/json',
 
-					// dataType: 'json',
+					dataType: 'json',
 		    		
-		    		data: req
+		    		data: JSON.stringify(req)
 		    		
 		    	}).done(function(msg){
 		    		

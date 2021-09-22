@@ -12,7 +12,9 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.jpa.GWProcess;
 import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
@@ -45,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
@@ -933,6 +936,84 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/edit/process", method = RequestMethod.POST)
+    public @ResponseBody String editprocess(ModelMap model, @RequestBody GWProcess up, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			// String lang = request.getParameter("lang");
+			
+			// String name = request.getParameter("name");
+			
+			// String desc = request.getParameter("desc");
+			
+			// String id = request.getParameter("id");
+			
+			checkID(up.getId());
+			
+			// String code = null;
+			
+			// if(lang.equals("shell")) {
+				
+			// 	code = request.getParameter("code");
+				
+			// }else if(lang.equals("builtin")) {
+				
+			// 	String operation = request.getParameter("code[operation]");
+				
+			// 	code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
+				
+			// 	List params = new ArrayList();
+				
+			// 	int i=0;
+				
+			// 	while(request.getParameter("code[params]["+i+"][name]")!=null) {
+					
+			// 		if(i!=0) {
+						
+			// 			code += ", ";
+						
+			// 		}
+					
+			// 		code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
+					
+			// 		i++;
+					
+			// 	}
+				
+			// 	code += "] }";
+				
+			// }else if(lang.equals("jupyter")) {
+				
+			// 	code = request.getParameter("code");
+				
+			// }else {
+				
+			// 	code = request.getParameter("code");
+				
+			// }
+			
+			// pt.update(id, name, lang, code, desc);
+
+			pt.save(up);
+			
+			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
     public @ResponseBody String edit(ModelMap model, WebRequest request){
@@ -1155,6 +1236,101 @@ public class GeoweaverController {
 			String filepath = request.getParameter("filepath");
 			
 			resp = ft.scp_download(hid, password, filepath);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/process", method = RequestMethod.POST)
+    public @ResponseBody String addProcess(ModelMap model, @RequestBody GWProcess np, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			// String lang = request.getParameter("lang");
+
+			// String name = request.getParameter("name");
+			
+			// String desc = request.getParameter("desc");
+
+			String ownerid = bt.isNull(np.getOwner())?"111111":np.getOwner();
+
+			np.setOwner(ownerid);
+
+			// String confidential = request.getParameter("confidential");
+			
+			
+			String newid = new RandomString(6).nextString();
+
+			np.setId(newid);
+
+			np.setCode(np.getCode());
+
+			pt.save(np);
+
+			resp = "{\"id\" : \"" + newid + "\", \"name\":\"" + np.getName() + "\", \"lang\": \""+np.getDescription()+"\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/host", method = RequestMethod.POST)
+    public @ResponseBody String addHost(ModelMap model, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			// String type = request.getParameter("type");
+			
+			// if(type.equals("host")) {
+				
+				// String hostname = request.getParameter("hostname");
+				
+				// String hostip = request.getParameter("hostip");
+				
+				// String hostport = request.getParameter("hostport");
+				
+				// String username = request.getParameter("username");
+				
+				// String hosttype = request.getParameter("hosttype");
+				
+				// String url = request.getParameter("url");
+
+				// String confidential = request.getParameter("confidential");
+
+				String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+
+				h.setOwner(ownerid);
+
+				String newhostid = new RandomString(6).nextString();
+
+				h.setId(newhostid);
+
+				ht.save(h);
+				
+				// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
+				
+				resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
+				
+			// }
 			
 		}catch(Exception e) {
 			
