@@ -2240,7 +2240,7 @@ GW.process = {
 	            		
 	            	}).done(function(msg){
 	            		
-	            		msg = GW.parseResponse(msg);
+	            		msg = GW.general.parseResponse(msg);
 	            		
 	            		$("#hostselector").find('option').remove().end();
 	            		

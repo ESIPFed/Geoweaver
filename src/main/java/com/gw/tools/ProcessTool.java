@@ -752,7 +752,7 @@ public class ProcessTool {
 		GWProcess p = processrepository.findById(pid).get();
 		
 		
-		return p.getDescription();
+		return bt.isNull(p.getLang())?p.getDescription():p.getLang();
 		
 		
 	}
