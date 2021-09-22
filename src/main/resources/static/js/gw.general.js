@@ -42,7 +42,23 @@ GW.general = {
 		   return result;
 		},
 		
+		parseResponse: function(msg){
+
+			if(msg!=null && typeof msg != 'undefined'){
+
+				if(typeof msg != 'object'){
+
+					msg = $.parseJSON(msg);
+
+				}
+
+			}
+
+			return msg;
+
+		},
 		
+
 		displayObject: function(type, msg){
 			
 			if(type=="process"){

@@ -1702,11 +1702,11 @@ public class GeoweaverController {
 
 
 
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
     	
-    	sessionManager.closeAll();
+    // 	sessionManager.closeAll();
     	
-    }
+    // }
 	
     
 }

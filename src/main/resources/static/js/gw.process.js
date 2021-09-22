@@ -327,9 +327,8 @@ GW.process = {
 			this.load_jupyter();
 			
 			if(code!=null && typeof code != 'undefined'){
-				if(typeof code != 'object'){
-					code = $.parseJSON(code);
-				}
+				
+				code = GW.general.parseResponse(code);
 				var notebook = nb.parse(code);
 				var rendered = notebook.render();
 				$("#jupyter_area-"+cmid).append(rendered);
@@ -365,7 +364,7 @@ GW.process = {
 			
 			if(code!=null){
 				
-				code = $.parseJSON(code);
+				code = GW.general.parseResponse(code);
 				
 				$("#builtin_processes-"+cmid).val(code.operation);
 				
@@ -519,7 +518,7 @@ GW.process = {
 					
 				}
 				
-				msg = $.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 				
 				var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\"> "+
 				"  <thead> "+
@@ -673,7 +672,7 @@ GW.process = {
 					
 				}
 				
-				msg = $.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 				
 				$("#process-history-container").html(GW.process.getTable(msg));
 				
@@ -716,7 +715,7 @@ GW.process = {
 				
 			}).done(function(msg){
 				
-				msg = $.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 				
 				console.log("stop process is called");
 
@@ -765,7 +764,7 @@ GW.process = {
 					
 				}
 				
-				msg = $.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 
 				msg.code = msg.input;
 				
@@ -873,7 +872,7 @@ GW.process = {
 					
 				}
 				
-				msg = $.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 				
 				GW.process.displayOutput(msg);
 				
@@ -1016,10 +1015,7 @@ GW.process = {
 				
 			}).done(function(msg){
 				
-				if(typeof msg != 'object'){
-					msg = $.parseJSON(msg);
-				}
-				
+				msg = GW.general.parseResponse(msg);
 				var content = '<div class="modal-body">'+
 					GW.process.getProcessDialogTemplate() + '</div>';
 				
@@ -1126,11 +1122,8 @@ GW.process = {
 			
 			var process_name = null;
 			
-			if(typeof msg !='object'){
-				
-				msg = $.parseJSON(msg);
-			}
-			
+			msg = GW.general.parseResponse(msg);
+
 			code_type = msg.lang==null?msg.description: msg.lang;
 			
 			code = msg.code;
@@ -1148,11 +1141,11 @@ GW.process = {
 
 			if(msg.confidential=="FALSE"){
 
-				confidential_field += '       <input type="radio" name="confidential" value="FALSE" checked> ';
+				confidential_field += '       <input type="radio" name="confidential_process" value="FALSE" checked> ';
 
 			}else{
 
-				confidential_field += '       <input type="radio" name="confidential" value="FALSE"> ';
+				confidential_field += '       <input type="radio" name="confidential_process" value="FALSE"> ';
 
 			}
 			
@@ -1162,12 +1155,12 @@ GW.process = {
 
 				if(msg.confidential=="TRUE"){
 
-					confidential_field += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> '+
 						'		<label for="confidential">Private</label>';
 
 				}else{
 
-					confidential_field += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> '+
 						'		<label for="confidential">Private</label>';
 					
 				}
@@ -1349,11 +1342,7 @@ GW.process = {
 				
 				if(code != null && code != "null"){
 
-					if(typeof code != 'object'){
-					
-						code = $.parseJSON(code);
-					
-					}
+					code = GW.general.parseResponse(code);
 					
 					var notebook = nb.parse(code);
 					
@@ -1369,7 +1358,7 @@ GW.process = {
 				
 				code = code.replace(/\\/g, '\\\\');
 				
-				code = $.parseJSON(code)
+				code = GW.general.parseResponse(code)
 				
 				var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
 				'     <div class="col-sm-8"> <select class="form-control builtin-process" onchange=\"GW.process.updateBuiltin()\" id="builtin_processes">';
@@ -1492,29 +1481,20 @@ GW.process = {
 
 		},
 		
+		//edit switch should always be on
 		editSwitch: function(){
 			
 			if(GW.process.checkIfProcessPanelActive()){
 
 				console.log("Turn on/off the fields");
-			
-				// Uncomment if editing should be disabled by default [Currently enabled]
-				// GW.process.editOn = !GW.process.editOn;
 				
-
-				
-				// if(GW.process.editOn && isinitial == null) {
-
-					
-				
-
 				if(typeof $("#processid").val() != undefined){
 
 					GW.process.current_pid = $("#processid").val();
 					GW.process.update(GW.process.current_pid);
 					
 				
-					$("#processcategory").prop( "disabled", GW.process.editOn );
+					$("#processcategory").prop( "disabled", true ); //don't allow change of process category
 					
 					$("#processname").prop( "disabled", GW.process.editOn );
 					
@@ -1539,8 +1519,6 @@ GW.process = {
 					}
 				}
 				
-				
-
 			}
 			
 			
@@ -1558,7 +1536,7 @@ GW.process = {
         		
         	}).done(function(msg){
         		
-        		msg = $.parseJSON(msg);
+        		msg = GW.general.parseResponse(msg);
         		
         		console.log("Start to refresh the process list..");
         		
@@ -1661,7 +1639,7 @@ GW.process = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				this.addMenuItem(msg[i], msg[i].lang);
+				this.addMenuItem(msg[i], msg[i].lang==null?msg[i].description:msg[i].lang);
 				
 				//this.addWorkspace(msg[i]);
 				
@@ -1703,7 +1681,7 @@ GW.process = {
 			
 		},
 		
-		updateRaw: function(pid, pname, plang, pdesc, pcode){
+		updateRaw: function(pid, pname, plang, pdesc, pcode, confidential){
 			
 			var req =  {
 					
@@ -1716,6 +1694,10 @@ GW.process = {
 					name: pname, 
 					
 					id: pid,
+
+					owner: GW.user.current_userid,
+
+					confidential: confidential,
 	    			
 					code: pcode
 					
@@ -1735,7 +1717,7 @@ GW.process = {
 		    		
 		    	}).done(function(msg){
 		    		
-		    		msg = $.parseJSON(msg);
+		    		msg = GW.general.parseResponse(msg);
 		    		
 		    		console.log("Updated!!");
 		    		
@@ -1770,8 +1752,10 @@ GW.process = {
 			
 			var pcode =  GW.process.getCode();
 
+			var confidential = $('input[name="confidential_process"]:checked').val()
+
 			if(pid!=null){
-				this.updateRaw(pid, pname, plang, pdesc, pcode);
+				this.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
 			}
 			
 			// GW.process.showSaved();
@@ -1831,7 +1815,7 @@ GW.process = {
 		    		
 		    	}).done(function(msg){
 		    		
-		    		// msg = $.parseJSON(msg);
+		    		msg = GW.general.parseResponse(msg);
 		    		
 		    		// msg.desc = req.desc;
 		    		
@@ -1926,7 +1910,7 @@ GW.process = {
 				
 				if(msg){
 					
-					msg = $.parseJSON(msg);
+					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){
 						
@@ -2028,7 +2012,7 @@ GW.process = {
 	                		
 	                	}).done(function(msg){
 	                		
-	                		msg = $.parseJSON(msg);
+	                		msg = GW.general.parseResponse(msg);
 	                		
 	                		if(GW.process.env_frame != null){
 	                			
@@ -2256,7 +2240,7 @@ GW.process = {
 	            		
 	            	}).done(function(msg){
 	            		
-	            		msg = $.parseJSON(msg);
+	            		msg = GW.parseResponse(msg);
 	            		
 	            		$("#hostselector").find('option').remove().end();
 	            		
