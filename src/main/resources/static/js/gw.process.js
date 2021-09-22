@@ -1016,7 +1016,9 @@ GW.process = {
 				
 			}).done(function(msg){
 				
-				msg = $.parseJSON(msg);
+				if(typeof msg != 'object'){
+					msg = $.parseJSON(msg);
+				}
 				
 				var content = '<div class="modal-body">'+
 					GW.process.getProcessDialogTemplate() + '</div>';
@@ -1030,7 +1032,7 @@ GW.process = {
 				
             	var old_name = msg.name;
             	
-            	var old_lang = msg.description;
+            	var old_lang = msg.lang==null?msg.desc : msg.lang;
             	
             	var old_code = msg.code;
             	
@@ -1100,7 +1102,7 @@ GW.process = {
             		
             		//not finished yet
             		
-            		GW.process.runProcess(msg.id, msg.name, msg.description);
+            		GW.process.runProcess(msg.id, msg.name, msg.lang);
             		
             	});
 				
@@ -1659,7 +1661,7 @@ GW.process = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				this.addMenuItem(msg[i], msg[i].description);
+				this.addMenuItem(msg[i], msg[i].lang);
 				
 				//this.addWorkspace(msg[i]);
 				
@@ -1829,13 +1831,13 @@ GW.process = {
 		    		
 		    	}).done(function(msg){
 		    		
-		    		msg = $.parseJSON(msg);
+		    		// msg = $.parseJSON(msg);
 		    		
-		    		msg.desc = req.desc;
+		    		// msg.desc = req.desc;
 		    		
-		    		GW.process.addMenuItem(msg, req.desc);
+		    		GW.process.addMenuItem(msg, req.lang);
 
-					GW.process.expand(req.desc);
+					GW.process.expand(req.lang);
 		    		
 		    		if(run)
 		    				
@@ -1986,7 +1988,7 @@ GW.process = {
 		/**
 		 * This function is to directly execute one process
 		 */
-		executeProcess: function(pid, hid, desc){
+		executeProcess: function(pid, hid, lang){
 			
             var req = {
 		    		
@@ -1994,11 +1996,13 @@ GW.process = {
 		    		
 		    		hostId: hid,
 		    		
-		    		desc: desc
+		    		desc: lang,
+
+					lang: lang
 		    		
 		    }
             
-            if(req.desc == "python" || req.desc == "jupyter"){
+            if(req.lang == "python" || req.lang == "jupyter"){
             	
 	            	//check if there is cached environment for this host
 	            	
@@ -2088,7 +2092,7 @@ GW.process = {
 	        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 	        				'</div>';
 	                		
-	                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.desc + " environment")
+	                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.lang + " environment")
 	                		
 	            			$("#env-select").change(function(e){
 								
@@ -2188,9 +2192,9 @@ GW.process = {
 		 * Show a Run process dialog
 		 * @param {*} pid 
 		 * @param {*} pname 
-		 * @param {*} desc 
+		 * @param {*} lang 
 		 */
-		runProcess: function(pid, pname, desc){
+		runProcess: function(pid, pname, lang){
 
 			if(!this.isSaved){
 
@@ -2307,7 +2311,7 @@ GW.process = {
 	                		
 	                	}
 	                	
-	                	GW.process.executeProcess(pid, hostid, desc);
+	                	GW.process.executeProcess(pid, hostid, lang);
 	                	
 	                	GW.process.host_frame.closeFrame();
 			    		
@@ -2321,7 +2325,7 @@ GW.process = {
 				
 			}else{
 				
-				GW.process.executeProcess(pid, h, desc);
+				GW.process.executeProcess(pid, h, lang);
 				
 			}
 			
