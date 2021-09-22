@@ -212,7 +212,7 @@ GW.process = {
 		    var load_file = function (file) {
 		        var reader = new FileReader();
 		        reader.onload = function (e) {
-		        	GW.process.jupytercode = this.result;
+		        	GW.process.jupytercode = JSON.stringify(this.result);
 		            var parsed = JSON.parse(this.result);
 		            render_notebook(parsed);
 		        };
@@ -1806,11 +1806,11 @@ GW.process = {
 		    		
 		    		method: "POST",
 
-					contentType: 'application/json',
+					// contentType: 'application/json',
 
-					dataType: 'json',
+					// dataType: 'json',
 		    		
-		    		data: JSON.stringify(req)
+		    		data: req
 		    		
 		    	}).done(function(msg){
 		    		
