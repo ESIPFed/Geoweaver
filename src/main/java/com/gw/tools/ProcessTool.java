@@ -253,6 +253,13 @@ public class ProcessTool {
 		
 		GWProcess p = getProcessById(id);
 
+		if(!bt.isNull(p.getCode()) && (p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
+			|| p.getCode().contains("\\\"operation\\\"") || p.getCode().contains("\\\"cells\\\""))){
+
+			p.setCode(this.unescape(p.getCode()));
+
+		}
+
 		ObjectMapper mapper = new ObjectMapper();
 
 		String jsonString = mapper.writeValueAsString(p);
@@ -713,7 +720,9 @@ public class ProcessTool {
 		
 		String code = p.getCode();
 		
-		code = this.unescape(code);
+		if(p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
+		|| p.getCode().contains("\\\"operation\\\"") || p.getCode().contains("\\\"cells\\\"")) 
+			code = this.unescape(code);
 		
 		return code;
 		

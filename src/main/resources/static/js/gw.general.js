@@ -47,7 +47,7 @@ GW.general = {
 			if(msg!=null && typeof msg != 'undefined'){
 
 				if(typeof msg != 'object'){
-
+					
 					msg = $.parseJSON(msg);
 
 				}

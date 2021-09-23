@@ -208,4 +208,33 @@ class GeoweaverApplicationTests {
 		assertThat(result).contains("[");
 	}
 
+	@Test
+	void testJSONEscape(){
+
+		String jsonstr = "import os\nimport time";
+
+		if(jsonstr.contains("\nimport")){
+
+			logger.debug("import is detected");
+
+		}else{
+
+			logger.debug("import is not detected");
+		}
+
+		
+		String jsonstr2 = "{\"cells\":[{\"cell_type\":\"markdown\"";
+
+		if(jsonstr2.contains("\"cells\"")){
+
+			logger.debug("cell is detected");
+
+		}else{
+
+			logger.debug("cell is not detected");
+		}
+
+
+	}
+
 }

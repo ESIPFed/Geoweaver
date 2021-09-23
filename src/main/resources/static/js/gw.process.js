@@ -888,14 +888,14 @@ GW.process = {
 			if(code != null){
 
 				// code = code.replaceAll("<br/>", "\n"); //no long needed after using StringEscapeUtils, should remove in v1.0
-				// var code = code.replace(/\\n/g, "\\n")
-				// 				.replace(/\\'/g, "\\'")
-				// 				.replace(/\\"/g, '\\"')
-				// 				.replace(/\\&/g, "\\&")
-				// 				.replace(/\\r/g, "\\r")
-				// 				.replace(/\\t/g, "\\t")
-				// 				.replace(/\\b/g, "\\b")
-				// 				.replace(/\\f/g, "\\f");
+				var code = code.replace(/\\n/g, "\\n")
+								.replace(/\\'/g, "\\'")
+								.replace(/\\"/g, '\\"')
+								.replace(/\\&/g, "\\&")
+								.replace(/\\r/g, "\\r")
+								.replace(/\\t/g, "\\t")
+								.replace(/\\b/g, "\\b")
+								.replace(/\\f/g, "\\f");
 			}
 			
 			return code;
@@ -1128,7 +1128,11 @@ GW.process = {
 			
 			code = msg.code;
 
-			
+			if(code!=null && code.includes("\\\"")){
+
+				code = GW.process.unescape(code);
+
+			}
 			
 			process_id = msg.id;
 			
@@ -1676,6 +1680,8 @@ GW.process = {
 				pcode.params.push({name: paramname.substring(6), value: paramval})
 				
 			});
+
+			pcode = JSON.stringify(pcode);
 			
 			this.updateRaw(pid, pname, plang, pdesc, pcode);
 			
@@ -1755,7 +1761,12 @@ GW.process = {
 			var confidential = $('input[name="confidential_process"]:checked').val()
 
 			if(pid!=null){
-				this.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
+				if(plang=="builtin"){
+					GW.process.updateBuiltin();
+				}else{
+					GW.process.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
+				}
+				
 			}
 			
 			// GW.process.showSaved();
