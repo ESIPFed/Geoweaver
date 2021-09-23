@@ -110,21 +110,21 @@ GW.workflow = {
 					
 		if(confidential=="FALSE"){
 
-			content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
-			'		<label for="confidential">Public</label>';
+			content  += '       <input type="radio" name="confidential_workflow" value="FALSE" checked> '+
+			'		<label for="confidential_workflow">Public</label>';
 			
 			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
-				content += '       <input type="radio" name="confidential" value="TRUE"> '+
-				'		<label for="confidential">Private</label>';
+				content += '       <input type="radio" name="confidential_workflow" value="TRUE"> '+
+				'		<label for="confidential_workflow">Private</label>';
 
 		}else{
 
-			content  += '       <input type="radio" name="confidential" value="FALSE"> '+
-			'		<label for="confidential">Public</label>';
+			content  += '       <input type="radio" name="confidential_workflow" value="FALSE"> '+
+			'		<label for="confidential_workflow">Public</label>';
 			
 			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
-				content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
-				'		<label for="confidential">Private</label>';
+				content += '       <input type="radio" name="confidential_workflow" value="TRUE" checked> '+
+				'		<label for="confidential_workflow">Private</label>';
 
 		}
 
@@ -239,14 +239,14 @@ GW.workflow = {
 		       '     </div>'+
 		       '   </div>'+
 			   '   <div class="form-group row required">'+
-		       '     <label for="confidential" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+		       '     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
 			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
-			   '       <input type="radio" name="confidential" value="FALSE" checked> '+
-			   '		<label for="confidential">Public</label>';
+			   '       <input type="radio" name="confidential_new" value="FALSE" checked> '+
+			   '		<label for="confidential_new">Public</label>';
 
 			   if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
-			   		content += '       <input type="radio" name="confidential" value="TRUE"> '+
-			   		'		<label for="confidential">Private</label>';
+			   		content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
+			   		'		<label for="confidential_new">Private</label>';
 
 			   content += '     </div>'+
 		       '   </div>'+
@@ -270,9 +270,9 @@ GW.workflow = {
 
 				var confidential = "FALSE"; //default is public
 
-				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+				if(typeof $('input[name="confidential_new"]:checked').val() != "undefined"){
 					
-					confidential = $('input[name="confidential"]:checked').val()
+					confidential = $('input[name="confidential_new"]:checked').val()
 					
 				}
 				
@@ -285,6 +285,10 @@ GW.workflow = {
 					"type": "workflow",
 
 					"confidential": confidential,
+
+					"description": $("#wf_desc").val(),
+					
+					"owner": GW.user.current_userid,
 					
 					"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
 					
@@ -296,15 +300,19 @@ GW.workflow = {
 				
 				$.ajax({
 					
-					url: "add",
+					url: "add/workflow",
 		    		
 		    		method: "POST",
+
+					contentType: 'application/json',
+
+					dataType: 'json',
 		    		
-		    		data: workflow
+		    		data: JSON.stringify(workflow)
 		    		
 				}).done(function(msg){
 					
-					msg = $.parseJSON(msg);
+					msg = GW.general.parseResponse(msg);
 					
 					GW.workflow.new_frame.closeFrame()
 					
@@ -334,94 +342,6 @@ GW.workflow = {
 				
 			});
 			
-//			BootstrapDialog.show({
-//				
-//				title: "New workflow",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Confirm",
-//					
-//					id: "workflow-new-confirm",
-//					
-//					action: function(dialog){
-//						
-//						var $button = this;
-//	                	
-//	                	$button.spin();
-//	                	
-////	                	dialog.enableButtons(false);
-//	                	$("#workflow-new-confirm").prop('disabled', true);
-//						
-//						//save the new workflow
-//						
-//						var workflow = {
-//							
-//							"name": $("#workflow_name").val(), 
-//							
-//							"type": "workflow",
-//							
-//							"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
-//							
-//							"edges": JSON.stringify(GW.workspace.theGraph.edges)
-//							
-//						};
-//						
-//						$.ajax({
-//							
-//							url: "add",
-//				    		
-//				    		method: "POST",
-//				    		
-//				    		data: workflow
-//				    		
-//						}).done(function(msg){
-//							
-//							msg = $.parseJSON(msg);
-//							
-//							GW.workflow.addMenuItem(msg);
-//							
-//							console.log("the workflow is added");
-//							
-//							GW.workflow.loaded_workflow = msg.id;
-//							
-//							if(createandrun){
-//								
-//								GW.workflow.run(msg.id);
-//								
-//							}
-//							
-//							dialog.close();
-//							
-//						}).fail(function(jqXHR, textStatus){
-//							
-//							console.error("fail to add workflow");
-//							
-//							$button.stopSpin();
-//	                		
-//	        				dialogItself.enableButtons(true);
-//							
-//						});
-//						
-//					}
-//					
-//				},{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//				
-//			});
-			
 		}else{
 			
 			alert("There are no adequate processes in the workspace!");
@@ -444,13 +364,27 @@ GW.workflow = {
 	save: function(nodes, edges){
 		
 		if(this.loaded_workflow!=null){
+
+			var confidential = "FALSE"; //default is public
+
+			if(typeof $('input[name="confidential_workflow"]:checked').val() != "undefined"){
+				
+				confidential = $('input[name="confidential_workflow"]:checked').val()
+				
+			}
 			
 			var req = {
 					
 					"type": "workflow",
 					
 					"id": this.loaded_workflow,
-					
+
+					"confidential": confidential,
+
+					"owner": GW.user.current_userid,
+
+					"description": "",
+
 					"nodes": JSON.stringify(nodes), 
 					
 					"edges": JSON.stringify(edges)
@@ -463,7 +397,11 @@ GW.workflow = {
 				
 				method: "POST",
 				
-				data: req
+				contentType: 'application/json',
+
+				dataType: 'json',
+
+				data: JSON.stringify(req)
 				
 			}).done(function(msg){
 				

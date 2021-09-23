@@ -47,6 +47,8 @@
         <link rel="stylesheet" href="../css/imageviewer.css" />
         
         <link rel="stylesheet" href="../css/Chart.min.css" />
+
+		<link rel="stylesheet" href="../css/landing.css" />
         
         <link href="../css/introjs.min.css" rel="stylesheet" />
         
@@ -104,15 +106,15 @@
 	
 		<div id="jsframe-container"></div>
 	
-		<div class="container" style="margin:0; padding:0; width:100%; height:100%;">
+		<div class="container overflow-auto" style="margin:0; padding:0; width:100%; height:100%;">
 			
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
 				
 				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
-				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:grey " href="javascript:void(0)">
+				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:grey " href="/Geoweaver/web">
 				  	<img src="../img/header.png" width="100px" height="50px" />
 				  </a>
-				  <a id="toolbar-search"  
+				  <!--<a id="toolbar-search"  
 				  data-toggle="tooltip" title="Search Process/Workflow/Hosts"
 				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
 				  	<i class="fa fa-search" alt="search" > Search</i>
@@ -157,405 +159,207 @@
 				  
 				  <a style="float: right; width: 120px;visibility: hidden; text-align: right;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.user.profiledialog()" id="toolbar-profile-a">
 					<i class="fa fa-user" alt="info" id="toolbar-profile"> Welcome</i>
-				  </a>
+				  </a>-->
 
 				</div>
 				
 				
 			</div>
-			
-			<!-- set site margin here -->
-			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px;">
-				
-				
-			    <!-- Workspace -->
-			    
-			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
-			    
-					  	<div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-						  <button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
-						  <button class="tablinks " id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">Dashboard</button>
-						  <button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
-						  <button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-						  <button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
-						  <button class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
-						  <button class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+
+			<div class="main-body overflow-auto">
+    
+				<!-- Breadcrumb -->
+				<nav aria-label="breadcrumb" class="main-breadcrumb">
+				  <ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+					<li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
+					<li class="breadcrumb-item active" aria-current="page">User Profile</li>
+				  </ol>
+				</nav>
+				<!-- /Breadcrumb -->
+		  
+				<div class="row gutters-sm">
+				  <div class="col-md-4 mb-3">
+					<div class="card">
+					  <div class="card-body">
+						<div class="d-flex flex-column align-items-center text-center">
+						  <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
+						  <div class="mt-3">
+							<h4>John Doe</h4>
+							<p class="text-secondary mb-1">Full Stack Developer</p>
+							<p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>
+							<button class="btn btn-primary">Follow</button>
+							<button class="btn btn-outline-primary">Message</button>
+						  </div>
 						</div>
-						
-						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;"> 
-							<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
-								
-								<h2 style="color:black;font-weight: bold;font-size: 30px; font-family: 'Poppins', sans-serif;padding-top:5px;padding-left:5px" >Welcome to Geoweaver! <a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"><i class="fab fa-github"></i></a></h2>
-							  	
-							  	<div class="row">
-									<div class="col col-md-12">
-
-										<p class="p-3 mb-2 bg-light text-dark">Geoweaver is an open source web-based scientific experiment management software. It allows users to compose and execute full-stack scientific experiments on distributed platforms. It can be installed on Linux, Mac, and Windows.</p>
-										
-										<p>It provides some very useful features like: 
-
-											<ul>
-
-												<li>proxying and recording provenance of Jupyter Notebook Server, Jupyter Hub, Jupyter Lab, Google Earth Engine;</li>
-
-												<li>It also provides essential functionality like FTP client, Shell scripts and SSH for running system-level programs</li>
-
-												<li>It allows every user to record history and manage, share, track, replicate and reuse complicated scientific workflows</li>
-
-											</ul>
-										
-										</p>
-
-									</div>
-									
-								</div>
-						
-								<div class="row">
-									<div class="col col-md-3">
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Host</h3>
-										<div class="list-group" style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >SSH Server</button>
-											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Notebook</button>
-											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Hub</button>
-											
-											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog()">Google Earth Engine</button>
-
-										</div>
-										
-											
-											
-									</div>
-
-									<div class="col col-md-3">
-
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Process</h3>
-										
-										<div class="list-group" style="width: 100%">
-											
-											<button onclick="GW.process.newDialog()" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Notebook</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Python</button> 
-											
-										</div>
-									</div>
-									
-									<div class="col col-md-3">
-										<h3  style="font-weight:bold;font-size:25px;color:black;font-family: 'Poppins', sans-serif" >Workflow</h3>
-										
-										<div class="list-group"  style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onclick="GW.home.showDialog()" >Workflow</button>
-											
-										</div>
-									</div>
-									
-									<div class="col col-md-3">
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >About</h3>
-										
-										<div class="btn-group-vertical"  style="width: 100%">
-											
-											<button onclick="GW.about.showDialog()" type="button" class="list-group-item list-group-item-action ">About</button>
-									
-											<button onclick="GW.settings.showDialog()" type="button" class="list-group-item list-group-item-action ">Settings</button>
-									
-											<button onclick="GW.tutorial.showDialog()" type="button" class="list-group-item list-group-item-action " >Tutorial</button>
-										</div>
-									</div>
-								</div>	  								  	
-							  
-							  	
-								<div class="row">       
-									<div  class="col col-md-12">
-
-										<h1 style="color:black;font-weight: bold;font-size: 25px;font-family: 'Poppins', sans-serif;">Geoweaver Services</h1>
-											
-										<h2>Hosts</h2>
-										
-										<h3>SSH Server</h3>
-										
-										<p>SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
-										
-										<p>Geoweaver provides a Host category called <b>SSH Server</b> to manage all the remote servers with SSH enabled. There is a builtin SSH console to login and type command lines to directly run scripts. Geoweaver also provides a file browser and uploader for users to transfer the files from/to remote servers. Geoweaver can be considered as two-in-one alternative for SSH client and FTP client. </p>
-
-										<h3>Jupyter NoteBook Server</h3>
-														
-										<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text. </p>
-										
-										<p>In Geoweaver, you can manage multiple Jupyter Notebook server in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver. </p>
-										
-										<h3>Jupyter Hub</h3>
-										
-										<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs. </p>
-										
-										<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
-
-										<h3>Jupyter Lab</h3>
-										
-										<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
-										
-										<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
-										
-										<h3>Google Earth Engine</h3>
-										
-										<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
-										
-										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p>
-										
-										<h2>Process</h2>
-										
-										<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
-
-										<h3>Shell</h3>
-										
-										<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
-											
-										<h3>NoteBook</h3>
-										<p> Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database. </p>
-										
-										
-										<h3>Build In Process</h3>
-										<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
-											These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. 
-											Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. 
-											This section is under intensive development right and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.  
-										</p>
-										
-										<h3>Python</h3>
-										<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. 
-											Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
-										All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
-												
-										<h2>Workflow</h2>
-													
-													
-										<p>The workflow module allows users to compose workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
-
-									</div>
-									
-												
-			
-								</div>
-			  	
-							  	
-							</div> 
-						</div>
-
-						<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-							<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-								
-							</div>
-					  	</div>
-						
-						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							  	<h2 style="color:black">Please select a host on the right panel! </h2>
-							  </div>
-						</div>
-						 
-						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-							  <div id="main-process-content" style="height:100%;  padding: 10px;">
-							  	<h2 style="color:black">Please select a process on the right panel!</h2>
-							  </div>
-						</div>
-						
-						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-							  <div id="main-workflow-content" style="height:100%; padding: 10px;">
-							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
-							  </div>
-						</div>
-							
-						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
-							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
-							  <h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
-							  <div id="log-window">
-							  	
-							  </div>
-							</div>
-						</div>
-				
-						<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
-							
-							<!-- status indicator right bottom -->
-							
-							<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; right: 20px; height: 50px; z-index:1;">
-					    	  		<!--<span id="current_workflow_name" class="invisible">Current Workflow: </span>-->
-									  
-									  
-									  <h2><i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i><span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span></h2>
-						    
-						    </div>
-						    
-						    <!-- progress right bottom, above the status indicator -->
-							
-							<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;">
-								
-						    	
-						    </div>
-						    
-				   			<div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
-					  	
-							  	<i style="text-align:center; padding:0; margin-top:10px; ">Workflow Toolbar</i>
-							  
-							    <input id="hidden-file-upload" type="file" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" />
-							      
-							    <i id="test-jsframe" title="js frame" class="btn fa fa-alien fa-2x" 
-							    	style="color:gray; padding:0; margin:0; margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="test jsframe graph" ></i>
-
-								<i id="new-workflow" title="new graph" class="btn fa fa-plus-square fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
-							      
-							    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload graph" ></i>
-							      
-							    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="download graph" ></i>
-							      
-							    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 
-							      
-							    <i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="execute workflow"></i> 
-							      
-							    <i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show object information"></i>
-							      
-							    <i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="show process log"></i> 
-							      
-							    <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="get result"></i> 
-							      
-							    <i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;"  alt="delete graph" ></i> 
-						      
-						    </div>
-						
-						</div>
-			    </div>
-			    
-				
-				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:100vh; margin: 0;padding: 0;">
-					
-					<div class="nav-side-menu" >
-		
-					    
-					    <!-- <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> -->
-					  	
-					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
-					  
-					            <ul id="menu-content" class="menu-content collapse out">
-					                <!-- <li>
-					                  <a href="javascript:void(0)">
-					                  <i class="fa fa-dashboard fa-lg"></i> Overview
-					                  </a>
-					                </li> -->
-					
-					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost" onClick="host()"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
-
-					                </li>
-					                <ul   class="sub-menu collapse" id="hosts">
-					                    <li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
-											<a href="javascript:void(0)">SSH Server</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
-										
-										<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
-											<a href="javascript:void(0)">Jupyter Notebook Server</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyter_target"></ul>
-										
-										<li class="jupyterhubserver folder " id="host_folder_jupyterhub" data-toggle="collapse" data-target="#host_folder_jupyterhub_target">
-											<a href="javascript:void(0)">Jupyter Hub</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyterhub_target"></ul>
-
-										<li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
-											<a href="javascript:void(0)">Jupyter Lab</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
-										
-										<li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
-											<a href="javascript:void(0)">Google Earth Engine</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul>
-					                </ul>
-					                
-					                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. " >
-					                  <a href="javascript:void(0)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
-					                </li>
-					                <ul class="sub-menu collapse" id="processs">
-					                  
-					                  	<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
-											<a href="javascript:void(0)">Shell</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_shell_target"></ul>
-										
-										<li class="notebookfolder" id="process_folder_jupyter" data-toggle="collapse" data-target="#process_folder_jupyter_target">
-											<a href="javascript:void(0)">Notebook</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_jupyter_target"></ul>
-										
-										<li class="builtinfolder" id="process_folder_builtin" data-toggle="collapse" data-target="#process_folder_builtin_target">
-											<a href="javascript:void(0)">Builtin Process</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_builtin_target"></ul>
-										
-										<li class="pythonfolder" id="process_folder_python" data-toggle="collapse" data-target="#process_folder_python_target">
-											<a href="javascript:void(0)">Python</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_python_target"></ul>
-					                  
-					                  
-					                </ul>
-					
-					
-					                <li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <!--<i class="fa fa-plus" id="newworkflow"></i>--> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
-					                </li>  
-					                <ul  class="sub-menu collapse" id="workflows">
-					                  
-					                </ul>
-									
-					
-					                <!-- <li>
-					                  <a href="javascript:void(0)">
-					                  <i class="fa fa-share fa-lg"></i> Share
-					                  </a>
-					                </li> -->
-					
-									<li>
-					                  <a href="javascript:GW.tutorial.showDialog()">
-					                  <i class="fa fa-book fa-lg"></i> Tutorial
-					                  </a>
-					                </li>
-						
-					                <li>
-					                  <a href="javascript:GW.about.showDialog()">
-					                  <i class="fa fa-info fa-lg"></i> About
-					                  </a>
-					                </li>
-					            </ul>
-					            
-					     </div>
-					     
+					  </div>
 					</div>
+					<div class="card mt-3">
+					  <ul class="list-group list-group-flush">
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Website</h6>
+						  <span class="text-secondary">https://bootdey.com</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github mr-2 icon-inline"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>Github</h6>
+						  <span class="text-secondary">bootdey</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter mr-2 icon-inline text-info"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>Twitter</h6>
+						  <span class="text-secondary">@bootdey</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram mr-2 icon-inline text-danger"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</h6>
+						  <span class="text-secondary">bootdey</span>
+						</li>
+						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook mr-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
+						  <span class="text-secondary">bootdey</span>
+						</li>
+					  </ul>
 					</div>
-				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				  <div class="modal-dialog">
-				    <div class="modal-content">              
-				      <div class="modal-body">
-				      	<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				        <img src="" class="imagepreview" style="width: 100%;" />
-				      </div>
-				    </div>
+				  </div>
+				  <div class="col-md-8">
+					<div class="card mb-3">
+					  <div class="card-body">
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Full Name</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary">
+							Kenneth Valdez
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Email</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary">
+							fip@jukmuh.al
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Phone</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary">
+							(239) 816-9029
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Mobile</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary">
+							(320) 380-4539
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Address</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary">
+							Bay Area, San Francisco, CA
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-12">
+							<a class="btn btn-info " target="__blank" href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+						  </div>
+						</div>
+					  </div>
+					</div>
+	  
+					<div class="row gutters-sm">
+					  <div class="col-sm-6 mb-3">
+						<div class="card h-100">
+						  <div class="card-body">
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+							<small>Web Design</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Website Markup</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>One Page</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Mobile Template</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Backend API</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					  <div class="col-sm-6 mb-3">
+						<div class="card h-100">
+						  <div class="card-body">
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+							<small>Web Design</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Website Markup</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>One Page</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Mobile Template</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Backend API</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
+							<small>Web Design</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Website Markup</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>One Page</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Mobile Template</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+							<small>Backend API</small>
+							<div class="progress mb-3" style="height: 5px">
+							  <div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					</div>
+	  
+	  
+	  
 				  </div>
 				</div>
-				
-			</div>
+	  
+			  </div>
+			
 			
 		
 		</div>

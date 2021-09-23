@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
@@ -944,63 +945,37 @@ public class GeoweaverController {
 		
 		try {
 			
-			// String lang = request.getParameter("lang");
-			
-			// String name = request.getParameter("name");
-			
-			// String desc = request.getParameter("desc");
-			
-			// String id = request.getParameter("id");
-			
 			checkID(up.getId());
 			
-			// String code = null;
-			
-			// if(lang.equals("shell")) {
-				
-			// 	code = request.getParameter("code");
-				
-			// }else if(lang.equals("builtin")) {
-				
-			// 	String operation = request.getParameter("code[operation]");
-				
-			// 	code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
-				
-			// 	List params = new ArrayList();
-				
-			// 	int i=0;
-				
-			// 	while(request.getParameter("code[params]["+i+"][name]")!=null) {
-					
-			// 		if(i!=0) {
-						
-			// 			code += ", ";
-						
-			// 		}
-					
-			// 		code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
-					
-			// 		i++;
-					
-			// 	}
-				
-			// 	code += "] }";
-				
-			// }else if(lang.equals("jupyter")) {
-				
-			// 	code = request.getParameter("code");
-				
-			// }else {
-				
-			// 	code = request.getParameter("code");
-				
-			// }
-			
-			// pt.update(id, name, lang, code, desc);
-
 			pt.save(up);
 			
 			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/edit/workflow", method = RequestMethod.POST)
+    public @ResponseBody String editworkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(w.getId());
+			
+			wt.save(w);
+			
+			resp = "{\"id\" : \"" + w.getId() + "\"}";
 			
 			
 		}catch(Exception e) {
@@ -1298,39 +1273,55 @@ public class GeoweaverController {
 		
 		try {
 			
-			// String type = request.getParameter("type");
+
+			String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+
+			h.setOwner(ownerid);
+
+			String newhostid = new RandomString(6).nextString();
+
+			h.setId(newhostid);
+
+			ht.save(h);
 			
-			// if(type.equals("host")) {
-				
-				// String hostname = request.getParameter("hostname");
-				
-				// String hostip = request.getParameter("hostip");
-				
-				// String hostport = request.getParameter("hostport");
-				
-				// String username = request.getParameter("username");
-				
-				// String hosttype = request.getParameter("hosttype");
-				
-				// String url = request.getParameter("url");
+			// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
+			
+			resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 
-				// String confidential = request.getParameter("confidential");
+	@RequestMapping(value = "/add/workflow", method = RequestMethod.POST)
+    public @ResponseBody String addWorkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
 
-				String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+			String ownerid = bt.isNull(w.getOwner())?"111111":w.getOwner();
 
-				h.setOwner(ownerid);
+			w.setOwner(ownerid);
 
-				String newhostid = new RandomString(6).nextString();
+			String newwid = new RandomString(20).nextString();
 
-				h.setId(newhostid);
+			w.setId(newwid);
 
-				ht.save(h);
+			wt.save(w);
+
+			// String wid = wt.add(name, nodes, edges, ownerid);
 				
-				// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
-				
-				resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
-				
-			// }
+			resp = "{\"id\" : \"" + newwid + "\", \"name\":\"" + w.getName() + "\"}";
 			
 		}catch(Exception e) {
 			

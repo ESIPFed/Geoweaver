@@ -14,7 +14,14 @@ public class Workflow {
 	private String name, description, owner;
 
 	private String confidential;
+	
+	@Column(columnDefinition = "LONGTEXT")
+	private String edges;
 
+	@Column(columnDefinition = "LONGTEXT")
+	private String nodes;
+	
+	
 	public String getConfidential() {
 		return this.confidential;
 	}
@@ -23,14 +30,7 @@ public class Workflow {
 		this.confidential = confidential;
 	}
 
-	
 
-	@Column(columnDefinition = "LONGTEXT")
-	private String edges;
-
-	@Column(columnDefinition = "LONGTEXT")
-	private String nodes;
-	
 	public String getDescription() {
 		return description;
 	}
