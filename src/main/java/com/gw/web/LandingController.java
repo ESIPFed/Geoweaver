@@ -1,5 +1,6 @@
 package com.gw.web;
 
+import com.gw.jpa.GWUser;
 import com.gw.jpa.Workflow;
 import com.gw.search.GWSearchTool;
 import com.gw.tools.DashboardTool;
@@ -8,6 +9,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.tools.WorkflowTool;
+import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
 import org.slf4j.Logger;
@@ -42,6 +44,9 @@ public class LandingController {
 	
 	@Autowired
 	FileTool ft;
+
+    @Autowired
+    UserTool ut;
 	
 	@Autowired
 	HistoryTool hist;
@@ -60,11 +65,13 @@ public class LandingController {
 
             if("FALSE".equals(wf.getConfidential())){
 
-                String ownername = wt.getOwnerNameByID(wf.getOwner());
+                // String ownername = wt.getOwnerNameByID(wf.getOwner());
+
+                GWUser u = ut.getUserById(wf.getOwner());
 
                 model.addAttribute("workflow", wf);
 
-                model.addAttribute("username", ownername);
+                model.addAttribute("user", u);
 
             }else{
 

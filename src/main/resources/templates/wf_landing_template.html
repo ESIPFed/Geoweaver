@@ -102,7 +102,7 @@
     	
 	</head>
 	
-	<body style="cursor: auto; padding:0;">
+	<body style="cursor: auto; padding:0;" class=" overflow-auto">
 	
 		<div id="jsframe-container"></div>
 	
@@ -166,37 +166,49 @@
 				
 			</div>
 
-			<div class="main-body overflow-auto">
+			<div class="main-body" style=" height:100%; overflow: visible">
     
 				<!-- Breadcrumb -->
-				<nav aria-label="breadcrumb" class="main-breadcrumb">
+				<!-- <nav aria-label="breadcrumb" class="main-breadcrumb">
 				  <ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="index.html">Home</a></li>
 					<li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
 					<li class="breadcrumb-item active" aria-current="page">User Profile</li>
 				  </ol>
-				</nav>
+				</nav> -->
 				<!-- /Breadcrumb -->
 		  
 				<div class="row gutters-sm">
-				  <div class="col-md-4 mb-3">
+				  <div class="col-md-1"></div>
+				  <div class="col-md-2 mb-3">
 					<div class="card">
 					  <div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
 						  <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150">
 						  <div class="mt-3">
-							<h4>John Doe</h4>
-							<p class="text-secondary mb-1">Full Stack Developer</p>
-							<p class="text-muted font-size-sm">Bay Area, San Francisco, CA</p>
-							<button class="btn btn-primary">Follow</button>
-							<button class="btn btn-outline-primary">Message</button>
+							<h4 th:text="${user.username}"></h4>
+							<p class="text-secondary mb-1" th:text="${user.role}"></p>
+							<p class="text-secondary mb-1" >Active: <span th:text="${user.isactive}"></span></p>
+							<p class="text-secondary mb-1">Workflow Owner</p>
 						  </div>
 						</div>
 					  </div>
 					</div>
+					<hr/>
+					<div class="card mt-3">
+						<div class="card-body">
+						  <div class="d-flex flex-column align-items-center text-center">
+							
+							<div class="mt-3">
+								<p></p>
+								<button class="btn btn-success">Run This Workflow</button>
+							</div>
+						  </div>
+						</div>
+					  </div>
 					<div class="card mt-3">
 					  <ul class="list-group list-group-flush">
-						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+						<!-- <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe mr-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Website</h6>
 						  <span class="text-secondary">https://bootdey.com</span>
 						</li>
@@ -215,45 +227,48 @@
 						<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
 						  <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook mr-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
 						  <span class="text-secondary">bootdey</span>
-						</li>
+						</li> -->
 					  </ul>
 					</div>
 				  </div>
-				  <div class="col-md-8">
+
+				  <!--  workflow information body area -->
+
+				  <div class="col-md-6">
 					<div class="card mb-3">
 					  <div class="card-body">
 						<div class="row">
 						  <div class="col-sm-3">
-							<h6 class="mb-0">Full Name</h6>
+							<h6 class="mb-0">Workflow Name</h6>
 						  </div>
-						  <div class="col-sm-9 text-secondary">
-							Kenneth Valdez
-						  </div>
-						</div>
-						<hr>
-						<div class="row">
-						  <div class="col-sm-3">
-							<h6 class="mb-0">Email</h6>
-						  </div>
-						  <div class="col-sm-9 text-secondary">
-							fip@jukmuh.al
+						  <div class="col-sm-9 text-secondary" th:text="${workflow.name}">
+							
 						  </div>
 						</div>
 						<hr>
 						<div class="row">
 						  <div class="col-sm-3">
-							<h6 class="mb-0">Phone</h6>
+							<h6 class="mb-0">Description</h6>
 						  </div>
-						  <div class="col-sm-9 text-secondary">
+						  <div class="col-sm-9 text-secondary" th:text="${workflow.description}" >
+							
+						  </div>
+						</div>
+						<hr>
+						<div class="row">
+						  <div class="col-sm-3">
+							<h6 class="mb-0">Workflow Nodes</h6>
+						  </div>
+						  <div class="col-sm-9 text-secondary" th:text="${workflow.nodes}">
 							(239) 816-9029
 						  </div>
 						</div>
 						<hr>
 						<div class="row">
 						  <div class="col-sm-3">
-							<h6 class="mb-0">Mobile</h6>
+							<h6 class="mb-0">Connections</h6>
 						  </div>
-						  <div class="col-sm-9 text-secondary">
+						  <div class="col-sm-9 text-secondary" th:text="${workflow.edges}">
 							(320) 380-4539
 						  </div>
 						</div>
@@ -356,6 +371,22 @@
 	  
 	  
 				  </div>
+
+				  <!-- The news, activities, and related information column -->
+				  <div class="col-md-2">
+
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="mt-3">
+								<h4>Recent Activities</h4>
+								<p class="text-secondary mb-1">XXX created workflow "EmissionAI"</p>
+								<p class="text-secondary mb-1">XXX created workflow "CMAQAI"</p>
+							</div>
+						  <hr>
+						</div>
+					</div>
+				  </div>
+
 				</div>
 	  
 			  </div>
