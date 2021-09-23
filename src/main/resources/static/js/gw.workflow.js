@@ -74,7 +74,7 @@ GW.workflow = {
 					{
 					  val = JSON.stringify(val);
 					}
-					
+
 					if(i=="id"){
 						
 						workflowid = val;
