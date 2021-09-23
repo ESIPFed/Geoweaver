@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.EnvironmentRepository;
@@ -275,7 +276,9 @@ public class HostTool {
 	
 	public Host getHostById(String id) {
 		
-		Host h = hostrepository.findById(id).get();
+		Optional<Host> oh = hostrepository.findById(id);
+
+		Host h = oh.isEmpty()?null:oh.get();
 		
 //		Host h = new Host();
 //		

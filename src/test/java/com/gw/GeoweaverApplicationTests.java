@@ -7,7 +7,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.jpa.GWUser;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
@@ -80,7 +84,7 @@ class GeoweaverApplicationTests {
 
 	@Test
 	@DisplayName("Testing adding jupyter process...")
-	void testAddJupyterProcess(){
+	void testAddJupyterProcess() throws JsonMappingException, JsonProcessingException{
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -93,11 +97,24 @@ class GeoweaverApplicationTests {
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+
+		// id=2avx48&type=process
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("done");
+
 	}
 
 	@Test
 	@DisplayName("Test adding builtin process")
-	void testAddBuiltinProcess(){
+	void testAddBuiltinProcess() throws JsonMappingException, JsonProcessingException{
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -110,11 +127,24 @@ class GeoweaverApplicationTests {
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+
+		// id=2avx48&type=process
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("done");
+
 	}
 
 	@Test
 	@DisplayName("Test adding python process")
-	void testAddPythonProcess(){
+	void testAddPythonProcess() throws JsonMappingException, JsonProcessingException{
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -127,11 +157,24 @@ class GeoweaverApplicationTests {
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+
+		// id=2avx48&type=process
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("done");
+
 	}
 
 	@Test
 	@DisplayName("Test adding shell process")
-	void testAddShellProcess(){
+	void testAddShellProcess() throws JsonMappingException, JsonProcessingException{
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -143,6 +186,19 @@ class GeoweaverApplicationTests {
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+
+		// id=2avx48&type=process
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("done");
 
 	}
 

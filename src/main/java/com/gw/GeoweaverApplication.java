@@ -10,6 +10,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.tools.HostTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BeanTool;
  
@@ -29,9 +31,50 @@ public class GeoweaverApplication {
 
         addDefaultPublicUser();
 
-
+        addLocalhost();
     
 	}
+
+    public static void addLocalhost(){
+
+        HostTool ht = BeanTool.getBean(HostTool.class);
+
+        Host h = ht.getHostById("100001");
+
+        if(h==null){
+
+            System.out.println("Localhost doesn't exist. Adding now..");
+
+            h = new Host();
+
+            h.setId("100001");
+
+            h.setIp("127.0.0.1");
+
+            h.setConfidential("FALSE");
+
+            h.setName("Localhost");
+
+            h.setOwner("111111");
+
+            h.setPort("22");
+
+            h.setType("ssh");
+
+            h.setUrl("http://localhost/");
+
+            h.setUsername("publicuser");
+
+            ht.save(h);
+
+        }else{
+
+            System.out.println("Localhost exists.");
+
+        }
+
+
+    }
 
     public static void addDefaultPublicUser(){
 
