@@ -516,7 +516,7 @@ GW.workspace = {
     	            
 					GW.workspace.showSaved();
 	    			
-    	            var newNodes = $.parseJSON(jsonObj.nodes);
+    	            var newNodes = GW.general.parseResponse(jsonObj.nodes);
     	            
     	            //remove the old color status - load a brand new workflow
     	            newNodes.forEach(function(e, i){
@@ -529,7 +529,7 @@ GW.workspace = {
     	            
     	            this.setIdCt(jsonObj.nodes.length + 1);
     	            
-    	            var newEdges = $.parseJSON(jsonObj.edges);
+    	            var newEdges = GW.general.parseResponse(jsonObj.edges);
     	            
     	            newEdges.forEach(function(e, i){
     	            	

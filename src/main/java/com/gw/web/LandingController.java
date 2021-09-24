@@ -14,6 +14,7 @@ import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,16 @@ public class LandingController {
                 model.addAttribute("failed_num", failed_num);
                 model.addAttribute("pending_num", pending_num);
                 model.addAttribute("unknown_num", unknown_num);
+
+                JSONArray jsonArr = new JSONArray(wf.getNodes());
+
+                model.addAttribute("nodes", jsonArr);
+
+                model.addAttribute("historylist", historylist);
+
+                //get recent activities
+                // wt.getAllWorkflow();
+                model.addAttribute("workflowlist", wt.getWorkflowListByOwner(u.getId()));
 
             }else{
 

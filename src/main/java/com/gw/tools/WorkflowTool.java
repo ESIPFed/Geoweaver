@@ -111,6 +111,18 @@ public class WorkflowTool {
 		return json;
 		
 	}
+
+	public List<Workflow> getWorkflowListByOwner(String ownerid){
+
+		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(ownerid).iterator();
+
+		List<Workflow> actualList = new ArrayList<Workflow>();
+
+		wit.forEachRemaining(actualList::add);
+
+		return actualList;
+
+	}
 	
 	public String list(String owner){
 		

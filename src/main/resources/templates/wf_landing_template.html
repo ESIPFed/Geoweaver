@@ -139,10 +139,10 @@
 							<!-- <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150"> -->
 							<i class="fa fa-user" style="font-size:100px;color:gray"></i>
 							<div class="mt-3">
-							<h4 th:text="${user.username}"></h4>
-							<p class="text-secondary mb-1" th:text="${user.role}"></p>
-							<p class="text-secondary mb-1" >Active: <span th:text="${user.isactive}"></span></p>
-							<p class="text-secondary mb-1">Workflow Owner</p>
+								<h4 th:text="${user.username}"></h4>
+								<p class="text-secondary mb-1" th:text="${user.role}"></p>
+								<p class="text-secondary mb-1" >Active: <span th:text="${user.isactive}"></span></p>
+								<p class="text-secondary mb-1">Workflow Owner</p>
 							</div>
 						</div>
 						</div>
@@ -152,10 +152,14 @@
 						<div class="card-body">
 							<div class="d-flex flex-column align-items-center text-center">
 							
-							<div class="mt-3">
-								<p></p>
-								<button class="btn btn-success">Run This Workflow</button>
-							</div>
+								<div class="mt-3">
+									<p class="h6">Operation Allowed</p>
+									<p>
+										<button class="btn btn-success" onclick="runWorkflow()">Run</button> 
+										<button class="btn btn-primary" onclick="downloadJSON()">Download</button>
+									</p>
+									
+								</div>
 							</div>
 						</div>
 					</div>
@@ -192,8 +196,23 @@
 							<div class="col-sm-3">
 							<h6 class="mb-0">Workflow Nodes</h6>
 							</div>
-							<div class="col-sm-9 text-secondary" th:text="${workflow.nodes}">
-							(239) 816-9029
+							<div class="col-sm-9 text-secondary" >
+								<table border="1" class="table" >
+									<thead>
+										<tr>
+											<th scope="col">Process Name</th>
+											<th scope="col">Instance ID</th>
+										</tr>
+									</thead>
+									<tbody id="node_table">
+
+
+									</tbody>
+									<!-- <tr th:each="node : ${nodes}">
+									 <td th:text="${node.title}">First Name</td>
+									 <td th:text="${node.id}">Last Name</td>
+									</tr> -->
+								</table>
 							</div>
 						</div>
 						<hr>
@@ -201,19 +220,12 @@
 							<div class="col-sm-3">
 							<h6 class="mb-0">Connections</h6>
 							</div>
-							<div class="col-sm-9 text-secondary" th:text="${workflow.edges}">
-							(320) 380-4539
+							<div class="col-sm-9 text-secondary border border-primary" id="workspace">
+								<!-- <p id="connection_list"></p> -->
 							</div>
 						</div>
 						<hr>
-						<div class="row">
-							<div class="col-sm-3">
-							<h6 class="mb-0">Address</h6>
-							</div>
-							<div class="col-sm-9 text-secondary">
-							Bay Area, San Francisco, CA
-							</div>
-						</div>
+						
 						
 					</div>
 				</div>
@@ -223,21 +235,21 @@
 					<div class="card h-100">
 						<div class="card-body">
 						<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2"> Execution Statistics</h6>
-							<small>Successful</small>
+							<small>Success <span th:text="${success_num}"></span>/<span th:text="${all_history_num}"></span></small>
 							<div class="progress mb-3" style="height: 5px">
-								<div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ 100*${success_num}/${all_history_num} + '%'" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>
-							<small>Failed</small>
+							<small>Failed <span th:text="${failed_num}"></span>/<span th:text="${all_history_num}"></span></small>
 							<div class="progress mb-3" style="height: 5px">
-								<div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ 100*${failed_num}/${all_history_num} + '%'" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>
-							<small>Pending</small>
+							<small>Pending <span th:text="${pending_num}"></span>/<span th:text="${all_history_num}"></span></small>
 							<div class="progress mb-3" style="height: 5px">
-								<div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ 100*${pending_num}/${all_history_num} + '%'" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>
-							<small>Unknown</small>
+							<small>Unknown <span th:text="${unknown_num}"></span>/<span th:text="${all_history_num}"></span></small>
 							<div class="progress mb-3" style="height: 5px">
-								<div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ 100*${unknown_num}/${all_history_num} + '%'" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
 							</div>
 						</div>
 					</div>
@@ -245,48 +257,13 @@
 					<div class="col-sm-6 mb-3">
 					<div class="card h-100">
 						<div class="card-body">
-						<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
-						<small>Web Design</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Website Markup</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>One Page</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Mobile Template</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Backend API</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">assignment</i>Project Status</h6>
-						<small>Web Design</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Website Markup</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>One Page</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 89%" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Mobile Template</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
-						<small>Backend API</small>
-						<div class="progress mb-3" style="height: 5px">
-							<div class="progress-bar bg-primary" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
-						</div>
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">History</h6>
+							
+							<small th:each="history : ${historylist}" >
+								<span th:text="${user.username}"></span> runned this workflow at <span th:text="${history.history_begin_time}"></span>
+							</small>
+							
+							
 						</div>
 					</div>
 					</div>
@@ -299,22 +276,45 @@
 				<!-- The news, activities, and related information column -->
 				<div class="col-md-2">
 
-				<div class="card mb-3">
-					<div class="card-body">
-						<div class="mt-3">
-							<h4>Recent Activities</h4>
-							<p class="text-secondary mb-1">XXX created workflow "EmissionAI"</p>
-							<p class="text-secondary mb-1">XXX created workflow "CMAQAI"</p>
+					<!--<div class="card mb-3">
+						<div class="card-body">
+							<div class="mt-3">
+								<h4>Recent Activities</h4>
+								<p class="text-secondary mb-1">XXX created workflow "EmissionAI"</p>
+								<p class="text-secondary mb-1">XXX created workflow "CMAQAI"</p>
+							</div>
+							<hr>
 						</div>
-						<hr>
 					</div>
-				</div>
+					<hr/>-->
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="mt-3">
+								<p class="h4">Other Workflows Of Same User</p>
+								<ul>
+									<li class="text-secondary mb-1" th:each="workflow : ${workflowlist}" >
+										<a th:href="${workflow.id}" th:text="${workflow.name}"></a>
+									</li>
+								</ul>
+								
+							</div>
+							<hr>
+						</div>
+					</div>
 				</div>
 
 			</div>
 	
 		</div>
 			
+		<footer class="text-muted">
+			<div class="container">
+			  <hr/>
+			  <p class="text-center h5">Copyright @ GeoWeaver Team</p>
+			  <p class="text-center h6">This project is funded by NASA ACCESS Program and National Science Foundation.</p>
+			  <hr/>
+			</div>
+		</footer>
 			
 		
 		<script src="../js/es5-shim.min.js"></script>
@@ -346,49 +346,94 @@
 	    <script src="../js/gw.toolbar.js"></script>
 	    <script src="../js/gw.menu.js"></script>
 		<script src="../js/gw.home.js"></script>
-	    <script src="../js/gw.main.js"></script>
 	    
-        <script>
-	    
-	    	function switchTab(ele, name){
-	    		
-	    	  console.log("Turn on the tab " + name)
-	    		
-	    	  var i, tabcontent, tablinks;
-			  tabcontent = document.getElementsByClassName("tabcontent");
-			  for (i = 0; i < tabcontent.length; i++) {
-			    tabcontent[i].style.display = "none";
-			  }
-			  tablinks = document.getElementsByClassName("tablinks");
-			  for (i = 0; i < tablinks.length; i++) {
-			    tablinks[i].className = tablinks[i].className.replace(" active", "");
-			  }
-			  document.getElementById(name).style.display = "block";
-			  ele.className += " active";
-
-			  if(name=="main-dashboard"){
-
-				GW.board.refresh();
-
-			  }
-	    		
-	    	}
-	    	
-			function openCity(evt, name) {
-			  switchTab(evt.currentTarget, name);
-			}
+		<script th:inline="javascript">
 			
-			$(document).ready(function(){
-				console.log("trigger click event");
-				//$("main-content-tab").trigger("click")
-				switchTab(document.getElementById("main-general-tab"), "main-general");
+			function renderNodeTable(nodejson){
 				
-			});
-			
-			
-		
+				nodejson = GW.general.parseResponse(nodejson);
+				console.log(nodejson);
+
+				for(var i=0;i<nodejson.length;i+=1){
+
+					$("#node_table").append('<tr >'+
+										'<td >'+nodejson[i].title+'</td>'+
+										'<td >'+nodejson[i].id+'</td>'+
+										'</tr>');
+
+				}
+			}
+
+			function renderConnections(nodejson, connectionjson){
+
+				nodejson = GW.general.parseResponse(nodejson);
+				connectionjson = GW.general.parseResponse(connectionjson);
+
+				// for(var i=0;i<connectionjson.length;i+=1){
+
+				// 	$("#connection_table").append('<tr >'+
+				// 					'<td >'+connectionjson[i].title+'</td>'+
+				// 					'<td >'+connectionjson[i].id+'</td>'+
+				// 					'</tr>');
+
+				// }
+
+				GW.workspace.addListeners();
+
+				var svg = d3.select("#workspace").append("svg")
+					.attr("preserveAspectRatio", "xMinYMin meet")
+					.attr("viewBox", "0 0 960 500")	
+	    	        // .attr("width", "500")
+	    	        // .attr("height", "400");
+	    	  
+				var format = d3.format(",d");
+				
+				GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, [], []);
+
+				GW.workspace.theGraph.load({
+					nodes: nodejson,
+					edges: connectionjson
+				});
+
+			}
+
+			function downloadJSON(){
+
+				var entire_wf_json = /*[[${workflow}]]*/ {};
+				var blob = new Blob([JSON.stringify(entire_wf_json)], 
+						{type: "text/plain;charset=utf-8"});
+				window.saveAs(blob, "geoweaver.json");
+
+				// if(thisGraph.nodes.length!=0){
+				// 	var saveEdges = [];
+				// 	thisGraph.edges.forEach(function(val, i){
+				// 	saveEdges.push({source: val.source.id, target: val.target.id});
+				// 	});
+				// 	var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+				// 			{type: "text/plain;charset=utf-8"});
+				// 	window.saveAs(blob, "geoweaver.json");
+				// }else{
+				// 	alert("No nodes are present!");
+				// }
+
+			}
+
+			function runWorkflow(){
+
+				var wid = /*[[${workflow.id}]]*/"";
+
+				window.location.href = "../web/geoweaver?runwf=" + wid;
+
+
+			}
+
+			renderNodeTable(/*[[${workflow.nodes}]]*/ {});
+
+			renderConnections(/*[[${workflow.nodes}]]*/ {}, /*[[${workflow.edges}]]*/ {});
+
+
 		</script>
-	    
+
 	</body>
 
 </html>

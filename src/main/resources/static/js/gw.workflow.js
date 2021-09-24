@@ -453,6 +453,8 @@ GW.workflow = {
 			
 		});
 	},
+
+	
 	
 	/**
 	 * Allow users to choose how to add the workflow into the workspace in two ways: 
