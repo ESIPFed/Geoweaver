@@ -1,6 +1,7 @@
 package com.gw.web;
 
 import com.gw.jpa.GWUser;
+import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.search.GWSearchTool;
 import com.gw.tools.DashboardTool;
@@ -11,6 +12,7 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.WorkflowTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +74,29 @@ public class LandingController {
                 model.addAttribute("workflow", wf);
 
                 model.addAttribute("user", u);
+
+                List<History> historylist = hist.getHistoryByWorkflowId(wf.getId());
+
+                int success_num = 0, failed_num = 0, pending_num = 0, unknown_num = 0;
+
+                for(History h: historylist){
+
+                    if("Done".equals(h.getIndicator())){
+
+
+
+                    }else if("Failed".equals(h.getIndicator())){
+
+
+                    }else if("Pending".equals(h.getIndicator())){
+
+
+                    }else{
+
+
+                    }
+
+                }
 
             }else{
 

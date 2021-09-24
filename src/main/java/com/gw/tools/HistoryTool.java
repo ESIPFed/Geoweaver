@@ -167,6 +167,12 @@ public class HistoryTool {
 		return resp;
 		
 	}
+
+	public List<History> getHistoryByWorkflowId(String wid){
+
+		return historyrepository.findByProcessId(wid);
+
+	}
 	
 	/**
 	 * Get all history of a workflow
