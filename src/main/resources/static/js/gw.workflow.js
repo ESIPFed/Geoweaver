@@ -141,6 +141,10 @@ GW.workflow = {
 		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
 		workflowid+"', '"+workflowname+"')\"></i> "+
+
+		"<i class=\"fa fa-share subalignicon\" onclick=\"GW.workflow.landingpage('"+
+    	
+		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> "+
 		
 		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
     	
@@ -176,6 +180,12 @@ GW.workflow = {
 		switchTab(document.getElementById("main-workflow-info-code-tab"), "main-workflow-info-code");
 		GW.general.switchTab("workflow")
 		
+	},
+
+	landingpage: function(wid, wname){
+
+		window.open("../landing/" + wid, '_blank').focus();
+
 	},
 
 	openCity: function(evt, name){

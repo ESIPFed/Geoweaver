@@ -3,7 +3,7 @@
 
 	<head>
 	
-		<title>Geoweaver</title>
+		<title th:text="'Geoweaver Workflow ' + ${workflow.name}">Geoweaver Workflow</title>
 		
 		<link rel="icon" href="../img/favicon.ico" />
 		
@@ -112,6 +112,13 @@
 				<a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:silver " href="/Geoweaver/web">
 				<img src="../img/header.png" width="100px" height="50px" />
 				</a>
+				<a data-toggle="tooltip" title="Information"
+				  style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
+                  	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
+				</a>
+				<a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+					<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
+				</a>
 
 			</div>
 			
@@ -175,28 +182,28 @@
 				<div class="card mb-3">
 					<div class="card-body">
 						<div class="row">
-							<div class="col-sm-3">
+							<div class="col-sm-2">
 							<h6 class="mb-0">Workflow Name</h6>
 							</div>
-							<div class="col-sm-9 text-secondary" th:text="${workflow.name}">
+							<div class="col-sm-10 text-secondary" th:text="${workflow.name}">
 							
 							</div>
 						</div>
 						<hr>
 						<div class="row">
-							<div class="col-sm-3">
+							<div class="col-sm-2">
 							<h6 class="mb-0">Description</h6>
 							</div>
-							<div class="col-sm-9 text-secondary" th:text="${workflow.description}" >
+							<div class="col-sm-10 text-secondary" th:text="${workflow.description}" >
 							
 							</div>
 						</div>
 						<hr>
 						<div class="row">
-							<div class="col-sm-3">
+							<div class="col-sm-2">
 							<h6 class="mb-0">Workflow Nodes</h6>
 							</div>
-							<div class="col-sm-9 text-secondary" >
+							<div class="col-sm-10 text-secondary" >
 								<table border="1" class="table" >
 									<thead>
 										<tr>
@@ -217,10 +224,10 @@
 						</div>
 						<hr>
 						<div class="row">
-							<div class="col-sm-3">
+							<div class="col-sm-2">
 							<h6 class="mb-0">Connections</h6>
 							</div>
-							<div class="col-sm-9 text-secondary border border-primary" id="workspace">
+							<div class="col-sm-10 text-secondary border border-primary" id="workspace">
 								<!-- <p id="connection_list"></p> -->
 							</div>
 						</div>
@@ -423,8 +430,7 @@
 				var wid = /*[[${workflow.id}]]*/"";
 
 				window.location.href = "../web/geoweaver?runwf=" + wid;
-
-
+				
 			}
 
 			renderNodeTable(/*[[${workflow.nodes}]]*/ {});

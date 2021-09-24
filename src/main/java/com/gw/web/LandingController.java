@@ -120,10 +120,12 @@ public class LandingController {
 
             }else{
 
-                
+                throw new RuntimeException("This workflow isn't public");
 
             }
 
+        }else{
+            throw new RuntimeException("This workflow doesn't exist");
         }
 
         return "wf_landing_template";
