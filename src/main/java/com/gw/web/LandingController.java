@@ -83,20 +83,29 @@ public class LandingController {
 
                     if("Done".equals(h.getIndicator())){
 
-
+                        success_num++;
 
                     }else if("Failed".equals(h.getIndicator())){
 
+                        failed_num++;
 
                     }else if("Pending".equals(h.getIndicator())){
 
+                        pending_num++;
 
                     }else{
 
+                        unknown_num++;
 
                     }
 
                 }
+
+                model.addAttribute("all_history_num", historylist.size());
+                model.addAttribute("success_num", success_num);
+                model.addAttribute("failed_num", failed_num);
+                model.addAttribute("pending_num", pending_num);
+                model.addAttribute("unknown_num", unknown_num);
 
             }else{
 
