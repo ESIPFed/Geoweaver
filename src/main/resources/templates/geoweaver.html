@@ -254,13 +254,13 @@
 									<div class="col col-md-3">
 										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Host</h3>
 										<div class="list-group" style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >SSH Server</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('shell')" >SSH Server</button>
 											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Notebook</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('jupyter')" >Jupyter Notebook</button>
 											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Hub</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('hub')" >Jupyter Hub</button>
 											
-											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog()">Google Earth Engine</button>
+											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog('gee')">Google Earth Engine</button>
 
 										</div>
 										
@@ -274,10 +274,10 @@
 										
 										<div class="list-group" style="width: 100%">
 											
-											<button onclick="GW.process.newDialog()" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Notebook</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Python</button> 
+											<button onclick="GW.process.newDialog('shell')" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
+											<button onclick="GW.process.newDialog('jupyter')" type="button" class="list-group-item list-group-item-action " >Notebook</button>
+											<button onclick="GW.process.newDialog('builtin')" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
+											<button onclick="GW.process.newDialog('python')" type="button" class="list-group-item list-group-item-action " >Python</button> 
 											
 										</div>
 									</div>

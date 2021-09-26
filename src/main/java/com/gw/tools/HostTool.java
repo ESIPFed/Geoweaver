@@ -278,7 +278,8 @@ public class HostTool {
 		
 		Optional<Host> oh = hostrepository.findById(id);
 
-		Host h = oh.isEmpty()?null:oh.get();
+
+		Host h = oh.isPresent()?oh.get():null;
 		
 //		Host h = new Host();
 //		

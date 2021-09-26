@@ -432,7 +432,7 @@ GW.process = {
 			
 		},
 		
-		newDialog: function(){
+		newDialog: function(category){
 			
 			var content = '<div class="modal-body">'+
 				GW.process.getProcessDialogTemplate()+
@@ -495,6 +495,9 @@ GW.process = {
 				frame.closeFrame();
         		
         	});
+
+			//change the category if it is not null
+			if(category) $("#processcategory-"+GW.process.cmid).val(category);
 			
 		},
 		
