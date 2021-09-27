@@ -1136,7 +1136,7 @@ GW.workspace = {
 						
 						GW.workspace.theGraph.updateGraph();
 
-					}else{
+					}else if(typeof statusList === 'object'){
 
 						var newnodes = [];
 		    	  

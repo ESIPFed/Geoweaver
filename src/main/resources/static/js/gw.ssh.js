@@ -91,7 +91,7 @@ GW.ssh = {
 				      		
 				      	}else{
 				      		
-				      		GW.workspace.updateStatus(returnmsg);
+				      		// GW.workspace.updateStatus(returnmsg); // the workflow status message should only come from the workflow-socket
 				      		
 				      	}
 				
