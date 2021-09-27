@@ -160,7 +160,26 @@ class GeoweaverApplicationTests {
 
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String,Object> map = mapper.readValue(result, Map.class);
+		String pid = String.valueOf(map.get("id"));
 
+		//run the python process
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		pythonjson = bt.readStringFromFile(this.testResourceFiles()+ "/run_python_process.json" );
+		pythonjson = pythonjson.replace("jsff21", pid);
+		
+    	request = new HttpEntity<>(pythonjson, headers);
+		// String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+		// 	request, 
+		// 	String.class);
+		// logger.debug("the result is: " + result);
+		// // assertThat(controller).isNotNull();
+		// assertThat(result).contains("id");
+
+
+
+		//edit the python process
+
+		//remove the python process
 		// id=2avx48&type=process
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
@@ -284,8 +303,6 @@ class GeoweaverApplicationTests {
 		Map<String,Object> map = mapper.readValue(result, Map.class);
 
 		String workflowname = String.valueOf(map.get("name"));
-
-		
 
 		assertNotNull(workflowname);
 
