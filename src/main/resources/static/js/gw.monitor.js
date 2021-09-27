@@ -36,7 +36,11 @@ GW.monitor = {
 
 			// console.log(e.data); //print out everything back from server
 
-			if(GW.monitor.IsJsonString(e.data)){
+			if(e.data.indexOf("Session_Status:Active")!=-1){
+
+				GW.monitor.checker_swich = false;
+
+			}else if(GW.monitor.IsJsonString(e.data)){
 
 				var returnmsg = $.parseJSON(e.data)
 
@@ -194,6 +198,45 @@ GW.monitor = {
 			console.log("workspace indicator is closed");
 			
 		},
+
+		send: function (data) {
+	    	
+	        if(this.all_ws != null){
+	      	
+	        	this.all_ws.send(data);
+	        
+	        } else {
+	        
+	        	if(data!=this.token){
+	        		
+	        		this.error('not connected!');
+	        		
+	        	}
+	        	
+	        }
+	    },
+
+		checkSessionStatus: function(){
+			// console.log("Current WS status: " + GW.ssh.all_ws.readyState);
+			// return GW.ssh.all_ws.readyState;
+
+			GW.monitor.checker_swich = true;
+
+			GW.monitor.send("token:testactive");
+
+			setTimeout(() => {  
+				
+				if(GW.monitor.checker_swich){
+
+					//restart the websocket if the switch is still true two seconds later
+					GW.monitor.startSocket(GW.monitor.token);
+					GW.monitor.checker_swich = false;
+
+				}
+
+			}, 2000);
+
+		},
 		
 		/**
 		 * 
@@ -210,6 +253,11 @@ GW.monitor = {
 
 				GW.monitor.startSocket(token);
 			
+			}else{
+
+				//check 
+				GW.monitor.checkSessionStatus();
+
 			}
 			
 //			//only start when the mode is in monitor mode

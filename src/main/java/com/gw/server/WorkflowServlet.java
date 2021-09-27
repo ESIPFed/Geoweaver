@@ -101,6 +101,9 @@ public class WorkflowServlet {
 
 			this.registerSession(session);
 
+			if("token:testactive".equals(message))
+				session.getBasicRemote().sendText("Session_Status:Active");
+
 			// String received = session.getQueryString();
         	
 			// if(message!=null && message.startsWith("token:")){

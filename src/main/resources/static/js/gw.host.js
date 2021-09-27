@@ -1831,7 +1831,7 @@ GW.host = {
 			
 		},
 		
-		newDialog: function(){
+		newDialog: function(category){
 			
 			if(GW.host.new_host_frame!=null){
 				
@@ -1901,7 +1901,8 @@ GW.host = {
 				
 			});
 			
-			
+			if(category)
+				$("#hosttype").val(category).trigger('change');
 		},
 		
 }

@@ -497,7 +497,8 @@ GW.process = {
         	});
 
 			//change the category if it is not null
-			if(category) $("#processcategory-"+GW.process.cmid).val(category);
+			if(category) 
+				$("#processcategory-"+GW.process.cmid).val(category).trigger('change');
 			
 		},
 		
