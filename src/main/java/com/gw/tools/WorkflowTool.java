@@ -390,9 +390,7 @@ public class WorkflowTool {
 			// task.initialize(id, mode, hosts, pswds, token);
 			
 			// tm.addANewTask(task);
-
-			
-
+						
 			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
 
 			task.execute();
