@@ -1110,23 +1110,7 @@ GW.workspace = {
 						
 						var num = this.getNodeNumById(id);
 
-						if(flag=="Ready"){
-								
-							GW.workspace.theGraph.nodes[num].color = "";
-							
-						}else if(flag=="Running"){
-								
-							GW.workspace.theGraph.nodes[num].color = "orange";
-								
-						}else if(flag=="Done"){
-								
-							GW.workspace.theGraph.nodes[num].color = "green";
-								
-						}else if(flag=="Failed"){
-								
-							GW.workspace.theGraph.nodes[num].color = "red";
-								
-						}
+						GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
 						
 						// newnodes.push(node);
 						
@@ -1149,24 +1133,8 @@ GW.workspace = {
 							var flag = statusList[i].status; //true or false
 							
 							var node = this.getNodeById(id);
-							
-							if(flag=="Ready"){
-								
-								  node.color = "blue";
-								  
-							}else if(flag=="Running"){
-								  
-								  node.color = "orange";
-								  
-							}else if(flag=="Done"){
-								  
-								  node.color = "green";
-								  
-							}else if(flag=="Failed"){
-								  
-								  node.color = "red";
-								  
-							}
+
+							node.color = GW.workspace.getColorByFlag(flag);
 							
 							newnodes.push(node);
 							
@@ -1274,6 +1242,36 @@ GW.workspace = {
 	    	    svg.attr("width", x).attr("height", y);
 	    	  };
 			
+		},
+
+		getColorByFlag: function(flag){
+
+			var color = "black"
+
+			if(flag=="Ready"){
+								
+				color = "blue";
+				
+			}else if(flag=="Running"){
+					
+				color = "orange";
+					
+			}else if(flag=="Done"){
+					
+				color = "green";
+					
+			}else if(flag=="Failed"){
+					
+				color = "red";
+					
+			}else if(flag== null){
+
+				color = "blue";
+
+			}
+
+			return color;
+
 		},
 
 		

@@ -71,13 +71,13 @@ public class WorkflowServlet {
 
 			// logger.debug("Websocket original headers: " + originHeader);
 
-			Session existingsession = WorkflowServlet.findSessionByToken(wss.getHttpSessionId());
+			// Session existingsession = WorkflowServlet.findSessionByToken(wss.getHttpSessionId());
 
-			if(existingsession==null || !existingsession.isOpen()){
+			// if(existingsession==null || !existingsession.isOpen()){
 
-				peers.put(wss.getHttpSessionId(), session);
+			peers.put(wss.getHttpSessionId(), session);
 
-			}
+			// }
 		}
 
 

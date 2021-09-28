@@ -353,22 +353,8 @@ public class JupyterController {
 //			logger.debug("Ensuring Unicode to UTF");
 			
 			logger.debug("Request URI: " + request.getRequestURI());
-			
-//			logger.info("Request Headers: " + entity.getHeaders());
-			
-//			logger.info("Query String: " + request.getQueryString());
-			
-//			String realurl =  this.getRealRequestURL(request.getRequestURI());
-//			
-//			Host h = HostTool.getHostById(hostid);
-//			
-//			logger.info("HTTP Method: " + method.toString());
-//			
-//			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-//			
-//			HttpHeaders newheaders = this.updateHeaderReferer(entity.getHeaders(), h, realurl, request.getQueryString());
-			
-			HttpHeaders newheaders = getHeaders(entity.getHeaders(), method, request, hostid);
+			 
+			HttpHeaders newheaders = getHeaders(entity.getHeaders(), method, request, hostid); 
 			
 			HttpEntity newentity = new HttpEntity(entity.getBody(), newheaders);
 			
