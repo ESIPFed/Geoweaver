@@ -45,7 +45,7 @@ public class WorkflowServlet {
 
 			// session.setMaxIdleTimeout(0);
 
-			this.registerSession(session);
+			// this.registerSession(session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -55,7 +55,7 @@ public class WorkflowServlet {
 		
     }
 
-	public void registerSession(Session session){
+	public void registerSession(Session session, String token){
 
 
 		WsSession wss = (WsSession) session;
@@ -65,9 +65,9 @@ public class WorkflowServlet {
 		// List<String> originHeader = (List<String>)session.getUserProperties()
 		// .get("TheUpgradeOrigin");
 
-		if(wss.getHttpSessionId()==null){
-			throw new RuntimeException("The HTTP Session ID shouldn't be null.");
-		}else{
+		// if(wss.getHttpSessionId()==null){
+		// 	throw new RuntimeException("The HTTP Session ID shouldn't be null.");
+		// }else{
 
 			// logger.debug("Websocket original headers: " + originHeader);
 
@@ -75,10 +75,12 @@ public class WorkflowServlet {
 
 			// if(existingsession==null || !existingsession.isOpen()){
 
-			peers.put(wss.getHttpSessionId(), session);
+			// peers.put(wss.getHttpSessionId(), session);
 
 			// }
-		}
+		// }
+
+		peers.put(token, session);
 
 
 	}
@@ -99,10 +101,16 @@ public class WorkflowServlet {
     		
 			logger.debug("Received message: " + message);
 
-			this.registerSession(session);
 
-			if("token:testactive".equals(message))
-				session.getBasicRemote().sendText("Session_Status:Active"); 
+			if(message.indexOf("token:")!=-1){
+
+				message = message.substring(6);
+
+				this.registerSession(session, message);
+
+			}
+			
+			session.getBasicRemote().sendText("Session_Status:Active"); 
 
 			// String received = session.getQueryString();
         	
@@ -140,7 +148,7 @@ public class WorkflowServlet {
 
 			WsSession wss = (WsSession) session;
 
-			peers.remove(wss.getHttpSessionId());
+			// peers.remove(wss.getHttpSessionId());
         	
 		} catch (Exception e) {
 			

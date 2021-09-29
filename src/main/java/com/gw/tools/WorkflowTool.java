@@ -377,7 +377,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
+	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -390,14 +390,14 @@ public class WorkflowTool {
 			// task.initialize(id, mode, hosts, pswds, token);
 			
 			// tm.addANewTask(task);
-						
-			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
+
+			task.initialize(history_id, wid, mode, hosts, pswds, token);
 
 			task.execute();
 
 			resp = "{\"history_id\": \""+task.getHistory_id()+
 					
-					"\", \"token\": \""+httpsessionid+
+					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			

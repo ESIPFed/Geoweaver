@@ -796,7 +796,7 @@ public class GeoweaverController {
 
 			// if(bt.isNull(token)){
 
-			token = session.getId(); // the token from client is useless
+			// token = session.getId(); // the token from client is useless
 
 			String history_id = bt.isNull(request.getParameter("history_id"))? 
 				new RandomString(18).nextString(): request.getParameter("history_id");
@@ -913,6 +913,8 @@ public class GeoweaverController {
 			String hid = request.getParameter("hostId");
 			
 			String encrypted_password = request.getParameter("pswd");
+
+			String token = request.getParameter("token");
 			
 			String bin = request.getParameter("env[bin]");
 			
@@ -924,7 +926,7 @@ public class GeoweaverController {
 
 			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
-			resp = pt.execute(history_id, pid, hid, password, session.getId(), false, bin, pyenv, basedir);
+			resp = pt.execute(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			

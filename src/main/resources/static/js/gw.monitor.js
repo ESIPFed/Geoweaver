@@ -20,9 +20,9 @@ GW.monitor = {
 
 			//shell.echo(special.white + "connected" + special.reset);
 			console.log("workflow websocket is connected");
-			if(this.token==null || this.token == "null") this.token = GW.main.getJSessionId();
+			// if(this.token==null || this.token == "null") this.token = GW.main.getJSessionId();
 			// link the SSH session established with spring security logon to the websocket session...
-			GW.monitor.all_ws.send("token:" + this.token);
+			GW.monitor.all_ws.send("token:" + GW.general.CLIENT_TOKEN);
 			
 		},
 
@@ -222,7 +222,7 @@ GW.monitor = {
 
 			GW.monitor.checker_swich = true;
 
-			GW.monitor.send("token:testactive");
+			GW.monitor.send("token:"+GW.general.CLIENT_TOKEN);
 
 			setTimeout(() => {  
 				

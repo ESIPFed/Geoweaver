@@ -849,6 +849,7 @@ GW.workflow = {
  				
  				mode: mode,
 
+				token: GW.general.CLIENT_TOKEN
 				// token: current_token
  				
  		};

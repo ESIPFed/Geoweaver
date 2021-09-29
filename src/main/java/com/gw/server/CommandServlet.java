@@ -52,7 +52,7 @@ public class CommandServlet {
 			
 			logger.debug("Command-socket websocket channel openned");
 			
-            this.registerSession(session);
+            // this.registerSession(session);
 			
 		} catch (Exception e) {
 			
@@ -62,31 +62,33 @@ public class CommandServlet {
 		
     }
 
-    public void registerSession(Session session){
+    public void registerSession(Session session, String token){
 
         WsSession wss = (WsSession) session;
 			
-		logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+		// logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
 
 		// List<String> originHeader = (List<String>)session.getUserProperties()
 		// .get("TheUpgradeOrigin");
 
-		if(wss.getHttpSessionId()==null){
-			throw new RuntimeException("The HTTP Session ID shouldn't be null.");
-		}else{
+		// if(wss.getHttpSessionId()==null){
+		// 	throw new RuntimeException("The HTTP Session ID shouldn't be null.");
+		// }else{
 
-			// logger.debug("Websocket original headers: " + originHeader);
+		// 	// logger.debug("Websocket original headers: " + originHeader);
 
-			// Session existingsession = CommandServlet.findSessionById(wss.getHttpSessionId());
+		// 	// Session existingsession = CommandServlet.findSessionById(wss.getHttpSessionId());
 
-			// if(existingsession==null || !existingsession.isOpen()){
+		// 	// if(existingsession==null || !existingsession.isOpen()){
 
-            logger.debug("New Command WebSocket ID is: " + session.getId());
+        //     logger.debug("New Command WebSocket ID is: " + session.getId());
 
-			peers.put(wss.getHttpSessionId(), session);
+		// 	peers.put(wss.getHttpSessionId(), session);
 
-			// }
-		}
+		// 	// }
+		// }
+
+        peers.put(token, wss);
 
     }
 
@@ -108,7 +110,6 @@ public class CommandServlet {
 
             String tokenfromclient = null;
 
-            this.registerSession(session);
 
             if(message!=null ){
 
@@ -123,6 +124,8 @@ public class CommandServlet {
                     tokenfromclient = message.substring(6);
 
                     logger.debug(" - Token: " + tokenfromclient);
+
+                    this.registerSession(session, tokenfromclient);
 
                 }
 
@@ -253,9 +256,9 @@ public class CommandServlet {
             	
             }
 
-            WsSession wss = (WsSession) session;
+            // WsSession wss = (WsSession) session;
 
-            peers.remove(wss.getHttpSessionId());
+            // peers.remove(wss.getHttpSessionId());
         	
 		} catch (Exception e) {
 			
@@ -270,17 +273,17 @@ public class CommandServlet {
      * @param sessionid
      * @return
      */
-    public static javax.websocket.Session findSessionById(String sessionid) {
+    public static javax.websocket.Session findSessionById(String token) {
     	javax.websocket.Session se = null;
-        if (peers.containsKey(sessionid)) {
-        	se = peers.get(sessionid);
+        if (peers.containsKey(token)) {
+        	se = peers.get(token);
         }
         return se;
     }
 
-    public static void removeSessionById(String sessionid){
+    public static void removeSessionById(String token){
 
-        peers.remove(sessionid);
+        peers.remove(token);
 
     }
 

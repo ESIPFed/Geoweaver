@@ -10,6 +10,8 @@
 GW.general = {
 		
 		process_code_editor: null, 
+
+		CLIENT_TOKEN: null,
 		
 		init: function(){
 			
@@ -28,6 +30,8 @@ GW.general = {
 					}
 				}
 			});
+
+			GW.general.CLIENT_TOKEN = GW.general.makeid(26);
 			
 		},
 

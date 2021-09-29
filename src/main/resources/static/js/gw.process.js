@@ -1911,6 +1911,8 @@ GW.process = {
 
 			req.history_id = newhistid;
 
+			req.token = GW.general.CLIENT_TOKEN;
+
 			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
 
 			$.ajax({
