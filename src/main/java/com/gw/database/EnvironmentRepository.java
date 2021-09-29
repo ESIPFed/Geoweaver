@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.gw.jpa.Environment;
-import com.gw.jpa.History;
 
 public interface EnvironmentRepository extends CrudRepository<Environment, String>{
 	

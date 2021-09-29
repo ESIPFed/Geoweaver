@@ -77,12 +77,14 @@ public class WorkflowTool {
         String[] child_process_ids = childprocesses.split(";");
         
         for(String cid : child_process_ids) {
+
+			Optional<History> hisopt = historyrepository.findById(cid);
         	
-        	History phis = historyrepository.findById(cid).get();
+        	History phis = hisopt.isPresent()? hisopt.get():null;
         	
         	// pt.stop(phis.getHistory_id());
-
-			tm.stopTask(phis.getHistory_id());
+			if(!bt.isNull(phis))
+				tm.stopTask(phis.getHistory_id());
         	
         }
 

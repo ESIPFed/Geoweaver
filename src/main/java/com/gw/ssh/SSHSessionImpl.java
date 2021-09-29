@@ -44,9 +44,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.IOUtils;
+import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.connection.channel.direct.Session.Shell;
+import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
@@ -637,6 +640,41 @@ public class SSHSessionImpl implements SSHSession {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    public String readPythonEnvironment(String hostid, String password) {
+
+        try {
+
+            String cmdline = "whereis python"; //remove the script finally, leave no trace behind
+        
+            log.info(cmdline);
+        
+            Command cmd = session.exec(cmdline);
+
+            String output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+            System.out.println(output);
+
+            
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally{
+
+            if(!bt.isNull(session))
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+        }
+
+        
+
+        return null;
     }
 
 }

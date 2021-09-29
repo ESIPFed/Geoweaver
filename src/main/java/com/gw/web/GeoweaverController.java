@@ -782,17 +782,25 @@ public class GeoweaverController {
 	}
 
 	@RequestMapping(value="/readEnvironment", method = RequestMethod.POST)
-	public @ResponseBody String readPythonEnvironment(){
+	public @ResponseBody String readPythonEnvironment(ModelMap model, WebRequest request, HttpSession session){
 
 		String resp = null;
 
 		try{
 
+			String hid = request.getParameter("hostid");
 			
+			String password = request.getParameter("pswd");
+
+			password = RSAEncryptTool.getPassword(password, session.getId());
+
+			resp = ht.readEnvironment(hid, password);
 
 		}catch(Exception e){
 
 			e.printStackTrace();
+
+			resp = bt.getErrorReturn(e.getLocalizedMessage());
 
 		}
 

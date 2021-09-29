@@ -73,6 +73,8 @@ public class LocalSessionNixImpl implements LocalSession {
     
     
     private String           workspace_folder_path;
+
+	private Process          process;
     
     
     public LocalSessionNixImpl() {
@@ -412,6 +414,42 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 		return temp.delete();
 		
+	}
+
+	@Override
+	public String readPythonEnvironment(String hostid, String password) {
+
+		String resp = null;
+
+		try {
+
+			ProcessBuilder builder = new ProcessBuilder();
+    		
+			builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+
+			builder.redirectErrorStream(true);
+
+			process = builder.start();
+
+			process.waitFor();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s = null;
+			while ((s = in.readLine()) != null) {
+				System.out.println(s);
+			}
+
+			//get all the python path
+
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
 	}
 	
 

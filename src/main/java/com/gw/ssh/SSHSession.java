@@ -65,6 +65,8 @@ public interface SSHSession {
 
 	public String getHistory_id();
 
+	public String readPythonEnvironment(String hostid, String password);
+
 	// public void setHistory_id(String history_id);
 
 	public BufferedReader getSSHInput();

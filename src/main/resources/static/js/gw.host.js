@@ -1222,6 +1222,12 @@ GW.host = {
 			
 		},
 
+		showEnvironmentTable: function(message){
+
+			
+
+		},
+
 		readEnvironmentCallback: function(encrypt, req, dialogItself, button){
 
 			req.pswd = encrypt;
@@ -1242,16 +1248,16 @@ GW.host = {
 					
 					msg = GW.general.parseResponse(msg);
 					
-					if(msg.ret == "success"){
-						
-						console.log("python environment is read.");
-						
-					}else if(msg.ret == "fail"){
+					if(msg.status == "failed"){
 						
 						alert("Fail to read python environment.");
 						
 						console.error("fail to execute the process " + msg.reason);
 						
+					}else{
+
+						GW.host.showEnvironmentTable(msg);
+
 					}
 					
 					if(dialog) {
@@ -1278,11 +1284,11 @@ GW.host = {
 			});
 		},
 
-		readEnvionment: function(hid){
+		readEnvironment: function(hid){
 
 			var req = {
 		    	
-				hostId: hid,
+				hostid: hid,
 				
 			}
 

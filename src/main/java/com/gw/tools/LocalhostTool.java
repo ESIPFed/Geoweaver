@@ -90,6 +90,15 @@ public class LocalhostTool {
 
 	}
 
+	public String readPythonEnvironment(String hostid, String password){
+
+		LocalSession session = this.getLocalSession();
+
+		return session.readPythonEnvironment(hostid, password);
+
+	}
+
+
 	/**
 	 * Execute Shell Script on Localhost
 	 * @param history_id
@@ -188,8 +197,6 @@ public class LocalhostTool {
 		String resp = null;
 		
 		try {
-			
-			
 			
 			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 			

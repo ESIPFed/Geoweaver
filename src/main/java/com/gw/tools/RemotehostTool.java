@@ -1,36 +1,26 @@
 package com.gw.tools;
 
 import java.io.File;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.websocket.Session;
+import com.gw.database.ProcessRepository;
+import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
+import com.gw.ssh.SSHSession;
+import com.gw.tasks.GeoweaverProcessTask;
+import com.gw.tasks.TaskManager;
+import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
+import com.gw.web.GeoweaverController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
-
-import com.gw.database.DataBaseOperation;
-import com.gw.database.ProcessRepository;
-import com.gw.jpa.GWProcess;
-import com.gw.jpa.History;
-import com.gw.ssh.SSHSession;
-import com.gw.ssh.SSHSessionImpl;
-import com.gw.tasks.GeoweaverProcessTask;
-import com.gw.tasks.TaskManager;
-import com.gw.tasks.TaskSocket;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
-import com.gw.web.GeoweaverController;
-import  com.gw.server.CommandServlet;
 
 @Service
 public class RemotehostTool {
@@ -66,6 +56,20 @@ public class RemotehostTool {
 
 	@Autowired
 	GeoweaverProcessTask t ;
+
+	/**
+	 * Find all python environments
+	 * @param hostid
+	 * @param password
+	 * @return
+	 */
+	public String readPythonEnvironment(String hostid, String password){
+
+		session.login(hostid, password, new RandomString(18).nextString(), false);
+
+		return session.readPythonEnvironment(hostid, password);
+
+	}
 	
 	/**
 	 * Execute shell scripts
