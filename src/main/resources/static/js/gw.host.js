@@ -1222,9 +1222,48 @@ GW.host = {
 			
 		},
 
-		showEnvironmentTable: function(message){
+
+
+		showEnvironmentTable: function(msg){
+
+			var content = "<h4 class=\"border-bottom\">Environment List  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeEnvironmentPanel\" >close</button></h4>"+
+			"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+			"<table class=\"table table-striped\" id=\"environment_table\"> "+
+			"  <thead class=\"thead-light\"> "+
+			"    <tr> "+
+			"      <th scope=\"col\">Name</th> "+
+			"      <th scope=\"col\">Bin Path</th> "+
+			"      <th scope=\"col\">PyEnv</th> "+
+			"      <th scope=\"col\">Base Directory</th> "+
+			"      <th scope=\"col\">Settings</th> "+
+			"    </tr> "+
+			"  </thead> "+
+			"  <tbody> ";
 
 			
+			for(var i=0;i<msg.length;i++){
+				
+				content += "    <tr> "+
+					"      <td>"+msg[i].name+"</td> "+
+					"      <td>"+msg[i].bin+"</td> "+
+					"      <td>"+msg[i].pyenv+"</td> "+
+					"      <td>"+msg[i].basedir+"</td> "+
+					"      <td>"+msg[i].settings+"</td> "+
+					"    </tr>";
+				
+			}
+			
+			content += "</tbody>"+
+			"</table>"+
+			"</div>";
+
+			$("#environment-iframe").html(content);
+
+			$("#closeEnvironmentPanel").click(function(){
+
+				$("#environment-iframe").html("");
+
+			});
 
 		},
 
@@ -1260,9 +1299,9 @@ GW.host = {
 
 					}
 					
-					if(dialog) {
+					if(dialogItself) {
 						
-						try{dialog.closeFrame(); }catch(e){}
+						try{dialogItself.closeFrame(); }catch(e){}
 						
 					}
 					
@@ -1403,6 +1442,10 @@ GW.host = {
 					delbtn +
 				
 				"</p>"+
+				
+				"</div>"+
+
+				"<div class=\"col-md-12\" style=\"max-height:600px;margin:0;\" id=\"environment-iframe\">"+
 				
 				"</div>"+
 				
