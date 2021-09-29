@@ -1187,6 +1187,10 @@ GW.host = {
 //				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
 //				
 //				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+
+					"<i class=\"fab fa-python subalignicon\" onclick=\"GW.host.readEnvironment('"+
+									
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Read Python Environment\"></i>"+
 					
 					"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
 		        	
@@ -1216,6 +1220,74 @@ GW.host = {
 			
 			return content;
 			
+		},
+
+		readEnvironmentCallback: function(encrypt, req, dialogItself, button){
+
+			req.pswd = encrypt;
+
+			req.token = GW.general.CLIENT_TOKEN;
+
+			$.ajax({
+				
+				url: "readEnvironment",
+				
+				type: "POST",
+				
+				data: req
+				
+			}).done(function(msg){
+				
+				if(msg){
+					
+					msg = GW.general.parseResponse(msg);
+					
+					if(msg.ret == "success"){
+						
+						console.log("python environment is read.");
+						
+					}else if(msg.ret == "fail"){
+						
+						alert("Fail to read python environment.");
+						
+						console.error("fail to execute the process " + msg.reason);
+						
+					}
+					
+					if(dialog) {
+						
+						try{dialog.closeFrame(); }catch(e){}
+						
+					}
+					
+				}else{
+					
+					console.error("Return Response is Empty");
+					
+				}
+				
+				
+			}).fail(function(jxr, status){
+				
+				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
+				
+				if($("#inputpswd").length) $("#inputpswd").val("");
+				
+				console.error("fail to execute the process " + req.processId);
+				
+			});
+		},
+
+		readEnvionment: function(hid){
+
+			var req = {
+		    	
+				hostId: hid,
+				
+			}
+
+			GW.host.start_auth_single(hid, req, GW.host.readEnvironmentCallback );
+
 		},
 		
 		display: function(msg){

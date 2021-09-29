@@ -781,6 +781,25 @@ public class GeoweaverController {
 		
 	}
 
+	@RequestMapping(value="/readEnvironment", method = RequestMethod.POST)
+	public @ResponseBody String readPythonEnvironment(){
+
+		String resp = null;
+
+		try{
+
+			
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
+	}
+
 	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
     public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -806,7 +825,7 @@ public class GeoweaverController {
 			String[] encrypted_password = request.getParameterValues("passwords[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
-			
+			 
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
 			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
 			

@@ -774,6 +774,14 @@ public class HostTool {
 		return resp;
 		
 	}
+
+	public String readEnvironment(String hid, String password){
+
+		
+
+		return null;
+
+	}
 	
 	/**
 	 * Get environments by host
