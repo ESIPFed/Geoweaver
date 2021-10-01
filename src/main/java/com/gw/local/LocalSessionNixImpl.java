@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
@@ -18,6 +21,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -420,44 +424,105 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 	}
 
-	void readWhere() throws IOException, InterruptedException{
+	void readWhere(String hostid, String password) throws IOException, InterruptedException{
 
-		ProcessBuilder builder = new ProcessBuilder();
-    		
-		builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("whereis");
+		cmds.add("python");
 
-		builder.redirectErrorStream(true);
+		List<String> stdout = bt.executeLocal(cmds);
 
-		process = builder.start();
+		//get all the python path
+		for(String line: stdout){
+			
+			Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
 
-		process.waitFor();
+			if(bt.isNull(theenv)){
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String s = null;
-		while ((s = in.readLine()) != null) {
-			System.out.println(s);
+				Environment env = new Environment();
+				env.setId(new RandomString(6).nextString());
+				env.setBin(line);
+				env.setName(line);
+				env.setHost(hostid);
+				// env.setBasedir(line); //the execution place which is unknown at this point
+				if(line.contains("conda"))
+					env.setPyenv("anaconda");
+				else
+					env.setPyenv("pip");
+				env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+				env.setType("python"); //could be python or shell. R is not supported yet. 
+				env.setBasedir("~");
+				ht.saveEnvironment(env);
+
+			}else{
+
+				//if want to update the settings, do it here
+
+			}
+			
 		}
 	}
 
-	void readConda() throws IOException, InterruptedException{
+	void readConda(String hostid, String password) throws IOException, InterruptedException{
 
-		ProcessBuilder builder = new ProcessBuilder();
-    		
-		builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("conda");
+		cmds.add("env");
+		cmds.add("list");
 
-		builder.redirectErrorStream(true);
+		List<String> stdout = bt.executeLocal(cmds);
 
-		process = builder.start();
+		if(stdout.size()>0 && stdout.get(0).startsWith("# conda")){
 
-		process.waitFor();
+			//get all the python path
+			for(String line: stdout){
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String s = null;
+				if(!bt.isNull(line) && !line.startsWith("#")){
 
-		while ((s = in.readLine()) != null) {
-		
-			System.out.println(s);
-		
+					String[] vals = line.split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"\\python.exe";
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+					Environment theenv = ht.getEnvironmentByBin(bin, old_envlist);
+
+					if(bt.isNull(theenv)){
+
+						Environment env = new Environment();
+						env.setId(new RandomString(6).nextString());
+						env.setBin(bin);
+						env.setName(name);
+						env.setHost(hostid);
+						// env.setBasedir(line); //the execution place which is unknown at this point
+						env.setPyenv("anaconda");
+						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+						env.setType("python"); //could be python or shell. R is not supported yet. 
+						env.setBasedir("~");
+						ht.saveEnvironment(env);
+
+					}else{
+
+						//if want to update the settings, do it here
+
+					}
+
+				}
+				
+				
+				
+			}
+
+		}else{
+			log.debug("Conda environments are not found.");
 		}
 	
 	}
@@ -469,9 +534,9 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		try {
 
-			this.readWhere();
+			this.readWhere(hostid, password);
 
-			this.readConda();
+			this.readConda(hostid, password);
 
 			resp = ht.getEnvironments(hostid);
 

@@ -403,7 +403,7 @@ GW.workflow = {
 			
 			$.ajax({
 				
-				url: "edit",
+				url: "edit/workflow",
 				
 				method: "POST",
 				
