@@ -686,6 +686,7 @@ public class HostTool {
 			
 			if(!bt.isNull(type)) h.setType(type);
 			
+			
 			if(!bt.isNull(owner)) h.setOwner(owner);
 			
 			if(!bt.isNull(url)) h.setUrl(url);
