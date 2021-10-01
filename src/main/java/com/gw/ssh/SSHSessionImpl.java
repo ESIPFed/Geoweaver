@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
@@ -642,22 +643,46 @@ public class SSHSessionImpl implements SSHSession {
         return true;
     }
 
+    void readWhere() throws IOException{
+
+        String cmdline = "whereis python"; //remove the script finally, leave no trace behind
+        
+        log.info(cmdline);
+    
+        Command cmd = session.exec(cmdline);
+
+        String output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+        System.out.println(output);
+
+    }
+
+    void readConda() throws IOException{
+
+        String cmdline = "whereis python"; //remove the script finally, leave no trace behind
+        
+        log.info(cmdline);
+    
+        Command cmd = session.exec(cmdline);
+
+        String output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+        System.out.println(output);
+
+    }
+
     @Override
     public String readPythonEnvironment(String hostid, String password) {
 
+        String resp = null;
+
         try {
 
-            String cmdline = "whereis python"; //remove the script finally, leave no trace behind
-        
-            log.info(cmdline);
-        
-            Command cmd = session.exec(cmdline);
+           this.readWhere();
 
-            String output = IOUtils.readFully(cmd.getInputStream()).toString();
+           this.readConda();
 
-            System.out.println(output);
-
-            
+           resp = ht.getEnvironments(hostid);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -674,7 +699,7 @@ public class SSHSessionImpl implements SSHSession {
 
         
 
-        return null;
+        return resp;
     }
 
 }

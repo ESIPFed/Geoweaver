@@ -15,6 +15,7 @@ import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 
@@ -42,6 +43,9 @@ public class LocalSessionNixImpl implements LocalSession {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HostTool ht;
 	
 	@Autowired
 	HistoryTool history_tool;
@@ -416,6 +420,48 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 	}
 
+	void readWhere() throws IOException, InterruptedException{
+
+		ProcessBuilder builder = new ProcessBuilder();
+    		
+		builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+
+		builder.redirectErrorStream(true);
+
+		process = builder.start();
+
+		process.waitFor();
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String s = null;
+		while ((s = in.readLine()) != null) {
+			System.out.println(s);
+		}
+	}
+
+	void readConda() throws IOException, InterruptedException{
+
+		ProcessBuilder builder = new ProcessBuilder();
+    		
+		builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+
+		builder.redirectErrorStream(true);
+
+		process = builder.start();
+
+		process.waitFor();
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String s = null;
+
+		while ((s = in.readLine()) != null) {
+		
+			System.out.println(s);
+		
+		}
+	
+	}
+
 	@Override
 	public String readPythonEnvironment(String hostid, String password) {
 
@@ -423,24 +469,11 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		try {
 
-			ProcessBuilder builder = new ProcessBuilder();
-    		
-			builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+			this.readWhere();
 
-			builder.redirectErrorStream(true);
+			this.readConda();
 
-			process = builder.start();
-
-			process.waitFor();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String s = null;
-			while ((s = in.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			//get all the python path
-
+			resp = ht.getEnvironments(hostid);
 
 		} catch (Exception e) {
 
