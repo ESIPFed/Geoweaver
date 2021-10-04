@@ -541,19 +541,28 @@ public class HostTool {
 	}
 
 	public Environment getEnvironmentByBin(String bin, List<Environment> envlist){
-
+		
 		Environment theenv = null;
 
-		for(Environment env: envlist){
+		if(bin.length()>255){
 
-			if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+			logger.info("The BIN is too long to save. Pass.");
+			
+		}else{
+			
+			for(Environment env: envlist){
 
-				theenv = env;
-
-				break;
+				if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+	
+					theenv = env;
+	
+					break;
+				}
+	
 			}
-
+		
 		}
+
 
 		return theenv;
 	}
