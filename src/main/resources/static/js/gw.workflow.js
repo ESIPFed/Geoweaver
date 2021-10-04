@@ -653,7 +653,7 @@ GW.workflow = {
 				    } else {
 				    
 						
-						nodes = $.parseJSON(nodes);
+						nodes = GW.general.parseResponse(nodes);
 
 				    	for(var i=0;i<nodes.length;i++){
 

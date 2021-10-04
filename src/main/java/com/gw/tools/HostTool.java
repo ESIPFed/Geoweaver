@@ -655,6 +655,31 @@ public class HostTool {
 		return resp;
 	}
 
+	public void addNewEnvironment(String pypath, List<Environment> old_envlist, String hostid, String name){
+
+		Environment theenv = this.getEnvironmentByBin(pypath, old_envlist);
+
+		if(bt.isNull(theenv)){
+
+			Environment env = new Environment();
+			env.setId(new RandomString(6).nextString());
+			env.setBin(pypath);
+			env.setName(name);
+			env.setHost(hostid);
+			// env.setBasedir(line); //the execution place which is unknown at this point
+			if(pypath.contains("conda"))
+				env.setPyenv("anaconda");
+			else
+				env.setPyenv("pip");
+			env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+			env.setType("python"); //could be python or shell. R is not supported yet. 
+			env.setBasedir("~");
+			this.saveEnvironment(env);
+
+		}
+
+	}
+
 
 	/**
 	 * Update the Host table

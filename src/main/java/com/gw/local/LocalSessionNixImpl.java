@@ -438,30 +438,32 @@ public class LocalSessionNixImpl implements LocalSession {
 		//get all the python path
 		for(String line: stdout){
 			
-			Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+			ht.addNewEnvironment(line, old_envlist, hostid);
 
-			if(bt.isNull(theenv)){
+			// Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
 
-				Environment env = new Environment();
-				env.setId(new RandomString(6).nextString());
-				env.setBin(line);
-				env.setName(line);
-				env.setHost(hostid);
-				// env.setBasedir(line); //the execution place which is unknown at this point
-				if(line.contains("conda"))
-					env.setPyenv("anaconda");
-				else
-					env.setPyenv("pip");
-				env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
-				env.setType("python"); //could be python or shell. R is not supported yet. 
-				env.setBasedir("~");
-				ht.saveEnvironment(env);
+			// if(bt.isNull(theenv)){
 
-			}else{
+			// 	Environment env = new Environment();
+			// 	env.setId(new RandomString(6).nextString());
+			// 	env.setBin(line);
+			// 	env.setName(line);
+			// 	env.setHost(hostid);
+			// 	// env.setBasedir(line); //the execution place which is unknown at this point
+			// 	if(line.contains("conda"))
+			// 		env.setPyenv("anaconda");
+			// 	else
+			// 		env.setPyenv("pip");
+			// 	env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+			// 	env.setType("python"); //could be python or shell. R is not supported yet. 
+			// 	env.setBasedir("~");
+			// 	ht.saveEnvironment(env);
 
-				//if want to update the settings, do it here
+			// }else{
 
-			}
+			// 	//if want to update the settings, do it here
+
+			// }
 			
 		}
 	}
@@ -497,17 +499,19 @@ public class LocalSessionNixImpl implements LocalSession {
 
 					if(bt.isNull(theenv)){
 
-						Environment env = new Environment();
-						env.setId(new RandomString(6).nextString());
-						env.setBin(bin);
-						env.setName(name);
-						env.setHost(hostid);
-						// env.setBasedir(line); //the execution place which is unknown at this point
-						env.setPyenv("anaconda");
-						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
-						env.setType("python"); //could be python or shell. R is not supported yet. 
-						env.setBasedir("~");
-						ht.saveEnvironment(env);
+						ht.addNewEnvironment(bin, old_envlist, hostid, name);
+
+						// Environment env = new Environment();
+						// env.setId(new RandomString(6).nextString());
+						// env.setBin(bin);
+						// env.setName(name);
+						// env.setHost(hostid);
+						// // env.setBasedir(line); //the execution place which is unknown at this point
+						// env.setPyenv("anaconda");
+						// env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+						// env.setType("python"); //could be python or shell. R is not supported yet. 
+						// env.setBasedir("~");
+						// ht.saveEnvironment(env);
 
 					}else{
 
@@ -517,12 +521,12 @@ public class LocalSessionNixImpl implements LocalSession {
 
 				}
 				
-				
-				
 			}
 
 		}else{
+
 			log.debug("Conda environments are not found.");
+			
 		}
 	
 	}
