@@ -41,6 +41,9 @@ public class HistoryTool {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	ProcessTool pt;
 	
 
 	public HistoryTool() {
@@ -127,11 +130,11 @@ public class HistoryTool {
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
-	public String escape_jupyter(String code) {		
+	// public String escape_jupyter(String code) {		
 		
-		return null;
+	// 	return null;
 		
-	}
+	// }
 
 	/**
 	 * Escape the code text
@@ -163,6 +166,12 @@ public class HistoryTool {
 		
 		return resp;
 		
+	}
+
+	public List<History> getHistoryByWorkflowId(String wid){
+
+		return historyrepository.findByProcessId(wid);
+
 	}
 	
 	/**
@@ -198,11 +207,11 @@ public class HistoryTool {
 				
 				resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
 				
-				resp.append("\", \"output\": \"").append(escape(String.valueOf(h.getHistory_output())));
+				resp.append("\", \"output\": \"").append(pt.escape(String.valueOf(h.getHistory_output())));
 				
-				resp.append("\", \"status\": \"").append(escape(String.valueOf(h.getIndicator())));
+				resp.append("\", \"status\": \"").append(pt.escape(String.valueOf(h.getIndicator())));
 				
-				resp.append("\", \"host\": \"").append(escape(String.valueOf(h.getHost_id())));
+				resp.append("\", \"host\": \"").append(pt.escape(String.valueOf(h.getHost_id())));
 				
 				resp.append("\"}");
 				
@@ -248,11 +257,11 @@ public class HistoryTool {
 				
 				resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
 				
-				resp.append("\", \"output\": \"").append(escape(String.valueOf(h.getHistory_output())));
+				resp.append("\", \"output\": \"").append(pt.escape(String.valueOf(h.getHistory_output())));
 				
-				resp.append("\", \"status\": \"").append(escape(String.valueOf(h.getIndicator())));
+				resp.append("\", \"status\": \"").append(pt.escape(String.valueOf(h.getIndicator())));
 				
-				resp.append("\", \"host\": \"").append(escape(String.valueOf(h.getHost_id())));
+				resp.append("\", \"host\": \"").append(pt.escape(String.valueOf(h.getHost_id())));
 				
 				resp.append("\"}");
 				

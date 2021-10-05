@@ -16,6 +16,7 @@ import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.RandomString;
+import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -52,6 +53,12 @@ public class WorkflowTool {
 	
 	@Autowired
 	HistoryTool tool;
+
+	@Autowired
+	UserTool ut;
+
+	@Autowired
+	BaseTool bt;
 	
 	@Autowired
 	GeoweaverWorkflowTask task;
@@ -70,12 +77,14 @@ public class WorkflowTool {
         String[] child_process_ids = childprocesses.split(";");
         
         for(String cid : child_process_ids) {
+
+			Optional<History> hisopt = historyrepository.findById(cid);
         	
-        	History phis = historyrepository.findById(cid).get();
+        	History phis = hisopt.isPresent()? hisopt.get():null;
         	
         	// pt.stop(phis.getHistory_id());
-
-			tm.stopTask(phis.getHistory_id());
+			if(!bt.isNull(phis))
+				tm.stopTask(phis.getHistory_id());
         	
         }
 
@@ -103,6 +112,18 @@ public class WorkflowTool {
         }
 		return json;
 		
+	}
+
+	public List<Workflow> getWorkflowListByOwner(String ownerid){
+
+		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(ownerid).iterator();
+
+		List<Workflow> actualList = new ArrayList<Workflow>();
+
+		wit.forEachRemaining(actualList::add);
+
+		return actualList;
+
 	}
 	
 	public String list(String owner){
@@ -358,7 +379,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String httpsessionid) {
+	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -372,15 +393,13 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			
-
-			task.initialize(history_id, wid, mode, hosts, pswds, httpsessionid);
+			task.initialize(history_id, wid, mode, hosts, pswds, token);
 
 			task.execute();
 
 			resp = "{\"history_id\": \""+task.getHistory_id()+
 					
-					"\", \"token\": \""+httpsessionid+
+					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
@@ -659,17 +678,27 @@ public class WorkflowTool {
 		
 	}
 	
-	public static void main(String[] args) throws ParseException {
+	// public static void main(String[] args) throws ParseException {
 		
-		String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
+	// 	String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
 		
-		JSONParser parser = new JSONParser();
+	// 	JSONParser parser = new JSONParser();
 		
-		JSONArray obj = (JSONArray)parser.parse(jsonarray);
+	// 	JSONArray obj = (JSONArray)parser.parse(jsonarray);
 		
-		System.out.println("parsed json objects: " + obj.size());
+	// 	System.out.println("parsed json objects: " + obj.size());
 		
 		
-	}
+	// }
+
+    public String getOwnerNameByID(String ownerid) {
+
+		String ownername = "Public User";
+		
+		if(!bt.isNull(ownerid)) 
+			ownername = ut.getUserById(ownerid).getUsername();
+
+        return ownername;
+    }
 
 }

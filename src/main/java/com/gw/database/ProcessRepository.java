@@ -15,7 +15,7 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String>{
 		nativeQuery = true)
 	Collection<GWProcess> findProcessesByNameAlike(@Param("keyword") String keyword);
 	
-	@Query(value="select * from gwprocess where description = 'python'",
+	@Query(value="select * from gwprocess where lang = 'python'",
 		nativeQuery = true)
 	Collection<GWProcess> findPythonProcess();
 
@@ -23,15 +23,15 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String>{
 		nativeQuery = true)
 	Collection<GWProcess> findAllPublicPrivateByOwner(String owner);
 
-	@Query(value="select * from gwprocess where description = 'shell'",
+	@Query(value="select * from gwprocess where lang = 'shell'",
 		nativeQuery = true)
 	Collection<GWProcess> findShellProcess();
 	
-	@Query(value="select * from gwprocess where description = 'builtin'",
+	@Query(value="select * from gwprocess where lang = 'builtin'",
 		nativeQuery = true)
 	Collection<GWProcess> findBuiltinProcess();
 
-	@Query(value="select * from gwprocess where description = 'jupyter'",
+	@Query(value="select * from gwprocess where lang = 'jupyter'",
 		nativeQuery = true)
 	Collection<GWProcess> findNotebookProcess();
 

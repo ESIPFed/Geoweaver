@@ -91,7 +91,7 @@ GW.ssh = {
 				      		
 				      	}else{
 				      		
-				      		GW.workspace.updateStatus(returnmsg);
+				      		// GW.workspace.updateStatus(returnmsg); // the workflow status message should only come from the workflow-socket
 				      		
 				      	}
 				
@@ -140,7 +140,7 @@ GW.ssh = {
 
 			GW.ssh.checker_swich = true;
 
-			GW.ssh.send("token:testactive");
+			GW.ssh.send("token:"+GW.general.CLIENT_TOKEN);
 
 			setTimeout(() => {  
 				
@@ -165,7 +165,7 @@ GW.ssh = {
 		  console.log("WebSocket Channel is Openned");
 	      this.echo("connected");
 
-		  setTimeout(() => {  GW.ssh.send("token:" + GW.ssh.token) }, 1000); //create a chance for the server side to register the session if it didn't when it is openned
+		  setTimeout(() => {  GW.ssh.send("token:" + GW.general.CLIENT_TOKEN) }, 1000); //create a chance for the server side to register the session if it didn't when it is openned
 	      // link the SSH session established with spring security logon to the websocket session...
 	    //   this.send("token:" + this.token);
 	      
@@ -331,7 +331,7 @@ GW.ssh = {
 
 		connectWsSessionWithExecution: function(msg){
 
-
+			
 
 		},
 

@@ -90,6 +90,15 @@ public class LocalhostTool {
 
 	}
 
+	public String readPythonEnvironment(String hostid, String password){
+
+		LocalSession session = this.getLocalSession();
+
+		return session.readPythonEnvironment(hostid, password);
+
+	}
+
+
 	/**
 	 * Execute Shell Script on Localhost
 	 * @param history_id
@@ -189,8 +198,6 @@ public class LocalhostTool {
 		
 		try {
 			
-			
-			
 			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 			
 			//get host ip, port, user name and password
@@ -277,8 +284,10 @@ public class LocalhostTool {
 			GWProcess process = pt.getProcessById(id);
 
 			this.saveHistory(id, process.getCode(), history_id);
+
+			String code = pt.getCodeById(id);
 			
-			localizeJupyter(process.getCode(), process.getName(), token);
+			localizeJupyter(code, process.getName(), token);
 			
 			LocalSession session = getLocalSession();
 			
@@ -288,7 +297,7 @@ public class LocalhostTool {
 			
 			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
-			session.runJupyter(history_id, process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
+			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
 			resp = "{\"history_id\": \""+history_id+
 					
@@ -449,7 +458,7 @@ public class LocalhostTool {
 				
 				code = p.getCode();
 				
-				code = pt.unescape(code);
+				// code = pt.unescape(code);
 				
 				name = p.getName();
 				

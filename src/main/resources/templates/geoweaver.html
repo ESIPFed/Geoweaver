@@ -111,7 +111,7 @@
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
 				
 				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
-				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:grey " href="javascript:void(0)">
+				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:silver; " href="javascript:void(0)">
 				  	<img src="../img/header.png" width="100px" height="50px" />
 				  </a>
 				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
@@ -254,13 +254,13 @@
 									<div class="col col-md-3">
 										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Host</h3>
 										<div class="list-group" style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >SSH Server</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('ssh')" >SSH Server</button>
 											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Notebook</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('jupyter')" >Jupyter Notebook</button>
 											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog()" >Jupyter Hub</button>
+											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('jupyterhub')" >Jupyter Hub</button>
 											
-											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog()">Google Earth Engine</button>
+											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog('gee')">Google Earth Engine</button>
 
 										</div>
 										
@@ -274,10 +274,10 @@
 										
 										<div class="list-group" style="width: 100%">
 											
-											<button onclick="GW.process.newDialog()" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Notebook</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
-											<button onclick="GW.process.newDialog()" type="button" class="list-group-item list-group-item-action " >Python</button> 
+											<button onclick="GW.process.newDialog('shell')" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
+											<button onclick="GW.process.newDialog('jupyter')" type="button" class="list-group-item list-group-item-action " >Notebook</button>
+											<button onclick="GW.process.newDialog('builtin')" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
+											<button onclick="GW.process.newDialog('python')" type="button" class="list-group-item list-group-item-action " >Python</button> 
 											
 										</div>
 									</div>
@@ -596,9 +596,8 @@
 				
 			</div>
 			
-			<!-- The actual snackbar -->
+			<!-- The actual snackbar showing the saved/code update message -->
 			<div id="snackbar">Some message..</div>
-		
 		</div>
 		
 		<script src="../js/es5-shim.min.js"></script>

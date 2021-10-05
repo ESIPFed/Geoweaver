@@ -1021,6 +1021,8 @@ GW.host = {
 		    		url: "add",
 		    		
 		    		method: "POST",
+
+					
 		    		
 		    		data: req
 		    		
@@ -1083,6 +1085,14 @@ GW.host = {
 					jupyter_url = $("#_host_url").val()
 					
 				}
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential"]:checked').val()
+					
+				}
 				
 				var req = {
 					
@@ -1100,7 +1110,9 @@ GW.host = {
 					
 					username: hostusername,
 					
-					hostid: hostid
+					hostid: hostid,
+
+					confidential: confidential
 					
 				}
 		    	
@@ -1175,6 +1187,10 @@ GW.host = {
 //				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
 //				
 //				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+
+					"<i class=\"fab fa-python subalignicon\" onclick=\"GW.host.readEnvironment('"+
+									
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Read Python Environment\"></i>"+
 					
 					"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
 		        	
@@ -1204,6 +1220,119 @@ GW.host = {
 			
 			return content;
 			
+		},
+
+
+
+		showEnvironmentTable: function(msg){
+
+			var content = "<h4 class=\"border-bottom\">Environment List  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeEnvironmentPanel\" >close</button></h4>"+
+			"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+			"<table class=\"table table-striped\" id=\"environment_table\"> "+
+			"  <thead class=\"thead-light\"> "+
+			"    <tr> "+
+			"      <th scope=\"col\">Name</th> "+
+			"      <th scope=\"col\">Bin Path</th> "+
+			"      <th scope=\"col\">PyEnv</th> "+
+			"      <th scope=\"col\">Base Directory</th> "+
+			"      <th scope=\"col\">Settings</th> "+
+			"    </tr> "+
+			"  </thead> "+
+			"  <tbody> ";
+
+			
+			for(var i=0;i<msg.length;i++){
+				
+				content += "    <tr> "+
+					"      <td>"+msg[i].name+"</td> "+
+					"      <td>"+msg[i].bin+"</td> "+
+					"      <td>"+msg[i].pyenv+"</td> "+
+					"      <td>"+msg[i].basedir+"</td> "+
+					"      <td>"+msg[i].settings+"</td> "+
+					"    </tr>";
+				
+			}
+			
+			content += "</tbody>"+
+			"</table>"+
+			"</div>";
+
+			$("#environment-iframe").html(content);
+
+			$("#closeEnvironmentPanel").click(function(){
+
+				$("#environment-iframe").html("");
+
+			});
+
+		},
+
+		readEnvironmentCallback: function(encrypt, req, dialogItself, button){
+
+			req.pswd = encrypt;
+
+			req.token = GW.general.CLIENT_TOKEN;
+
+			$.ajax({
+				
+				url: "readEnvironment",
+				
+				type: "POST",
+				
+				data: req
+				
+			}).done(function(msg){
+				
+				if(msg){
+					
+					msg = GW.general.parseResponse(msg);
+					
+					if(msg.status == "failed"){
+						
+						alert("Fail to read python environment.");
+						
+						console.error("fail to execute the process " + msg.reason);
+						
+					}else{
+
+						GW.host.showEnvironmentTable(msg);
+
+					}
+					
+					if(dialogItself) {
+						
+						try{dialogItself.closeFrame(); }catch(e){}
+						
+					}
+					
+				}else{
+					
+					console.error("Return Response is Empty");
+					
+				}
+				
+				
+			}).fail(function(jxr, status){
+				
+				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
+				
+				if($("#inputpswd").length) $("#inputpswd").val("");
+				
+				console.error("fail to execute the process " + req.processId);
+				
+			});
+		},
+
+		readEnvironment: function(hid){
+
+			var req = {
+		    	
+				hostid: hid,
+				
+			}
+
+			GW.host.start_auth_single(hid, req, GW.host.readEnvironmentCallback );
+
 		},
 		
 		display: function(msg){
@@ -1313,6 +1442,10 @@ GW.host = {
 					delbtn +
 				
 				"</p>"+
+				
+				"</div>"+
+
+				"<div class=\"col-md-12\" style=\"max-height:600px;margin:0;\" id=\"environment-iframe\">"+
 				
 				"</div>"+
 				
@@ -1819,7 +1952,7 @@ GW.host = {
 			
 		},
 		
-		newDialog: function(){
+		newDialog: function(category){
 			
 			if(GW.host.new_host_frame!=null){
 				
@@ -1889,7 +2022,8 @@ GW.host = {
 				
 			});
 			
-			
+			if(category)
+				$("#hosttype").val(category).trigger('change');
 		},
 		
 }

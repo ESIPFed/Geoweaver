@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+	<head>
+	
+		<title th:text="'Geoweaver Workflow ' + ${workflow.name}">Geoweaver Workflow</title>
+		
+		<link rel="icon" href="../img/favicon.ico" />
+		
+		<link rel="stylesheet" href="../css/jquery.dataTables.min.css" />
+		
+		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
+		
+   		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
+   		<link href="../css/bootstrap-colorpicker.min.css" rel="stylesheet" />
+		
+		<!-- <link href="../css/font-awesome.css" rel="stylesheet" /> -->
+		
+		<link href="../css/all.min.css" rel="stylesheet" />
+		
+		<link href="../css/workspace.css" rel="stylesheet" />
+		
+		<link href="../css/sidemenu.css" rel="stylesheet" />
+		
+		<link rel="stylesheet" href="../js/codemirror/lib/codemirror.css" />
+		
+		<link rel="stylesheet" href="../js/codemirror/theme/xq-dark.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/xq-light.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/yeti.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/idea.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/darcula.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/yonce.css">
+		<link rel="stylesheet" href="../js/codemirror/theme/zenburn.css">
+		
+		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
+    	<link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
+   		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
+   		<link rel="stylesheet" href="../css/main.css" />
+   		
+   		<link rel="stylesheet" href="../css/prism.css" />
+    	
+        <link rel="stylesheet" href="../css/notebook.css" />
+        
+        <link rel="stylesheet" href="../css/nbpreview.css" />
+        
+        <link rel="stylesheet" href="../css/imageviewer.css" />
+        
+        <link rel="stylesheet" href="../css/Chart.min.css" />
+
+		<link rel="stylesheet" href="../css/landing.css" />
+        
+        <link href="../css/introjs.min.css" rel="stylesheet" />
+        
+		<script type="text/javascript" src="../js/FileSaver.min.js"></script>
+		
+		<script type="text/javascript" src="../js/jsencrypt.min.js"></script>
+		
+		<script type="text/javascript" src="../ssh/sockjs.js" ></script>
+		
+		<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
+		
+		<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+		
+		<script type="text/javascript" src="../js/dataTables.cellEdit.js"></script>
+		
+		<script type="text/javascript" src="../js/imageviewer.min.js"></script>
+		
+		<!-- <script src="https://danielmg.org/assets/demo/uploader/js/jquery.dm-uploader.min.js?v=v10"></script>
+	    
+	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-main.js?v=v10"></script>
+		    
+	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-multiple.js?v=v10"></script>
+	  	
+	    <script src="https://danielmg.org/assets/demo/uploader/js/configs/no-queue.js?v=v10"></script> -->
+	    
+	    <script type="text/javascript" src="../js/jquery.dm-uploader.min.js"></script>
+	    
+	    <script type="text/javascript" src="../js/ui-main.js"></script>
+	    
+	    <script type="text/javascript" src="../js/ui-multiple.js"></script>
+	    
+	    <script type="text/javascript" src="../js/no-queue.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/lib/codemirror.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/mode/shell/shell.js"></script>
+		
+		<script type="text/javascript" src="../js/codemirror/addon/display/placeholder.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
+    
+   		<script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+   	
+   		<script type="text/javascript" src="../js/jsframe.js" ></script>
+    	
+    	<script type="text/javascript" src="../js/Chart.min.js"></script>
+    	
+    	<script type="text/javascript" src="../js/intro.min.js"></script>
+    	
+	</head>
+	
+	<body style="cursor: auto; padding:0;overflow:visible;" >
+	
+		<div id="jsframe-container"></div>
+
+		<nav class="navbar navbar-default navbar-fixed-top"  style="height: 50px; margin: 0; padding: 0; background-color:black;">
+			
+			<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" >
+				<a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:silver " href="/Geoweaver/web">
+				<img src="../img/header.png" width="100px" height="50px" />
+				</a>
+				<a data-toggle="tooltip" title="Information"
+				  style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.tutorial.showDialog()">
+                  	<i class="fa fa-book" alt="tutorial" > Tutorial</i> 
+				</a>
+				<a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
+					<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
+				</a>
+
+			</div>
+			
+			
+		</nav>
+
+		<div class="main-body" style="margin-top: 70px;">
+
+			<!-- Breadcrumb -->
+			<!-- <nav aria-label="breadcrumb" class="main-breadcrumb">
+				<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+				<li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
+				<li class="breadcrumb-item active" aria-current="page">User Profile</li>
+				</ol>
+			</nav> -->
+			<!-- /Breadcrumb -->
+		
+			<div class="row gutters-sm">
+				<div class="col-md-1"></div>
+				<div class="col-md-2 mb-3">
+					<div class="card">
+						<div class="card-body">
+						<div class="d-flex flex-column align-items-center text-center">
+							<!-- <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150"> -->
+							<i class="fa fa-user" style="font-size:100px;color:gray"></i>
+							<div class="mt-3">
+								<h4 th:text="${user.username}"></h4>
+								<p class="text-secondary mb-1" th:text="${user.role}"></p>
+								<p class="text-secondary mb-1" >Active: <span th:text="${user.isactive}"></span></p>
+								<p class="text-secondary mb-1">Workflow Owner</p>
+							</div>
+						</div>
+						</div>
+					</div>
+					<hr/>
+					<div class="card mt-3">
+						<div class="card-body">
+							<div class="d-flex flex-column align-items-center text-center">
+							
+								<div class="mt-3">
+									<p class="h6">Operation Allowed</p>
+									<p>
+										<button class="btn btn-success" onclick="runWorkflow()">Run</button> 
+										<button class="btn btn-primary" onclick="downloadJSON()">Download</button>
+									</p>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card mt-3">
+						<ul class="list-group list-group-flush">
+						</ul>
+					</div>
+				</div>
+
+				<!--  workflow information body area -->
+
+				<div class="col-md-6">
+				<div class="card mb-3">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-2">
+							<h6 class="mb-0">Workflow Name</h6>
+							</div>
+							<div class="col-sm-10 text-secondary" th:text="${workflow.name}">
+							
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-2">
+							<h6 class="mb-0">Description</h6>
+							</div>
+							<div class="col-sm-10 text-secondary" th:text="${workflow.description}" >
+							
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-2">
+							<h6 class="mb-0">Workflow Nodes</h6>
+							</div>
+							<div class="col-sm-10 text-secondary" >
+								<table border="1" class="table" >
+									<thead>
+										<tr>
+											<th scope="col">Process Name</th>
+											<th scope="col">Instance ID</th>
+										</tr>
+									</thead>
+									<tbody id="node_table">
+
+
+									</tbody>
+									<!-- <tr th:each="node : ${nodes}">
+									 <td th:text="${node.title}">First Name</td>
+									 <td th:text="${node.id}">Last Name</td>
+									</tr> -->
+								</table>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-2">
+							<h6 class="mb-0">Connections</h6>
+							</div>
+							<div class="col-sm-10 text-secondary border border-primary" id="workspace">
+								<!-- <p id="connection_list"></p> -->
+							</div>
+						</div>
+						<hr>
+						
+						
+					</div>
+				</div>
+	
+				<div class="row gutters-sm">
+					<div class="col-sm-6 mb-3">
+						<div class="card h-100">
+							<div class="card-body">
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2"> Execution Statistics</h6>
+								<small>Success <span th:text="${success_num}"></span>/<span th:text="${all_history_num}"></span></small>
+								<div class="progress mb-3" style="height: 5px">
+									<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ ${all_history_num==0}?0:100*${success_num}/${all_history_num} + '%'" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<small>Failed <span th:text="${failed_num}"></span>/<span th:text="${all_history_num}"></span></small>
+								<div class="progress mb-3" style="height: 5px">
+									<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ ${all_history_num==0}?0:100*${failed_num}/${all_history_num} + '%'" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<small>Pending <span th:text="${pending_num}"></span>/<span th:text="${all_history_num}"></span></small>
+								<div class="progress mb-3" style="height: 5px">
+									<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ ${all_history_num==0}?0:100*${pending_num}/${all_history_num} + '%'" aria-valuenow="89" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+								<small>Unknown <span th:text="${unknown_num}"></span>/<span th:text="${all_history_num}"></span></small>
+								<div class="progress mb-3" style="height: 5px">
+									<div class="progress-bar bg-primary" role="progressbar" th:style="'width:'+ ${all_history_num==0}?0:100*${unknown_num}/${all_history_num} + '%'" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6 mb-3">
+					<div class="card h-100">
+						<div class="card-body">
+							<h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">History</h6>
+							
+							<small th:each="history : ${historylist}" >
+								<span th:text="${user.username}"></span> runned this workflow at <span th:text="${history.history_begin_time}"></span>
+							</small>
+							
+							
+						</div>
+					</div>
+					</div>
+				</div>
+	
+	
+	
+				</div>
+
+				<!-- The news, activities, and related information column -->
+				<div class="col-md-2">
+
+					<!--<div class="card mb-3">
+						<div class="card-body">
+							<div class="mt-3">
+								<h4>Recent Activities</h4>
+								<p class="text-secondary mb-1">XXX created workflow "EmissionAI"</p>
+								<p class="text-secondary mb-1">XXX created workflow "CMAQAI"</p>
+							</div>
+							<hr>
+						</div>
+					</div>
+					<hr/>-->
+					<div class="card mb-3">
+						<div class="card-body">
+							<div class="mt-3">
+								<p class="h4">Other Workflows Of Same User</p>
+								<ul>
+									<li class="text-secondary mb-1" th:each="workflow : ${workflowlist}" >
+										<a th:href="${workflow.id}" th:text="${workflow.name}"></a>
+									</li>
+								</ul>
+								
+							</div>
+							<hr>
+						</div>
+					</div>
+				</div>
+
+			</div>
+	
+		</div>
+			
+		<footer class="text-muted">
+			<div class="container">
+			  <hr/>
+			  <p class="text-center h5">Copyright @ GeoWeaver Team</p>
+			  <p class="text-center h6">This project is funded by NASA ACCESS Program and National Science Foundation.</p>
+			  <hr/>
+			</div>
+		</footer>
+			
+		
+		<script src="../js/es5-shim.min.js"></script>
+        <script src="../js/marked.min.js"></script>
+        <script src="../js/ansi_up.min.js"></script>
+        <script src="../js/prism.min.js"></script>
+		<script src="../js/notebook.js" ></script>
+    	<script src="../js/d3.min.js"></script>
+	    <script src="../js/gw.js"></script>
+	    <script src="../js/gw.general.js"></script>
+	    <script src="../js/gw.tutorial.js"></script>
+	    <script src="../js/gw.about.js"></script>
+	    <script src="../js/gw.chart.js"></script>
+	    <script src="../js/gw.workspace.js"></script>
+	    <script src="../js/gw.ssh.js"></script>
+	    <script src="../js/gw.fileupload.js"></script>
+	    <script src="../js/gw.filebrowser.js"></script>
+	    <script src="../js/gw.comparison.js"></script>
+		<script src="../js/gw.history.js"></script>
+	    <script src="../js/gw.host.js"></script>
+	    <script src="../js/gw.result.js"></script>
+	    <script src="../js/gw.process.js"></script>
+	    <script src="../js/gw.workflow.js"></script>
+	    <script src="../js/gw.monitor.js"></script>
+		<script src="../js/gw.dashboard.js"></script>
+		<script src="../js/gw.user.js"></script>
+	    <script src="../js/gw.search.js"></script>
+	    <script src="../js/gw.settings.js"></script>
+	    <script src="../js/gw.toolbar.js"></script>
+	    <script src="../js/gw.menu.js"></script>
+		<script src="../js/gw.home.js"></script>
+	    
+		<script th:inline="javascript">
+			
+			function renderNodeTable(nodejson){
+				
+				nodejson = GW.general.parseResponse(nodejson);
+				console.log(nodejson);
+
+				for(var i=0;i<nodejson.length;i+=1){
+
+					$("#node_table").append('<tr >'+
+										'<td >'+nodejson[i].title+'</td>'+
+										'<td >'+nodejson[i].id+'</td>'+
+										'</tr>');
+
+				}
+			}
+
+			function renderConnections(nodejson, connectionjson){
+
+				nodejson = GW.general.parseResponse(nodejson);
+				connectionjson = GW.general.parseResponse(connectionjson);
+
+				// for(var i=0;i<connectionjson.length;i+=1){
+
+				// 	$("#connection_table").append('<tr >'+
+				// 					'<td >'+connectionjson[i].title+'</td>'+
+				// 					'<td >'+connectionjson[i].id+'</td>'+
+				// 					'</tr>');
+
+				// }
+
+				GW.workspace.addListeners();
+
+				var svg = d3.select("#workspace").append("svg")
+					.attr("preserveAspectRatio", "xMinYMin meet")
+					.attr("viewBox", "0 0 960 500")	
+	    	        // .attr("width", "500")
+	    	        // .attr("height", "400");
+	    	  
+				var format = d3.format(",d");
+				
+				GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, [], []);
+
+				GW.workspace.theGraph.load({
+					nodes: nodejson,
+					edges: connectionjson
+				});
+
+			}
+
+			function downloadJSON(){
+
+				var entire_wf_json = /*[[${workflow}]]*/ {};
+				var blob = new Blob([JSON.stringify(entire_wf_json)], 
+						{type: "text/plain;charset=utf-8"});
+				window.saveAs(blob, "geoweaver.json");
+
+				// if(thisGraph.nodes.length!=0){
+				// 	var saveEdges = [];
+				// 	thisGraph.edges.forEach(function(val, i){
+				// 	saveEdges.push({source: val.source.id, target: val.target.id});
+				// 	});
+				// 	var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+				// 			{type: "text/plain;charset=utf-8"});
+				// 	window.saveAs(blob, "geoweaver.json");
+				// }else{
+				// 	alert("No nodes are present!");
+				// }
+
+			}
+
+			function runWorkflow(){
+
+				var wid = /*[[${workflow.id}]]*/"";
+
+				window.location.href = "../web/geoweaver?runwf=" + wid;
+				
+			}
+
+			renderNodeTable(/*[[${workflow.nodes}]]*/ {});
+
+			renderConnections(/*[[${workflow.nodes}]]*/ {}, /*[[${workflow.edges}]]*/ {});
+
+
+		</script>
+
+	</body>
+
+</html>
+
+

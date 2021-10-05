@@ -1,5 +1,6 @@
 package com.gw.jpa;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -10,7 +11,10 @@ public class Environment {
 	@Id
 	String id;
 	
-	String name, type, bin, pyenv, host, basedir, settings;
+	String name, type, bin, pyenv, host, basedir;
+	
+	@Column(columnDefinition = "LONGTEXT")
+	String settings;
 
 	public String getId() {
 		return id;

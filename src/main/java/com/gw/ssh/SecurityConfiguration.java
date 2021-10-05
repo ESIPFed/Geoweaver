@@ -18,7 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.gw.tools.SessionManager;
+// import com.gw.tools.SessionManager;
 
 
 @Configuration
@@ -27,8 +27,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected final Logger log = Logger.getLogger(getClass());
 
-	@Autowired
-	private SessionManager sessionManager;
+	// @Autowired
+	// private SessionManager sessionManager;
 
 	@Bean
 	public SSHAuthenticationProvider sshAuthentication() {

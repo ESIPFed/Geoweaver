@@ -207,9 +207,9 @@ public class GeoweaverProcessTask  extends Task {
 	 */
 	public void refreshWorkflowMonitor(){
 
-		if(!bt.isNull(this.workflow_monitor) && !this.workflow_monitor.isOpen()){
-			this.workflow_monitor = WorkflowServlet.findSessionByToken(token);
-		}
+		// if(!bt.isNull(this.workflow_monitor) && !this.workflow_monitor.isOpen()){
+		this.workflow_monitor = WorkflowServlet.findSessionByToken(token);
+		// }
 
 	}
 	

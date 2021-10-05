@@ -27,10 +27,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
@@ -255,6 +258,7 @@ public class BaseTool {
         return m.matches();
 	}
 
+
 //	public String toJSONString(Object value) {
 //		String json = null;
 //		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -274,6 +278,69 @@ public class BaseTool {
 //
 //		return json;
 //	}
+
+	public String getErrorReturn(String message){
+
+		StringBuffer json = new StringBuffer("{\"status\": \"failed\", \"reason\":\"");
+		
+		json.append(message).append("\"}");
+
+		return json.toString();
+
+	}
+
+	public List<String> executeLocal(List<String> cmds){
+		
+		List envlist = new ArrayList();
+
+		try{
+
+			ProcessBuilder builder = new ProcessBuilder();
+				
+			builder.command(cmds); //bash.exe of cygwin must be in the $PATH
+
+			builder.redirectErrorStream(true);
+
+			Process process = builder.start();
+
+			process.waitFor();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s = null;
+			
+
+			while ((s = in.readLine()) != null) {
+				System.out.println(s);
+
+				envlist.add(s);
+				
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+			
+		}
+
+
+		return envlist;
+
+	}
+
+	public String toJSON(Object h) {
+			
+		String json = "{}";
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			json = mapper.writeValueAsString(h);
+			// logger.debug("ResultingJSONstring = " + json);
+			//System.out.println(json);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return json;
+		
+	}
 	
 	public void createWorkspace(String filepath) {
 		
@@ -285,6 +352,20 @@ public class BaseTool {
 			
 		}
 		
+	}
+
+	public void sleep(long timelen){
+
+		try {
+			
+			Thread.sleep(timelen);                 //1000 milliseconds is one second.
+
+		} catch(InterruptedException ex) {
+			
+			// Thread.currentThread().interrupt();
+			ex.printStackTrace();
+
+		}
 	}
 
 	/**

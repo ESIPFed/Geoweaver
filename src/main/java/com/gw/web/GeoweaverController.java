@@ -12,7 +12,10 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.jpa.GWProcess;
 import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
@@ -24,6 +27,7 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.MasterRequestObject;
 import com.gw.utils.RandomString;
 import com.gw.tools.UserTool;
 
@@ -41,8 +45,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
@@ -775,6 +781,33 @@ public class GeoweaverController {
 		
 	}
 
+	@RequestMapping(value="/readEnvironment", method = RequestMethod.POST)
+	public @ResponseBody String readPythonEnvironment(ModelMap model, WebRequest request, HttpSession session){
+
+		String resp = null;
+
+		try{
+
+			String hid = request.getParameter("hostid");
+			
+			String password = request.getParameter("pswd");
+
+			password = RSAEncryptTool.getPassword(password, session.getId());
+
+			resp = ht.readEnvironment(hid, password);
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			resp = bt.getErrorReturn(e.getLocalizedMessage());
+
+		}
+
+		return resp;
+
+	}
+
 	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
     public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -790,7 +823,7 @@ public class GeoweaverController {
 
 			// if(bt.isNull(token)){
 
-			token = session.getId(); // the token from client is useless
+			// token = session.getId(); // the token from client is useless
 
 			String history_id = bt.isNull(request.getParameter("history_id"))? 
 				new RandomString(18).nextString(): request.getParameter("history_id");
@@ -800,7 +833,7 @@ public class GeoweaverController {
 			String[] encrypted_password = request.getParameterValues("passwords[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
-			
+			 
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
 			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
 			
@@ -907,6 +940,8 @@ public class GeoweaverController {
 			String hid = request.getParameter("hostId");
 			
 			String encrypted_password = request.getParameter("pswd");
+
+			String token = request.getParameter("token");
 			
 			String bin = request.getParameter("env[bin]");
 			
@@ -918,7 +953,59 @@ public class GeoweaverController {
 
 			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
-			resp = pt.execute(history_id, pid, hid, password, session.getId(), false, bin, pyenv, basedir);
+			resp = pt.execute(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/edit/process", method = RequestMethod.POST)
+    public @ResponseBody String editprocess(ModelMap model, @RequestBody GWProcess up, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(up.getId());
+			
+			pt.save(up);
+			
+			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/edit/workflow", method = RequestMethod.POST)
+    public @ResponseBody String editworkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(w.getId());
+			
+			wt.save(w);
+			
+			resp = "{\"id\" : \"" + w.getId() + "\"}";
+			
 			
 		}catch(Exception e) {
 			
@@ -956,12 +1043,14 @@ public class GeoweaverController {
 				String username = request.getParameter("username");
 				
 				String hosttype = request.getParameter("hosttype");
+
+				String confidential = request.getParameter("confidential");
 				
 				String url = request.getParameter("url");
 				
 //				String owner = request.getParameter("owner");
 				
-				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url);
+				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url, confidential);
 				
 				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
 				
@@ -1151,6 +1240,117 @@ public class GeoweaverController {
 			String filepath = request.getParameter("filepath");
 			
 			resp = ft.scp_download(hid, password, filepath);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/process", method = RequestMethod.POST)
+    public @ResponseBody String addProcess(ModelMap model, @RequestBody GWProcess np, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			// String lang = request.getParameter("lang");
+
+			// String name = request.getParameter("name");
+			
+			// String desc = request.getParameter("desc");
+
+			String ownerid = bt.isNull(np.getOwner())?"111111":np.getOwner();
+
+			np.setOwner(ownerid);
+
+			// String confidential = request.getParameter("confidential");
+			
+			
+			String newid = new RandomString(6).nextString();
+
+			np.setId(newid);
+
+			np.setCode(np.getCode());
+
+			pt.save(np);
+
+			resp = "{\"id\" : \"" + newid + "\", \"name\":\"" + np.getName() + "\", \"lang\": \""+np.getDescription()+"\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/host", method = RequestMethod.POST)
+    public @ResponseBody String addHost(ModelMap model, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+
+			String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+
+			h.setOwner(ownerid);
+
+			String newhostid = new RandomString(6).nextString();
+
+			h.setId(newhostid);
+
+			ht.save(h);
+			
+			// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
+			
+			resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/workflow", method = RequestMethod.POST)
+    public @ResponseBody String addWorkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+
+			String ownerid = bt.isNull(w.getOwner())?"111111":w.getOwner();
+
+			w.setOwner(ownerid);
+
+			String newwid = new RandomString(20).nextString();
+
+			w.setId(newwid);
+
+			wt.save(w);
+
+			// String wid = wt.add(name, nodes, edges, ownerid);
+				
+			resp = "{\"id\" : \"" + newwid + "\", \"name\":\"" + w.getName() + "\"}";
 			
 		}catch(Exception e) {
 			
@@ -1522,11 +1722,11 @@ public class GeoweaverController {
 
 
 
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
     	
-    	sessionManager.closeAll();
+    // 	sessionManager.closeAll();
     	
-    }
+    // }
 	
     
 }

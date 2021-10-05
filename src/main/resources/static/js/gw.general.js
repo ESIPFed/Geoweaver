@@ -10,6 +10,8 @@
 GW.general = {
 		
 		process_code_editor: null, 
+
+		CLIENT_TOKEN: null,
 		
 		init: function(){
 			
@@ -28,6 +30,8 @@ GW.general = {
 					}
 				}
 			});
+
+			GW.general.CLIENT_TOKEN = GW.general.makeid(26);
 			
 		},
 
@@ -38,11 +42,27 @@ GW.general = {
 			for ( var i = 0; i < length; i++ ) {
 			  result += characters.charAt(Math.floor(Math.random() * 
 		 charactersLength));
-		   }
+		   } 
 		   return result;
 		},
 		
+		parseResponse: function(msg){
+
+			if(msg!=null && typeof msg != 'undefined'){
+
+				if(typeof msg != 'object'){
+					
+					msg = $.parseJSON(msg);
+
+				}
+
+			}
+
+			return msg;
+
+		},
 		
+
 		displayObject: function(type, msg){
 			
 			if(type=="process"){

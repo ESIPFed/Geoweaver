@@ -20,9 +20,9 @@ GW.monitor = {
 
 			//shell.echo(special.white + "connected" + special.reset);
 			console.log("workflow websocket is connected");
-			if(this.token==null || this.token == "null") this.token = GW.main.getJSessionId();
+			// if(this.token==null || this.token == "null") this.token = GW.main.getJSessionId();
 			// link the SSH session established with spring security logon to the websocket session...
-			GW.monitor.all_ws.send("token:" + this.token);
+			GW.monitor.all_ws.send("token:" + GW.general.CLIENT_TOKEN);
 			
 		},
 
@@ -36,7 +36,11 @@ GW.monitor = {
 
 			// console.log(e.data); //print out everything back from server
 
-			if(GW.monitor.IsJsonString(e.data)){
+			if(e.data.indexOf("Session_Status:Active")!=-1){
+
+				GW.monitor.checker_swich = false;
+
+			}else if(GW.monitor.IsJsonString(e.data)){
 
 				var returnmsg = $.parseJSON(e.data)
 
@@ -194,6 +198,45 @@ GW.monitor = {
 			console.log("workspace indicator is closed");
 			
 		},
+
+		send: function (data) {
+	    	
+	        if(this.all_ws != null){
+	      	
+	        	this.all_ws.send(data);
+	        
+	        } else {
+	        
+	        	if(data!=this.token){
+	        		
+	        		this.error('not connected!');
+	        		
+	        	}
+	        	
+	        }
+	    },
+
+		checkSessionStatus: function(){
+			// console.log("Current WS status: " + GW.ssh.all_ws.readyState);
+			// return GW.ssh.all_ws.readyState;
+
+			GW.monitor.checker_swich = true;
+
+			GW.monitor.send("token:"+GW.general.CLIENT_TOKEN);
+
+			setTimeout(() => {  
+				
+				if(GW.monitor.checker_swich){
+
+					//restart the websocket if the switch is still true two seconds later
+					GW.monitor.startSocket(GW.monitor.token);
+					GW.monitor.checker_swich = false;
+
+				}
+
+			}, 2000);
+
+		},
 		
 		/**
 		 * 
@@ -210,6 +253,11 @@ GW.monitor = {
 
 				GW.monitor.startSocket(token);
 			
+			}else{
+
+				//check 
+				GW.monitor.checkSessionStatus();
+
 			}
 			
 //			//only start when the mode is in monitor mode

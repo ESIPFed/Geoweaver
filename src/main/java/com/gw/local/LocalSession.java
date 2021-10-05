@@ -27,6 +27,12 @@ public interface LocalSession {
 	 * @return
 	 */
 	public boolean stop();
+
+	/**
+	 * Find all python environments on the localhost
+	 * @return
+	 */
+	public String readPythonEnvironment(String hostid, String password);
 	
 //	public void setWebSocketSession(WebSocketSession session);
 	/**

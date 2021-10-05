@@ -516,7 +516,7 @@ GW.workspace = {
     	            
 					GW.workspace.showSaved();
 	    			
-    	            var newNodes = $.parseJSON(jsonObj.nodes);
+    	            var newNodes = GW.general.parseResponse(jsonObj.nodes);
     	            
     	            //remove the old color status - load a brand new workflow
     	            newNodes.forEach(function(e, i){
@@ -529,7 +529,7 @@ GW.workspace = {
     	            
     	            this.setIdCt(jsonObj.nodes.length + 1);
     	            
-    	            var newEdges = $.parseJSON(jsonObj.edges);
+    	            var newEdges = GW.general.parseResponse(jsonObj.edges);
     	            
     	            newEdges.forEach(function(e, i){
     	            	
@@ -841,6 +841,41 @@ GW.workspace = {
 					GW.workspace.showNonSaved();
 	    	  }
 
+			  GW.workspace.GraphCreator.prototype.deleteSelected = function(){
+
+				if(Object.keys(BootstrapDialog.dialogs).length){
+	    			return; //if there are shown dialogs, key activity will be disconnected from svg
+	    		}
+	    	    var thisGraph = this,
+	    	        state = thisGraph.state,
+	    	        consts = thisGraph.consts;
+	
+	    	    var selectedNode = state.selectedNode,
+	    	        selectedEdge = state.selectedEdge;
+	
+				if(document.getElementById("workspace").style.display=="block"){
+
+					if (selectedNode){
+					
+						var pid = selectedNode.id;
+						console.log("going to remove process: " + pid);
+	//	    	    	GW.menu.del(pid, "process");
+						thisGraph.removeNode(pid);
+					
+					} else if (selectedEdge){
+					
+						//removing an edge is much easier than removing a process
+						thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+						state.selectedEdge = null;
+						GW.workspace.showNonSaved();
+						thisGraph.updateGraph();
+					
+					}
+				}
+		    	      
+
+			  }
+
 			  GW.workspace.GraphCreator.prototype.deleteSelectedOrAll = function(){
 
 				if(Object.keys(BootstrapDialog.dialogs).length){
@@ -898,8 +933,8 @@ GW.workspace = {
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
-		    	      d3.event.preventDefault();
-					  this.deleteSelectedOrAll();
+		    	    //   d3.event.preventDefault();
+					  this.deleteSelected();
 		// 			  if(document.getElementById("workspace").style.display=="block"){
 		// 				if (selectedNode){
 		    	        
@@ -1075,23 +1110,7 @@ GW.workspace = {
 						
 						var num = this.getNodeNumById(id);
 
-						if(flag=="Ready"){
-								
-							GW.workspace.theGraph.nodes[num].color = "";
-							
-						}else if(flag=="Running"){
-								
-							GW.workspace.theGraph.nodes[num].color = "orange";
-								
-						}else if(flag=="Done"){
-								
-							GW.workspace.theGraph.nodes[num].color = "green";
-								
-						}else if(flag=="Failed"){
-								
-							GW.workspace.theGraph.nodes[num].color = "red";
-								
-						}
+						GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
 						
 						// newnodes.push(node);
 						
@@ -1101,7 +1120,7 @@ GW.workspace = {
 						
 						GW.workspace.theGraph.updateGraph();
 
-					}else{
+					}else if(typeof statusList === 'object'){
 
 						var newnodes = [];
 		    	  
@@ -1114,24 +1133,8 @@ GW.workspace = {
 							var flag = statusList[i].status; //true or false
 							
 							var node = this.getNodeById(id);
-							
-							if(flag=="Ready"){
-								
-								  node.color = "blue";
-								  
-							}else if(flag=="Running"){
-								  
-								  node.color = "orange";
-								  
-							}else if(flag=="Done"){
-								  
-								  node.color = "green";
-								  
-							}else if(flag=="Failed"){
-								  
-								  node.color = "red";
-								  
-							}
+
+							node.color = GW.workspace.getColorByFlag(flag);
 							
 							newnodes.push(node);
 							
@@ -1239,6 +1242,36 @@ GW.workspace = {
 	    	    svg.attr("width", x).attr("height", y);
 	    	  };
 			
+		},
+
+		getColorByFlag: function(flag){
+
+			var color = "black"
+
+			if(flag=="Ready"){
+								
+				color = "blue";
+				
+			}else if(flag=="Running"){
+					
+				color = "orange";
+					
+			}else if(flag=="Done"){
+					
+				color = "green";
+					
+			}else if(flag=="Failed"){
+					
+				color = "red";
+					
+			}else if(flag== null){
+
+				color = "blue";
+
+			}
+
+			return color;
+
 		},
 
 		

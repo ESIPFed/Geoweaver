@@ -24,16 +24,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
 import java.text.Normalizer;
+import java.util.List;
 
+import com.gw.jpa.Environment;
 import com.gw.jpa.History;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -44,9 +48,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.IOUtils;
+import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.connection.channel.direct.Session.Shell;
+import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
@@ -364,7 +371,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		cmdline += "cd ..; rm -R " + token + "*;";
     		
@@ -462,7 +469,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "rm ./jupyter-" + history.getHistory_id() + ".ipynb; "; // remove the script finally, leave no trace behind
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
 //    		cmdline += "./geoweaver-" + token + ".sh;";
     		
@@ -532,7 +539,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		String cmdline = "echo \"" 
     				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
@@ -637,6 +644,112 @@ public class SSHSessionImpl implements SSHSession {
             e.printStackTrace();
         }
         return true;
+    }
+
+    void readWhereCondaInOneCommand(String hostid) throws IOException{
+
+        List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+
+        String cmdline = "whereis python; conda env list";
+        
+        log.info(cmdline);
+    
+        Command cmd = session.exec(cmdline);
+
+        String output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+        System.out.println(output);
+        //An Example:
+        //  python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python2.7 /usr/lib/python3.8 /usr/lib/python3.6 /usr/lib/python3.7 /etc/python2.7 /etc/python /etc/python3.6 /usr/local/lib/python3.6 /usr/include/python3.6m /usr/share/python
+        //  bash: conda: command not found
+        //  # conda environments:
+        //  #
+        //                           /home/zsun/anaconda3
+        //                           /home/zsun/anaconda3/envs/ag
+        //  base                  *  /root/anaconda3
+
+        String[] lines = output.split("\n");
+
+        //Parse "whereis python"
+        if(lines[0].startsWith("python")){
+
+            String pythonarraystr = lines[0].substring(8);
+
+            String[] pythonarray = pythonarraystr.split(" ");
+
+            for(String pypath : pythonarray){
+
+                if(!bt.isNull(pypath)){
+
+                    pypath = pypath.trim();
+
+                    ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+
+                }
+
+            }
+
+        }
+
+        //parse Conda results
+        if(!bt.isNull(lines[1]) && lines[1].startsWith("#")){ //pass if conda is not found
+
+            for(int i=2; i<lines.length; i++){
+
+                if(!lines[i].startsWith("#")){ //pass comments
+
+                    String[] vals = lines[i].split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"/bin/python"; //on linux python command is under bin folder
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+                    ht.addNewEnvironment(bin, old_envlist, hostid, name);
+
+                }
+
+            }
+
+        }
+        
+
+    }
+
+    @Override
+    public String readPythonEnvironment(String hostid, String password) {
+
+        String resp = null;
+
+        try {
+
+           this.readWhereCondaInOneCommand(hostid);
+
+        //    this.readConda();
+
+           resp = ht.getEnvironments(hostid);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally{
+
+            finalize();
+            // if(!bt.isNull(session))
+            //     try {
+
+            //         session.close();
+            //     } catch (Exception e) {
+            //         e.printStackTrace();
+            //     }
+
+        }
+
+        
+
+        return resp;
     }
 
 }

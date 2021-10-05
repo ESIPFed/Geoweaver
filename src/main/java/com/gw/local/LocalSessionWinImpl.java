@@ -6,15 +6,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.database.EnvironmentRepository;
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import  com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
@@ -41,6 +46,9 @@ public class LocalSessionWinImpl implements LocalSession {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HostTool ht;
 	
 	@Autowired
     private HistoryTool      history_tool;
@@ -48,11 +56,10 @@ public class LocalSessionWinImpl implements LocalSession {
 	private boolean			 isTerminal;
 	
 	private BufferedReader   input;
-	    
-    private OutputStream     output;
-
+	
     @Autowired
     private LocalSessionOutput sender;
+
     
     private Thread           thread;
     
@@ -251,13 +258,17 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path + "/" + token));
+    		builder.directory(new File(workspace_folder_path + "/" + token)); // this folder is only used to find data files, not the execution command
     		
     		String pythonfilename = pro.getName();
     		
     		log.info("Start to execute jupyter notebook: " + pythonfilename);
     		
     		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
+
+			
+
+			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
     		
     		builder.command(new String[] {"jupyter", "nbconvert", "--to", "notebook", "--execute", pythonfilename} );
     		
@@ -421,6 +432,133 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 		return temp.delete();
 		
+	}
+
+	void readWhere(String hostid, String password){
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("where");
+		cmds.add("python.exe");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		//get all the python path
+		for(String line: stdout){
+			
+			Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+
+			if(bt.isNull(theenv)){
+
+				Environment env = new Environment();
+				env.setId(new RandomString(6).nextString());
+				env.setBin(line);
+				env.setName(line);
+				env.setHost(hostid);
+				// env.setBasedir(line); //the execution place which is unknown at this point
+				if(line.contains("conda"))
+					env.setPyenv("anaconda");
+				else
+					env.setPyenv("pip");
+				env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+				env.setType("python"); //could be python or shell. R is not supported yet. 
+				env.setBasedir("~");
+				ht.saveEnvironment(env);
+
+			}else{
+
+				//if want to update the settings, do it here
+
+			}
+			
+		}
+	}
+
+	void readConda(String hostid, String password){
+
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("conda");
+		cmds.add("env");
+		cmds.add("list");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		if(stdout.get(0).startsWith("# conda")){
+
+			//get all the python path
+			for(String line: stdout){
+
+				if(!bt.isNull(line) && !line.startsWith("#")){
+
+					String[] vals = line.split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"\\python.exe";
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+					Environment theenv = ht.getEnvironmentByBin(bin, old_envlist);
+
+					if(bt.isNull(theenv)){
+
+						Environment env = new Environment();
+						env.setId(new RandomString(6).nextString());
+						env.setBin(bin);
+						env.setName(name);
+						env.setHost(hostid);
+						// env.setBasedir(line); //the execution place which is unknown at this point
+						env.setPyenv("anaconda");
+						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+						env.setType("python"); //could be python or shell. R is not supported yet. 
+						env.setBasedir("~");
+						ht.saveEnvironment(env);
+
+					}else{
+
+						//if want to update the settings, do it here
+
+					}
+
+				}
+				
+				
+				
+			}
+
+		}else{
+			log.debug("Conda environments are not found.");
+		}
+
+
+	}
+
+
+	@Override
+	public String readPythonEnvironment(String hostid, String password) {
+
+		String resp = null;
+
+		try {
+
+			this.readWhere(hostid, password);
+
+			this.readConda(hostid, password);
+
+			resp = ht.getEnvironments(hostid);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
 	}
 
 	

@@ -173,11 +173,11 @@ public class GeoweaverWorkflowTask{
 
 	public void refreshMonitor(){
 
-		if(bt.isNull(monitor)){
+		// if(bt.isNull(monitor)){
 
-			monitor = WorkflowServlet.findSessionByToken(token); 
+		monitor = WorkflowServlet.findSessionByToken(token); 
 			
-		}
+		// }
 		
 
 	}
@@ -191,6 +191,8 @@ public class GeoweaverWorkflowTask{
 	public void sendStatus(JSONArray nodes, String[] flags) {
 		
 		try {
+
+			refreshMonitor();
 			
 			if(monitor!=null) {
 				
@@ -214,7 +216,6 @@ public class GeoweaverWorkflowTask{
 					
 				}
 				
-				this.refreshMonitor();
 				log.debug("Send workflow process status back to the client: " + array);
 //				monitor.sendMessage(new TextMessage(array.toJSONString()));
 				monitor.getBasicRemote().sendText(array.toJSONString());
