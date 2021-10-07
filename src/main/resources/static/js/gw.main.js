@@ -53,8 +53,18 @@ GW.main = {
 		
 		
 	},
-	
+
+	exitWarning: function(event){
+		return "Make sure to save your graph locally before leaving :-)";
+	},
+
+	quietExit: function(){
+		window.removeEventListener('beforeunload', GW.main.exitWarning, true);
+	},
+
 	init: function(){
+
+		window.onbeforeunload =  GW.main.exitWarning;
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		

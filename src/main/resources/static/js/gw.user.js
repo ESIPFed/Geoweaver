@@ -427,9 +427,9 @@ GW.user = {
     
                 if(msg.status=="success"){
     
-                    GW.user.refreshthetopbar(null, null, false);
+                    // GW.user.refreshthetopbar(null, null, false);
 
-                    GW.menu.refresh();
+                    // GW.menu.refresh();
     
                     GW.user.current_username = null;
     
@@ -440,6 +440,10 @@ GW.user = {
                     console.log("Fail to logout");
     
                 }
+                
+                GW.main.quietExit();
+
+                location.reload();
     
             }).fail(function(jxr, status){
     
