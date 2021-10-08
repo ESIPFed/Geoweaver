@@ -9,6 +9,8 @@
 */
 
 GW.main = {
+
+	quiet: false,
 		
 	getJSessionId: function (){
 		
@@ -53,8 +55,29 @@ GW.main = {
 		
 		
 	},
+
+	exitWarning: function(e){
+		// this should show up when there are unsaved edits only
+		if(!GW.process.isSaved || !GW.workflow.isSaved)
+			return "Are you going to leave Geoweaver? Please make sure all the edits are saved."
+		else
+			return false
+
+	},
+
+	quiteExit: function(){
+
+		// GW.main.quiet = true
+		// $(window).off("beforeunload", GW.main.exitWarning);
+		$(window).on("beforeunload", function(){});
+
+	},
 	
 	init: function(){
+
+		$(window).on("beforeunload", GW.main.exitWarning);
+
+		// $(window).off("beforeunload", GW.main.exitWarning);
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		
