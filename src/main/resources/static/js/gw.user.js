@@ -447,6 +447,10 @@ GW.user = {
                     console.log("Fail to logout");
     
                 }
+                
+                GW.main.quietExit();
+
+                location.reload();
     
             }).fail(function(jxr, status){
     

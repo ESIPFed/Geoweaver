@@ -541,19 +541,28 @@ public class HostTool {
 	}
 
 	public Environment getEnvironmentByBin(String bin, List<Environment> envlist){
-
+		
 		Environment theenv = null;
 
-		for(Environment env: envlist){
+		if(bin.length()>255){
 
-			if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+			logger.info("The BIN is too long to save. Pass.");
+			
+		}else{
+			
+			for(Environment env: envlist){
 
-				theenv = env;
-
-				break;
+				if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+	
+					theenv = env;
+	
+					break;
+				}
+	
 			}
-
+		
 		}
+
 
 		return theenv;
 	}
@@ -653,6 +662,31 @@ public class HostTool {
 		}
 		
 		return resp;
+	}
+
+	public void addNewEnvironment(String pypath, List<Environment> old_envlist, String hostid, String name){
+
+		Environment theenv = this.getEnvironmentByBin(pypath, old_envlist);
+
+		if(bt.isNull(theenv)){
+
+			Environment env = new Environment();
+			env.setId(new RandomString(6).nextString());
+			env.setBin(pypath);
+			env.setName(name);
+			env.setHost(hostid);
+			// env.setBasedir(line); //the execution place which is unknown at this point
+			if(pypath.contains("conda"))
+				env.setPyenv("anaconda");
+			else
+				env.setPyenv("pip");
+			env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+			env.setType("python"); //could be python or shell. R is not supported yet. 
+			env.setBasedir("~");
+			this.saveEnvironment(env);
+
+		}
+
 	}
 
 

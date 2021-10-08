@@ -5,18 +5,23 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +47,9 @@ public class LocalSessionNixImpl implements LocalSession {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HostTool ht;
 	
 	@Autowired
 	HistoryTool history_tool;
@@ -416,6 +424,125 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 	}
 
+	void readWhere(String hostid, String password) throws IOException, InterruptedException{
+
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("whereis");
+		cmds.add("python");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		//get all the python path
+		for(String line: stdout){
+
+			if(!bt.isNull(line)){
+
+				if(line.startsWith("python")){
+
+					String pythonarraystr = line.substring(8);
+
+            		String[] pythonarray = pythonarraystr.split(" ");
+
+					for(String pypath : pythonarray){
+
+						if(!bt.isNull(pypath)){
+		
+							pypath = pypath.trim();
+		
+							ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+		
+						}
+		
+					}
+
+				}
+
+			}
+			
+			
+
+			// Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+
+			// if(bt.isNull(theenv)){
+
+			// 	Environment env = new Environment();
+			// 	env.setId(new RandomString(6).nextString());
+			// 	env.setBin(line);
+			// 	env.setName(line);
+			// 	env.setHost(hostid);
+			// 	// env.setBasedir(line); //the execution place which is unknown at this point
+			// 	if(line.contains("conda"))
+			// 		env.setPyenv("anaconda");
+			// 	else
+			// 		env.setPyenv("pip");
+			// 	env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+			// 	env.setType("python"); //could be python or shell. R is not supported yet. 
+			// 	env.setBasedir("~");
+			// 	ht.saveEnvironment(env);
+
+			// }else{
+
+			// 	//if want to update the settings, do it here
+
+			// }
+			
+		}
+	}
+
+	void readConda(String hostid, String password) throws IOException, InterruptedException{
+
+		//read existing environments
+		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("conda");
+		cmds.add("env");
+		cmds.add("list");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		if(stdout.size()>0 && stdout.get(0).startsWith("# conda")){
+
+			//get all the python path
+			for(String line: stdout){
+
+				if(!bt.isNull(line) && !line.startsWith("#")){
+
+					String[] vals = line.split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"/bin/python";
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+					Environment theenv = ht.getEnvironmentByBin(bin, old_envlist);
+
+					if(bt.isNull(theenv)){
+
+						ht.addNewEnvironment(bin, old_envlist, hostid, name);
+
+					}else{
+
+						//if want to update the settings, do it here
+
+					}
+
+				}
+				
+			}
+
+		}else{
+
+			log.debug("Conda environments are not found.");
+
+		}
+	
+	}
+
 	@Override
 	public String readPythonEnvironment(String hostid, String password) {
 
@@ -423,24 +550,11 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		try {
 
-			ProcessBuilder builder = new ProcessBuilder();
-    		
-			builder.command("whereis", "python"); //bash.exe of cygwin must be in the $PATH
+			this.readWhere(hostid, password);
 
-			builder.redirectErrorStream(true);
+			this.readConda(hostid, password);
 
-			process = builder.start();
-
-			process.waitFor();
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String s = null;
-			while ((s = in.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			//get all the python path
-
+			resp = ht.getEnvironments(hostid);
 
 		} catch (Exception e) {
 

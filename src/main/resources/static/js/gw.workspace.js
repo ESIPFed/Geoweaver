@@ -1323,9 +1323,9 @@ GW.workspace = {
 	    	  /**** MAIN ****/
 	
 	    	  // warn the user when leaving
-	    	  window.onbeforeunload = function(){
-	    	    return "Make sure to save your graph locally before leaving :-)";
-	    	  };      
+	    	//   window.onbeforeunload = function(){
+	    	//     return "Make sure to save your graph locally before leaving :-)";
+	    	//   };      
 	
 	    	  var docEl = document.documentElement,
 //	    	      bodyEl = document.getElementsByTagName('body')[0];

@@ -24,10 +24,8 @@ public class GeoweaverApplication {
 //		BasicConfigurator.configure();
 		
 		SpringApplication.run(GeoweaverApplication.class, args);
-        // browse("http://localhost:8070/Geoweaver/");
 
-
-//		openHomePage();	
+		openHomePage();	
 
         addDefaultPublicUser();
 
@@ -113,6 +111,12 @@ public class GeoweaverApplication {
 
         //set everything that doesn't have an owner to this user
         ut.belongToPublicUser();
+
+    }
+
+    public static void openHomePage(){
+
+        browse("http://localhost:8070/Geoweaver/");
 
     }
 	
