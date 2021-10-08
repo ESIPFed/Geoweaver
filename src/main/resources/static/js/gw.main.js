@@ -69,7 +69,7 @@ GW.main = {
 
 		// GW.main.quiet = true
 		// $(window).off("beforeunload", GW.main.exitWarning);
-		$(window).on("beforeunload", function(){});
+		// $(window).on("beforeunload", function(){});
 
 	},
 	
