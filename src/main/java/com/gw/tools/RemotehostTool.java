@@ -432,16 +432,6 @@ public class RemotehostTool {
 
 			this.saveHistory(id, code, history_id);
 			
-//			logger.info(code);
-			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
-			//establish SSH session and generate a token for it
-			
-//			SSHSession session = new SSHSessionImpl();
-			
 			session.login(hid, pswd, token, false);
 			
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);

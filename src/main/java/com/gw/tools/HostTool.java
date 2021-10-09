@@ -383,9 +383,9 @@ public class HostTool {
 		
 		try {
 			
-			if(!bt.isNull(bin) && !bt.isNull(env) && !bt.isNull(basedir) && !bt.isNull(settings)){
+			if(!bt.isNull(bin) && !bt.isNull(env) && !bt.isNull(basedir)){
 				
-				Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
+				Iterator<Environment> eit = environmentrepository.findEnvByID_BIN(hostid, bin).iterator();
 				
 				Environment newenv = new Environment();
 				

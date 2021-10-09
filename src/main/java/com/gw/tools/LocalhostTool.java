@@ -354,8 +354,7 @@ public class LocalhostTool {
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 
 			//save environment
-			if(!bt.isNull(bin) && !bt.isNull(pyenv) && !bt.isNull(basedir))
-				ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			

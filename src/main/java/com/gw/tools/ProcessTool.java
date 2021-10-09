@@ -874,6 +874,8 @@ public class ProcessTool {
 		logger.debug("this process is : " + category);
 		
 		String resp = null;
+
+		if(bt.isNull(basedir)) basedir = "~";
 		
 		if(ht.islocal(hid)) {
 			

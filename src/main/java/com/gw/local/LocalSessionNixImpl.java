@@ -313,8 +313,10 @@ public class LocalSessionNixImpl implements LocalSession {
     		String pythonfilename = pro.getName();
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
+
+			if(bt.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {"python", pythonfilename} );
+    		builder.command(new String[] {bin, pythonfilename} );
     		
     		builder.redirectErrorStream(true);
     		

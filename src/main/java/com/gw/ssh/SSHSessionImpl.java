@@ -37,7 +37,6 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -49,11 +48,9 @@ import org.springframework.web.socket.WebSocketSession;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
-import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.connection.channel.direct.Session.Shell;
-import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
@@ -301,15 +298,6 @@ public class SSHSessionImpl implements SSHSession {
     
     public static String escapeJupter(String json) {
     	
-//    	json = json.replaceAll("\r\n", "\n");
-//    	
-//    	json = json.replaceAll("\\", "\\\\\\")
-////				.replaceAll("\'", "\\\\\\\'")
-////				.replaceAll("`", ".")
-////				.replaceAll("()", ".")
-////				.replaceAll(")", "\\\\)")
-//				.replaceAll("\"", "\\\\\\\"");
-    	
     	json  = StringEscapeUtils.escapeJava(json);
     	
     	return json;
@@ -336,10 +324,10 @@ public class SSHSessionImpl implements SSHSession {
     		
     		if(!bt.isNull(basedir)||"default".equals(basedir)) {
     			
-    			cmdline += "cd \"" + basedir + "\"; ";
+    			cmdline += "cd " + basedir + "; ";
     			
     		}
-    		
+
     		//new version of execution in which all the python files are copied in the host
     		
     		cmdline += "mkdir " + token + ";";
@@ -363,17 +351,13 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}else {
     			
-//    			cmdline += "conda init; ";
-    			
-    			cmdline += "source activate " + pyenv + "; "; //for demo only
+    			// if(!bt.isNull(pyenv)) cmdline += "source activate " + pyenv + "; "; //for demo only
     			
     			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
-    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
-    		
-    		cmdline += "cd ..; rm -R " + token + "*;";
+    		cmdline += "cd ..; rm -R " + token + "*;"; //remove the code
     		
     		log.info(cmdline);
     		
@@ -400,21 +384,6 @@ public class SSHSessionImpl implements SSHSession {
             log.info("returning to the client..");
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        
-//	        cmd = "./geoweaver-" + token + ".sh";
-//	        		
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        	
-//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//	        output.flush();
 	        
 		} catch (Exception e) {
 			
@@ -435,7 +404,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		if(!bt.isNull(basedir)||"default".equals(basedir)) {
     			
-    			cmdline += "cd \"" + basedir + "\"; ";
+    			cmdline += "cd " + basedir + "; ";
     			
     		}
     		
@@ -650,7 +619,7 @@ public class SSHSessionImpl implements SSHSession {
 
         List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
 
-        String cmdline = "whereis python; conda env list";
+        String cmdline = "source ~/.bashrc; whereis python; conda env list";
         
         log.info(cmdline);
     
