@@ -427,21 +427,18 @@ GW.user = {
     
                 if(msg.status=="success"){
     
-                    // GW.user.refreshthetopbar(null, null, false);
+                    GW.user.refreshthetopbar(null, null, false);
 
-                    // GW.menu.refresh();
+                    GW.menu.refresh();
     
                     GW.user.current_username = null;
     
                     GW.user.current_userid = null;
 
-                    GW.main.quiteExit();
-
-                    // $(window).unbind('beforeunload');
+                    // GW.main.quiteExit(); //this seems even impossible
 
                     location.reload();
                     
-    
                 }else{
     
                     console.log("Fail to logout");
