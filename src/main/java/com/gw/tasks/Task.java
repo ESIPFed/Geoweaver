@@ -1,6 +1,5 @@
 package com.gw.tasks;
 
-import java.util.Observable;
 
 import javax.websocket.Session;
 
@@ -12,7 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
  *@time Aug 10, 2015 4:04:57 PM
  *Original aim is to support Geoweaver.
  */
-public abstract class Task extends Observable{
+public abstract class Task{
 	/**
 	 * Set up a task
 	 */

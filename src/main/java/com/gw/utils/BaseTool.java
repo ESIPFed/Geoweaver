@@ -52,8 +52,6 @@ import org.springframework.stereotype.Service;
 /**
  *Class BaseTool.java
  *@author ziheng
- *@time Aug 6, 2015 2:49:10 PM
- *Original aim is to support iGFDS.
  */
 @Service
 public class BaseTool {
@@ -74,6 +72,15 @@ public class BaseTool {
 	public BaseTool() {
 		
 		
+	}
+
+	public String testResourceFiles(){
+
+		Path resourceDirectory = Paths.get("src","test","resources");
+		String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+
+		logger.debug(absolutePath);
+		return absolutePath;
 	}
 
 	public String getBody(HttpServletRequest req) {

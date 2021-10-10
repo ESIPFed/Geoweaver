@@ -8,8 +8,6 @@ package com.gw.utils;
 /**
  * Class SOAPClient
  * @author ziheng
- * @createtime 5:34:14 PM Jul 18, 2014
- * aim to support igfds
  */
 public class SOAPClient {
 	

@@ -12,8 +12,6 @@ import com.gw.utils.RandomString;
 /**
  *Class Worker.java
  *@author ziheng
- *@time Aug 10, 2015 4:02:19 PM
- *Original aim is to support iGFDS.
  */
 @Service
 public class Worker extends Thread{

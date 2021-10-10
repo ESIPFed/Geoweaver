@@ -416,7 +416,7 @@ public class RemotehostTool {
 			//package all the python files into a tar
 			String packagefile = packageAllPython(token);
 			
-			if(basedir!=null) {
+			if(basedir!=null && !"~".equals(basedir)) {
 				
 				ft.scp_upload(hid, pswd, packagefile, basedir, true);
 				
