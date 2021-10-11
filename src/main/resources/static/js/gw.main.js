@@ -117,3 +117,38 @@ GW.main = {
 };
 
 GW.main.init();
+
+function switchTab(ele, name){
+	    		
+	console.log("Turn on the tab " + name)
+	  
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+	  tabcontent[i].style.display = "none";
+	}
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+	  tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	document.getElementById(name).style.display = "block";
+	ele.className += " active";
+
+	if(name=="main-dashboard"){
+
+	  GW.board.refresh();
+
+	}
+	  
+  }
+  
+  function openCity(evt, name) {
+	switchTab(evt.currentTarget, name);
+  }
+  
+  $(document).ready(function(){
+	  console.log("trigger click event");
+	  //$("main-content-tab").trigger("click")
+	  switchTab(document.getElementById("main-general-tab"), "main-general");
+	  
+  });

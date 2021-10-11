@@ -312,15 +312,15 @@ GW.process = {
 		
 		showJupyter: function(code, cmid){
 			
-			var cont = '<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>'+
-				'<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> '+
-                '<div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />'+
-				'</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3"> '+
-		        '  <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> '+
-		        '  <div class="input-group-append"> '+
-		        '    <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button> '+
-		        '  </div> '+
-		        '</div></div></div> <div id="jupyter_area"></div>';
+			var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>
+				<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> 
+                <div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />
+				</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3">
+		          <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
+		          <div class="input-group-append"> 
+		            <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
+		          </div>
+		        </div></div></div> <div id="jupyter_area"></div>`;
 			
 			$("#codearea-"+cmid).append(cont);
 			
@@ -338,8 +338,8 @@ GW.process = {
 		
 		showBuiltinProcess: function(code, cmid){
 			
-			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-			'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-'+cmid+'">';
+			var cont = `     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>
+			     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-` + cmid + `">`;
 			
 			for(var i=0;i<GW.process.builtin_processes.length;i++){
 				
@@ -352,11 +352,11 @@ GW.process = {
 		   	
 		   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
 				
-				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-				GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
-				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-				GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
-				cont += '</div>';
+				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
+					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
+					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
+					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
+					cont += '</div>';
 				
 			}
 			
@@ -1251,9 +1251,6 @@ GW.process = {
 
 			switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 
-			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
-			
-//			switchTab(document.getElementById("main-process-tab"), "main-process-info");
 			GW.general.switchTab("process");
 			
 			$("#processcategory").val(code_type);
@@ -1262,11 +1259,7 @@ GW.process = {
 			
 			$("#processid").val(process_id);
 			
-//			console.log("The detected code language is : ", lang);
-			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
-			
-			// GW.process.editSwitch(true);
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
@@ -1276,16 +1269,6 @@ GW.process = {
 
 				GW.process.showSaved();
 
-				// GW.process.displayCodeArea(process_id, process_name, code_type,  code);
-				
-				// if($("#closeHistory")) $("#closeHistory").trigger( "click" );
-				
-				// if($("#closeLog")) $("#closeLog").trigger("click");
-				
-				// GW.process.editSwitch();
-
-				// GW.process.clearProcessLogging();
-				
 			});
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
