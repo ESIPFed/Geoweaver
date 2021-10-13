@@ -435,6 +435,8 @@ GW.user = {
     
                     GW.user.current_userid = null;
 
+                    $(window).off("beforeunload", GW.main.exitWarning);
+
                     // GW.main.quiteExit(); //this seems even impossible
 
                     location.reload();
