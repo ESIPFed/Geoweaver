@@ -978,21 +978,13 @@ GW.host = {
 				
 				var confidential = "FALSE"; //default is public
 
-				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+				var confidential_field_value = $('#host_dynamic_form input[name="confidential"]:checked').val()
+
+				if(typeof  confidential_field_value != "undefined"){
 					
-					confidential = $('input[name="confidential"]:checked').val()
+					confidential = confidential_field_value
 					
 				}
-				
-//				var req = "type=host&hostname="+$("#hostname").val() + 
-//	    		
-//		    		"&hostip=" + hostip +
-//		    		
-//		    		"&hostport=" + hostport + 
-//		    		
-//		    		"&hosttype=" + hosttype
-//		    		
-//		    		"&username=" + $("#username").val();
 				
 				var req = {
 					
@@ -1022,8 +1014,6 @@ GW.host = {
 		    		
 		    		method: "POST",
 
-					
-		    		
 		    		data: req
 		    		
 		    	}).done(function(msg){
@@ -1970,7 +1960,7 @@ GW.host = {
 				
 			}
 			
-			var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+			var content = '<div class="modal-body" id="newhostdialog" style=\"font-size: 12px;\">'+
 			   '<form>'+
 			   '   <div class="form-group row required">'+
 		       '     <label for="hosttype" class="col-sm-3 col-form-label control-label">Host Type </label>'+

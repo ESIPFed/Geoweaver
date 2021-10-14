@@ -247,6 +247,12 @@ GW.workspace = {
 				GW.workflow.loaded_workflow = null;
 
 			});
+
+			d3.select("#add-workflow").on("click", function(){
+
+				GW.workflow.newDialog(true);
+
+			});
     	    
     	    d3.select("#save-workflow").on("click", function(){
     	    	
