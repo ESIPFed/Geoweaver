@@ -237,7 +237,7 @@ public class CommandServlet {
     	
 		try {
 
-            printoutCallStack(); 
+            // printoutCallStack(); 
 
             // session.getBasicRemote().sendText("Warning: Websocket Channel is going to close");
 			

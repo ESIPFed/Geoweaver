@@ -119,25 +119,27 @@ public class ProcessTool {
 		
 		// Iterator<GWProcess> pit = processrepository.findAll().iterator();
 
-		Iterator<GWProcess> pit = processrepository.findAllPublicPrivateByOwner(owner).iterator();
+		Iterator<GWProcess> pit = processrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
-		
-		int num = 0;
 		
 		while(pit.hasNext()) {
 			
 			GWProcess p = pit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(p));
+			json.append(toJSON(p)).append(",");
 			
 		}
+
+		pit = processrepository.findAllPrivateByOwner(owner).iterator();
+
+		while(pit.hasNext()){
+
+			json.append(toJSON(pit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		

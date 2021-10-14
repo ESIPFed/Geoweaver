@@ -274,29 +274,27 @@ public class HostTool {
 	 */
 	public String list(String owner) {
 		
-//		List<Host> hostlist =  hostrepository.findByOwner(owner);
-		
-		// Iterator<Host> hostit = hostrepository.findAll().iterator();
-		
-		Iterator<Host> hostit = hostrepository.findAllPublicAndPrivateByOwner(owner).iterator();
-		
 		StringBuffer json = new StringBuffer("[");
 		
-		int num = 0;
+		Iterator<Host> hostit = hostrepository.findAllPublicHosts().iterator();
 		
 		while(hostit.hasNext()) {
 			
 			Host h = hostit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(h));
+			json.append(toJSON(h)).append(",");
 			
 		}
+
+		hostit = hostrepository.findPrivateByOwner(owner).iterator();
+
+		while(hostit.hasNext()){
+
+			json.append(toJSON(hostit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		

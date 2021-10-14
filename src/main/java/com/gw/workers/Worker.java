@@ -66,7 +66,7 @@ public class Worker extends Thread{
 
 	public void setTask(Task t) {
 
-		this.printoutCallStack();
+		// this.printoutCallStack();
 		
 		this.t = t;
 		

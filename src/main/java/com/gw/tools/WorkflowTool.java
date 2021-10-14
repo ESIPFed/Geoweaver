@@ -116,9 +116,13 @@ public class WorkflowTool {
 
 	public List<Workflow> getWorkflowListByOwner(String ownerid){
 
-		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(ownerid).iterator();
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 
 		List<Workflow> actualList = new ArrayList<Workflow>();
+
+		wit.forEachRemaining(actualList::add);
+
+		wit = workflowrepository.findAllPrivateByOwner(ownerid).iterator();
 
 		wit.forEachRemaining(actualList::add);
 
@@ -130,25 +134,27 @@ public class WorkflowTool {
 		
 		// Iterator<Workflow> wit = workflowrepository.findAll().iterator();
 		
-		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(owner).iterator();
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
-		
-		int num = 0;
 		
 		while(wit.hasNext()) {
 			
 			Workflow w = wit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(w));
+			json.append(toJSON(w)).append(",");
 			
 		}
+
+		wit = workflowrepository.findAllPrivateByOwner(owner).iterator();
+
+		while(wit.hasNext()){
+
+			json.append(toJSON(wit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		

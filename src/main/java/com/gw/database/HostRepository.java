@@ -23,9 +23,13 @@ public interface HostRepository extends CrudRepository<Host, String>{
 		nativeQuery = true)
 	Collection<Host> findSSHHosts();
 
-	@Query(value="select * from HOST where owner in ('111111', ?1 )",
+	@Query(value="select * from HOST where owner  = ?1 ",
 		nativeQuery = true)
 	Collection<Host> findAllPublicAndPrivateByOwner(String owner);
+
+	@Query(value="select * from HOST where owner  = ?1 and confidential = 'TRUE'",
+		nativeQuery = true)
+	Collection<Host> findPrivateByOwner(String owner);
 
 	@Query(value="select * from HOST where confidential = 'FALSE' ",
 		nativeQuery = true)
