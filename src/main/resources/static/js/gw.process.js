@@ -1215,7 +1215,6 @@ GW.process = {
 			content += "<div class=\"tab\" data-intro=\"this is a tab inside the process tab panel\">"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
-        	
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
@@ -1223,8 +1222,11 @@ GW.process = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
-				"				<div class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
-				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
+				"					<h4 class=\"border-bottom\">Code "+
+				'							<label class="pull-right text-primary" for="log_switch">Log</label>'+
+				'							<input type="checkbox" class="pull-right" checked id="log_switch">'+
+				" 					<button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
@@ -1270,6 +1272,18 @@ GW.process = {
 				GW.process.showSaved();
 
 			});
+
+			$("#log_switch").change(function(){
+				if(!this.checked){
+					$("#single-console-content").hide()
+					$("#process_code_window").removeClass("col-md-6");
+					$("#process_code_window").addClass("col-md-12");
+				}else{
+					$("#single-console-content").show()
+					$("#process_code_window").removeClass("col-md-12");
+					$("#process_code_window").addClass("col-md-6");
+				}
+			})
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
 			
