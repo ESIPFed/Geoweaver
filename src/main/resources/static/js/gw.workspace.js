@@ -250,7 +250,16 @@ GW.workspace = {
 
 			d3.select("#add-workflow").on("click", function(){
 
-				GW.workflow.newDialog(true);
+				if(GW.workflow.loaded_workflow != null){
+
+					if(!confirm("This is an existing workflow. Do you want to create a new one?")){
+
+						return;
+						
+					}
+
+				}
+				GW.workflow.newDialog(false);
 
 			});
     	    
