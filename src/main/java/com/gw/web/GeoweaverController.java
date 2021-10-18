@@ -555,6 +555,31 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/listhostwithenvironments", method = RequestMethod.POST)
+    public @ResponseBody String listhostwithenvironments(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
+		
+		String resp = null;
+		
+		try {
+			
+			String ownerid = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
+			
+			resp = ht.list(ownerid);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+//			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
     public @ResponseBody String list(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
@@ -831,11 +856,13 @@ public class GeoweaverController {
 			String[] hosts = request.getParameterValues("hosts[]");
 			
 			String[] encrypted_password = request.getParameterValues("passwords[]");
+
+			String[] environments = request.getParameterValues("envs[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			 
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
-			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
+			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
 			
 		}catch(Exception e) {
 			

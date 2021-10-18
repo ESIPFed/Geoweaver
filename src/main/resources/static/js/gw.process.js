@@ -1224,10 +1224,10 @@ GW.process = {
 				// "			<div class=\"row\">"+
 				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
 				"					<h4 class=\"border-bottom\">Code "+
-				'							<label class="pull-right text-primary" for="log_switch">Log</label>'+
-				'							<input type="checkbox" class="pull-right" checked id="log_switch">'+
+				'							<label class="pull-right text-primary" style="margin-left:5px;" for="log_switch">Log</label>&nbsp;'+
+				'							<input type="checkbox" class="pull-right" style="margin-left:5px;" checked id="log_switch">&nbsp;'+
 				" 					<button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
 				"					<h4 style=\"color:black\">Logging <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"clearProcessLog\">Clear</button></h4> "+
@@ -2244,82 +2244,82 @@ GW.process = {
 				
 				GW.process.host_frame = GW.process.createJSFrameDialog(550, 280, content, 'Select a host')
 				
-			    	$.ajax({
-	            		
-	            		url: "list",
-	            		
-	            		method: "POST",
-	            		
-	            		data: "type=host"
-	            		
-	            	}).done(function(msg){
-	            		
-	            		msg = GW.general.parseResponse(msg);
-	            		
-	            		$("#hostselector").find('option').remove().end();
-	            		
-	            		for(var i=0;i<msg.length;i++){
-	            			
-							if(msg[i].type=="ssh"){
+				$.ajax({
+					
+					url: "list",
+					
+					method: "POST",
+					
+					data: "type=host"
+					
+				}).done(function(msg){
+					
+					msg = GW.general.parseResponse(msg);
+					
+					$("#hostselector").find('option').remove().end();
+					
+					for(var i=0;i<msg.length;i++){
+						
+						if(msg[i].type=="ssh"){
 
-								if(GW.host.isLocal(msg[i])){
-	            				
-									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-											"\" selected=\"selected\">"+msg[i].name+"</option>");
-									
-								}else{
-									
-									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-											"\" >"+msg[i].name+"</option>");
-									
-								}
-
+							if(GW.host.isLocal(msg[i])){
+							
+								$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+										"\" selected=\"selected\">"+msg[i].name+"</option>"); // default select localhost
+								
+							}else{
+								
+								$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+										"\" >"+msg[i].name+"</option>");
+								
 							}
-	            			
-	            			
-	            		}
-	            		
-	            	}).fail(function(jxr, status){
-	    				
-	    				console.error("fail to list host");
-	    				
-	    			});
-			    	
-			    	$("#host-execute-btn").click(function(){
-			    		
-			    		var hostid = $("#hostselector").children(":selected").attr("id");
-			    		
-			    		var hostip = $("#hostselector").children(":selected").attr("value");
-			    		
-			    		console.log("host ip: " + hostip);
-	                	
-	                	console.log("selected host: " + hostid);
-	                	
-	                	if(hostip=="127.0.0.1"){
-	                		
-	                		GW.host.local_hid = hostid;
-	                		
-	                	}
-	                	
-	                	//remember the process-host connection
-	                	
-	                	if(document.getElementById('remember').checked) {
-	                	    
-	                		GW.process.setCache(pid, hostid); //remember s
-	                		
-	                	}
-	                	
-	                	GW.process.executeProcess(pid, hostid, lang);
-	                	
-	                	GW.process.host_frame.closeFrame();
-			    		
-			    	});
-			    	
-			    	$("#host-cancel-btn").click(function(){
-			    		
-			    		GW.process.host_frame.closeFrame();
-			    		
-			    	});
+
+						}
+						
+						
+					}
+					
+				}).fail(function(jxr, status){
+					
+					console.error("fail to list host");
+					
+				});
+				
+				$("#host-execute-btn").click(function(){
+					
+					var hostid = $("#hostselector").children(":selected").attr("id");
+					
+					var hostip = $("#hostselector").children(":selected").attr("value");
+					
+					console.log("host ip: " + hostip);
+					
+					console.log("selected host: " + hostid);
+					
+					if(hostip=="127.0.0.1"){
+						
+						GW.host.local_hid = hostid;
+						
+					}
+					
+					//remember the process-host connection
+					
+					if(document.getElementById('remember').checked) {
+						
+						GW.process.setCache(pid, hostid); //remember s
+						
+					}
+					
+					GW.process.executeProcess(pid, hostid, lang);
+					
+					GW.process.host_frame.closeFrame();
+					
+				});
+				
+				$("#host-cancel-btn").click(function(){
+					
+					GW.process.host_frame.closeFrame();
+					
+				});
 				
 			}else{
 				

@@ -457,7 +457,7 @@ public class LocalSessionWinImpl implements LocalSession {
 				env.setId(new RandomString(6).nextString());
 				env.setBin(line);
 				env.setName(line);
-				env.setHost(hostid);
+				env.setHostobj(ht.getHostById(hostid));
 				// env.setBasedir(line); //the execution place which is unknown at this point
 				if(line.contains("conda"))
 					env.setPyenv("anaconda");
@@ -512,7 +512,8 @@ public class LocalSessionWinImpl implements LocalSession {
 						env.setId(new RandomString(6).nextString());
 						env.setBin(bin);
 						env.setName(name);
-						env.setHost(hostid);
+						// env.setHost(hostid);
+						env.setHostobj(ht.getHostById(hostid));
 						// env.setBasedir(line); //the execution place which is unknown at this point
 						env.setPyenv("anaconda");
 						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml

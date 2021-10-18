@@ -244,8 +244,6 @@ GW.workspace = {
 
 				thisGraph.deleteGraph(false);
 
-				GW.workflow.loaded_workflow = null;
-
 			});
 
 			d3.select("#add-workflow").on("click", function(){
@@ -255,7 +253,7 @@ GW.workspace = {
 					if(!confirm("This is an existing workflow. Do you want to create a new one?")){
 
 						return;
-						
+
 					}
 
 				}
@@ -489,6 +487,8 @@ GW.workspace = {
 							thisGraph.edges = [];
 							thisGraph.updateGraph();
 							GW.workflow.setCurrentWorkflowName("");
+							GW.workflow.loaded_workflow = null;
+							
 						}
 						
 					}else{

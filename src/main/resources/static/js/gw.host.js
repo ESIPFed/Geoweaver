@@ -7,6 +7,8 @@ GW.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy", "env": {"bin":"python3", "pyenv": "cdl"}}],
 		
+		host_environment_list_cache: null,
+
 		password_frame: null,
 		
 		ssh_password_frame: null,
@@ -16,10 +18,13 @@ GW.host = {
 		local_hid: null,
 		
 		editOn: false,
+
 		
 		clearCache: function(){
 			
 			this.cred_cache = [];
+
+			this.host_environment_list_cache = [];
 			
 		},
 
@@ -291,10 +296,14 @@ GW.host = {
                 }
                 
                 var ids = GW.host.turnHosts2Ids(hosts);
+
+				var envs = GW.host.turnHosts2EnvIds(hosts);
                 
                 req.hosts = ids;
                 
                 req.passwords = encrypt_passwds;
+
+				req.envs = envs;
                 
                 business_callback(req, dialogItself, button);
                 
@@ -409,6 +418,20 @@ GW.host = {
 			for(var i=0; i<hosts.length; i++){
 				
 				ids.push(hosts[i].id);
+				
+			}
+			
+			return ids;
+			
+		},
+
+		turnHosts2EnvIds: function(hosts){
+			
+			var ids = [];
+			
+			for(var i=0; i<hosts.length; i++){
+				
+				ids.push(hosts[i].env);
 				
 			}
 			
@@ -768,12 +791,12 @@ GW.host = {
 			});
 			
 		},
-		
-		refreshHostList: function(){
-			
+
+		refreshHostListForExecution:function(){
+
 			$.ajax({
         		
-        		url: "list",
+        		url: "listhostwithenvironments",
         		
         		method: "POST",
         		
@@ -782,10 +805,11 @@ GW.host = {
         	}).done(function(msg){
         		
         		msg = $.parseJSON(msg);
+
+				GW.host.host_environment_list_cache = msg;
         		
         		console.log("Start to refresh the host list..");
         		
-        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
         		$("#host_folder_ssh_target").html("");
         		$("#host_folder_jupyter_target").html("");
         		$("#host_folder_jupyterhub_target").html("");
@@ -805,8 +829,121 @@ GW.host = {
 						}
             			
             		}
+
+					//show the environment of the first host
+					if($(".environmentselector")){
+
+						$(".environmentselector").append('<option id="default_option">default</option>');
+
+						var envs = msg[0].envs
+
+						for(var i=0;i<envs.length;i++){
+
+							$(".environmentselector").append("<option id=\""+envs[i].id+"\">"+envs[i].name+"</option>");
+
+						}
+
+					}
+
+					$(".hostselector").change(function(){
+
+						//get the corresponding environmentselector
+						// var corenvelelist = $(this).closest('div').next().find('.environmentselector');
+						var hostselectid = $(this).attr("id");
+
+						var envselectid = "environmentforprocess_" + hostselectid.split("_")[1];
+
+						//change the environment selector options
+						var envselect  = $("#" + envselectid);
+
+						var selectedhostid = $(this).children("option:selected").attr("id");
+
+						envselect.empty().append('<option id="default_option">default</option>');
+
+						//add new options to the environment selector
+						var theenv = GW.host.findEnvironmentByHostId(selectedhostid);
+
+						if(theenv != null){
+
+							for(var i=0;i<theenv.length;i++){
+
+								envselect.append("<option id=\""+theenv[i].id+"\">"+theenv[i].name+"</option>");
+	
+							}
+						
+						}
+
+					});
         			
         		}
+        		
+        	}).fail(function(jxr, status){
+				
+				console.error("fail to list host");
+				
+			});
+
+		},
+
+		findEnvironmentByHostId: function(hostid){
+
+			var theenv = null;
+
+			if(GW.host.host_environment_list_cache!=null){
+
+				for(var i=0;i<GW.host.host_environment_list_cache.length; i++){
+					var value = GW.host.host_environment_list_cache[i];
+					if(hostid == value.id){
+						theenv = value.envs;
+						break;
+					}
+
+				}
+
+			}
+			
+			return theenv;
+
+		},
+		
+		//refresh host list for the menu
+		refreshHostList: function(){
+			
+			$.ajax({
+        		
+        		url: "list",
+        		
+        		method: "POST",
+        		
+        		data: "type=host"
+        		
+        	}).done(function(msg){
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		console.log("Start to refresh the host list..");
+        		
+        		$("#host_folder_ssh_target").html("");
+        		$("#host_folder_jupyter_target").html("");
+        		$("#host_folder_jupyterhub_target").html("");
+        		$("#host_folder_gee_target").html("");
+        		
+        		GW.host.list(msg);
+        		
+        		// if($(".hostselector")) {
+
+            	// 	for(var i=0;i<msg.length;i++){
+            			
+				// 		//right now only SSH host can run processes
+            	// 		if(msg[i].type == "ssh"){
+
+				// 			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+
+				// 		}
+            			
+            	// 	}
+        			
+        		// }
         		
         	}).fail(function(jxr, status){
 				

@@ -267,6 +267,23 @@ public class HostTool {
 		
 	}
 	
+	// public String listWithEnvironments(String owner){
+
+	// 	Iterator<Host> hostit = hostrepository.findAllPublicHosts().iterator();
+		
+	// 	List<Host> hostlist = new ArrayList();
+
+	// 	hostit.forEachRemaining(hostlist::add);
+
+	// 	hostit = hostrepository.findPrivateByOwner(owner).iterator();
+
+	// 	hostit.forEachRemaining(hostlist::add);
+
+		
+		
+		
+	// }
+
 	/**
 	 * 
 	 * @return
@@ -275,24 +292,18 @@ public class HostTool {
 	public String list(String owner) {
 		
 		StringBuffer json = new StringBuffer("[");
+
+		List<Host> hostlist = new ArrayList();
 		
 		Iterator<Host> hostit = hostrepository.findAllPublicHosts().iterator();
-		
-		while(hostit.hasNext()) {
-			
-			Host h = hostit.next();
-			
-			json.append(toJSON(h)).append(",");
-			
-		}
 
+		hostit.forEachRemaining(hostlist::add);
+		
 		hostit = hostrepository.findPrivateByOwner(owner).iterator();
 
-		while(hostit.hasNext()){
+		hostit.forEachRemaining(hostlist::add);
 
-			json.append(toJSON(hostit.next())).append(",");
-
-		}
+		hostlist.forEach((host)->{json.append(toJSON(host)).append(",");});
 
 		json.deleteCharAt(json.length() - 1);
 		
@@ -407,7 +418,8 @@ public class HostTool {
 					
 					newenv.setSettings(settings);
 					
-					newenv.setHost(hostid);
+					// newenv.setHost(hostid);
+					newenv.setHostobj(this.getHostById(hostid));
 					
 					environmentrepository.save(newenv);
 					
@@ -672,7 +684,8 @@ public class HostTool {
 			env.setId(new RandomString(6).nextString());
 			env.setBin(pypath);
 			env.setName(name);
-			env.setHost(hostid);
+			// env.setHost(hostid);
+			env.setHostobj(this.getHostById(hostid));
 			// env.setBasedir(line); //the execution place which is unknown at this point
 			if(pypath.contains("conda"))
 				env.setPyenv("anaconda");

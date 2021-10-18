@@ -7,10 +7,13 @@ import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.gw.database.EnvironmentRepository;
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.server.WorkflowServlet;
+import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.ProcessTool;
 import com.gw.tools.WorkflowTool;
@@ -45,6 +48,10 @@ public class GeoweaverWorkflowTask{
 	WorkflowTool wt;
 
 	@Autowired
+	EnvironmentTool et;
+
+
+	@Autowired
 	TaskManager tm;
 	
 	String name;
@@ -54,6 +61,8 @@ public class GeoweaverWorkflowTask{
 	String[] hosts;
 	
 	String[] pswds;
+
+	String[] envs;
 	
 	String token;
 	
@@ -100,7 +109,7 @@ public class GeoweaverWorkflowTask{
 	}
 	
 	
-	public void initialize(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
+	public void initialize(String history_id, String wid, String mode, String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		this.history_id = history_id;
 
@@ -111,6 +120,8 @@ public class GeoweaverWorkflowTask{
 		this.hosts = hosts;
 		
 		this.pswds = pswds;
+
+		this.envs = envs;
 		
 		this.token = token;
 		
@@ -173,12 +184,7 @@ public class GeoweaverWorkflowTask{
 
 	public void refreshMonitor(){
 
-		// if(bt.isNull(monitor)){
-
 		monitor = WorkflowServlet.findSessionByToken(token); 
-			
-		// }
-		
 
 	}
 	
@@ -331,6 +337,8 @@ public class GeoweaverWorkflowTask{
 				String hid = mode.equals("one")?hosts[0]:hosts[num];
 				
 				String password = mode.equals("one")?pswds[0]:pswds[num];
+
+				String envid = mode.equals("one")?envs[0]:envs[num];
 				
 				//nodes
 //				[{"title":"download-landsat","id":"nhi96d-7VZhh","x":119,"y":279},{"title":"filter_cloud","id":"rh1u8q-4sCmg","x":286,"y":148},{"title":"filter_shadow","id":"rpnhlg-JZfyQ","x":455,"y":282},{"title":"match_cdl_landsat","id":"omop8l-1p5x1","x":624,"y":152}]
@@ -342,8 +350,13 @@ public class GeoweaverWorkflowTask{
 
 					GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
 
-					new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
-
+					Environment env = et.getEnvironmentById(envid);
+					if(bt.isNull(env)){
+						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
+					}else{
+						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id); //what is token?
+					}
+					
 					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
 
 					new_task.setWorkflowHistoryId(this.history_id);
