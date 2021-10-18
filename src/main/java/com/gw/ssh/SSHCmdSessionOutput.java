@@ -157,16 +157,6 @@ public class SSHCmdSessionOutput  implements Runnable {
 						
 					}
 					
-				}else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-					
-//                	session.saveHistory(logs.toString()); //complete the record
-					
-					// this.updateStatus(logs.toString(), "Done");
-					
-					// sendMessage2WebSocket("The process "+this.history_id+" is finished.");
-					
-					// break;
-					
 				}
 				
 				log.info("command thread output >> " + line);
@@ -183,9 +173,6 @@ public class SSHCmdSessionOutput  implements Runnable {
 						
 					}
 					
-					log.debug("wsout message {}:{}", wsout.getId(), line);
-					
-//                    out.sendMessage(new TextMessage(line));
 					sendMessage2WebSocket(line);
 					
 				}else {
