@@ -629,6 +629,7 @@ public class SSHSessionImpl implements SSHSession {
 
         System.out.println(output);
         //An Example:
+        //  ## there might be some error messages here because of the source ~/.bashrc
         //  python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python2.7 /usr/lib/python3.8 /usr/lib/python3.6 /usr/lib/python3.7 /etc/python2.7 /etc/python /etc/python3.6 /usr/local/lib/python3.6 /usr/include/python3.6m /usr/share/python
         //  bash: conda: command not found
         //  # conda environments:
@@ -638,32 +639,40 @@ public class SSHSessionImpl implements SSHSession {
         //  base                  *  /root/anaconda3
 
         String[] lines = output.split("\n");
-
+        int nextlineindex = 1;
         //Parse "whereis python"
-        if(lines[0].startsWith("python")){
+        for(int i=0; i<lines.length; i++){
 
-            String pythonarraystr = lines[0].substring(8);
+            if(lines[i].startsWith("python")){
 
-            String[] pythonarray = pythonarraystr.split(" ");
-
-            for(String pypath : pythonarray){
-
-                if(!bt.isNull(pypath)){
-
-                    pypath = pypath.trim();
-
-                    ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
-
+                String pythonarraystr = lines[i].substring(8);
+    
+                String[] pythonarray = pythonarraystr.split(" ");
+    
+                for(String pypath : pythonarray){
+    
+                    if(!bt.isNull(pypath)){
+    
+                        pypath = pypath.trim();
+    
+                        ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+    
+                    }
+    
                 }
 
-            }
+                nextlineindex = i+1;
 
+                break;
+    
+            }
         }
+        
 
         //parse Conda results
-        if(!bt.isNull(lines[1]) && lines[1].startsWith("#")){ //pass if conda is not found
+        if(!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")){ //pass if conda is not found
 
-            for(int i=2; i<lines.length; i++){
+            for(int i=nextlineindex+1; i<lines.length; i++){
 
                 if(!lines[i].startsWith("#")){ //pass comments
 

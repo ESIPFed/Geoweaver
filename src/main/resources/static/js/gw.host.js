@@ -1470,7 +1470,7 @@ GW.host = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null, hostip = null, hosttype = null, confidential = null, owner = null;
+			var hostid = null, hostip = null, hosttype = null, confidential = null, owner = null, envs = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -1507,6 +1507,11 @@ GW.host = {
 					}else if(i=="owner"){
 
 						owner = val;
+						return;
+
+					}else if(i=="envs"){
+
+						envs = val;
 						return;
 
 					}
