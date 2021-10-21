@@ -641,7 +641,8 @@ GW.process = {
 			
 			// create an interactive chart to show all the data
 			
-			content ="<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
+			content = 
+			// "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
 			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
 			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
 			"</div>" + content ;
@@ -1208,7 +1209,14 @@ GW.process = {
 			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
-		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+
+		       '	     <div class="col-md-6" style="padding:0;" >'+
+			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
+			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
+			   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
+			   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
+			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
+			   '			</p>'+
+			   '		 </div>'+
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
@@ -1218,19 +1226,18 @@ GW.process = {
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 0; border: 1px solid gray;\">";
 			
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
-				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
-				"					<h4 class=\"border-bottom\">Code "+
-				'							<label class="pull-right text-primary" style="margin-left:5px;" for="log_switch">Log</label>&nbsp;'+
-				'							<input type="checkbox" class="pull-right" style="margin-left:5px;" checked id="log_switch">&nbsp;'+
-				" 					<button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
+				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;\" >"+
+				// "					<h4 class=\"border-bottom\">Code"+
+				// "					</h4> "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
-				"					<h4 style=\"color:black\">Logging <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"clearProcessLog\">Clear</button></h4> "+
+				"					<h4 style=\"color:black\">Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
