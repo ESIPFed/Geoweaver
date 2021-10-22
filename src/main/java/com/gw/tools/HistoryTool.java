@@ -89,6 +89,18 @@ public class HistoryTool {
 		return history;
 		
 	}
+
+	public String getWorkflowProcessHistory(String workflowhistoryid, String processid){
+
+		History h = this.getHistoryById(workflowhistoryid);
+
+		h.getHistory_input();
+		h.getHistory_output();
+
+
+		return this.toJSON(h);
+
+	}
 	
 	public History getHistoryById(String hid) {
 		

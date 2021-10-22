@@ -1022,14 +1022,8 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = '").append(hid).append("' and history.process=process_type.id;");
-		
-//		logger.info(sql.toString());
-		
 		try {
 			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-
 			History hist = historyrepository.findById(hid).get();
 
 			if(!bt.isNull(hist)) {
@@ -1085,10 +1079,6 @@ public class ProcessTool {
 		StringBuffer resp = new StringBuffer();
 		
 		List<Object[]> active_processes = historyrepository.findRunningProcess();
-		
-//		StringBuffer sql = new StringBuffer("select * from history where indicator='Running'  ORDER BY begin_time DESC;");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
 		try {
 			

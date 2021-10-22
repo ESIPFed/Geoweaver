@@ -14,6 +14,7 @@ GW.workflow = {
 
 	current_token:null,
 
+	history_id: null,
 	
 	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
 	
@@ -452,6 +453,8 @@ GW.workflow = {
 			msg = $.parseJSON(msg);
 			
 			GW.workflow.loaded_workflow = msg.id;
+
+			
 			
 			GW.workspace.theGraph.load(msg);
 			
@@ -745,6 +748,8 @@ GW.workflow = {
 	execute_callback: function(req, dialogItself, button){
 
 		var history_id = GW.general.makeid(18);
+
+		GW.workflow.history_id = history_id;
 
 		req.history_id = history_id;
 		

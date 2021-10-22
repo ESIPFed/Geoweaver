@@ -429,6 +429,31 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/workflow_process_log", method = RequestMethod.POST)
+    public @ResponseBody String workflow_process_log(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String workflowhistoryid = request.getParameter("workflowhistoryid");
+			
+			String processid = request.getParameter("processid");
+			
+			resp = hist.getWorkflowProcessHistory(workflowhistoryid, processid);
+
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
     public @ResponseBody String stop(ModelMap model, WebRequest request){
@@ -571,8 +596,6 @@ public class GeoweaverController {
 			
 			e.printStackTrace();
 			
-//			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
 			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
 		}
@@ -609,8 +632,6 @@ public class GeoweaverController {
 		}catch(Exception e) {
 			
 			e.printStackTrace();
-			
-//			throw new RuntimeException("failed " + e.getLocalizedMessage());
 			
 			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
@@ -737,8 +758,6 @@ public class GeoweaverController {
 		ResponseEntity<Resource> resp = null;
 		
 		try {
-			
-//			http://localhost:8070/download/temp/115336065-smiling-boy-on-a-toy-swing-on-a-playground-in-a-park-black-and-white-vector-illustration-in-a-cartoo.jpg
 			
 			if(tempfolder.equals(upload_file_path)) {
 				
