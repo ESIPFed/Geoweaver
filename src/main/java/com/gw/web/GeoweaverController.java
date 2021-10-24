@@ -27,14 +27,16 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.MasterRequestObject;
+import com.gw.tools.EnvironmentTool;
 import com.gw.utils.RandomString;
 import com.gw.tools.UserTool;
+import com.gw.tools.ExecutionTool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.query.Param;
@@ -65,7 +67,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Controller 
-@RequestMapping(value="/web")     
+@RequestMapping(value="/web")
 //@SessionAttributes({"SSHToken"})
 //@RequestMapping("/Geoweaver/web")
 public class GeoweaverController {
@@ -95,6 +97,12 @@ public class GeoweaverController {
 
 	@Autowired
 	DashboardTool dbt;
+
+	@Autowired
+	EnvironmentTool et;
+
+	@Autowired
+	ExecutionTool ext;
 	
 	@Autowired
 	SSHSession sshSession;
@@ -567,7 +575,7 @@ public class GeoweaverController {
 			
 			String hid = request.getParameter("hid");
 			
-			resp = ht.getEnvironments(hid);
+			resp = et.getEnvironments(hid);
 			
 		}catch(Exception e) {
 			
@@ -838,7 +846,7 @@ public class GeoweaverController {
 
 			password = RSAEncryptTool.getPassword(password, session.getId());
 
-			resp = ht.readEnvironment(hid, password);
+			resp = ext.readEnvironment(hid, password);
 
 		}catch(Exception e){
 
@@ -999,7 +1007,7 @@ public class GeoweaverController {
 
 			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
-			resp = pt.execute(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
+			resp = ext.executeProcess(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			

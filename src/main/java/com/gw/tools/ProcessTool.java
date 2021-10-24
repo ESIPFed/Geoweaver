@@ -25,9 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class ProcessTool {
 	
 	Logger logger = LoggerFactory.getLogger(ProcessTool.class);
@@ -42,22 +45,8 @@ public class ProcessTool {
 	HistoryRepository historyrepository;
 	
 	@Autowired
-	HostTool ht;
-	
-	@Autowired
-	LocalhostTool lt;
-	
-	@Autowired
-	RemotehostTool rt;
-	
-	@Autowired
 	BaseTool bt;
 
-	@Autowired
-	GeoweaverProcessTask process_task;
-
-	@Autowired
-	TaskManager tm;
 	
 	@Value("${geoweaver.workspace}")
 	String workspace;
@@ -315,28 +304,7 @@ public class ProcessTool {
 		
 	}
 
-	/**
-	 * Escape the code text
-	 * @param code
-	 * @return
-	 */
-	public String escape(String code) {
-		
-		String resp = null;
-		
-		if(!bt.isNull(code)) {
-
-			// resp = code.replaceAll("\\\\", "\\\\\\\\")
-			// 		.replaceAll("\"", "\\\\\"")
-			// 		.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
-			// 		.replaceAll("	", "\\\\t");
-			resp = StringEscapeUtils.escapeJson(code);
-			
-		}
-			
-		return resp;
-		
-	}
+	
 	
 	public String unescape(String code) {
 		
@@ -452,7 +420,7 @@ public class ProcessTool {
 		
 		p.setDescription(lang);
 		
-		p.setCode(escape(code));
+		p.setCode(bt.escape(code));
 		
 		processrepository.save(p);
 		
@@ -517,7 +485,7 @@ public class ProcessTool {
 		
 		GWProcess p = new GWProcess();
 		
-		p.setCode(this.escape(code));
+		p.setCode(bt.escape(code));
 		
 		p.setDescription(desc);
 		
@@ -831,113 +799,8 @@ public class ProcessTool {
 		
 	}
 
-	/**
-	 * Execute the process using workers
-	 * This should be the method called by the controller
-	 * @param id
-	 * @param hid
-	 * @param pswd
-	 * @param httpsessionid
-	 * @param isjoin
-	 * @param bin
-	 * @param pyenv
-	 * @param basedir
-	 * @return
-	 */
-	public String executeByWorker(String history_id, String id, String hid, String pswd, String httpsessionid, 
-			boolean isjoin, String bin, String pyenv, String basedir) {
-
-			process_task.initialize(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir,null);
-			tm.addANewTask(process_task);
-
-			return null;
 	
-	}
 	
-	/**
-	 * Execute the process directly
-	 * This method should be only called by a worker
-	 * @param id
-	 * @param hid
-	 * @param pswd
-	 * @param httpsessionid
-	 * @param isjoin
-	 * @param bin
-	 * @param pyenv
-	 * @param basedir
-	 * @return
-	 */
-	public String execute(String history_id, String id, String hid, String pswd, String httpsessionid, 
-			boolean isjoin, String bin, String pyenv, String basedir) {
-
-		
-		String category = getTypeById(id);
-		
-		logger.debug("this process is : " + category);
-		
-		String resp = null;
-
-		if(bt.isNull(basedir)) basedir = "~";
-		
-		if(ht.islocal(hid)) {
-			
-			//localhost
-			if("shell".equals(category)) {
-				
-				resp = lt.executeShell(history_id, id, hid, pswd, httpsessionid, isjoin);
-				
-			}else if("builtin".equals(category)) {
-				
-				resp = lt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
-				
-			}else if("jupyter".equals(category)){
-				
-				resp = lt.executeJupyterProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
-				
-			}else if("python".equals(category)) {
-				
-				resp = lt.executePythonProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
-				
-			}else{
-				
-				throw new RuntimeException("This category of process is not supported");
-				
-			}
-			
-			
-		}else {
-			
-			//non-local remote server
-
-			if("shell".equals(category)) {
-				
-				resp = rt.executeShell(history_id, id, hid, pswd, httpsessionid, isjoin);
-				
-			}else if("builtin".equals(category)) {
-				
-				resp = rt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
-				
-			}else if("jupyter".equals(category)){
-				
-				resp = rt.executeJupyterProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
-				
-			}else if("python".equals(category)) {
-				
-				resp = rt.executePythonProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
-				
-			}else{
-				
-				throw new RuntimeException("This category of process is not supported");
-				
-			}
-
-			
-		}
-		
-		return resp;
-		
-	}
-
 	public String recent(int limit) {
 		
 		StringBuffer resp = new StringBuffer();
@@ -1042,17 +905,17 @@ public class ProcessTool {
 				
 				resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
 				
-				String input_code = escape(String.valueOf(hist.getHistory_input()));
+				String input_code = bt.escape(String.valueOf(hist.getHistory_input()));
 				
 				resp.append("\"input\":\"").append(input_code).append("\", ");
 				
-				String output_code = escape(String.valueOf(hist.getHistory_output()));
+				String output_code = bt.escape(String.valueOf(hist.getHistory_output()));
 				
 				resp.append("\"output\":\"").append(output_code).append("\", ");
 				
-				resp.append("\"category\":\"").append(escape(String.valueOf(thep.getDescription()))).append("\", ");
+				resp.append("\"category\":\"").append(bt.escape(String.valueOf(thep.getDescription()))).append("\", ");
 				
-				resp.append("\"host\":\"").append(escape(String.valueOf(hist.getHost_id()))).append("\", ");
+				resp.append("\"host\":\"").append(bt.escape(String.valueOf(hist.getHost_id()))).append("\", ");
 				
 				resp.append("\"status\":\"").append(String.valueOf(hist.getIndicator())).append("\" }");
 				
@@ -1102,13 +965,13 @@ public class ProcessTool {
 				
 				resp.append("\", \"end_time\": \"").append(row[2]);
 				
-				resp.append("\", \"output\": \"").append(escape(String.valueOf(row[3])));
+				resp.append("\", \"output\": \"").append(bt.escape(String.valueOf(row[3])));
 				
-				resp.append("\", \"status\": \"").append(escape(String.valueOf(row[4])));
+				resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(row[4])));
 				
-				resp.append("\", \"notes\": \"").append(escape(String.valueOf(row[8])));
+				resp.append("\", \"notes\": \"").append(bt.escape(String.valueOf(row[8])));
 				
-				resp.append("\", \"host\": \"").append(escape(String.valueOf(row[5])));
+				resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(row[5])));
 				
 				resp.append("\"}");
 				

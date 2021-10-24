@@ -19,6 +19,7 @@ import com.gw.web.GeoweaverController;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalhostTool {
 	
 	Logger logger = Logger.getLogger(LocalhostTool.class);
@@ -44,6 +46,9 @@ public class LocalhostTool {
 
 	@Autowired
 	BuiltinTool bint;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Value("${geoweaver.workspace}")
 	String workspace_folder_path;
@@ -62,10 +67,7 @@ public class LocalhostTool {
 	
 	@Autowired
 	LocalSessionWinImpl winsession;
-
-	@Autowired
-	GeoweaverProcessTask t ;
-
+	
 	public void saveHistory(String processid, String script, String history_id){
 
 		History history = histool.getHistoryById(history_id);
@@ -295,7 +297,7 @@ public class LocalhostTool {
 			
 			//save environment
 			
-			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
@@ -354,7 +356,7 @@ public class LocalhostTool {
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 
 			//save environment
-			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			

@@ -11,22 +11,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gw.ssh.SSHSession;
+import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.gw.ssh.SSHSession;
-import com.gw.ssh.SSHSessionImpl;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.xfer.FilePermission;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 @Service
+@Scope("prototype")
 public class FileTool {
 	
 	Logger log = Logger.getLogger(FileTool.class);

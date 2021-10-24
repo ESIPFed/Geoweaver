@@ -30,12 +30,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.database.HostRepository;
+import com.gw.jpa.Host;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -44,6 +48,7 @@ import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +73,61 @@ public class BaseTool {
 	
 	@Value("${geoweaver.prefixurl}")
 	String prefixurl;
+
+	@Autowired
+	HostRepository hostRepository;
 	
 	public BaseTool() {
 		
+		
+	}
+
+	/**
+	 * Judge if the host is localhost
+	 * @param hid
+	 * @return
+	 */
+	public boolean islocal(String hid) {
+		
+		boolean is = false;
+		
+		Optional<Host> opthost = hostRepository.findById(hid);
+
+		if(opthost.isPresent()){
+			Host h = hostRepository.findById(hid).get();
+		
+			if("127.0.0.1".equals(h.getIp()) || "localhost".equals(h.getIp())) {
+				
+				is = true;
+				
+			}
+		}
+		
+		
+		return is;
+		
+	}
+
+	/**
+	 * Escape the code text
+	 * @param code
+	 * @return
+	 */
+	public String escape(String code) {
+		
+		String resp = null;
+		
+		if(!this.isNull(code)) {
+
+			// resp = code.replaceAll("\\\\", "\\\\\\\\")
+			// 		.replaceAll("\"", "\\\\\"")
+			// 		.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
+			// 		.replaceAll("	", "\\\\t");
+			resp = StringEscapeUtils.escapeJson(code);
+			
+		}
+			
+		return resp;
 		
 	}
 
@@ -412,10 +469,10 @@ public class BaseTool {
 	 * @param msg
 	 * @return
 	 */
-	public String escape(String msg){
-		msg = msg.replaceAll("\\'", "").replaceAll("\\\n", "");
-		return msg;
-	}
+	// public String escape(String msg){
+	// 	msg = msg.replaceAll("\\'", "").replaceAll("\\\n", "");
+	// 	return msg;
+	// }
 	
 	public Document parseString(String xml){
 		

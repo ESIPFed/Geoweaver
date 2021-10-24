@@ -73,8 +73,8 @@ GW.workspace = {
 
 			}
 
-
 		},
+
 		
 		/**
 		 * Create a new GraphCreator object
@@ -769,13 +769,7 @@ GW.workspace = {
 
 				frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
 
-				frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
-
-					GW.menu.details(processid, "process");
-			
-					_frame.closeFrame()
-					
-				})
+				
 
 				$.ajax({
 
@@ -783,15 +777,23 @@ GW.workspace = {
 				
 					method: "POST",
 				
-					data: "workflowhistoryid=" + GW.workflow.history_id + "&processid=" + processid
+					data: "workflowhistoryid=" + GW.workflow.history_id + "&processid=" + d.id
 				
 				}).done(function(msg){
 
 					msg = GW.general.parseResponse(msg);
 
-
-
 					$("#dbclick_content").append(msg.history_output);
+
+					frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
+
+						// GW.menu.details(processid, "process");
+	
+						GW.process.showHistoryDetails(msg.history_id);
+				
+						_frame.closeFrame()
+						
+					})
 
 				})
 

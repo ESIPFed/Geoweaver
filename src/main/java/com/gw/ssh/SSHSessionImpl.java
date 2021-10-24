@@ -31,10 +31,13 @@ import java.security.PublicKey;
 import java.text.Normalizer;
 import java.util.List;
 
+import com.gw.database.HostRepository;
+import com.gw.database.ProcessRepository;
 import com.gw.jpa.Environment;
 import com.gw.jpa.History;
+import com.gw.jpa.Host;
+import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 
@@ -42,6 +45,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
@@ -59,16 +64,23 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
  *
  */
 @Service
+@Scope("prototype")
 public class SSHSessionImpl implements SSHSession {
 	
-	@Autowired
-	HostTool ht;
+	// @Autowired
+	// HostTool ht;
+
+    @Autowired
+    HostRepository hostrepo;
 	
 	@Autowired
 	BaseTool bt;
 	
-	@Autowired
-	ProcessTool pt;
+    @Autowired
+    ProcessRepository processRepository;
+
+    @Autowired
+	EnvironmentTool et;
 	
     protected final Logger   log = LoggerFactory.getLogger(getClass());
     
@@ -180,10 +192,10 @@ public class SSHSessionImpl implements SSHSession {
 	public boolean login(String hostid, String password, String token, boolean isTerminal) {
 		
 		this.hostid = hostid;
+
+        Host h = hostrepo.findById(hostid).get();
 		
-		String[] hostdetails = ht.getHostDetailsById(hostid);
-		
-		return this.login(hostdetails[1], hostdetails[2], hostdetails[3], password, token, false);
+		return this.login(h.getIp(), h.getPort(), h.getUsername(), password, token, false);
 		
 	}
 
@@ -339,8 +351,8 @@ public class SSHSessionImpl implements SSHSession {
 //    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		
     		cmdline += "chmod +x *.py;";
-    		
-    		String filename = pt.getNameById(processid);
+
+    		String filename = processRepository.findById(processid).get().getName();//pt.getNameById(processid);
     		
     		filename = filename.trim().endsWith(".py")? filename: filename+".py";
     		
@@ -617,7 +629,7 @@ public class SSHSessionImpl implements SSHSession {
 
     void readWhereCondaInOneCommand(String hostid) throws IOException{
 
-        List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+        List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 
         String cmdline = "source ~/.bashrc; whereis python; conda env list";
         
@@ -655,7 +667,7 @@ public class SSHSessionImpl implements SSHSession {
     
                         pypath = pypath.trim();
     
-                        ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+                        et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
     
                     }
     
@@ -684,7 +696,7 @@ public class SSHSessionImpl implements SSHSession {
 
 					String name = bt.isNull(vals[0])?bin:vals[0];
 
-                    ht.addNewEnvironment(bin, old_envlist, hostid, name);
+                    et.addNewEnvironment(bin, old_envlist, hostid, name);
 
                 }
 
@@ -706,7 +718,7 @@ public class SSHSessionImpl implements SSHSession {
 
         //    this.readConda();
 
-           resp = ht.getEnvironments(hostid);
+           resp = et.getEnvironments(hostid);
 
         } catch (Exception e) {
 

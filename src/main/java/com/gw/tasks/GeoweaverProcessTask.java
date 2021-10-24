@@ -14,6 +14,7 @@ import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
+import com.gw.tools.ExecutionTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
@@ -41,6 +42,9 @@ public class GeoweaverProcessTask  extends Task {
 	
 	@Autowired
 	ProcessTool pt;
+
+	@Autowired
+	ExecutionTool et;
 	
 	@Autowired
 	BaseTool bt;
@@ -287,7 +291,7 @@ public class GeoweaverProcessTask  extends Task {
 
 			this.updateEverything();
 
-			pt.execute(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
+			et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
 			this.curstatus = ExecutionStatus.DONE;
 			
@@ -458,20 +462,6 @@ public class GeoweaverProcessTask  extends Task {
 		
 		hist.saveHistory(history);
     	
-//    	StringBuffer sql = new StringBuffer("insert into history (id, process, begin_time, end_time, input, output, host) values ('");
-//    	
-//    	sql.append(this.history_id).append("','");
-//    	
-//    	sql.append(this.pid).append("','");
-//    	
-//    	sql.append(this.history_begin_time).append("','");
-//    	
-//    	sql.append(this.history_end_time).append("',?, ?,'");
-//    	
-//    	sql.append(this.host).append("' )");
-//    	
-//    	DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
-		
 	}
 
 	/**

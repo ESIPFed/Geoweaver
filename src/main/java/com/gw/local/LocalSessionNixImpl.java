@@ -17,6 +17,7 @@ import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
@@ -50,6 +51,9 @@ public class LocalSessionNixImpl implements LocalSession {
 
 	@Autowired
 	HostTool ht;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Autowired
 	HistoryTool history_tool;
@@ -429,7 +433,7 @@ public class LocalSessionNixImpl implements LocalSession {
 	void readWhere(String hostid, String password) throws IOException, InterruptedException{
 
 		//read existing environments
-		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 			
 		List<String> cmds = new ArrayList();
 		cmds.add("whereis");
@@ -454,7 +458,7 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 							pypath = pypath.trim();
 		
-							ht.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+							et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
 		
 						}
 		
@@ -497,7 +501,7 @@ public class LocalSessionNixImpl implements LocalSession {
 	void readConda(String hostid, String password) throws IOException, InterruptedException{
 
 		//read existing environments
-		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 			
 		List<String> cmds = new ArrayList();
 		cmds.add("conda");
@@ -521,11 +525,11 @@ public class LocalSessionNixImpl implements LocalSession {
 
 					String name = bt.isNull(vals[0])?bin:vals[0];
 
-					Environment theenv = ht.getEnvironmentByBin(bin, old_envlist);
+					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
 
 					if(bt.isNull(theenv)){
 
-						ht.addNewEnvironment(bin, old_envlist, hostid, name);
+						et.addNewEnvironment(bin, old_envlist, hostid, name);
 
 					}else{
 
@@ -556,7 +560,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
 			this.readConda(hostid, password);
 
-			resp = ht.getEnvironments(hostid);
+			resp = et.getEnvironments(hostid);
 
 		} catch (Exception e) {
 

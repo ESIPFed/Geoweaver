@@ -1,13 +1,17 @@
 package com.gw.tasks;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
 import com.gw.database.EnvironmentRepository;
+import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
@@ -44,8 +48,10 @@ public class GeoweaverWorkflowTask{
 	@Autowired
 	HistoryTool hist;
 	
+	// @Autowired
+	// WorkflowTool wt;
 	@Autowired
-	WorkflowTool wt;
+	WorkflowRepository workflowRepository;
 
 	@Autowired
 	EnvironmentTool et;
@@ -259,8 +265,94 @@ public class GeoweaverWorkflowTask{
 		
 	}
 
+	public Map<String, List> getNodeConditionMap(JSONArray nodes, JSONArray edges) throws ParseException{
+		
+		//find the condition nodes of each process
+		
+		Map<String, List> node2condition = new HashMap();
+		
+		for(int i=0;i<nodes.size();i++) {
+			
+			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			String current_history_id = (String)((JSONObject)nodes.get(i)).get("history_id");
+			
+			List preids = new ArrayList();
+			
+			for(int j=0;j<edges.size();j++) {
+				
+				JSONObject eobj = (JSONObject)edges.get(j);
+				
+				String sourceid = (String)((JSONObject)eobj.get("source")).get("id");
+				
+				String targetid = (String)((JSONObject)eobj.get("target")).get("id");
+				
+				if(current_id.equals(targetid)) {
+
+					preids.add(getNodeByID(nodes, sourceid).get("history_id"));
+					
+					// preids.add(sourceid);
+					
+				}
+				
+				
+			}
+
+			node2condition.put(current_history_id, preids);
+			
+		}
+		
+		return node2condition;
+		
+	}
+
+	public JSONObject getNodeByID(JSONArray nodes, String id){
+
+		JSONObject theobj = null;
+
+		for(int i=0;i<nodes.size();i++){
+
+			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
+
+			if(current_id.equals(id)){
+
+				theobj = (JSONObject)nodes.get(i);
+				break;
+
+			}
+
+		}
+
+		return theobj;
+
+	}
+
+	/**
+	 * Update the status of a node
+	 * @param id
+	 * @param flags
+	 * @param nodes
+	 * @param status
+	 */
+	public void updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
+		
+		for(int j=0;j<nodes.size();j++) {
+			
+			String prenodeid = (String)((JSONObject)nodes.get(j)).get("id");
+			
+			if(prenodeid.equals(id)) {
+				
+				flags[j] = status;
+				
+				break;
+				
+			}
+			
+		}
+		
+	}
+
 	public void execute() {
-		// TODO Auto-generated method stub
 		
 		log.debug(" + + + start Geoweaver workflow " + wid + " - history id : " + this.history_id);
 		
@@ -276,14 +368,12 @@ public class GeoweaverWorkflowTask{
 			
 			this.history_output = "";
 			
-			Workflow w = wt.getById(wid);
+			Workflow w = workflowRepository.findById(wid).get();
 			
 			if(bt.isNull(w))
 				throw new RuntimeException("no workflow is found");
 			
 			//execute the process in a while loop - for now. Improve this in future
-			
-			int executed_process = 0;
 			
 			JSONParser parser = new JSONParser();
 			
@@ -305,7 +395,7 @@ public class GeoweaverWorkflowTask{
 			}
 			
 			// all the ids in this map is history id
-			Map<String, List> node2condition = wt.getNodeConditionMap(nodes, edges);
+			Map<String, List> node2condition = this.getNodeConditionMap(nodes, edges);
 			
 			// while(executed_process < (nodes.size())) {
 			for(int i=0;i< nodes.size();i++){
@@ -324,7 +414,7 @@ public class GeoweaverWorkflowTask{
 				
 				String stat = ExecutionStatus.READY;
 				
-				wt.updateNodeStatus(nextid, flags, nodes, stat);
+				this.updateNodeStatus(nextid, flags, nodes, stat);
 				
 				sendStatus(nodes, flags);
 
@@ -359,7 +449,7 @@ public class GeoweaverWorkflowTask{
 					
 					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
 
-					new_task.setWorkflowHistoryId(this.history_id);
+					// new_task.setWorkflowHistoryId(this.history_id);
 
 					log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
 					
@@ -376,7 +466,7 @@ public class GeoweaverWorkflowTask{
 					
 					stat = ExecutionStatus.FAILED;
 
-					wt.updateNodeStatus(nextid, flags, nodes, stat);
+					this.updateNodeStatus(nextid, flags, nodes, stat);
 				
 					sendStatus(nodes, flags);
 					
@@ -391,7 +481,7 @@ public class GeoweaverWorkflowTask{
 				
 				// wt.updateNodeStatus(nextid, flags, nodes, stat); //once the process is finished, updated its status
 				
-				executed_process++;
+				// executed_process++;
 				
 			}
 			

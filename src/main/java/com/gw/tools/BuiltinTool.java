@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.gw.jpa.ExecutionStatus;
@@ -19,6 +20,7 @@ import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 
 @Service
+@Scope("prototype")
 public class BuiltinTool {
     
     @Autowired
@@ -76,7 +78,6 @@ public class BuiltinTool {
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -126,7 +127,7 @@ public class BuiltinTool {
                 
                 String fileloc = bt.getFileTransferFolder() + "/" + filename;
                 
-                if(ht.islocal(host)) {
+                if(bt.islocal(host)) {
                     
                     resp = ft.download_local(filepath, fileloc);
 

@@ -20,9 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class RemotehostTool {
 	
 	Logger logger = LoggerFactory.getLogger(ProcessTool.class);
@@ -46,6 +48,9 @@ public class RemotehostTool {
 	BaseTool bt;
 
 	@Autowired
+	EnvironmentTool et;
+
+	@Autowired
 	HistoryTool histool;
 	
 	@Autowired
@@ -54,8 +59,8 @@ public class RemotehostTool {
 	@Autowired
 	ProcessRepository processrepository;
 
-	@Autowired
-	GeoweaverProcessTask t ;
+	// @Autowired
+	// GeoweaverProcessTask t ;
 
 	/**
 	 * Find all python environments
@@ -194,7 +199,7 @@ public class RemotehostTool {
 			
 			//save environment
 			
-			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
@@ -213,7 +218,7 @@ public class RemotehostTool {
 	}
 	
 	/**
-	 * Execute builtin process
+	 * Execute builtin process - not implemented yet
 	 * @param id
 	 * @param hid
 	 * @param pswd
@@ -249,24 +254,24 @@ public class RemotehostTool {
 			
 			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(history_id, id, hid, pswd, token, isjoin,  null, null, null, null);
+			// t.initialize(history_id, id, hid, pswd, token, isjoin,  null, null, null, null);
 			
-			// find active websocket for this builtin process when it is running as a member process in a workflow
-			// If this builtin process is running solo, the TaskSocket will take care of the problem.
+			// // find active websocket for this builtin process when it is running as a member process in a workflow
+			// // If this builtin process is running solo, the TaskSocket will take care of the problem.
 			
-			if(isjoin) {
+			// if(isjoin) {
 			
-				tm.runDirectly(t);
+			// 	tm.runDirectly(t);
 				
-			}else {
+			// }else {
 			
-				tm.addANewTask(t);
+			// 	tm.addANewTask(t);
 				
-			}
+			// }
 			
-			String historyid = t.getHistory_id();
+			// String historyid = t.getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
@@ -437,7 +442,7 @@ public class RemotehostTool {
 			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 			//save environment
 			
-			ht.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
 			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			

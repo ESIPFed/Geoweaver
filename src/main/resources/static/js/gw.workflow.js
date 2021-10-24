@@ -57,9 +57,7 @@ GW.workflow = {
 		
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
 		
-		var workflowid = null;
-		
-		var workflowname = null;
+		var workflowid, workflowname, workflowdescription;
 
 		var confidential = null;
 
@@ -69,7 +67,7 @@ GW.workflow = {
 		
 		jQuery.each(msg, function(i, val) {
 			
-			if(val!=null&&val!="null"&&val!=""){
+			// if(val!=null&&val!="null"&&val!=""){
 				
 					if(typeof val =='object')
 					{
@@ -80,13 +78,19 @@ GW.workflow = {
 						
 						workflowid = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
 						
 					}else if(i=="name"){
 						
 						workflowname = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\">"+val+"</div>";
+							"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
+						
+					}else if(i=="description"){
+						
+						workflowdescription = val;
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" value=\""+val+"\" /></textarea ></div>";
 						
 					}else if(i=="confidential"){
 						
@@ -102,7 +106,7 @@ GW.workflow = {
 						"<div class=\"col col-md-7\">"+val+"</div>";
 					}
 					
-			}
+			// }
 
 		});
 
@@ -177,8 +181,37 @@ GW.workflow = {
 		"</div>";
 		
 		$("#main-workflow-content").html(content);
+
+		var current_workflow_name = workflowname;
+
+		$("#display_workflow_name_field").focus(()=>{current_workflow_name = $("#display_workflow_name_field").val()})
 		
+		$("#display_workflow_name_field").focusout(()=>{
+
+			if(current_workflow_name!=$("#display_workflow_name_field").val()){
+
+				GW.workflow.updateWorkflowMetadata(); //if name changes, update the metadata
+
+			}
+
+		})
+
+		var current_workflow_description = workflowdescription;
+
+		$("#display_workflow_description_field").focus(()=>{current_workflow_description = $("#display_workflow_description_field").val()})
+		
+		$("#display_workflow_description_field").focusout(()=>{
+
+			if(current_workflow_description!=$("#display_workflow_description_field").val()){
+
+				GW.workflow.updateWorkflowMetadata(); //if name changes, update the metadata
+
+			}
+
+		})
+
 		switchTab(document.getElementById("main-workflow-info-code-tab"), "main-workflow-info-code");
+
 		GW.general.switchTab("workflow")
 		
 	},
@@ -234,6 +267,50 @@ GW.workflow = {
 		return phs;
 		
 	},
+
+	updateWorkflowMetadata: function(){
+
+		var wid = $("#display_workflow_id").text();
+
+		var newname = $("#display_workflow_name_field").val();
+
+		var newdesc = $("#display_workflow_description_field").val();
+
+		var req = {
+				"type": "workflow",
+				"name": newname,
+				"id": wid,
+				"description" : newdesc
+		};
+		
+		$.ajax({
+			
+			url: "edit/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(req)
+			
+		}).done(function(msg){
+			
+			GW.workspace.showSaved();
+
+			GW.general.showToasts("updated");
+		    
+			GW.workflow.refreshWorkflowList();
+			
+		}).fail(function(jxr, status){
+			
+			alert("Error!!! Fail to save.");
+			
+		});
+
+	},
+	
 		
 	newDialog: function(createandrun){
 		
@@ -383,18 +460,20 @@ GW.workflow = {
 				confidential = $('input[name="confidential_workflow"]:checked').val()
 				
 			}
+
+			var newname = "";
 			
 			var req = {
 					
 					"type": "workflow",
+
+					"name": newname,
 					
 					"id": this.loaded_workflow,
 
 					"confidential": confidential,
 
 					"owner": GW.user.current_userid,
-
-					"description": "",
 
 					"nodes": JSON.stringify(nodes), 
 					
@@ -1196,10 +1275,12 @@ GW.workflow = {
 	},
 	
 	addMenuItem: function(one){
+
+		if(one.name=="") one.name = "null"
 		
 		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
 				
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">" + 
+				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\"> " + 
 	    		
 				one.name + "</a> "+
 				
@@ -1246,20 +1327,9 @@ GW.workflow = {
 			
 			console.log("Start to refresh the workflow list..");
 			
-			// $("#"+GW.menu.getPanelIdByType("host")).html("");
 			$("#workflows").html("");
 			
 			GW.workflow.list(msg);
-			
-			// if($(".processselector")) {
-
-			// 	for(var i=0;i<msg.length;i++){
-					
-			// 		$(".processselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-					
-			// 	}
-				
-			// }
 			
 		}).fail(function(jxr, status){
 			
