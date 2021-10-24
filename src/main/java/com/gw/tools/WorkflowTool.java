@@ -167,7 +167,11 @@ public class WorkflowTool {
 	
 	public Workflow getById(String id) {
 		
-		Workflow w = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow w = null;
+		
+		if(wo.isPresent())w = wo.get();
 		
 		return w;
 		
@@ -175,7 +179,11 @@ public class WorkflowTool {
 	
 	public String detail(String id) {
 		
-		Workflow wf = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow wf = null;
+		
+		if(wo.isPresent())wf = wo.get();
 		
 		return toJSON(wf);
 		
