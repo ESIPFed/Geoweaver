@@ -125,7 +125,7 @@ public class BuiltinTool {
                     folder.mkdir();
                 }
                 
-                String fileloc = bt.getFileTransferFolder() + "/" + filename;
+                String fileloc = bt.getFileTransferFolder() + filename;
                 
                 if(bt.islocal(host)) {
                     

@@ -21,6 +21,7 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -224,7 +225,7 @@ public class BaseTool {
 	 */
 	public String getFileTransferFolder() {
 		
-		String tempfolder = this.normalizedPath(workspace) + "/" + this.upload_file_path + "/";
+		String tempfolder = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + this.upload_file_path + FileSystems.getDefault().getSeparator();
 		
 		File tf = new File(tempfolder);
 		
@@ -1030,7 +1031,7 @@ public class BaseTool {
 			
 		}
 		
-		String folderpath = this.getFileTransferFolder() + "/";
+		String folderpath = this.getFileTransferFolder();
 		
 		String folderuri = prefixurl + "/Geoweaver/" + upload_file_path + "/";
 		
