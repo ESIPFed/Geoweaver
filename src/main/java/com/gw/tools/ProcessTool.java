@@ -240,6 +240,18 @@ public class ProcessTool {
 		
 	}
 	
+	public String escapeJupyter(String code){
+
+		if(!bt.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport") 
+			|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\""))){
+
+				code = this.unescape(code);
+
+		}
+
+		return code;
+	}
+
 	public String detail(String id) throws JsonProcessingException {
 		
 		GWProcess p = getProcessById(id);
@@ -690,8 +702,8 @@ public class ProcessTool {
 		
 		String code = p.getCode();
 		
-		if(p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
-		|| p.getCode().contains("\\\"operation\\\"") || p.getCode().contains("\\\"cells\\\"")) 
+		if(code.contains("bash\\\n") || code.contains("\\\nimport") 
+		|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\"")) 
 			code = this.unescape(code);
 		
 		return code;
@@ -832,11 +844,11 @@ public class ProcessTool {
 				
 				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
 				
-				resp.append("\"notes\": \"").append(process_obj[8]).append("\", ");
+				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
 				
-				resp.append("\"status\": \"").append(process_obj[7]).append("\", ");
+				resp.append("\"status\": \"").append(process_obj[8]).append("\", ");
 				
 				resp.append("\"begin_time\": \"").append(process_obj[1]).append("\"}");
 				
@@ -905,7 +917,18 @@ public class ProcessTool {
 				
 				resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
 				
-				String input_code = bt.escape(String.valueOf(hist.getHistory_input()));
+				String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
+
+			// 	if(!bt.isNull(hist.getHistory_input()) && (hist.getHistory_input().contains("bash\\\n") || hist.getHistory_input().contains("\\\nimport") 
+			// || hist.getHistory_input().contains("\\\"operation\\\"") || hist.getHistory_input().contains("\\\"cells\\\""))){
+				
+			// 		input_code = this.unescape(hist.getHistory_input());
+
+			// 	}else{
+				
+			// 		input_code = bt.escape(hist.getHistory_input());
+				
+			// 	}
 				
 				resp.append("\"input\":\"").append(input_code).append("\", ");
 				
@@ -913,11 +936,13 @@ public class ProcessTool {
 				
 				resp.append("\"output\":\"").append(output_code).append("\", ");
 				
-				resp.append("\"category\":\"").append(bt.escape(String.valueOf(thep.getDescription()))).append("\", ");
+				resp.append("\"lang\":\"").append(thep.getLang()).append("\", ");
 				
-				resp.append("\"host\":\"").append(bt.escape(String.valueOf(hist.getHost_id()))).append("\", ");
+				resp.append("\"host\":\"").append(hist.getHost_id()).append("\", ");
+
+				resp.append("\"confidential\":\"").append(thep.getConfidential()).append("\", ");
 				
-				resp.append("\"status\":\"").append(String.valueOf(hist.getIndicator())).append("\" }");
+				resp.append("\"status\":\"").append(hist.getIndicator()).append("\" }");
 				
 			}
 			

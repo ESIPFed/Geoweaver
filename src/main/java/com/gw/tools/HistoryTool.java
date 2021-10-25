@@ -154,8 +154,7 @@ public class HistoryTool {
 			logger.error("This indicator shouldn't be null at all");
 		}
 		
-		historyrepository.save(history);
-		
+		historyrepository.saveAndFlush(history);
     	
 	}
 	

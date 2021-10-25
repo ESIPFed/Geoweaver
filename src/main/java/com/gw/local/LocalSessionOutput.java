@@ -154,6 +154,8 @@ public class LocalSessionOutput  implements Runnable{
 
 		ht.saveHistory(h);
 
+		log.debug("print out history_output: " + h.getHistory_output());
+
 	}
     
     

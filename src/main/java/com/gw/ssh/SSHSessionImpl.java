@@ -422,7 +422,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		notebookjson = escapeJupter(notebookjson);
     		
-    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history.getHistory_id() + ".ipynb; ";
+    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
     		
 //    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
 //    			
@@ -446,9 +446,9 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history.getHistory_id() + ".ipynb;";
+    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
     		
-    		cmdline += "rm ./jupyter-" + history.getHistory_id() + ".ipynb; "; // remove the script finally, leave no trace behind
+    		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
     		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
