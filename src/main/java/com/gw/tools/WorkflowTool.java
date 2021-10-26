@@ -24,6 +24,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class WorkflowTool {
 	
 	public Map<String, String> token2ws = new HashMap();
@@ -54,8 +57,8 @@ public class WorkflowTool {
 	@Autowired
 	HistoryTool tool;
 
-	@Autowired
-	UserTool ut;
+	// @Autowired
+	// UserTool ut;
 
 	@Autowired
 	BaseTool bt;
@@ -116,9 +119,13 @@ public class WorkflowTool {
 
 	public List<Workflow> getWorkflowListByOwner(String ownerid){
 
-		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(ownerid).iterator();
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 
 		List<Workflow> actualList = new ArrayList<Workflow>();
+
+		wit.forEachRemaining(actualList::add);
+
+		wit = workflowrepository.findAllPrivateByOwner(ownerid).iterator();
 
 		wit.forEachRemaining(actualList::add);
 
@@ -130,25 +137,27 @@ public class WorkflowTool {
 		
 		// Iterator<Workflow> wit = workflowrepository.findAll().iterator();
 		
-		Iterator<Workflow> wit = workflowrepository.findAllPublicPrivateByOwner(owner).iterator();
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
-		
-		int num = 0;
 		
 		while(wit.hasNext()) {
 			
 			Workflow w = wit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(w));
+			json.append(toJSON(w)).append(",");
 			
 		}
+
+		wit = workflowrepository.findAllPrivateByOwner(owner).iterator();
+
+		while(wit.hasNext()){
+
+			json.append(toJSON(wit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
@@ -158,7 +167,11 @@ public class WorkflowTool {
 	
 	public Workflow getById(String id) {
 		
-		Workflow w = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow w = null;
+		
+		if(wo.isPresent())w = wo.get();
 		
 		return w;
 		
@@ -166,73 +179,19 @@ public class WorkflowTool {
 	
 	public String detail(String id) {
 		
-		Workflow wf = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow wf = null;
+		
+		if(wo.isPresent())wf = wo.get();
 		
 		return toJSON(wf);
 		
 	}
 
-	public JSONObject getNodeByID(JSONArray nodes, String id){
-
-		JSONObject theobj = null;
-
-		for(int i=0;i<nodes.size();i++){
-
-			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
-
-			if(current_id.equals(id)){
-
-				theobj = (JSONObject)nodes.get(i);
-				break;
-
-			}
-
-		}
-
-		return theobj;
-
-	}
 	
-	public Map<String, List> getNodeConditionMap(JSONArray nodes, JSONArray edges) throws ParseException{
-		
-		//find the condition nodes of each process
-		
-		Map<String, List> node2condition = new HashMap();
-		
-		for(int i=0;i<nodes.size();i++) {
-			
-			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
-
-			String current_history_id = (String)((JSONObject)nodes.get(i)).get("history_id");
-			
-			List preids = new ArrayList();
-			
-			for(int j=0;j<edges.size();j++) {
-				
-				JSONObject eobj = (JSONObject)edges.get(j);
-				
-				String sourceid = (String)((JSONObject)eobj.get("source")).get("id");
-				
-				String targetid = (String)((JSONObject)eobj.get("target")).get("id");
-				
-				if(current_id.equals(targetid)) {
-
-					preids.add(getNodeByID(nodes, sourceid).get("history_id"));
-					
-					// preids.add(sourceid);
-					
-				}
-				
-				
-			}
-
-			node2condition.put(current_history_id, preids);
-			
-		}
-		
-		return node2condition;
-		
-	}
+	
+	
 
 	
 	
@@ -300,30 +259,7 @@ public class WorkflowTool {
 		
 	}
 	
-	/**
-	 * Update the status of a node
-	 * @param id
-	 * @param flags
-	 * @param nodes
-	 * @param status
-	 */
-	public void updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
-		
-		for(int j=0;j<nodes.size();j++) {
-			
-			String prenodeid = (String)((JSONObject)nodes.get(j)).get("id");
-			
-			if(prenodeid.equals(id)) {
-				
-				flags[j] = status;
-				
-				break;
-				
-			}
-			
-		}
-		
-	}
+	
 
 	public List<Workflow> getAllWorkflow(){
 
@@ -336,6 +272,24 @@ public class WorkflowTool {
 	}
 
 	public void save(Workflow w){
+
+		Workflow wold = this.getById(w.getId());
+
+		if(!bt.isNull(wold)){
+
+			if(bt.isNull(w.getName())) w.setName(wold.getName());
+
+			if(bt.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
+
+			if(bt.isNull(w.getDescription())) w.setDescription(wold.getDescription());
+
+			if(bt.isNull(w.getEdges())) w.setEdges(wold.getEdges());
+
+			if(bt.isNull(w.getNodes())) w.setNodes(wold.getNodes());
+
+			if(bt.isNull(w.getOwner())) w.setOwner(wold.getOwner());
+
+		}
 
 		workflowrepository.save(w);
 
@@ -379,7 +333,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String token) {
+	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -393,7 +347,7 @@ public class WorkflowTool {
 			
 			// tm.addANewTask(task);
 
-			task.initialize(history_id, wid, mode, hosts, pswds, token);
+			task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
 
 			task.execute();
 
@@ -525,7 +479,7 @@ public class WorkflowTool {
 				
 				resp.append("\"end_time\": \"").append(hiscols[2]).append("\", ");
 				
-				resp.append("\"status\": \"").append(pt.escape(String.valueOf(hiscols[3]))).append("\", ");
+				resp.append("\"status\": \"").append(bt.escape(String.valueOf(hiscols[3]))).append("\", ");
 				
 				resp.append("\"output\": \"").append(hiscols[4]).append("\"}");
 				
@@ -691,14 +645,14 @@ public class WorkflowTool {
 		
 	// }
 
-    public String getOwnerNameByID(String ownerid) {
+    // public String getOwnerNameByID(String ownerid) {
 
-		String ownername = "Public User";
+	// 	String ownername = "Public User";
 		
-		if(!bt.isNull(ownerid)) 
-			ownername = ut.getUserById(ownerid).getUsername();
+	// 	if(!bt.isNull(ownerid)) 
+	// 		ownername = ut.getUserById(ownerid).getUsername();
 
-        return ownername;
-    }
+    //     return ownername;
+    // }
 
 }

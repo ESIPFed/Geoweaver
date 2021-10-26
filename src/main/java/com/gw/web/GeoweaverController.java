@@ -27,14 +27,16 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.MasterRequestObject;
+import com.gw.tools.EnvironmentTool;
 import com.gw.utils.RandomString;
 import com.gw.tools.UserTool;
+import com.gw.tools.ExecutionTool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.query.Param;
@@ -65,7 +67,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Controller 
-@RequestMapping(value="/web")     
+@RequestMapping(value="/web")
 //@SessionAttributes({"SSHToken"})
 //@RequestMapping("/Geoweaver/web")
 public class GeoweaverController {
@@ -95,6 +97,12 @@ public class GeoweaverController {
 
 	@Autowired
 	DashboardTool dbt;
+
+	@Autowired
+	EnvironmentTool et;
+
+	@Autowired
+	ExecutionTool ext;
 	
 	@Autowired
 	SSHSession sshSession;
@@ -429,6 +437,31 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/workflow_process_log", method = RequestMethod.POST)
+    public @ResponseBody String workflow_process_log(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String workflowhistoryid = request.getParameter("workflowhistoryid");
+			
+			String processid = request.getParameter("processid");
+			
+			resp = hist.getWorkflowProcessHistory(workflowhistoryid, processid);
+
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
     public @ResponseBody String stop(ModelMap model, WebRequest request){
@@ -542,13 +575,36 @@ public class GeoweaverController {
 			
 			String hid = request.getParameter("hid");
 			
-			resp = ht.getEnvironments(hid);
+			resp = et.getEnvironments(hid);
 			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
 			
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/listhostwithenvironments", method = RequestMethod.POST)
+    public @ResponseBody String listhostwithenvironments(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
+		
+		String resp = null;
+		
+		try {
+			
+			String ownerid = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
+			
+			resp = ht.list(ownerid);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
 		}
 		
@@ -584,8 +640,6 @@ public class GeoweaverController {
 		}catch(Exception e) {
 			
 			e.printStackTrace();
-			
-//			throw new RuntimeException("failed " + e.getLocalizedMessage());
 			
 			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
@@ -713,8 +767,6 @@ public class GeoweaverController {
 		
 		try {
 			
-//			http://localhost:8070/download/temp/115336065-smiling-boy-on-a-toy-swing-on-a-playground-in-a-park-black-and-white-vector-illustration-in-a-cartoo.jpg
-			
 			if(tempfolder.equals(upload_file_path)) {
 				
 				HttpHeaders headers = new HttpHeaders(); 
@@ -794,7 +846,7 @@ public class GeoweaverController {
 
 			password = RSAEncryptTool.getPassword(password, session.getId());
 
-			resp = ht.readEnvironment(hid, password);
+			resp = ext.readEnvironment(hid, password);
 
 		}catch(Exception e){
 
@@ -831,11 +883,13 @@ public class GeoweaverController {
 			String[] hosts = request.getParameterValues("hosts[]");
 			
 			String[] encrypted_password = request.getParameterValues("passwords[]");
+
+			String[] environments = request.getParameterValues("envs[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			 
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
-			resp = wt.execute(history_id, id, mode, hosts, passwords, token);
+			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
 			
 		}catch(Exception e) {
 			
@@ -953,7 +1007,7 @@ public class GeoweaverController {
 
 			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
-			resp = pt.execute(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
+			resp = ext.executeProcess(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 			
 		}catch(Exception e) {
 			

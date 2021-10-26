@@ -26,8 +26,8 @@ public class LocalSessionOutput  implements Runnable{
 	@Autowired
 	BaseTool bt;
 	
-	@Autowired
-	LocalhostTool lt;
+	// @Autowired
+	// LocalhostTool lt;
 
 	@Autowired
 	HistoryTool ht;
@@ -154,6 +154,8 @@ public class LocalSessionOutput  implements Runnable{
 
 		ht.saveHistory(h);
 
+		log.debug("print out history_output: " + h.getHistory_output());
+
 	}
     
     
@@ -173,7 +175,7 @@ public class LocalSessionOutput  implements Runnable{
 			
 			int nullnumber = 0;
 			
-			LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
+			// LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
 			
 			this.updateStatus("Running", "Running"); //initiate the history record
 
@@ -295,6 +297,8 @@ public class LocalSessionOutput  implements Runnable{
 		}catch(Exception e){
 
 			e.printStackTrace();
+
+			this.updateStatus(e.getLocalizedMessage(), "Failed");
 		
 		}finally{
 			

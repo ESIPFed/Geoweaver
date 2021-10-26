@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 /**
  *Class RunningTaskObserver.java
  *@author ziheng
- *@time Aug 11, 2015 11:48:01 AM
- *Original aim is to support iGFDS.
  */
 @Deprecated
 @Service

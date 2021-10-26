@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 /**
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 @Configurable
 public class HistoryTool {
 	
@@ -42,8 +44,8 @@ public class HistoryTool {
 	@Autowired
 	BaseTool bt;
 
-	@Autowired
-	ProcessTool pt;
+	// @Autowired
+	// ProcessTool pt;
 	
 
 	public HistoryTool() {
@@ -57,8 +59,7 @@ public class HistoryTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(his);
-            logger.debug("ResultingJSONstring = " + json);
-            //System.out.println(json);
+            // logger.debug("ResultingJSONstring = " + json);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,6 +89,36 @@ public class HistoryTool {
 		
 		return history;
 		
+	}
+
+	public String getWorkflowProcessHistory(String workflowhistoryid, String processid){
+
+		History h = this.getHistoryById(workflowhistoryid);
+
+		String[] processes = h.getHistory_input().split(";");
+
+		String[] processhistories = h.getHistory_output().split(";");
+
+		if(processes.length==processhistories.length){
+
+			h = null;
+
+			for(int i=0;i<processes.length;i++){
+
+				if(processes[i].equals(processid)){
+
+					h = this.getHistoryById(processhistories[i]);
+
+					break;
+
+				}
+
+			}
+
+		}
+
+		return this.toJSON(h);
+
 	}
 	
 	public History getHistoryById(String hid) {
@@ -123,8 +154,7 @@ public class HistoryTool {
 			logger.error("This indicator shouldn't be null at all");
 		}
 		
-		historyrepository.save(history);
-		
+		historyrepository.saveAndFlush(history);
     	
 	}
 	
@@ -207,11 +237,11 @@ public class HistoryTool {
 				
 				resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
 				
-				resp.append("\", \"output\": \"").append(pt.escape(String.valueOf(h.getHistory_output())));
+				resp.append("\", \"output\": \"").append(bt.escape(String.valueOf(h.getHistory_output())));
 				
-				resp.append("\", \"status\": \"").append(pt.escape(String.valueOf(h.getIndicator())));
+				resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(h.getIndicator())));
 				
-				resp.append("\", \"host\": \"").append(pt.escape(String.valueOf(h.getHost_id())));
+				resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(h.getHost_id())));
 				
 				resp.append("\"}");
 				
@@ -257,11 +287,11 @@ public class HistoryTool {
 				
 				resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
 				
-				resp.append("\", \"output\": \"").append(pt.escape(String.valueOf(h.getHistory_output())));
+				resp.append("\", \"output\": \"").append(bt.escape(String.valueOf(h.getHistory_output())));
 				
-				resp.append("\", \"status\": \"").append(pt.escape(String.valueOf(h.getIndicator())));
+				resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(h.getIndicator())));
 				
-				resp.append("\", \"host\": \"").append(pt.escape(String.valueOf(h.getHost_id())));
+				resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(h.getHost_id())));
 				
 				resp.append("\"}");
 				

@@ -21,12 +21,14 @@ import  com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
+import com.gw.tools.EnvironmentTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalSessionWinImpl implements LocalSession {
 
 	Logger log  = Logger.getLogger(this.getClass());
@@ -49,6 +52,9 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Autowired
 	HostTool ht;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Autowired
     private HistoryTool      history_tool;
@@ -336,8 +342,10 @@ public class LocalSessionWinImpl implements LocalSession {
     		String pythonfilename = pro.getName();
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
+
+			if(bt.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {"python", pythonfilename} );
+    		builder.command(new String[] {bin, pythonfilename} );
     		
 			// log.info(builder.environment());
     		builder.redirectErrorStream(true);
@@ -436,7 +444,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	void readWhere(String hostid, String password){
 		//read existing environments
-		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 			
 		List<String> cmds = new ArrayList();
 		cmds.add("where");
@@ -447,7 +455,7 @@ public class LocalSessionWinImpl implements LocalSession {
 		//get all the python path
 		for(String line: stdout){
 			
-			Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+			Environment theenv = et.getEnvironmentByBin(line, old_envlist);
 
 			if(bt.isNull(theenv)){
 
@@ -455,7 +463,7 @@ public class LocalSessionWinImpl implements LocalSession {
 				env.setId(new RandomString(6).nextString());
 				env.setBin(line);
 				env.setName(line);
-				env.setHost(hostid);
+				env.setHostobj(ht.getHostById(hostid));
 				// env.setBasedir(line); //the execution place which is unknown at this point
 				if(line.contains("conda"))
 					env.setPyenv("anaconda");
@@ -478,7 +486,7 @@ public class LocalSessionWinImpl implements LocalSession {
 	void readConda(String hostid, String password){
 
 		//read existing environments
-		List<Environment> old_envlist = ht.getEnvironmentsByHostId(hostid);
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 			
 		List<String> cmds = new ArrayList();
 		cmds.add("conda");
@@ -502,7 +510,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 					String name = bt.isNull(vals[0])?bin:vals[0];
 
-					Environment theenv = ht.getEnvironmentByBin(bin, old_envlist);
+					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
 
 					if(bt.isNull(theenv)){
 
@@ -510,7 +518,8 @@ public class LocalSessionWinImpl implements LocalSession {
 						env.setId(new RandomString(6).nextString());
 						env.setBin(bin);
 						env.setName(name);
-						env.setHost(hostid);
+						// env.setHost(hostid);
+						env.setHostobj(ht.getHostById(hostid));
 						// env.setBasedir(line); //the execution place which is unknown at this point
 						env.setPyenv("anaconda");
 						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
@@ -549,7 +558,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 			this.readConda(hostid, password);
 
-			resp = ht.getEnvironments(hostid);
+			resp = et.getEnvironments(hostid);
 
 		} catch (Exception e) {
 

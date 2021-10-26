@@ -434,12 +434,22 @@ GW.user = {
                     GW.user.current_username = null;
     
                     GW.user.current_userid = null;
-    
+
+                    $(window).off("beforeunload", GW.main.exitWarning);
+
+                    // GW.main.quiteExit(); //this seems even impossible
+
+                    location.reload();
+                    
                 }else{
     
                     console.log("Fail to logout");
     
                 }
+                
+                GW.main.quietExit();
+
+                location.reload();
     
             }).fail(function(jxr, status){
     

@@ -15,7 +15,11 @@ public interface WorkflowRepository extends CrudRepository<Workflow, String>{
 		nativeQuery=true)
 	Collection<Workflow> findProcessesByNameAlike(@Param("keyword") String keyword);
 
-	@Query(value="select * from workflow where owner in ('111111', ?1)",
+	@Query(value="select * from workflow where owner = ?1 and confidential = 'TRUE'",
 		nativeQuery=true)
-	Collection<Workflow> findAllPublicPrivateByOwner(String owner);
+	Collection<Workflow> findAllPrivateByOwner(String owner);
+
+	@Query(value="select * from workflow where confidential = 'FALSE'",
+		nativeQuery=true)
+	Collection<Workflow> findAllPublic();
 }

@@ -1,10 +1,6 @@
 package com.gw;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,6 +10,10 @@ import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BeanTool;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
  
 @SpringBootApplication
 @ServletComponentScan
@@ -25,7 +25,7 @@ public class GeoweaverApplication {
 		
 		SpringApplication.run(GeoweaverApplication.class, args);
 
-		openHomePage();	
+		// openHomePage();	
 
         addDefaultPublicUser();
 

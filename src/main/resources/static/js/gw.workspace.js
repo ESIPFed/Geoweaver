@@ -28,18 +28,6 @@ GW.workspace = {
 		
 		resizeIframe: function(obj){
 			
-//			setTimeout(function(){
-//				
-//				obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-//				
-//				console.log("The content height is " + obj.contentWindow.document.documentElement.scrollHeight);
-//				
-//				console.log("The height is updated");
-//				
-//			}, 2000); //wait 2 seconds
-			
-			
-			
 		},
 		
 		openModalWindow:function() {
@@ -85,8 +73,8 @@ GW.workspace = {
 
 			}
 
-
 		},
+
 		
 		/**
 		 * Create a new GraphCreator object
@@ -244,7 +232,20 @@ GW.workspace = {
 
 				thisGraph.deleteGraph(false);
 
-				GW.workflow.loaded_workflow = null;
+			});
+
+			d3.select("#add-workflow").on("click", function(){
+
+				if(GW.workflow.loaded_workflow != null){
+
+					if(!confirm("This is an existing workflow. Do you want to create a new one?")){
+
+						return;
+
+					}
+
+				}
+				GW.workflow.newDialog(false);
 
 			});
     	    
@@ -255,6 +256,8 @@ GW.workspace = {
       	    });
     	    
     	    d3.select("#execute-workflow").on("click", function(){
+
+				GW.workflow.history_id = null; 
     	    	
     	    	//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, save the workflow first.
     	    	if(GW.workflow.loaded_workflow==null){
@@ -336,45 +339,6 @@ GW.workspace = {
     	    d3.select("#test-jsframe").on('click', function(){
     	    	
     	    	GW.workspace.openModalWindow();
-    	    	
-//    	    	const frame = GW.workspace.jsFrame.create({
-//    	    		title: 'Test Window',
-//    	    	    left: 120, 
-//    	    	    top: 120, 
-//    	    	    width: 620, 
-//    	    	    height: 560,
-//    	    	    zIndex: 199,
-//    	    	    appearanceName: 'yosemite',
-////    	    	    url: 'geoweaver.html',//URL to display in iframe
-//    	    	    //urlLoaded:Callback function called after loading iframe
-////    	    	    urlLoaded: (frame) => {
-////    	    	      //Called when the url finishes loading
-////    	    	    }
-////    	    	    title: 'Window',
-////    	    	    left: 20, top: 20, width: 320, height: 220,
-////    	    	    movable: true,//Enable to be moved by mouse
-////    	    	    resizable: true,//Enable to be resized by mouse
-////    	    	    html: '<div id="my_element" style="padding:10px;font-size:12px;color:darkgray;">Contents of window</div>'
-//    	    	});
-//    	    	
-//    	    	frame.setControl({
-//    	            maximizeButton: 'maximizeButton',
-//    	            demaximizeButton: 'restoreButton',
-//    	            minimizeButton: 'minimizeButton',
-//    	            deminimizeButton: 'deminimizeButton',
-//    	            animation: true,
-//    	            animationDuration: 200,
-//
-//    	        });
-//    	    	
-//                frame.on('closeButton', 'click', (_frame, evt) => {
-//                	alert("click button is clicked");
-//                    _frame.closeFrame();
-//                    
-//                });
-//                
-//    	    	//Show the window
-//    	    	frame.show();
     	    	
     	    });
     	    
@@ -474,6 +438,8 @@ GW.workspace = {
 							thisGraph.edges = [];
 							thisGraph.updateGraph();
 							GW.workflow.setCurrentWorkflowName("");
+							GW.workflow.loaded_workflow = null;
+							
 						}
 						
 					}else{
@@ -768,6 +734,70 @@ GW.workspace = {
 	    	    return;
 	    	    
 	    	  }; // end of circles mouseup
+
+			  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
+				
+				var processid = d.id.split("-")[0];
+
+				var content = `<div class="modal-body">
+					
+					<div class="row">
+				
+						<div class="col-md-12" id="dbclick_content">
+
+							Process Name: `+d.title+` <br/>
+
+							Process ID: `+d.id+` <br/>
+
+							Output: <br/>
+
+						</div>
+				
+					</div>
+				
+				</div>
+		
+				<div class="modal-footer">
+
+					<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
+				
+					<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+				
+				</div>`;
+
+				var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+
+				frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
+
+				
+
+				$.ajax({
+
+					url: "workflow_process_log",
+				
+					method: "POST",
+				
+					data: "workflowhistoryid=" + GW.workflow.history_id + "&processid=" + d.id
+				
+				}).done(function(msg){
+
+					msg = GW.general.parseResponse(msg);
+
+					$("#dbclick_content").append(msg.history_output);
+
+					frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
+
+						// GW.menu.details(processid, "process");
+	
+						GW.process.showHistoryDetails(msg.history_id);
+				
+						_frame.closeFrame()
+						
+					})
+
+				})
+
+			  }
 	
 	    	  // mousedown on main svg
 	    	  GW.workspace.GraphCreator.prototype.svgMouseDown = function(){
@@ -935,25 +965,6 @@ GW.workspace = {
 		    	    case consts.DELETE_KEY:
 		    	    //   d3.event.preventDefault();
 					  this.deleteSelected();
-		// 			  if(document.getElementById("workspace").style.display=="block"){
-		// 				if (selectedNode){
-		    	        
-		// 					var pid = selectedNode.id;
-		// 					console.log("going to remove process: " + pid);
-		// //	    	    	GW.menu.del(pid, "process");
-		// 					thisGraph.removeNode(pid);
-						
-		// 				} else if (selectedEdge){
-						
-		// 					//removing an edge is much easier than removing a process
-		// 					thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-		// 					state.selectedEdge = null;
-		// 					GW.workspace.showNonSaved();
-		// 					thisGraph.updateGraph();
-						
-		// 				}
-		// 			  }
-		    	      
 		    	      break;
 	    	    }
 	    	  };
@@ -1033,6 +1044,9 @@ GW.workspace = {
 	    	      .on("mouseup", function(d){
 	    	        thisGraph.circleMouseUp.call(thisGraph, d3.select(this), d);
 	    	      })
+				  .on("dblclick", function(d){
+					thisGraph.circleDdlClick.call(thisGraph, d3.select(this), d);
+				  })
 	    	      .call(thisGraph.drag);
 	    	    
 //	    	    console.log("update circile once");	
@@ -1154,8 +1168,6 @@ GW.workspace = {
 
 						}
 
-						
-						
 						// console.log("circle should change its color");
 
 					}
@@ -1323,9 +1335,9 @@ GW.workspace = {
 	    	  /**** MAIN ****/
 	
 	    	  // warn the user when leaving
-	    	  window.onbeforeunload = function(){
-	    	    return "Make sure to save your graph locally before leaving :-)";
-	    	  };      
+	    	//   window.onbeforeunload = function(){
+	    	//     return "Make sure to save your graph locally before leaving :-)";
+	    	//   };      
 	
 	    	  var docEl = document.documentElement,
 //	    	      bodyEl = document.getElementsByTagName('body')[0];

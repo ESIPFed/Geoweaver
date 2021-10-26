@@ -2,7 +2,12 @@ package com.gw.jpa;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class Environment {
@@ -11,10 +16,26 @@ public class Environment {
 	@Id
 	String id;
 	
-	String name, type, bin, pyenv, host, basedir;
-	
+	String name, type, bin, pyenv, basedir;
+
+	// String host;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hostid")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Host hostobj;
+
 	@Column(columnDefinition = "LONGTEXT")
 	String settings;
+
+	
+	public Host getHostobj() {
+		return this.hostobj;
+	}
+
+	public void setHostobj(Host hostobj) {
+		this.hostobj = hostobj;
+	}
 
 	public String getId() {
 		return id;
@@ -56,13 +77,13 @@ public class Environment {
 		this.pyenv = pyenv;
 	}
 
-	public String getHost() {
-		return host;
-	}
+	// public String getHost() {
+	// 	return host;
+	// }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+	// public void setHost(String host) {
+	// 	this.host = host;
+	// }
 
 	public String getBasedir() {
 		return basedir;

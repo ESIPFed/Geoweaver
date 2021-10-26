@@ -312,15 +312,15 @@ GW.process = {
 		
 		showJupyter: function(code, cmid){
 			
-			var cont = '<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>'+
-				'<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> '+
-                '<div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />'+
-				'</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3"> '+
-		        '  <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> '+
-		        '  <div class="input-group-append"> '+
-		        '    <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button> '+
-		        '  </div> '+
-		        '</div></div></div> <div id="jupyter_area"></div>';
+			var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>
+				<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> 
+                <div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />
+				</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3">
+		          <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
+		          <div class="input-group-append"> 
+		            <button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
+		          </div>
+		        </div></div></div> <div id="jupyter_area"></div>`;
 			
 			$("#codearea-"+cmid).append(cont);
 			
@@ -338,8 +338,8 @@ GW.process = {
 		
 		showBuiltinProcess: function(code, cmid){
 			
-			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-			'     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-'+cmid+'">';
+			var cont = `     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>
+			     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-` + cmid + `">`;
 			
 			for(var i=0;i<GW.process.builtin_processes.length;i++){
 				
@@ -352,11 +352,11 @@ GW.process = {
 		   	
 		   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
 				
-				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-				GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
-				'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-				GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
-				cont += '</div>';
+				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
+					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
+					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
+					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
+					cont += '</div>';
 				
 			}
 			
@@ -641,7 +641,8 @@ GW.process = {
 			
 			// create an interactive chart to show all the data
 			
-			content ="<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
+			content = 
+			// "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
 			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
 			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
 			"</div>" + content ;
@@ -1208,27 +1209,35 @@ GW.process = {
 			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
-		       '	     <div class="col-md-6" style="padding:0;" ><p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.</p></div>'+
+		       '	     <div class="col-md-6" style="padding:0;" >'+
+			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
+			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
+			   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
+			   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
+			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
+			   '			</p>'+
+			   '		 </div>'+
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
 			content += "<div class=\"tab\" data-intro=\"this is a tab inside the process tab panel\">"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
-        	
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 0; border: 1px solid gray;\">";
 			
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
-				"				<div class=\"col col-md-6\" style=\"height:100%; overflow-y:scroll;\" >"+
-				"					<h4 class=\"border-bottom\">Code <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"showCurrent\">Latest Code</button></h4> "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; padding-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
+				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;\" >"+
+				// "					<h4 class=\"border-bottom\">Code"+
+				// "					</h4> "+
+				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
-				"					<h4 style=\"color:black\">Logging <button type=\"button\" class=\"btn btn-secondary btn-sm pull-right\" id=\"clearProcessLog\">Clear</button></h4> "+
+				"					<h4 style=\"color:black\">Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
@@ -1251,9 +1260,6 @@ GW.process = {
 
 			switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 
-			// content += "<div class=\"col col-md-6\" id=\"code-embed\" style=\"/* width:100%; */; float: none;\" ></div>";
-			
-//			switchTab(document.getElementById("main-process-tab"), "main-process-info");
 			GW.general.switchTab("process");
 			
 			$("#processcategory").val(code_type);
@@ -1262,11 +1268,7 @@ GW.process = {
 			
 			$("#processid").val(process_id);
 			
-//			console.log("The detected code language is : ", lang);
-			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
-			
-			// GW.process.editSwitch(true);
 			
 			GW.process.displayToolbar(process_id, process_name, code_type);
 			
@@ -1276,17 +1278,19 @@ GW.process = {
 
 				GW.process.showSaved();
 
-				// GW.process.displayCodeArea(process_id, process_name, code_type,  code);
-				
-				// if($("#closeHistory")) $("#closeHistory").trigger( "click" );
-				
-				// if($("#closeLog")) $("#closeLog").trigger("click");
-				
-				// GW.process.editSwitch();
-
-				// GW.process.clearProcessLogging();
-				
 			});
+
+			$("#log_switch").change(function(){
+				if(!this.checked){
+					$("#single-console-content").hide()
+					$("#process_code_window").removeClass("col-md-6");
+					$("#process_code_window").addClass("col-md-12");
+				}else{
+					$("#single-console-content").show()
+					$("#process_code_window").removeClass("col-md-12");
+					$("#process_code_window").addClass("col-md-6");
+				}
+			})
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
 			
@@ -2247,82 +2251,82 @@ GW.process = {
 				
 				GW.process.host_frame = GW.process.createJSFrameDialog(550, 280, content, 'Select a host')
 				
-			    	$.ajax({
-	            		
-	            		url: "list",
-	            		
-	            		method: "POST",
-	            		
-	            		data: "type=host"
-	            		
-	            	}).done(function(msg){
-	            		
-	            		msg = GW.general.parseResponse(msg);
-	            		
-	            		$("#hostselector").find('option').remove().end();
-	            		
-	            		for(var i=0;i<msg.length;i++){
-	            			
-							if(msg[i].type=="ssh"){
+				$.ajax({
+					
+					url: "list",
+					
+					method: "POST",
+					
+					data: "type=host"
+					
+				}).done(function(msg){
+					
+					msg = GW.general.parseResponse(msg);
+					
+					$("#hostselector").find('option').remove().end();
+					
+					for(var i=0;i<msg.length;i++){
+						
+						if(msg[i].type=="ssh"){
 
-								if(GW.host.isLocal(msg[i])){
-	            				
-									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-											"\" selected=\"selected\">"+msg[i].name+"</option>");
-									
-								}else{
-									
-									$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
-											"\" >"+msg[i].name+"</option>");
-									
-								}
-
+							if(GW.host.isLocal(msg[i])){
+							
+								$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+										"\" selected=\"selected\">"+msg[i].name+"</option>"); // default select localhost
+								
+							}else{
+								
+								$("#hostselector").append("<option id=\""+msg[i].id+"\" value=\""+msg[i].ip+
+										"\" >"+msg[i].name+"</option>");
+								
 							}
-	            			
-	            			
-	            		}
-	            		
-	            	}).fail(function(jxr, status){
-	    				
-	    				console.error("fail to list host");
-	    				
-	    			});
-			    	
-			    	$("#host-execute-btn").click(function(){
-			    		
-			    		var hostid = $("#hostselector").children(":selected").attr("id");
-			    		
-			    		var hostip = $("#hostselector").children(":selected").attr("value");
-			    		
-			    		console.log("host ip: " + hostip);
-	                	
-	                	console.log("selected host: " + hostid);
-	                	
-	                	if(hostip=="127.0.0.1"){
-	                		
-	                		GW.host.local_hid = hostid;
-	                		
-	                	}
-	                	
-	                	//remember the process-host connection
-	                	
-	                	if(document.getElementById('remember').checked) {
-	                	    
-	                		GW.process.setCache(pid, hostid); //remember s
-	                		
-	                	}
-	                	
-	                	GW.process.executeProcess(pid, hostid, lang);
-	                	
-	                	GW.process.host_frame.closeFrame();
-			    		
-			    	});
-			    	
-			    	$("#host-cancel-btn").click(function(){
-			    		
-			    		GW.process.host_frame.closeFrame();
-			    		
-			    	});
+
+						}
+						
+						
+					}
+					
+				}).fail(function(jxr, status){
+					
+					console.error("fail to list host");
+					
+				});
+				
+				$("#host-execute-btn").click(function(){
+					
+					var hostid = $("#hostselector").children(":selected").attr("id");
+					
+					var hostip = $("#hostselector").children(":selected").attr("value");
+					
+					console.log("host ip: " + hostip);
+					
+					console.log("selected host: " + hostid);
+					
+					if(hostip=="127.0.0.1"){
+						
+						GW.host.local_hid = hostid;
+						
+					}
+					
+					//remember the process-host connection
+					
+					if(document.getElementById('remember').checked) {
+						
+						GW.process.setCache(pid, hostid); //remember s
+						
+					}
+					
+					GW.process.executeProcess(pid, hostid, lang);
+					
+					GW.process.host_frame.closeFrame();
+					
+				});
+				
+				$("#host-cancel-btn").click(function(){
+					
+					GW.process.host_frame.closeFrame();
+					
+				});
 				
 			}else{
 				

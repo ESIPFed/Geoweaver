@@ -1,6 +1,5 @@
 package com.gw.search;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.gw.database.DataBaseOperation;
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;

@@ -18,10 +18,13 @@ import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service
+@Scope("prototype")
 public class UserTool {
     
     @Autowired
