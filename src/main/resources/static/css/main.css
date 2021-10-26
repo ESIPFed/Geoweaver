@@ -162,6 +162,11 @@ form .progress {
 
 }
 
+.toptoolbarbtn::before {
+
+  font-family: "Verdana, Geneva, Tahoma, sans-serif";
+
+}
 
 /* 
 loginbtn  {
