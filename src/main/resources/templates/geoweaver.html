@@ -6,6 +6,7 @@
 		<title>Geoweaver</title>
 		
 		<link rel="icon" href="../img/favicon.ico" />
+
 		
 		<link rel="stylesheet" href="../css/jquery.dataTables.min.css" />
 		
@@ -16,7 +17,6 @@
    		<link href="../css/bootstrap-colorpicker.min.css" rel="stylesheet" />
 		
 		<!-- <link href="../css/font-awesome.css" rel="stylesheet" /> -->
-		
 		<link href="../css/all.min.css" rel="stylesheet" />
 		
 		<link href="../css/workspace.css" rel="stylesheet" />
@@ -102,17 +102,17 @@
 			
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:rgb(216, 34, 34);">
 				
-				<div data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: auto;">
-				  <a  style="float: left; width: 100px;text-align: center; transition: all 0.3s ease;background-color:silver; " href="javascript:void(0)">
-				  	<img src="../img/header.png" width="100px" height="50px" />
+				<div class="tab" data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: hidden;" >
+				  <a  style="float: left; width: 120px;text-align: center; transition: all 0.3s ease;background-color:silver; " href="javascript:void(0)">
+				  	<img src="../img/header.png" width="120px" height="50px" />
 				  </a>
 				  <!-- <div style="float: left; width: 100px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" >
 				  	Geoweaver
 				  </div> -->
-				  <a id="toolbar-search"  
+				  <!--<a id="toolbar-search"  
 				  data-toggle="tooltip" title="Search Process/Workflow/Hosts"
 				  style="float: left; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:void(0)">
-				  	<i class="fa fa-search" alt="search" > Search</i>
+				  	<i class="fa fa-search toptoolbarbtn" style="font-family:Verdana, Geneva, Tahoma, sans-serif" alt="search" > Search</i>
 				  </a>
 				  <a id="toolbar-add" 
 				  data-toggle="tooltip" title="New Host/Process/Workflow"
@@ -146,15 +146,47 @@
                   </a>
 				  <a style="float: right; width: 80px;text-align: center;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.about.showDialog()">
 				  	<i class="fa fa-info" alt="info" id="toolbar-info"> Info</i>
-				  </a>
+				  </a>-->
 
-				  <a style="float: right; width: 100px;text-align: center; font-weight: bold; margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: yellow;font-size: 16px;" href="javascript:GW.user.logindialog()" id="toolbar-loginout-a">
+				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-general')" >
+					Home
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
+					Dashboard
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
+					Host
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
+					Process
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
+					Workflow
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
+					Weaver
+				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')" >
+					Console
+				  </button>
+
+				  <!-- <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
+					<button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
+					<button class="tablinks " id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">Dashboard</button>
+					<button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
+					<button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
+					<button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
+					<button class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
+					<button class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
+				  </div> -->
+
+				  <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
 					Login
-				  </a>
+				  </button>
 				  
-				  <a style="float: right; width: 120px;visibility: hidden; text-align: right;margin-top: 9px;padding-top: 5px;transition: all 0.3s ease;color: white;font-size: 16px;" href="javascript:GW.user.profiledialog()" id="toolbar-profile-a">
+				  <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
 					<i class="fa fa-user" alt="info" id="toolbar-profile"> Welcome</i>
-				  </a>
+				  </button>
 
 				</div>
 				
@@ -197,24 +229,16 @@
 			
 			<!-- set site margin here -->
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px;">
+			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
 				
 			    <!-- Workspace -->
 			    
 			    <div  class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 			    
-					  	<div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-						  <button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
-						  <button class="tablinks " id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">Dashboard</button>
-						  <button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
-						  <button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-						  <button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
-						  <button class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
-						  <button class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
-						</div>
+					  	
 						
-						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;"> 
+						<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;"> 
 							<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
 								
 								<h2 style="color:black;font-weight: bold;font-size: 30px; font-family: 'Poppins', sans-serif;padding-top:5px;padding-left:5px" >Welcome to Geoweaver! <a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"><i class="fab fa-github"></i></a></h2>
@@ -374,31 +398,31 @@
 							</div> 
 						</div>
 
-						<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+						<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
 								
 							</div>
 					  	</div>
 						
-						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
 							  	<h2 style="color:black">Please select a host on the right panel! </h2>
 							  </div>
 						</div>
 						 
-						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-process-content" style="height:100%;  padding: 10px;">
 							  	<h2 style="color:black">Please select a process on the right panel!</h2>
 							  </div>
 						</div>
 						
-						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
+						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-workflow-content" style="height:100%; padding: 10px;">
 							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
 							  </div>
 						</div>
 							
-						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
+						<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:0px;">
 							<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
 							  <h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
 							  <div id="log-window">
@@ -557,10 +581,43 @@
 					                  <i class="fa fa-share fa-lg"></i> Share
 					                  </a>
 					                </li> -->
-					
+									<li>
+										<a id="toolbar-search"  
+										data-toggle="tooltip" title="Search Process/Workflow/Hosts"
+										href="javascript:void(0)">
+											<i class="fa fa-search fa-lg" alt="search" ></i> Search
+										</a>
+									</li>
+
+									<li>
+										<a id="toolbar-history" 
+										data-toggle="tooltip" title="Process/Workflow History"
+										 href="javascript:void(0)">
+											<i class="fa fa-history fa-lg" alt="List the recent execution history"> </i> History
+										</a>
+									</li>
+									
+									<li>
+										<a id="toolbar-monitor" 
+										data-toggle="tooltip" title="Monitor Running Process/Workflow"
+										href="javascript:void(0)">
+											<i class="fa fa-film fa-lg" alt="monitor" > </i> Monitor
+										</a>
+
+									</li>
+				  
+									<li>
+										<a id="toolbar-settings" 
+										data-toggle="tooltip" title="Settings"
+										href="javascript:void(0)">
+											<i class="fa fa-cog fa-lg" alt="settings"  > </i> Settings
+										</a>
+
+									</li>
+
 									<li>
 					                  <a href="javascript:GW.tutorial.showDialog()">
-					                  <i class="fa fa-book fa-lg"></i> Tutorial
+					                  	<i class="fa fa-book fa-lg"></i> Tutorial
 					                  </a>
 					                </li>
 						
