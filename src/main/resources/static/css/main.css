@@ -122,7 +122,7 @@ form .progress {
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
-  background-color: #f1f1f1;
+  background-color: black;
 }
 
 /* Style the buttons inside the tab */
@@ -132,19 +132,24 @@ form .progress {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 3px 3px;
+  /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 12px;
+  font-size: 18px;
+  
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ddd;
+  background-color: rgb(24, 24, 24);
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-  background-color: #ccc;
+  background-color: rgb(56, 63, 85);
 }
 
 /* Style the tab content */
@@ -162,69 +167,57 @@ form .progress {
 
 }
 
-.toptoolbarbtn::before {
-
-  font-family: "Verdana, Geneva, Tahoma, sans-serif";
-
+.subtab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: white;
 }
 
-/* 
-loginbtn  {
-  background-color: #56baed;
+.subtab button{
+
+  background-color: white;
+  float: left;
   border: none;
-  color: white;
-  padding: 15px 80px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-loginbtn:hover, input[type=submit]:hover, input[type=reset]:hover  {
-  background-color: #39ace7;
-}
-
-loginbtn:active, input[type=submit]:active, input[type=reset]:active  {
-  -moz-transform: scale(0.95);
-  -webkit-transform: scale(0.95);
-  -o-transform: scale(0.95);
-  -ms-transform: scale(0.95);
-  transform: scale(0.95);
-}
-
-logintextinput {
-  background-color: #f6f6f6;
-  border: none;
-  color: #0d0d0d;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  /* padding: 3px 3px; */
+  transition: 0.3s;
   font-size: 16px;
-  margin: 5px;
-  width: 85%;
-  border: 2px solid #f6f6f6;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
+  
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+
 }
 
-logintextinput:focus {
-  background-color: #fff;
-  border-bottom: 2px solid #5fbae9;
-} */
+/* Change background color of buttons on hover */
+.subtab button:hover {
+  background-color: rgb(169, 171, 250);
+}
+
+/* Create an active/current tablink class */
+.subtab button.active {
+  background-color: rgb(193, 195, 201);
+}
+
+.toptoolbarbtn {
+
+  font-family: "Verdana, Geneva, Tahoma, sans-serif"; 
+  text-align: center; 
+  font-weight: bold;
+  transition: all 0.3s ease;
+  color: white;
+  /* font-size: 24px; */
+  height: 50px;
+  float: left;
+
+}
+
+.loginbtn {
+
+  float: right;
+
+}
+
+

@@ -158,18 +158,18 @@ GW.workflow = {
 		"</p></div>"+
 
 		// tab panel of workflow
-		"<div class=\"tab\" data-intro=\"this is a tab inside the workflow tab panel\">"+
+		"<div class=\"subtab tab\" data-intro=\"this is a tab inside the workflow tab panel\">"+
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-code-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-code')\">Info</button>"+
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 		
 		workflowid+"', '" + workflowname+"')\">History</button>"+
 		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll; left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 265px); box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; overflow-y: scroll; left:0; margin:0; padding: 5px;padding-bottom:25px;\">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
 			info_body+
 		"	</div>"+
 		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 170px); overflow-y: scroll;  left:0; margin:0; padding: 5px; padding-bottom:25px; border: 1px solid gray; display:none;\">"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 265px); box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; overflow-y: scroll;  left:0; margin:0; padding: 5px; padding-bottom:25px; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
