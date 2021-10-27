@@ -74,8 +74,10 @@ GW.user = {
             $("#login_dialog_body").html('<div class="row"><div class="col-md-12"><h3>You have logged in successfully!</h3><p>This window will automatically close in 3 seconds..</p></div></div>');
 
             $("#toolbar-loginout-a").html("Logout");
+
+            $("#toolbar-loginout-a").off("click");
     
-            $("#toolbar-loginout-a").attr("href", "javascript:GW.user.logout()"); 
+            $("#toolbar-loginout-a").click(GW.user.logout); 
     
             $("#toolbar-profile").html(" "+ name);
     
