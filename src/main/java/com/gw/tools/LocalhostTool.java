@@ -100,6 +100,15 @@ public class LocalhostTool {
 
 	}
 
+	public void authenticate(String password) throws Exception{
+
+		if(!bt.checkLocalhostPassword(password)){
+
+			throw new RuntimeException("Authentication Failed. Wrong Password.");
+
+		}
+
+	}
 
 	/**
 	 * Execute Shell Script on Localhost
@@ -121,6 +130,8 @@ public class LocalhostTool {
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
 			//get code of the process
 			
@@ -199,6 +210,8 @@ public class LocalhostTool {
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
 			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 			
@@ -279,6 +292,8 @@ public class LocalhostTool {
 		
 		try {
 			
+			authenticate(pswd);
+
 			//get code of the process
 			
 //			String code = ProcessTool.getCodeById(id);
@@ -341,6 +356,8 @@ public class LocalhostTool {
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
 			//write all the python files into local workspace folder
 			localizeAllPython(token);

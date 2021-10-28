@@ -1,15 +1,19 @@
 package com.gw;
 
 import java.awt.Desktop;
+import java.io.Console;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
 import com.gw.tools.UserTool;
+import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
+import com.gw.utils.RandomString;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,17 +23,48 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @ServletComponentScan
 public class GeoweaverApplication {
 
+    @Value("${geoweaver.workspace}")
+    private static String           workspace;
+
+
 	public static void main(String[] args) {
 		
 //		BasicConfigurator.configure();
+
+        if(args.length==1 && "resetpassword".equals(args[0])){
+
+            Console console = System.console();
+            if (console == null) {
+                System.out.println("Couldn't get Console instance");
+                System.exit(0);
+            }
+
+            console.printf("Reset Geoweaver Localhost password%n");
+            char[] passwordArray = console.readPassword("Enter your secret password: ");
+            // console.printf("Password entered was: %s%n", new String(passwordArray));
+
+
+            String originalpassword = new String(passwordArray);
+        
+            BaseTool bt = new BaseTool();
+
+            bt.setLocalhostPassword(originalpassword, true);
+
+            console.printf("Password updated.");
+
+        }else{
+
+            SpringApplication.run(GeoweaverApplication.class, args);
+
+            // openHomePage();	
+
+            addDefaultPublicUser();
+
+            addLocalhost();
+
+        }
 		
-		SpringApplication.run(GeoweaverApplication.class, args);
-
-		// openHomePage();	
-
-        addDefaultPublicUser();
-
-        addLocalhost();
+		
     
 	}
 
@@ -71,13 +106,45 @@ public class GeoweaverApplication {
 
         }
 
+        // read password file
+        try{
+
+            BaseTool bt = BeanTool.getBean(BaseTool.class);
+
+            if(bt.isNull(bt.getLocalhostPassword())){
+
+                String initialpassword = new RandomString(30).nextString();
+
+                System.out.println("\n~~~~~~~~~\n");
+
+                System.out.println("Default Password for Localhost Execution: " + initialpassword+ "\n");
+
+                System.out.println("Please copy and remember the password in a safe place. This message only shows once.");
+
+                System.out.println("To change the password, please use command: java -jar geoweaver.jar resetpassword");
+
+                System.out.println("\n~~~~~~~~~\n");
+                
+                bt.setLocalhostPassword(initialpassword, false);
+
+            }
+
+            
+            
+        }catch(Exception e){
+
+            e.printStackTrace();
+
+        }
+        
+
 
     }
 
     public static void addDefaultPublicUser(){
 
-        //fixed public user "public_user", id: "111111"
-        //all the created resources will be assigned to this user
+        // fixed public user "public_user", id: "111111"
+        // all the created resources will be assigned to this user
         
         UserTool ut = BeanTool.getBean(UserTool.class);
 
