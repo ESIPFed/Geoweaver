@@ -169,7 +169,7 @@
 				  <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')" >
 					Console
 				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-general')" >
+				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
 					Documentation
 				  </button>
 
@@ -254,64 +254,14 @@
 									</div>	
 								</div>
 
-								<!--	
-								<div class="row">
-									<div class="col col-md-3">
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Hosts</h3>
-										<div class="list-group" style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('ssh')" >SSH Server</button>
-											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('jupyter')" >Jupyter Notebook</button>
-											
-											<button type="button" class="list-group-item list-group-item-action " onClick="GW.host.newDialog('jupyterhub')" >Jupyter Hub</button>
-											
-											<button type="button" class="list-group-item list-group-item-action "  onClick="GW.host.newDialog('gee')">Google Earth Engine</button>
+								
+			  	
+							  	
+							</div> 
+						</div>
 
-										</div>
-										
-									</div>
-
-									<div class="col col-md-3">
-
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >Process</h3>
-										
-										<div class="list-group" style="width: 100%">
-											
-											<button onclick="GW.process.newDialog('shell')" id="shell" type="button" class="list-group-item list-group-item-action " >Shell</button>
-											<button onclick="GW.process.newDialog('jupyter')" type="button" class="list-group-item list-group-item-action " >Notebook</button>
-											<button onclick="GW.process.newDialog('builtin')" type="button" class="list-group-item list-group-item-action " >Built-in Process</button>
-											<button onclick="GW.process.newDialog('python')" type="button" class="list-group-item list-group-item-action " >Python</button> 
-											
-										</div>
-									</div>
-
-									<div class="col col-md-4">
-				  					<img src="../img/geoweaver_graph.png" class="rounded float-right"/>
-									</div>
-
-
-									<div class="col col-md-3">
-										<h3  style="font-weight:bold;font-size:25px;color:black;font-family: 'Poppins', sans-serif" >Workflow</h3>
-										
-										<div class="list-group"  style="width: 100%">
-											<button type="button" class="list-group-item list-group-item-action " onclick="GW.home.showDialog()" >Workflow</button>
-											
-										</div>
-									</div>
-										<div class="col col-md-3"> 
-										<h3 style="color:black;font-weight:bold;font-size:25px;font-family: 'Poppins', sans-serif" >About</h3>
-										
-										<div class="btn-group-vertical"  style="width: 100%">
-											
-											<button onclick="GW.about.showDialog()" type="button" class="list-group-item list-group-item-action ">About</button>
-									
-											<button onclick="GW.settings.showDialog()" type="button" class="list-group-item list-group-item-action ">Settings</button>
-									
-											<button onclick="GW.tutorial.showDialog()" type="button" class="list-group-item list-group-item-action " >Tutorial</button>
-										</div>
-									</div>
-								</div>	-->			
-
+						<div id="main-documentation" class="tabcontent" style="height:100%; left:0; margin:0; padding: 30px;padding-bottom:0px;">
+							<div id="main-documentation-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
 								<div class="row">       
 									<div  class="col col-md-12">
 
@@ -383,10 +333,8 @@
 												
 			
 								</div>
-			  	
-							  	
-							</div> 
-						</div>
+							</div>
+					  	</div>
 
 						<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
