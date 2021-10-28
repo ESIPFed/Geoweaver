@@ -20,7 +20,7 @@ nav li.active {
 	padding-bottom: 1rem;
 }
 hr {
-	margin-top: 2rem;
+	margin-top: 1rem;
 	margin-bottom: 2rem;
 }
 
@@ -77,7 +77,7 @@ form .progress {
   visibility: hidden; /* Hidden by default. Visible on click */
   min-width: 250px; /* Set a default minimum width */
   margin-left: -125px; /* Divide value of min-width by 2 */
-  background-color: grey; /* Black background color */
+  background-color: rgb(206, 206, 206); /* Black background color */
   color: #fff; /* White text color */
   text-align: center; /* Centered text */
   border-radius: 2px; /* Rounded borders */
@@ -122,40 +122,39 @@ form .progress {
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
-  background-color: black;
+  background-color: rgb(255, 255, 255);
 }
 
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
-  float: left;
-  border: none;
+  float: none;
+  border: none ;
   outline: none;
   cursor: pointer;
   /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 18px;
-  
+  font-size: 14px;
   padding-top: 8px;
   padding-bottom: 8px;
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: rgb(24, 24, 24);
+  background-color: rgb(218, 218, 218);
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-  background-color: rgb(56, 63, 85);
+  background-color: rgb(204, 204, 204);
 }
 
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  padding: 6px 12px; 
   /* border: 1px solid #ccc; */
   border-top: none;
 }
@@ -203,11 +202,10 @@ form .progress {
 
 .toptoolbarbtn {
 
-  font-family: "Verdana"; 
+  font-family: "Lato"; 
   text-align: center; 
-  font-weight: bold;
   transition: all 0.3s ease;
-  color: white;
+  color: rgb(0, 0, 0);
   /* font-size: 24px; */
   height: 50px;
   float: left;
