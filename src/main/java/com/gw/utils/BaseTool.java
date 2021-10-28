@@ -504,7 +504,7 @@ public class BaseTool {
 			
 			filepath = this.normalizedPath(filepath);
 			
-			logger.info("Writing to file: " + filepath);
+			// logger.info("Writing to file: " + filepath);
 			
 			createWorkspace(filepath);
 			
