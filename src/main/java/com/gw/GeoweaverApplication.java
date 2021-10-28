@@ -3,8 +3,6 @@ package com.gw;
 import java.awt.Desktop;
 import java.io.Console;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -17,13 +15,9 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-
-import jdk.internal.org.jline.utils.Log;
  
 @SpringBootApplication
 @ServletComponentScan
