@@ -88,14 +88,14 @@ public class BaseTool {
 
 	public String getLocalhostIdentifier() throws Exception{
 
-		return "GeoweaverWorkflowManagementSoftwareForAll";
-		// InetAddress localHost = InetAddress.getLocalHost();
+		// return "GeoweaverWorkflowManagementSoftwareForAll";
+		InetAddress localHost = InetAddress.getLocalHost();
 
-        // NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
+        NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
         
-        // byte[] hardwareAddress = ni.getHardwareAddress();
+        byte[] hardwareAddress = ni.getHardwareAddress();
 
-		// return hardwareAddress.toString();
+		return new String(hardwareAddress, StandardCharsets.UTF_8);
 	}
 
 	public boolean checkLocalhostPassword(String received_password) throws Exception{

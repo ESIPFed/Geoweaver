@@ -38,7 +38,7 @@ public class HostTest {
 	@Test
 	void testLocalhostPassword(){
 
-		bt.setLocalhostPassword("Test1", true);
+		bt.setLocalhostPassword("password", true);
 
 		String password = bt.getLocalhostPassword();
 
