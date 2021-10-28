@@ -1249,7 +1249,7 @@ GW.process = {
 				
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:calc(100% - 165x); overflow-y: scroll; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; left:0; margin:0; padding: 5px; padding-bottom:25px; display:none;\">";
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:calc(100% - 165px); overflow-y: scroll; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; left:0; margin:0; padding: 5px; padding-bottom:25px; display:none;\">";
 
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
 			'   </div>';
