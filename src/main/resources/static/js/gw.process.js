@@ -1220,14 +1220,14 @@ GW.process = {
 		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
 			   '   </div>' ;
 			
-			content += "<div class=\"subtab tab\" data-intro=\"this is a tab inside the process tab panel\">"+
+			content += "<div class=\"subtab tab titleshadow\" data-intro=\"this is a tab inside the process tab panel\">"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
 			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
 			process_id+"', '" + process_name+"')\">History</button>"+
 		 	" </div>";
 			
 			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 165px);box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; left:0; margin:0; padding: 0; \">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px);left:0; margin:0; padding: 0; \">";
 			
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
@@ -1240,7 +1240,9 @@ GW.process = {
 				"					<h4 style=\"color:black\">Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
-				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " ></div>'+
+				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >'+
+				'							<div class="d-flex justify-content-center"><div class="dot-flashing "></div></div>'+
+				'						</div>'+
 				'   				</div>'+
 				"				</div>";
 				// "			</div>";
@@ -1249,7 +1251,7 @@ GW.process = {
 				
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process\" style=\"height:calc(100% - 165px); overflow-y: scroll; box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; left:0; margin:0; padding: 5px; padding-bottom:25px; display:none;\">";
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;\">";
 
 			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
 			'   </div>';
