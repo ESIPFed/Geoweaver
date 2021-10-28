@@ -246,11 +246,12 @@ GW.host = {
 			
 			var s = GW.host.findCache(hid);
 			
-			if(hid == GW.host.local_hid){
+			// if(hid == GW.host.local_hid){
 				
-				GW.host.encrypt(hid, "local", req, null, null, business_callback);
+			// 	GW.host.encrypt(hid, "local", req, null, null, business_callback);
 				
-			}else if(s==null){
+			// }else 
+			if(s==null){
 				
 				GW.host.enter_password(hid, req, business_callback);
 				

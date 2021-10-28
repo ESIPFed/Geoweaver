@@ -2,22 +2,35 @@ package com.gw;
 
 import java.awt.Desktop;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
 import com.gw.tools.UserTool;
+import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
+import com.gw.utils.RandomString;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+
+import jdk.internal.org.jline.utils.Log;
  
 @SpringBootApplication
 @ServletComponentScan
 public class GeoweaverApplication {
+
+    @Value("${geoweaver.workspace}")
+    private static String           workspace;
+
 
 	public static void main(String[] args) {
 		
@@ -71,13 +84,26 @@ public class GeoweaverApplication {
 
         }
 
+        // read password file
+        try{
+            BaseTool bt = BeanTool.getBean(BaseTool.class);
+
+            
+
+        }catch(Exception e){
+
+            e.printStackTrace();
+
+        }
+        
+
 
     }
 
     public static void addDefaultPublicUser(){
 
-        //fixed public user "public_user", id: "111111"
-        //all the created resources will be assigned to this user
+        // fixed public user "public_user", id: "111111"
+        // all the created resources will be assigned to this user
         
         UserTool ut = BeanTool.getBean(UserTool.class);
 

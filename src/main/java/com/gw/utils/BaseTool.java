@@ -16,10 +16,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -81,6 +84,62 @@ public class BaseTool {
 	public BaseTool() {
 		
 		
+	}
+
+	public String getLocalhostIdentifier() throws Exception{
+
+		return "GeoweaverWorkflowManagementSoftwareForAll";
+		// InetAddress localHost = InetAddress.getLocalHost();
+
+        // NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
+        
+        // byte[] hardwareAddress = ni.getHardwareAddress();
+
+		// return hardwareAddress.toString();
+	}
+
+	public boolean checkLocalhostPassword(String received_password) throws Exception{
+
+		String encodedreceivedpassword = this.get_SHA_512_SecurePassword(received_password, getLocalhostIdentifier());
+
+		String readpassword = this.getLocalhostPassword();
+
+		return readpassword.equals(encodedreceivedpassword);
+
+	}
+
+	public String getLocalhostPassword(){
+
+		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
+
+		return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+
+	}
+
+	public void setLocalhostPassword(String originalpassword, boolean force){
+
+		try{
+
+			String encodedpassword = getLocalhostPassword();
+
+			if(this.isNull(encodedpassword) || force){
+	
+				originalpassword = this.isNull(originalpassword)? new RandomString(30).nextString(): originalpassword;
+	
+				encodedpassword = this.get_SHA_512_SecurePassword(originalpassword, getLocalhostIdentifier());
+
+				workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
+	
+				this.writeString2File(encodedpassword, this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+	
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
 	}
 
 	/**
