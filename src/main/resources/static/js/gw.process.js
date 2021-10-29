@@ -19,6 +19,8 @@ GW.process = {
 		
 		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 		
+		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
+
 		env_frame: null,
 
 		isSaved: true,
@@ -965,7 +967,7 @@ GW.process = {
 		
 		createJSFrameDialog: function(width, height, content, title){
 			
-			var frame = GW.workspace.jsFrame.create({
+			var frame = GW.process.jsFrame.create({
 	    		title: title,
 	    	    left: 0, 
 	    	    top: 0, 
@@ -1241,7 +1243,7 @@ GW.process = {
 				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >'+
-				'							<div class="d-flex justify-content-center"><div class="dot-flashing "></div></div>'+
+				'							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>'+
 				'						</div>'+
 				'   				</div>'+
 				"				</div>";
