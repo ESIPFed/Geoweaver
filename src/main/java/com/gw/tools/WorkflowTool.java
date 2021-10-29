@@ -631,6 +631,21 @@ public class WorkflowTool {
 		return resp.toString();
 		
 	}
+
+	/**
+	 * Download workflow 
+	 * @param wid
+	 * workflow id
+	 * @param option
+	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodehistory
+	 * @return
+	 */
+    public String download(String wid, String option) {
+
+
+
+        return null;
+    }
 	
 	// public static void main(String[] args) throws ParseException {
 		

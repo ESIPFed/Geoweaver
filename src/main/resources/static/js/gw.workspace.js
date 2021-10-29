@@ -239,7 +239,7 @@ GW.workspace = {
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly">
 									<label class="form-check-label" for="workflowonly">
-									Workflow JSON Only
+									Workflow (JSON Only)
 									</label>
 								</div>
 								<div class="form-check">
@@ -251,7 +251,7 @@ GW.workspace = {
 								<div class="form-check">
 									<input class="form-check-input" type="radio" name="workflowdownloadoption" id="workflowwitheverything" checked>
 									<label class="form-check-label" for="workflowwitheverything">
-									Workflow with Process Code and History
+									Workflow with Process Code and History (Recommended)
 									</label>
 								</div>
 							</div>
@@ -272,13 +272,15 @@ GW.workspace = {
 
 					$("#workflow-download-confirm-btn").click(function(){
 
+						let exportoption = $("input[name='workflowdownloadoption']:checked").val();
+
 						$.ajax({
 
-							url: "download_workflow",
+							url: "downloadworkflow",
 					
 							method: "POST",
 						
-							data: "id=" + GW.workspace.loaded_workflow + "&type=everything"
+							data: "id=" + GW.workspace.loaded_workflow + "&option=" + exportoption
 	
 						}).done(function(msg){
 	

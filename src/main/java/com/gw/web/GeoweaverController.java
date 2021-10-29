@@ -394,6 +394,31 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/downloadworkflow", method = RequestMethod.POST)
+    public @ResponseBody String downloadworkflow(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String option = request.getParameter("option");
+			
+			String wid = request.getParameter("id");
+			
+			resp = wt.download(wid, option);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	/**
 	 * Get history of process or workflow
