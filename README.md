@@ -71,7 +71,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 ## Reset Password for Localhost
 
-Geoweaver will automatically create a password for localhost. It will only show once at first run of Geoweaver. It is recommended to copy and save it ia safe place. If forget or missed that password, please run the following command to reset:
+Geoweaver will automatically create a password for localhost. It will only show once at first run of Geoweaver. It is recommended to copy and save it at a safe place. If forget or missed that password, please run the following command to reset:
 
 ```
 java -jar geoweaver.jar resetpassword

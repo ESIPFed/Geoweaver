@@ -217,4 +217,66 @@ form .progress {
   margin-right: 30px;
 }
 
+/**
+ * ==============================================
+ * Dot Flashing
+ * ==============================================
+ */
+ .dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #b8b8b8;
+  color: #b8b8b8;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: .5s;
+  margin: 0 auto;
+}
 
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #3a3a3a;
+  color: #3a3a3a;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #3a3a3a;
+  color: #3a3a3a;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #3a3a3a;
+  }
+  50%,
+  100% {
+    background-color: #f7f6fc;
+  }
+}
+
+.generalshadow {
+  box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset;
+}
+
+.titleshadow {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px inset;
+}

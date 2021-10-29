@@ -164,12 +164,12 @@ GW.workflow = {
 		
 		workflowid+"', '" + workflowname+"')\">History</button>"+
 		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 265px); box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; overflow-y: scroll; left:0; margin:0; padding: 5px;padding-bottom:25px;\">"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
 			info_body+
 		"	</div>"+
 		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow\" style=\"height:calc(100% - 265px); box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset; overflow-y: scroll;  left:0; margin:0; padding: 5px; padding-bottom:25px; display:none;\">"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
