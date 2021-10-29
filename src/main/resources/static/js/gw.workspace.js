@@ -237,21 +237,21 @@ GW.workspace = {
 							<div class="col-md-12">
 
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly">
-									<label class="form-check-label" for="workflowonly">
-									Workflow (JSON Only)
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly" >
+										<i>Workflow (JSON Only)</i>
 									</label>
 								</div>
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="workflowdownloadoption" id="workflowwithcode">
-									<label class="form-check-label" for="workflowwithcode">
-									Workflow with Process Code
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscode">
+										<i>Workflow with Process Code</i>
 									</label>
 								</div>
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="workflowdownloadoption" id="workflowwitheverything" checked>
-									<label class="form-check-label" for="workflowwitheverything">
-									Workflow with Process Code and History (Recommended)
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodehistory" checked>
+										<i>Workflow with Process Code and History (Recommended)</i>
 									</label>
 								</div>
 							</div>
@@ -280,17 +280,21 @@ GW.workspace = {
 					
 							method: "POST",
 						
-							data: "id=" + GW.workspace.loaded_workflow + "&option=" + exportoption
+							data: "id=" + GW.workflow.loaded_workflow + "&option=" + exportoption
 	
 						}).done(function(msg){
 	
-							msg = GW.general.parseResponse(msg);
-	
-							
+							if(msg.startsWith("download/temp/")){
+
+								let zipurl = msg;
+
+								window.open("../" + zipurl)
+
+							}
 	
 						}).fail(function(msg){
 	
-
+							alert("Fail to download workflow: " + msg);
 
 						});
 

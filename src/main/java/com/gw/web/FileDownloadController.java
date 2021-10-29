@@ -26,6 +26,7 @@ public class FileDownloadController {
 	
 	@Autowired
 	BaseTool bt;
+
 	
 //	http://localhost:8070/Geoweaver/download/temp/testoutput.nc
 	@RequestMapping(value="/download/temp/{filename}", method=RequestMethod.GET)
