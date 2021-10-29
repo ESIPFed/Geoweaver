@@ -1,22 +1,28 @@
 package com.gw.web;
 
 import java.io.UnsupportedEncodingException;
+
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.gw.jpa.Host;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
-import com.gw.utils.BaseTool;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.simple.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +36,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.WebRequest;
+
+import com.gw.jpa.Host;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
+import com.gw.utils.BaseTool;
+import com.gw.utils.LoggingRequestInterceptor;
 
 /**
  * 
@@ -251,6 +272,7 @@ public class GoogleEarthController {
 			newheaders =  HttpHeaders.writableHttpHeaders(oldheaders);
 			// logger.debug("New Headers [updateRequestHeader]: "+newheaders.toString());
 			logger.debug("{{{Real URL}}} : "+realurl);
+
 			newheaders.set("Host", "code.earthengine.google.com");
 			
 			// newheaders.set("origin", hosturl);
@@ -276,6 +298,7 @@ public class GoogleEarthController {
 
 			// newheaders.set("Alt-Used", "code.earthengine.google.com");
 
+
 			newheaders.set("Connection", "keep-alive");
 
 		} catch (Exception e) {
@@ -298,6 +321,7 @@ public class GoogleEarthController {
 	 */
 	private HttpHeaders updateResponseHeader(HttpHeaders oldheaders, byte[] body, String hostid) {
 		// logger.debug("Old Headers: "+oldheaders.toString());
+
 		HttpHeaders newheaders = oldheaders;
 		
 		try {
@@ -314,6 +338,7 @@ public class GoogleEarthController {
 			newheaders.set("Host", "code.earthengine.google.com");
 			// newheaders.set("Cookie", newheaders.get("Set-Cookie").toString());
             // logger.debug("New Headers [updateResponseHeader]: "+newheaders.get("Set-Cookie"));
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -336,6 +361,7 @@ public class GoogleEarthController {
 			Host h = ht.getHostById(hostid);
 			
             newheaders = this.updateRequestHeader(headers, h, realurl, request.getQueryString());
+
 
 			
 		} catch (Exception e) {
@@ -448,6 +474,7 @@ public class GoogleEarthController {
 	}
 
 
+
     /**
 	 * Process GET Request
 	 * @param <T>
@@ -478,6 +505,7 @@ public class GoogleEarthController {
 			
 			String targeturl = getRealTargetURL(newheaders.get("target_url").get(0)); //using referer as the target url is not right
 			logger.debug("[Target URL GoogleEarth]: "+targeturl);
+
 			// logger.info("New target url: " + targeturl);
 			
 
@@ -486,6 +514,7 @@ public class GoogleEarthController {
             // URI uri = new URI("https", null, "https://code.earthengine.google.com/", 443, request.getRequestURI(), request.getQueryString(), null);
 
 			// logger.debug(newentity.toString());
+
 
 
 
@@ -522,6 +551,109 @@ public class GoogleEarthController {
 					headers, 
 					responseEntity.getStatusCode());
 
+
+                restTemplate.exchange("https://code.earthengine.google.com/", HttpMethod.GET, newentity, byte[].class);
+        
+			logger.debug("response entity: " + responseEntity.toString());
+
+			HttpHeaders headers = updateResponseHeader(responseEntity.getHeaders(), responseEntity.getBody(), hostid);
+
+			resp = new ResponseEntity<byte[]>(
+					responseEntity.getBody(), 
+					headers, 
+					responseEntity.getStatusCode());
+
+            return responseEntity;
+			// String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
+
+			// byte[] newbody = null;
+
+			// if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			//  && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+
+				// newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
+
+			// }else{
+
+				// newbody = responseEntity.getBody();
+
+			// }
+
+			// if(ishub) logger.debug("Old Response Header: " + responseEntity.getHeaders().toString());
+			
+			// HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+			
+			// if(ishub) logger.debug("New Response Header: " + headers.toString());
+
+			// resp = new ResponseEntity<byte[]>(
+			// 		newbody, 
+			// 		headers, 
+			// 		responseEntity.getStatusCode());
+
+			
+// 			if(targeturl.contains(".png") || targeturl.contains(".woff")) {
+				
+// 				ResponseEntity<byte[]> responseEntity = restTemplate.exchange(targeturl, method, newentity, byte[].class);
+// //				
+// //				String newbody = new String(responseEntity.getBody());
+// //				
+// //				HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+// //			    
+// //				resp = new ResponseEntity<byte[]>(
+// //						responseEntity.getBody(), 
+// //			    		headers, 
+// //			    		responseEntity.getStatusCode());;
+				
+// 				resp = responseEntity;
+				
+// 			}else {
+				
+// 				ResponseEntity<String> responseEntity = restTemplate.exchange(targeturl, method, newentity, String.class);
+			    
+		    	
+// 		    	String newbody = responseEntity.getBody();
+		    	
+// 		    	String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
+		    	
+// 		    	// if(bt.isNull(newbody)|| ( !bt.isNull(contenttype) && (contenttype.contains("image")
+// 				// 	|| contenttype.contains("font")) )) {
+// 				if( !bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font")) ) {
+// //			    	HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+// //			    	
+// //			    	resp = new ResponseEntity<byte[]>(
+// //							bt.isNull(newbody)?null:newbody.getBytes("UTF-8"), 
+// //				    		headers, 
+// //				    		responseEntity.getStatusCode());;
+// 		    		// find a way not send the same request twice just because the type is not byte for image/font files
+// 		    		resp = restTemplate.exchange(targeturl, method, newentity, byte[].class);
+		    		
+// //		    		resp = responseEntity;
+		    		
+// 		    	}else {
+		    		
+// 			    	if(bt.isNull(responseEntity.getBody())){
+// 						resp = new ResponseEntity<byte[]>(
+// 								null,
+// 								headers, 
+// 								responseEntity.getStatusCode());
+// 					}else{
+						
+// 						newbody = addURLProxy(responseEntity.getBody(), hostid);
+
+// 						HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
+
+// 						resp = new ResponseEntity<byte[]>(
+// 								newbody.getBytes("UTF-8"), 
+// 								headers, 
+// 								responseEntity.getStatusCode());
+// 					}
+
+	    		
+// 		    	}
+// //		    	
+	    		
+				
+// 			}
 			
 		    
 		    
@@ -533,6 +665,7 @@ public class GoogleEarthController {
 		    
 		    // get response body
 		    System.out.println(ex.getResponseBodyAsString());
+
 		    
 		    // get http headers
 //		    HttpHeaders headers = ex.getResponseHeaders();
@@ -542,12 +675,14 @@ public class GoogleEarthController {
 		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
 		    
 		    resp = errorControl(newbody, hostid);
+
 		    
 		}catch(Exception e) {
 			
 			e.printStackTrace();
 			
 			resp = errorControl(e.getLocalizedMessage(), hostid);
+
 			
 		}
 		
@@ -564,13 +699,17 @@ public class GoogleEarthController {
     produces = MediaType.ALL_VALUE)
 public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") String hostid, RequestEntity reqentity, HttpServletRequest request) throws URISyntaxException
 {
-    // logger.info(reqentity.toString());
-    // logger.info(method.toString());
-    // logger.info(request.toString());
-    // logger.info(hostid.toString());
+
+    logger.info(reqentity.toString());
+    logger.info(method.toString());
+    logger.info(request.toString());
+    logger.info(hostid.toString());
     ResponseEntity resp = processGET(reqentity, method, request, hostid);
 	logger.debug("response status code: " + resp.getStatusCode());
-
+    // URI yahoo = new URI("https://code.earthengine.google.com/");
+    // HttpHeaders httpHeaders = new HttpHeaders();
+    // httpHeaders.setLocation(yahoo);
+    // return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
     
 
 
@@ -698,6 +837,7 @@ public ResponseEntity proxyroot_get(HttpMethod method, @PathVariable("hostid") S
 	    return resp;
 	    
 	}
+
 
 
 
