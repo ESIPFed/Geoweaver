@@ -29,7 +29,7 @@ public class EmailService {
 
 		String token = new RandomString(30).nextString();
 
-		String reset_url = site_url + "reset_password?token=" + token;
+		String reset_url = site_url + "/reset_password?token=" + token;
 
 		ut.token2userid.put(token, user.getId());
 
@@ -64,7 +64,7 @@ public class EmailService {
 
 			com.google.api.services.gmail.model.Message msg = gmailOperations.createMessageWithEmail(Mimemessage);
 
-			service.users().messages().send("Geoweaver Service Team", msg).execute();
+			service.users().messages().send("me", msg).execute();
 			
 		}catch(Exception e) {
 			
