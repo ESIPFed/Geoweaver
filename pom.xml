@@ -11,24 +11,23 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.6</version>
+	<version>0.9.8</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		
-		<!-- <java.version>1.8</java.version> -->
-		 
 		<org.springframework-version>[5.3.1,)</org.springframework-version>
 		
 		<org.springboot-version>[2.4.1,)</org.springboot-version>
 		
 		<thymeleaf-version>[3.0.12,)</thymeleaf-version>
+
+		<start-class>com.gw.GeoweaverApplication</start-class>
 		
 	</properties>
-	
 	
 	<dependencies>
 		<dependency>
@@ -65,8 +64,7 @@
 		<dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
-	         <scope>runtime</scope><!-- -->
-	        <optional>true</optional>
+	        <optional>false</optional>
 	    </dependency>
 		
 		
@@ -87,7 +85,26 @@
 		    <artifactId>aopalliance</artifactId>
 		    <version>1.0</version>
 		</dependency>
-        
+        <dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-gmail</artifactId>
+			<version>v1-rev20210111-1.31.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.14.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20200518</version>
+		</dependency>
         <!-- 
         <dependency>
             <groupId>aopalliance</groupId>
@@ -137,6 +154,13 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.9</version>
+		</dependency>
+
 		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -232,13 +256,6 @@
 		    <groupId>commons-httpclient</groupId>
 		    <artifactId>commons-httpclient</artifactId>
 		    <version>3.1</version>
-		</dependency>
-
-        
-        <dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-text</artifactId>
-		    <version>1.6</version>
 		</dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
@@ -423,5 +440,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>

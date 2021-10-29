@@ -6,9 +6,23 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch SpatialExtentValidator",
+            "name": "Launch ResetPassword",
             "request": "launch",
-            "mainClass": "com.gw.utils.SpatialExtentValidator",
+            "mainClass": "com.gw.tools.ResetPassword",
+            "projectName": "geoweaver"
+        },
+        {
+            "type": "java",
+            "name": "Launch TempTest",
+            "request": "launch",
+            "mainClass": "com.TempTest",
+            "projectName": "geoweaver"
+        },
+        {
+            "type": "java",
+            "name": "Launch GmailAPI",
+            "request": "launch",
+            "mainClass": "com.gw.utils.GmailAPI",
             "projectName": "geoweaver"
         },
         {
@@ -17,13 +31,6 @@
             "request": "launch",
             "mainClass": "com.gw.GeoweaverApplication",
             "projectName": "geoweaver"
-        },
-        {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
         }
     ]
 }

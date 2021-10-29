@@ -10,9 +10,11 @@ GW.workspace = {
 		
 		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
 
+		keymap : {},
+
 		showNonSaved: function(){
 
-			console.trace("changes happened")
+			console.log("changes happened")
 
 			$("#main-workspace-tab").html("Weaver *");
 
@@ -25,18 +27,6 @@ GW.workspace = {
 		},
 		
 		resizeIframe: function(obj){
-			
-//			setTimeout(function(){
-//				
-//				obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-//				
-//				console.log("The content height is " + obj.contentWindow.document.documentElement.scrollHeight);
-//				
-//				console.log("The height is updated");
-//				
-//			}, 2000); //wait 2 seconds
-			
-			
 			
 		},
 		
@@ -58,76 +48,33 @@ GW.workspace = {
 //			});
 			
 			GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
-			
-//	        const jsFrame = new JSFrame({parentElement: $('#jsframe-container')[0]});
-////	        const innerHTML = '<div class="modal-header">' +
-////	            '<h6 class="modal-title">Do want to save ?</h6>' +
-////	            '</div>' +
-////	            '<div class="modal-footer">' +
-////	            '<button id="bt_submit" type="button" class="btn btn-outline-primary">OK</button>' +
-////	            '<button id="bt_cancel" type="button" class="btn btn-outline-secondary">Cancel</button>' +
-////	            '</div>';
-//	        const innerHTML = '<div style="padding:10px; font-size: 12px;">Your contents here.</div>'
-//
-//	        const modalFrame = jsFrame.create({
-//	            name: 'my-modal-window',
-//	            title: 'Confirmation',
-//	            appearanceName: 'yosemite',
-//	            left: 0, top: 0, width: 320, height: 150,
-//	            style: {
-//                    backgroundColor: 'rgb(255,255,255)',
-//                    overflow:'auto'
-//
-//                },
-//	            movable: true,
-//	            resizable: true,
-//	            html: innerHTML
-//	        });
-//	        modalFrame.setControl({
-//                styleDisplay:'inline',
-//                maximizeButton: 'zoomButton',
-//                demaximizeButton: 'dezoomButton',
-//                minimizeButton: 'minimizeButton',
-//                deminimizeButton: 'deminimizeButton',
-//                hideButton: 'closeButton',
-//                animation: true,
-//                animationDuration: 150,
-//
-//            });
-//	        //Place window in the center
-//	        modalFrame.setPosition(window.innerWidth / 2, window.innerHeight / 2, 'CENTER_BOTTOM');
-//
-//
-//	        //Handling the button's click event
-//	        modalFrame.on('#bt_submit', 'click', (_frame, e) => {
-//	            _frame.extra = {
-//	                result: 'submitted'
-//	            }
-//	            _frame.closeFrame();
-//	        });
-//	        modalFrame.on('#bt_cancel', 'click', (frame, e) => {
-//	            //You can also get frame object from JSFrame object.
-//	            var _frame = jsFrame.getWindowByName('my-modal-window');
-//	            _frame.extra = {
-//	                result: 'canceled'
-//	            }
-//	            _frame.closeFrame();
-//	        });
-//
-////	        //Open as modal window
-////	        modalFrame.showModal(_frame => {
-////	            //You can get callback when closing the modal window
-////	            jsFrame.showToast({
-////	                html: `${_frame.getName()} is closed.The result is ${_frame.extra.result}`,
-////	                align: 'center',
-////	                duration: 2000
-////	            });
-////	        });
-//	        
-//	        modalFrame.show()
-
 
 	    },
+
+		saveWorkflow: function(){
+
+			if(GW.workspace.checkIfWorkflow()){
+
+				if(GW.workspace.theGraph.nodes.length!=0){
+      	    	  
+					var saveEdges = [];
+					
+					GW.workspace.theGraph.edges.forEach(function(val, i){
+					  saveEdges.push({source: val.source, target: val.target});
+					});
+					
+					GW.workflow.save(GW.workspace.theGraph.nodes, saveEdges);
+	//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+	//          	    		  {type: "text/plain;charset=utf-8"});
+	//          	      window.saveAs(blob, "geoweaver.json");
+				}else{
+					alert("No nodes are present!");
+				}
+
+			}
+
+		},
+
 		
 		/**
 		 * Create a new GraphCreator object
@@ -153,6 +100,8 @@ GW.workspace = {
     	      shiftNodeDrag: false,
     	      selectedText: null
     	    };
+
+			GW.workspace.keymap = {};
 
     	    // define arrow markers for graph links
     	    var defs = svg.append('svg:defs');
@@ -206,6 +155,8 @@ GW.workspace = {
     	    
     	    // listen for key events
     	    d3.select(window).on("keydown", function(){
+
+				GW.workspace.keymap[d3.event.keyCode] = 'keydown';
     	    	
     	    	switch (d3.event.keyCode) {
 	    	        case 8: //backspace = 8
@@ -213,15 +164,22 @@ GW.workspace = {
 	    	          // BACKSPACE_KEY was fired in <input id="textbox">
 	    	          if(d3.event.target.nodeName.toLowerCase() === 'input') {
 
-		    	          event.stopPropagation();
+						d3.event.stopPropagation();
 		    	          return;
-	    	          }    
-	    	          
+	    	          };
+					  
 	    	   }
-    	    	
+
+			//    if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
+			// 		console.log("Ctrl+s event detected: " + d3.event.keyCode);
+			// 		GW.workspace.saveWorkflow(thisGraph); //trigger save button
+
+			//    }
+
     	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
     	    .on("keyup", function(){
+				GW.workspace.keymap[d3.event.keyCode] = 'keyup';
     	      thisGraph.svgKeyUp.call(thisGraph);
     	    });
     	    svg.on("mousedown", function(d){thisGraph.svgMouseDown.call(thisGraph, d);});
@@ -274,31 +232,32 @@ GW.workspace = {
 
 				thisGraph.deleteGraph(false);
 
-				GW.workflow.loaded_workflow = null;
+			});
+
+			d3.select("#add-workflow").on("click", function(){
+
+				if(GW.workflow.loaded_workflow != null){
+
+					if(!confirm("This is an existing workflow. Do you want to create a new one?")){
+
+						return;
+
+					}
+
+				}
+				GW.workflow.newDialog(false);
 
 			});
     	    
     	    d3.select("#save-workflow").on("click", function(){
     	    	
-      	      if(thisGraph.nodes.length!=0){
-      	    	  
-      	    	  var saveEdges = [];
-      	    	  
-          	      thisGraph.edges.forEach(function(val, i){
-          	        saveEdges.push({source: val.source, target: val.target});
-          	      });
-          	      
-          	      GW.workflow.save(thisGraph.nodes, saveEdges);
-//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-//          	    		  {type: "text/plain;charset=utf-8"});
-//          	      window.saveAs(blob, "geoweaver.json");
-      	      }else{
-      	    	  alert("No nodes are present!");
-      	      }
+      	      GW.workspace.saveWorkflow();
       	      
       	    });
     	    
     	    d3.select("#execute-workflow").on("click", function(){
+
+				GW.workflow.history_id = null; 
     	    	
     	    	//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, save the workflow first.
     	    	if(GW.workflow.loaded_workflow==null){
@@ -381,45 +340,6 @@ GW.workspace = {
     	    	
     	    	GW.workspace.openModalWindow();
     	    	
-//    	    	const frame = GW.workspace.jsFrame.create({
-//    	    		title: 'Test Window',
-//    	    	    left: 120, 
-//    	    	    top: 120, 
-//    	    	    width: 620, 
-//    	    	    height: 560,
-//    	    	    zIndex: 199,
-//    	    	    appearanceName: 'yosemite',
-////    	    	    url: 'geoweaver.html',//URL to display in iframe
-//    	    	    //urlLoaded:Callback function called after loading iframe
-////    	    	    urlLoaded: (frame) => {
-////    	    	      //Called when the url finishes loading
-////    	    	    }
-////    	    	    title: 'Window',
-////    	    	    left: 20, top: 20, width: 320, height: 220,
-////    	    	    movable: true,//Enable to be moved by mouse
-////    	    	    resizable: true,//Enable to be resized by mouse
-////    	    	    html: '<div id="my_element" style="padding:10px;font-size:12px;color:darkgray;">Contents of window</div>'
-//    	    	});
-//    	    	
-//    	    	frame.setControl({
-//    	            maximizeButton: 'maximizeButton',
-//    	            demaximizeButton: 'restoreButton',
-//    	            minimizeButton: 'minimizeButton',
-//    	            deminimizeButton: 'deminimizeButton',
-//    	            animation: true,
-//    	            animationDuration: 200,
-//
-//    	        });
-//    	    	
-//                frame.on('closeButton', 'click', (_frame, evt) => {
-//                	alert("click button is clicked");
-//                    _frame.closeFrame();
-//                    
-//                });
-//                
-//    	    	//Show the window
-//    	    	frame.show();
-    	    	
     	    });
     	    
     	    d3.select("#hidden-file-upload").on("change", function(){
@@ -458,7 +378,8 @@ GW.workspace = {
 
     	    // handle delete graph
     	    d3.select("#delete-graph").on("click", function(){
-    	      thisGraph.deleteGraph(false);
+    	    //   thisGraph.deleteGraph(false);
+				GW.workspace.theGraph.deleteSelectedOrAll();
     	    });
     	    
     	
@@ -500,40 +421,50 @@ GW.workspace = {
 	    	  };
 	
 	    	  GW.workspace.GraphCreator.prototype.deleteGraph = function(skipPrompt){
-	    	    var thisGraph = this,
-	    	        doDelete = true;
+	    	    var thisGraph = this;
 	    	    
-	    	    //if some objects are selected, delete the selected only. If nothing selected, delete all.
-	    	    if(thisGraph.state.selectedEdge){
-	    	    	
-	    	    	//removing an edge is much easier than removing a process
-	    	        thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-	    	        state.selectedEdge = null;
-	    	        thisGraph.updateGraph();
-	    	        
-	    	    }else if(thisGraph.state.selectedNode){
-	    	    	
-	    	    	var pid = thisGraph.state.selectedNode.id;
-	    	    	console.log("going to remove process: " + pid);
-	    	    	thisGraph.removeNode(pid);
-	    	    	
-	    	    }else{
-	    	    	
-	    	    	if (!skipPrompt){
-	    	    		
-	  	    	      doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
-	  	    	    }
-	  	    	    if(doDelete){
-	  	    	      
-	  	    	      thisGraph.nodes = [];
-	  	    	      thisGraph.edges = [];
-	  	    	      thisGraph.updateGraph();
-	  	    	      
-	  	    	    }
-	    	    	
-	    	    }
+				//first check if the current view is in the workspace
+				if(document.getElementById("workspace").style.display=="block"){
 
-				GW.workspace.showNonSaved();
+					//if some objects are selected, delete the selected only. If nothing selected, delete all.
+					
+					if (!skipPrompt){
+						
+						doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
+
+						if(doDelete){
+					
+							thisGraph.nodes = [];
+							thisGraph.edges = [];
+							thisGraph.updateGraph();
+							GW.workflow.setCurrentWorkflowName("");
+							GW.workflow.loaded_workflow = null;
+							
+						}
+						
+					}else{
+
+						if(thisGraph.state.selectedEdge){
+					
+							//removing an edge is much easier than removing a process
+							thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+							state.selectedEdge = null;
+							thisGraph.updateGraph();
+							
+						}else if(thisGraph.state.selectedNode){
+							
+							var pid = thisGraph.state.selectedNode.id;
+							console.log("going to remove process: " + pid);
+							thisGraph.removeNode(pid);
+							
+						}
+					}
+					
+
+					GW.workspace.showNonSaved();
+
+				}
+
 	    	    
 	    	    
 	    	  };
@@ -551,7 +482,7 @@ GW.workspace = {
     	            
 					GW.workspace.showSaved();
 	    			
-    	            var newNodes = $.parseJSON(jsonObj.nodes);
+    	            var newNodes = GW.general.parseResponse(jsonObj.nodes);
     	            
     	            //remove the old color status - load a brand new workflow
     	            newNodes.forEach(function(e, i){
@@ -564,7 +495,7 @@ GW.workspace = {
     	            
     	            this.setIdCt(jsonObj.nodes.length + 1);
     	            
-    	            var newEdges = $.parseJSON(jsonObj.edges);
+    	            var newEdges = GW.general.parseResponse(jsonObj.edges);
     	            
     	            newEdges.forEach(function(e, i){
     	            	
@@ -803,6 +734,70 @@ GW.workspace = {
 	    	    return;
 	    	    
 	    	  }; // end of circles mouseup
+
+			  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
+				
+				var processid = d.id.split("-")[0];
+
+				var content = `<div class="modal-body">
+					
+					<div class="row">
+				
+						<div class="col-md-12" id="dbclick_content">
+
+							Process Name: `+d.title+` <br/>
+
+							Process ID: `+d.id+` <br/>
+
+							Output: <br/>
+
+						</div>
+				
+					</div>
+				
+				</div>
+		
+				<div class="modal-footer">
+
+					<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
+				
+					<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+				
+				</div>`;
+
+				var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+
+				frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
+
+				
+
+				$.ajax({
+
+					url: "workflow_process_log",
+				
+					method: "POST",
+				
+					data: "workflowhistoryid=" + GW.workflow.history_id + "&processid=" + d.id
+				
+				}).done(function(msg){
+
+					msg = GW.general.parseResponse(msg);
+
+					$("#dbclick_content").append(msg.history_output);
+
+					frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
+
+						// GW.menu.details(processid, "process");
+	
+						GW.process.showHistoryDetails(msg.history_id);
+				
+						_frame.closeFrame()
+						
+					})
+
+				})
+
+			  }
 	
 	    	  // mousedown on main svg
 	    	  GW.workspace.GraphCreator.prototype.svgMouseDown = function(){
@@ -875,6 +870,80 @@ GW.workspace = {
     	    		thisGraph.updateGraph();
 					GW.workspace.showNonSaved();
 	    	  }
+
+			  GW.workspace.GraphCreator.prototype.deleteSelected = function(){
+
+				if(Object.keys(BootstrapDialog.dialogs).length){
+	    			return; //if there are shown dialogs, key activity will be disconnected from svg
+	    		}
+	    	    var thisGraph = this,
+	    	        state = thisGraph.state,
+	    	        consts = thisGraph.consts;
+	
+	    	    var selectedNode = state.selectedNode,
+	    	        selectedEdge = state.selectedEdge;
+	
+				if(document.getElementById("workspace").style.display=="block"){
+
+					if (selectedNode){
+					
+						var pid = selectedNode.id;
+						console.log("going to remove process: " + pid);
+	//	    	    	GW.menu.del(pid, "process");
+						thisGraph.removeNode(pid);
+					
+					} else if (selectedEdge){
+					
+						//removing an edge is much easier than removing a process
+						thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+						state.selectedEdge = null;
+						GW.workspace.showNonSaved();
+						thisGraph.updateGraph();
+					
+					}
+				}
+		    	      
+
+			  }
+
+			  GW.workspace.GraphCreator.prototype.deleteSelectedOrAll = function(){
+
+				if(Object.keys(BootstrapDialog.dialogs).length){
+	    			return; //if there are shown dialogs, key activity will be disconnected from svg
+	    		}
+	    	    var thisGraph = this,
+	    	        state = thisGraph.state,
+	    	        consts = thisGraph.consts;
+	
+	    	    var selectedNode = state.selectedNode,
+	    	        selectedEdge = state.selectedEdge;
+	
+				if(document.getElementById("workspace").style.display=="block"){
+
+					if (selectedNode){
+					
+						var pid = selectedNode.id;
+						console.log("going to remove process: " + pid);
+	//	    	    	GW.menu.del(pid, "process");
+						thisGraph.removeNode(pid);
+					
+					} else if (selectedEdge){
+					
+						//removing an edge is much easier than removing a process
+						thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
+						state.selectedEdge = null;
+						GW.workspace.showNonSaved();
+						thisGraph.updateGraph();
+					
+					}else{
+
+						this.deleteGraph(false);
+
+					}
+				}
+		    	      
+
+			  }
 	
 	    	  // keydown on main svg
 	    	  GW.workspace.GraphCreator.prototype.svgKeyDown = function() {
@@ -888,29 +957,14 @@ GW.workspace = {
 	    	    if(state.lastKeyDown !== -1) return;
 	
 	    	    state.lastKeyDown = d3.event.keyCode;
-	    	    var selectedNode = state.selectedNode,
-	    	        selectedEdge = state.selectedEdge;
+	    	    // var selectedNode = state.selectedNode,
+	    	    //     selectedEdge = state.selectedEdge;
 	
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
-		    	      d3.event.preventDefault();
-		    	      if (selectedNode){
-		    	        
-		    	    	var pid = selectedNode.id;
-		    	    	console.log("going to remove process: " + pid);
-	//	    	    	GW.menu.del(pid, "process");
-		    	    	thisGraph.removeNode(pid);
-		    	    	
-		    	      } else if (selectedEdge){
-		    	    	
-		    	    	//removing an edge is much easier than removing a process
-		    	        thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
-		    	        state.selectedEdge = null;
-						GW.workspace.showNonSaved();
-		    	        thisGraph.updateGraph();
-		    	        
-		    	      }
+		    	    //   d3.event.preventDefault();
+					  this.deleteSelected();
 		    	      break;
 	    	    }
 	    	  };
@@ -966,7 +1020,9 @@ GW.workspace = {
 	    	    // update existing nodes
 	    	    thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 	    	    thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; });
+	    	      .style("fill", function (d) { 
+					//   console.log("current color "+ d.id + " - " + d.color); 
+					  return d.color; });
 	
 	    	    // add new nodes
 	    	    var newGs= thisGraph.circles.enter()
@@ -988,13 +1044,18 @@ GW.workspace = {
 	    	      .on("mouseup", function(d){
 	    	        thisGraph.circleMouseUp.call(thisGraph, d3.select(this), d);
 	    	      })
+				  .on("dblclick", function(d){
+					thisGraph.circleDdlClick.call(thisGraph, d3.select(this), d);
+				  })
 	    	      .call(thisGraph.drag);
 	    	    
 //	    	    console.log("update circile once");	
 	    	    newGs.append("circle")
 	    	      .attr("r", String(consts.nodeRadius))
 //	    	      .attr("r", function(d) { return d.r; })
-	    	      .style("fill", function (d) { console.log("current color "+ d.id + " - " + d.color); return d.color; }); //add color
+	    	      .style("fill", function (d) { 
+					//   console.log("current color "+ d.id + " - " + d.color); 
+					  return d.color; }); //add color
 	
 	    	    newGs.each(function(d){
 	    	      thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
@@ -1052,48 +1113,65 @@ GW.workspace = {
 		      GW.workspace.GraphCreator.prototype.renderStatus = function(statusList){
 		    	  
 		    	  	console.log("monitor workflow status called");
-		    	  	
-		    	  	var newnodes = [];
+
+					if(statusList.message_type == "single_process"){
+
+						var id = statusList.id;
+						
+						var history_id = statusList.history_id;
+
+						var flag = statusList.status; //true or false
+						
+						var num = this.getNodeNumById(id);
+
+						GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+						
+						// newnodes.push(node);
+						
+						GW.monitor.updateProgress(id, flag);
+
+						// GW.workspace.theGraph.nodes = newnodes;
+						
+						GW.workspace.theGraph.updateGraph();
+
+					}else if(typeof statusList === 'object'){
+
+						var newnodes = [];
 		    	  
-					for(var i=0;i<statusList.length;i++){
-		        		
-		        		//single node
-		        		
-		        		var id = statusList[i].id;
-		        		
-		        		var flag = statusList[i].status; //true or false
-		        		
-		        		var node = this.getNodeById(id);
-		        		
-		        		if(flag=="READY"){
-		        			
-		        			  node.color = "";
-				    		  
-				    	}else if(flag=="RUNNING"){
-				    		  
-				    		  node.color = "orange";
-				    		  
-				    	}else if(flag=="DONE"){
-				    		  
-				    		  node.color = "green";
-				    		  
-				    	}else if(flag=="FAILED"){
-				    		  
-				    		  node.color = "red";
-				    		  
-				    	}
-		        		
-		        		newnodes.push(node);
-		        		
-		        		GW.monitor.updateProgress(id, flag);
-		        		
-		        	}
-					
-					GW.workspace.theGraph.nodes = newnodes;
-					
-					GW.workspace.theGraph.updateGraph();
-					
-					console.log("circle should change its color");
+						for(var i=0;i<statusList.length;i++){
+							
+							//single node
+							
+							var id = statusList[i].id;
+							
+							var flag = statusList[i].status; //true or false
+							
+							var node = this.getNodeById(id);
+
+							node.color = GW.workspace.getColorByFlag(flag);
+							
+							newnodes.push(node);
+							
+							GW.monitor.updateProgress(id, flag);
+							
+						}
+						
+						if(newnodes.length==0){
+
+							console.error("Lost all the nodes");
+
+						}else{
+
+							GW.workspace.theGraph.nodes = newnodes;
+						
+							GW.workspace.theGraph.updateGraph();
+
+						}
+
+						// console.log("circle should change its color");
+
+					}
+		    	  	
 					
 		      }
 	    	  /**
@@ -1118,6 +1196,9 @@ GW.workspace = {
 	  			return thenodes;
 		    	  
 		      };
+
+
+
 		      /**
 		       * Node
 		       */
@@ -1142,6 +1223,28 @@ GW.workspace = {
 	  			return thenode;
 	  			
 	  		  };
+
+				GW.workspace.GraphCreator.prototype.getNodeNumById = function(id){
+			
+					var thisGraph = this;
+				
+					var thenum = -1;
+					
+					for(var i=0;i<thisGraph.nodes.length;i++){
+						
+						if(thisGraph.nodes[i].id == id){
+
+							thenum = i;
+							
+							break;
+							
+						}
+							
+					}
+					
+					return thenum;
+					
+				};
 	
 	    	  GW.workspace.GraphCreator.prototype.updateWindow = function(svg){
 	    	    var docEl = document.documentElement,
@@ -1152,11 +1255,48 @@ GW.workspace = {
 	    	  };
 			
 		},
+
+		getColorByFlag: function(flag){
+
+			var color = "black"
+
+			if(flag=="Ready"){
+								
+				color = "blue";
+				
+			}else if(flag=="Running"){
+					
+				color = "orange";
+					
+			}else if(flag=="Done"){
+					
+				color = "green";
+					
+			}else if(flag=="Failed"){
+					
+				color = "red";
+					
+			}else if(flag== null){
+
+				color = "blue";
+
+			}
+
+			return color;
+
+		},
+
 		
 		updateStatus: function(statusList){
 			
 			GW.workspace.theGraph.renderStatus(statusList);
 			
+		},
+
+		checkIfWorkspacePanelActive: function(){
+
+			return document.getElementById("workspace").style.display=="block";
+
 		},
 		
 		/**
@@ -1195,9 +1335,9 @@ GW.workspace = {
 	    	  /**** MAIN ****/
 	
 	    	  // warn the user when leaving
-	    	  window.onbeforeunload = function(){
-	    	    return "Make sure to save your graph locally before leaving :-)";
-	    	  };      
+	    	//   window.onbeforeunload = function(){
+	    	//     return "Make sure to save your graph locally before leaving :-)";
+	    	//   };      
 	
 	    	  var docEl = document.documentElement,
 //	    	      bodyEl = document.getElementsByTagName('body')[0];
@@ -1220,9 +1360,9 @@ GW.workspace = {
 	    	  
 	    	  var format = d3.format(",d");
 	    	  
-	    	  this.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
+	    	  GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
 	    	  
-	    	  this.theGraph.updateGraph();
+	    	  GW.workspace.theGraph.updateGraph();
 			
 		}
 		

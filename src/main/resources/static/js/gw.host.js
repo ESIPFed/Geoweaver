@@ -7,6 +7,8 @@ GW.host = {
 		
 		cred_cache: [{"h":"xxxx", "s": "yyyyy", "env": {"bin":"python3", "pyenv": "cdl"}}],
 		
+		host_environment_list_cache: null,
+
 		password_frame: null,
 		
 		ssh_password_frame: null,
@@ -16,11 +18,20 @@ GW.host = {
 		local_hid: null,
 		
 		editOn: false,
+
 		
 		clearCache: function(){
 			
 			this.cred_cache = [];
+
+			this.host_environment_list_cache = [];
 			
+		},
+
+		checkIfHostPanelActive: function(){
+
+			return document.getElementById("main-host-info").style.display=="block";
+
 		},
 		
 		setEnvCache: function(hid, env){
@@ -235,11 +246,12 @@ GW.host = {
 			
 			var s = GW.host.findCache(hid);
 			
-			if(hid == GW.host.local_hid){
+			// if(hid == GW.host.local_hid){
 				
-				GW.host.encrypt(hid, "local", req, null, null, business_callback);
+			// 	GW.host.encrypt(hid, "local", req, null, null, business_callback);
 				
-			}else if(s==null){
+			// }else 
+			if(s==null){
 				
 				GW.host.enter_password(hid, req, business_callback);
 				
@@ -285,10 +297,14 @@ GW.host = {
                 }
                 
                 var ids = GW.host.turnHosts2Ids(hosts);
+
+				var envs = GW.host.turnHosts2EnvIds(hosts);
                 
                 req.hosts = ids;
                 
                 req.passwords = encrypt_passwds;
+
+				req.envs = envs;
                 
                 business_callback(req, dialogItself, button);
                 
@@ -403,6 +419,20 @@ GW.host = {
 			for(var i=0; i<hosts.length; i++){
 				
 				ids.push(hosts[i].id);
+				
+			}
+			
+			return ids;
+			
+		},
+
+		turnHosts2EnvIds: function(hosts){
+			
+			var ids = [];
+			
+			for(var i=0; i<hosts.length; i++){
+				
+				ids.push(hosts[i].env);
 				
 			}
 			
@@ -762,12 +792,12 @@ GW.host = {
 			});
 			
 		},
-		
-		refreshHostList: function(){
-			
+
+		refreshHostListForExecution:function(){
+
 			$.ajax({
         		
-        		url: "list",
+        		url: "listhostwithenvironments",
         		
         		method: "POST",
         		
@@ -776,10 +806,11 @@ GW.host = {
         	}).done(function(msg){
         		
         		msg = $.parseJSON(msg);
+
+				GW.host.host_environment_list_cache = msg;
         		
         		console.log("Start to refresh the host list..");
         		
-        		// $("#"+GW.menu.getPanelIdByType("host")).html("");
         		$("#host_folder_ssh_target").html("");
         		$("#host_folder_jupyter_target").html("");
         		$("#host_folder_jupyterhub_target").html("");
@@ -799,8 +830,121 @@ GW.host = {
 						}
             			
             		}
+
+					//show the environment of the first host
+					if($(".environmentselector")){
+
+						$(".environmentselector").append('<option id="default_option">default</option>');
+
+						var envs = msg[0].envs
+
+						for(var i=0;i<envs.length;i++){
+
+							$(".environmentselector").append("<option id=\""+envs[i].id+"\">"+envs[i].name+"</option>");
+
+						}
+
+					}
+
+					$(".hostselector").change(function(){
+
+						//get the corresponding environmentselector
+						// var corenvelelist = $(this).closest('div').next().find('.environmentselector');
+						var hostselectid = $(this).attr("id");
+
+						var envselectid = "environmentforprocess_" + hostselectid.split("_")[1];
+
+						//change the environment selector options
+						var envselect  = $("#" + envselectid);
+
+						var selectedhostid = $(this).children("option:selected").attr("id");
+
+						envselect.empty().append('<option id="default_option">default</option>');
+
+						//add new options to the environment selector
+						var theenv = GW.host.findEnvironmentByHostId(selectedhostid);
+
+						if(theenv != null){
+
+							for(var i=0;i<theenv.length;i++){
+
+								envselect.append("<option id=\""+theenv[i].id+"\">"+theenv[i].name+"</option>");
+	
+							}
+						
+						}
+
+					});
         			
         		}
+        		
+        	}).fail(function(jxr, status){
+				
+				console.error("fail to list host");
+				
+			});
+
+		},
+
+		findEnvironmentByHostId: function(hostid){
+
+			var theenv = null;
+
+			if(GW.host.host_environment_list_cache!=null){
+
+				for(var i=0;i<GW.host.host_environment_list_cache.length; i++){
+					var value = GW.host.host_environment_list_cache[i];
+					if(hostid == value.id){
+						theenv = value.envs;
+						break;
+					}
+
+				}
+
+			}
+			
+			return theenv;
+
+		},
+		
+		//refresh host list for the menu
+		refreshHostList: function(){
+			
+			$.ajax({
+        		
+        		url: "list",
+        		
+        		method: "POST",
+        		
+        		data: "type=host"
+        		
+        	}).done(function(msg){
+        		
+        		msg = $.parseJSON(msg);
+        		
+        		console.log("Start to refresh the host list..");
+        		
+        		$("#host_folder_ssh_target").html("");
+        		$("#host_folder_jupyter_target").html("");
+        		$("#host_folder_jupyterhub_target").html("");
+        		$("#host_folder_gee_target").html("");
+        		
+        		GW.host.list(msg);
+        		
+        		// if($(".hostselector")) {
+
+            	// 	for(var i=0;i<msg.length;i++){
+            			
+				// 		//right now only SSH host can run processes
+            	// 		if(msg[i].type == "ssh"){
+
+				// 			$(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
+
+				// 		}
+            			
+            	// 	}
+        			
+        		// }
         		
         	}).fail(function(jxr, status){
 				
@@ -970,15 +1114,15 @@ GW.host = {
 					
 				}
 				
-//				var req = "type=host&hostname="+$("#hostname").val() + 
-//	    		
-//		    		"&hostip=" + hostip +
-//		    		
-//		    		"&hostport=" + hostport + 
-//		    		
-//		    		"&hosttype=" + hosttype
-//		    		
-//		    		"&username=" + $("#username").val();
+				var confidential = "FALSE"; //default is public
+
+				var confidential_field_value = $('#host_dynamic_form input[name="confidential"]:checked').val()
+
+				if(typeof  confidential_field_value != "undefined"){
+					
+					confidential = confidential_field_value
+					
+				}
 				
 				var req = {
 					
@@ -994,7 +1138,11 @@ GW.host = {
 					
 					hosttype: hosttype,
 					
-					username: $("#username").val()
+					username: $("#username").val(),
+
+					confidential: confidential,
+
+					ownerid: GW.user.current_userid
 					
 				}
 		    	
@@ -1003,7 +1151,7 @@ GW.host = {
 		    		url: "add",
 		    		
 		    		method: "POST",
-		    		
+
 		    		data: req
 		    		
 		    	}).done(function(msg){
@@ -1065,6 +1213,14 @@ GW.host = {
 					jupyter_url = $("#_host_url").val()
 					
 				}
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential"]:checked').val()
+					
+				}
 				
 				var req = {
 					
@@ -1082,7 +1238,9 @@ GW.host = {
 					
 					username: hostusername,
 					
-					hostid: hostid
+					hostid: hostid,
+
+					confidential: confidential
 					
 				}
 		    	
@@ -1118,19 +1276,23 @@ GW.host = {
 		
 		editSwitch: function(){
 			
-			console.log("Turn on/off the fields");
+			if(GW.host.checkIfHostPanelActive()){
+
+				console.log("Turn on/off the fields");
 			
-			$(".host-value-field").prop( "disabled", GW.process.editOn );
-			
-			GW.process.editOn = !GW.process.editOn;
-			
-			if(!GW.process.editOn){
+				$(".host-value-field").prop( "disabled", GW.process.editOn );
 				
-				console.log("Save the changes if any")
+				GW.process.editOn = !GW.process.editOn;
 				
-				this.edit()
-				
+				if(!GW.process.editOn){
+					
+					console.log("Save the changes if any")
+					
+					this.edit()
+					
+				}
 			}
+			
 			
 		},
 		
@@ -1159,6 +1321,10 @@ GW.host = {
 //				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
 //				
 //				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+
+					"<i class=\"fab fa-python subalignicon\" onclick=\"GW.host.readEnvironment('"+
+									
+					hostid + "')\" data-toggle=\"tooltip\" title=\"Read Python Environment\"></i>"+
 					
 					"<i class=\"fa fa-upload subalignicon\" onclick=\"GW.fileupload.uploadfile('"+
 		        	
@@ -1193,6 +1359,119 @@ GW.host = {
 			return content;
 			
 		},
+
+
+
+		showEnvironmentTable: function(msg){
+
+			var content = "<h4 class=\"border-bottom\">Environment List  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeEnvironmentPanel\" >close</button></h4>"+
+			"<div class=\"modal-body\" style=\"font-size: 12px;\">"+
+			"<table class=\"table table-striped\" id=\"environment_table\"> "+
+			"  <thead class=\"thead-light\"> "+
+			"    <tr> "+
+			"      <th scope=\"col\">Name</th> "+
+			"      <th scope=\"col\">Bin Path</th> "+
+			"      <th scope=\"col\">PyEnv</th> "+
+			"      <th scope=\"col\">Base Directory</th> "+
+			"      <th scope=\"col\">Settings</th> "+
+			"    </tr> "+
+			"  </thead> "+
+			"  <tbody> ";
+
+			
+			for(var i=0;i<msg.length;i++){
+				
+				content += "    <tr> "+
+					"      <td>"+msg[i].name+"</td> "+
+					"      <td>"+msg[i].bin+"</td> "+
+					"      <td>"+msg[i].pyenv+"</td> "+
+					"      <td>"+msg[i].basedir+"</td> "+
+					"      <td>"+msg[i].settings+"</td> "+
+					"    </tr>";
+				
+			}
+			
+			content += "</tbody>"+
+			"</table>"+
+			"</div>";
+
+			$("#environment-iframe").html(content);
+
+			$("#closeEnvironmentPanel").click(function(){
+
+				$("#environment-iframe").html("");
+
+			});
+
+		},
+
+		readEnvironmentCallback: function(encrypt, req, dialogItself, button){
+
+			req.pswd = encrypt;
+
+			req.token = GW.general.CLIENT_TOKEN;
+
+			$.ajax({
+				
+				url: "readEnvironment",
+				
+				type: "POST",
+				
+				data: req
+				
+			}).done(function(msg){
+				
+				if(msg){
+					
+					msg = GW.general.parseResponse(msg);
+					
+					if(msg.status == "failed"){
+						
+						alert("Fail to read python environment.");
+						
+						console.error("fail to execute the process " + msg.reason);
+						
+					}else{
+
+						GW.host.showEnvironmentTable(msg);
+
+					}
+					
+					if(dialogItself) {
+						
+						try{dialogItself.closeFrame(); }catch(e){}
+						
+					}
+					
+				}else{
+					
+					console.error("Return Response is Empty");
+					
+				}
+				
+				
+			}).fail(function(jxr, status){
+				
+				alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
+				
+				if($("#inputpswd").length) $("#inputpswd").val("");
+				
+				console.error("fail to execute the process " + req.processId);
+				
+			});
+		},
+
+		readEnvironment: function(hid){
+
+			var req = {
+		    	
+				hostid: hid,
+				
+			}
+
+			GW.host.start_auth_single(hid, req, GW.host.readEnvironmentCallback );
+
+		},
 		
 		display: function(msg){
 			
@@ -1202,7 +1481,7 @@ GW.host = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px;\">";
 			
-			var hostid = null, hostip = null, hosttype = null;
+			var hostid = null, hostip = null, hosttype = null, confidential = null, owner = null, envs = null;
 			
 			jQuery.each(msg, function(i, val) {
 				
@@ -1230,6 +1509,23 @@ GW.host = {
 						hosttype = val;
 						
 					}
+
+					if(i=="confidential"){
+
+						confidential = val;
+						return;
+
+					}else if(i=="owner"){
+
+						owner = val;
+						return;
+
+					}else if(i=="envs"){
+
+						envs = val;
+						return;
+
+					}
 					
 					content += "<div class=\"col col-md-3\">"+i+"</div>";
 					
@@ -1248,6 +1544,29 @@ GW.host = {
 				}
 
 			});
+
+			content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+			if(confidential=="FALSE"){
+
+				content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner && GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE"> '+
+					'		<label for="confidential">Private</label>';
+
+			}else{
+
+				content  += '       <input type="radio" name="confidential" value="FALSE"> '+
+				'		<label for="confidential">Public</label>';
+				
+				if(GW.user.current_userid==owner&& GW.user.current_userid != "111111")
+					content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
+					'		<label for="confidential">Private</label>';
+
+			}
 			
 			var delbtn = "";
 			
@@ -1257,7 +1576,7 @@ GW.host = {
 			
 			content += "</div>"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\">"+
+				"<div class=\"col-md-12\">"+
 				
 				"<p align=\"right\">"+
 				
@@ -1267,23 +1586,27 @@ GW.host = {
 				
 				"</p>"+
 				
-				"</div></div>"+
+				"</div>"+
+
+				"<div class=\"col-md-12\" style=\"max-height:600px;margin:0;\" id=\"environment-iframe\">"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:600px;\" id=\"ssh-terminal-iframe\">"+
+				"</div>"+
 				
-				"</div></div>"+
+				"<div class=\"col-md-12\" style=\"max-height:600px;margin:0;\" id=\"ssh-terminal-iframe\">"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" id=\"host-file-uploader\">"+
+				"</div>"+
 				
-				"</div></div>"+
+				"<div class=\"col-md-12\" style=\"margin:0;\" id=\"host-file-uploader\">"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-file-browser\">"+
+				"</div>"+
 				
-				"</div></div>"+
+				"<div class=\"col-md-12\" style=\"max-height:800px;margin:0;\" id=\"host-file-browser\">"+
 				
-				"<div class=\"row\"><div class=\"col-md-12\" style=\"max-height:800px;\" id=\"host-history-browser\">"+
+				"</div>"+
 				
-				"</div></div>"+
+				"<div class=\"col-md-12\" style=\"max-height:800px;margin:0;\" id=\"host-history-browser\">"+
+				
+				"</div>"+
 				
 				"</div>";
 			
@@ -1669,14 +1992,14 @@ GW.host = {
 			if(host_type=="jupyter") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Jupyter URL </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Jupyter URL </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
 				       '     </div>'+
 				       '   	</div>';
@@ -1684,14 +2007,14 @@ GW.host = {
 			}else if(host_type=="jupyterhub"){
 				
 				content = '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 			       '     </div>'+
 			       '   	</div>'+
 			       '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterHub URL </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">JupyterHub URL </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8000/">'+
 			       '     </div>'+
 			       '   	</div>';
@@ -1699,14 +2022,14 @@ GW.host = {
 			}else if(host_type=="jupyterlab"){
 				
 				content = '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 			       '     </div>'+
 			       '   	</div>'+
 			       '   	<div class="form-group row required">'+
-			       '     <label for="hostname" class="col-sm-2 col-form-label control-label">JupyterLab URL </label>'+
-			       '     <div class="col-sm-10">'+
+			       '     <label for="hostname" class="col-sm-3 col-form-label control-label">JupyterLab URL </label>'+
+			       '     <div class="col-sm-9">'+
 			       '       <input type="text" class="form-control" id="jupyter_home_url" placeholder="http://localhost:8888/">'+
 			       '     </div>'+
 			       '   	</div>';
@@ -1714,26 +2037,26 @@ GW.host = {
 			}else if(host_type == "ssh") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostip" class="col-sm-2 col-form-label control-label">Hose IP</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostip" class="col-sm-3 col-form-label control-label">Hose IP</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostip" placeholder="Host IP">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostport" class="col-sm-2 col-form-label control-label">Port</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostport" class="col-sm-3 col-form-label control-label">Port</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostport" placeholder="">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="username" class="col-sm-2 col-form-label control-label">User Name</label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="username" class="col-sm-3 col-form-label control-label">User Name</label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="username" placeholder="">'+
 				       '     </div>'+
 				       '   	</div>';
@@ -1741,25 +2064,38 @@ GW.host = {
 			}else if(host_type == "gee") {
 				
 				content = '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Host Name </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Host Name </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="hostname" value="New Host">'+
 				       '     </div>'+
 				       '   	</div>'+
 				       '   	<div class="form-group row required">'+
-				       '     <label for="hostname" class="col-sm-2 col-form-label control-label">Client ID </label>'+
-				       '     <div class="col-sm-10">'+
+				       '     <label for="hostname" class="col-sm-3 col-form-label control-label">Client ID </label>'+
+				       '     <div class="col-sm-9">'+
 				       '       <input type="text" class="form-control" id="client_id" placeholder="ee.Authenticate client ID..">'+
 				       '     </div>'+
 				       '   	</div>';
 				
 			}
+
+			content += '   	<div class="form-group row required">'+
+			'     <label for="hostname" class="col-sm-3 col-form-label control-label">Confidential </label>'+
+			'     <div class="col-sm-9" style="padding-left: 30px;">'+
+			'       <input type="radio" name="confidential" value="FALSE" checked> '+
+	 		'		<label for="confidential">Public</label>';
+			
+			if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+				content += '       <input type="radio" name="confidential" value="TRUE"> '+
+				'		<label for="confidential">Private</label>';
+			
+			content += '     </div>'+
+			'   	</div>';
 			
 			return content;
 			
 		},
 		
-		newDialog: function(){
+		newDialog: function(category){
 			
 			if(GW.host.new_host_frame!=null){
 				
@@ -1777,11 +2113,11 @@ GW.host = {
 				
 			}
 			
-			var content = '<div class="modal-body" style=\"font-size: 12px;\">'+
+			var content = '<div class="modal-body" id="newhostdialog" style=\"font-size: 12px;\">'+
 			   '<form>'+
 			   '   <div class="form-group row required">'+
-		       '     <label for="hosttype" class="col-sm-2 col-form-label control-label">Host Type </label>'+
-		       '     <div class="col-sm-10">'+
+		       '     <label for="hosttype" class="col-sm-3 col-form-label control-label">Host Type </label>'+
+		       '     <div class="col-sm-9">'+
 //		       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
 		       '	 	<select class="form-control" id="hosttype"> '+
 			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
@@ -1829,7 +2165,8 @@ GW.host = {
 				
 			});
 			
-			
+			if(category)
+				$("#hosttype").val(category).trigger('change');
 		},
 		
 }

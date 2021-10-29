@@ -1,6 +1,7 @@
 package com.gw.server;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.websocket.EndpointConfig;
@@ -38,11 +39,13 @@ public class WorkflowServlet {
 		
 		try {
 			
-			logger.debug("websocket channel openned");
+			logger.debug("Workflow-Socket websocket channel openned");
 			
 			// this.wsSession = session;
 
-			
+			// session.setMaxIdleTimeout(0);
+
+			// this.registerSession(session);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -51,6 +54,36 @@ public class WorkflowServlet {
 		}
 		
     }
+
+	public void registerSession(Session session, String token){
+
+
+		WsSession wss = (WsSession) session;
+			
+		logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+
+		// List<String> originHeader = (List<String>)session.getUserProperties()
+		// .get("TheUpgradeOrigin");
+
+		// if(wss.getHttpSessionId()==null){
+		// 	throw new RuntimeException("The HTTP Session ID shouldn't be null.");
+		// }else{
+
+			// logger.debug("Websocket original headers: " + originHeader);
+
+			// Session existingsession = WorkflowServlet.findSessionByToken(wss.getHttpSessionId());
+
+			// if(existingsession==null || !existingsession.isOpen()){
+
+			// peers.put(wss.getHttpSessionId(), session);
+
+			// }
+		// }
+
+		peers.put(token, session);
+
+
+	}
 
     @OnError
     public void error(final Session session, final Throwable throwable) throws Throwable {
@@ -68,21 +101,32 @@ public class WorkflowServlet {
     		
 			logger.debug("Received message: " + message);
 
-			// String received = session.getQueryString();
-        	
-			if(message!=null && message.startsWith("token:")){
+
+			if(message.indexOf("token:")!=-1){
 
 				message = message.substring(6);
 
-				logger.debug(" - Token: " + message);
-
-				WsSession wss = (WsSession) session;
-				
-				logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
-				
-				peers.put(message, session);
+				this.registerSession(session, message);
 
 			}
+			
+			session.getBasicRemote().sendText("Session_Status:Active"); 
+
+			// String received = session.getQueryString();
+        	
+			// if(message!=null && message.startsWith("token:")){
+
+			// 	message = message.substring(6);
+
+			// 	logger.debug(" - Token: " + message);
+
+			// 	WsSession wss = (WsSession) session;
+				
+			// 	logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
+				
+			// 	peers.put(message, session);
+
+			// }
 
         	
     	}catch(Exception e) {
@@ -98,7 +142,13 @@ public class WorkflowServlet {
     	
 		try {
 			
+			// session.getBasicRemote().sendText("Warning: Websocket Channel is going to close"); 
+
     		logger.error("Channel closed.");
+
+			WsSession wss = (WsSession) session;
+
+			// peers.remove(wss.getHttpSessionId());
         	
 		} catch (Exception e) {
 			

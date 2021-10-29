@@ -34,6 +34,7 @@ import com.gw.web.GeoweaverController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 /**
@@ -44,6 +45,7 @@ import org.springframework.web.socket.WebSocketSession;
  *
  */
 @Service
+@Scope("prototype")
 public class SSHLiveSessionOutput implements Runnable {
 
     protected Logger log = LoggerFactory.getLogger(getClass());
@@ -97,102 +99,50 @@ public class SSHLiveSessionOutput implements Runnable {
     	int startrecorder = -1;
     	
     	int nullnumber = 0;
-    	
-        while (run) {
+
+        String line = null;
+
+    	try{
+
+            while ((line = in.readLine())!=null) {
         	
-            try {
-                
-            	// readLine will block if nothing to send
-            	
-                String line = in.readLine();
-                
-//                out.sendMessage(new TextMessage(line));
-                
-//                linenumber++;
-//                
-//                //when detected the command is finished, end this process
-//                if(BaseTool.isNull(line)) {
-//                	
-//                	//if ten consective output lines are null, break this loop
-//                	
-//                	if(startrecorder==-1) 
-//                		startrecorder = linenumber;
-//                	else
-//                		nullnumber++;
-//                	
-//                	if(nullnumber==10) {
-//                		
-//                		if((startrecorder+nullnumber)==linenumber) {
-//                			
-//                			System.out.println("null output lines exceed 100. Disconnected.");
-//                			
-//                			GeoweaverController.sshSessionManager.closeByToken(token);
-//                		
-//                			break;
-//                			
-//                		}else {
-//                			
-//                			startrecorder = -1;
-//                			
-//                			nullnumber = 0;
-//                			
-//                		}
-//                		
-//                	}
-//                	
-//                }else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-//                	
-//                	SSHSession session = GeoweaverController.sshSessionManager.sshSessionByToken.get(token);
-//                	
-//                	session.saveHistory(logs.toString());
-//                	
-//                	GeoweaverController.sshSessionManager.closeByToken(token);
-//                	
-//                	break;
-//                	
-//                }
-//                
-                log.info("shell thread output >> " + line);
-//                
-//                logs.append(line).append("\n");
-                
-                if(!bt.isNull(wsout) && wsout.isOpen()) {
-//                	
-//                	if(prelog.toString()!=null) {
-//                		
-//                		line = prelog.toString() + line;
-//                		
-//                		prelog = new StringBuffer();
-//                		
-//                	}
-                	
-                    log.info("wsout message {}:{}", token, line);
+                try {
                     
-//                    out.sendMessage(new TextMessage(line)); // for the SockJS session to deliver it back to the SSH Terminal
+                    // readLine will block if nothing to send
                     
-                	wsout.getBasicRemote().sendText(line); // for the All information web socket session
+                    // String line = in.readLine();
                     
-//                }else {
-//                	
-//                	prelog.append(line).append("\n");
-//                	
-                }else {
-                	
-                	wsout = TerminalServlet.findSessionById(token);
-                	
+                    log.debug("shell thread output >> " + line);
+                    
+                    if(!bt.isNull(wsout) && wsout.isOpen()) {
+                        
+                        log.debug("wsout message {}:{}", token, line);
+
+                        wsout.getBasicRemote().sendText(line); // for the All information web socket session
+                        
+                    }else {
+                        
+                        wsout = TerminalServlet.findSessionById(token);
+                        
+                    }
+                    
+                } catch (Exception e) {
+                    
+                    e.printStackTrace();
+                    
+                    GeoweaverController.sessionManager.closeByToken(token);
+                    
                 }
-                
-            } catch (Exception e) {
-            	
-                e.printStackTrace();
-                
-                GeoweaverController.sessionManager.closeByToken(token);
                 
             }
             
+            log.debug("SSH session output thread ended");
+
+        }catch(Exception e){
+
+            e.printStackTrace();
         }
         
-        log.info("SSH session output thread ended");
 
     }
     

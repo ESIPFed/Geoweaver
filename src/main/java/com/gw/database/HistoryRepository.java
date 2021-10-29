@@ -3,12 +3,13 @@ package com.gw.database;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.gw.jpa.History;
 
-public interface HistoryRepository extends CrudRepository<History, String>{
+public interface HistoryRepository extends JpaRepository<History, String>{
 
 	@Query(value="select * from history where host_id = ?1 ORDER BY history_begin_time DESC limit ?2",
 		nativeQuery = true)
@@ -45,6 +46,10 @@ public interface HistoryRepository extends CrudRepository<History, String>{
 	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
 			nativeQuery = true)
 	List<History> findByProcessId(String pid);
+
+	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
+			nativeQuery = true)
+	List<History> findByWorkflowId(String wid);
 	
 	
 	@Query(value="select * from history, workflow where workflow.id = history.history_process ORDER BY history_begin_time DESC limit ?1",

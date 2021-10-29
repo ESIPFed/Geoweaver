@@ -96,6 +96,7 @@ public class GmailAPI {
     public static Gmail getGmailService() throws IOException, GeneralSecurityException {
 
 
+
         String credentials = "{\"web\":{\"client_id\":\"471690502756-7inelnnpit9mp4dofk5sda2op0105d9u.apps.googleusercontent.com\",\"project_id\":\"geoweaver\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"4i09QpoapOndeIw79_hWmd24\",\"redirect_uris\":[\"http://localhost:8070/Geoweaver\"]}}";
         InputStream in = new ByteArrayInputStream(credentials.getBytes());
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));

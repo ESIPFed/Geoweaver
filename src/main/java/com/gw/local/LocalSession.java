@@ -27,6 +27,12 @@ public interface LocalSession {
 	 * @return
 	 */
 	public boolean stop();
+
+	/**
+	 * Find all python environments on the localhost
+	 * @return
+	 */
+	public String readPythonEnvironment(String hostid, String password);
 	
 //	public void setWebSocketSession(WebSocketSession session);
 	/**
@@ -38,7 +44,7 @@ public interface LocalSession {
 	 * @param token
 	 * http session id
 	 */
-	public void runBash(String script, String processid, boolean isjoin, String token);
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token);
 	
 	/**
 	 * Run jupyter locally
@@ -51,7 +57,7 @@ public interface LocalSession {
 	 * @param token
 	 * http session id
 	 */
-	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir, String token);
+	public void runJupyter(String history_id, String script, String processid, boolean isjoin, String bin, String env, String basedir, String token);
 	
 	/**
 	 * Run Python locally
@@ -64,9 +70,9 @@ public interface LocalSession {
 	 * @param token
 	 * http session id
 	 */
-	public void runPython(String script, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token);
+	public void runPython(String history_id, String script, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token);
 	
-	public void runMultipleBashes(String[] script, String processid);
+	public void runMultipleBashes(String history_id, String[] script, String processid);
 	/**
 	 * Save history to database
 	 * @param logs

@@ -16,21 +16,34 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.database.HostRepository;
+import com.gw.jpa.Host;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -39,6 +52,7 @@ import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -47,8 +61,6 @@ import org.springframework.stereotype.Service;
 /**
  *Class BaseTool.java
  *@author ziheng
- *@time Aug 6, 2015 2:49:10 PM
- *Original aim is to support iGFDS.
  */
 @Service
 public class BaseTool {
@@ -65,10 +77,127 @@ public class BaseTool {
 	
 	@Value("${geoweaver.prefixurl}")
 	String prefixurl;
+
+	@Autowired
+	HostRepository hostRepository;
 	
 	public BaseTool() {
 		
 		
+	}
+
+	public String getLocalhostIdentifier() throws Exception{
+
+		// return "GeoweaverWorkflowManagementSoftwareForAll";
+		InetAddress localHost = InetAddress.getLocalHost();
+
+        NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
+        
+        byte[] hardwareAddress = ni.getHardwareAddress();
+
+		return new String(hardwareAddress, StandardCharsets.UTF_8);
+	}
+
+	public boolean checkLocalhostPassword(String received_password) throws Exception{
+
+		String encodedreceivedpassword = this.get_SHA_512_SecurePassword(received_password, getLocalhostIdentifier());
+
+		String readpassword = this.getLocalhostPassword();
+
+		return readpassword.equals(encodedreceivedpassword);
+
+	}
+
+	public String getLocalhostPassword(){
+
+		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
+
+		return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+
+	}
+
+	public void setLocalhostPassword(String originalpassword, boolean force){
+
+		try{
+
+			String encodedpassword = getLocalhostPassword();
+
+			if(this.isNull(encodedpassword) || force){
+	
+				originalpassword = this.isNull(originalpassword)? new RandomString(30).nextString(): originalpassword;
+	
+				encodedpassword = this.get_SHA_512_SecurePassword(originalpassword, getLocalhostIdentifier());
+
+				workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
+	
+				this.writeString2File(encodedpassword, this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+	
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+	}
+
+	/**
+	 * Judge if the host is localhost
+	 * @param hid
+	 * @return
+	 */
+	public boolean islocal(String hid) {
+		
+		boolean is = false;
+		
+		Optional<Host> opthost = hostRepository.findById(hid);
+
+		if(opthost.isPresent()){
+			Host h = hostRepository.findById(hid).get();
+		
+			if("127.0.0.1".equals(h.getIp()) || "localhost".equals(h.getIp())) {
+				
+				is = true;
+				
+			}
+		}
+		
+		
+		return is;
+		
+	}
+
+	/**
+	 * Escape the code text
+	 * @param code
+	 * @return
+	 */
+	public String escape(String code) {
+		
+		String resp = null;
+		
+		if(!this.isNull(code)) {
+
+			// resp = code.replaceAll("\\\\", "\\\\\\\\")
+			// 		.replaceAll("\"", "\\\\\"")
+			// 		.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
+			// 		.replaceAll("	", "\\\\t");
+			resp = StringEscapeUtils.escapeJson(code);
+			
+		}
+			
+		return resp;
+		
+	}
+
+	public String testResourceFiles(){
+
+		Path resourceDirectory = Paths.get("src","test","resources");
+		String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+
+		logger.debug(absolutePath);
+		return absolutePath;
 	}
 
 	public String getBody(HttpServletRequest req) {
@@ -155,7 +284,7 @@ public class BaseTool {
 	 */
 	public String getFileTransferFolder() {
 		
-		String tempfolder = this.normalizedPath(workspace) + "/" + this.upload_file_path + "/";
+		String tempfolder = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + this.upload_file_path + FileSystems.getDefault().getSeparator();
 		
 		File tf = new File(tempfolder);
 		
@@ -213,6 +342,46 @@ public class BaseTool {
 		
 	}
 	
+	/**
+	 * add on 10/31/2018
+	 * @param passwordToHash
+	 * @param salt
+	 * @return
+	 */
+	public String get_SHA_512_SecurePassword(String passwordToHash, String salt){
+		String generatedPassword = null;
+	   try {
+		   if(passwordToHash!=null){
+				MessageDigest md = MessageDigest.getInstance("SHA-512");
+				md.update(salt.getBytes(StandardCharsets.UTF_8));
+				byte[] bytes = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8));
+				StringBuilder sb = new StringBuilder();
+				for(int i=0; i< bytes.length ;i++){
+					sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+				}
+				generatedPassword = sb.toString();
+		   }
+	       
+       } 
+       catch (NoSuchAlgorithmException e){
+    	   
+         e.printStackTrace();
+       }
+	    return generatedPassword;
+	}
+
+	/**
+	 * Match Email string
+	 * @param email
+	 * @return
+	 */
+	public static boolean validate(String email){
+		String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+	}
+
 
 //	public String toJSONString(Object value) {
 //		String json = null;
@@ -233,6 +402,69 @@ public class BaseTool {
 //
 //		return json;
 //	}
+
+	public String getErrorReturn(String message){
+
+		StringBuffer json = new StringBuffer("{\"status\": \"failed\", \"reason\":\"");
+		
+		json.append(message).append("\"}");
+
+		return json.toString();
+
+	}
+
+	public List<String> executeLocal(List<String> cmds){
+		
+		List envlist = new ArrayList();
+
+		try{
+
+			ProcessBuilder builder = new ProcessBuilder();
+				
+			builder.command(cmds); //bash.exe of cygwin must be in the $PATH
+
+			builder.redirectErrorStream(true);
+
+			Process process = builder.start();
+
+			process.waitFor();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String s = null;
+			
+
+			while ((s = in.readLine()) != null) {
+				System.out.println(s);
+
+				envlist.add(s);
+				
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+			
+		}
+
+
+		return envlist;
+
+	}
+
+	public String toJSON(Object h) {
+			
+		String json = "{}";
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			json = mapper.writeValueAsString(h);
+			// logger.debug("ResultingJSONstring = " + json);
+			//System.out.println(json);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return json;
+		
+	}
 	
 	public void createWorkspace(String filepath) {
 		
@@ -244,6 +476,20 @@ public class BaseTool {
 			
 		}
 		
+	}
+
+	public void sleep(long timelen){
+
+		try {
+			
+			Thread.sleep(timelen);                 //1000 milliseconds is one second.
+
+		} catch(InterruptedException ex) {
+			
+			// Thread.currentThread().interrupt();
+			ex.printStackTrace();
+
+		}
 	}
 
 	/**
@@ -258,7 +504,7 @@ public class BaseTool {
 			
 			filepath = this.normalizedPath(filepath);
 			
-			logger.info("Writing to file: " + filepath);
+			// logger.info("Writing to file: " + filepath);
 			
 			createWorkspace(filepath);
 			
@@ -283,10 +529,10 @@ public class BaseTool {
 	 * @param msg
 	 * @return
 	 */
-	public String escape(String msg){
-		msg = msg.replaceAll("\\'", "").replaceAll("\\\n", "");
-		return msg;
-	}
+	// public String escape(String msg){
+	// 	msg = msg.replaceAll("\\'", "").replaceAll("\\\n", "");
+	// 	return msg;
+	// }
 	
 	public Document parseString(String xml){
 		
@@ -916,7 +1162,7 @@ public class BaseTool {
 			
 		}
 		
-		String folderpath = this.getFileTransferFolder() + "/";
+		String folderpath = this.getFileTransferFolder();
 		
 		String folderuri = prefixurl + "/Geoweaver/" + upload_file_path + "/";
 		

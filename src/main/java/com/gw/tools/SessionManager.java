@@ -33,6 +33,9 @@ import org.springframework.stereotype.Service;
 import com.gw.local.LocalSession;
 import com.gw.ssh.SSHSession;
 
+/**
+ * Manage all the SSH connection sessions between Geoweaver and local/remote servers
+ */
 @Service
 public class SessionManager {
 
@@ -76,9 +79,11 @@ public class SessionManager {
     		
     		LocalSession localSession = localSessionByToken.get(token);
     		
-    		localSession.stop();
+    		if(localSession!=null){
+				localSession.stop();
     		
-    		localSessionByToken.remove(token);
+    			localSessionByToken.remove(token);
+			}
     		
     	}
     	

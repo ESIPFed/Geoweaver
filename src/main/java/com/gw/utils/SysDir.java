@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 /**
  *Class SysDir.java
  *@author ziheng
- *@time Aug 10, 2015 4:18:19 PM
- *Original aim is to support iGFDS.
  */
 
 @Configuration

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.gw.tasks.Task;
@@ -19,6 +20,7 @@ import com.gw.utils.SysDir;
  *Original aim is to support Geoweaver.
  */
 @Service
+@Scope("singleton")
 public class WorkerManager {
 	
 	private List<Worker> workerlist;
@@ -83,6 +85,8 @@ public class WorkerManager {
 	
 	public Worker getNextAvailableWorker() {
 		
+		logger.debug("Get next available worker..");
+		
 		Worker w = null;
 		
 		for(int i=0;i<worknumber;i++) {
@@ -142,6 +146,7 @@ public class WorkerManager {
 	public Worker createANewWorker(Task t){
 		//add the task to a empty worker
 		Worker w = getNextAvailableWorker();
+		logger.debug("Load task into worker.." + t.getName());
 		w.setTask(t);
 //		w.start();
 //		workerlist.add(w);

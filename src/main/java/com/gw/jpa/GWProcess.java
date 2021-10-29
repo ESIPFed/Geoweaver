@@ -19,10 +19,46 @@ public class GWProcess {
 	String id;
 	
 	String name;
+	
 	@Column(columnDefinition = "LONGTEXT")
 	String description;
+
 	@Column(columnDefinition = "LONGTEXT")
 	String code;
+
+	String lang;
+
+	
+
+	String owner;
+
+	//true: private; false: public
+	String confidential;
+
+
+	public String getOwner() {
+		return this.owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+	public String getConfidential() {
+		return this.confidential;
+	}
+
+	public void setConfidential(String confidential) {
+		this.confidential = confidential;
+	}
+	
+	public String getLang() {
+		return this.lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
 
 	public String getId() {
 		return id;

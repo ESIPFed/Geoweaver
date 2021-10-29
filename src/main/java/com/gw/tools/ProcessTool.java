@@ -2,9 +2,11 @@ package com.gw.tools;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
@@ -12,17 +14,23 @@ import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.ssh.SSHSession;
+import com.gw.tasks.GeoweaverProcessTask;
+import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class ProcessTool {
 	
 	Logger logger = LoggerFactory.getLogger(ProcessTool.class);
@@ -37,16 +45,8 @@ public class ProcessTool {
 	HistoryRepository historyrepository;
 	
 	@Autowired
-	HostTool ht;
-	
-	@Autowired
-	LocalhostTool lt;
-	
-	@Autowired
-	RemotehostTool rt;
-	
-	@Autowired
 	BaseTool bt;
+
 	
 	@Value("${geoweaver.workspace}")
 	String workspace;
@@ -58,7 +58,28 @@ public class ProcessTool {
 		
 		
 	}
+
+	public void save(GWProcess p){
+
+		processrepository.save(p);
+
+	}
 	
+	public List<GWProcess> getAllProcesses(){
+
+		Iterable<GWProcess> pit = processrepository.findAll();
+
+		List<GWProcess> plist = new ArrayList();
+
+		pit.forEach(p->{
+
+			plist.add(p);
+
+		});
+
+		return plist;
+
+	}
 	
 	public String toJSON(GWProcess p) {
 		
@@ -85,25 +106,29 @@ public class ProcessTool {
 		
 //		history_tool.process_all_history(pid)
 		
-		Iterator<GWProcess> pit = processrepository.findAll().iterator();
+		// Iterator<GWProcess> pit = processrepository.findAll().iterator();
+
+		Iterator<GWProcess> pit = processrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
-		
-		int num = 0;
 		
 		while(pit.hasNext()) {
 			
 			GWProcess p = pit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(p));
+			json.append(toJSON(p)).append(",");
 			
 		}
+
+		pit = processrepository.findAllPrivateByOwner(owner).iterator();
+
+		while(pit.hasNext()){
+
+			json.append(toJSON(pit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
@@ -215,41 +240,73 @@ public class ProcessTool {
 		
 	}
 	
-	public String detail(String id) {
+	public String escapeJupyter(String code){
+
+		if(!bt.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport") 
+			|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\""))){
+
+				code = this.unescape(code);
+
+		}
+
+		return code;
+	}
+
+	public String detail(String id) throws JsonProcessingException {
 		
 		GWProcess p = getProcessById(id);
-		
-		StringBuffer resp = new StringBuffer();
-		
-		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
-		
-		resp.append("\"name\":\"").append(p.getName()).append("\", ");
-		
-		String lang = "shell";
-		
-		if(!bt.isNull(p.getDescription()))
-		
-			lang = p.getDescription();
-		
-		resp.append("\"description\":\"").append(lang).append("\", ");
-		
-		String code = p.getCode();
 
-//		if(lang.equals("jupyter")) {
-//			
-//			resp.append("\"code\":").append(code).append(" ");
-//			
-//		}else {
-			
-//			code = escape(code); //it already escaped once
-			
-			resp.append("\"code\":\"").append(code).append("\" ");
-			
-//		}
+		if(!bt.isNull(p.getCode()) && (p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
+			|| p.getCode().contains("\\\"operation\\\"") || p.getCode().contains("\\\"cells\\\""))){
+
+			p.setCode(this.unescape(p.getCode()));
+
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String jsonString = mapper.writeValueAsString(p);
 		
-		resp.append(" }");
+// 		StringBuffer resp = new StringBuffer();
+		
+// 		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
+		
+// 		resp.append("\"name\":\"").append(p.getName()).append("\", ");
+		
+// 		String lang = "shell";
+		
+// 		if(bt.isNull(p.getLang())){
+
+// 			if(!bt.isNull(p.getDescription()))
+		
+// 			lang = p.getDescription();
+// 		}
+		
+// 		resp.append("\"lang\":\"").append(lang).append("\", ");
+
+// 		resp.append("\"description\":\"").append(p.getDescription()).append("\", ");
+		
+// 		String code = p.getCode();
+
+// //		if(lang.equals("jupyter")) {
+// //			
+// //			resp.append("\"code\":").append(code).append(" ");
+// //			
+// //		}else {
+			
+// //			code = escape(code); //it already escaped once
+			
+// 			resp.append("\"code\":\"").append(code).append("\", ");
+
+// 			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
+
+// 			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
+			
+// //		}
+		
+// 		resp.append(" }");
 				
-		return resp.toString();
+		return jsonString;
 		
 	}
 	
@@ -259,27 +316,7 @@ public class ProcessTool {
 		
 	}
 
-	/**
-	 * Escape the code text
-	 * @param code
-	 * @return
-	 */
-	public String escape(String code) {
-		
-		String resp = null;
-		
-		if(!bt.isNull(code)) {
-
-			resp = code.replaceAll("\\\\", "\\\\\\\\")
-					.replaceAll("\"", "\\\\\"")
-					.replaceAll("(\r\n|\r|\n|\n\r)", "<br/>")
-					.replaceAll("	", "\\\\t");
-			
-		}
-			
-		return resp;
-		
-	}
+	
 	
 	public String unescape(String code) {
 		
@@ -287,10 +324,11 @@ public class ProcessTool {
 		
 		if(!bt.isNull(code)) {
 			
-			resp = code.replace("\\\\", "\\")
-					.replace("\\\"", "\"")
-					.replace("<br/>", "\n")
-					.replaceAll("\t", "	");
+			// resp = code.replace("\\\\", "\\")
+			// 		.replace("\\\"", "\"")
+			// 		.replace("<br/>", "\n")
+			// 		.replace("\t", "	");
+			resp = StringEscapeUtils.unescapeJson(code);
 			
 		}
 		
@@ -394,7 +432,7 @@ public class ProcessTool {
 		
 		p.setDescription(lang);
 		
-		p.setCode(escape(code));
+		p.setCode(bt.escape(code));
 		
 		processrepository.save(p);
 		
@@ -455,11 +493,11 @@ public class ProcessTool {
 	 * @param description
 	 * @return
 	 */
-	public String add_database(String name, String lang, String code, String desc) {
+	public String add_database(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		GWProcess p = new GWProcess();
 		
-		p.setCode(this.escape(code));
+		p.setCode(bt.escape(code));
 		
 		p.setDescription(desc);
 		
@@ -468,6 +506,10 @@ public class ProcessTool {
 		p.setId(newid);
 		
 		p.setName(name);
+
+		p.setOwner(ownerid);
+
+		p.setConfidential(confidential);
 		
 		processrepository.save(p);
 
@@ -498,7 +540,7 @@ public class ProcessTool {
 	 * @param hid
 	 * @return
 	 */
-	public String add_database(String name, String type, String code, String filepath, String hid) {
+	public String add_database(String name, String type, String code, String filepath, String hid, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -561,7 +603,7 @@ public class ProcessTool {
 	 * @param desc
 	 * @return
 	 */
-	public String add(String name, String lang, String code, String desc) {
+	public String add(String name, String lang, String code, String desc, String ownerid, String confidential) {
 		
 		String newid = null;
 		
@@ -571,7 +613,7 @@ public class ProcessTool {
 //			
 //		}else {
 			
-			newid = add_database(name, lang, code, desc);
+			newid = add_database(name, lang, code, desc, ownerid, confidential);
 			
 //		}
 		
@@ -660,7 +702,9 @@ public class ProcessTool {
 		
 		String code = p.getCode();
 		
-		code = this.unescape(code);
+		if(code.contains("bash\\\n") || code.contains("\\\nimport") 
+		|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\"")) 
+			code = this.unescape(code);
 		
 		return code;
 		
@@ -699,7 +743,7 @@ public class ProcessTool {
 		GWProcess p = processrepository.findById(pid).get();
 		
 		
-		return p.getDescription();
+		return bt.isNull(p.getLang())?p.getDescription():p.getLang();
 		
 		
 	}
@@ -766,85 +810,9 @@ public class ProcessTool {
 		return resp;
 		
 	}
+
 	
-	/**
-	 * Execute one process on a host
-	 * @param id
-	 * process Id
-	 * @param hid
-	 * host Id
-	 * @param pswd
-	 * password
-	 * @return
-	 */
-	public String execute(String id, String hid, String pswd, String token, 
-			boolean isjoin, String bin, String pyenv, String basedir) {
-		
-		String category = getTypeById(id);
-		
-		logger.debug("this process is : " + category);
-		
-		String resp = null;
-		
-		if(ht.islocal(hid)) {
-			
-			//localhost
-			if("shell".equals(category)) {
-				
-				resp = lt.executeShell(id, hid, pswd, token, isjoin);
-				
-			}else if("builtin".equals(category)) {
-				
-				resp = lt.executeBuiltInProcess(id, hid, pswd, token, isjoin);
-				
-			}else if("jupyter".equals(category)){
-				
-				resp = lt.executeJupyterProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
-				
-			}else if("python".equals(category)) {
-				
-				resp = lt.executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
-				
-			}else{
-				
-				throw new RuntimeException("This category of process is not supported");
-				
-			}
-			
-			
-		}else {
-			
-			//non-local remote server
-
-			if("shell".equals(category)) {
-				
-				resp = rt.executeShell(id, hid, pswd, token, isjoin);
-				
-			}else if("builtin".equals(category)) {
-				
-				resp = rt.executeBuiltInProcess(id, hid, pswd, token, isjoin);
-				
-			}else if("jupyter".equals(category)){
-				
-				resp = rt.executeJupyterProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
-				
-			}else if("python".equals(category)) {
-				
-				resp = rt.executePythonProcess(id, hid, pswd, token, isjoin, bin, pyenv, basedir);
-				
-			}else{
-				
-				throw new RuntimeException("This category of process is not supported");
-				
-			}
-
-			
-		}
-		
-		return resp;
-		
-	}
-
+	
 	public String recent(int limit) {
 		
 		StringBuffer resp = new StringBuffer();
@@ -876,11 +844,11 @@ public class ProcessTool {
 				
 				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
 				
-				resp.append("\"notes\": \"").append(process_obj[8]).append("\", ");
+				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
 				
-				resp.append("\"status\": \"").append(process_obj[7]).append("\", ");
+				resp.append("\"status\": \"").append(process_obj[8]).append("\", ");
 				
 				resp.append("\"begin_time\": \"").append(process_obj[1]).append("\"}");
 				
@@ -929,14 +897,8 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history, process_type where history.id = '").append(hid).append("' and history.process=process_type.id;");
-		
-//		logger.info(sql.toString());
-		
 		try {
 			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-
 			History hist = historyrepository.findById(hid).get();
 
 			if(!bt.isNull(hist)) {
@@ -955,19 +917,32 @@ public class ProcessTool {
 				
 				resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
 				
-				String input_code = escape(String.valueOf(hist.getHistory_input()));
+				String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
+
+			// 	if(!bt.isNull(hist.getHistory_input()) && (hist.getHistory_input().contains("bash\\\n") || hist.getHistory_input().contains("\\\nimport") 
+			// || hist.getHistory_input().contains("\\\"operation\\\"") || hist.getHistory_input().contains("\\\"cells\\\""))){
+				
+			// 		input_code = this.unescape(hist.getHistory_input());
+
+			// 	}else{
+				
+			// 		input_code = bt.escape(hist.getHistory_input());
+				
+			// 	}
 				
 				resp.append("\"input\":\"").append(input_code).append("\", ");
 				
-				String output_code = escape(String.valueOf(hist.getHistory_output()));
+				String output_code = bt.escape(String.valueOf(hist.getHistory_output()));
 				
 				resp.append("\"output\":\"").append(output_code).append("\", ");
 				
-				resp.append("\"category\":\"").append(escape(String.valueOf(thep.getDescription()))).append("\", ");
+				resp.append("\"lang\":\"").append(thep.getLang()).append("\", ");
 				
-				resp.append("\"host\":\"").append(escape(String.valueOf(hist.getHost_id()))).append("\", ");
+				resp.append("\"host\":\"").append(hist.getHost_id()).append("\", ");
+
+				resp.append("\"confidential\":\"").append(thep.getConfidential()).append("\", ");
 				
-				resp.append("\"status\":\"").append(String.valueOf(hist.getIndicator())).append("\" }");
+				resp.append("\"status\":\"").append(hist.getIndicator()).append("\" }");
 				
 			}
 			
@@ -993,10 +968,6 @@ public class ProcessTool {
 		
 		List<Object[]> active_processes = historyrepository.findRunningProcess();
 		
-//		StringBuffer sql = new StringBuffer("select * from history where indicator='Running'  ORDER BY begin_time DESC;");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		try {
 			
 			resp.append("[");
@@ -1019,13 +990,13 @@ public class ProcessTool {
 				
 				resp.append("\", \"end_time\": \"").append(row[2]);
 				
-				resp.append("\", \"output\": \"").append(escape(String.valueOf(row[3])));
+				resp.append("\", \"output\": \"").append(bt.escape(String.valueOf(row[3])));
 				
-				resp.append("\", \"status\": \"").append(escape(String.valueOf(row[4])));
+				resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(row[4])));
 				
-				resp.append("\", \"notes\": \"").append(escape(String.valueOf(row[8])));
+				resp.append("\", \"notes\": \"").append(bt.escape(String.valueOf(row[8])));
 				
-				resp.append("\", \"host\": \"").append(escape(String.valueOf(row[5])));
+				resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(row[5])));
 				
 				resp.append("\"}");
 				

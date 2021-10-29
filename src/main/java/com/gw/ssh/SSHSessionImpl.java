@@ -24,26 +24,35 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.PublicKey;
 import java.text.Normalizer;
+import java.util.List;
+
+import com.gw.database.HostRepository;
+import com.gw.database.ProcessRepository;
+import com.gw.jpa.Environment;
+import com.gw.jpa.History;
+import com.gw.jpa.Host;
+import com.gw.tools.EnvironmentTool;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.ProcessTool;
+import com.gw.utils.BaseTool;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import com.gw.jpa.History;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
-import com.gw.tools.ProcessTool;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.connection.channel.direct.Session.Shell;
@@ -55,16 +64,23 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
  *
  */
 @Service
+@Scope("prototype")
 public class SSHSessionImpl implements SSHSession {
 	
-	@Autowired
-	HostTool ht;
+	// @Autowired
+	// HostTool ht;
+
+    @Autowired
+    HostRepository hostrepo;
 	
 	@Autowired
 	BaseTool bt;
 	
-	@Autowired
-	ProcessTool pt;
+    @Autowired
+    ProcessRepository processRepository;
+
+    @Autowired
+	EnvironmentTool et;
 	
     protected final Logger   log = LoggerFactory.getLogger(getClass());
     
@@ -111,9 +127,8 @@ public class SSHSessionImpl implements SSHSession {
 //    
 //    private String			 history_process;
 //    
-//    private String			 history_id;
     
-    private History          history = new History();
+    private History          history;
     
     @Autowired
     private HistoryTool      history_tool;
@@ -124,7 +139,8 @@ public class SSHSessionImpl implements SSHSession {
     
     public SSHSessionImpl() {
     	
-    	this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
+        // this id should be passed into this class in the initilizer
+    	// this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
     	
     }
     
@@ -138,10 +154,6 @@ public class SSHSessionImpl implements SSHSession {
 
 	public String getHistory_id() {
 		return history.getHistory_id();
-	}
-
-	public void setHistory_id(String history_id) {
-		history.setHistory_id(history_id);
 	}
 	
     public SSHClient getSsh() {
@@ -180,10 +192,10 @@ public class SSHSessionImpl implements SSHSession {
 	public boolean login(String hostid, String password, String token, boolean isTerminal) {
 		
 		this.hostid = hostid;
+
+        Host h = hostrepo.findById(hostid).get();
 		
-		String[] hostdetails = ht.getHostDetailsById(hostid);
-		
-		return this.login(hostdetails[1], hostdetails[2], hostdetails[3], password, token, false);
+		return this.login(h.getIp(), h.getPort(), h.getUsername(), password, token, false);
 		
 	}
 
@@ -266,15 +278,15 @@ public class SSHSessionImpl implements SSHSession {
         	e.printStackTrace();
         }
         try {
-            shell.close();
+            shell.close(); //sshj shell
         } catch (Throwable e) {
         }
         try {
-            session.close();
+            session.close(); //sshj session
         } catch (Throwable e) {
         }
         try {
-            ssh.disconnect();
+            ssh.disconnect(); //sshj client
             
         } catch (Throwable e) {
         }
@@ -288,71 +300,6 @@ public class SSHSessionImpl implements SSHSession {
 		history.setIndicator(status);
     	this.history_tool.saveHistory(history);
     	
-//    	try {
-//    		
-//    		log.info("save history " + status);
-//    		
-//    		this.history_end_time = BaseTool.getCurrentMySQLDatetime();
-//    		
-//    		//the log is more than 65500 characters, write it into a log file
-//    		if(logs.length()>65500) {
-//    			
-//    			String logfile = SysDir.upload_file_path + "/" + this.history_id + ".log";
-//    			
-//    			BaseTool.writeString2File(logs, BaseTool.getGeoweaverRootPath() + logfile);
-//    			
-//    			this.history_output = "logfile";
-//    			
-//    		}else {
-//    			
-//    			this.history_output = logs;
-//    			
-//    		}
-//    		
-//    		StringBuffer sql = new StringBuffer("select id from history where id = '").append(this.history_id).append("'; ");
-//    		
-//    		ResultSet rs = DataBaseOperation.query(sql.toString());
-//    		
-//			if(!rs.next()) {
-//				
-//				sql = new StringBuffer("insert into history (id, process, begin_time, input, output, host, indicator) values ('");
-//				
-//				sql.append(this.history_id).append("','");
-//				
-//				sql.append(this.history_process).append("','");
-//				
-//				sql.append(this.history_begin_time).append("', ?, ?, '");
-//				
-//				sql.append(this.hostid).append("', '");
-//				
-//				sql.append(status).append("' )");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_input, this.history_output});
-//				
-//			}else {
-//				
-//				sql = new StringBuffer("update history set end_time = '");
-//				
-//				sql.append(this.history_end_time);
-//				
-//				sql.append("', output = ?, indicator = '").append(status).append("' where id = '");
-//				
-//				sql.append(this.history_id).append("';");
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {this.history_output});
-//				
-//			}
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-    	
 	}
     
     public static String unaccent(String src) {
@@ -363,15 +310,6 @@ public class SSHSessionImpl implements SSHSession {
     
     public static String escapeJupter(String json) {
     	
-//    	json = json.replaceAll("\r\n", "\n");
-//    	
-//    	json = json.replaceAll("\\", "\\\\\\")
-////				.replaceAll("\'", "\\\\\\\'")
-////				.replaceAll("`", ".")
-////				.replaceAll("()", ".")
-////				.replaceAll(")", "\\\\)")
-//				.replaceAll("\"", "\\\\\\\"");
-    	
     	json  = StringEscapeUtils.escapeJava(json);
     	
     	return json;
@@ -379,15 +317,7 @@ public class SSHSessionImpl implements SSHSession {
     }
     
     @Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(python);
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
     	try {
     		
@@ -406,10 +336,10 @@ public class SSHSessionImpl implements SSHSession {
     		
     		if(!bt.isNull(basedir)||"default".equals(basedir)) {
     			
-    			cmdline += "cd \"" + basedir + "\"; ";
+    			cmdline += "cd " + basedir + "; ";
     			
     		}
-    		
+
     		//new version of execution in which all the python files are copied in the host
     		
     		cmdline += "mkdir " + token + ";";
@@ -421,8 +351,8 @@ public class SSHSessionImpl implements SSHSession {
 //    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		
     		cmdline += "chmod +x *.py;";
-    		
-    		String filename = pt.getNameById(processid);
+
+    		String filename = processRepository.findById(processid).get().getName();//pt.getNameById(processid);
     		
     		filename = filename.trim().endsWith(".py")? filename: filename+".py";
     		
@@ -433,17 +363,13 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}else {
     			
-//    			cmdline += "conda init; ";
-    			
-    			cmdline += "source activate " + pyenv + "; "; //for demo only
+    			// if(!bt.isNull(pyenv)) cmdline += "source activate " + pyenv + "; "; //for demo only
     			
     			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
-    		
-    		cmdline += "cd ..; rm -R " + token + "*;";
+    		cmdline += "cd ..; rm -R " + token + "*;"; //remove the code
     		
     		log.info(cmdline);
     		
@@ -454,7 +380,7 @@ public class SSHSessionImpl implements SSHSession {
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -470,21 +396,6 @@ public class SSHSessionImpl implements SSHSession {
             log.info("returning to the client..");
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        
-//	        cmd = "./geoweaver-" + token + ".sh";
-//	        		
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        	
-//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//	        output.flush();
 	        
 		} catch (Exception e) {
 			
@@ -495,15 +406,7 @@ public class SSHSessionImpl implements SSHSession {
 	}
     
     @Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(notebookjson);
+	public void runJupyter(String history_id, String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
     	
     	try {
     		
@@ -513,13 +416,13 @@ public class SSHSessionImpl implements SSHSession {
     		
     		if(!bt.isNull(basedir)||"default".equals(basedir)) {
     			
-    			cmdline += "cd \"" + basedir + "\"; ";
+    			cmdline += "cd " + basedir + "; ";
     			
     		}
     		
     		notebookjson = escapeJupter(notebookjson);
     		
-    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history.getHistory_id() + ".ipynb; ";
+    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
     		
 //    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
 //    			
@@ -543,11 +446,11 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history.getHistory_id() + ".ipynb;";
+    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
     		
-    		cmdline += "rm ./jupyter-" + history.getHistory_id() + ".ipynb; "; // remove the script finally, leave no trace behind
+    		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
-    		cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
     		
 //    		cmdline += "./geoweaver-" + token + ".sh;";
     		
@@ -570,7 +473,7 @@ public class SSHSessionImpl implements SSHSession {
             
 //            sender = new SSHSessionOutput(input, token);
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -611,21 +514,13 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
-    	
-//		this.history_id = token; //new RandomString(12).nextString();
-		
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
-		
-		history.setHistory_input(script);
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
     	
     	try {
     		
     		log.info("starting command");
     		
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		String cmdline = "echo \"" 
     				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
@@ -650,7 +545,7 @@ public class SSHSessionImpl implements SSHSession {
             
 //            sender = new SSHSessionOutput(input, token);
 //            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token);
+            cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -708,7 +603,7 @@ public class SSHSessionImpl implements SSHSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		// TODO Auto-generated method stub
 		
 		
@@ -730,6 +625,121 @@ public class SSHSessionImpl implements SSHSession {
             e.printStackTrace();
         }
         return true;
+    }
+
+    void readWhereCondaInOneCommand(String hostid) throws IOException{
+
+        List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+
+        String cmdline = "source ~/.bashrc; whereis python; conda env list";
+        
+        log.info(cmdline);
+    
+        Command cmd = session.exec(cmdline);
+
+        String output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+        System.out.println(output);
+        //An Example:
+        //  ## there might be some error messages here because of the source ~/.bashrc
+        //  python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python2.7 /usr/lib/python3.8 /usr/lib/python3.6 /usr/lib/python3.7 /etc/python2.7 /etc/python /etc/python3.6 /usr/local/lib/python3.6 /usr/include/python3.6m /usr/share/python
+        //  bash: conda: command not found
+        //  # conda environments:
+        //  #
+        //                           /home/zsun/anaconda3
+        //                           /home/zsun/anaconda3/envs/ag
+        //  base                  *  /root/anaconda3
+
+        String[] lines = output.split("\n");
+        int nextlineindex = 1;
+        //Parse "whereis python"
+        for(int i=0; i<lines.length; i++){
+
+            if(lines[i].startsWith("python")){
+
+                String pythonarraystr = lines[i].substring(8);
+    
+                String[] pythonarray = pythonarraystr.split(" ");
+    
+                for(String pypath : pythonarray){
+    
+                    if(!bt.isNull(pypath)){
+    
+                        pypath = pypath.trim();
+    
+                        et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+    
+                    }
+    
+                }
+
+                nextlineindex = i+1;
+
+                break;
+    
+            }
+        }
+        
+
+        //parse Conda results
+        if(!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")){ //pass if conda is not found
+
+            for(int i=nextlineindex+1; i<lines.length; i++){
+
+                if(!lines[i].startsWith("#")){ //pass comments
+
+                    String[] vals = lines[i].split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"/bin/python"; //on linux python command is under bin folder
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+                    et.addNewEnvironment(bin, old_envlist, hostid, name);
+
+                }
+
+            }
+
+        }
+        
+
+    }
+
+    @Override
+    public String readPythonEnvironment(String hostid, String password) {
+
+        String resp = null;
+
+        try {
+
+           this.readWhereCondaInOneCommand(hostid);
+
+        //    this.readConda();
+
+           resp = et.getEnvironments(hostid);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally{
+
+            finalize();
+            // if(!bt.isNull(session))
+            //     try {
+
+            //         session.close();
+            //     } catch (Exception e) {
+            //         e.printStackTrace();
+            //     }
+
+        }
+
+        
+
+        return resp;
     }
 
 }

@@ -5,8 +5,6 @@ import java.util.Random;
 /**
  *Class RandomString.java
  *@author ziheng
- *@time Aug 11, 2015 10:52:43 AM
- *Original aim is to support iGFDS.
  */
 public class RandomString {
 

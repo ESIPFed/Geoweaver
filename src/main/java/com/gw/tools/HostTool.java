@@ -1,9 +1,13 @@
 package com.gw.tools;
 
 
+import java.rmi.Remote;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.EnvironmentRepository;
@@ -12,14 +16,18 @@ import com.gw.database.HostRepository;
 import com.gw.jpa.Environment;
 import com.gw.jpa.History;
 import com.gw.jpa.Host;
+import com.gw.local.LocalSession;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service
+@Scope("prototype")
 public class HostTool {
 
 	Logger logger = Logger.getLogger(HostTool.class);
@@ -28,38 +36,16 @@ public class HostTool {
 	HostRepository hostrepository;
 	
 	@Autowired
-	ProcessTool pt;
-	
-	@Autowired
 	HistoryRepository historyrepository;
 	
 	@Autowired
 	BaseTool bt;
-	
+
 	@Autowired
 	EnvironmentRepository environmentrepository;
 	
 	
-	/**
-	 * Judge if the host is localhost
-	 * @param hid
-	 * @return
-	 */
-	public boolean islocal(String hid) {
-		
-		boolean is = false;
-		
-		Host h = hostrepository.findById(hid).get();
-		
-		if("127.0.0.1".equals(h.getIp()) || "localhost".equals(h.getIp())) {
-			
-			is = true;
-			
-		}
-		
-		return is;
-		
-	}
+	
 	
 	/**
 	 * Get History by ID
@@ -70,13 +56,7 @@ public class HostTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history where history.id = '").append(hid).append("';");
-		
-//		logger.info(sql.toString());
-		
 		try {
-			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
 			
 			History his = historyrepository.findById(hid).get();
 			
@@ -94,7 +74,7 @@ public class HostTool {
 				
 				resp.append("\"input\":\"").append(his.getHistory_input()).append("\", ");
 				
-				resp.append("\"output\":\"").append(pt.escape(his.getHistory_output())).append("\", ");
+				resp.append("\"output\":\"").append(bt.escape(his.getHistory_output())).append("\", ");
 				
 				resp.append("\"host\":\"").append(his.getHost_id()).append("\", ");
 				
@@ -119,13 +99,6 @@ public class HostTool {
 		
 		Collection<History> historylist = historyrepository.findRecentHistory(hostid, limit);
 		
-		
-		
-//		StringBuffer sql = new StringBuffer("select * from history where host = '")
-//				.append(hostid).append("' ORDER BY begin_time DESC limit ").append(limit).append(";");
-		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		try {
 			
 			resp.append("[");
@@ -143,7 +116,7 @@ public class HostTool {
 				}
 				
 				History h = hisint.next();
-				
+
 				resp.append("{ \"id\": \"").append(h.getHistory_id()).append("\", ");
 				
 				resp.append("\"name\": \"").append(h.getHistory_process()).append("\", ");
@@ -185,82 +158,6 @@ public class HostTool {
 		
 		return json;
 		
-//		String sql = "select * from hosts where id = '" + id + "';";
-//		
-//		ResultSet rsmd = DataBaseOperation.query(sql);
-//
-//	    JSONObject obj = new JSONObject();
-//	      
-//		try {
-//			
-//			if(rsmd.next()) {
-//				
-//			      int numColumns = rsmd.getMetaData().getColumnCount();
-//			      
-//			      for (int i=1; i<numColumns+1; i++) {
-//			      
-//			    	String column_name = rsmd.getMetaData().getColumnName(i).toLowerCase();
-//
-//			        if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.ARRAY){
-//			        	obj.put(column_name, rsmd.getArray(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BIGINT){
-//			        	obj.put(column_name, rsmd.getInt(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BOOLEAN){
-//			        	obj.put(column_name, rsmd.getBoolean(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.BLOB){
-//			        	obj.put(column_name, rsmd.getBlob(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.DOUBLE){
-//			        	obj.put(column_name, rsmd.getDouble(column_name)); 
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.FLOAT){
-//			        	obj.put(column_name, rsmd.getFloat(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.INTEGER){
-//			        	obj.put(column_name, rsmd.getInt(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.NVARCHAR){
-//			        	obj.put(column_name, rsmd.getNString(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.VARCHAR){
-//			        	obj.put(column_name, rsmd.getString(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.TINYINT){
-//			        	obj.put(column_name, rsmd.getInt(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.SMALLINT){
-//			        	obj.put(column_name, rsmd.getInt(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.DATE){
-//			        	obj.put(column_name, rsmd.getDate(column_name));
-//			        }
-//			        else if(rsmd.getMetaData().getColumnType(i)==java.sql.Types.TIMESTAMP){
-//			        	obj.put(column_name, rsmd.getTimestamp(column_name));   
-//			        }
-//			        else{
-//			        	obj.put(column_name, rsmd.getObject(column_name));
-//			        }
-//			      }
-//
-//			}
-//			
-//			
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-//
-//		
-//		return obj;
-		
 	}
 	
 	public String detail(String id) {
@@ -273,58 +170,19 @@ public class HostTool {
 	
 	public Host getHostById(String id) {
 		
-		Host h = hostrepository.findById(id).get();
-		
-//		Host h = new Host();
-//		
-//		StringBuffer sql = new StringBuffer("select * from hosts where id = '").append(id).append("'; ");
-//		
-//		String[] hostdetails = new String[6] ;
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		try {
-//			
-//			if(rs.next()) {
-//				
-//				h.setName(rs.getString("name"));;
-//				
-//				h.setIp(rs.getString("ip"));
-//				
-//				h.setPort(rs.getString("port"));
-//				
-//				h.setUsername(rs.getString("username"));
-//				
-//				h.setType(rs.getString("type"));
-//				
-//				h.setUrl(rs.getString("url"));
-//				
-//				h.setId(id);
-//				
-//				h.setOwner(rs.getString("owner"));
-//				
-//			}
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
+		Optional<Host> oh = hostrepository.findById(id);
+
+
+		Host h = oh.isPresent()?oh.get():null;
 		
 		return h;
 	}
 	
 	public String[] getHostDetailsById(String id) {
 		
-//		StringBuffer sql = new StringBuffer("select * from hosts where id = '").append(id).append("'; ");
-		
 		String[] hostdetails = new String[6] ;
 		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		try {
-			
-//			if(rs.next()) {
 			
 			Host h = hostrepository.findById(id).get();
 				
@@ -339,8 +197,6 @@ public class HostTool {
 			hostdetails[4] = h.getType();
 			
 			hostdetails[5] = h.getUrl();
-			
-			
 			
 		} catch (Exception e) {
 			
@@ -357,7 +213,7 @@ public class HostTool {
         ObjectMapper mapper = new ObjectMapper();
         try {
             json = mapper.writeValueAsString(h);
-            logger.debug("ResultingJSONstring = " + json);
+            // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -366,21 +222,25 @@ public class HostTool {
 		
 	}
 	
-	public String toJSON(Environment env) {
-		
-		String json = "{}";
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            json = mapper.writeValueAsString(env);
-            logger.debug("ResultingJSONstring = " + json);
-            //System.out.println(json);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		return json;
-		
-	}
 	
+	
+	// public String listWithEnvironments(String owner){
+
+	// 	Iterator<Host> hostit = hostrepository.findAllPublicHosts().iterator();
+		
+	// 	List<Host> hostlist = new ArrayList();
+
+	// 	hostit.forEachRemaining(hostlist::add);
+
+	// 	hostit = hostrepository.findPrivateByOwner(owner).iterator();
+
+	// 	hostit.forEachRemaining(hostlist::add);
+
+		
+		
+		
+	// }
+
 	/**
 	 * 
 	 * @return
@@ -388,84 +248,25 @@ public class HostTool {
 	 */
 	public String list(String owner) {
 		
-//		List<Host> hostlist =  hostrepository.findByOwner(owner);
-		
-		Iterator<Host> hostit = hostrepository.findAll().iterator();
-		
 		StringBuffer json = new StringBuffer("[");
+
+		List<Host> hostlist = new ArrayList();
 		
-		int num = 0;
+		Iterator<Host> hostit = hostrepository.findAllPublicHosts().iterator();
+
+		hostit.forEachRemaining(hostlist::add);
 		
-		while(hostit.hasNext()) {
-			
-			Host h = hostit.next();
-			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(h));
-			
-		}
+		hostit = hostrepository.findPrivateByOwner(owner).iterator();
+
+		hostit.forEachRemaining(hostlist::add);
+
+		hostlist.forEach((host)->{json.append(toJSON(host)).append(",");});
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
 		return json.toString();
-		
-//		StringBuffer json = new StringBuffer("[");
-//		try {
-//			
-//			String sql = "select id, ip, url, type, port, name from hosts;";
-//			
-//			ResultSet rs = DataBaseOperation.query(sql);
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				String hostid = rs.getString("id");
-//				
-//				String hostname = rs.getString("name");
-//				
-//				String ip = rs.getString("ip");
-//				
-//				String url = rs.getString("url");
-//				
-//				String port = rs.getString("port");
-//				
-//				String type = rs.getString("type");
-//				
-//				if( num++ != 0) {
-//					
-//					json.append(",");
-//					
-//				}
-//				
-//				json.append("{\"id\":\"").append(hostid)
-//					.append("\", \"name\": \"").append(hostname)
-//					.append("\", \"ip\": \"").append(ip)
-//					.append("\", \"url\": \"").append(url)
-//					.append("\", \"port\": \"").append(port)
-//					.append("\", \"type\": \"").append(type)
-//					.append("\"}");
-//				
-//			}
-//			
-//		}catch(Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-//		
-//		json.append("]");
-//		
-//		return json.toString();
 		
 	}
 	
@@ -478,11 +279,13 @@ public class HostTool {
 	 * @param username
 	 * @param owner
 	 */
-	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner) {
+	public String add(String hostname, String hostip, String hostport, String username, String url, String type, String owner, String confidential) {
 		
 		String newhostid = new RandomString(6).nextString();
 		
 		Host h = new Host();
+
+		if(bt.isNull(owner)) owner = "111111"; //default to be the public user
 		
 		h.setId(newhostid);
 		h.setIp(hostip);
@@ -492,28 +295,9 @@ public class HostTool {
 		h.setType(type);
 		h.setUrl(url);
 		h.setUsername(username);
+		h.setConfidential(confidential);
 		
 		hostrepository.save(h);
-		
-//		StringBuffer sql = new StringBuffer("insert into hosts (id, name, ip, port, url, type, username, owner) values ('")
-//				
-//				.append(newhostid).append("', '")
-//				
-//				.append(hostname).append("', '")
-//				
-//				.append(hostip).append("', '")
-//				
-//				.append(hostport).append("', '")
-//				
-//				.append(url).append("', '")
-//				
-//				.append(type).append("', '")
-//				
-//				.append(username).append("', '")
-//				
-//				.append(owner).append("'); ");
-//		
-//		DataBaseOperation.execute(sql.toString());
 		
 		return newhostid;
 		
@@ -525,288 +309,34 @@ public class HostTool {
 	 */
 	public String del(String hostid) {
 		
-//		StringBuffer sql = new StringBuffer("delete from hosts where id = '").append(hostid).append("';");
-//		
-//		DataBaseOperation.execute(sql.toString());
-		
 		hostrepository.deleteById(hostid);
 		
 		return "done";
 		
 	}
 
-	/**
-	 * Add environment to database
-	 * @param historyid
-	 * @param bin
-	 * @param env
-	 * @param basedir
-	 * @return
-	 */
-	public String addEnv(String historyid, String hostid, String type, String bin, String env, String basedir, String settings) {
-		
-		String resp = null;
-		
-		try {
-			
-//			String enviroment = getEnvironmentByBEB(hostid, bin, env, basedir);
-			
-			Iterator<Environment> eit = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir).iterator();
-			
-			Environment newenv = new Environment();
-			
-			if(eit.hasNext()) {
-				
-				newenv = eit.next();
-				
-			}else {
-				
-				newenv.setId(historyid);
-				
-				newenv.setName(bin+"-"+env+"-"+basedir);
-				
-				newenv.setType(type);
-				
-				newenv.setBin(bin);
-				
-				newenv.setPyenv(env);
-				
-				newenv.setBasedir(basedir);
-				
-				newenv.setSettings(settings);
-				
-				newenv.setHost(hostid);
-				
-				environmentrepository.save(newenv);
-				
-			}
-			
-			
-			
-//			logger.info("existing environment " + enviroment);
-//			
-//			if(enviroment.equals("[]")) {
-//				
-//				StringBuffer sql = new StringBuffer("insert into environment (id, name, type, bin, pyenv, host, basedir, settings) values ('");
-//				
-//				sql.append(historyid).append("', '");
-//				
-//				sql.append(bin).append("-").append(env).append("-").append(basedir).append("', '");
-//				
-//				sql.append(type).append("', '");
-//				
-//				sql.append(bin).append("', '");
-//				
-//				sql.append(env).append("', '");
-//
-//				sql.append(hostid).append("', '");
-//				
-//				sql.append(basedir).append("', '");
-//				
-//				sql.append(settings).append("' ); ");
-//				
-//				logger.info(sql);
-//				
-//				DataBaseOperation.execute(sql.toString());
-//				
-//			}
-			
-		}catch(Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-		
-		return resp;
-		
+	public void save(Host h){
+
+		hostrepository.save(h);
+
 	}
+
+	public List<Host> getAllHosts(){
+
+		List<Host> hostlist = new ArrayList();
+
+		hostrepository.findAll().forEach(h->hostlist.add(h));
+
+		return hostlist;
+
+	}
+
+	public void saveEnvironment(Environment newenv){
+		environmentrepository.save(newenv);
+	}
+
 	
-	public void showAllEnvironment() {
-		
-
-		String resp = null;
-		
-		try {
-			
-//			StringBuffer sql = new StringBuffer("select * from environment ;");
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-			
-			Iterator<Environment> envit = environmentrepository.findAll().iterator();
-			
-			StringBuffer envstr = new StringBuffer();
-			
-			envstr.append("[");
-			
-			int num = 0;
-			
-			while(envit.hasNext()) {
-				
-				if(num!=0) {
-					
-					envstr.append(", ");
-					
-				}
-				
-				Environment newenv = envit.next();
-				
-				envstr.append(toJSON(newenv));
-				
-//				envstr.append("{ \"id\": \"").append(newenv.getId());
-//				
-//				envstr.append("\", \"name\": \"").append(rs.getString("name"));
-//				
-//				envstr.append("\", \"type\": \"").append(rs.getString("type"));
-//				
-//				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
-//				
-//				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
-				
-			}
-			
-			envstr.append("]");
-			
-			resp = envstr.toString();
-			
-			logger.debug(resp);
-			
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			
-		}
-	}
 	
-	public String getEnvironmentByBEB(String hostid, String bin, String env, String basedir) {
-		
-		String resp = null;
-		
-		try {
-			
-//			StringBuffer sql = new StringBuffer("select * from environment where host = '").append(hostid)
-//					.append("' and bin = '").append(bin).append("' and pyenv = '")
-//					.append(env).append("' and basedir = '").append(basedir).append("';");
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-			
-			Collection<Environment> envlist = environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostid, bin, env, basedir);
-			
-			StringBuffer envstr = new StringBuffer();
-			
-			envstr.append("[");
-			
-			int num = 0;
-			
-			Iterator<Environment> it = envlist.iterator();
-			
-			while(it.hasNext()) {
-				
-				if(num!=0) {
-					
-					envstr.append(", ");
-					
-				}
-				
-				Environment newenv = it.next();
-				
-				envstr.append(toJSON(newenv));
-				
-//				envstr.append("{ \"id\": \"").append(rs.getString("id"));
-//				
-//				envstr.append("\", \"name\": \"").append(rs.getString("name"));
-//				
-//				envstr.append("\", \"type\": \"").append(rs.getString("type"));
-//				
-//				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
-//				
-//				envstr.append("\", \"basedir\": \"").append(rs.getString("basedir"));
-//				
-//				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
-				
-			}
-			
-			envstr.append("]");
-			
-			resp = envstr.toString();
-			
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			
-		}
-		
-		return resp;
-		
-	}
-	
-	/**
-	 * Get environments by host
-	 * @param hid
-	 * @return
-	 */
-	public String getEnvironments(String hid) {
-		
-		String resp = null;
-		
-		try {
-			
-//			StringBuffer sql = new StringBuffer("select * from environment where host = '").append(hid).append("';");
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-			
-			Collection<Environment> envlist = environmentrepository.findEnvByHost(hid);
-			
-			StringBuffer envstr = new StringBuffer();
-			
-			envstr.append("[");
-			
-			int num = 0;
-			
-			Iterator<Environment> it = envlist.iterator();
-			
-			while(it.hasNext()) {
-				
-				if(num!=0) {
-					
-					envstr.append(", ");
-					
-				}
-				
-				Environment newenv = it.next();
-				
-				envstr.append(toJSON(newenv));
-				
-//				envstr.append("{ \"id\": \"").append(rs.getString("id"));
-//				
-//				envstr.append("\", \"name\": \"").append(rs.getString("name"));
-//				
-//				envstr.append("\", \"type\": \"").append(rs.getString("type"));
-//				
-//				envstr.append("\", \"bin\": \"").append(rs.getString("bin"));
-//				
-//				envstr.append("\", \"basedir\": \"").append(rs.getString("basedir"));
-//				
-//				envstr.append("\", \"pyenv\": \"").append(rs.getString("pyenv")).append("\" }");
-				
-				num++;
-				
-			}
-			
-			envstr.append("]");
-			
-			resp = envstr.toString();
-			
-			logger.debug("the python environment for host: " + hid + " " + resp);
-			
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			
-		}
-		
-		return resp;
-	}
-
 
 	/**
 	 * Update the Host table
@@ -818,15 +348,15 @@ public class HostTool {
 	 * @param object
 	 * @return
 	 */
-	public String update(String hostid, String hostname, String hostip, String hostport, String username, String type, String owner, String url) {
+	public String update(String hostid, String hostname, String hostip, String hostport, String username, String type, String owner, String url, String confidential) {
 
 		String resp = null;
 		
 		try {
 			
-			Host h = new Host();
+			Host h = this.getHostById(hostid);
 			
-			h.setId(hostid);
+			// h.setId(hostid);
 			
 			h.setName(hostname);
 			
@@ -834,35 +364,18 @@ public class HostTool {
 			
 			if(!bt.isNull(hostport)) h.setPort(hostport);
 			
-			h.setUsername(username);
+			if(!bt.isNull(username)) h.setUsername(username);
 			
-			h.setType(type);
+			if(!bt.isNull(type)) h.setType(type);
 			
-			h.setOwner(owner);
 			
-			h.setUrl(url);
+			if(!bt.isNull(owner)) h.setOwner(owner);
+			
+			if(!bt.isNull(url)) h.setUrl(url);
+
+			if(!bt.isNull(confidential)) h.setConfidential(confidential);
 			
 			hostrepository.save(h);
-			
-//			StringBuffer sql = new StringBuffer("update hosts set ")
-//					.append("name='").append(hostname).append("', ");
-//			
-//			if(!bt.isNull(hostip))
-//					sql.append("ip='").append(hostip).append("', ");
-//			
-//			if(!bt.isNull(hostport))
-//					sql.append("port=").append(hostport).append(", ");
-//			
-//					
-//			sql.append("username='").append(username).append("', ")
-//					.append("owner='").append(owner).append("', ")
-//					.append("type='").append(type).append("', ")
-//					.append("url='").append(url).append("' ")
-//					.append(" where id = '").append(hostid).append("';");
-//			
-//			logger.info(sql);
-//			
-//			DataBaseOperation.execute(sql.toString());
 			
 		} catch (Exception e) {
 

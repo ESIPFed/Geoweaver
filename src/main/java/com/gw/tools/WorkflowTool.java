@@ -10,12 +10,13 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.database.WorkflowRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.RandomString;
-import com.gw.utils.STATUS;
+import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -23,6 +24,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Scope("prototype")
 public class WorkflowTool {
 	
 	public Map<String, String> token2ws = new HashMap();
@@ -52,6 +56,12 @@ public class WorkflowTool {
 	
 	@Autowired
 	HistoryTool tool;
+
+	// @Autowired
+	// UserTool ut;
+
+	@Autowired
+	BaseTool bt;
 	
 	@Autowired
 	GeoweaverWorkflowTask task;
@@ -63,91 +73,35 @@ public class WorkflowTool {
 	 */
 	public String stop(String history_id) {
         
-        Optional<History> whis = historyrepository.findById(history_id);
+        History whis = historyrepository.findById(history_id).get();
         
-        String childprocesses = whis.get().getHistory_output();
+        String childprocesses = whis.getHistory_output();
         
         String[] child_process_ids = childprocesses.split(";");
         
         for(String cid : child_process_ids) {
+
+			Optional<History> hisopt = historyrepository.findById(cid);
         	
-        	Optional<History> phis = historyrepository.findById(cid);
+        	History phis = hisopt.isPresent()? hisopt.get():null;
         	
-        	pt.stop(phis.get().getHistory_id());
+        	// pt.stop(phis.getHistory_id());
+			if(!bt.isNull(phis))
+				tm.stopTask(phis.getHistory_id());
         	
         }
 
-//        StringBuffer sql = new StringBuffer("select input, output from history where id = '").append(history_id).append("';");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//	
-//                pids.append("(");
-//
-//                for (String id: rs.getString("output").split(";")) {
-//
-//                    resp.append("\"").append(id).append("\"").append(", ");
-//
-//                }
-//
-//                pids.append(")");
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//        } finally {
-//	
-//            DataBaseOperation.closeConnection();
-//
-//        }
+		whis.setIndicator(ExecutionStatus.STOPPED);
 
-//        sql = new StringBuffer("select id from history where id in ").append(pids).append("and indicator='Running'").append(";");
-//
-//        try {
-//
-//            ResultSet rs = DataBaseOperation.query(sql.toString());
-//
-//            if(rs.next()) {
-//
-//                String pid = rs.getString("id");
-//
-//                pt.stop(pid);
-//
-//            }
-//
-//        } catch (Exception e) {
-//
-//            e.printStackTrace();
-//
-//            throw new RuntimeException(e.getLocalizedMessage());
-//
-//		} finally {
-//
-//            DataBaseOperation.closeConnection();
-//
-//        }
+		historyrepository.save(whis);
 
-//        sql = new StringBuffer("update history set end_time = '");
-//
-//        String history_end_time = BaseTool.getCurrentMySQLDatetime();
-//
-//        sql.append(history_end_time);
-//
-//        sql.append("', indicator = 'Stopped' where id = '");
-//
-//        sql.append(history_id).append("';");
-//
-//        DataBaseOperation.execute(sql.toString());
+		String resp = "{\"history_id\": \""+history_id+
+//					
+//					"\", \"token\": \""+token+
+//					
+					"\", \"ret\": \"stopped\"}";
 
-        return null;
+        return resp;
 	}
 	
 	public String toJSON(Workflow w) {
@@ -162,78 +116,62 @@ public class WorkflowTool {
 		return json;
 		
 	}
+
+	public List<Workflow> getWorkflowListByOwner(String ownerid){
+
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
+
+		List<Workflow> actualList = new ArrayList<Workflow>();
+
+		wit.forEachRemaining(actualList::add);
+
+		wit = workflowrepository.findAllPrivateByOwner(ownerid).iterator();
+
+		wit.forEachRemaining(actualList::add);
+
+		return actualList;
+
+	}
 	
 	public String list(String owner){
 		
-		Iterator<Workflow> wit = workflowrepository.findAll().iterator();
+		// Iterator<Workflow> wit = workflowrepository.findAll().iterator();
+		
+		Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
-		
-		int num = 0;
 		
 		while(wit.hasNext()) {
 			
 			Workflow w = wit.next();
 			
-			if( num++ != 0) {
-				
-				json.append(",");
-				
-			}
-			
-			json.append(toJSON(w));
+			json.append(toJSON(w)).append(",");
 			
 		}
+
+		wit = workflowrepository.findAllPrivateByOwner(owner).iterator();
+
+		while(wit.hasNext()){
+
+			json.append(toJSON(wit.next())).append(",");
+
+		}
+
+		json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
 		return json.toString();
 		
-//		StringBuffer json = new StringBuffer("[");
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query("select * from abstract_model where length(identifier) < 30 ; ");
-//			
-//			int num = 0;
-//			
-//			while(rs.next()) {
-//				
-//				if(num!=0) {
-//					
-//					json.append(",");
-//					
-//				}
-//				
-//				json.append("{ \"id\": \"")
-//					.append(rs.getString("identifier"))
-//					.append("\", \"name\": \"")
-//					.append(rs.getString("name"))
-//					.append("\" }");
-//				
-//				num++;
-//				
-//			}
-//			
-//			json.append("]");
-//			
-//		} catch (SQLException e) {
-//
-//			e.printStackTrace();
-//			
-//		}finally {
-//
-//			DataBaseOperation.closeConnection();
-//			
-//		}
-//		
-//		return json.toString();
-		
 	}
 	
 	public Workflow getById(String id) {
 		
-		Workflow w = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow w = null;
+		
+		if(wo.isPresent())w = wo.get();
 		
 		return w;
 		
@@ -241,82 +179,21 @@ public class WorkflowTool {
 	
 	public String detail(String id) {
 		
-		Workflow wf = workflowrepository.findById(id).get();
+		Optional<Workflow> wo = workflowrepository.findById(id);
+
+		Workflow wf = null;
 		
-//		StringBuffer sql = new StringBuffer("select * from abstract_model where identifier = '").append(id).append("';");
-//		
-//		StringBuffer resp = new StringBuffer();
-//		
-//		try {
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-//			
-//			if(rs.next()) {
-//				
-//				resp.append("{ \"name\":\"");
-//				
-//				resp.append(rs.getString("name")).append("\", \"id\": \"");
-//				
-//				resp.append(id).append("\", \"nodes\":");
-//				
-//				resp.append(rs.getString("process_connection")).append(", \"edges\":");
-//				
-//				resp.append(rs.getString("param_connection")).append(" }");
-//				
-//			}
-//			
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//			throw new RuntimeException(e.getLocalizedMessage());
-//			
-//		}finally {
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		}
+		if(wo.isPresent())wf = wo.get();
 		
 		return toJSON(wf);
 		
 	}
-	
-	public Map<String, List> getNodeConditionMap(JSONArray nodes, JSONArray edges) throws ParseException{
-		
-		//find the condition nodes of each process
-		
-		Map<String, List> node2condition = new HashMap();
-		
-		for(int i=0;i<nodes.size();i++) {
-			
-			String current_id = (String)((JSONObject)nodes.get(i)).get("id");
-			
-			List preids = new ArrayList();
-			
-			for(int j=0;j<edges.size();j++) {
-				
-				JSONObject eobj = (JSONObject)edges.get(j);
-				
-				String sourceid = (String)((JSONObject)eobj.get("source")).get("id");
-				
-				String targetid = (String)((JSONObject)eobj.get("target")).get("id");
-				
-				if(current_id.equals(targetid)) {
-					
-					preids.add(sourceid);
-					
-				}
-				
-				
-			}
 
-			node2condition.put(current_id, preids);
-			
-		}
-		
-		return node2condition;
-		
-	}
+	
+	
+	
+
+	
 	
 	/**
 	 * Find a process whose status is not executed, while all of its condition nodes are satisfied. 
@@ -325,7 +202,7 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	public String[] findNextProcess(Map<String, List> nodemap, STATUS[] flags, JSONArray nodes) {
+	public String[] findNextProcess(Map<String, List> nodemap, ExecutionStatus[] flags, JSONArray nodes) {
 		
 		String id = null;
 		
@@ -335,7 +212,7 @@ public class WorkflowTool {
 			
 			String currentid = (String)((JSONObject)nodes.get(i)).get("id");
 			
-			if(checkNodeStatus(currentid, flags, nodes)!=STATUS.READY) {
+			if(checkNodeStatus(currentid, flags, nodes).equals(ExecutionStatus.READY)) {
 				
 				continue;
 				
@@ -353,8 +230,8 @@ public class WorkflowTool {
 				
 				//if any of the pre- nodes is not satisfied, this node is passed. 
 				
-				if(checkNodeStatus(prenodeid, flags, nodes)!=STATUS.DONE
-						&&checkNodeStatus(prenodeid, flags, nodes)!=STATUS.FAILED) {
+				if(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
+						&&checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)) {
 					
 					satisfied = false;
 					
@@ -382,29 +259,40 @@ public class WorkflowTool {
 		
 	}
 	
-	/**
-	 * Update the status of a node
-	 * @param id
-	 * @param flags
-	 * @param nodes
-	 * @param status
-	 */
-	public void updateNodeStatus(String id, STATUS[] flags, JSONArray nodes, STATUS status) {
-		
-		for(int j=0;j<nodes.size();j++) {
-			
-			String prenodeid = (String)((JSONObject)nodes.get(j)).get("id");
-			
-			if(prenodeid.equals(id)) {
-				
-				flags[j] = status;
-				
-				break;
-				
-			}
-			
+	
+
+	public List<Workflow> getAllWorkflow(){
+
+		List<Workflow> wlist = new ArrayList();
+
+		workflowrepository.findAll().forEach(w->wlist.add(w));
+
+		return wlist;
+
+	}
+
+	public void save(Workflow w){
+
+		Workflow wold = this.getById(w.getId());
+
+		if(!bt.isNull(wold)){
+
+			if(bt.isNull(w.getName())) w.setName(wold.getName());
+
+			if(bt.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
+
+			if(bt.isNull(w.getDescription())) w.setDescription(wold.getDescription());
+
+			if(bt.isNull(w.getEdges())) w.setEdges(wold.getEdges());
+
+			if(bt.isNull(w.getNodes())) w.setNodes(wold.getNodes());
+
+			if(bt.isNull(w.getOwner())) w.setOwner(wold.getOwner());
+
 		}
-		
+
+		workflowrepository.save(w);
+
 	}
 	
 	/**
@@ -414,9 +302,9 @@ public class WorkflowTool {
 	 * @param nodes
 	 * @return
 	 */
-	private STATUS checkNodeStatus(String id, STATUS[] flags, JSONArray nodes) {
+	private ExecutionStatus checkNodeStatus(String id, ExecutionStatus[] flags, JSONArray nodes) {
 		
-		STATUS status = null;
+		ExecutionStatus status = null;
 		
 		for(int j=0;j<nodes.size();j++) {
 			
@@ -445,7 +333,7 @@ public class WorkflowTool {
 	 * @param token
 	 * @return
 	 */
-	public String execute(String id, String mode, String[] hosts, String[] pswds, String token) {
+	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -455,9 +343,13 @@ public class WorkflowTool {
 			
 //			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask("GW-Workflow-Run-" + token);
 			
-			task.initialize(id, mode, hosts, pswds, token);
+			// task.initialize(id, mode, hosts, pswds, token);
 			
-			tm.addANewTask(task);
+			// tm.addANewTask(task);
+
+			task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
+
+			task.execute();
 
 			resp = "{\"history_id\": \""+task.getHistory_id()+
 					
@@ -505,7 +397,7 @@ public class WorkflowTool {
 	}
 
 	
-	public String add(String name, String nodes, String edges) {
+	public String add(String name, String nodes, String edges, String ownerid) {
 		
 		String newid = new RandomString(20).nextString();
 		
@@ -519,7 +411,7 @@ public class WorkflowTool {
 		
 		wf.setNodes(nodes);
 		
-		wf.setOwner("");
+		wf.setOwner(ownerid);
 		
 		workflowrepository.save(wf);
 		
@@ -587,7 +479,7 @@ public class WorkflowTool {
 				
 				resp.append("\"end_time\": \"").append(hiscols[2]).append("\", ");
 				
-				resp.append("\"status\": \"").append(pt.escape(String.valueOf(hiscols[3]))).append("\", ");
+				resp.append("\"status\": \"").append(bt.escape(String.valueOf(hiscols[3]))).append("\", ");
 				
 				resp.append("\"output\": \"").append(hiscols[4]).append("\"}");
 				
@@ -740,17 +632,27 @@ public class WorkflowTool {
 		
 	}
 	
-	public static void main(String[] args) throws ParseException {
+	// public static void main(String[] args) throws ParseException {
 		
-		String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
+	// 	String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
 		
-		JSONParser parser = new JSONParser();
+	// 	JSONParser parser = new JSONParser();
 		
-		JSONArray obj = (JSONArray)parser.parse(jsonarray);
+	// 	JSONArray obj = (JSONArray)parser.parse(jsonarray);
 		
-		System.out.println("parsed json objects: " + obj.size());
+	// 	System.out.println("parsed json objects: " + obj.size());
 		
 		
-	}
+	// }
+
+    // public String getOwnerNameByID(String ownerid) {
+
+	// 	String ownername = "Public User";
+		
+	// 	if(!bt.isNull(ownerid)) 
+	// 		ownername = ut.getUserById(ownerid).getUsername();
+
+    //     return ownername;
+    // }
 
 }

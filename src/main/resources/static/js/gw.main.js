@@ -9,6 +9,8 @@
 */
 
 GW.main = {
+
+	quiet: false,
 		
 	getJSessionId: function (){
 		
@@ -53,11 +55,34 @@ GW.main = {
 		
 		
 	},
+
+	exitWarning: function(e){
+		// this should show up when there are unsaved edits only
+		if(!GW.process.isSaved || !GW.workflow.isSaved)
+			return "Are you going to leave Geoweaver? Please make sure all the edits are saved."
+		else
+			return false
+
+	},
+
+	quiteExit: function(){
+
+		// GW.main.quiet = true
+		// $(window).off("beforeunload", GW.main.exitWarning);
+		// $(window).on("beforeunload", function(){});
+
+	},
 	
 	init: function(){
+
+		$(window).on("beforeunload", GW.main.exitWarning);
+
+		// $(window).off("beforeunload", GW.main.exitWarning);
 		
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		
+		GW.process.init();
+
 		GW.workspace.init();
 		
 		GW.toolbar.init();
@@ -71,7 +96,7 @@ GW.main = {
 
 		// console.log("Current JS Session ID: " + current_jssessionid);
 
-		var current_token = GW.general.makeid(40);
+		var current_token = GW.general.makeid(40); // this is no longer used
 
 		console.log("Current token is: " + current_token);
 		
@@ -82,6 +107,8 @@ GW.main = {
 		GW.board.init();
 
 		introJs().start();
+
+		GW.user.loggedInafterrefresh();
 		
 //		this.test_websocket()
 		
@@ -90,3 +117,38 @@ GW.main = {
 };
 
 GW.main.init();
+
+function switchTab(ele, name){
+	    		
+	console.log("Turn on the tab " + name)
+	  
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+	  tabcontent[i].style.display = "none";
+	}
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+	  tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	document.getElementById(name).style.display = "block";
+	ele.className += " active";
+
+	if(name=="main-dashboard"){
+
+	  GW.board.refresh();
+
+	}
+	  
+  }
+  
+  function openCity(evt, name) {
+	switchTab(evt.currentTarget, name);
+  }
+  
+  $(document).ready(function(){
+	  console.log("trigger click event");
+	  //$("main-content-tab").trigger("click")
+	  switchTab(document.getElementById("main-general-tab"), "main-general");
+	  
+  });

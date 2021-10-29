@@ -4,22 +4,23 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
 import com.gw.local.LocalSession;
 import com.gw.local.LocalSessionNixImpl;
 import com.gw.local.LocalSessionWinImpl;
-import  com.gw.server.CommandServlet;
 import com.gw.tasks.GeoweaverProcessTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.OSValidator;
 import com.gw.web.GeoweaverController;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -29,6 +30,7 @@ import com.gw.web.GeoweaverController;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalhostTool {
 	
 	Logger logger = Logger.getLogger(LocalhostTool.class);
@@ -41,12 +43,21 @@ public class LocalhostTool {
 	
 	@Autowired
 	HostTool ht;
+
+	@Autowired
+	BuiltinTool bint;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Value("${geoweaver.workspace}")
 	String workspace_folder_path;
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HistoryTool histool;
 	
 	@Autowired
 	ProcessRepository processrepository;
@@ -56,32 +67,79 @@ public class LocalhostTool {
 	
 	@Autowired
 	LocalSessionWinImpl winsession;
+	
+	public void saveHistory(String processid, String script, String history_id){
 
-	@Autowired
-	GeoweaverProcessTask t ;
+		History history = histool.getHistoryById(history_id);
+
+		if(bt.isNull(history)){
+
+			history = new History();
+
+			history.setHistory_id(history_id);
+
+		}
+
+		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
+		
+		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		
+		history.setHistory_input(script);
+
+        history.setHistory_id(history_id);
+
+		histool.saveHistory(history);
+
+	}
+
+	public String readPythonEnvironment(String hostid, String password){
+
+		LocalSession session = this.getLocalSession();
+
+		return session.readPythonEnvironment(hostid, password);
+
+	}
+
+	public void authenticate(String password) throws Exception{
+
+		if(!bt.checkLocalhostPassword(password)){
+
+			throw new RuntimeException("Authentication Failed. Wrong Password.");
+
+		}
+
+	}
 
 	/**
 	 * Execute Shell Script on Localhost
+	 * @param history_id
 	 * @param id
+	 * process id
 	 * @param hid
+	 * host id
 	 * @param pswd
+	 * password
 	 * @param token
+	 * http session id
 	 * @param isjoin
+	 * if wait for the process to end
 	 * @return
 	 */
-	public String executeShell(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeShell(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
 			//get code of the process
 			
 			String code = pt.getCodeById(id);
 			
-			code = pt.unescape(code);
-			
 			logger.debug(code);
+
+			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
 			
@@ -89,13 +147,11 @@ public class LocalhostTool {
 			
 			LocalSession session = getLocalSession();
 			
-			session.runBash(code, id, isjoin, token); 
-			
-			String historyid = session.getHistory().getHistory_id();
+			session.runBash(history_id, code, id, isjoin, token); 
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
@@ -106,10 +162,6 @@ public class LocalhostTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			if(isjoin) GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -153,17 +205,15 @@ public class LocalhostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeBuiltInProcess(String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeBuiltInProcess(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
 		
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
-			//get code of the process
-			
-			String code = pt.getCodeById(id);
-			
-			logger.debug(code);
+			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 			
 			//get host ip, port, user name and password
 			
@@ -182,32 +232,29 @@ public class LocalhostTool {
 			
 			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
-			t.initialize(id, hid, pswd, token, isjoin, token);
+			// t.initialize(id, hid, pswd, token, isjoin, token);
 			
-			// find active websocket for this builtin process when it is running as a member process in a workflow
-			// If this builtin process is running solo, the TaskSocket will take care of the problem.
+			// // find active websocket for this builtin process when it is running as a member process in a workflow
+			// // If this builtin process is running solo, the TaskSocket will take care of the problem.
 			
-			javax.websocket.Session ws = CommandServlet.findSessionById(token);
+			// javax.websocket.Session ws = CommandServlet.findSessionById(token);
 			
-			if(!bt.isNull(ws)) t.startMonitor(ws);
+			// if(!bt.isNull(ws)) t.startMonitor(ws);
 			
-			if(isjoin) {
+			// if(isjoin) {
 			
-				tm.runDirectly(t);
+			// 	tm.runDirectly(t);
 				
-			}else {
+			// }else {
 			
-				tm.addANewTask(t);
+			// 	tm.addANewTask(t);
 				
-			}
+			// }
+
+			// this.history_input = code;
 			
-			String historyid = t.getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
-					
-					"\", \"token\": \""+token+
-					
-					"\", \"ret\": \"success\"}"; 
+			
 			
 //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
 			
@@ -218,10 +265,6 @@ public class LocalhostTool {
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			if(isjoin)GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
         		
@@ -241,7 +284,7 @@ public class LocalhostTool {
 	 * @param basedir
 	 * @return
 	 */
-	public String executeJupyterProcess(String id, String hid, 
+	public String executeJupyterProcess(String history_id, String id, String hid, 
 			String pswd, String token, boolean isjoin,
 			String bin, String pyenv, String basedir) {
 
@@ -249,41 +292,42 @@ public class LocalhostTool {
 		
 		try {
 			
+			authenticate(pswd);
+
 			//get code of the process
 			
 //			String code = ProcessTool.getCodeById(id);
 			
 			GWProcess process = pt.getProcessById(id);
+
+			this.saveHistory(id, process.getCode(), history_id);
+
+			String code = pt.getCodeById(id);
 			
-			localizeJupyter(process.getCode(), process.getName(), token);
+			localizeJupyter(code, process.getName(), token);
 			
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
 			
-			session.runJupyter(process.getCode(), id, isjoin, bin, pyenv, basedir, token); 
+			//save environment
 			
-			String historyid = session.getHistory().getHistory_id();
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
-			resp = "{\"history_id\": \""+historyid+
+			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
+			
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
-			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			if(isjoin) GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -306,12 +350,14 @@ public class LocalhostTool {
 	 * @param basedir
 	 * @return
 	 */
-	public String executePythonProcess(String id, String hid, String pswd, 
+	public String executePythonProcess(String history_id, String id, String hid, String pswd, 
 			String token, boolean isjoin, String bin, String pyenv, String basedir) {
 
 		String resp = null;
 		
 		try {
+
+			authenticate(pswd);
 			
 			//write all the python files into local workspace folder
 			localizeAllPython(token);
@@ -319,34 +365,32 @@ public class LocalhostTool {
 			//get code of the process
 			
 			String code = pt.getCodeById(id);
+
+			this.saveHistory(id, code, history_id);
 			
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			//save environment
+			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 			
-			session.runPython(code, id, isjoin, bin, pyenv, basedir, token); 
+			session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			String historyid = session.getHistory().getHistory_id();
 			
-			resp = "{\"history_id\": \""+historyid+
+			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
 					
 					"\", \"ret\": \"success\"}";
 			
-			//save environment
 			
-			ht.addEnv(historyid, hid, "python", bin, pyenv, basedir, "");
 			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());
-			
-		}  finally {
-			
-			GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at the end
 			
 		}
 		
@@ -432,7 +476,7 @@ public class LocalhostTool {
 				
 				code = p.getCode();
 				
-				code = pt.unescape(code);
+				// code = pt.unescape(code);
 				
 				name = p.getName();
 				

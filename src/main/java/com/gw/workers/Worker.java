@@ -12,8 +12,6 @@ import com.gw.utils.RandomString;
 /**
  *Class Worker.java
  *@author ziheng
- *@time Aug 10, 2015 4:02:19 PM
- *Original aim is to support iGFDS.
  */
 @Service
 public class Worker extends Thread{
@@ -39,7 +37,7 @@ public class Worker extends Thread{
 		
 		is_temp = temporary;
 		
-		name = new RandomString(5).nextString();
+		name = "Worker-" + new RandomString(5).nextString();
 		
 	}
 	
@@ -56,9 +54,19 @@ public class Worker extends Thread{
 		this.status = status;
 	}
 
+	public void printoutCallStack(){
 
+        System.out.println("Printing stack trace:");
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < elements.length; i++) {
+            StackTraceElement s = elements[i];
+            System.out.println("\tnull websocket trace at " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+        }
+    }
 
 	public void setTask(Task t) {
+
+		// this.printoutCallStack();
 		
 		this.t = t;
 		

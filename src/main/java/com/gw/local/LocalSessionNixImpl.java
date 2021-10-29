@@ -5,25 +5,30 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.websocket.Session;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 /**
  * 
@@ -33,6 +38,7 @@ import com.gw.utils.BaseTool;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalSessionNixImpl implements LocalSession {
 
 	Logger log  = Logger.getLogger(this.getClass());
@@ -42,6 +48,12 @@ public class LocalSessionNixImpl implements LocalSession {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HostTool ht;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Autowired
 	HistoryTool history_tool;
@@ -57,6 +69,9 @@ public class LocalSessionNixImpl implements LocalSession {
     
     private Thread           thread;
     
+	/**
+	 * Http Session Id
+	 */
     private String           token;
     
     private History          history;
@@ -70,6 +85,8 @@ public class LocalSessionNixImpl implements LocalSession {
     
     
     private String           workspace_folder_path;
+
+	private Process          process;
     
     
     public LocalSessionNixImpl() {
@@ -85,13 +102,13 @@ public class LocalSessionNixImpl implements LocalSession {
 	 * @param isjoin
 	 * @param token
 	 */
-	public void initHistory(String script, String processid, boolean isjoin, String token) {
+	public void initHistory(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 		this.token = token;
 		
 		this.isTerminal = isjoin;
 		
-		history = history_tool.initProcessHistory(processid, script);
+		history = history_tool.initProcessHistory(history_id, processid, script);
 		
 	}
 	
@@ -106,11 +123,11 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			Session wsout = CommandServlet.findSessionById(token);
 			
-			if(!bt.isNull(wsout) && wsout.isOpen()) {
+			if(!bt.isNull(wsout) && wsout.isOpen() ) {
 				
 				log.info("The failed message has been sent to client");
-				
-				wsout.getBasicRemote().sendText(message);
+				if(!bt.isNull(message))
+					wsout.getBasicRemote().sendText(message);
 				
 				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
 				
@@ -135,11 +152,11 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
     
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 //		this.history = history_tool.initProcessHistory(history, processid, script);
 		
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
     	
     	try {
     		
@@ -149,11 +166,13 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		tempfile = workspace_folder_path + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
 
-    		script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		
-    		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile});
+    		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
+
+			bt.sleep(1000);
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
@@ -169,7 +188,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token);
+    		sender.init(input, token, history_id);
     		
     		thread = new Thread(sender);
             
@@ -178,6 +197,8 @@ public class LocalSessionNixImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -193,10 +214,11 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runJupyter(String notebookjson, String processid, boolean isjoin, String bin, String env, String basedir,
+	public void runJupyter(String history_id, String notebookjson, String processid, 
+			boolean isjoin, String bin, String env, String basedir,
 			String token) {
 		
-		this.initHistory(notebookjson, processid, isjoin, token);
+		this.initHistory(history_id, notebookjson, processid, isjoin, token);
 		
     	try {
     		
@@ -223,7 +245,7 @@ public class LocalSessionNixImpl implements LocalSession {
     			
 //    			cmdline += "source activate " + env + "; "; //for demo only
     			
-    			Runtime.getRuntime().exec(new String[] {"source", "activate", env});
+    			Runtime.getRuntime().exec(new String[] {"source", "activate", env}).waitFor();
     			
 //    			cmdline += bin + " " + filename + "; ";
     			
@@ -246,7 +268,7 @@ public class LocalSessionNixImpl implements LocalSession {
             input = new BufferedReader(new InputStreamReader(stdout));
             
 //            sender = new SSHSessionOutput(input, token);
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -261,7 +283,9 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			
@@ -274,9 +298,9 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
 		
-		this.initHistory(python, processid, isjoin, token);
+		this.initHistory(history_id, python, processid, isjoin, token);
     	
     	try {
     		
@@ -293,8 +317,10 @@ public class LocalSessionNixImpl implements LocalSession {
     		String pythonfilename = pro.getName();
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
+
+			if(bt.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {"python", pythonfilename} );
+    		builder.command(new String[] {bin, pythonfilename} );
     		
     		builder.redirectErrorStream(true);
     		
@@ -306,7 +332,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
     		
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -321,7 +347,8 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
             
 		} catch (Exception e) {
 			
@@ -334,7 +361,7 @@ public class LocalSessionNixImpl implements LocalSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		
 		
 		
@@ -401,6 +428,148 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 		return temp.delete();
 		
+	}
+
+	void readWhere(String hostid, String password) throws IOException, InterruptedException{
+
+		//read existing environments
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("whereis");
+		cmds.add("python");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		//get all the python path
+		for(String line: stdout){
+
+			if(!bt.isNull(line)){
+
+				if(line.startsWith("python")){
+
+					String pythonarraystr = line.substring(8);
+
+            		String[] pythonarray = pythonarraystr.split(" ");
+
+					for(String pypath : pythonarray){
+
+						if(!bt.isNull(pypath)){
+		
+							pypath = pypath.trim();
+		
+							et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+		
+						}
+		
+					}
+
+				}
+
+			}
+			
+			
+
+			// Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+
+			// if(bt.isNull(theenv)){
+
+			// 	Environment env = new Environment();
+			// 	env.setId(new RandomString(6).nextString());
+			// 	env.setBin(line);
+			// 	env.setName(line);
+			// 	env.setHost(hostid);
+			// 	// env.setBasedir(line); //the execution place which is unknown at this point
+			// 	if(line.contains("conda"))
+			// 		env.setPyenv("anaconda");
+			// 	else
+			// 		env.setPyenv("pip");
+			// 	env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+			// 	env.setType("python"); //could be python or shell. R is not supported yet. 
+			// 	env.setBasedir("~");
+			// 	ht.saveEnvironment(env);
+
+			// }else{
+
+			// 	//if want to update the settings, do it here
+
+			// }
+			
+		}
+	}
+
+	void readConda(String hostid, String password) throws IOException, InterruptedException{
+
+		//read existing environments
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("conda");
+		cmds.add("env");
+		cmds.add("list");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		if(stdout.size()>0 && stdout.get(0).startsWith("# conda")){
+
+			//get all the python path
+			for(String line: stdout){
+
+				if(!bt.isNull(line) && !line.startsWith("#")){
+
+					String[] vals = line.split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"/bin/python";
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
+
+					if(bt.isNull(theenv)){
+
+						et.addNewEnvironment(bin, old_envlist, hostid, name);
+
+					}else{
+
+						//if want to update the settings, do it here
+
+					}
+
+				}
+				
+			}
+
+		}else{
+
+			log.debug("Conda environments are not found.");
+
+		}
+	
+	}
+
+	@Override
+	public String readPythonEnvironment(String hostid, String password) {
+
+		String resp = null;
+
+		try {
+
+			this.readWhere(hostid, password);
+
+			this.readConda(hostid, password);
+
+			resp = et.getEnvironments(hostid);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
 	}
 	
 

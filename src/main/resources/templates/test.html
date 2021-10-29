@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <meta charset="utf-8">
+  <title>Test Suite</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.17.2.css">
+
+  <link rel="icon" href="../img/favicon.ico" />
+      
+  <link rel="stylesheet" href="../css/jquery.dataTables.min.css" />
+
+  <link rel="stylesheet"  href="../css/bootstrap.min.css" id="bootstrap-css" />
+  <link rel="stylesheet" href="../css/bootstrap-dialog.min.css" />
+
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
+  <link rel="stylesheet" href="../css/bootstrap-colorpicker.min.css" />
+
+  <!-- <link href="../css/font-awesome.css" rel="stylesheet" /> -->
+
+  <link rel="stylesheet" href="../css/all.min.css" />
+
+  <link rel="stylesheet" href="../css/workspace.css"  />
+
+  <link rel="stylesheet" href="../css/sidemenu.css" />
+
+  <link rel="stylesheet" href="../js/codemirror/lib/codemirror.css" />
+
+  <link rel="stylesheet" href="../js/codemirror/theme/xq-dark.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/xq-light.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/yeti.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/idea.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/darcula.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/yonce.css">
+  <link rel="stylesheet" href="../js/codemirror/theme/zenburn.css">
+
+<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
+  <link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
+   <!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
+  <link rel="stylesheet" href="../css/main.css" />
+   
+  <link rel="stylesheet" href="../css/prism.css" />
+  
+  <link rel="stylesheet" href="../css/notebook.css" />
+    
+  <link rel="stylesheet" href="../css/nbpreview.css" />
+  
+  <link rel="stylesheet" href="../css/imageviewer.css" />
+  
+  <link rel="stylesheet" href="../css/Chart.min.css" />
+  
+  <link rel="stylesheet" href="../css/introjs.min.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    
+  <script type="text/javascript" src="../js/FileSaver.min.js"></script>
+
+  <script type="text/javascript" src="../js/jsencrypt.min.js"></script>
+
+  <script type="text/javascript" src="../ssh/sockjs.js" ></script>
+
+  <script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
+
+  <script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+  <script type="text/javascript" src="../js/dataTables.cellEdit.js"></script>
+
+  <script type="text/javascript" src="../js/imageviewer.min.js"></script>
+
+<!-- <script src="https://danielmg.org/assets/demo/uploader/js/jquery.dm-uploader.min.js?v=v10"></script>
+  
+  <script src="https://danielmg.org/assets/demo/uploader/js/ui-main.js?v=v10"></script>
+    
+  <script src="https://danielmg.org/assets/demo/uploader/js/ui-multiple.js?v=v10"></script>
+  
+  <script src="https://danielmg.org/assets/demo/uploader/js/configs/no-queue.js?v=v10"></script> -->
+  
+  <script type="text/javascript" src="../js/jquery.dm-uploader.min.js"></script>
+  
+  <script type="text/javascript" src="../js/ui-main.js"></script>
+  
+  <script type="text/javascript" src="../js/ui-multiple.js"></script>
+  
+  <script type="text/javascript" src="../js/no-queue.js"></script>
+
+  <script type="text/javascript" src="../js/codemirror/lib/codemirror.js"></script>
+
+  <script type="text/javascript" src="../js/codemirror/mode/shell/shell.js"></script>
+
+  <script type="text/javascript" src="../js/codemirror/addon/display/placeholder.js"></script>
+
+  <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
+
+  <script type="text/javascript" src="../js/bootstrap-treeview.js" ></script>
+
+  <script type="text/javascript" src="../js/jsframe.js" ></script>
+  
+  <script type="text/javascript" src="../js/Chart.min.js"></script>
+  
+  <script type="text/javascript" src="../js/intro.min.js"></script>
+
+  <!-- <script src="https://code.jquery.com/qunit/qunit-2.17.2.js"></script> -->
+  <script src="https://unpkg.com/mocha/mocha.js"></script>
+
+  <script src="https://unpkg.com/chai/chai.js"></script>
+  
+  
+  <body>
+    <!-- <div id="qunit"></div>
+    <div id="qunit-fixture"></div> -->
+    <div id="mocha"></div>
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      // mocha.checkLeaks();
+    </script>
+    <script>expect = chai.expect</script>
+
+    <script src="../js/es5-shim.min.js"></script>
+    <script src="../js/marked.min.js"></script>
+    <script src="../js/ansi_up.min.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <script src="../js/notebook.js" ></script>
+    <script src="../js/d3.min.js"></script>
+    <script src="../js/gw.js"></script>
+    <script src="../js/gw.general.js"></script>
+    <script src="../js/gw.tutorial.js"></script>
+    <script src="../js/gw.about.js"></script>
+    <script src="../js/gw.chart.js"></script>
+    <script src="../js/gw.workspace.js"></script>
+    <script src="../js/gw.ssh.js"></script>
+    <script src="../js/gw.fileupload.js"></script>
+    <script src="../js/gw.filebrowser.js"></script>
+    <script src="../js/gw.comparison.js"></script>
+    <script src="../js/gw.history.js"></script>
+    <script src="../js/gw.host.js"></script>
+    <script src="../js/gw.result.js"></script>
+    <script src="../js/gw.process.js"></script>
+    <script src="../js/gw.workflow.js"></script>
+    <script src="../js/gw.monitor.js"></script>
+    <script src="../js/gw.dashboard.js"></script>
+    <script src="../js/gw.user.js"></script>
+    <script src="../js/gw.search.js"></script>
+    <script src="../js/gw.settings.js"></script>
+    <script src="../js/gw.toolbar.js"></script>
+    <script src="../js/gw.menu.js"></script>
+    <script src="../js/gw.home.js"></script>
+    <script src="../js/gw.main.js"></script>
+    <script src="../js/gw.test.js"></script>
+
+    <script class="mocha-exec">
+      mocha.run();
+    </script>
+
+  </body>
+</html>

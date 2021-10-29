@@ -5,12 +5,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.jpa.GWProcess;
+import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
@@ -22,28 +27,35 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
+import com.gw.tools.EnvironmentTool;
 import com.gw.utils.RandomString;
+import com.gw.tools.UserTool;
+import com.gw.tools.ExecutionTool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 /**
  * 
  * Controller for SSH related activities, including all the handlers for Geoweaver.
@@ -55,7 +67,7 @@ import org.springframework.web.context.request.WebRequest;
  */
 
 @Controller 
-@RequestMapping(value="/web")     
+@RequestMapping(value="/web")
 //@SessionAttributes({"SSHToken"})
 //@RequestMapping("/Geoweaver/web")
 public class GeoweaverController {
@@ -85,12 +97,21 @@ public class GeoweaverController {
 
 	@Autowired
 	DashboardTool dbt;
+
+	@Autowired
+	EnvironmentTool et;
+
+	@Autowired
+	ExecutionTool ext;
 	
 	@Autowired
 	SSHSession sshSession;
 	
 	@Value("${geoweaver.upload_file_path}")
 	String upload_file_path;
+
+	@Autowired
+	UserTool ut;
 	
 	public static SessionManager sessionManager;
 	
@@ -287,6 +308,53 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	/**
+     * This is the password reset callback url
+     * @param token
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/reset_password", method = RequestMethod.GET)
+    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
+
+        if(!bt.isNull(token)){
+
+            System.err.print(token);
+            // User user = userService.getByResetPasswordToken(token);
+            String userid = ut.token2userid.get(token);
+            Date created_date = ut.token2date.get(token);
+    
+            if(!bt.isNull(userid)){
+    
+                long time_difference =  new Date().getTime() - created_date.getTime();
+    
+                //if the token is one hour old
+                if(time_difference<60*60*1000){
+    
+                    GWUser user = ut.getUserById(userid);
+    
+                    model.addAttribute("token", token);
+                    
+                    if (user == null) {
+                        // model.addAttribute("message", "Invalid Token");
+                        return "Invalid Token";
+                    }
+    
+                }
+    
+            }
+
+        }else{
+
+            model.addAttribute("error", "No Token. Invalid Link. ");
+            
+        }
+
+
+         
+        return "reset_password_form";
+    }
 	
 	@RequestMapping(value = "/recent", method = RequestMethod.POST)
     public @ResponseBody String recent_history(ModelMap model, WebRequest request){
@@ -358,6 +426,31 @@ public class GeoweaverController {
 				
 			}
 			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/workflow_process_log", method = RequestMethod.POST)
+    public @ResponseBody String workflow_process_log(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String workflowhistoryid = request.getParameter("workflowhistoryid");
+			
+			String processid = request.getParameter("processid");
+			
+			resp = hist.getWorkflowProcessHistory(workflowhistoryid, processid);
+
 		}catch(Exception e) {
 			
 			e.printStackTrace();
@@ -482,7 +575,7 @@ public class GeoweaverController {
 			
 			String hid = request.getParameter("hid");
 			
-			resp = ht.getEnvironments(hid);
+			resp = et.getEnvironments(hid);
 			
 		}catch(Exception e) {
 			
@@ -495,35 +588,58 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/listhostwithenvironments", method = RequestMethod.POST)
+    public @ResponseBody String listhostwithenvironments(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
+		
+		String resp = null;
+		
+		try {
+			
+			String ownerid = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
+			
+			resp = ht.list(ownerid);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-    public @ResponseBody String list(ModelMap model, WebRequest request){
+    public @ResponseBody String list(ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest){
 		
 		String resp = null;
 		
 		try {
 			
 			String type = request.getParameter("type");
+
+			String ownerid = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
 			
 			if(type.equals("host")) {
 
-				resp = ht.list("");
+				resp = ht.list(ownerid);
 				
 			}else if(type.equals("process")) {
 				
-				resp = pt.list("");
+				resp = pt.list(ownerid);
 				
 			}else if(type.equals("workflow")) {
 				
-				resp = wt.list("");
+				resp = wt.list(ownerid);
 				
 			}
 			
 		}catch(Exception e) {
 			
 			e.printStackTrace();
-			
-//			throw new RuntimeException("failed " + e.getLocalizedMessage());
 			
 			resp = "{\"ret\": \"failure\", \"reason\": \"Database Query Error.\"}";
 			
@@ -651,8 +767,6 @@ public class GeoweaverController {
 		
 		try {
 			
-//			http://localhost:8070/download/temp/115336065-smiling-boy-on-a-toy-swing-on-a-playground-in-a-park-black-and-white-vector-illustration-in-a-cartoo.jpg
-			
 			if(tempfolder.equals(upload_file_path)) {
 				
 				HttpHeaders headers = new HttpHeaders(); 
@@ -719,6 +833,33 @@ public class GeoweaverController {
 		
 	}
 
+	@RequestMapping(value="/readEnvironment", method = RequestMethod.POST)
+	public @ResponseBody String readPythonEnvironment(ModelMap model, WebRequest request, HttpSession session){
+
+		String resp = null;
+
+		try{
+
+			String hid = request.getParameter("hostid");
+			
+			String password = request.getParameter("pswd");
+
+			password = RSAEncryptTool.getPassword(password, session.getId());
+
+			resp = ext.readEnvironment(hid, password);
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			resp = bt.getErrorReturn(e.getLocalizedMessage());
+
+		}
+
+		return resp;
+
+	}
+
 	@RequestMapping(value = "/executeWorkflow", method = RequestMethod.POST)
     public @ResponseBody String executeWorkflow(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -731,15 +872,24 @@ public class GeoweaverController {
 			String mode = request.getParameter("mode");
 
 			String token = request.getParameter("token");
+
+			// if(bt.isNull(token)){
+
+			// token = session.getId(); // the token from client is useless
+
+			String history_id = bt.isNull(request.getParameter("history_id"))? 
+				new RandomString(18).nextString(): request.getParameter("history_id");
 			
 			String[] hosts = request.getParameterValues("hosts[]");
 			
 			String[] encrypted_password = request.getParameterValues("passwords[]");
+
+			String[] environments = request.getParameterValues("envs[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
-			
+			 
 			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
-			resp = wt.execute(id, mode, hosts, passwords, token);
+			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
 			
 		}catch(Exception e) {
 			
@@ -776,8 +926,12 @@ public class GeoweaverController {
 			String content = request.getParameter("content");
 			
 			String name = request.getParameter("name");
+
+			String ownerid = request.getParameter("ownerid");
+
+			String confidential = request.getParameter("confidential");
 			
-			String pid = pt.add_database(name, type, content, filepath, hid);
+			String pid = pt.add_database(name, type, content, filepath, hid, ownerid, confidential);
 			
 			resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"desc\" : \""+ type +"\" }";
 			
@@ -840,6 +994,8 @@ public class GeoweaverController {
 			String hid = request.getParameter("hostId");
 			
 			String encrypted_password = request.getParameter("pswd");
+
+			String token = request.getParameter("token");
 			
 			String bin = request.getParameter("env[bin]");
 			
@@ -848,8 +1004,62 @@ public class GeoweaverController {
 			String basedir = request.getParameter("env[basedir]");
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
+
+			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
+
+			resp = ext.executeProcess(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 			
-			resp = pt.execute(pid, hid, password, session.getId(), false, bin, pyenv, basedir);
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/edit/process", method = RequestMethod.POST)
+    public @ResponseBody String editprocess(ModelMap model, @RequestBody GWProcess up, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(up.getId());
+			
+			pt.save(up);
+			
+			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/edit/workflow", method = RequestMethod.POST)
+    public @ResponseBody String editworkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(w.getId());
+			
+			wt.save(w);
+			
+			resp = "{\"id\" : \"" + w.getId() + "\"}";
+			
 			
 		}catch(Exception e) {
 			
@@ -887,12 +1097,14 @@ public class GeoweaverController {
 				String username = request.getParameter("username");
 				
 				String hosttype = request.getParameter("hosttype");
+
+				String confidential = request.getParameter("confidential");
 				
 				String url = request.getParameter("url");
 				
 //				String owner = request.getParameter("owner");
 				
-				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url);
+				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url, confidential);
 				
 				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
 				
@@ -1094,6 +1306,117 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/add/process", method = RequestMethod.POST)
+    public @ResponseBody String addProcess(ModelMap model, @RequestBody GWProcess np, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			// String lang = request.getParameter("lang");
+
+			// String name = request.getParameter("name");
+			
+			// String desc = request.getParameter("desc");
+
+			String ownerid = bt.isNull(np.getOwner())?"111111":np.getOwner();
+
+			np.setOwner(ownerid);
+
+			// String confidential = request.getParameter("confidential");
+			
+			
+			String newid = new RandomString(6).nextString();
+
+			np.setId(newid);
+
+			np.setCode(np.getCode());
+
+			pt.save(np);
+
+			resp = "{\"id\" : \"" + newid + "\", \"name\":\"" + np.getName() + "\", \"lang\": \""+np.getDescription()+"\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/host", method = RequestMethod.POST)
+    public @ResponseBody String addHost(ModelMap model, Host h, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+
+			String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+
+			h.setOwner(ownerid);
+
+			String newhostid = new RandomString(6).nextString();
+
+			h.setId(newhostid);
+
+			ht.save(h);
+			
+			// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
+			
+			resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	@RequestMapping(value = "/add/workflow", method = RequestMethod.POST)
+    public @ResponseBody String addWorkflow(ModelMap model, @RequestBody Workflow w, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+
+			String ownerid = bt.isNull(w.getOwner())?"111111":w.getOwner();
+
+			w.setOwner(ownerid);
+
+			String newwid = new RandomString(20).nextString();
+
+			w.setId(newwid);
+
+			wt.save(w);
+
+			// String wid = wt.add(name, nodes, edges, ownerid);
+				
+			resp = "{\"id\" : \"" + newwid + "\", \"name\":\"" + w.getName() + "\"}";
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
     public @ResponseBody String add(ModelMap model, WebRequest request){
@@ -1117,8 +1440,12 @@ public class GeoweaverController {
 				String hosttype = request.getParameter("hosttype");
 				
 				String url = request.getParameter("url");
+
+				String confidential = request.getParameter("confidential");
+
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 				
-				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, null);
+				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
 				resp = "{ \"id\" : \"" + hostid + "\", \"name\" : \""+ hostname + "\", \"type\": \""+hosttype+"\" }";
 				
@@ -1129,6 +1456,10 @@ public class GeoweaverController {
 				String name = request.getParameter("name");
 				
 				String desc = request.getParameter("desc");
+
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+
+				String confidential = request.getParameter("confidential");
 				
 				String code = null;
 				
@@ -1172,7 +1503,7 @@ public class GeoweaverController {
 					
 				}
 				
-				String pid = pt.add(name, lang, code, desc);
+				String pid = pt.add(name, lang, code, desc, ownerid, confidential);
 				
 				resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"lang\": \""+lang+"\"}";
 				
@@ -1184,7 +1515,9 @@ public class GeoweaverController {
 				
 				String edges = request.getParameter("edges");
 				
-				String wid = wt.add(name, nodes, edges);
+				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+
+				String wid = wt.add(name, nodes, edges, ownerid);
 				
 				resp = "{\"id\" : \"" + wid + "\", \"name\":\"" + name + "\"}";
 				
@@ -1443,11 +1776,11 @@ public class GeoweaverController {
 
 
 
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
     	
-    	sessionManager.closeAll();
+    // 	sessionManager.closeAll();
     	
-    }
+    // }
 	
     
 }

@@ -12,8 +12,9 @@ GW.workflow = {
 	
 	new_frame: null,
 
-	token:null,
+	current_token:null,
 
+	history_id: null,
 	
 	connection_cache: [{"w":"xxxx", "phs": {"hosts":"", "mode":"" }}],
 	
@@ -52,40 +53,87 @@ GW.workflow = {
 	
 	display: function(msg){
 		
-		var content = "<div class=\"modal-body\">";
+		var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 		
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
 		
-		var workflowid = null;
-		
-		var workflowname = null;
+		var workflowid, workflowname, workflowdescription;
+
+		var confidential = null;
+
+		var owner = null;
+
+		var info_body = "";
 		
 		jQuery.each(msg, function(i, val) {
 			
-			if(val!=null&&val!="null"&&val!=""){
+			// if(val!=null&&val!="null"&&val!=""){
 				
 					if(typeof val =='object')
 					{
 					  val = JSON.stringify(val);
 					}
-					
+
 					if(i=="id"){
 						
 						workflowid = val;
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+							"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
 						
 					}else if(i=="name"){
 						
 						workflowname = val;
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+							"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
 						
+					}else if(i=="description"){
+						
+						workflowdescription = val;
+						content += "<div class=\"col col-md-3\">"+i+"</div>"+
+							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" value=\""+val+"\" /></textarea ></div>";
+						
+					}else if(i=="confidential"){
+						
+						confidential = val;
+
+					}else if(i=="owner"){
+
+						owner = val;
+
+					}else{
+
+						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
+						"<div class=\"col col-md-7\">"+val+"</div>";
 					}
 					
-					
-					content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\">"+val+"</div>";
-					
-			}
+			// }
 
 		});
+
+		content += "<div class=\"col col-md-3\">Confidential</div>"+
+							"<div class=\"col col-md-7\">";
+					
+		if(confidential=="FALSE"){
+
+			content  += '       <input type="radio" name="confidential_workflow" value="FALSE" checked> '+
+			'		<label for="confidential_workflow">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential_workflow" value="TRUE"> '+
+				'		<label for="confidential_workflow">Private</label>';
+
+		}else{
+
+			content  += '       <input type="radio" name="confidential_workflow" value="FALSE"> '+
+			'		<label for="confidential_workflow">Public</label>';
+			
+			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
+				content += '       <input type="radio" name="confidential_workflow" value="TRUE" checked> '+
+				'		<label for="confidential_workflow">Private</label>';
+
+		}
+
+		content += "</div>";
 		
 		content += "</div><div>"+
 		
@@ -95,27 +143,109 @@ GW.workflow = {
     	
 		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 		
-		"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
     	
-		workflowid+"')\"></i> "+
+		workflowid+"', '"+workflowname+"')\"></i> "+
+
+		"<i class=\"fa fa-share subalignicon\" onclick=\"GW.workflow.landingpage('"+
+    	
+		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> "+
 		
 		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
     	
 		workflowid+"','workflow')\"></i>"+
 		
 		"</p></div>"+
+
+		// tab panel of workflow
+		"<div class=\"subtab tab\" data-intro=\"this is a tab inside the workflow tab panel\">"+
+		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-code-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-code')\">Info</button>"+
+		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 		
+		workflowid+"', '" + workflowname+"')\">History</button>"+
+		" </div>"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
+		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
+			info_body+
+		"	</div>"+
+		"</div>"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
+		"</div>"+
+		//end of tab panel
+		
+		
 		
 		"</div>";
 		
 		$("#main-workflow-content").html(content);
+
+		var current_workflow_name = workflowname;
+
+		$("#display_workflow_name_field").focus(()=>{current_workflow_name = $("#display_workflow_name_field").val()})
 		
-//		switchTab(document.getElementById("main-workflow-tab"), "main-workflow-info");
+		$("#display_workflow_name_field").focusout(()=>{
+
+			if(current_workflow_name!=$("#display_workflow_name_field").val()){
+
+				GW.workflow.updateWorkflowMetadata(); //if name changes, update the metadata
+
+			}
+
+		})
+
+		var current_workflow_description = workflowdescription;
+
+		$("#display_workflow_description_field").focus(()=>{current_workflow_description = $("#display_workflow_description_field").val()})
+		
+		$("#display_workflow_description_field").focusout(()=>{
+
+			if(current_workflow_description!=$("#display_workflow_description_field").val()){
+
+				GW.workflow.updateWorkflowMetadata(); //if name changes, update the metadata
+
+			}
+
+		})
+
+		switchTab(document.getElementById("main-workflow-info-code-tab"), "main-workflow-info-code");
+
 		GW.general.switchTab("workflow")
 		
+	},
+
+	landingpage: function(wid, wname){
+
+		window.open("../landing/" + wid, '_blank').focus();
+
+	},
+
+	openCity: function(evt, name){
+
+		GW.workflow.switchTab(evt.currentTarget, name);
+
+	},
+
+	switchTab: function (ele, name){
+	    		
+		console.log("Turn on the tab " + name)
+		  
+		var i, tabcontent, tablinks;
+		tabcontent = document.getElementsByClassName("tabcontent-workflow");
+		for (i = 0; i < tabcontent.length; i++) {
+		  tabcontent[i].style.display = "none";
+		}
+		tablinks = document.getElementsByClassName("tablinks-workflow");
+		for (i = 0; i < tablinks.length; i++) {
+		  tablinks[i].className = tablinks[i].className.replace(" active", "");
+		}
+		document.getElementById(name).style.display = "block";
+		ele.className += " active";
+
+		// GW.process.refreshCodeEditor();
+		  
 	},
 
 	findCache: function(wid){
@@ -137,6 +267,50 @@ GW.workflow = {
 		return phs;
 		
 	},
+
+	updateWorkflowMetadata: function(){
+
+		var wid = $("#display_workflow_id").text();
+
+		var newname = $("#display_workflow_name_field").val();
+
+		var newdesc = $("#display_workflow_description_field").val();
+
+		var req = {
+				"type": "workflow",
+				"name": newname,
+				"id": wid,
+				"description" : newdesc
+		};
+		
+		$.ajax({
+			
+			url: "edit/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(req)
+			
+		}).done(function(msg){
+			
+			GW.workspace.showSaved();
+
+			GW.general.showToasts("updated");
+		    
+			GW.workflow.refreshWorkflowList();
+			
+		}).fail(function(jxr, status){
+			
+			alert("Error!!! Fail to save.");
+			
+		});
+
+	},
+	
 		
 	newDialog: function(createandrun){
 		
@@ -147,10 +321,28 @@ GW.workflow = {
 			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
 			   '<form>'+
 		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-4 col-form-label control-label">Input Workflow Name : </label>'+
-		       '     <div class="col-sm-8">'+
+		       '     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
+		       '     <div class="col-sm-9" style="padding-left: 30px;">'+
 		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
 		       '     </div>'+
+		       '   </div>'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   '       <input type="radio" name="confidential_new" value="FALSE" checked> '+
+			   '		<label for="confidential_new">Public</label>';
+
+			   if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+			   		content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
+			   		'		<label for="confidential_new">Private</label>';
+
+			   content += '     </div>'+
+		       '   </div>'+
+			   '   <div class="form-group row required">'+
+		       '     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
+			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   '       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
+			   '     </div>'+
 		       '   </div>'+
 		       '</form></div>';
 			
@@ -160,48 +352,17 @@ GW.workflow = {
 			
 			GW.workflow.new_frame = GW.process.createJSFrameDialog(520, 450, content, "Authorization")
 			
-//			var width = 520; var height = 450;
-//			
-//			GW.workflow.new_frame = GW.workspace.jsFrame.create({
-//	    		title: 'Authorization',
-//	    	    left: 0, 
-//	    	    top: 0, 
-//	    	    width: width, 
-//	    	    height: height,
-//	    	    appearanceName: 'yosemite',
-//	    	    style: {
-//                    backgroundColor: 'rgb(255,255,255)',
-//		    	    fontSize: 12,
-//                    overflow:'auto'
-//                },
-//	    	    html: content
-//	    	});
-//	    	
-//			GW.workflow.new_frame.setControl({
-//                styleDisplay:'inline',
-//                maximizeButton: 'zoomButton',
-//                demaximizeButton: 'dezoomButton',
-//                minimizeButton: 'minimizeButton',
-//                deminimizeButton: 'deminimizeButton',
-//                hideButton: 'closeButton',
-//                animation: true,
-//                animationDuration: 150,
-//
-//            });
-//	    	
-//			GW.workflow.new_frame.on('closeButton', 'click', (_frame, evt) => {
-//                _frame.closeFrame();
-//                
-//            });
-//            
-//	    	//Show the window
-//			GW.workflow.new_frame.show();
-//	    	
-//			GW.workflow.new_frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
 			$("#new-workflow-confirm").click(function(){
 				
             	$("#new-workflow-confirm").prop('disabled', true);
+
+				var confidential = "FALSE"; //default is public
+
+				if(typeof $('input[name="confidential_new"]:checked').val() != "undefined"){
+					
+					confidential = $('input[name="confidential_new"]:checked').val()
+					
+				}
 				
 				//save the new workflow
 				
@@ -210,6 +371,12 @@ GW.workflow = {
 					"name": $("#workflow_name").val(), 
 					
 					"type": "workflow",
+
+					"confidential": confidential,
+
+					"description": $("#wf_desc").val(),
+					
+					"owner": GW.user.current_userid,
 					
 					"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
 					
@@ -221,15 +388,19 @@ GW.workflow = {
 				
 				$.ajax({
 					
-					url: "add",
+					url: "add/workflow",
 		    		
 		    		method: "POST",
+
+					contentType: 'application/json',
+
+					dataType: 'json',
 		    		
-		    		data: workflow
+		    		data: JSON.stringify(workflow)
 		    		
 				}).done(function(msg){
 					
-					msg = $.parseJSON(msg);
+					msg = GW.general.parseResponse(msg);
 					
 					GW.workflow.new_frame.closeFrame()
 					
@@ -259,94 +430,6 @@ GW.workflow = {
 				
 			});
 			
-//			BootstrapDialog.show({
-//				
-//				title: "New workflow",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Confirm",
-//					
-//					id: "workflow-new-confirm",
-//					
-//					action: function(dialog){
-//						
-//						var $button = this;
-//	                	
-//	                	$button.spin();
-//	                	
-////	                	dialog.enableButtons(false);
-//	                	$("#workflow-new-confirm").prop('disabled', true);
-//						
-//						//save the new workflow
-//						
-//						var workflow = {
-//							
-//							"name": $("#workflow_name").val(), 
-//							
-//							"type": "workflow",
-//							
-//							"nodes": JSON.stringify(GW.workspace.theGraph.nodes), 
-//							
-//							"edges": JSON.stringify(GW.workspace.theGraph.edges)
-//							
-//						};
-//						
-//						$.ajax({
-//							
-//							url: "add",
-//				    		
-//				    		method: "POST",
-//				    		
-//				    		data: workflow
-//				    		
-//						}).done(function(msg){
-//							
-//							msg = $.parseJSON(msg);
-//							
-//							GW.workflow.addMenuItem(msg);
-//							
-//							console.log("the workflow is added");
-//							
-//							GW.workflow.loaded_workflow = msg.id;
-//							
-//							if(createandrun){
-//								
-//								GW.workflow.run(msg.id);
-//								
-//							}
-//							
-//							dialog.close();
-//							
-//						}).fail(function(jqXHR, textStatus){
-//							
-//							console.error("fail to add workflow");
-//							
-//							$button.stopSpin();
-//	                		
-//	        				dialogItself.enableButtons(true);
-//							
-//						});
-//						
-//					}
-//					
-//				},{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//				
-//			});
-			
 		}else{
 			
 			alert("There are no adequate processes in the workspace!");
@@ -369,13 +452,29 @@ GW.workflow = {
 	save: function(nodes, edges){
 		
 		if(this.loaded_workflow!=null){
+
+			var confidential = "FALSE"; //default is public
+
+			if(typeof $('input[name="confidential_workflow"]:checked').val() != "undefined"){
+				
+				confidential = $('input[name="confidential_workflow"]:checked').val()
+				
+			}
+
+			var newname = "";
 			
 			var req = {
 					
 					"type": "workflow",
+
+					"name": newname,
 					
 					"id": this.loaded_workflow,
-					
+
+					"confidential": confidential,
+
+					"owner": GW.user.current_userid,
+
 					"nodes": JSON.stringify(nodes), 
 					
 					"edges": JSON.stringify(edges)
@@ -384,11 +483,15 @@ GW.workflow = {
 			
 			$.ajax({
 				
-				url: "edit",
+				url: "edit/workflow",
 				
 				method: "POST",
 				
-				data: req
+				contentType: 'application/json',
+
+				dataType: 'json',
+
+				data: JSON.stringify(req)
 				
 			}).done(function(msg){
 				
@@ -429,6 +532,8 @@ GW.workflow = {
 			msg = $.parseJSON(msg);
 			
 			GW.workflow.loaded_workflow = msg.id;
+
+			
 			
 			GW.workspace.theGraph.load(msg);
 			
@@ -440,18 +545,20 @@ GW.workflow = {
 			
 		});
 	},
+
+	
 	
 	/**
 	 * Allow users to choose how to add the workflow into the workspace in two ways: 
 	 * one process or the original workflow of processes
 	 */
-	add: function(wid){
+	add: function(wid, wname){
 		
 		//pop up a dialog to ask which they would like to show it
 		
 		var req = "<div class=\"modal-body\"><div class=\"row\"> "+
 		"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
-		"		      <label class=\"labeltext\">How do you want to load the workflow?</label><br/>"+
+		"		      <label class=\"labeltext\">You have to load the workflow into the weaver view first to execute it. Do you want to proceed?</label><br/>"+
 		"		      <div class=\"form-check-inline\">"+
 		"					<label class=\"customradio\"><span class=\"radiotextsty\">show all child processes and edges</span>"+
 		"					  <input type=\"radio\" checked=\"checked\" name=\"addway\" value=\"all\">"+
@@ -471,7 +578,7 @@ GW.workflow = {
 		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
 		'</div>';
 		
-		var frame = GW.process.createJSFrameDialog(320, 210, req, "Show a Way");
+		var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
 		
 		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 			
@@ -495,6 +602,8 @@ GW.workflow = {
 //			switchTab(document.getElementById("main-workspace-tab"), "workspace");
 			
 			GW.general.switchTab("workspace")
+
+			GW.workflow.setCurrentWorkflowName(wname);
 			
         	_frame.closeFrame();
         	
@@ -506,54 +615,15 @@ GW.workflow = {
 		
 		
 		
-//		BootstrapDialog.show({
-//			
-//			title: "Show a way",
-//			
-//			message: req,
-//			
-//			buttons: [{
-//				
-//				label: "Confirm",
-//				
-//				action: function(dialog){
-//					
-//					//get workflow details by the selected way
-//					
-//					var selValue = $('input[name=addway]:checked').val(); 
-//					
-//					console.log("selected way: " + selValue);
-//					
-//					if(selValue == "one"){
-//						
-//						GW.workflow.showProcess(wid);
-//						
-//					}else if(selValue == "all"){
-//						
-//						GW.workflow.showWorkflow(wid);
-//						
-//					}
-//					
-//					dialog.close();
-//					
-//				}
-//				
-//			},{
-//				
-//				label: "Cancel",
-//				
-//				action: function(dialog){					
-//					
-//					dialog.close();
-//					
-//				}
-//				
-//			}]
-//			
-//		});
-		
 	},
 	
+
+	setCurrentWorkflowName: function(name){
+
+		$("#current_workflow_na").html(name);
+
+	},
+
 	/**
 	 * Start to collect information to run the workflow
 	 */
@@ -593,36 +663,25 @@ GW.workflow = {
 			       '   <div class=\"panel-body\"><div class="form-group row required">'+
 			       '     <label for="hostselector" class="col-md-4 col-form-label control-label">Mode: </label>'+
 			       '     <div class="col-md-8">'+
-				   '        <div class="col-md-6"> '+
-				   '            <input type="radio" '+
+				   '		<div class="row">'+
+				   '        	<div class="col-md-6"> '+
+				   '            	<input type="radio" '+
 				   '                   name="modeswitch" value="one"  checked/> '+
-				   '            <label>One host</label> '+
-				   '        </div>'+
-			       '		<div class="col-md-6"> '+
-				   '            <input type="radio" '+
+				   '            	<label>One host</label> '+
+				   '        	</div>'+
+			       '			<div class="col-md-6"> '+
+				   '            	<input type="radio" '+
 				   '                   name="modeswitch" value="different" /> '+
-				   '	        <label>Multiple host</label> '+
-				   '        </div> '+
+				   '	        	<label>Multiple host</label> '+
+				   '        	</div> '+
+				   '		</div>'+
 			       '     </div>'+
 			       '   </div></div>';
 				
 				content += "<div class=\"panel-body\" id=\"selectarea\">";
-				
-//				for(var i=0;i<nodes.length;i++){
-//					
-//					content += '   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-//				       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-//				       '     <div class="col-sm-8">'+
-//				       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
-//				       '  		</select>'+
-//				       '     </div>'+
-//				       '   </div>';
-//					
-//				}
-				
 				content += "</div>";
 				
-				content += '<div class="col-sm-12 form-check">'+
+				content += '<div class="row form-check">'+
 			       '		<input type="checkbox" class="form-check-input" id="remember">'+
 			       '		<label class="form-check-label" for="remember">Remember this workflow-host connection</label>'+
 			       '     </div>';
@@ -636,15 +695,24 @@ GW.workflow = {
 				
 				var frame = GW.process.createJSFrameDialog(480, 500, content, "Select Host");
 				
-				GW.host.refreshHostList();
+				GW.host.refreshHostListForExecution();
+
+				var onehost = '   <div class="form-group row required" id="hostselectlist">'+
+				'     <span for="hostselector" class="col-sm-4 col-form-label"></span>'+
+				'     <label for="hostselector" class="col-sm-4 col-form-label">Host</label>'+
+				'     <label for="hostselector" class="col-sm-4 col-form-label">Environment</label>'+
+				'     <label for="hostselector" class="col-sm-4 col-form-label control-label align-middle">Select one host: </label>'+
+				'     <div class="col-sm-4">'+
+				'		<select class="form-control hostselector" id="hostforprocess_0">'+
+				'  		</select>'+
+				'     </div>'+
+				'     <div class="col-sm-4">'+
+				'		<select class="form-control environmentselector" id="environmentforprocess_0">'+
+				'  		</select>'+
+				'     </div>'+
+				'   </div>';
 				
-				$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
-					       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-					       '     <div class="col-sm-8">'+
-					       '		<select class="form-control hostselector" id="hostforworkflow">'+
-					       '  		</select>'+
-					       '     </div>'+
-					       '   </div>');
+				$("#selectarea").append(onehost);
 				
 				$("input[name='modeswitch']").change(function(e){
 					
@@ -653,23 +721,25 @@ GW.workflow = {
 				    if($(this).val() == 'one') {
 				    
 				    	//only show one host selector
-				    	
-				    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-					       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-					       '     <div class="col-sm-8">'+
-					       '		<select class="form-control hostselector" id="hostforworkflow">'+
-					       '  		</select>'+
-					       '     </div>'+
-					       '   </div>');
+				    	$("#selectarea").append(onehost);
 				    
 				    } else {
 				    
+						
+						nodes = GW.general.parseResponse(nodes);
+
 				    	for(var i=0;i<nodes.length;i++){
-							
+
 				    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-						       '     <div class="col-sm-8">'+
+						       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+
+							   nodes[i].title+ " (" + nodes[i].id + ")"+
+							   '</mark> on: </label>'+
+						       '     <div class="col-sm-4">'+
 						       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
+						       '  		</select>'+
+						       '     </div>'+
+							   '     <div class="col-sm-4">'+
+						       '		<select class="form-control environmentselector" id="environmentforprocess_'+i+'">'+
 						       '  		</select>'+
 						       '     </div>'+
 						       '   </div>');
@@ -678,7 +748,7 @@ GW.workflow = {
 				    
 				    }
 				    
-				    GW.host.refreshHostList();
+				    GW.host.refreshHostListForExecution();
 				    
 				});
 				
@@ -691,27 +761,27 @@ GW.workflow = {
 					if($('input[name=modeswitch]:checked').val()=="one"){
 						
 						//all on one
-						
 						mode = "one";
 						
-						var thehost = $("#hostforworkflow").val();
-						
+						var thehost = $("#hostforprocess_0").val();
+
 						hosts.push({
 							"name":thehost, 
-							"id": $("#hostforworkflow").find('option:selected').attr('id')
+							"id": $("#hostforprocess_0").find('option:selected').attr('id'),
+							"env": $("#environmentforprocess_0").find('option:selected').attr('id')
 						});
 						
 					}else{
 						
 						//multiple
-						
 						mode = "different";
 						
 						for(var i=0;i<nodes.length;i++){
 							
 							hosts.push({
 								"name":$("#hostforprocess_"+i).val(), 
-								"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
+								"id": $("#hostforprocess_"+i).find('option:selected').attr('id'),
+								"env": $("#environmentforprocess_"+i).find('option:selected').attr('id'),
 							});
 							
 						}
@@ -738,119 +808,6 @@ GW.workflow = {
 		        });
 			       
 				
-//				BootstrapDialog.show({
-//					
-//					title: "Select host",
-//					
-//					message: content,
-//					
-//					onshown: function(){
-//						
-//						GW.host.refreshHostList();
-//						
-//						$("#selectarea").append('   <div class="form-group row required" id="hostselectlist">'+
-//							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-//							       '     <div class="col-sm-8">'+
-//							       '		<select class="form-control hostselector" id="hostforworkflow">'+
-//							       '  		</select>'+
-//							       '     </div>'+
-//							       '   </div>');
-//						
-//						$("input[name='modeswitch']").change(function(e){
-//							
-//					    	$("#selectarea").empty();
-//							
-//						    if($(this).val() == 'one') {
-//						    
-//						    	//only show one host selector
-//						    	
-//						    	$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-//							       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Select one host: </label>'+
-//							       '     <div class="col-sm-8">'+
-//							       '		<select class="form-control hostselector" id="hostforworkflow">'+
-//							       '  		</select>'+
-//							       '     </div>'+
-//							       '   </div>');
-//						    
-//						    } else {
-//						    
-//						    	for(var i=0;i<nodes.length;i++){
-//									
-//						    		$("#selectarea").append('   <div class="form-group row required" id="hostselectlist_'+i+'">'+
-//								       '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run <mark>'+nodes[i].title+'</mark> on: </label>'+
-//								       '     <div class="col-sm-8">'+
-//								       '		<select class="form-control hostselector" id="hostforprocess_'+i+'">'+
-//								       '  		</select>'+
-//								       '     </div>'+
-//								       '   </div>');
-//									
-//								}
-//						    
-//						    }
-//						    
-//						    GW.host.refreshHostList();
-//						    
-//						});
-//						
-//					},
-//					
-//					buttons: [{
-//						
-//						label: "Run",
-//						
-//						action: function(dialog){
-//							
-//							var hosts = [];
-//							
-//							var mode;
-//							
-//							if($('input[name=modeswitch]:checked').val()=="one"){
-//								
-//								//all on one
-//								
-//								mode = "one";
-//								
-//								var thehost = $("#hostforworkflow").val();
-//								
-//								hosts.push({
-//									"name":thehost, 
-//									"id": $("#hostforworkflow").find('option:selected').attr('id')
-//								});
-//								
-//							}else{
-//								
-//								//multiple
-//								
-//								mode = "different";
-//								
-//								for(var i=0;i<nodes.length;i++){
-//									
-//									hosts.push({
-//										"name":$("#hostforprocess_"+i).val(), 
-//										"id": $("#hostforprocess_"+i).find('option:selected').attr('id')
-//									});
-//									
-//								}
-//								
-//							}
-//							
-//							//remember the process-host connection
-//		                	if(document.getElementById('remember').checked) {
-//		                	    
-//		                		GW.workflow.setCache(id, {hosts: hosts, mode: mode}); //remember s
-//		                		
-//		                	}
-//							
-//							GW.workflow.execute(id, mode, hosts);
-//							
-//							dialog.close();
-//							
-//						}
-//						
-//					}]
-//					
-//				});
-				
 			}).fail(function(jxr, status){
 				
 				alert("fail to get workflow details");
@@ -868,12 +825,24 @@ GW.workflow = {
 	
 	
 	execute_callback: function(req, dialogItself, button){
+
+		var history_id = GW.general.makeid(18);
+
+		GW.workflow.history_id = history_id;
+
+		req.history_id = history_id;
 		
  		$.ajax({
 				
 				url: "executeWorkflow",
 				
 				type: "POST",
+
+				// contentType: 'application/json',
+
+				// dataType: 'json',
+				
+				// data: JSON.stringify(req)
 				
 				data: req
 				
@@ -891,13 +860,15 @@ GW.workflow = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					GW.process.showSSHOutputLog(msg); //use the same method as the single process
+					// GW.process.showSSHOutputLog(msg); //use the same method as the single process
 					
 					if(GW.workflow.loaded_workflow!=null
 							&&GW.workflow.loaded_workflow==req.id){
 						
-    					GW.monitor.startMonitor(msg.history_id);
+						GW.monitor.startMonitor(msg.token); //for workspace refreshing
     					
+						GW.ssh.openLog(msg); //for logging
+
 					}
 					
 				}else if(msg.ret == "fail"){
@@ -951,10 +922,10 @@ GW.workflow = {
 	 */
 	execute: function(wid, mode, hosts){
 
-		var current_token = GW.main.getJSessionId();
+		// var current_token = GW.main.getJSessionId();
 
-		if(GW.monitor.token!=null && GW.monitor.token!=current_token)
-			current_token = GW.monitor.token;
+		// if(GW.monitor.token!=null && GW.monitor.token!=current_token)
+		// 	current_token = GW.monitor.token;
 		
 		var req = {
  				
@@ -962,12 +933,59 @@ GW.workflow = {
  				
  				mode: mode,
 
-				token: current_token
+				token: GW.general.CLIENT_TOKEN
+				// token: current_token
  				
  		};
 		
 		GW.host.start_auth_multiple(hosts, req, GW.workflow.execute_callback);
 		
+	},
+
+
+
+	getStatusCol: function(single_msg){
+
+		// var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
+				
+		// if(single_msg.end_time!=null && single_msg.end_time != single_msg.begin_time){
+			
+		// 	status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
+			
+		// }else if(single_msg.end_time == single_msg.begin_time && single_msg.output != null){
+			
+		// 	status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
+			
+		// }
+
+		var status_col = "      <td id=\"status_"+single_msg.id+"\">";
+			
+		if(single_msg.status == "Done"){
+			
+			status_col += "       <span class=\"label label-success\">Done</span>  ";
+			
+		}else if(single_msg.status == "Failed"){
+			
+			status_col += "       <span class=\"label label-danger\">Failed</span>  ";
+			
+		}else if(single_msg.status == "Running"){
+			
+			status_col += "       <span class=\"label label-warning\">Running</span>  ";
+			
+		}else if(single_msg.status == "Stopped"){
+			
+			status_col += "       <span class=\"label label-default\">Stopped</span>  ";
+			
+		}else{
+			
+			status_col += "       <span class=\"label label-primary\">Unknown</span>  ";
+			
+		}
+
+		status_col += "</td>";
+
+		return status_col;
+
 	},
 	
 	recent: function(number){
@@ -1006,17 +1024,7 @@ GW.workflow = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-				
-				if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
-					
-					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-					
-				}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
-					
-					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-					
-				}
+				var status_col = GW.workflow.getStatusCol(msg[i]);
 				
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
@@ -1028,8 +1036,19 @@ GW.workflow = {
 			}
 			
 			content += "</tbody></table></div>";
+
+			content += '<div class="modal-footer">' +
+	        				"	<button type=\"button\" class=\"btn btn-outline-secondary general-cancel-btn\">Cancel</button>"+
+	        				'</div>';
+
 			
 			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
+
+			$(".general-cancel-btn").click(function(){
+				
+				frame.closeFrame();
+				
+			});
 			
 		}).fail(function(jxr, status){
 			
@@ -1055,29 +1074,7 @@ GW.workflow = {
 		
 		for(var i=0;i<msg.length;i++){
 			
-			var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-			
-			if(msg[i].status == "Done"){
-				
-				status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-				
-			}else if(msg[i].status == "Failed"){
-				
-				status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-				
-			}else if(msg[i].status == "Running"){
-				
-				status_col = "      <td><span class=\"label label-warning\">Running</span></td> ";
-				
-			}else if(msg[i].status == "Stopped"){
-				
-				status_col = "      <td><span class=\"label label-primary\">Stopped</span></td> ";
-				
-			}else{
-				
-				status_col = "      <td><span class=\"label label-primary\">Unknown</span></td> ";
-				
-			}
+			var status_col = GW.workflow.getStatusCol(msg[i]);
 			
 			content += "    <tr> "+
 				"      <td>"+msg[i].id+"</td> "+
@@ -1087,7 +1084,7 @@ GW.workflow = {
 			
 			if(msg[i].status == "Running"){
 				
-				content += "		<a href=\"javascript: GW.workflow.stop('"+msg[i].id+"'), 'workflow'\">Stop</a> ";
+				content += "		<a href=\"javascript:void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.workflow.stop('"+msg[i].id+"')\">Stop</a> ";
 			}
 				
 			content += "   </td> </tr>";
@@ -1099,12 +1096,51 @@ GW.workflow = {
 		// create an interactive chart to show all the data
 		
 		content = "<div id=\"workflow-chart-container\" width=\"200\" height=\"100\">"+
-		"<canvas id=\"workflow-history-chart\" style=\"width:200px !important; height:100px !important;\" ></canvas>"+
+		"<canvas id=\"workflow-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
 		"</div>" + 
 		content;
 		
 		return content;
 		
+	},
+
+	stop: function(workflow_history_id){
+
+		console.log("Send stop request to stop the running workflow");
+			
+		$.ajax({
+			
+			url: "stop",
+			
+			method: "POST",
+			
+			data: {type: "workflow", id: workflow_history_id}
+			
+		}).done(function(msg){
+			
+			msg = $.parseJSON(msg);
+			
+			console.log("stopping workflow is called");
+
+			if(msg.ret=="stopped"){
+				
+				$("#stopbtn_" + workflow_history_id).html("<span class=\"text-success\">Stopped</span>");
+				
+				$("#stopbtn_" + workflow_history_id).prop("onclick", null).off("click");
+				
+//					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
+				
+				$("#status_" + workflow_history_id).html("<span class=\"label label-default\">Stopped</span>");
+				
+			}else{
+
+				alert("Fail to stop.");
+
+			}
+			
+		});
+		
+
 	},
 	
 	history: function(wid, name){
@@ -1134,100 +1170,9 @@ GW.workflow = {
 			$("#workflow-history-container").html(content);
 
 			GW.chart.renderWorkflowHistoryChart(msg);
+
+			GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history");
 			
-			
-//			var frame = GW.process.createJSFrameDialog(600, 360, content, "History")
-			
-//			var width = 600; var height = 360;
-//			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'History',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	    
-//	    	});
-//	    	
-//			frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
-			
-//			var content = "<table class=\"table\"> "+
-//			"  <thead> "+
-//			"    <tr> "+
-//			"      <th scope=\"col\">Execution Id</th> "+
-//			"      <th scope=\"col\">Begin Time</th> "+
-//			"      <th scope=\"col\">Status</th> "+
-//			"      <th scope=\"col\">Action</th> "+
-//			"    </tr> "+
-//			"  </thead> "+
-//			"  <tbody> ";
-//
-//			
-//			for(var i=0;i<msg.length;i++){
-//				
-//				var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-//				
-//				if(msg[i].end_time!=null && msg[i].end_time != msg[i].begin_time){
-//					
-//					status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-//					
-//				}else if(msg[i].end_time == msg[i].begin_time && msg[i].output != null){
-//					
-//					status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-//					
-//				}
-//				
-//				content += "    <tr> "+
-//					"      <td>"+msg[i].id+"</td> "+
-//					"      <td>"+msg[i].begin_time+"</td> "+
-//					status_col+
-//					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
-//					"    </tr>";
-//				
-//			}
-//			
-//			content += "</tbody>";
-			
-//			BootstrapDialog.show({
-//				
-//				title: "History",
-//				
-//				message: content,
-//				
-//				buttons: [{
-//					
-//					label: "Close",
-//					
-//					action: function(dialog){
-//						
-//						dialog.close();
-//						
-//					}
-//					
-//				}]
-//				
-//			});
 			
 		}).fail(function(jxr, status){
 			
@@ -1311,41 +1256,15 @@ GW.workflow = {
 			
 			content += "</tbody></table></div>";
 			
-			var frame = GW.process.createJSFrameDialog(800, 640, content, "History")
+			content += '<div class="modal-footer">' +
+			"	<button type=\"button\" class=\"btn btn-outline-secondary general-cancel-btn\">Cancel</button>"+
+			'</div>';
 			
-//			var width = 800; var height = 640;
-//			
-//			const frame = GW.workspace.jsFrame.create({
-//		    		title: 'History',
-//		    	    left: 0, 
-//		    	    top: 0, 
-//		    	    width: width, 
-//		    	    height: height,
-//		    	    appearanceName: 'yosemite',
-//		    	    style: {
-//	                    backgroundColor: 'rgb(255,255,255)',
-//			    	    fontSize: 12,
-//	                    overflow:'auto'
-//	                },
-//		    	    html: content
-//		    	    
-//	    	});
-//	    	
-//			frame.setControl({
-//	            styleDisplay:'inline',
-//	            maximizeButton: 'zoomButton',
-//	            demaximizeButton: 'dezoomButton',
-//	            minimizeButton: 'minimizeButton',
-//	            deminimizeButton: 'deminimizeButton',
-//	            hideButton: 'closeButton',
-//	            animation: true,
-//	            animationDuration: 150,
-//	
-//	        });
-//	    	
-//	    	frame.show();
-//	    	
-//	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+			var frame = GW.process.createJSFrameDialog(800, 640, content, "History");
+			
+			frame.on('.general-cancel-btn', 'click', (_frame, evt) => {
+	        	_frame.closeFrame();
+	        });
 			
 		}).fail(function(){
 			
@@ -1356,10 +1275,12 @@ GW.workflow = {
 	},
 	
 	addMenuItem: function(one){
+
+		if(one.name=="") one.name = "null"
 		
 		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
 				
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">" + 
+				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\"> " + 
 	    		
 				one.name + "</a> "+
 				
@@ -1390,6 +1311,33 @@ GW.workflow = {
 		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
 	},
 
+	refreshWorkflowList: function(){
+
+		$.ajax({
+        		
+			url: "list",
+			
+			method: "POST",
+			
+			data: "type=workflow"
+			
+		}).done(function(msg){
+			
+			msg = $.parseJSON(msg);
+			
+			console.log("Start to refresh the workflow list..");
+			
+			$("#workflows").html("");
+			
+			GW.workflow.list(msg);
+			
+		}).fail(function(jxr, status){
+			
+			console.error("fail to list process");
+			
+		});
+
+	},
 	
 	list: function(msg){
 		

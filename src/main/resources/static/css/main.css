@@ -20,7 +20,7 @@ nav li.active {
 	padding-bottom: 1rem;
 }
 hr {
-	margin-top: 2rem;
+	margin-top: 1rem;
 	margin-bottom: 2rem;
 }
 
@@ -42,7 +42,6 @@ hr {
 	overflow-y: scroll !important;
 	height: 180px;	
 }
-
 
 /* These are for the single examle */
 .preview-img {
@@ -76,8 +75,9 @@ form .progress {
 #snackbar {
   visibility: hidden; /* Hidden by default. Visible on click */
   min-width: 250px; /* Set a default minimum width */
-  /* margin-left: -125px; Divide value of min-width by 2 */
-  background-color: grey; /* Black background color */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: rgb(206, 206, 206); /* Black background color */
+
   color: #fff; /* White text color */
   text-align: center; /* Centered text */
   border-radius: 2px; /* Rounded borders */
@@ -122,35 +122,39 @@ form .progress {
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
-  background-color: #f1f1f1;
+  background-color: rgb(255, 255, 255);
 }
 
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
-  float: left;
-  border: none;
+  float: none;
+  border: none ;
   outline: none;
   cursor: pointer;
-  padding: 3px 3px;
+  /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 12px;
+  font-size: 14px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ddd;
+  background-color: rgb(218, 218, 218);
 }
 
 /* Create an active/current tablink class */
 .tab button.active {
-  background-color: #ccc;
+  background-color: rgb(204, 204, 204);
 }
 
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  padding: 6px 12px; 
   /* border: 1px solid #ccc; */
   border-top: none;
 }
@@ -162,64 +166,118 @@ form .progress {
 
 }
 
+.subtab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: white;
+}
 
-/* 
-loginbtn  {
-  background-color: #56baed;
+.subtab button{
+
+  background-color: white;
+  float: left;
   border: none;
-  color: white;
-  padding: 15px 80px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-loginbtn:hover, input[type=submit]:hover, input[type=reset]:hover  {
-  background-color: #39ace7;
-}
-
-loginbtn:active, input[type=submit]:active, input[type=reset]:active  {
-  -moz-transform: scale(0.95);
-  -webkit-transform: scale(0.95);
-  -o-transform: scale(0.95);
-  -ms-transform: scale(0.95);
-  transform: scale(0.95);
-}
-
-logintextinput {
-  background-color: #f6f6f6;
-  border: none;
-  color: #0d0d0d;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  /* padding: 3px 3px; */
+  transition: 0.3s;
   font-size: 16px;
-  margin: 5px;
-  width: 85%;
-  border: 2px solid #f6f6f6;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
+  
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+
 }
 
-logintextinput:focus {
-  background-color: #fff;
-  border-bottom: 2px solid #5fbae9;
-} */
+/* Change background color of buttons on hover */
+.subtab button:hover {
+  background-color: rgb(169, 171, 250);
+}
+
+/* Create an active/current tablink class */
+.subtab button.active {
+  background-color: rgb(193, 195, 201);
+}
+
+.toptoolbarbtn {
+
+  font-family: "Lato"; 
+  text-align: center; 
+  transition: all 0.3s ease;
+  color: rgb(0, 0, 0);
+  /* font-size: 24px; */
+  height: 50px;
+  float: left;
+
+}
+
+.loginbtn {
+
+  float: right;
+  margin-right: 30px;
+}
+
+/**
+ * ==============================================
+ * Dot Flashing
+ * ==============================================
+ */
+ .dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #b8b8b8;
+  color: #b8b8b8;
+  animation: dotFlashing 1s infinite linear alternate;
+  animation-delay: .5s;
+  margin: 0 auto;
+}
+
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #3a3a3a;
+  color: #3a3a3a;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #3a3a3a;
+  color: #3a3a3a;
+  animation: dotFlashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dotFlashing {
+  0% {
+    background-color: #3a3a3a;
+  }
+  50%,
+  100% {
+    background-color: #f7f6fc;
+  }
+}
+
+.generalshadow {
+  box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset;
+}
+
+.titleshadow {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px inset;
+}

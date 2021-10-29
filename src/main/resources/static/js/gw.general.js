@@ -10,10 +10,28 @@
 GW.general = {
 		
 		process_code_editor: null, 
+
+		CLIENT_TOKEN: null,
 		
 		init: function(){
 			
-			
+			//add hot keys for the entire app
+			$(window).bind('keydown', function(event) {
+				if (event.ctrlKey || event.metaKey) {
+					switch (String.fromCharCode(event.which).toLowerCase()) {
+						case 's':
+							//need to check if the current page to call the correct method
+							event.preventDefault();
+							GW.host.editSwitch();
+							GW.process.editSwitch();
+							GW.workspace.saveWorkflow();
+							// alert('ctrl-s');
+							break;
+					}
+				}
+			});
+
+			GW.general.CLIENT_TOKEN = GW.general.makeid(26);
 			
 		},
 
@@ -24,11 +42,27 @@ GW.general = {
 			for ( var i = 0; i < length; i++ ) {
 			  result += characters.charAt(Math.floor(Math.random() * 
 		 charactersLength));
-		   }
+		   } 
 		   return result;
 		},
 		
+		parseResponse: function(msg){
+
+			if(msg!=null && typeof msg != 'undefined'){
+
+				if(typeof msg != 'object'){
+					
+					msg = $.parseJSON(msg);
+
+				}
+
+			}
+
+			return msg;
+
+		},
 		
+
 		displayObject: function(type, msg){
 			
 			if(type=="process"){
@@ -119,16 +153,23 @@ GW.general = {
 		isJSON: function(text){
 			
 			var isjson = false;
-			
-			if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
-				replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-				replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 
-			  //the json is ok
-						
-			 isjson = true;
+			if(text !=null){
+
+				text = text.trim();
+			
+				if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
+					replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
+					replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+	
+				  //the json is ok
+							
+					isjson = true;
+	
+				}
 
 			}
+			
 		
 			return isjson;
 			

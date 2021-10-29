@@ -1,13 +1,12 @@
 package com.gw.jpa;
 
-import java.net.URL;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Host {
@@ -18,6 +17,31 @@ public class Host {
 	String id;
 	
 	String name, ip, port, username, owner, type, url;
+
+	String confidential;
+
+	@OneToMany(cascade = CascadeType.ALL,
+		fetch = FetchType.LAZY,
+		mappedBy="hostobj")
+    private Set<Environment> envs;
+
+	public Set<Environment> getEnvs() {
+		return this.envs;
+	}
+
+	public void setEnvs(Set<Environment> envs) {
+		this.envs = envs;
+	}
+
+	public String getConfidential() {
+		return this.confidential;
+	}
+
+	public void setConfidential(String confidential) {
+		this.confidential = confidential;
+	}
+
+	
 	
 	public String getId() {
 		return id;

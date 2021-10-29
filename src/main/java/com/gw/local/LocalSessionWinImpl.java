@@ -6,23 +6,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.websocket.Session;
+
+import com.gw.database.EnvironmentRepository;
+import com.gw.jpa.Environment;
+import com.gw.jpa.ExecutionStatus;
+import com.gw.jpa.GWProcess;
+import com.gw.jpa.History;
+import  com.gw.server.CommandServlet;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.HostTool;
+import com.gw.tools.ProcessTool;
+import com.gw.tools.EnvironmentTool;
+import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import com.gw.jpa.ExecutionStatus;
-import com.gw.jpa.History;
-import com.gw.jpa.GWProcess;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.ProcessTool;
-import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
-import com.gw.utils.SysDir;
-import  com.gw.server.CommandServlet;
 
 /**
  * 
@@ -32,6 +39,7 @@ import  com.gw.server.CommandServlet;
  *
  */
 @Service
+@Scope("prototype")
 public class LocalSessionWinImpl implements LocalSession {
 
 	Logger log  = Logger.getLogger(this.getClass());
@@ -41,6 +49,12 @@ public class LocalSessionWinImpl implements LocalSession {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	HostTool ht;
+
+	@Autowired
+	EnvironmentTool et;
 	
 	@Autowired
     private HistoryTool      history_tool;
@@ -48,11 +62,10 @@ public class LocalSessionWinImpl implements LocalSession {
 	private boolean			 isTerminal;
 	
 	private BufferedReader   input;
-	    
-    private OutputStream     output;
-
+	
     @Autowired
     private LocalSessionOutput sender;
+
     
     private Thread           thread;
     
@@ -121,7 +134,7 @@ public class LocalSessionWinImpl implements LocalSession {
 					
 					wsout.getBasicRemote().sendText(message);
 					
-					wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
+					wsout.getBasicRemote().sendText("======= Process " + this.history.getHistory_id() + " ended.");
 					
 				}
 				
@@ -152,13 +165,13 @@ public class LocalSessionWinImpl implements LocalSession {
 	 * @param isjoin
 	 * @param token
 	 */
-	public void initHistory(String script, String processid, boolean isjoin, String token) {
+	public void initHistory(String history_id, String script, String processid, boolean isjoin, String token) {
 		
 		this.token = token;
 		
 		this.isTerminal = isjoin;
 		
-		history = history_tool.initProcessHistory(processid, script);
+		history = history_tool.initProcessHistory(history_id, processid, script);
 		
 	}
 	
@@ -178,9 +191,9 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 	
 	@Override
-	public void runBash(String script, String processid, boolean isjoin, String token) {
+	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
 		
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
     	
     	try {
     		
@@ -190,7 +203,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		tempfile = workspace_folder_path + "/gw-" + token + "-" + rand + ".sh";
 
-    		script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
+    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		
@@ -207,13 +220,13 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token);
+    		sender.init(input, token, history_id);
     		
     		thread = new Thread(sender);
             
@@ -222,6 +235,8 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+
+			if(isjoin) process.waitFor();
             
             log.info("returning to the client..");
     		
@@ -238,10 +253,10 @@ public class LocalSessionWinImpl implements LocalSession {
 	
 
 	@Override
-	public void runJupyter(String script, String processid, boolean isjoin, String bin, String env, String basedir,
+	public void runJupyter(String history_id, String script, String processid, boolean isjoin, String bin, String env, String basedir,
 			String token) {
 
-		this.initHistory(script, processid, isjoin, token);
+		this.initHistory(history_id, script, processid, isjoin, token);
 		
     	try {
     		
@@ -249,13 +264,17 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path + "/" + token));
+    		builder.directory(new File(workspace_folder_path + "/" + token)); // this folder is only used to find data files, not the execution command
     		
     		String pythonfilename = pro.getName();
     		
     		log.info("Start to execute jupyter notebook: " + pythonfilename);
     		
     		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
+
+			
+
+			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
     		
     		builder.command(new String[] {"jupyter", "nbconvert", "--to", "notebook", "--execute", pythonfilename} );
     		
@@ -269,7 +288,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             thread = new Thread(sender);
             
@@ -281,7 +300,8 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
             log.info("Local Session Windows Implementation is done.");
             
@@ -296,34 +316,41 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runPython(String python, String processid, boolean isjoin, String bin, 
+	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, 
 			String pyenv, String basedir, String token) {
 		
-		this.initHistory(python, processid, isjoin, token);
+		this.initHistory(history_id, python, processid, isjoin, token);
 		
     	try {
     		
-    		log.info("save to local file: " + python);
+    		// log.info("save to local file: " + python);
 
     		GWProcess pro = pt.getProcessById(processid);
     		
     		ProcessBuilder builder = new ProcessBuilder();
+			
+			Map<String, String> env = builder.environment();
+
+			env.put("Path", env.get("Path")+";");
 
 			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
     		
 			log.info("Setting the working directory to " + realpath);
 
     		builder.directory(new File(realpath));
-    		
+			
     		String pythonfilename = pro.getName();
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
+
+			if(bt.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {"python", pythonfilename} );
+    		builder.command(new String[] {bin, pythonfilename} );
     		
+			// log.info(builder.environment());
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
@@ -331,7 +358,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token);
+            sender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -346,7 +373,9 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin) process.waitFor();
+
+            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
 	        
 		} catch (Exception e) {
 			
@@ -359,7 +388,7 @@ public class LocalSessionWinImpl implements LocalSession {
 	}
 
 	@Override
-	public void runMultipleBashes(String[] script, String processid) {
+	public void runMultipleBashes(String history_id, String[] script, String processid) {
 		
 		throw new RuntimeException("Not Supported Yet");
 		
@@ -369,28 +398,36 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Override
 	public boolean stop() {
+
+		// log.debug("Is process alive? " + process.isAlive());
+
+		// log.debug("Is thread alive? " + thread.isAlive()); //this thread will stop by itself after the task is finished.
+
+		// if(thread.isAlive()) thread.interrupt();
+
+		log.debug("for localhost session, there is nothing to manually stop. Just wait for the process to finish. That is all.");
 		
-		if(!bt.isNull(process)) {
+		// if(!bt.isNull(process)) {
 			
-			process.destroy();
+		// 	process.destroy();
 			
-		}
+		// }
 		
-		if(!bt.isNull(thread)) {
+		// if(!bt.isNull(thread)) {
 			
-			thread.interrupt();
+		// 	thread.interrupt();
 			
-		}
+		// }
 		
-		if(!bt.isNull(input)) {
+		// if(!bt.isNull(input)) {
 			
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		// 	try {
+		// 		input.close();
+		// 	} catch (IOException e) {
+		// 		e.printStackTrace();
+		// 	}
 			
-		}
+		// }
 		
 		return true;
 		
@@ -403,6 +440,134 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 		return temp.delete();
 		
+	}
+
+	void readWhere(String hostid, String password){
+		//read existing environments
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("where");
+		cmds.add("python.exe");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		//get all the python path
+		for(String line: stdout){
+			
+			Environment theenv = et.getEnvironmentByBin(line, old_envlist);
+
+			if(bt.isNull(theenv)){
+
+				Environment env = new Environment();
+				env.setId(new RandomString(6).nextString());
+				env.setBin(line);
+				env.setName(line);
+				env.setHostobj(ht.getHostById(hostid));
+				// env.setBasedir(line); //the execution place which is unknown at this point
+				if(line.contains("conda"))
+					env.setPyenv("anaconda");
+				else
+					env.setPyenv("pip");
+				env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+				env.setType("python"); //could be python or shell. R is not supported yet. 
+				env.setBasedir("~");
+				ht.saveEnvironment(env);
+
+			}else{
+
+				//if want to update the settings, do it here
+
+			}
+			
+		}
+	}
+
+	void readConda(String hostid, String password){
+
+		//read existing environments
+		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+			
+		List<String> cmds = new ArrayList();
+		cmds.add("conda");
+		cmds.add("env");
+		cmds.add("list");
+
+		List<String> stdout = bt.executeLocal(cmds);
+
+		if(stdout.get(0).startsWith("# conda")){
+
+			//get all the python path
+			for(String line: stdout){
+
+				if(!bt.isNull(line) && !line.startsWith("#")){
+
+					String[] vals = line.split("\\s+");
+
+					if(vals.length<2) continue;
+
+					String bin = vals[vals.length-1]+"\\python.exe";
+
+					String name = bt.isNull(vals[0])?bin:vals[0];
+
+					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
+
+					if(bt.isNull(theenv)){
+
+						Environment env = new Environment();
+						env.setId(new RandomString(6).nextString());
+						env.setBin(bin);
+						env.setName(name);
+						// env.setHost(hostid);
+						env.setHostobj(ht.getHostById(hostid));
+						// env.setBasedir(line); //the execution place which is unknown at this point
+						env.setPyenv("anaconda");
+						env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
+						env.setType("python"); //could be python or shell. R is not supported yet. 
+						env.setBasedir("~");
+						ht.saveEnvironment(env);
+
+					}else{
+
+						//if want to update the settings, do it here
+
+					}
+
+				}
+				
+				
+				
+			}
+
+		}else{
+			log.debug("Conda environments are not found.");
+		}
+
+
+	}
+
+
+	@Override
+	public String readPythonEnvironment(String hostid, String password) {
+
+		String resp = null;
+
+		try {
+
+			this.readWhere(hostid, password);
+
+			this.readConda(hostid, password);
+
+			resp = et.getEnvironments(hostid);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+		return resp;
+
 	}
 
 	
