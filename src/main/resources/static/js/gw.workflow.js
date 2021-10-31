@@ -319,32 +319,32 @@ GW.workflow = {
 		if(GW.workspace.checkIfWorkflow()){
 			
 			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
-			   '<form>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
-		       '     <div class="col-sm-9" style="padding-left: 30px;">'+
-		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
-		       '     </div>'+
-		       '   </div>'+
-			   '   <div class="form-group row required">'+
-		       '     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
-			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
-			   '       <input type="radio" name="confidential_new" value="FALSE" checked> '+
-			   '		<label for="confidential_new">Public</label>';
+			   	'<form>'+
+		       	'   <div class="form-group row required">'+
+		       	'     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
+		       	'     <div class="col-sm-9" style="padding-left: 30px;">'+
+		       	'		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
+		       	'     </div>'+
+		       	'   </div>'+
+			   	'   <div class="form-group row required">'+
+		       	'     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+			   	'     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   	'       <input type="radio" name="confidential_new" value="FALSE" checked> '+
+			   	'		<label for="confidential_new">Public</label>';
 
-			   if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
-			   		content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
-			   		'		<label for="confidential_new">Private</label>';
+				if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+					content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
+					'		<label for="confidential_new">Private</label>';
 
-			   content += '     </div>'+
-		       '   </div>'+
-			   '   <div class="form-group row required">'+
-		       '     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
-			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
-			   '       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
-			   '     </div>'+
-		       '   </div>'+
-		       '</form></div>';
+				content += '     </div>'+
+					'   </div>'+
+					'   <div class="form-group row required">'+
+					'     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
+					'     <div class="col-sm-9" style="padding-left: 30px;">'+
+					'       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
+					'     </div>'+
+					'   </div>'+
+					'</form></div>';
 			
 			content += '<div class="modal-footer">' +
 			"<button type=\"button\" id=\"new-workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
@@ -384,8 +384,6 @@ GW.workflow = {
 					
 				};
 				
-				
-				
 				$.ajax({
 					
 					url: "add/workflow",
@@ -411,6 +409,8 @@ GW.workflow = {
 					GW.workflow.expand(msg);
 					
 					GW.workflow.loaded_workflow = msg.id;
+
+					GW.workflow.setCurrentWorkflowName(msg.name);
 					
 					if(createandrun){
 						
@@ -436,8 +436,33 @@ GW.workflow = {
 			
 		}
 		
-		
-		
+	},
+
+	parseUploadedWorkflow: function(id, dataurl){
+
+		let req = {id: id, dataurl: dataurl}
+
+		$.ajax({
+				
+			url: "load/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(req)
+			
+		}).done(function(msg){
+			
+
+		}).fail(function(jxr, status){
+			
+			alert("Error!!! Fail to load.");
+			
+		});
+
 	},
 	
 	/**

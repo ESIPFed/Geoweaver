@@ -181,13 +181,7 @@ GW.workspace = {
 		    	          return;
 	    	          };
 					  
-	    	   }
-
-			//    if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
-			// 		console.log("Ctrl+s event detected: " + d3.event.keyCode);
-			// 		GW.workspace.saveWorkflow(thisGraph); //trigger save button
-
-			//    }
+	    	   	}
 
     	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
@@ -202,7 +196,6 @@ GW.workspace = {
     	    var dragSvg = d3.behavior.zoom()
     	          .on("zoom", function(){
     	            if (d3.event.sourceEvent.shiftKey){
-    	              // TODO  the internal d3 state is still changing
     	              return false;
     	            } else{
     	              thisGraph.zoomed.call(thisGraph);
@@ -286,9 +279,9 @@ GW.workspace = {
 	
 							if(msg.startsWith("download/temp/")){
 
-								let zipurl = msg;
+								let zipurl = "../" + msg;
 
-								window.open("../" + zipurl)
+								window.open(zipurl)
 
 							}
 	
@@ -423,17 +416,13 @@ GW.workspace = {
     	    
     	    d3.select("#upload-input").on("click", function(){
 
-				console.log("upload-input clicked")
+				// console.log("upload-input clicked")
     	    
-    	    	$("#hidden-file-upload").click();
+    	    	// $("#hidden-file-upload").click();
+
+				GW.fileupload.showUploadWorkflowDialog();
     	    
     	    });
-    	    
-    	    // d3.select("#test-jsframe").on('click', function(){
-    	    	
-    	    // 	GW.workspace.openModalWindow();
-    	    	
-    	    // });
     	    
     	    d3.select("#hidden-file-upload").on("change", function(){
 				console.log("hidden-file-upload is changed")
