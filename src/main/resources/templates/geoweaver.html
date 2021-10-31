@@ -372,19 +372,19 @@
 						
 						<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							  	<h2 style="color:black">Please select a host on the right panel! </h2>
+							  	<h2 style="color:black">Please select a host on the right panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
 							  </div>
 						</div>
 						 
 						<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-process-content" style="height:100%;  padding: 10px;">
-							  	<h2 style="color:black">Please select a process on the right panel!</h2>
+							  	<h2 style="color:black">Please select a process on the right panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
 							  </div>
 						</div>
 						
 						<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							  <div id="main-workflow-content" style="height:100%; padding: 10px;">
-							  	<h2 style="color:black">Please select a workflow on the right panel!</h2>
+							  	<h2 style="color:black">Please select a workflow on the right panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
 							  </div>
 						</div>
 							
@@ -394,6 +394,7 @@
 							  <div id="log-window">
 							  	
 							  </div>
+							  <div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 							</div>
 						</div>
 				
@@ -422,17 +423,17 @@
 							  
 							    <input id="hidden-file-upload" type="file" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" />
 							    
-								<i id="new-workflow" title="new graph" class="btn fa fa-file fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="new workflow" ></i>
+								<i id="new-workflow" title="new workspace" class="btn fa fa-file fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="new workspace" ></i>
 							    
 								<i id="add-workflow" title="create a new workflow" class="btn fa fa-plus-square fa-2x" 
 							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="create new workflow" ></i>
 
-							    <i id="upload-input" title="upload graph" class="btn fa fa-upload fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="upload workflow" ></i>
+							    <i id="upload-input" title="import workflow" class="btn fa fa-upload fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="import workflow" ></i>
 							      
-							    <i id="download-input" title="download graph" class="btn fa fa-download fa-2x" 
-							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="download workflow" ></i>
+							    <i id="download-input" title="export workflow" class="btn fa fa-download fa-2x" 
+							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="export workflow" ></i>
 							      
 							    <i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x" 
 							    	style="color:gray; padding:0; margin:0;margin-top:5px; display: block;text-align: center;transition: all 0.3s ease;" alt="save workflow"></i> 

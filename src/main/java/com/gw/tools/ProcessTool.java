@@ -134,49 +134,6 @@ public class ProcessTool {
 		
 		return json.toString();
 		
-//		StringBuffer json = new StringBuffer("[");
-//		
-//		StringBuffer sql = new StringBuffer("select id, name, description from process_type");
-//		
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		int num = 0;
-//		
-//		while(rs.next()) {
-//			
-//			String id = rs.getString("id");
-//			
-//			String name = rs.getString("name");
-//			
-//			String desc = rs.getString("description");
-//			
-//			if(BaseTool.isNull(desc)) desc = "shell";
-//			
-//			if(!StringUtils.isNumeric(id)) {
-//				
-//				if(num!=0) {
-//					
-//					json.append(",");
-//					
-//				}
-//				
-//				json.append("{\"id\": \"").append(id).append("\", \"name\": \"")
-//					
-//					.append(name).append("\", \"desc\":\"").append(desc).append("\"}");
-//
-//				num++;
-//				
-//			}
-//			
-//		}
-//		
-//		json.append("]");
-//		
-//		DataBaseOperation.closeConnection();
-//		
-//		return json.toString();
-		
 	}
 	
 	/**
@@ -189,52 +146,6 @@ public class ProcessTool {
 	public GWProcess getProcessById(String id) {
 		
 		GWProcess p = processrepository.findById(id).get();
-		
-//		GWProcess p = new GWProcess();
-//		
-//		StringBuffer sql = new StringBuffer("select * from process_type where id = '").append(id).append("';");
-//		
-////		StringBuffer resp = new StringBuffer();
-//		
-//		try {
-//
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-//			
-//			if(rs.next()) {
-//				
-//				p.setId(rs.getString("id"));
-//				
-//				p.setName(rs.getString("name"));
-//				
-//				String lang = "shell";
-//				
-//				if(!BaseTool.isNull(rs.getString("description")))
-//				
-//					lang = rs.getString("description");
-//				
-//				p.setDescription(lang);
-//				
-//				String code = rs.getString("code");
-//
-//				if(lang.equals("jupyter")) {
-//					
-//				}else {
-//					
-//					code = escape(code);
-//					
-//				}
-//				
-//				p.setCode(code);
-//				
-//			}
-//			
-//		} catch (Exception e) {
-//			
-//			e.printStackTrace();
-//			
-//			throw new RuntimeException(e.getLocalizedMessage());
-//			
-//		}
 		
 		return p;
 		
@@ -267,45 +178,6 @@ public class ProcessTool {
 
 		String jsonString = mapper.writeValueAsString(p);
 		
-// 		StringBuffer resp = new StringBuffer();
-		
-// 		resp.append("{ \"id\":\"").append(p.getId()).append("\", ");
-		
-// 		resp.append("\"name\":\"").append(p.getName()).append("\", ");
-		
-// 		String lang = "shell";
-		
-// 		if(bt.isNull(p.getLang())){
-
-// 			if(!bt.isNull(p.getDescription()))
-		
-// 			lang = p.getDescription();
-// 		}
-		
-// 		resp.append("\"lang\":\"").append(lang).append("\", ");
-
-// 		resp.append("\"description\":\"").append(p.getDescription()).append("\", ");
-		
-// 		String code = p.getCode();
-
-// //		if(lang.equals("jupyter")) {
-// //			
-// //			resp.append("\"code\":").append(code).append(" ");
-// //			
-// //		}else {
-			
-// //			code = escape(code); //it already escaped once
-			
-// 			resp.append("\"code\":\"").append(code).append("\", ");
-
-// 			resp.append("\"owner\":\"").append(p.getOwner()).append("\",");
-
-// 			resp.append("\"confidential\":\"").append(p.getConfidential()).append("\"");
-			
-// //		}
-		
-// 		resp.append(" }");
-				
 		return jsonString;
 		
 	}
@@ -316,7 +188,40 @@ public class ProcessTool {
 		
 	}
 
-	
+	public String getSuffix(String lang){
+
+		String suffix = "";
+
+		if("shell".equals(lang)){
+
+			suffix = "sh";
+
+		}else if("python".equals(lang)){
+
+			suffix = "py";
+
+		}else if("jupyter".equals(lang)){
+
+			suffix = "ipynb";
+
+		}else if("builtin".equals(lang)){
+
+			suffix = "builtin";
+
+		}
+
+		return suffix;
+	}
+
+	public String getProcessFileName(String pid){
+
+		GWProcess gp = this.getProcessById(pid);
+
+		String filename = gp.getName() + "." + getSuffix(gp.getLang());
+
+		return filename;
+
+	}
 	
 	public String unescape(String code) {
 		
@@ -349,16 +254,6 @@ public class ProcessTool {
 	 */
 	public void update(GWProcess p ) {
 		
-//		logger.info("The process code is updated: " + p.getCode());
-		
-//		StringBuffer sql = new StringBuffer("update process_type set name = '").append(p.getName())
-//				
-//				.append("', code = ?, description = '").append(p.getDescription()).append("' where id = '").append(p.getId()).append("';");
-//		
-////		logger.info(sql.toString());
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {p.getCode()});
-		
 		processrepository.save(p);
 		
 	}
@@ -375,8 +270,6 @@ public class ProcessTool {
 			GWProcess p = getProcessById(h.getHistory_process());
 			
 			if(!bt.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
-				
-//								log.info("save new jupyter into the code");
 				
 				String newfilename = p.getName();
 				

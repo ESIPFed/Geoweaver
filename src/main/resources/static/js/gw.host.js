@@ -2120,7 +2120,7 @@ GW.host = {
 		       '     <div class="col-sm-9">'+
 //		       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
 		       '	 	<select class="form-control" id="hosttype"> '+
-			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+			   '    		<option value="ssh">SSH Linux/Macintosh/Windows</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
 			   '    		<option value="jupyterhub">JupyterHub</option> '+
 			   '    		<option value="jupyterlab">Jupyter Lab</option> '+

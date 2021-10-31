@@ -446,7 +446,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "jupyter nbconvert --to notebook --execute jupyter-" + history_id + ".ipynb;";
+    		cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
     		
     		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		

@@ -394,6 +394,31 @@ public class GeoweaverController {
 		return resp;
 		
 	}
+
+	@RequestMapping(value = "/downloadworkflow", method = RequestMethod.POST)
+    public @ResponseBody String downloadworkflow(ModelMap model, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String option = request.getParameter("option");
+			
+			String wid = request.getParameter("id");
+			
+			resp = wt.download(wid, option);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
 	
 	/**
 	 * Get history of process or workflow
@@ -1021,6 +1046,56 @@ public class GeoweaverController {
 		
 	}
 
+	@RequestMapping(value = "/preload/workflow", method = RequestMethod.POST)
+    public @ResponseBody String preloadworkflow(ModelMap model,  WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			String dataurl = request.getParameter("dataurl");
+			
+			resp = wt.precheck(dataurl);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
+	
+	@RequestMapping(value = "/load/workflow", method = RequestMethod.POST)
+    public @ResponseBody String loadworkflow(ModelMap model, @RequestBody GWProcess up, WebRequest request){
+		
+		String resp = null;
+		
+		try {
+			
+			checkID(up.getId());
+			
+			pt.save(up);
+			
+			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+		
+	}
+
 	@RequestMapping(value = "/edit/process", method = RequestMethod.POST)
     public @ResponseBody String editprocess(ModelMap model, @RequestBody GWProcess up, WebRequest request){
 		
@@ -1629,36 +1704,16 @@ public class GeoweaverController {
         	
         	String token = session.getId(); //use session id as token
         	
-//        	if(token!=null && sessionManager.sshSessionByToken.get(token)!=null) {
-//        		
-////        		token = sessionManager.sshSessionByToken.get(token).getToken();
-//        		
-//        	}else {
-        		
-//        		token = new RandomString(16).nextString(); //token must be assigned by server in case somebody else hijacks it
-            	
-//            	SSHSession sshSession = new SSHSessionImpl();
-            	
-            	boolean success = sshSession.login(host, port, username, password, token, true);
-            	
-            	logger.debug("SSH login: " + username + "=" + success);
-                        
-                logger.debug("adding SSH session for " + username);
-                
+			boolean success = sshSession.login(host, port, username, password, token, true);
+			
+			logger.debug("SSH login: " + username + "=" + success);
+					
+			logger.debug("adding SSH session for " + username);
+			
 //                sessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
-                
-                sessionManager.sshSessionByToken.put(token, sshSession); //token is session id
+			
+			sessionManager.sshSessionByToken.put(token, sshSession); //token is session id
         		
-//        	}
-        	
-//            model.addAttribute("host", host);
-//            
-//            model.addAttribute("username", username);
-//            
-//            model.addAttribute("port", port);
-//            
-//            model.addAttribute("token", token);
-            
             resp = "{\"token\": \""+token+"\"}";
             
     	}catch(Exception e) {

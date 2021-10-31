@@ -261,13 +261,25 @@ GW.ssh = {
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
 			var style1 = "";
-			if(content.includes("Start to execute") || content.includes("===== Process")){
+			if(content.includes("Start to execute") ){
 
 				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
 
-			}else{
+				$(".dot-flashing").removeClass("invisible")
+				$(".dot-flashing").addClass("visible")
 
+			}else if(content.includes("===== Process")){
+				
+				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+
+				$(".dot-flashing").removeClass("visible")
+				$(".dot-flashing").addClass("invisible")
+
+			}else if(content=="disconnected"){
+				$(".dot-flashing").removeClass("visible")
+				$(".dot-flashing").addClass("invisible")
 			}
+			
 			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
 			+ time + "</span> <span style=\""+style1+"\">" + content + "</span></p>";
 

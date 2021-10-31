@@ -143,9 +143,9 @@ GW.workflow = {
     	
 		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 		
-		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
     	
-		workflowid+"', '"+workflowname+"')\"></i> "+
+		workflowid+"', '"+workflowname+"', false)\"></i> "+
 
 		"<i class=\"fa fa-share subalignicon\" onclick=\"GW.workflow.landingpage('"+
     	
@@ -319,32 +319,32 @@ GW.workflow = {
 		if(GW.workspace.checkIfWorkflow()){
 			
 			var content =  '<div class="modal-body"  style="font-size: 12px;">'+
-			   '<form>'+
-		       '   <div class="form-group row required">'+
-		       '     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
-		       '     <div class="col-sm-9" style="padding-left: 30px;">'+
-		       '		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
-		       '     </div>'+
-		       '   </div>'+
-			   '   <div class="form-group row required">'+
-		       '     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
-			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
-			   '       <input type="radio" name="confidential_new" value="FALSE" checked> '+
-			   '		<label for="confidential_new">Public</label>';
+			   	'<form>'+
+		       	'   <div class="form-group row required">'+
+		       	'     <label for="processcategory" class="col-sm-3 col-form-label control-label">Input Workflow Name : </label>'+
+		       	'     <div class="col-sm-9" style="padding-left: 30px;">'+
+		       	'		<input type="text" class="form-control" id="workflow_name" placeholder="New Workflow Name" />'+
+		       	'     </div>'+
+		       	'   </div>'+
+			   	'   <div class="form-group row required">'+
+		       	'     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+			   	'     <div class="col-sm-9" style="padding-left: 30px;">'+
+			   	'       <input type="radio" name="confidential_new" value="FALSE" checked> '+
+			   	'		<label for="confidential_new">Public</label>';
 
-			   if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
-			   		content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
-			   		'		<label for="confidential_new">Private</label>';
+				if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
+					content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
+					'		<label for="confidential_new">Private</label>';
 
-			   content += '     </div>'+
-		       '   </div>'+
-			   '   <div class="form-group row required">'+
-		       '     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
-			   '     <div class="col-sm-9" style="padding-left: 30px;">'+
-			   '       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
-			   '     </div>'+
-		       '   </div>'+
-		       '</form></div>';
+				content += '     </div>'+
+					'   </div>'+
+					'   <div class="form-group row required">'+
+					'     <label for="description" class="col-sm-3 col-form-label control-label">Description : </label>'+
+					'     <div class="col-sm-9" style="padding-left: 30px;">'+
+					'       <textarea class="form-control rounded-0" id="wf_desc" value="Enter Description" ></textarea> '+
+					'     </div>'+
+					'   </div>'+
+					'</form></div>';
 			
 			content += '<div class="modal-footer">' +
 			"<button type=\"button\" id=\"new-workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
@@ -384,8 +384,6 @@ GW.workflow = {
 					
 				};
 				
-				
-				
 				$.ajax({
 					
 					url: "add/workflow",
@@ -411,6 +409,8 @@ GW.workflow = {
 					GW.workflow.expand(msg);
 					
 					GW.workflow.loaded_workflow = msg.id;
+
+					GW.workflow.setCurrentWorkflowName(msg.name);
 					
 					if(createandrun){
 						
@@ -436,8 +436,80 @@ GW.workflow = {
 			
 		}
 		
-		
-		
+	},
+
+	parseUploadedWorkflow: function(id, dataurl){
+
+		let req = {id: id, dataurl: dataurl}
+
+		$.ajax({
+				
+			url: "preload/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(req)
+			
+		}).done(function(msg){
+			
+			msg = GW.general.parseJSON(msg);
+
+			if(msg.warning){
+
+				if(confirm(msg.warning)){
+
+					GW.workflow.saveUploadWorkflow(preloadresponse);
+
+				}
+
+			}
+
+		}).fail(function(jxr, status){
+			
+			alert("Error!!! Fail to load.");
+			
+		});
+
+	},
+
+	saveUploadWorkflow: function(preloadresponse){
+
+		$.ajax({
+	
+			url: "load/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(preloadresponse)
+			
+		}).done(function(msg){
+
+			if(msg.status == "success"){
+
+				GW.workflow.refreshWorkflowList();
+				
+				GW.menu.details(msg.id, "workflow");
+				
+			}else{
+				
+				alert(msg.message);
+
+			}
+
+		}).fail(function(jxr, status){
+			
+			console.error(jxr);
+
+		})
+
 	},
 	
 	/**
@@ -552,66 +624,78 @@ GW.workflow = {
 	 * Allow users to choose how to add the workflow into the workspace in two ways: 
 	 * one process or the original workflow of processes
 	 */
-	add: function(wid, wname){
+	add: function(wid, wname, ifconfirm){
 		
 		//pop up a dialog to ask which they would like to show it
-		
-		var req = "<div class=\"modal-body\"><div class=\"row\"> "+
-		"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
-		"		      <label class=\"labeltext\">You have to load the workflow into the weaver view first to execute it. Do you want to proceed?</label><br/>"+
-		"		      <div class=\"form-check-inline\">"+
-		"					<label class=\"customradio\"><span class=\"radiotextsty\">show all child processes and edges</span>"+
-		"					  <input type=\"radio\" checked=\"checked\" name=\"addway\" value=\"all\">"+
-		"					  <span class=\"checkmark\"></span>"+
-		"					</label>"+
-		//this is not supported yet
-//		"					<label class=\"customradio\"><span class=\"radiotextsty\">show one single process</span>"+
-//		"					  <input type=\"radio\" name=\"addway\" value=\"one\">"+
-//		"					  <span class=\"checkmark\"></span>"+
-//		"					</label>"+
-		"			  </div>"+
-		"		  </div>"+
-		"	</div></div>";
-		
-		req += '<div class="modal-footer">' +
-		"	<button type=\"button\" id=\"workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
-		"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-		'</div>';
-		
-		var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
-		
-		frame.on('#workflow-confirm', 'click', (_frame, evt) => {
+		if(ifconfirm || ifconfirm==null){
+
+			var req = "<div class=\"modal-body\"><div class=\"row\"> "+
+			"		 <div class=\"col-md-12 col-sm-12 col-xs-12 form-group\">"+
+			"		      <label class=\"labeltext\">You have to load the workflow into the weaver view first to execute it. Do you want to proceed?</label><br/>"+
+			"		      <div class=\"form-check-inline\">"+
+			"					<label class=\"customradio\"><span class=\"radiotextsty\">show all child processes and edges</span>"+
+			"					  <input type=\"radio\" checked=\"checked\" name=\"addway\" value=\"all\">"+
+			"					  <span class=\"checkmark\"></span>"+
+			"					</label>"+
+			//this is not supported yet
+	//		"					<label class=\"customradio\"><span class=\"radiotextsty\">show one single process</span>"+
+	//		"					  <input type=\"radio\" name=\"addway\" value=\"one\">"+
+	//		"					  <span class=\"checkmark\"></span>"+
+	//		"					</label>"+
+			"			  </div>"+
+			"		  </div>"+
+			"	</div></div>";
 			
-			//get workflow details by the selected way
+			req += '<div class="modal-footer">' +
+			"	<button type=\"button\" id=\"workflow-confirm\" class=\"btn btn-outline-primary\">Confirm</button> "+
+			"	<button type=\"button\" id=\"workflow-cancel\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+			'</div>';
 			
-			var selValue = $('input[name=addway]:checked').val(); 
+			var frame = GW.process.createJSFrameDialog(320, 250, req, "Show a Way");
 			
-			console.log("selected way: " + selValue);
-			
-			if(selValue == "one"){
+			frame.on('#workflow-confirm', 'click', (_frame, evt) => {
 				
-				GW.workflow.showProcess(wid);
+				//get workflow details by the selected way
 				
-			}else if(selValue == "all"){
+				var selValue = $('input[name=addway]:checked').val(); 
 				
-				GW.workflow.showWorkflow(wid);
+				console.log("selected way: " + selValue);
 				
-			}
+				if(selValue == "one"){
+					
+					GW.workflow.showProcess(wid);
+					
+				}else if(selValue == "all"){
+					
+					GW.workflow.showWorkflow(wid);
+					
+				}
+				
+				// switch to the workflow tab
+	//			switchTab(document.getElementById("main-workspace-tab"), "workspace");
+				
+				GW.general.switchTab("workspace")
+
+				GW.workflow.setCurrentWorkflowName(wname);
+				
+				_frame.closeFrame();
+				
+			});
 			
-			// switch to the workflow tab
-//			switchTab(document.getElementById("main-workspace-tab"), "workspace");
-			
+			frame.on('#workflow-cancel', 'click', (_frame, evt) => {
+				_frame.closeFrame();
+			});
+
+		}else{
+
+			GW.workflow.showWorkflow(wid);
+
 			GW.general.switchTab("workspace")
 
 			GW.workflow.setCurrentWorkflowName(wname);
 			
-        	_frame.closeFrame();
-        	
-        });
+		}
 		
-		frame.on('#workflow-cancel', 'click', (_frame, evt) => {
-        	_frame.closeFrame();
-        });
 		
 		
 		
@@ -1288,7 +1372,7 @@ GW.workflow = {
 //	        	
 //				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 //				
-//				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+//				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
 //	        	
 //				one.id+"')\"></i> "+
 //				

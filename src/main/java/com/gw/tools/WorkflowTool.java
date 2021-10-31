@@ -1,5 +1,7 @@
 package com.gw.tools;
 
+import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -631,6 +633,142 @@ public class WorkflowTool {
 		return resp.toString();
 		
 	}
+
+	/**
+	 * Download workflow 
+	 * @param wid
+	 * workflow id
+	 * @param option
+	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodehistory
+	 * @return
+	 * @throws ParseException
+	 */
+    public String download(String wid, String option) throws ParseException {
+
+		Workflow wf = this.getById(wid);
+
+		String fileurl = "download/temp/" + wf.getId() + ".zip";
+
+		String savefilepath = bt.getFileTransferFolder() + wf.getId() + FileSystems.getDefault().getSeparator();
+		
+		File tf = new File(savefilepath);
+
+		bt.deleteDirectory(tf);
+		
+		if(!tf.exists()) tf.mkdirs();
+
+		String workflowstring = bt.toJSON(wf);
+
+		bt.writeString2File(workflowstring, savefilepath + "workflow.json");
+
+		if("workflowwithprocesscode".equals(option) || "workflowwithprocesscodehistory".equals(option)){
+
+			JSONParser jsonParser=new JSONParser();
+
+			JSONArray arrayobj=(JSONArray) jsonParser.parse(wf.getNodes());
+
+			String codesavefile = savefilepath + "code" + FileSystems.getDefault().getSeparator();
+
+			File codef = new File(codesavefile);
+		
+			if(!codef.exists()) codef.mkdirs();
+
+			for (int i = 0; i < arrayobj.size(); i++)
+			{
+
+				JSONObject jsonObj = (JSONObject) arrayobj.get(i);
+
+				String process_workflow_id = (String)jsonObj.get("id");
+
+				String process_name = (String)jsonObj.get("title");
+
+				String process_id = process_workflow_id.split("-")[0];
+
+				String targetsourcefile = codesavefile + pt.getProcessFileName(process_id);
+
+				if(new File(targetsourcefile).exists()) continue;
+
+				bt.writeString2File(pt.getProcessById(process_id).getCode(), targetsourcefile);
+
+			}
+
+		}
+		
+		if("workflowwithprocesscodehistory".equals(option)){
+
+			String wfhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + wid + ".json";
+
+			//first save workflow history
+
+			List<History> histlist = historyrepository.findByWorkflowId(wid);
+
+			StringBuffer workflowhistory = new StringBuffer("[");
+
+			String prefix = "";
+			
+			for(History h: histlist){
+			
+				String historystr = bt.toJSON(h);
+			
+				workflowhistory.append(prefix);
+  			
+				prefix = ","; 
+			
+				workflowhistory.append(historystr); 
+			
+			};
+
+			workflowhistory.append("]");
+
+			bt.writeString2File(workflowhistory.toString(), wfhistorysavefile);
+			
+			//second, save process history of one workflow execution into a file
+			for(History h : histlist){
+
+				String[] processhistorylist = h.getHistory_output().split(";");
+
+				prefix = "";
+
+				String processhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + h.getHistory_id() + ".json";
+
+				StringBuffer processhistorybuffer = new StringBuffer("[");
+
+				for(String processhitoryid: processhistorylist){
+
+					Optional<History> hisop = historyrepository.findById(processhitoryid);
+
+					if(hisop.isPresent()){
+
+						processhistorybuffer.append(prefix);
+  			
+						prefix = ","; 
+	
+						processhistorybuffer.append(bt.toJSON(hisop.get())); 
+
+					}
+
+				}
+
+				processhistorybuffer.append("]");
+
+				bt.writeString2File(processhistorybuffer.toString(), processhistorysavefile);
+
+			}
+
+		}
+		
+		bt.zipFolder(savefilepath, bt.getFileTransferFolder() + wf.getId() + ".zip");
+
+        return fileurl;
+    }
+
+    public String precheck(String dataurl) {
+
+		bt.getFileTransferFolder();
+
+        return null;
+
+    }
 	
 	// public static void main(String[] args) throws ParseException {
 		

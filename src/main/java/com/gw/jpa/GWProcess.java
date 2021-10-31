@@ -27,9 +27,7 @@ public class GWProcess {
 	String code;
 
 	String lang;
-
 	
-
 	String owner;
 
 	//true: private; false: public

@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -35,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -112,7 +116,13 @@ public class BaseTool {
 
 		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
 
-		return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret";
+
+		if(new File(secretfile).exists()){
+			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		}
+		
+		return null;
 
 	}
 
@@ -1009,6 +1019,87 @@ public class BaseTool {
 			rootpath = classpath.substring(0, classpath.indexOf("WEB-INF")) + "/";
 		
 		return rootpath;
+	}
+
+
+	public boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
+	}
+
+	public void zipFolder(String folderpath, String targetfile){
+
+		try{
+
+			String sourceFile = folderpath;
+			FileOutputStream fos = new FileOutputStream(targetfile);
+			ZipOutputStream zipOut = new ZipOutputStream(fos);
+			File fileToZip = new File(sourceFile);
+	
+			zipFile(fileToZip, fileToZip.getName(), zipOut);
+			zipOut.close();
+			fos.close();
+	
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+		
+	}
+
+	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                zipOut.closeEntry();
+            }
+            File[] children = fileToZip.listFiles();
+            for (File childFile : children) {
+                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
+
+    }
+
+	public void tar(String folderpath, String targetfile){
+
+		try {
+			
+			List<String> files = Files.list(Paths.get(folderpath))
+                        .map(Path::toString)
+                        .collect(Collectors.toList());
+            
+			//zip the files into a tar file
+			this.tar(files, targetfile);
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+
 	}
 	
 	/**
