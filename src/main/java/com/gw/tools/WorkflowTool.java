@@ -761,6 +761,14 @@ public class WorkflowTool {
 
         return fileurl;
     }
+
+    public String precheck(String dataurl) {
+
+		bt.getFileTransferFolder();
+
+        return null;
+
+    }
 	
 	// public static void main(String[] args) throws ParseException {
 		

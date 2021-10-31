@@ -34,54 +34,54 @@ public class FileDownloadController {
 		
 		logger.info("Get file downloading request: " + filename);
 		
-			try {
-				
-				String fileloc = bt.getFileTransferFolder() + "/" + filename;
-				
-				File file = new File(fileloc);
-				
-				if (file.exists()) {
+		try {
+			
+			String fileloc = bt.getFileTransferFolder() + "/" + filename;
+			
+			File file = new File(fileloc);
+			
+			if (file.exists()) {
 
-					//get the mimetype
+				//get the mimetype
 //					String mimeType = URLConnection.guessContentTypeFromName(file.getName());
 //					if (mimeType == null) {
-						//unknown mimetype so set the mimetype to application/octet-stream
-					String mimeType = "application/octet-stream";
+					//unknown mimetype so set the mimetype to application/octet-stream
+				String mimeType = "application/octet-stream";
 //					}
 
-					response.setContentType(mimeType);
+				response.setContentType(mimeType);
 
-					/**
-					 * In a regular HTTP response, the Content-Disposition response header is a
-					 * header indicating if the content is expected to be displayed inline in the
-					 * browser, that is, as a Web page or as part of a Web page, or as an
-					 * attachment, that is downloaded and saved locally.
-					 * 
-					 */
+				/**
+				 * In a regular HTTP response, the Content-Disposition response header is a
+				 * header indicating if the content is expected to be displayed inline in the
+				 * browser, that is, as a Web page or as part of a Web page, or as an
+				 * attachment, that is downloaded and saved locally.
+				 * 
+				 */
 
-					/**
-					 * Here we have mentioned it to show inline
-					 */
-					response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
+				/**
+				 * Here we have mentioned it to show inline
+				 */
+				response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
 
-					 //Here we have mentioned it to show as attachment
-					 //response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getName() + "\""));
+					//Here we have mentioned it to show as attachment
+					//response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getName() + "\""));
 
-					response.setContentLength((int) file.length());
+				response.setContentLength((int) file.length());
 
-					InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-					
-					FileCopyUtils.copy(inputStream, response.getOutputStream());
-
-				}
-			
-			} catch (IOException e) {
+				InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 				
-				e.printStackTrace();
-				
-				throw new RuntimeException("Cannot download the file " + e.getLocalizedMessage());
-				
+				FileCopyUtils.copy(inputStream, response.getOutputStream());
+
 			}
+		
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("Cannot download the file " + e.getLocalizedMessage());
+			
+		}
 		
 	}
 	

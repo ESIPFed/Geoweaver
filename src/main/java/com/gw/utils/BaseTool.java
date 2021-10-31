@@ -116,7 +116,13 @@ public class BaseTool {
 
 		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
 
-		return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret";
+
+		if(new File(secretfile).exists()){
+			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		}
+		
+		return null;
 
 	}
 
