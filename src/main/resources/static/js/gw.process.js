@@ -1177,7 +1177,6 @@ GW.process = {
 				}
 
 			}
-				
 			
 			confidential_field += '     </div>';
 			
@@ -1353,6 +1352,8 @@ GW.process = {
 		displayCodeArea: function(process_id, process_name, code_type, code){
 			
 			$("#code-embed").html("");
+
+			$( "#process_code_window" ).css( "background-color", "white" );
 			
 			if(code_type == "jupyter"){
 				
@@ -1425,6 +1426,8 @@ GW.process = {
 				val = GW.process.unescape(code);
 				
 				code = val;
+
+				$( "#process_code_window" ).css( "background-color", "rgb(28,28,28)" );
 				
 				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
 //			          mode: "text/html",

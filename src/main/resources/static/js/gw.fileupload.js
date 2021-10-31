@@ -377,11 +377,10 @@ GW.fileupload = {
 			
 			$("#upload-close").click(function(){
 				
-//				GW.fileupload.uploader.closeFrame();
-				
-				$("#host-file-uploader").html("");
-				
-				
+				if(iftransfer) $("#host-file-uploader").html("");
+
+				if(ifworkflow) GW.fileupload.closeUploaderJSFrame();
+
 			});
 
 		},

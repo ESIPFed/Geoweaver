@@ -143,9 +143,9 @@ GW.workflow = {
     	
 		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 		
-		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
     	
-		workflowid+"', '"+workflowname+"')\"></i> "+
+		workflowid+"', '"+workflowname+"', false)\"></i> "+
 
 		"<i class=\"fa fa-share subalignicon\" onclick=\"GW.workflow.landingpage('"+
     	
@@ -444,7 +444,7 @@ GW.workflow = {
 
 		$.ajax({
 				
-			url: "load/workflow",
+			url: "preload/workflow",
 			
 			method: "POST",
 			
@@ -456,12 +456,59 @@ GW.workflow = {
 			
 		}).done(function(msg){
 			
+			msg = GW.general.parseJSON(msg);
+
+			if(msg.warning){
+
+				if(confirm(msg.warning)){
+
+					GW.workflow.saveUploadWorkflow(preloadresponse);
+
+				}
+
+			}
 
 		}).fail(function(jxr, status){
 			
 			alert("Error!!! Fail to load.");
 			
 		});
+
+	},
+
+	saveUploadWorkflow: function(preloadresponse){
+
+		$.ajax({
+	
+			url: "load/workflow",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
+
+			dataType: 'json',
+
+			data: JSON.stringify(preloadresponse)
+			
+		}).done(function(msg){
+
+			if(msg.status == "success"){
+
+				GW.workflow.refreshWorkflowList();
+				
+				GW.menu.details(msg.id, "workflow");
+				
+			}else{
+				
+				alert(msg.message);
+
+			}
+
+		}).fail(function(jxr, status){
+			
+			console.error(jxr);
+
+		})
 
 	},
 	
@@ -1325,7 +1372,7 @@ GW.workflow = {
 //	        	
 //				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 //				
-//				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Show/Add this workflow\" onclick=\"GW.workflow.add('"+
+//				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
 //	        	
 //				one.id+"')\"></i> "+
 //				
