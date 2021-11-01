@@ -762,9 +762,17 @@ public class WorkflowTool {
         return fileurl;
     }
 
-    public String precheck(String dataurl) {
+    public String precheck(String filename) {
 
-		bt.getFileTransferFolder();
+		// { "url": "download/temp/aavthwdfvxinra0a0rsw.zip", "filename": "aavthwdfvxinra0a0rsw.zip" }
+
+		String filepath = bt.getFileTransferFolder() + filename;
+
+		if(filename.endsWith(".zip")){
+			
+			bt.unzip(filepath, bt.getFileTransferFolder());
+		}
+
 
         return null;
 

@@ -319,15 +319,15 @@ GW.fileupload = {
 			      // A file was successfully uploaded
 			      GW.fileupload.ui_add_log('Server Response for file #' + id + ': ' + data);
 			      GW.fileupload.ui_add_log('Upload of file #' + id + ' COMPLETED', 'success');
+				  data = $.parseJSON(data);
 				  if(iftransfer){
 					GW.fileupload.ui_multi_update_file_progress(id, 90, '', true);
-					data = $.parseJSON(data);
 					GW.fileupload.transfer(id, data.url);
 				  }
 
 				  if(ifworkflow){
 					GW.fileupload.closeUploaderJSFrame();
-					GW.workflow.parseUploadedWorkflow(id, data.url);
+					GW.workflow.parseUploadedWorkflow(id, data.filename);
 				  }
 			      
 			    },

@@ -1053,9 +1053,9 @@ public class GeoweaverController {
 		
 		try {
 			
-			String dataurl = request.getParameter("dataurl");
+			String filename = request.getParameter("filename");
 			
-			resp = wt.precheck(dataurl);
+			resp = wt.precheck(filename);
 			
 		}catch(Exception e) {
 			
