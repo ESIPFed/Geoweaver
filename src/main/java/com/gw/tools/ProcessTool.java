@@ -258,6 +258,25 @@ public class ProcessTool {
 		
 	}
 
+	public GWProcess fromJSON(String json){
+		
+		GWProcess p = null;
+		
+		try {
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			p = mapper.readValue(json, GWProcess.class);
+		
+		} catch (Exception e) {
+		
+			e.printStackTrace();
+		
+		}
+		
+		return p;
+	}
+
 	/**
 	 * for jupyter, save the jupyter nbconvert to replace the code
 	 * @param h

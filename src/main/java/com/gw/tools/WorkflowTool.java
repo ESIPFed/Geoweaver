@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
+import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
+import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
@@ -673,24 +676,45 @@ public class WorkflowTool {
 		
 			if(!codef.exists()) codef.mkdirs();
 
+			StringBuffer processjson = new StringBuffer("[");
+
+			String prefix = "";
+
 			for (int i = 0; i < arrayobj.size(); i++)
 			{
 
-				JSONObject jsonObj = (JSONObject) arrayobj.get(i);
+				try{
 
-				String process_workflow_id = (String)jsonObj.get("id");
+					JSONObject jsonObj = (JSONObject) arrayobj.get(i);
 
-				String process_name = (String)jsonObj.get("title");
+					String process_workflow_id = (String)jsonObj.get("id");
 
-				String process_id = process_workflow_id.split("-")[0];
+					String process_id = process_workflow_id.split("-")[0];
 
-				String targetsourcefile = codesavefile + pt.getProcessFileName(process_id);
+					String targetsourcefile = codesavefile + pt.getProcessFileName(process_id);
 
-				if(new File(targetsourcefile).exists()) continue;
+					if(new File(targetsourcefile).exists()) continue;
 
-				bt.writeString2File(pt.getProcessById(process_id).getCode(), targetsourcefile);
+					GWProcess p = pt.getProcessById(process_id);
 
+					bt.writeString2File(p.getCode(), targetsourcefile);
+
+					processjson.append(prefix);
+				
+					prefix = ","; 
+				
+					processjson.append(pt.toJSON(p)); 
+
+				}catch(Exception e){
+
+					e.printStackTrace();
+				}
+				
 			}
+
+			processjson.append("]");
+
+			bt.writeString2File(processjson.toString(), codesavefile + "process.json");
 
 		}
 		
@@ -774,9 +798,10 @@ public class WorkflowTool {
 
 			try{
 
-				bt.unzip(filepath, bt.getFileTransferFolder());
-
 				String foldername = filename.substring(0, filename.lastIndexOf("."));
+
+				bt.unzip(filepath, bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator());
+
 	
 				String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
 	
@@ -784,10 +809,6 @@ public class WorkflowTool {
 	
 				String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history";
 	
-				// JSONParser jsonParser=new JSONParser();
-	
-				// JSONObject workflowobj=(JSONObject) jsonParser.parse(workflowjson);
-
 				if(!bt.isNull(workflowjson) && new File(codefolder).exists() && new File(historyfolder).exists()){
 
 					respjson.append(workflowjson);
@@ -800,14 +821,120 @@ public class WorkflowTool {
 
 			}
 			
-			
-
 		}
-
 
         return respjson.toString();
 
     }
+
+	public Workflow fromJSON(String json){
+		
+		Workflow w = null;
+		
+		try {
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			w = mapper.readValue(json, Workflow.class);
+		
+		} catch (Exception e) {
+		
+			e.printStackTrace();
+		
+		}
+		
+		return w;
+	}
+
+	public History historyFromJSON(String json){
+		
+		History h = null;
+		
+		try {
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			h = mapper.readValue(json, History.class);
+		
+		} catch (Exception e) {
+		
+			e.printStackTrace();
+		
+		}
+		
+		return h;
+	}
+
+	public String saveWorkflowFromFolder(String foldername) throws ParseException {
+
+		JSONParser jsonparser = new JSONParser();
+
+		String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
+	
+		String codefolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "code"+ FileSystems.getDefault().getSeparator();
+
+		String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history"+ FileSystems.getDefault().getSeparator();
+
+		//save workflow
+		Workflow w = this.fromJSON(workflowjson);
+
+		this.save(w);
+
+		//save history
+		File[] files = new File(historyfolder).listFiles();
+		
+		if(files != null) {
+			
+			for (File file : files) {
+				
+				String historyjson = bt.readStringFromFile(file.getAbsolutePath());
+
+				JSONArray historyarray = (JSONArray)jsonparser.parse(historyjson);
+
+				historyarray.forEach((obj)->{
+
+					String jsonobj = ((JSONObject)obj).toJSONString();
+					
+					History hist = historyFromJSON(jsonobj);
+
+					historyrepository.save(hist);
+					// historyrepository.saveJSON(jsonobj);
+				});
+
+			}
+
+		}
+
+		//save process
+		String processjson = bt.readStringFromFile(codefolder + "process.json");
+
+		JSONArray processarray = (JSONArray)jsonparser.parse(processjson);
+
+		processarray.forEach((obj) -> {
+
+			String jsonobj = ((JSONObject)obj).toJSONString();
+			
+			GWProcess p = pt.fromJSON(jsonobj);
+			
+			pt.save(p);
+
+		});
+
+		// files = new File(codefolder).listFiles();
+	
+		// if(files != null) {
+			
+		// 	for (File file : files) {
+				
+		// 		String processcode = bt.readStringFromFile(file.getAbsolutePath());
+
+		// 		GWProcess p = pt.fromJSON()
+
+		// 	}
+		// }
+
+		return workflowjson;
+	}
 	
 	// public static void main(String[] args) throws ParseException {
 		

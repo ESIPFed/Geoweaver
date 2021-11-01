@@ -1076,9 +1076,10 @@ public class GeoweaverController {
 		String resp = null;
 		
 		try {
-			
+
 			String wid = request.getParameter("id");
 			
+			resp = wt.saveWorkflowFromFolder(wid);
 			
 		}catch(Exception e) {
 			

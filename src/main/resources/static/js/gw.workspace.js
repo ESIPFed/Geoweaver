@@ -283,6 +283,12 @@ GW.workspace = {
 
 								window.open(zipurl)
 
+								GW.workspace.jsFrame.closeFrame();
+
+							}else{
+
+								alert("Failed to export workflow.");
+
 							}
 	
 						}).fail(function(msg){

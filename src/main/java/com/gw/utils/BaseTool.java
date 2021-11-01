@@ -95,6 +95,7 @@ public class BaseTool {
 
 		// return "GeoweaverWorkflowManagementSoftwareForAll";
 		String keystr = null;
+
 		try{
 			InetAddress localHost = InetAddress.getLocalHost();
 
@@ -103,11 +104,13 @@ public class BaseTool {
 			byte[] hardwareAddress = ni.getHardwareAddress();
 
 			keystr =  new String(hardwareAddress, StandardCharsets.UTF_8);
+		
 		}catch(Exception e){
 
 			keystr = "GeoweaverWorkflowManagementSoftwareForAll";
 
 		}
+		
 		return keystr;
 		
 	}
@@ -1116,7 +1119,7 @@ public class BaseTool {
 			ZipOutputStream zipOut = new ZipOutputStream(fos);
 			File fileToZip = new File(sourceFile);
 	
-			zipFile(fileToZip, fileToZip.getName(), zipOut);
+			zipFile(fileToZip, "", zipOut);
 			zipOut.close();
 			fos.close();
 	
@@ -1142,7 +1145,13 @@ public class BaseTool {
             }
             File[] children = fileToZip.listFiles();
             for (File childFile : children) {
-                zipFile(childFile, fileName + "/" + childFile.getName(), zipOut);
+				String newchildfile = null;
+				if(this.isNull(fileName)){
+					newchildfile = childFile.getName();
+				}else{
+					newchildfile = fileName + "/" + childFile.getName();
+				}
+                zipFile(childFile, newchildfile, zipOut);
             }
             return;
         }
