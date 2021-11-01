@@ -107,6 +107,8 @@ GW.menu = {
 				}else if(type=="workflow"){
 					
 					GW.workflow.display(msg);
+
+					GW.workflow.add(msg.id, msg.name, false) //load it into the weaver too
 					
 				}
 				

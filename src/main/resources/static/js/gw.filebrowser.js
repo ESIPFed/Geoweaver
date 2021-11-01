@@ -330,8 +330,8 @@ GW.filebrowser = {
 				parentfolder = ".";
 			
 			var cont = '<tr>'+
-			  '    <td class="col-md-6" style="word-wrap:break-word;"><span><i class="pull-left fa fa-folder"></i><a style="word-wrap:break-word;" href="javascript:GW.filebrowser.continuebrowser(\''+
-			  parentfolder+'\')" >'+parentfolder+'</a></span></td>'+
+			  '    <td class="col-md-6" style="word-wrap:break-word;"><span><i class="pull-left fa fa-folder" style="padding-right: 5px;"></i><a style="word-wrap:break-word;" href="javascript:GW.filebrowser.continuebrowser(\''+
+			  parentfolder+'\')" > '+parentfolder+' </a></span></td>'+
 			  '    <td> </td>'+
 			  '    <td> </td>'+
 			  '    <td> </td>'+
@@ -343,12 +343,12 @@ GW.filebrowser = {
 				
 				if(msg.array[i].isdirectory){
 					
-					cont += '    <td class="col-md-6 word-wrap" ><span><i class="pull-left fa fa-folder"></i><a class="word-wrap" href="javascript:GW.filebrowser.continuebrowser(\'' + 
+					cont += '    <td class="col-md-6 word-wrap" ><span><i class="pull-left fa fa-folder" style="padding-right: 5px;"></i><a class="word-wrap" href="javascript:GW.filebrowser.continuebrowser(\'' + 
 			  			msg.array[i].name + '\')" >' +msg.array[i].name+'</a></span></td>';
 						
 				}else{
 					
-					cont += '    <td class="col-md-5 word-wrap"><span><i class="pull-left fa fa-file"></i><a  class="word-wrap" href="javascript:GW.filebrowser.operatefile(\'' + 
+					cont += '    <td class="col-md-5 word-wrap"><span><i class="pull-left fa fa-file" style="padding-right: 5px;"></i><a  class="word-wrap" href="javascript:GW.filebrowser.operatefile(\'' + 
 			  			msg.array[i].name + '\', \'' + msg.array[i].size + '\')" >' +msg.array[i].name+'</a></span></td>';
 					
 				}

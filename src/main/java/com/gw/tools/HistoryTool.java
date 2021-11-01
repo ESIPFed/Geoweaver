@@ -153,8 +153,12 @@ public class HistoryTool {
 
 			logger.error("This indicator shouldn't be null at all");
 		}
+
+		synchronized(historyrepository){
 		
-		historyrepository.saveAndFlush(history);
+			historyrepository.saveAndFlush(history);
+		
+		}
     	
 	}
 	

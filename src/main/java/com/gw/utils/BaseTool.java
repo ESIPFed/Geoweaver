@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -35,6 +36,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -89,13 +94,25 @@ public class BaseTool {
 	public String getLocalhostIdentifier() throws Exception{
 
 		// return "GeoweaverWorkflowManagementSoftwareForAll";
-		InetAddress localHost = InetAddress.getLocalHost();
+		String keystr = null;
 
-        NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
-        
-        byte[] hardwareAddress = ni.getHardwareAddress();
+		try{
+			InetAddress localHost = InetAddress.getLocalHost();
 
-		return new String(hardwareAddress, StandardCharsets.UTF_8);
+			NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
+			
+			byte[] hardwareAddress = ni.getHardwareAddress();
+
+			keystr =  new String(hardwareAddress, StandardCharsets.UTF_8);
+		
+		}catch(Exception e){
+
+			keystr = "GeoweaverWorkflowManagementSoftwareForAll";
+
+		}
+		
+		return keystr;
+		
 	}
 
 	public boolean checkLocalhostPassword(String received_password) throws Exception{
@@ -112,7 +129,13 @@ public class BaseTool {
 
 		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
 
-		return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret";
+
+		if(new File(secretfile).exists()){
+			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+		}
+		
+		return null;
 
 	}
 
@@ -1010,6 +1033,158 @@ public class BaseTool {
 		
 		return rootpath;
 	}
+
+	/**
+	 * Delete directory
+	 * @param directoryToBeDeleted
+	 * @return
+	 */
+	public boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
+	}
+
+	/**
+	 * Unzip file to folder
+	 * @param filepath
+	 * @param targetfolder
+	 */
+	public void unzip(String filepath, String targetfolder){
+
+		try{
+			logger.debug("Unzipping " + filepath + " to " + targetfolder);
+			String fileZip = filepath;
+			File destDir = new File(targetfolder);
+			byte[] buffer = new byte[1024];
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+			ZipEntry zipEntry = zis.getNextEntry();
+			while (zipEntry != null) {
+				File newFile = newFile(destDir, zipEntry);
+				if (zipEntry.isDirectory()) {
+					if (!newFile.isDirectory() && !newFile.mkdirs()) {
+						throw new IOException("Failed to create directory " + newFile);
+					}
+				} else {
+					// fix for Windows-created archives
+					File parent = newFile.getParentFile();
+					if (!parent.isDirectory() && !parent.mkdirs()) {
+						throw new IOException("Failed to create directory " + parent);
+					}
+					
+					// write file content
+					FileOutputStream fos = new FileOutputStream(newFile);
+					int len;
+					while ((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+					fos.close();
+				}
+				zipEntry = zis.getNextEntry();
+		   	}
+			zis.closeEntry();
+			zis.close();
+	
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+
+	}
+
+	public File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+	
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+	
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+	
+		return destFile;
+	}
+
+	public void zipFolder(String folderpath, String targetfile){
+
+		try{
+
+			String sourceFile = folderpath;
+			FileOutputStream fos = new FileOutputStream(targetfile);
+			ZipOutputStream zipOut = new ZipOutputStream(fos);
+			File fileToZip = new File(sourceFile);
+	
+			zipFile(fileToZip, "", zipOut);
+			zipOut.close();
+			fos.close();
+	
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+		}
+		
+	}
+
+	private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                zipOut.closeEntry();
+            }
+            File[] children = fileToZip.listFiles();
+            for (File childFile : children) {
+				String newchildfile = null;
+				if(this.isNull(fileName)){
+					newchildfile = childFile.getName();
+				}else{
+					newchildfile = fileName + "/" + childFile.getName();
+				}
+                zipFile(childFile, newchildfile, zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
+
+    }
+
+	public void tar(String folderpath, String targetfile){
+
+		try {
+			
+			List<String> files = Files.list(Paths.get(folderpath))
+                        .map(Path::toString)
+                        .collect(Collectors.toList());
+            
+			//zip the files into a tar file
+			this.tar(files, targetfile);
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+
+	}
 	
 	/**
 	 * Zip the files into a tar file
@@ -1184,76 +1359,6 @@ public class BaseTool {
 		
 	}
 	
-//	/**
-//	 * Cache Data on Server
-//	 * @param url
-//	 * @return
-//	 */
-//	public String cacheData(String url){
-//		
-//		String resp = null;
-//		
-//		String cachedurl =null;
-//		
-//		if(url.startsWith(SysDir.CACHE_SERVICE_URL)){
-//			
-//			return url;
-//			
-//		}
-//		
-//		try {
-//			String req = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:cac=\"http://cache.cube.ws.csiss.gmu.edu\"> "+
-//		   " <soapenv:Header/> "+
-//		   " <soapenv:Body> "+
-//		   "   <cac:cacheElement> "+
-//		   "      <cac:rawDataURL>" + url + "</cac:rawDataURL> "+
-//		   "      <cac:lasting>whatever</cac:lasting> "+ //this option is meaningless for now
-//		   "   </cac:cacheElement> "+
-//		   " </soapenv:Body> "+
-//		   "</soapenv:Envelope>";
-//			
-//			SOAPClient client = new SOAPClient();
-//			
-//			client.setEndpoint(SysDir.CACHE_SERVICE_URL);
-//			
-//			client.setSoapmessage(req);
-//			client.send();
-//			resp = client.getRespmessage();
-//			
-//			Document doc = parseString(resp);
-//			
-//			if(doc==null){
-//				
-//				throw new RuntimeException("Fail to cache data onto server.");
-//				
-//			}
-//			
-//			Map map = new HashMap();
-//			
-//			map.put("soapenv", "http://schemas.xmlsoap.org/soap/envelope/");
-//			
-//			map.put("cache", "http://cache.cube.ws.csiss.gmu.edu");
-//			
-//			XPath cacheurlpath = DocumentHelper.createXPath("//soapenv:Envelope/soapenv:Body/cache:cacheResponse/cache:cacheURL");
-//			
-//			cacheurlpath.setNamespaceURIs(map);
-//			
-//			Node cachenode = cacheurlpath.selectSingleNode(doc);
-//			
-//			cachedurl = cachenode.getText();
-//			
-//		} catch (SOAPException e) {
-//			
-//			e.printStackTrace();
-//			
-//			throw new RuntimeException("Fail to cache data on server. SOAP servcie failure.");
-//			
-//		}
-//		
-//		return cachedurl;
-//		
-//	}
-	
 	/**
 	 * Read the string from a file
 	 * @param path
@@ -1374,8 +1479,6 @@ public class BaseTool {
     	return currentTime;
     }
     
-    
-    
     public Date getCurrentSQLDate(){
     	
 //    	java.sql.Date newdate = new java.sql.Date(new java.util.Date().getTime());
@@ -1402,7 +1505,6 @@ public class BaseTool {
 		return date1;
 
 	}
-    
     
     /**
      * Post long time request
@@ -1477,7 +1579,10 @@ public class BaseTool {
 	 * @param args
 	 */
 	public static final void main(String[] args){
-//		BaseTool tool = new BaseTool();
+		BaseTool tool = new BaseTool();
+		if(new File("D:\\temp\\aavthwdfvxinra0a0rsw.zip").exists())
+			System.out.println("The file exists");
+		tool.unzip("‪D:\\temp\\aavthwdfvxinra0a0rsw.zip", "C:/Users/JensenSun/Downloads/");
 ////		tool.notifyUserByEmail("szhwhu@gmail.com", "A data product link.");
 ////		tool.sendUserAOrderNotice("szhwhu@gmail.com", "sdfdsfewewfrewrfewrvcvdfde");
 ////		tool.sendUserAResultMail("", "zsun@gmu.edu", "");

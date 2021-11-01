@@ -8,7 +8,7 @@ GW.workspace = {
 		
 		currentmode: 1, //1: normal; 2: monitor
 		
-		jsFrame: new JSFrame({parentElement: $('#jsframe-container')[0]}),
+		jsFrame: null,
 
 		keymap : {},
 
@@ -19,6 +19,19 @@ GW.workspace = {
 			$("#main-workspace-tab").html("Weaver *");
 
 		}, 
+
+		closeOtherFrames: function(){
+
+			try{
+				if(this.jsFrame){
+					this.jsFrame.closeFrame();
+				}
+			}finally{
+
+			}
+			
+
+		},
 
 		showSaved: function(){
 
@@ -47,7 +60,7 @@ GW.workspace = {
 //				$("#jupyter-iframe").attr("src" , html_src);
 //			});
 			
-			GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
+			GW.workspace.jsFrame = GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
 
 	    },
 
@@ -168,13 +181,7 @@ GW.workspace = {
 		    	          return;
 	    	          };
 					  
-	    	   }
-
-			//    if(GW.workspace.keymap[17]=="keydown" && GW.workspace.keymap[83]=="keydown" ){
-			// 		console.log("Ctrl+s event detected: " + d3.event.keyCode);
-			// 		GW.workspace.saveWorkflow(thisGraph); //trigger save button
-
-			//    }
+	    	   	}
 
     	    	thisGraph.svgKeyDown.call(thisGraph);
     	    })
@@ -189,7 +196,6 @@ GW.workspace = {
     	    var dragSvg = d3.behavior.zoom()
     	          .on("zoom", function(){
     	            if (d3.event.sourceEvent.shiftKey){
-    	              // TODO  the internal d3 state is still changing
     	              return false;
     	            } else{
     	              thisGraph.zoomed.call(thisGraph);
@@ -214,17 +220,103 @@ GW.workspace = {
 
     	    // handle download data
     	    d3.select("#download-input").on("click", function(){
-    	      if(thisGraph.nodes.length!=0){
-    	    	  var saveEdges = [];
-        	      thisGraph.edges.forEach(function(val, i){
-        	        saveEdges.push({source: val.source.id, target: val.target.id});
-        	      });
-        	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-        	    		  {type: "text/plain;charset=utf-8"});
-        	      window.saveAs(blob, "geoweaver.json");
-    	      }else{
-    	    	  alert("No nodes are present!");
-    	      }
+
+				if(GW.workflow.loaded_workflow!=null){
+
+					var content = `<div class="modal-body">
+					
+						<div class="row">
+					
+							<div class="col-md-12">
+
+								<div class="form-check">
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly" >
+										<i>Workflow (JSON Only)</i>
+									</label>
+								</div>
+								<div class="form-check">
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscode">
+										<i>Workflow with Process Code</i>
+									</label>
+								</div>
+								<div class="form-check">
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodehistory" checked>
+										<i>Workflow with Process Code and History (Recommended)</i>
+									</label>
+								</div>
+							</div>
+					
+						</div>
+					
+					</div>
+			
+					<div class="modal-footer">
+
+						<button type="button" id="workflow-download-confirm-btn" class="btn btn-outline-secondary">Confirm</button>
+					
+						<button type="button" id="workflow-download-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+					
+					</div>`;
+
+					GW.workspace.jsFrame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+
+					$("#workflow-download-confirm-btn").click(function(){
+
+						let exportoption = $("input[name='workflowdownloadoption']:checked").val();
+
+						$.ajax({
+
+							url: "downloadworkflow",
+					
+							method: "POST",
+						
+							data: "id=" + GW.workflow.loaded_workflow + "&option=" + exportoption
+	
+						}).done(function(msg){
+	
+							if(msg.startsWith("download/temp/")){
+
+								let zipurl = "../" + msg;
+
+								window.open(zipurl)
+
+								GW.workspace.jsFrame.closeFrame();
+
+							}else{
+
+								alert("Failed to export workflow.");
+
+							}
+	
+						}).fail(function(msg){
+	
+							alert("Fail to download workflow: " + msg);
+
+						});
+
+					});
+
+					$("#workflow-download-cancel-btn").click(function(){
+						GW.workspace.jsFrame.closeFrame();
+					});
+
+				}else{
+					alert("No workflow in the workspace to download.");
+				}
+    	    //   if(thisGraph.nodes.length!=0){
+    	    // 	  var saveEdges = [];
+        	//       thisGraph.edges.forEach(function(val, i){
+        	//         saveEdges.push({source: val.source.id, target: val.target.id});
+        	//       });
+        	//       var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
+        	//     		  {type: "text/plain;charset=utf-8"});
+        	//       window.saveAs(blob, "geoweaver.json");
+    	    //   }else{
+    	    // 	  alert("No nodes are present!");
+    	    //   }
     	      
     	    });
 
@@ -330,16 +422,12 @@ GW.workspace = {
     	    
     	    d3.select("#upload-input").on("click", function(){
 
-				console.log("upload-input clicked")
+				// console.log("upload-input clicked")
     	    
-    	    	$("#hidden-file-upload").click();
+    	    	// $("#hidden-file-upload").click();
+
+				GW.fileupload.showUploadWorkflowDialog();
     	    
-    	    });
-    	    
-    	    d3.select("#test-jsframe").on('click', function(){
-    	    	
-    	    	GW.workspace.openModalWindow();
-    	    	
     	    });
     	    
     	    d3.select("#hidden-file-upload").on("change", function(){
@@ -769,7 +857,7 @@ GW.workspace = {
 
 				frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
 
-				
+				GW.workspace.jsFrame = frame;
 
 				$.ajax({
 

@@ -64,8 +64,7 @@ public interface HistoryRepository extends JpaRepository<History, String>{
 	@Query(value="select * from history, gwprocess where history.history_id = ?1 and history.history_process=gwprocess.id",
 		nativeQuery = true)
 	List<Object[]> findOneHistoryofProcess(String history_id);
-	
-	
+
 	
 	
 	

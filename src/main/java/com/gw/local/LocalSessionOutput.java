@@ -1,9 +1,14 @@
 package com.gw.local;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 
 import javax.websocket.Session;
+
+import com.gw.jpa.History;
+import com.gw.server.CommandServlet;
+import com.gw.tools.HistoryTool;
+import com.gw.utils.BaseTool;
+import com.gw.web.GeoweaverController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
-
-import com.gw.jpa.History;
-import com.gw.server.CommandServlet;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.LocalhostTool;
-import com.gw.utils.BaseTool;
-import com.gw.web.GeoweaverController;
 
 @Service
 @Scope("prototype")
@@ -72,19 +70,25 @@ public class LocalSessionOutput  implements Runnable{
 	public void sendMessage2WebSocket(String msg){
 
 		if(!bt.isNull(wsout)){
+
 			synchronized(wsout){
 
 				try {
+			
 					if(wsout.isOpen())
 						wsout.getBasicRemote().sendText(msg);
 					else
 						log.debug("Websocket is closed, message didn't send: " + msg );
+			
 				} catch (Exception e) {
+			
 					e.printStackTrace();
 					log.debug("Exception happens, message didn't send: " + msg);
+			
 				}
 	
 			}
+
 		}else{
 
 			log.debug("Websocket is null, message didn't send: " + msg);

@@ -271,12 +271,10 @@ public class LocalSessionWinImpl implements LocalSession {
     		log.info("Start to execute jupyter notebook: " + pythonfilename);
     		
     		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
-
 			
-
 			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
     		
-    		builder.command(new String[] {"jupyter", "nbconvert", "--to", "notebook", "--execute", pythonfilename} );
+    		builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
     		
     		builder.redirectErrorStream(true);
     		

@@ -92,13 +92,13 @@ GW.board = {
 
             var maxmin = GW.board.findMaxMin(time_costs);
 
-            var max_value = maxmin[0];
+            var max_value = maxmin[0].toFixed();
 
-            var min_value = maxmin[1];
+            var min_value = maxmin[1].toFixed();
 
-            var first_splitter = (max_value-min_value)/3 + min_value;
+            var first_splitter = (max_value-min_value)/3 + min_value; first_splitter = Number(first_splitter).toFixed();
 
-            var second_splitter = (max_value-min_value)*2/3 + min_value;
+            var second_splitter = (max_value-min_value)*2/3 + min_value;second_splitter = Number(second_splitter).toFixed();
 
             GW.board.time_cost_chart.data.labels = [min_value + " - " + first_splitter + " ms", first_splitter + " - " + second_splitter + " ms", second_splitter + " - " + max_value + " ms"]
 
@@ -301,9 +301,9 @@ GW.board = {
         '           </div>'+
         '           <div class="panel-body" style="height:200px;"><ul>'+
         '               <li><p class="panel-text"><span id="workflow_num"></span> workflows</p></li>'+
-        '               <li><p class="panel-text"><span id="running_workflow_num"></span> running workflows</p></li>'+
-        '               <li><p class="panel-text"><span id="failed_workflow_num"></span> failed workflows</p></li>'+
-        '               <li><p class="panel-text"><span id="success_workflow_num"></span> success workflows</p></li>'+
+        '               <li><p class="panel-text"><span id="running_workflow_num"></span> pending workflow runs</p></li>'+
+        '               <li><p class="panel-text"><span id="failed_workflow_num"></span> failed workflow runs</p></li>'+
+        '               <li><p class="panel-text"><span id="success_workflow_num"></span> successful workflow runs</p></li>'+
         '           </ul></div>'+
         '       </div>'+
         '   </div>'+

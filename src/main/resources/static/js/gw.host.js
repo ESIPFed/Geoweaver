@@ -1314,15 +1314,15 @@ GW.host = {
 			
 			if( hosttype=="ssh" || hosttype == null || hosttype == "null" ){
 				
-				content += "<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openssh('"+
+				// "<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openssh('"+
 				
-					hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+
+				// 	hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+ //this is a problematic function
 					
 //				"<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
 //				
 //				hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
 
-					"<i class=\"fab fa-python subalignicon\" onclick=\"GW.host.readEnvironment('"+
+				content += 	"<i class=\"fab fa-python subalignicon\" onclick=\"GW.host.readEnvironment('"+
 									
 					hostid + "')\" data-toggle=\"tooltip\" title=\"Read Python Environment\"></i>"+
 					
@@ -2120,7 +2120,7 @@ GW.host = {
 		       '     <div class="col-sm-9">'+
 //		       '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
 		       '	 	<select class="form-control" id="hosttype"> '+
-			   '    		<option value="ssh">SSH Linux/Macintosh</option> '+
+			   '    		<option value="ssh">SSH Linux/Macintosh/Windows</option> '+
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
 			   '    		<option value="jupyterhub">JupyterHub</option> '+
 			   '    		<option value="jupyterlab">Jupyter Lab</option> '+
