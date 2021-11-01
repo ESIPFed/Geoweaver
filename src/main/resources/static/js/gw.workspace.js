@@ -261,7 +261,7 @@ GW.workspace = {
 					
 					</div>`;
 
-					GW.workspace.jsFrame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+					GW.workspace.jsFrame = GW.process.createJSFrameDialog(620, 340, content, "Workflow Exportation Options");
 
 					$("#workflow-download-confirm-btn").click(function(){
 

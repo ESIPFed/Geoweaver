@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.management.RuntimeErrorException;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
@@ -809,15 +811,36 @@ public class WorkflowTool {
 	
 				String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history";
 	
-				if(!bt.isNull(workflowjson) && new File(codefolder).exists() && new File(historyfolder).exists()){
+				if(!bt.isNull(workflowjson) ){
 
-					respjson.append(workflowjson);
+					if(new File(codefolder).exists() ){
+
+						if(new File(historyfolder).exists()){
+
+							logger.debug("History folder exists");
+	
+						}
+	
+						respjson.append(workflowjson);
+
+					}else{
+
+						throw new RuntimeException("Cannot import as there is only workflow.json.");
+
+					}
+
+
+				}else{
+
+					throw new RuntimeException("Invalid workflow package.");
 
 				}
 
 			}catch(Exception e){
 
 				e.printStackTrace();
+
+				throw new RuntimeException(e.getLocalizedMessage());
 
 			}
 			

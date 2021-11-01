@@ -22,7 +22,6 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,7 +187,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token, history_id);
+    		sender.init(input, token, history_id, "shell", null);
     		
     		thread = new Thread(sender);
             
@@ -231,7 +230,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		bt.writeString2File(notebookjson, tempfile);
     		
     		// Get a list of all environment variables
-            final Map<String, String> envMap = new HashMap<String, String>(System.getenv());
+            Map<String, String> envMap = new HashMap<String, String>(System.getenv());
             
     		if(bt.isNull(bin)||"default".equals(bin)) {
 
@@ -267,8 +266,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-//            sender = new SSHSessionOutput(input, token);
-            sender.init(input, token, history_id);
+            sender.init(input, token, history_id, "juyter", tempfile);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
@@ -332,7 +330,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
     		
-            sender.init(input, token, history_id);
+            sender.init(input, token, history_id, "python", null);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread

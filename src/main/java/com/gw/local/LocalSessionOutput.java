@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 
 import javax.websocket.Session;
 
+import com.gw.database.HistoryRepository;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
@@ -29,6 +30,9 @@ public class LocalSessionOutput  implements Runnable{
 
 	@Autowired
 	HistoryTool ht;
+
+	@Autowired
+	HistoryRepository historyrespository;
 	
     protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -43,20 +47,24 @@ public class LocalSessionOutput  implements Runnable{
     protected boolean run = true;
     
     protected String history_id;
+
+	protected String lang;
     
+	protected String jupyterfilepath;
     
     
     public LocalSessionOutput() {
     	//this is for spring
     }
     
-    public void init(BufferedReader in, String token, String history_id) {
+    public void init(BufferedReader in, String token, String history_id, String lang, String jupyterfilepath) {
         log.info("created");
         this.in = in;
         this.token = token;
         this.run = true;
 		this.history_id = history_id;
-		
+		this.lang = lang;
+		this.jupyterfilepath = jupyterfilepath;
         refreshLogMonitor();
     }
     
@@ -100,44 +108,54 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void refreshLogMonitor(){
 
-		// log.debug("Refreshing monitor..token: " + token);
-
 		if(bt.isNull(wsout) || !wsout.isOpen()){
 
 			wsout = CommandServlet.findSessionById(token);
 			
-			// if(bt.isNull(wsout) && !wsout.isOpen()){
-				
-			// 	wsout = CommandServlet.findSessionById(history_id);
-
-			// }
-			
-			// if(!wsout.isOpen()){
-
-			// 	CommandServlet.removeSessionById(history_id);
-
-			// 	CommandServlet.removeSessionById(token);
-			
-			// }
-
 		}
-		// if(!bt.isNull(wsout))log.debug("Found command-socket session  - " + wsout.getId());
-		// else log.debug("Command-socket session  is missing ");
+
 	}
 
 	public void cleanLogMonitor(){
 
-			CommandServlet.removeSessionById(history_id);
+		CommandServlet.removeSessionById(history_id);
 			
-			// if(bt.isNull(wsout)){
-				
-			// 	wsout = CommandServlet.findSessionById(token);
-
-			// }
-
-
 	}
 
+	public void updateJupyterStatus(String logs, String status){
+
+		History h = ht.getHistoryById(this.history_id);
+
+		if(bt.isNull(h)){
+
+			h = new History();
+
+			h.setHistory_id(history_id);
+
+			log.debug("This is very unlikely");
+
+		}
+
+		String resultjupyterjson = bt.readStringFromFile(this.jupyterfilepath);
+
+		h.setHistory_input(resultjupyterjson);
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
+
+		if("Done".equals(status) || "Failed".equals(status)){
+
+			h.setHistory_end_time(bt.getCurrentSQLDate());
+
+		}
+
+		// ht.saveHistory(h);
+		historyrespository.save(h);
+
+		log.debug("print out history_output: " + h.getHistory_output());
+
+	}
 	
 	public void updateStatus(String logs, String status){
 
@@ -150,13 +168,21 @@ public class LocalSessionOutput  implements Runnable{
 			h.setHistory_id(history_id);
 
 			log.debug("This is very unlikely");
+
 		}
 
 		h.setHistory_output(logs);
 
 		h.setIndicator(status);
 
-		ht.saveHistory(h);
+		if("Done".equals(status) || "Failed".equals(status)){
+
+			h.setHistory_end_time(bt.getCurrentSQLDate());
+
+		}
+
+		// ht.saveHistory(h);
+		historyrespository.save(h);
 
 		log.debug("print out history_output: " + h.getHistory_output());
 
@@ -185,9 +211,8 @@ public class LocalSessionOutput  implements Runnable{
 
 			sendMessage2WebSocket("Process "+this.history_id+" Started");
 			
-			String line = null; //in.readLine();
+			String line = null;
 
-			// while (run) {
 			while((line = in.readLine()) != null){
 
 				try {
@@ -210,7 +235,6 @@ public class LocalSessionOutput  implements Runnable{
 					if(bt.isNull(line)) {
 						
 						//if ten consective output lines are null, break this loop
-						
 						if(startrecorder==-1) 
 							startrecorder = linenumber;
 						else
@@ -288,13 +312,24 @@ public class LocalSessionOutput  implements Runnable{
 				
 			}
 
-			this.updateStatus(logs.toString(), "Done");
+			if("jupyter".equals(this.lang)){
+
+				this.updateJupyterStatus(logs.toString(), "Done");
+
+			}else{
+
+				this.updateStatus(logs.toString(), "Done");
+
+			}
+			
 						
 			sendMessage2WebSocket("The process "+history_id+" is finished.");
 			
 			//this thread will end by itself when the task is finished, you don't have to close it manually
 
 			GeoweaverController.sessionManager.closeByToken(token);
+
+			
 			
 			log.info("Local session output thread ended");
 

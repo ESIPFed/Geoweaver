@@ -5,23 +5,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
-import com.gw.database.EnvironmentRepository;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import  com.gw.server.CommandServlet;
+import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
-import com.gw.tools.EnvironmentTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
@@ -226,7 +224,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		input = new BufferedReader(new InputStreamReader(stdout));
             
-    		sender.init(input, token, history_id);
+    		sender.init(input, token, history_id, "shell", null);
     		
     		thread = new Thread(sender);
             
@@ -286,7 +284,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token, history_id);
+            sender.init(input, token, history_id, pro.getLang(), pythonfilename);
             
             thread = new Thread(sender);
             
@@ -356,7 +354,7 @@ public class LocalSessionWinImpl implements LocalSession {
             
             input = new BufferedReader(new InputStreamReader(stdout));
             
-            sender.init(input, token, history_id);
+            sender.init(input, token, history_id, "python", null);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
