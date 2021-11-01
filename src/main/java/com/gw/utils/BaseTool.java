@@ -1022,7 +1022,11 @@ public class BaseTool {
 		return rootpath;
 	}
 
-
+	/**
+	 * Delete directory
+	 * @param directoryToBeDeleted
+	 * @return
+	 */
 	public boolean deleteDirectory(File directoryToBeDeleted) {
 		File[] allContents = directoryToBeDeleted.listFiles();
 		if (allContents != null) {
@@ -1033,10 +1037,15 @@ public class BaseTool {
 		return directoryToBeDeleted.delete();
 	}
 
+	/**
+	 * Unzip file to folder
+	 * @param filepath
+	 * @param targetfolder
+	 */
 	public void unzip(String filepath, String targetfolder){
 
 		try{
-
+			logger.debug("Unzipping " + filepath + " to " + targetfolder);
 			String fileZip = filepath;
 			File destDir = new File(targetfolder);
 			byte[] buffer = new byte[1024];

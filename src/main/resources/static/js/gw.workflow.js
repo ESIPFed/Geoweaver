@@ -440,19 +440,15 @@ GW.workflow = {
 
 	parseUploadedWorkflow: function(id, filename){
 
-		let req = {id: id, filename: filename}
+		// let req = {id: id, filename: filename}
 
 		$.ajax({
 				
 			url: "preload/workflow",
 			
 			method: "POST",
-			
-			contentType: 'application/json',
 
-			dataType: 'json',
-
-			data: JSON.stringify(req)
+			data: "id=" + id + "&filename=" + filename
 			
 		}).done(function(msg){
 			
