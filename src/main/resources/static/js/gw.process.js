@@ -1432,15 +1432,15 @@ GW.process = {
 				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
 //			          mode: "text/html",
 //			          extraKeys: {"Ctrl-Space": "autocomplete"},
-			          lineNumbers: true,
-		      		  lineWrapping: true,
-		      		  theme: "yonce",
-		      		  mode: "python",
-		      		  readOnly: false,
-//			          viewportMargin: Infinity,
-			          value: code,
-					  
-			          extraKeys: {
+						lineNumbers: true,
+						lineWrapping: true,
+						theme: "yonce",
+						mode: "python",
+						readOnly: false,
+	//			          viewportMargin: Infinity,
+						value: code,
+						
+						extraKeys: {
 			        			
 				    		    // "Ctrl-S": function(instance) { 
 				    		    	
@@ -1458,10 +1458,8 @@ GW.process = {
 				    		    			
 				    		    // 		}
 				    		    	
-
-								},
 								"Ctrl-Space": "autocomplete"
-				    	  }
+						}
 			    });
 				
 				GW.process.editor.on("change", function(instance, event){

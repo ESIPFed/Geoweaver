@@ -438,9 +438,9 @@ GW.workflow = {
 		
 	},
 
-	parseUploadedWorkflow: function(id, dataurl){
+	parseUploadedWorkflow: function(id, filename){
 
-		let req = {id: id, dataurl: dataurl}
+		let req = {id: id, filename: filename}
 
 		$.ajax({
 				

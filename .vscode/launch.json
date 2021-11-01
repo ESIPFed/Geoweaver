@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch BaseTool",
+            "request": "launch",
+            "mainClass": "com.gw.utils.BaseTool",
+            "projectName": "geoweaver"
+        },
+        {
+            "type": "java",
             "name": "Launch ResetPassword",
             "request": "launch",
             "mainClass": "com.gw.tools.ResetPassword",

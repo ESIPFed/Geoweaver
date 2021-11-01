@@ -137,8 +137,6 @@ public class LocalhostTool {
 			
 			String code = pt.getCodeById(id);
 			
-			logger.debug(code);
-
 			this.saveHistory(id, code, history_id);
 			
 			//get host ip, port, user name and password
