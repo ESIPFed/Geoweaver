@@ -451,18 +451,31 @@ GW.workflow = {
 			data: "id=" + id + "&filename=" + filename
 			
 		}).done(function(msg){
+
+			try{
 			
-			msg = GW.general.parseJSON(msg);
+				msg = GW.general.parseResponse(msg);
 
-			if(msg.warning){
+				if(msg.id){
 
-				if(confirm(msg.warning)){
+					if(confirm("The upload workflow is valid. Do you want to proceed to save it into the database?")){
 
-					GW.workflow.saveUploadWorkflow(preloadresponse);
+						GW.workflow.saveUploadWorkflow(msg.id);
+
+					}
+
+				}else{
+
+					alert("The uploaded workflow file is invalid. Fail to import.");
 
 				}
+				
+			}catch(error){
+
+				alert("The uploaded workflow file is invalid. Fail to import.");
 
 			}
+			
 
 		}).fail(function(jxr, status){
 			
@@ -472,7 +485,7 @@ GW.workflow = {
 
 	},
 
-	saveUploadWorkflow: function(preloadresponse){
+	saveUploadWorkflow: function(id){
 
 		$.ajax({
 	
@@ -480,15 +493,13 @@ GW.workflow = {
 			
 			method: "POST",
 			
-			contentType: 'application/json',
-
-			dataType: 'json',
-
-			data: JSON.stringify(preloadresponse)
+			data: "id=" + id
 			
 		}).done(function(msg){
 
-			if(msg.status == "success"){
+			msg = GW.general.parseResponse(msg);
+
+			if(msg.id){
 
 				GW.workflow.refreshWorkflowList();
 				
@@ -496,7 +507,7 @@ GW.workflow = {
 				
 			}else{
 				
-				alert(msg.message);
+				alert("Fail to save the workflow to database.");
 
 			}
 
