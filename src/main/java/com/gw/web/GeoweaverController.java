@@ -1071,17 +1071,13 @@ public class GeoweaverController {
 
 	
 	@RequestMapping(value = "/load/workflow", method = RequestMethod.POST)
-    public @ResponseBody String loadworkflow(ModelMap model, @RequestBody GWProcess up, WebRequest request){
+    public @ResponseBody String loadworkflow(ModelMap model, WebRequest request){
 		
 		String resp = null;
 		
 		try {
 			
-			checkID(up.getId());
-			
-			pt.save(up);
-			
-			resp = "{\"id\" : \"" + up.getId() + "\"}";
+			String wid = request.getParameter("id");
 			
 			
 		}catch(Exception e) {

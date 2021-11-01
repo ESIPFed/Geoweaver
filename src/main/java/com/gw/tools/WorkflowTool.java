@@ -768,13 +768,44 @@ public class WorkflowTool {
 
 		String filepath = bt.getFileTransferFolder() + filename;
 
+		StringBuffer respjson = new StringBuffer();
+
 		if(filename.endsWith(".zip")){
+
+			try{
+
+				bt.unzip(filepath, bt.getFileTransferFolder());
+
+				String foldername = filename.substring(0, filename.lastIndexOf("."));
+	
+				String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
+	
+				String codefolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "code";
+	
+				String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history";
+	
+				// JSONParser jsonParser=new JSONParser();
+	
+				// JSONObject workflowobj=(JSONObject) jsonParser.parse(workflowjson);
+
+				if(!bt.isNull(workflowjson) && new File(codefolder).exists() && new File(historyfolder).exists()){
+
+					respjson.append(workflowjson);
+
+				}
+
+			}catch(Exception e){
+
+				e.printStackTrace();
+
+			}
 			
-			bt.unzip(filepath, bt.getFileTransferFolder());
+			
+
 		}
 
 
-        return null;
+        return respjson.toString();
 
     }
 	
