@@ -556,11 +556,11 @@ public class GoogleEarthController {
         
 			logger.debug("response entity: " + responseEntity.toString());
 
-			HttpHeaders headers = updateResponseHeader(responseEntity.getHeaders(), responseEntity.getBody(), hostid);
+			HttpHeaders respheaders = updateResponseHeader(responseEntity.getHeaders(), responseEntity.getBody(), hostid);
 
 			resp = new ResponseEntity<byte[]>(
 					responseEntity.getBody(), 
-					headers, 
+					respheaders, 
 					responseEntity.getStatusCode());
 
             return responseEntity;
