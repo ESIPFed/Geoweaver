@@ -422,7 +422,7 @@ public class SSHSessionImpl implements SSHSession {
     		
     		notebookjson = escapeJupter(notebookjson);
     		
-    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; ";
+    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; //this must be changed to transfer file like the python
     		
 //    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
 //    			
@@ -447,7 +447,13 @@ public class SSHSessionImpl implements SSHSession {
     		}
     		
     		cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
+
+            cmdline += "echo '*<*$$$*<*';";
+
+            cmdline += "cat jupyter-" + history_id + ".ipynb;";
     		
+            cmdline += "echo '*>*$$$*>*';";
+
     		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
     		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
@@ -463,21 +469,15 @@ public class SSHSessionImpl implements SSHSession {
     		log.info(cmdline);
     		
     		Command cmd = session.exec(cmdline);
-//            con.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
-//            cmd.join(5, TimeUnit.SECONDS);
-//            con.writer().print("\n** exit status: " + cmd.getExitStatus());
-    		
+            
             log.info("SSH command session established");
             
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
-//            sender = new SSHSessionOutput(input, token);
-//            sender = new SSHCmdSessionOutput(input, token);
             cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
             //all SSH sessions must have a output thread
-            
             thread = new Thread(cmdsender);
             
             thread.setName("SSH Command output thread");

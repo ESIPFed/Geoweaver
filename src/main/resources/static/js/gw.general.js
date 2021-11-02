@@ -35,6 +35,19 @@ GW.general = {
 			
 		},
 
+		closeOtherFrames: function(frame){
+
+			try{
+			
+				if(frame!=null) frame.closeFrame();
+				
+			}catch(error){
+				console.error(error);
+			}
+			
+	
+		},
+
 		makeid: function (length) {
 			var result           = '';
 			var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -28,6 +28,8 @@ GW.process = {
 		envlist: {},
 		
 		cmid: null,  //the id used to differentiate the dialogs
+
+		replace_jupyter_jsframe: null,
 		
 		builtin_processes: [
 			
@@ -311,10 +313,79 @@ GW.process = {
 			GW.process.refreshCodeEditor();
 			
 		},
+
+		uploadAndReplaceJupyterCode: function(){
+
+			GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
+
+			var content = ''+
+				GW.process.getProcessDialogTemplate()+
+				'';
+			
+			content += '';
+
+			var content = `<div class="modal-body">
+					<div class="row"  style="font-size:12px;">
+						<div class="col col-md-12">
+							<span class="required-mark">*</span> 
+							This panel is for importing to replace the existing jupyter notebook.
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col-md-6">
+							<div id="controls" style="font-size:12px;"> 
+								<div id="header">IPython/Jupyter Notebook Loader</div>     
+								<input type="file" id="load_jupyter" />
+							</div>
+						</div>
+						<div class="col col-md-6">Or import from URL: <br/>
+							<div class="input-group col-md-12 mb-3">
+								<input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
+								<div class="input-group-append"> 
+									<button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="jupyter_area"></div>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" id="upload_replace_jupyter_confirm_btn" class="btn btn-outline-primary">Confirm</button> 
+					<button type="button" id="upload_replace_jupyter_cancel_btn" class="btn btn-outline-secondary">Cancel</button>
+				</div>`;
+
+			GW.process.replace_jupyter_jsframe = GW.process.createJSFrameDialog(720,300, content, "Replace Notebook");
+
+			this.load_jupyter();
+
+			$("#upload_replace_jupyter_confirm_btn").click(function(){
+
+				let code = GW.process.jupytercode;
+
+				if(code!=null && typeof code != 'undefined'){
+			
+					code = GW.general.parseResponse(code);
+					var notebook = nb.parse(code);
+					var rendered = notebook.render();
+					$("#code-embed").append(rendered);
+				}
+
+				GW.process.replace_jupyter_jsframe.closeFrame();
+
+			});
+
+			$("#upload_replace_jupyter_cancel_btn").click(function(){
+
+				GW.process.replace_jupyter_jsframe.closeFrame();
+
+			});
+
+		},
 		
 		showJupyter: function(code, cmid){
 			
-			var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing and editing jupyter notebooks. The execution is by nbconvert.</div></div>
+			var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing jupyter notebooks as new processes. The execution is by nbconvert.</div></div>
 				<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> 
                 <div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />
 				</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3">
@@ -1356,6 +1427,8 @@ GW.process = {
 			$( "#process_code_window" ).css( "background-color", "white" );
 			
 			if(code_type == "jupyter"){
+
+				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
 				
 				if(code != null && code != "null"){
 
@@ -1366,6 +1439,8 @@ GW.process = {
 					var rendered = notebook.render();
 					
 					code = rendered;
+
+					
 					
 					$("#code-embed").append(code);
 
@@ -1667,6 +1742,8 @@ GW.process = {
 			$('#processs').collapse("show");
 			
 		},
+
+		
 		
 		updateBuiltin: function(){
 			

@@ -152,18 +152,6 @@
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-general')" >
 					Home
 				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
-					Dashboard
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
-					Host
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
-					Process
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
-					Workflow
-				  </button>
 				  <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
 					Weaver
 				  </button>
@@ -173,6 +161,21 @@
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
 					Documentation
 				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
+					Dashboard
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
+					Host
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
+					Process
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
+					Workflow
+				  </button>
+				  
+				  
+				  
 
 				  <!-- <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
 					<button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
@@ -249,7 +252,7 @@
 							<hr/>
 
 							<div class="features">
-								<div class="container">
+								<!-- <div class="container"> -->
 									<div class="row">
 										<div class="col-md-3 feature">
 											<h3 style="color:rgb(158, 158, 158);text-align: center"> Geoweaver is an open source web-based application allowing users to compose, execute, and share full-stack distributed AI workflows.
@@ -268,23 +271,22 @@
 										<div class="col-md-3 feature">
 											<h1 style="color:gainsboro;text-align: center" <i class="fa fa-history"></i></h1>
 											<h3>Provenance </h3>
-											<p>Geoweaver records the history of each exceution and each change to the code, whether in Python, Jupyter notebooks, or a shell script. </p>
+											<p>Geoweaver records the history of each execution and each change to the code, whether in Python, Jupyter notebooks, or a shell script. </p>
 										</div>
 									</div>
-								</div>
+								<!-- </div> -->
 							</div>
 
 							<section id="weaver_example">
-								<div class="container" style="background-color: rgb(236, 236, 236);">
-									<div class="row">
-										<div class="col-md-6">
-											<img class="img-responsive" src="../img/weaver_graphic.png" id="portal" alt="example weaver graphic"/>
-										</div>
-											<div class="col-md-6 nb-highlight-text">
-												<h3>Weaver: Build <b>your</b> AI workflow!</h3>
-												<h4> Geoweaver takes every step of a full-stack AI workflow and translates it into a reproducible, sharable push-button solution.</h4>
-											</div>
+								<div class="row" style="background-color: rgb(236, 236, 236);">
+									<div class="col-md-6">
+										<img class="img-responsive" src="../img/weaver_graphic.png" id="portal" alt="example weaver graphic"/>
 									</div>
+										<div class="col-md-6 nb-highlight-text">
+											<h3>Weaver: Build <b>your</b> AI workflow!</h3>
+											<h4> Geoweaver takes every step of a full-stack AI workflow and translates it into a reproducible, sharable push-button solution.</h4>
+											<button type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">Create Your First Workflow</button>
+										</div>
 								</div>
 							</section>
 
