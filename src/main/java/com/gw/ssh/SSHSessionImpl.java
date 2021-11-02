@@ -446,7 +446,12 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
+            if(bt.isNull(bin)){
+                cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
+            }else{
+                cmdline += bin + "-m jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
+            }
+    		
 
             cmdline += "echo '*<*$$$*<*';";
 
