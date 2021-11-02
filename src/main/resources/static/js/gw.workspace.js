@@ -10,6 +10,8 @@ GW.workspace = {
 		
 		jsFrame: null,
 
+		svg: null,
+
 		keymap : {},
 
 		showNonSaved: function(){
@@ -187,31 +189,31 @@ GW.workspace = {
     	    })
     	    .on("keyup", function(){
 				GW.workspace.keymap[d3.event.keyCode] = 'keyup';
-    	      thisGraph.svgKeyUp.call(thisGraph);
+    	      	thisGraph.svgKeyUp.call(thisGraph);
     	    });
     	    svg.on("mousedown", function(d){thisGraph.svgMouseDown.call(thisGraph, d);});
     	    svg.on("mouseup", function(d){thisGraph.svgMouseUp.call(thisGraph, d);});
 
     	    // listen for dragging
     	    var dragSvg = d3.behavior.zoom()
-    	          .on("zoom", function(){
+				.on("zoom", function(){
     	            if (d3.event.sourceEvent.shiftKey){
     	              return false;
     	            } else{
     	              thisGraph.zoomed.call(thisGraph);
     	            }
     	            return true;
-    	          })
-    	          .on("zoomstart", function(){
+				})
+				.on("zoomstart", function(){
     	            var ael = d3.select("#" + thisGraph.consts.activeEditId).node();
     	            if (ael){
     	              ael.blur();
     	            }
     	            if (!d3.event.sourceEvent.shiftKey) d3.select('body').style("cursor", "move");
-    	          })
-    	          .on("zoomend", function(){
+				})
+				.on("zoomend", function(){
     	            d3.select('body').style("cursor", "auto");
-    	          });
+				});
     	    
     	    svg.call(dragSvg).on("dblclick.zoom", null);
 
@@ -229,12 +231,12 @@ GW.workspace = {
 					
 							<div class="col-md-12">
 
-								<div class="form-check">
+								<!--<div class="form-check">
 									<label>
 										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly" >
 										<i>Workflow (JSON Only)</i>
 									</label>
-								</div>
+								</div>-->
 								<div class="form-check">
 									<label>
 										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscode">
@@ -1115,35 +1117,63 @@ GW.workspace = {
 	    	    // add new nodes
 	    	    var newGs= thisGraph.circles.enter()
 	    	          .append("g");
+
+				var defs = GW.workspace.svg.append("defs");
+
+				var dropShadowFilter = defs.append('svg:filter')
+					.attr('id', 'drop-shadow')
+					.attr('filterUnits', "userSpaceOnUse")
+					.attr('width', '250%')
+					.attr('height', '250%');
+				dropShadowFilter.append('svg:feGaussianBlur')
+					.attr('in', 'SourceGraphic')
+					.attr('stdDeviation', 4)
+					.attr('result', 'blur-out');
+				dropShadowFilter.append('svg:feColorMatrix')
+					.attr('in', 'blur-out')
+					.attr('type', 'hueRotate')
+					.attr('values', 180)
+					.attr('result', 'color-out');
+				dropShadowFilter.append('svg:feOffset')
+					.attr('in', 'color-out')
+					.attr('dx', 4)
+					.attr('dy', 4)
+					.attr('result', 'the-shadow');
+				dropShadowFilter.append('svg:feBlend')
+					.attr('in', 'SourceGraphic')
+					.attr('in2', 'the-shadow')
+					.attr('mode', 'normal');
 	
 	    	    newGs.classed(consts.circleGClass, true)
-	    	      .attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	      .on("mouseover", function(d){        
-	    	        if (state.shiftNodeDrag){
-	    	          d3.select(this).classed(consts.connectClass, true);
-	    	        }
-	    	      })
-	    	      .on("mouseout", function(d){
-	    	        d3.select(this).classed(consts.connectClass, false);
-	    	      })
-	    	      .on("mousedown", function(d){
-	    	        thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
-	    	      })
-	    	      .on("mouseup", function(d){
-	    	        thisGraph.circleMouseUp.call(thisGraph, d3.select(this), d);
-	    	      })
-				  .on("dblclick", function(d){
-					thisGraph.circleDdlClick.call(thisGraph, d3.select(this), d);
-				  })
-	    	      .call(thisGraph.drag);
+					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
+					.on("mouseover", function(d){        
+						if (state.shiftNodeDrag){
+						d3.select(this).classed(consts.connectClass, true);
+						}
+					})
+					.on("mouseout", function(d){
+						d3.select(this).classed(consts.connectClass, false);
+					})
+					.on("mousedown", function(d){
+						thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
+					})
+					.on("mouseup", function(d){
+						thisGraph.circleMouseUp.call(thisGraph, d3.select(this), d);
+					})
+					.on("dblclick", function(d){
+						thisGraph.circleDdlClick.call(thisGraph, d3.select(this), d);
+					})
+					.call(thisGraph.drag);
 	    	    
 //	    	    console.log("update circile once");	
 	    	    newGs.append("circle")
-	    	      .attr("r", String(consts.nodeRadius))
+	    	      	.attr("r", String(consts.nodeRadius))
+				  	.style("stroke-width", 5)
 //	    	      .attr("r", function(d) { return d.r; })
-	    	      .style("fill", function (d) { 
+	    	      	.style("fill", function (d) { 
 					//   console.log("current color "+ d.id + " - " + d.color); 
-					  return d.color; }); //add color
+					  return d.color; })
+					.style("filter", "url(#drop-shadow)");; //add color
 	
 	    	    newGs.each(function(d){
 	    	      thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
@@ -1418,39 +1448,41 @@ GW.workspace = {
 		
 		init: function(){
 			
-			  GW.workspace.addListeners();
-			  
-	    	  /**** MAIN ****/
-	
-	    	  // warn the user when leaving
-	    	//   window.onbeforeunload = function(){
-	    	//     return "Make sure to save your graph locally before leaving :-)";
-	    	//   };      
-	
-	    	  var docEl = document.documentElement,
+			GW.workspace.addListeners();
+			
+			/**** MAIN ****/
+
+			// warn the user when leaving
+		//   window.onbeforeunload = function(){
+		//     return "Make sure to save your graph locally before leaving :-)";
+		//   };      
+
+			var docEl = document.documentElement,
 //	    	      bodyEl = document.getElementsByTagName('body')[0];
-	    	  	  bodyEl = document.getElementById('workspace');
+				bodyEl = document.getElementById('workspace');
+			
+			var width = window.innerWidth || docEl.clientWidth || bodyEl.clientWidth,
+				height =  window.innerHeight|| docEl.clientHeight|| bodyEl.clientHeight;
+
+			var xLoc = width/2 - 25,
+				yLoc = 100;
+			
+			var nodes = [];
+			
+			var edges = [];
+			
+			/** MAIN SVG **/
+			var svg = d3.select("#workspace").append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			GW.workspace.svg = svg;
 	    	  
-	    	  var width = window.innerWidth || docEl.clientWidth || bodyEl.clientWidth,
-	    	      height =  window.innerHeight|| docEl.clientHeight|| bodyEl.clientHeight;
-	
-	    	  var xLoc = width/2 - 25,
-	    	      yLoc = 100;
-	    	  
-	    	  var nodes = [];
-	    	  
-	    	  var edges = [];
-	    	  
-	    	  /** MAIN SVG **/
-	    	  var svg = d3.select("#workspace").append("svg")
-	    	        .attr("width", width)
-	    	        .attr("height", height);
-	    	  
-	    	  var format = d3.format(",d");
-	    	  
-	    	  GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
-	    	  
-	    	  GW.workspace.theGraph.updateGraph();
+			var format = d3.format(",d");
+			
+			GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
+			
+			GW.workspace.theGraph.updateGraph();
 			
 		}
 		
