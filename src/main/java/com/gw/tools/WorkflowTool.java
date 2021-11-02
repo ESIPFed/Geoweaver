@@ -937,7 +937,8 @@ public class WorkflowTool {
 
 			String jsonobj = ((JSONObject)obj).toJSONString();
 			
-			GWProcess p = pt.fromJSON(jsonobj);
+			// should be changed to check if the process already exists. Use the existing value if the incoming value is null
+			GWProcess p = pt.fromJSON(jsonobj); 
 			
 			pt.save(p);
 
