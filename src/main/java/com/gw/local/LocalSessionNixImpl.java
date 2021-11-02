@@ -240,13 +240,7 @@ public class LocalSessionNixImpl implements LocalSession {
     			
     		}else {
     			
-//    			cmdline += "conda init; ";
-    			
-//    			cmdline += "source activate " + env + "; "; //for demo only
-    			
     			Runtime.getRuntime().exec(new String[] {"source", "activate", env}).waitFor();
-    			
-//    			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
@@ -254,7 +248,15 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		builder.directory(new File(workspace_folder_path));
     		
-    		builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--allow-errors", "--to", "notebook", "--execute", tempfile} );
+			if(bt.isNull(bin)){
+			
+				builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--allow-errors", "--to", "notebook", "--execute", tempfile} );
+			
+			}else{
+
+				builder.command(new String[] {bin, "-m", "jupyter", "nbconvert", "--inplace", "--allow-errors", "--to", "notebook", "--execute", tempfile} );
+			
+			}
     		
     		builder.redirectErrorStream(true);
     		

@@ -246,7 +246,15 @@ public class LocalSessionOutput  implements Runnable{
 								
 								log.debug("null output lines exceed 10. Disconnected.");
 								
-								this.updateStatus(logs.toString(), "Done");
+								if("jupyter".equals(this.lang)){
+
+									this.updateJupyterStatus(logs.toString(), "Done");
+					
+								}else{
+					
+									this.updateStatus(logs.toString(), "Done");
+					
+								}
 								
 								break;
 								
@@ -300,7 +308,15 @@ public class LocalSessionOutput  implements Runnable{
 					
 					e.printStackTrace();
 					
-					this.updateStatus(logs.toString(), "Failed");
+					if("jupyter".equals(this.lang)){
+
+						this.updateJupyterStatus(logs.toString(), "Failed");
+		
+					}else{
+		
+						this.updateStatus(logs.toString(), "Failed");
+		
+					}
 
 					break;
 					

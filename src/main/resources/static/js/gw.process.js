@@ -1428,7 +1428,7 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 
-				$("#code-embed").append(`<p><button class="btn btn-success pull-right" style="margin:5px;margin-bottom:10px;" onclick="GW.process.uploadAndReplaceJupyterCode();">Upload and Replace</button></p>`);
+				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
 				
 				if(code != null && code != "null"){
 

@@ -272,7 +272,12 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
     		
-    		builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
+			if(bt.isNull(bin)){
+				builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
+			}else{
+				builder.command(new String[] {bin, "-m", "jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
+			}
+    		
     		
     		builder.redirectErrorStream(true);
     		
