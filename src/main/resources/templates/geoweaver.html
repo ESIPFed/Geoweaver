@@ -152,18 +152,6 @@
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-general')" >
 					Home
 				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
-					Dashboard
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
-					Host
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
-					Process
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
-					Workflow
-				  </button>
 				  <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
 					Weaver
 				  </button>
@@ -173,6 +161,21 @@
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
 					Documentation
 				  </button>
+				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
+					Dashboard
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
+					Host
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
+					Process
+				  </button>
+				  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
+					Workflow
+				  </button>
+				  
+				  
+				  
 
 				  <!-- <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
 					<button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
@@ -249,35 +252,44 @@
 							<hr/>
 
 							<div class="features">
-								<div class="container">
+								<!-- <div class="container"> -->
 									<div class="row">
 										<div class="col-md-3 feature">
-											<h3 style="color:gainsboro;text-align: center"> Geoweaver is an open source web-based application allowing users to compose, execute, and share full-stack distributed AI workflows.
+											<h3 style="color:rgb(158, 158, 158);text-align: center"> Geoweaver is an open source web-based application allowing users to compose, execute, and share full-stack distributed AI workflows.
 											</h3>
 										</div>
 										<div class="col-md-3 feature">
 											<h1 style="color:gainsboro;text-align: center" <i class="fa fa-code"></i></h1>	
-											<h3>Language/OS of choice</h3>
-												<p>Geoweaver supports a variety of programming languages, including Python, R, Julia, and Java. Additionally, Geowever can be installed on Linux, Mac, and Windows.</p>
+											<h3>Python driven & OS of choice</h3>
+												<p>Geoweaver supports Python and shell scripting. Geowever can be installed on Linux, Mac, and Windows.</p>
 											</div>
 										<div class="col-md-3 feature">
 											<h1 style="color:gainsboro;text-align: center" <i class="fa fa-share"></i></h1>
 											<h3>Share workflows </h3>
-											<p> Full-stack workflows can be shared with others easily. How?</a></p>
+											<p> Full-stack workflows can be exported/imported as a single package file. That package file includes source code and execution history. </a></p>
 										</div>
 										<div class="col-md-3 feature">
 											<h1 style="color:gainsboro;text-align: center" <i class="fa fa-history"></i></h1>
 											<h3>Provenance </h3>
-											<p>Geoweaver records each change you make, whether in Jupyter notebooks, a shell script, or in Google Earth Engine.</p>
+											<p>Geoweaver records the history of each execution and each change to the code, whether in Python, Jupyter notebooks, or a shell script. </p>
 										</div>
 									</div>
-								</div>
+								<!-- </div> -->
 							</div>
 
-								<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;background-color:whitesmoke;">
-									<img src="">
+							<section id="weaver_example">
+								<div class="row" style="background-color: rgb(236, 236, 236);">
+									<div class="col-md-6">
+										<img class="img-responsive" src="../img/weaver_graphic.png" id="portal" alt="example weaver graphic"/>
+									</div>
+										<div class="col-md-6 nb-highlight-text">
+											<h3>Weaver: Build <b>your</b> AI workflow!</h3>
+											<h4> Geoweaver takes every step of a full-stack AI workflow and translates it into a reproducible, sharable push-button solution.</h4>
+											<button type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">Create Your First Workflow</button>
+										</div>
 								</div>
-	
+							</section>
+
 						</div>	
 					</div>	
 							
@@ -324,11 +336,11 @@
 										
 										<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
 										
-										<h4>Google Earth Engine</h4>
+										<!-- <h4>Google Earth Engine</h4>
 										
 										<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
 										
-										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p>
+										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p> -->
 										
 										<a id="processes"></a>
 										<h2>Processes</h2>
@@ -500,10 +512,10 @@
 									    </li>
 										<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
 										
-										<li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
+										<!-- <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
 											<a href="javascript:void(0)">Google Earth Engine</a>
 									    </li>
-										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul>
+										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul> -->
 					                </ul>
 					                
 					                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. " >

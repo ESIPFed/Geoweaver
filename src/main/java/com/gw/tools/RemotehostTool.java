@@ -190,7 +190,6 @@ public class RemotehostTool {
 			
 			session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token); 
 			
-			
 			resp = "{\"history_id\": \""+history_id+
 					
 					"\", \"token\": \""+token+
