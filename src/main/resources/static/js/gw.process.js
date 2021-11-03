@@ -1267,8 +1267,7 @@ GW.process = {
 			   '    			<option value="builtin">Built-In Process</option>'+
 			   '    			<option value="jupyter">Jupyter Notebook</option>'+
 			   '    			<option value="python">Python</option>'+
-			   /*'    		<option value="python">Python</option>'+
-			   '    			<option value="r">R</option>'+
+			   /*'    			<option value="r">R</option>'+
 			   '    			<option value="matlab">Matlab</option>'+*/
 			   '  			</select>'+
 		       '     </div>'+
@@ -1982,11 +1981,16 @@ GW.process = {
 			var oper = msg.operation;
 			
 			console.log("Builtin Callback Triggered");
-			
+			console.log("{{GW.process.js}}: "+msg.path)
+			var filename = msg.path.replace(/^.*[\\\/]/, '')
+
+			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"650\" height=\"415\"> ");
+
 			if(oper == "ShowResultMap"){
 				
 				//show the map
 				GW.result.preview(msg.filename);
+				
 				
 			}else if(oper == "DownloadData"){
 				
@@ -2006,6 +2010,8 @@ GW.process = {
 			req.history_id = newhistid;
 
 			req.token = GW.general.CLIENT_TOKEN;
+
+			req.operation = "ShowResultMap";
 
 			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
 

@@ -15,6 +15,7 @@ import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,7 +76,7 @@ public class FileTool {
 			
 			copy(localPath, dest);
 			
-			resp = "{\"ret\": \"success\", \"path\": \"" + dest + "\"}";
+			resp = "{\"ret\": \"success\", \"path\": \"" + StringEscapeUtils.escapeJson(dest) + "\"}";
 			
 		}catch(Exception e) {
 			
