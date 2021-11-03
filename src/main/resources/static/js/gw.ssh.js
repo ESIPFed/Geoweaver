@@ -91,7 +91,7 @@ GW.ssh = {
 
 								GW.process.callback(returnmsg);
 							  
-							  }, 1000);
+							  }, 2000);
 							
 
 						}
