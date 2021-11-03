@@ -863,6 +863,12 @@ GW.process = {
 		displayOutput: function(msg){
 			
 			var output = msg.output;
+
+			if(output!=null){
+
+				output = output.replaceAll("\n", "<br/>");
+
+			}
 			
 			if(msg.output=="logfile"){
 				
