@@ -873,7 +873,15 @@ GW.workspace = {
 
 					msg = GW.general.parseResponse(msg);
 
-					$("#dbclick_content").append(msg.history_output);
+					let msgout = msg.history_output;
+
+					if(msgout!=null){
+
+						msgout = msgout.replaceAll("\n", "<br/>");
+
+					}
+					
+					$("#dbclick_content").append(msgout);
 
 					frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
 

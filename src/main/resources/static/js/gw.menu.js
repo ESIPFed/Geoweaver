@@ -24,7 +24,7 @@ GW.menu = {
 		},
 
 		refresh: function(){
-
+			
 			GW.host.refreshHostList();
 
 			GW.process.refreshProcessList();

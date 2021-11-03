@@ -292,7 +292,8 @@ GW.ssh = {
 			}
 			
 			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
-			+ time + "</span> <span style=\""+style1+"\">" + content + "</span></p>";
+			// + time 
+			+ "</span> <span style=\""+style1+"\">" + content + "</span></p>";
 
 	    	$("#log-window").append(newline);
 
