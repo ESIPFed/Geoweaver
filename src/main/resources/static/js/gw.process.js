@@ -1267,8 +1267,7 @@ GW.process = {
 			   '    			<option value="builtin">Built-In Process</option>'+
 			   '    			<option value="jupyter">Jupyter Notebook</option>'+
 			   '    			<option value="python">Python</option>'+
-			   /*'    		<option value="python">Python</option>'+
-			   '    			<option value="r">R</option>'+
+			   /*'    			<option value="r">R</option>'+
 			   '    			<option value="matlab">Matlab</option>'+*/
 			   '  			</select>'+
 		       '     </div>'+

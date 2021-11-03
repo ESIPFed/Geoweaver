@@ -95,9 +95,7 @@ public class BuiltinTool {
  
             String code = pt.getCodeById(pid);
             this.saveHistory(pid, code, history_id, ExecutionStatus.RUNNING);
-
             
-
             his = histool.getHistoryById(history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
