@@ -2,6 +2,8 @@ package com.gw.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
 import javax.websocket.Session;
 
@@ -95,7 +97,7 @@ public class BuiltinTool {
  
             String code = pt.getCodeById(pid);
             this.saveHistory(pid, code, history_id, ExecutionStatus.RUNNING);
-            
+
             his = histool.getHistoryById(history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
@@ -128,18 +130,18 @@ public class BuiltinTool {
             
             if(bt.islocal(host)) {
 
-                if (fileExtension.equals(".png") || fileExtension.equals(".jpg")){
+                // if (fileExtension.equals(".png") || fileExtension.equals(".jpg")){
 
-                    resp = ft.download_local(filepath, "/Users/uhhmed/geoweaver_ziheng/Geoweaver/src/main/resources/static/img/"+filename);
-                    
-                    sendMessageWebSocket(history_id, httpsessionid, resp);
-                }else {
-                    
                     resp = ft.download_local(filepath, fileloc);
-    
-                    sendMessageWebSocket(history_id, httpsessionid, resp);
                     
-                }
+                    sendMessageWebSocket(history_id, httpsessionid, resp);
+                // }else {
+                    
+                //     resp = ft.download_local(filepath, fileloc);
+    
+                //     sendMessageWebSocket(history_id, httpsessionid, resp);
+                    
+                // }
                 
 
             }else {

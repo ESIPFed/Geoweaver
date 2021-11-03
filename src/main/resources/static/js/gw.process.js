@@ -1982,9 +1982,9 @@ GW.process = {
 			
 			console.log("Builtin Callback Triggered");
 			console.log("{{GW.process.js}}: "+msg.path)
-			var filename = msg.path.split('/').pop();
+			var filename = msg.path.replace(/^.*[\\\/]/, '')
 
-			GW.ssh.echo("<img src=\"../img/"+filename+"\" width=\"650\" height=\"415\"> ");
+			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"650\" height=\"415\"> ");
 
 			if(oper == "ShowResultMap"){
 				
