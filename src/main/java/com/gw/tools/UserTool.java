@@ -46,7 +46,7 @@ public class UserTool {
     private final String LOCALHOST_IPV4 = "127.0.0.1";
 	private final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
 
-    List<UserSession> authsession2user = new ArrayList();
+    static List<UserSession> authsession2user = new ArrayList();
 
     public Map<String, String> token2userid = new HashMap();
 
@@ -58,11 +58,11 @@ public class UserTool {
 
     public void removeSessionById(String jssessionid){
 
-        for(UserSession u : this.authsession2user){
+        for(UserSession u : UserTool.authsession2user){
 
             if(u.getJssessionid().equals(jssessionid)){
 
-                this.authsession2user.remove(u);
+                UserTool.authsession2user.remove(u);
 
                 break;
 
@@ -76,7 +76,7 @@ public class UserTool {
 
         UserSession us = null;
 
-        for(UserSession u : this.authsession2user){
+        for(UserSession u : UserTool.authsession2user){
 
             if(u.getJssessionid().equals(jssessionid)){
 
@@ -93,7 +93,7 @@ public class UserTool {
 
     public void cleanExpiredAuth(){
 
-        for(UserSession u : this.authsession2user){
+        for(UserSession u : UserTool.authsession2user){
 
             long difference_In_Time
             = new Date().getTime() - u.getCreated_time().getTime();
@@ -102,7 +102,7 @@ public class UserTool {
 
                 logger.debug("Found Session Expired, removing..");
 
-                this.authsession2user.remove(u);
+                UserTool.authsession2user.remove(u);
 
             }
 
@@ -206,7 +206,7 @@ public class UserTool {
 
         us.setJssessionid(jssessionid);
 
-        authsession2user.add(us);
+        UserTool.authsession2user.add(us);
 
     }
 

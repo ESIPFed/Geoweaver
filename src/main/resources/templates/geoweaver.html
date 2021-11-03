@@ -351,11 +351,11 @@
 										
 										<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
 										
-										<h4>Google Earth Engine</h4>
+										<!-- <h4>Google Earth Engine</h4>
 										
 										<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
 										
-										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p>
+										<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p> -->
 										
 										<a id="processes"></a>
 										<h2>Processes</h2>
@@ -444,7 +444,7 @@
 						    	
 						    </div>
 						    
-				   			<div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">
+				   			<div id="toolbox" style="position: absolute; background-color: white; opacity: 1; margin:0; top: 60px; left: 0px;width: 80px; box-shadow:3px 3px grey;">
 					  	
 							  	<b style="text-align:center; padding:10px; margin-top:10px; ">Options</b>
 							  
@@ -503,7 +503,7 @@
 					                </li> -->
 					
 					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. ">
-					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost" onClick="host()"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
+					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
 
 					                </li>
 					                <ul   class="sub-menu collapse" id="hosts">
@@ -527,10 +527,10 @@
 									    </li>
 										<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
 										
-										<li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
+										<!-- <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
 											<a href="javascript:void(0)">Google Earth Engine</a>
 									    </li>
-										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul>
+										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul> -->
 					                </ul>
 					                
 					                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. " >

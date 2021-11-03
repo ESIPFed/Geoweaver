@@ -863,6 +863,12 @@ GW.process = {
 		displayOutput: function(msg){
 			
 			var output = msg.output;
+
+			if(output!=null){
+
+				output = output.replaceAll("\n", "<br/>");
+
+			}
 			
 			if(msg.output=="logfile"){
 				
@@ -2172,7 +2178,7 @@ GW.process = {
 								"  	</div>"+
 								"</form>"+
 								"	<div class=\"form-group col-sm-10\">"+
-							    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" checked=\"true\">"+
+							    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" >"+
 							    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
 							    "   </div></div>";
 	                		
@@ -2311,7 +2317,7 @@ GW.process = {
 			       '		<select class="form-control" id="hostselector" >'+
 			       '  		</select>'+
 			       '     <div class="col-sm-12 form-check">'+
-			       '		<input type="checkbox" class="form-check-input" id="remember" checked=\"true\" />'+
+			       '		<input type="checkbox" class="form-check-input" id="remember"  />'+
 			       '		<label class="form-check-label" for="remember">Remember this process-host connection</label>'+
 			       '     </div>'+
 			       '     </div>'+

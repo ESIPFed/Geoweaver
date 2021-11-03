@@ -176,15 +176,14 @@ GW.user = {
                 });
                 
             }).fail(function(jxr, status){
-                
-            });
 
+                console.error("Fail to get key");
             
+            });
 
         }
 
     },
-
 
     precheck: function(type){
 
@@ -260,9 +259,6 @@ GW.user = {
 
         }
 
-
-        
-
         return isvalid;
 
     },
@@ -282,13 +278,17 @@ GW.user = {
 
         }).done(function(msg){
 
+            console.log(msg);
+
             if(msg.status == "TRUE"){
 
                 
                 GW.user.current_userid = msg.id;
                 GW.user.current_username = msg.name;
-
+                console.log("Log back in");
                 GW.user.refreshthetopbar(msg.name, msg.id, true);
+
+                // GW.menu.refresh();
 
             }
 

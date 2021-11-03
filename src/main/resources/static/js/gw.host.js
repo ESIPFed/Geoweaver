@@ -2124,7 +2124,7 @@ GW.host = {
 			   '    		<option value="jupyter">Jupyter Notebook</option> '+
 			   '    		<option value="jupyterhub">JupyterHub</option> '+
 			   '    		<option value="jupyterlab">Jupyter Lab</option> '+
-			   '			<option value="gee">Google Earth Engine</option>'+
+			//    '			<option value="gee">Google Earth Engine</option>'+
 			   '  		</select> '+
 		       '     </div>'+
 		       '   </div>'+
