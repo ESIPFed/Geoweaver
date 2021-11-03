@@ -79,6 +79,8 @@ GW.main = {
 
 		// $(window).off("beforeunload", GW.main.exitWarning);
 		
+		GW.user.loggedInafterrefresh();
+
 		$("#menuheader").val("Geoweaver v" + GW.version);
 		
 		GW.process.init();
@@ -108,7 +110,6 @@ GW.main = {
 
 		introJs().start();
 
-		GW.user.loggedInafterrefresh();
 		
 //		this.test_websocket()
 		
