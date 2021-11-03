@@ -83,11 +83,22 @@ GW.ssh = {
 						
 						var returnmsg = $.parseJSON(content);
 			      	
-				    	console.log(returnmsg);
+						console.log(returnmsg);
+
+						if(returnmsg.ret == "success"){
+							
+							setTimeout(function (){
+
+								GW.process.callback(returnmsg);
+							  
+							  }, 1000);
+							
+
+						}
 				      	
 				    	if(returnmsg.builtin){
-				      		
-				      		GW.process.callback(returnmsg);
+
+							GW.process.callback(returnmsg);
 				      		
 				      	}else{
 				      		
