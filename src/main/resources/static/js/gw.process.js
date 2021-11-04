@@ -318,11 +318,10 @@ GW.process = {
 
 			GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
 
-			var content = ''+
-				GW.process.getProcessDialogTemplate()+
-				'';
-			
-			content += '';
+			// var content = ''+
+			// 	GW.process.getProcessDialogTemplate()+
+			// 	'';
+			// content += '';
 
 			var content = `<div class="modal-body">
 					<div class="row"  style="font-size:12px;">
@@ -360,6 +359,10 @@ GW.process = {
 			this.load_jupyter();
 
 			$("#upload_replace_jupyter_confirm_btn").click(function(){
+
+				$("#code-embed").html("");
+
+				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
 
 				let code = GW.process.jupytercode;
 
@@ -699,7 +702,7 @@ GW.process = {
 					"      <td>"+msg[i].id+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
 					status_col +
-					"      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
+					"      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
 				
 				if(msg[i].status == "Running"){
 					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.process.stop('"+msg[i].id+"')\">Stop</a>";
@@ -823,6 +826,7 @@ GW.process = {
 		 */
 		showHistoryDetails: function(history_id){
 			
+			console.log("history id: " + history_id);
 
 			$.ajax({
 				
@@ -833,6 +837,8 @@ GW.process = {
 				data: "type=process&id=" + history_id
 				
 			}).done(function(msg){
+
+				console.log("Log Message: " + msg);
 				
 				if(msg==""){
 					
@@ -852,9 +858,9 @@ GW.process = {
 
 				GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 				
-			}).fail(function(){
+			}).fail(function(jxr, status){
 				
-				
+				console.error("Fail to get log.");
 			});
 			
 			
@@ -957,6 +963,8 @@ GW.process = {
 				}
 				
 				msg = GW.general.parseResponse(msg);
+
+				GW.process.display(msg);
 				
 				GW.process.displayOutput(msg);
 				
@@ -1763,6 +1771,8 @@ GW.process = {
 			var oper = $(".builtin-process").val()
 			
 			var pcode = {operation: oper, params: []}
+
+			var confidential = $('input[name="confidential_process"]:checked').val()
 			
 			$('.builtin-parameter').each(function(i, obj) {
 				
@@ -1780,7 +1790,7 @@ GW.process = {
 
 			pcode = JSON.stringify(pcode);
 			
-			this.updateRaw(pid, pname, plang, pdesc, pcode);
+			this.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
 			
 		},
 		
@@ -1984,7 +1994,7 @@ GW.process = {
 			console.log("{{GW.process.js}}: "+msg.path)
 			var filename = msg.path.replace(/^.*[\\\/]/, '')
 
-			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"650\" height=\"415\"> ");
+			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"100%\" > ");
 
 			if(oper == "ShowResultMap"){
 				
