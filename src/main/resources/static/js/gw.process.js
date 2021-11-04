@@ -2102,200 +2102,199 @@ GW.process = {
 		executeProcess: function(pid, hid, lang){
 			
             var req = {
-		    		
-		    		processId: pid,
-		    		
-		    		hostId: hid,
-		    		
-		    		desc: lang,
+				
+				processId: pid,
+				
+				hostId: hid,
+				
+				desc: lang,
 
-					lang: lang
+				lang: lang
 		    		
 		    }
             
             if(req.lang == "python" || req.lang == "jupyter"){
             	
-	            	//check if there is cached environment for this host
-	            	
-	            	var cached_env = GW.host.findEnvCache(hid);
-	            	
-	            	if(cached_env!=null){
-	            		
-	            		req.env = cached_env;
-	            		
-	            		GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	                	
-	            	}else{
-	            		
-	                	// retrieve the environment list of a host
-	            		
-	                	$.ajax({
-	                		
-	                		url: "env",
-	                		
-	                		method: "POST",
-	                		
-	                		data: "hid=" + hid
-	                		
-	                	}).done(function(msg){
-	                		
-	                		msg = GW.general.parseResponse(msg);
-	                		
-	                		if(GW.process.env_frame != null){
-	                			
-	                			try{
-	                				
-	                				GW.process.env_frame.closeFrame();
-	                				
-	                			}catch(e){}
-	                			
-	                			GW.process.env_frame = null;
-	                			
-	                		}
-	                		
-	                		var envselector = "<div class=\"form-group\">"+
-	                			"<label for=\"env-select\">Select Environment:</label>"+
-	                			"<select id=\"env-select\" class=\"form-control\"> "+
-	                			"	<option value=\"default\">Default</option>"+
-	                			"	<option value=\"new\">New</option>";
-	                		
-	                		GW.process.envlist = msg;
-	    						
-	                		for(var i=0;i<msg.length;i+=1){
-	                			
-	                			envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
-	                			
-	                		}
-	                		
-	                		envselector += "</select>";
-	                		
-	                		var content = '<div class="modal-body" style="font-size: 12px;">'+
-	                			"<form> "+
-		    					"    <div class=\"row\"> "+
-									envselector +
-								"    </div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"</form>"+
-								"	<div class=\"form-group col-sm-10\">"+
-							    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" >"+
-							    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
-							    "   </div></div>";
-	                		
-	                		content += '<div class="modal-footer">' +
-	        				"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
-	        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-	        				'</div>';
-	                		
-	                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.lang + " environment")
-	                		
-	            			$("#env-select").change(function(e){
+				//check if there is cached environment for this host
+				
+				var cached_env = GW.host.findEnvCache(hid);
+				
+				if(cached_env!=null){
+					
+					req.env = cached_env;
+					
+					GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+					
+				}else{
+					
+					// retrieve the environment list of a host
+					
+					$.ajax({
+						
+						url: "env",
+						
+						method: "POST",
+						
+						data: "hid=" + hid
+						
+					}).done(function(msg){
+						
+						msg = GW.general.parseResponse(msg);
+						
+						if(GW.process.env_frame != null){
+							
+							try{
 								
-								if($(this).val() == 'default'){
+								GW.process.env_frame.closeFrame();
+								
+							}catch(e){}
+							
+							GW.process.env_frame = null;
+							
+						}
+						
+						var envselector = "<div class=\"form-group\">"+
+							"<label for=\"env-select\">Select Environment:</label>"+
+							"<select id=\"env-select\" class=\"form-control\"> "+
+							"	<option value=\"default\">Default</option>"+
+							"	<option value=\"new\">New</option>";
+						
+						GW.process.envlist = msg;
+							
+						for(var i=0;i<msg.length;i+=1){
+							
+							envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
+							
+						}
+						
+						envselector += "</select>";
+						
+						var content = '<div class="modal-body" style="font-size: 12px;">'+
+							"<form> "+
+							"    <div class=\"row\"> "+
+								envselector +
+							"    </div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"</form>"+
+							"	<div class=\"form-group col-sm-10\">"+
+							"		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" >"+
+							"		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+							"   </div></div>";
+						
+						content += '<div class="modal-footer">' +
+						"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+						"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+						'</div>';
+						
+						GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.lang + " environment")
+						
+						$("#env-select").change(function(e){
+							
+							if($(this).val() == 'default'){
+								
+								$("#bin").prop('disabled', true);
+								
+								$("#env").prop('disabled', true);
+								
+								$("#basedir").prop('disabled', true);
+								
+							}else{
+								
+								$("#bin").prop('disabled', false);
+								
+								$("#env").prop('disabled', false);
+								
+								$("#basedir").prop('disabled', false);
+								
+								if($(this).val() != 'new'){
 									
-									$("#bin").prop('disabled', true);
+									var envid = $(this).val();
 									
-									$("#env").prop('disabled', true);
-									
-									$("#basedir").prop('disabled', true);
-									
-								}else{
-									
-									$("#bin").prop('disabled', false);
-									
-									$("#env").prop('disabled', false);
-									
-									$("#basedir").prop('disabled', false);
-									
-									if($(this).val() != 'new'){
+									for(var i=0;i<GW.process.envlist.length;i+=1){
 										
-										var envid = $(this).val();
+										var env = GW.process.envlist[i];
 										
-										for(var i=0;i<GW.process.envlist.length;i+=1){
+										if(env.id == envid){
 											
-											var env = GW.process.envlist[i];
-											
-											if(env.id == envid){
+												$("#bin").val(env.bin);
 												
-		        									$("#bin").val(env.bin);
-		        									
-		        									$("#env").val(env.pyenv);
-		        									
-		        									$("#basedir").val(env.basedir);
-		        									
-		        									break;
-		        									
-											}
-											
+												$("#env").val(env.pyenv);
+												
+												$("#basedir").val(env.basedir);
+												
+												break;
+												
 										}
 										
 									}
 									
 								}
 								
-							})
+							}
 							
-							$("#process-confirm-btn").click(function(){
+						})
+						
+						$("#process-confirm-btn").click(function(){
+							
+							if($(this).val() == 'default'){
 								
-								if($(this).val() == 'default'){
-	    	                		
-	    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-	    	                		
-	    	                	}else{
-	    	                		
-	    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-	    	                		
-	    	                	}
-	    	                	
-	    	                	if($("#remember").prop('checked')){
-	    	                		
-	    	                		GW.host.setEnvCache(hid, req.env);
-	    	                		
-	    	                	}
-	    	                	
-	    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	    	                	
-	    	                	GW.process.env_frame.closeFrame();
+								req.env = { bin: "default", pyenv: "default", basedir: "default" };
 								
-							});
-	            			
-	            			$("#process-cancel-btn").click(function(){
-	            				
-	            				GW.process.env_frame.closeFrame();
-	            				
-	            			});
-	                		
-	                	}).fail(function(jxr, status){
-	        				
-	        				console.error("fail to get the environment on this host");
-	        				
-	        			});
-	        			
-	            		
-	            	}
-            	
-    			
-	    		}else{
-	    			
-	    			GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	    			
-	    		}
+							}else{
+								
+								req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+								
+							}
+							
+							if($("#remember").prop('checked')){
+								
+								GW.host.setEnvCache(hid, req.env);
+								
+							}
+							
+							GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+							
+							GW.process.env_frame.closeFrame();
+							
+						});
+						
+						$("#process-cancel-btn").click(function(){
+							
+							GW.process.env_frame.closeFrame();
+							
+						});
+						
+					}).fail(function(jxr, status){
+						
+						console.error("fail to get the environment on this host");
+						
+					});
+					
+					
+				}
+				
+			}else{
+				
+				GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+				
+			}
 			
 		},
 		
