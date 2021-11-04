@@ -196,8 +196,9 @@
 				  </button>
 				  
 				  <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
-					<i title="login" class="fa fa-user" alt="info" id="toolbar-profile"> Welcome</i>
+					<i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile"> Welcome</i>
 				  </button>
+
 
 				</div>
 				
@@ -302,9 +303,6 @@
 								</div>
 							</section>
 
-
-
-
 						</div>	
 					</div>	
 							
@@ -324,28 +322,29 @@
 
 										<hr/>
 										<a id="quickstart"></a>
-										<h2>Quick Start</h2>
+										<h2>Quick Start Guide</h2>
+										<p>You will need to know your Geoweaver password before you start.  The default password can be found when Geoweaver is first started. If you don't know the password, please use command "java -jar geoweaver.jar resetpassword" to reset it. </p>
 										
-										<h4>1. Create and Run a Process</h4>
+										<h4>1. Create and run a Process</h4>
 										<ul>
-											<li>Click on the <i class="fa fa-plus"></i> after Process in the right panel menu.</li>
+											<li>Click the <i class="fa fa-plus"></i> icon after 'Process' on the righthand menu.</li>
 											<li>Select "Python" from the Language dropdown. </li>
 											<li>Input "helloworld" for the name. </li>
-											<li>Type "print 'hello world'" to the code area. </li>
-											<li>Click "Add" on the bottom. A new process "helloworld" should be added to the folder Python under the Process basket.</li>
-											<li>Click on the newly added helloworld process. A information panel will show in the main area.</li>
-											<li>Click <i class="fa fa-play subalignicon"></i> to run the process. In the popup window, select "Localhost" and click "Execute". In the popup Python environment dialog, click "Confirm" to the default. There will be a window asking for password. The default password can be found when Geoweaver is first started. If you don't know the password, please use command "java -jar geoweaver.jar resetpassword" to reset it. After input password, click "Confirm". </li>
-											<li>If you see "hello world" is printed out in the logging window, it means it is successfully executed on localhost. You just created and run your first process in Geoweaver! Congrats!</li>
+											<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
+											<li>Click "Add" on the bottom. A new process "helloworld" will be added to the Process/Python basket.</li>
+											<li>Click on the newly added helloworld process. An informational panel will show in the main area.</li>
+											<li>Click <i class="fa fa-play subalignicon"></i> to run the process. In the popup window, select "Localhost" and click "Execute". In the popup Python environment dialog, click "Confirm" to the default. Add your password. </li>
+											<li>If you see <i style="font-family:'Courier New'">hello world </i>printed in the logging window, it means you have successfully created and run your first process in Geoweaver! Congrats!</li>
 										</ul>
 
 
 										<h4>2. Create and Run a Workflow</h4>
 										
 										<ul>
-											<li>Click twice on <i class="fa fa-plus"></i> after the "helloworld" Python process created in Step 1. The main work area will switch to "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
+											<li>Click twice on <i class="fa fa-plus"></i> after the "helloworld" Python process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
 											<li>Link the two circles by dragging from one circle and dropping on another circle while pressing "SHIFT" on the keyboard. </li>
-											<li>Click <i class="fa fa-plus-square"></i> on the toolbar on the left side of the workspace. In the popup window, input "HelloWorldWorkflow" for the workflow name, and type "Testing hello world" in the Description field. Click "Confirm".</li>
-											<li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to be default. Click "Run".</li>
+											<li>Click <i class="fa fa-plus-square"></i> on the "Options" toolbar on the left side of the workspace. In the popup window, input "HelloWorldWorkflow" for the workflow name, and type "Testing hello world" in the Description field. Click "Confirm".</li>
+											<li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to the default. Click "Run".</li>
 											<li>In the password dialog, enter the password for localhost. </li>
 											<li>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</li>
 											<li>Double click on the circles to check the real time output. If users need more details, click "Details" button in the popup information window. </li>
@@ -356,10 +355,10 @@
 											<li>Click <i class="fa fa-download"></i> when the workflow is present in the Weaver workspace. </li>
 											<li>In the popup window, there are two options: workflow with process code / workflow with process code and history. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. </li>
 											<li>Click "Confirm". A ZIP file will be automatically downloaded to your machine.</li>
-											<li>To import a workflow, click <i class="fa fa-upload"></i>. In the upload window, select the downloaded (or shared by anyone) ZIP file, click "Start". </li>
+											<li>To import a workflow, click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
 											<li>Once the uploading finished, if the workflow file is valid, it will ask "The upload workflow is valid. Do you want to proceed to save it into the database?" Click "OK".</li>
 											<li>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. </li>
-											<li>That is pretty much it. Congratulations you have learnt how to use Geoweaver!</li>
+											<li>Congratulations you have learnt how to use Geoweaver!</li>
 
 										</ul>
 										
@@ -483,7 +482,7 @@
 						    	
 						    </div>
 						    
-				   			<div id="toolbox" style="position: absolute; background-color: white; opacity: 1; margin:0; top: 60px; left: 0px;width: 80px; box-shadow:3px 3px grey;">
+				   			<div id="toolbox" style="position: absolute; background-color: white; opacity: 1; margin:0; top: 60px; left: 10px;width: 80px; box-shadow:3px 3px grey;">
 					  	
 							  	<b style="text-align:center; padding:10px; margin-top:10px; ">Options</b>
 							  
