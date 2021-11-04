@@ -83,11 +83,22 @@ GW.ssh = {
 						
 						var returnmsg = $.parseJSON(content);
 			      	
-				    	console.log(returnmsg);
+						console.log(returnmsg);
+
+						if(returnmsg.ret == "success"){
+							
+							setTimeout(function (){
+
+								GW.process.callback(returnmsg);
+							  
+							  }, 2000);
+							
+
+						}
 				      	
 				    	if(returnmsg.builtin){
-				      		
-				      		GW.process.callback(returnmsg);
+
+							GW.process.callback(returnmsg);
 				      		
 				      	}else{
 				      		
@@ -281,7 +292,8 @@ GW.ssh = {
 			}
 			
 			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
-			+ time + "</span> <span style=\""+style1+"\">" + content + "</span></p>";
+			// + time 
+			+ "</span> <span style=\""+style1+"\">" + content + "</span></p>";
 
 	    	$("#log-window").append(newline);
 

@@ -2,6 +2,8 @@ package com.gw.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
 import javax.websocket.Session;
 
@@ -94,62 +96,71 @@ public class BuiltinTool {
             // sendMessageWebSocket(history_id, httpsessionid, "====== Start to process " + history_id);
  
             String code = pt.getCodeById(pid);
-
             this.saveHistory(pid, code, history_id, ExecutionStatus.RUNNING);
-
-            
 
             his = histool.getHistoryById(history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
                 
             String operation = (String)obj.get("operation");
-            
             JSONArray params = (JSONArray)obj.get("params");
 
             String filename = null;
             
-            if(operation.equals("ShowResultMap") || operation.equals("DownloadData") ) {
-                
-                String filepath = (String)((JSONObject)params.get(0)).get("value");
-                
-                logger.debug("get result file path : " + filepath);
-                
-                filename = new File(filepath).getName();
-                
-    //				String dest = BaseTool.getGeoweaverRootPath() + SysDir.upload_file_path + "/" + filename;
-                
-                File folder = new File(bt.getFileTransferFolder());
-                
-                if(!folder.exists()) {
-                    folder.mkdir();
-                }
-                
-                String fileloc = bt.getFileTransferFolder() + filename;
-                
-                if(bt.islocal(host)) {
-                    
+            // if(operation.equals("ShowResultMap") || operation.equals("DownloadData") ) {
+            
+            String filepath = (String)((JSONObject)params.get(0)).get("value");
+            
+            logger.debug("get result file path : " + filepath);
+            
+            filename = new File(filepath).getName();
+            int extIndex = filename.lastIndexOf(".");
+            String fileExtension = filename.substring(extIndex);
+
+
+//				String dest = BaseTool.getGeoweaverRootPath() + SysDir.upload_file_path + "/" + filename;
+            
+            File folder = new File(bt.getFileTransferFolder());
+            
+            if(!folder.exists()) {
+                folder.mkdir();
+            }
+            
+            String fileloc = bt.getFileTransferFolder() + filename;
+            
+            if(bt.islocal(host)) {
+
+                // if (fileExtension.equals(".png") || fileExtension.equals(".jpg")){
+
                     resp = ft.download_local(filepath, fileloc);
-
-                    sendMessageWebSocket(history_id, httpsessionid, resp);
-
-                }else {
-
-                    ft.scp_download(host, pswd, filepath, fileloc);
-
-                    sendMessageWebSocket(history_id, httpsessionid, "File " + fileloc + " is downloaded from remote host.");
                     
-                }
+                    sendMessageWebSocket(history_id, httpsessionid, resp);
+                // }else {
+                    
+                //     resp = ft.download_local(filepath, fileloc);
+    
+                //     sendMessageWebSocket(history_id, httpsessionid, resp);
+                    
+                // }
                 
+
+            }else {
+
+                ft.scp_download(host, pswd, filepath, fileloc);
+
+                sendMessageWebSocket(history_id, httpsessionid, "File " + fileloc + " is downloaded from remote host.");
                 
-                logger.debug("result info: " + fileloc);
+            }
+            
+            
+            logger.debug("result info: " + fileloc);
                 
                 // String ret = "{\"builtin\": true, \"history_id\": \"" + history_id + 
                 //         "\", \"operation\":\""+operation+"\", \"filename\": \"" + filename + "\"}";
                 
                 // this.history_output = filename;
                 
-            }
+            // }
 
             // String historyid = t.getHistory_id();
 
