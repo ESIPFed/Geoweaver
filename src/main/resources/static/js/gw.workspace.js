@@ -410,7 +410,8 @@ GW.workspace = {
     	    	
     	    	if(selectedNode == null){
     	    		
-    	    		alert("No process is selected");
+    	    		// alert("No process is selected");
+					GW.general.switchTab("workflow");
     	    		
     	    	}else{
     	    		

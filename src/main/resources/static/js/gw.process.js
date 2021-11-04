@@ -1447,15 +1447,13 @@ GW.process = {
 
 					code = GW.general.parseResponse(code);
 					
+					GW.process.jupytercode = code;
+
 					var notebook = nb.parse(code);
 					
 					var rendered = notebook.render();
 					
-					code = rendered;
-
-					
-					
-					$("#code-embed").append(code);
+					$("#code-embed").append(rendered);
 
 				}
 				
