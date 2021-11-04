@@ -155,6 +155,8 @@ public class HistoryTool {
 		}
 
 		synchronized(historyrepository){
+
+			logger.info("History "+history.getHistory_id()+" will be updated!!!!!!!!!!!!" + history.getHistory_output());
 		
 			historyrepository.saveAndFlush(history);
 		

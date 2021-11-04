@@ -504,6 +504,8 @@ GW.workflow = {
 				GW.workflow.refreshWorkflowList();
 				
 				GW.menu.details(msg.id, "workflow");
+
+				GW.menu.refresh();
 				
 			}else{
 				
