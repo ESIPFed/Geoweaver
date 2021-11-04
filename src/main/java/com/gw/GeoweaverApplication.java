@@ -56,7 +56,7 @@ public class GeoweaverApplication {
 
             SpringApplication.run(GeoweaverApplication.class, args);
 
-            openHomePage();	
+            // openHomePage();	
 
             addDefaultPublicUser();
 

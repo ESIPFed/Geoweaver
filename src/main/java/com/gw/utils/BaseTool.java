@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -1034,6 +1035,17 @@ public class BaseTool {
 		return rootpath;
 	}
 
+	public void sleep(int seconds){
+
+		try {
+			TimeUnit.SECONDS.sleep(seconds);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	/**
 	 * Delete directory
 	 * @param directoryToBeDeleted
@@ -1048,6 +1060,16 @@ public class BaseTool {
 		}
 		return directoryToBeDeleted.delete();
 	}
+
+	public void printoutCallStack(){
+
+        System.out.println("Printing stack trace:");
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < elements.length; i++) {
+            StackTraceElement s = elements[i];
+            System.out.println("\tnull websocket trace at " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+        }
+    }
 
 	/**
 	 * Unzip file to folder

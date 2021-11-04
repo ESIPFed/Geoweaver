@@ -156,7 +156,9 @@ public class HistoryTool {
 
 		synchronized(historyrepository){
 
-			logger.info("History "+history.getHistory_id()+" will be updated!!!!!!!!!!!!" + history.getHistory_output());
+			bt.printoutCallStack();
+
+			logger.info("History  will be updated!!!!!!!!!!!! - "+history.getHistory_id() + " - " + history.getHistory_output());
 		
 			historyrepository.saveAndFlush(history);
 		
