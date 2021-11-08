@@ -1,15 +1,18 @@
-// notebook.js 0.3.2
 // http://github.com/jsvine/notebookjs
 // notebook.js may be freely distributed under the MIT license.
 (function () {
+    var VERSION = "0.6.6";
     var root = this;
-    var VERSION = "0.3.2";
+    var isBrowser = root.window !== undefined;
+    var doc;
 
     // Get browser or JSDOM document
-    var doc = root.document;
-    if (!doc) {
+    if (isBrowser) {
+        doc = root.document;
+    } else {
         var jsdom = require("jsdom");
-        doc = new jsdom.JSDOM().window.document;
+        var dom = new jsdom.JSDOM();
+        doc = dom.window.document;
     }
 
     // Helper functions
@@ -21,7 +24,7 @@
             return nb.prefix + cn;
         }).join(" ");
         return el;
-    }; 
+    };
 
     var escapeHTML = function (raw) {
         var replaced = raw
@@ -34,23 +37,27 @@
         if (text.join) {
             return text.map(joinText).join("");
         } else {
-            return text;    
-        } 
+            return text;
+        }
     };
 
     // Get supporting libraries
-    var condRequire = function (module_name) {
-        return typeof require === "function" && require(module_name);
-    };
-
     var getMarkdown = function () {
-        return root.marked || condRequire("marked"); 
+        return root.marked || (typeof require === "function" && require("marked"));
     };
 
     var getAnsi = function () {
-        var req = condRequire("ansi_up");
-        var lib = root.ansi_up || req; 
+        var lib = root.ansi_up || (typeof require === "function" && require("ansi_up"));
         return lib && lib.ansi_to_html;
+    };
+
+    var getSanitizer = function () {
+        var lib = root.DOMPurify || (typeof require === "function" && require("dompurify"));
+        if (isBrowser) {
+            return lib && lib.sanitize;
+        } else {
+            return lib(dom.window).sanitize;
+        }
     };
 
     // Set up `nb` namespace
@@ -58,19 +65,22 @@
         prefix: "nb-",
         markdown: getMarkdown() || ident,
         ansi: getAnsi() || ident,
+        sanitizer: getSanitizer() || ident,
         highlighter: ident,
         VERSION: VERSION
     };
 
     // Inputs
     nb.Input = function (raw, cell) {
-        this.raw = raw; 
+        this.raw = raw;
         this.cell = cell;
     };
 
     nb.Input.prototype.render = function () {
         if (!this.raw.length) { return makeElement("div"); }
         var holder = makeElement("div", [ "input" ]);
+        holder.setAttribute('contenteditable', 'true');
+        
         var cell = this.cell;
         if (typeof cell.number === "number") {
             holder.setAttribute("data-prompt-number", this.cell.number);
@@ -87,7 +97,7 @@
         holder.appendChild(pre_el);
         this.el = holder;
         return holder;
-    }; 
+    };
 
     // Outputs and output-renderers
     var imageCreator = function (format) {
@@ -108,7 +118,7 @@
 
     nb.display.html = function (html) {
         var el = makeElement("div", [ "html-output" ]);
-        el.innerHTML = joinText(html);
+        el.innerHTML = nb.sanitizer(joinText(html));
         return el;
     };
     nb.display["text/html"] = nb.display.html;
@@ -117,7 +127,7 @@
         return nb.display.html(nb.markdown(joinText(md)));
     };
     nb.display["text/markdown"] = nb.display.marked;
-    
+
     nb.display.svg = function (svg) {
         var el = makeElement("div", [ "svg-output" ]);
         el.innerHTML = joinText(svg);
@@ -175,7 +185,7 @@
     };
 
     nb.Output = function (raw, cell) {
-        this.raw = raw; 
+        this.raw = raw;
         this.cell = cell;
         this.type = raw.output_type;
     };
@@ -199,7 +209,7 @@
         if (typeof this.cell.number === "number") {
             outer.setAttribute("data-prompt-number", this.cell.number);
         }
-        var inner = this.renderers[this.type].call(this); 
+        var inner = this.renderers[this.type].call(this);
         outer.appendChild(inner);
         this.el = outer;
         return outer;
@@ -213,7 +223,8 @@
         outputs.slice(1).forEach(function (o) {
             if (o.raw.output_type === "stream" &&
                 last.raw.output_type === "stream" &&
-                o.raw.stream === last.raw.stream) {
+                o.raw.stream === last.raw.stream &&
+                o.raw.name === last.raw.name) {
                 last.raw.text = last.raw.text.concat(o.raw.text);
             } else {
                 new_outputs.push(o);
@@ -234,26 +245,48 @@
             var source = raw.input || [ raw.source ];
             cell.input = new nb.Input(source, cell);
             var raw_outputs = (cell.raw.outputs || []).map(function (o) {
-                return new nb.Output(o, cell); 
+                return new nb.Output(o, cell);
             });
             cell.outputs = nb.coalesceStreams(raw_outputs);
         }
     };
 
+    var math_delimiters = [
+        {left: "$$", right: "$$", display: true},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "$", right: "$", display: false}
+    ];
+
     nb.Cell.prototype.renderers = {
         markdown: function () {
             var el = makeElement("div", [ "cell", "markdown-cell" ]);
-            el.innerHTML = nb.markdown(joinText(this.raw.source));
+            el.setAttribute('contenteditable', 'true');
+
+            var joined = joinText(this.raw.source);
+
+            // Pre-render math via KaTeX's auto-render extension, if available
+            if (root.renderMathInElement != null) {
+                el.innerHTML = nb.sanitizer(joined);
+                root.renderMathInElement(el, { delimiters: math_delimiters });
+                el.innerHTML = nb.sanitizer(nb.markdown(
+                    el.innerHTML
+                    .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
+                ));
+            } else {
+                el.innerHTML = nb.sanitizer(nb.markdown(joined));
+            }
+
             return el;
         },
         heading: function () {
             var el = makeElement("h" + this.raw.level, [ "cell", "heading-cell" ]);
-            el.innerHTML = joinText(this.raw.source);
+            el.innerHTML = nb.sanitizer(joinText(this.raw.source));
             return el;
         },
         raw: function () {
             var el = makeElement("div", [ "cell", "raw-cell" ]);
-            el.innerHTML = joinText(this.raw.source);
+            el.innerHTML = escapeHTML(joinText(this.raw.source));
             return el;
         },
         code: function () {
@@ -267,7 +300,7 @@
     };
 
     nb.Cell.prototype.render = function () {
-        var el = this.renderers[this.type].call(this); 
+        var el = this.renderers[this.type].call(this);
         this.el = el;
         return el;
     };
@@ -283,7 +316,7 @@
         this.render = function () {
             var worksheet_el = makeElement("div", [ "worksheet" ]);
             worksheet.cells.forEach(function (c) {
-                worksheet_el.appendChild(c.render()); 
+                worksheet_el.appendChild(c.render());
             });
             this.el = worksheet_el;
             return worksheet_el;
@@ -295,9 +328,8 @@
         var notebook = this;
         this.raw = raw;
         this.config = config;
-        var meta = this.metadata = raw.metadata;
-        if(meta!=null)
-        	this.title = meta.title || meta.name;
+        var meta = this.metadata = raw.metadata || {};
+        this.title = meta.title || meta.name;
         var _worksheets = raw.worksheets || [ { cells: raw.cells } ];
         this.worksheets = _worksheets.map(function (ws) {
             return new nb.Worksheet(ws, notebook);
@@ -308,12 +340,12 @@
     nb.Notebook.prototype.render = function () {
         var notebook_el = makeElement("div", [ "notebook" ]);
         this.worksheets.forEach(function (w) {
-            notebook_el.appendChild(w.render()); 
+            notebook_el.appendChild(w.render());
         });
         this.el = notebook_el;
         return notebook_el;
     };
-    
+
     nb.parse = function (nbjson, config) {
         return new nb.Notebook(nbjson, config);
     };
@@ -332,5 +364,5 @@
     } else {
         root.nb = nb;
     }
-    
+
 }).call(this);
