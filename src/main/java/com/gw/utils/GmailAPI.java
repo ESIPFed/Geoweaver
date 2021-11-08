@@ -28,7 +28,7 @@ import com.google.api.services.gmail.model.Message;
 
 public class GmailAPI {
 
-
+    
     /*
     Sreten Cvetojevic 3/1/2021
     Created based on tutorials described in:
@@ -95,7 +95,9 @@ public class GmailAPI {
 
     public static Gmail getGmailService() throws IOException, GeneralSecurityException {
 
-        String credentials = SecretVar.credentials;
+        SecretVar sv = BeanTool.getBean(SecretVar.class);
+        sv.refresh();
+        String credentials = sv.credentials;
 
         InputStream in = new ByteArrayInputStream(credentials.getBytes());
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
@@ -108,8 +110,8 @@ public class GmailAPI {
                 .setClientSecrets(clientSecrets.getDetails().getClientId().toString(),
                         clientSecrets.getDetails().getClientSecret().toString())
                 .build().setAccessToken(getAccessToken()).setRefreshToken(
-                        SecretVar.refreshtoken);//Replace this
-        
+                    sv.refreshtoken);//Replace this
+
         // Create Gmail service
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, authorize)
@@ -121,14 +123,15 @@ public class GmailAPI {
     private static String getAccessToken() {
 
         String accessToken = "";
-        
+
         try {
-            
+            SecretVar sv = BeanTool.getBean(SecretVar.class);
+            sv.refresh();
             Map<String, Object> params = new LinkedHashMap<>();
             params.put("grant_type", "refresh_token");
-            params.put("client_id", SecretVar.clientid); //Replace this
-            params.put("client_secret", SecretVar.clientsecret);
-            params.put("refresh_token", SecretVar.refreshtoken); //Replace this
+            params.put("client_id", sv.clientid); //Replace this
+            params.put("client_secret", sv.clientsecret);
+            params.put("refresh_token", sv.refreshtoken); //Replace this
 
             StringBuilder postData = new StringBuilder();
             

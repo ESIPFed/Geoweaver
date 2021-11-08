@@ -7,8 +7,6 @@
 */ 
 
 
-
-
 GW.process = {
 		
 		editor: null,

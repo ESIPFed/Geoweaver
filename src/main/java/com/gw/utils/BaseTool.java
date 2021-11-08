@@ -301,6 +301,12 @@ public class BaseTool {
 		}
 	    return value;
 	}
+
+	public String getGWWorkspaceFolder(){
+
+		return this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator();
+
+	}
 	
 	/**
 	 * Get the temp folder for file transfer
