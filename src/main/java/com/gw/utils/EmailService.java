@@ -29,21 +29,26 @@ public class EmailService {
 
 		String token = new RandomString(30).nextString();
 
-		String reset_url = site_url + "/reset_password?token=" + token;
+		String reset_url = site_url + "/../../user/reset_password?token=" + token;
 
 		ut.token2userid.put(token, user.getId());
 
 		ut.token2date.put(token, new Date());
 
-		message.setBody("Hello zsun@gmu.edu! \n"+
+		message.setBody("Dear "+user.getUsername()+", <br/><br/>"+
 
-		" Someone has requested a link to change your password. You can do this through the link below.\n"+
+		" You recently requested to reset your password or unlock your Geoweaver user account. Click the link below to continue.<br/><br/>"+
 		
-		"  <a href=\""+reset_url+"\">Change my password</a> \n" +
+		" *********<br/> <a href=\""+reset_url+"\" style=\"\">Reset Password or Unlock Geoweaver User Account</a> <br/> *********<br/><br/>" +
 		
-		" If you didn't request this, please ignore this email. \n"+
+		" If you didn't make this change, please ignore this email; or if you believe an unauthorized person has accessed your account, please reset your password immediately and sign into your account page to review and update your security settings. <br/><br/>"+
 		
-		"Your password won't change until you access the link above and create a new one. \n");
+		"Sincerely, <br/><br/>Geoweaver Support Team<br/><br/>"+
+
+		"<div class=\"background-color:gray;\">"+
+
+		"<p><a href=\"https://github.com/ESIPFed/Geoweaver\">Geoweaver</a> | <a href=\"mailto:geoweaver.app@gmail.com\">Support</a> | <a href=\"https://github.com/ESIPFed/Geoweaver\">Privacy Policy</a></p><p>Copyright @ Geoweaver 2021. All rights reserved. </p>"+
+		"</div><br/>");
 
 		this.sendmail(message);
 

@@ -48,9 +48,9 @@ public class UserTool {
 
     static List<UserSession> authsession2user = new ArrayList();
 
-    public Map<String, String> token2userid = new HashMap();
+    public static Map<String, String> token2userid = new HashMap();
 
-    public Map<String, Date> token2date = new HashMap();
+    public static Map<String, Date> token2date = new HashMap();
 
     long TIMEOUT_THRESHOLD = 24*60*60*1000;
 
