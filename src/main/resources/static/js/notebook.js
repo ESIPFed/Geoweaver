@@ -282,7 +282,7 @@
                 el.setAttribute('contenteditable', 'true');
                 el.innerHTML = "";
                 console.log(rawjoined);
-                el.innerHTML = "<xmp style='width:100%;white-space: pre-wrap; background-color: grey;' >" + rawjoined + "</xmp>";
+                el.innerHTML = "<xmp style='width:100%;white-space: pre-wrap; background-color: #edf6f7;' >" + rawjoined + "</xmp>";
             });
 
             $(el).bind('keydown', function(event) {
