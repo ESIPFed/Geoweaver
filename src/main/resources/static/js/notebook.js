@@ -261,9 +261,9 @@
     nb.Cell.prototype.renderers = {
         markdown: function () {
             var el = makeElement("div", [ "cell", "markdown-cell" ]);
-            el.setAttribute('contenteditable', 'true');
 
             var joined = joinText(this.raw.source);
+            var rawjoined = joined;
 
             // Pre-render math via KaTeX's auto-render extension, if available
             if (root.renderMathInElement != null) {
@@ -276,6 +276,50 @@
             } else {
                 el.innerHTML = nb.sanitizer(nb.markdown(joined));
             }
+
+            $(el).on('dblclick', function(){
+                // alert("Edit markdown cell double clicked");
+                el.setAttribute('contenteditable', 'true');
+                el.innerHTML = "";
+                console.log(rawjoined);
+                el.innerHTML = "<xmp style='width:100%;white-space: pre-wrap; background-color: grey;' >" + rawjoined + "</xmp>";
+            });
+
+            $(el).bind('keydown', function(event) {
+                if(el.innerHTML.indexOf("<xmp")!=-1){
+                    if (event.ctrlKey && event.which == 13) {
+                        //save the current cell and update the whole notebook
+                        var newcode = $(el).find("xmp")[0].innerHTML;
+
+                        if (root.renderMathInElement != null) {
+                            el.innerHTML = nb.sanitizer(newcode);
+                            root.renderMathInElement(el, { delimiters: math_delimiters });
+                            el.innerHTML = nb.sanitizer(nb.markdown(
+                                el.innerHTML
+                                .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
+                            ));
+                        } else {
+                            el.innerHTML = nb.sanitizer(nb.markdown(newcode));
+                        }
+                        el.setAttribute('contenteditable', 'false');
+                    }
+                }
+				
+			});
+
+            // $(el).on('click', function(){
+            //     alert("Edit markdown cell single clicked");
+            //     if (root.renderMathInElement != null) {
+            //         el.innerHTML = nb.sanitizer(joined);
+            //         root.renderMathInElement(el, { delimiters: math_delimiters });
+            //         el.innerHTML = nb.sanitizer(nb.markdown(
+            //             el.innerHTML
+            //             .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
+            //         ));
+            //     } else {
+            //         el.innerHTML = nb.sanitizer(nb.markdown(joined));
+            //     }
+            // });
 
             return el;
         },
