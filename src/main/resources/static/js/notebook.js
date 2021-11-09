@@ -282,14 +282,14 @@
                 el.setAttribute('contenteditable', 'true');
                 el.innerHTML = "";
                 console.log(rawjoined);
-                el.innerHTML = "<xmp style='width:100%;white-space: pre-wrap; background-color: #edf6f7;' >" + rawjoined + "</xmp>";
+                el.innerHTML = "<plaintext style='width:100%;white-space: pre-wrap; background-color: #edf6f7;' >" + rawjoined + "</plaintext>";
             });
 
             $(el).bind('keydown', function(event) {
-                if(el.innerHTML.indexOf("<xmp")!=-1){
+                if(el.innerHTML.indexOf("<plaintext")!=-1){
                     if (event.ctrlKey && event.which == 13) {
                         //save the current cell and update the whole notebook
-                        var newcode = $(el).find("xmp")[0].innerHTML;
+                        var newcode = $(el).find("plaintext")[0].innerHTML;
 
                         if (root.renderMathInElement != null) {
                             el.innerHTML = nb.sanitizer(newcode);
