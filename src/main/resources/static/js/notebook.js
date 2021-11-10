@@ -41,6 +41,11 @@
         }
     };
 
+    var splitText = function(){
+
+
+    };
+
     // Get supporting libraries
     var getMarkdown = function () {
         return root.marked || (typeof require === "function" && require("marked"));
@@ -288,7 +293,8 @@
 
     function unescapeHtml(inputstr){
         $.each(reverseentityMap, function (key, data) {
-            inputstr = String(inputstr).replace(key, data);
+            var re = new RegExp(key,"g");
+            inputstr = String(inputstr).replace(re, data);
         })
         return inputstr;
     }
@@ -297,6 +303,7 @@
         markdown: function () {
             var el = makeElement("div", [ "cell", "markdown-cell" ]);
 
+            $(el).data("raw", this.raw);
             var joined = joinText(this.raw.source);
             var rawjoined = joined;
 
@@ -316,7 +323,7 @@
                 // alert("Edit markdown cell double clicked");
                 el.setAttribute('contenteditable', 'true');
                 el.innerHTML = "";
-                console.log(rawjoined);
+                // console.log(rawjoined);
                 el.innerHTML = "<pre style='width:100%;white-space: pre-wrap; background-color: #edf6f7;' >" + escapeHtml(rawjoined) + "</pre>";
             });
 
@@ -325,14 +332,13 @@
                     if (event.ctrlKey && event.which == 13) {
                         //save the current cell and update the whole notebook
                         var newcode = unescapeHtml($(el).find("pre")[0].innerHTML);
-                        console.log(newcode);
-
+                        // console.log(newcode);
+                        rawjoined = newcode;
                         if (root.renderMathInElement != null) {
                             el.innerHTML = nb.sanitizer(newcode);
                             root.renderMathInElement(el, { delimiters: math_delimiters });
                             el.innerHTML = nb.sanitizer(nb.markdown(
-                                el.innerHTML
-                                .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
+                                el.innerHTML.replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
                             ));
                         } else {
                             el.innerHTML = nb.sanitizer(nb.markdown(newcode));
@@ -361,16 +367,20 @@
         },
         heading: function () {
             var el = makeElement("h" + this.raw.level, [ "cell", "heading-cell" ]);
+            $(el).data("raw", this.raw);
             el.innerHTML = nb.sanitizer(joinText(this.raw.source));
             return el;
         },
         raw: function () {
             var el = makeElement("div", [ "cell", "raw-cell" ]);
+            $(el).data("raw", this.raw);
             el.innerHTML = escapeHTML(joinText(this.raw.source));
             return el;
         },
         code: function () {
             var cell_el = makeElement("div", [ "cell", "code-cell" ]);
+            $(cell_el).data("raw", this.raw);
+            console.log("get data from raw: " + $(cell_el).data("raw"));
             cell_el.appendChild(this.input.render());
             var output_els = this.outputs.forEach(function (o) {
                 cell_el.appendChild(o.render());
