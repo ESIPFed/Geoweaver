@@ -77,7 +77,7 @@ GW.main = {
 
 		$(".gw_version").html(edu.gmu.csiss.geoweaver.version);
 
-		$(window).on("beforeunload", GW.main.exitWarning);
+		
 
 		// $(window).off("beforeunload", GW.main.exitWarning);
 		
@@ -112,6 +112,7 @@ GW.main = {
 
 		introJs().start();
 
+		$(window).on("beforeunload", GW.main.exitWarning);
 		
 //		this.test_websocket()
 		

@@ -304,6 +304,7 @@
             var el = makeElement("div", [ "cell", "markdown-cell" ]);
 
             $(el).data("raw", this.raw);
+
             var joined = joinText(this.raw.source);
             var rawjoined = joined;
 
@@ -343,6 +344,8 @@
                         } else {
                             el.innerHTML = nb.sanitizer(nb.markdown(newcode));
                         }
+                        //send request to save the notebook
+                        
                         el.setAttribute('contenteditable', 'false');
                     }
                 }
@@ -380,7 +383,7 @@
         code: function () {
             var cell_el = makeElement("div", [ "cell", "code-cell" ]);
             $(cell_el).data("raw", this.raw);
-            console.log("get data from raw: " + $(cell_el).data("raw"));
+            // console.log("get data from raw: " + $(cell_el).data("raw"));
             cell_el.appendChild(this.input.render());
             var output_els = this.outputs.forEach(function (o) {
                 cell_el.appendChild(o.render());
@@ -429,6 +432,10 @@
 
     nb.Notebook.prototype.render = function () {
         var notebook_el = makeElement("div", [ "notebook" ]);
+        $(notebook_el).data("metadata", this.raw.metadata);
+        $(notebook_el).data("nbformat", this.raw.nbformat);
+        $(notebook_el).data("nbformat_minor", this.raw.nbformat_minor);
+
         this.worksheets.forEach(function (w) {
             notebook_el.appendChild(w.render());
         });
@@ -438,6 +445,29 @@
 
     nb.parse = function (nbjson, config) {
         return new nb.Notebook(nbjson, config);
+    };
+
+    nb.getjupyterjson = function(){
+
+        var cells = [];
+
+        $("#code-embed .nb-cell").each(function(index){
+
+            cells.push($(this).data("raw"));
+
+        });
+
+        var newjupyter = {
+            "cells": cells,
+            "metadata": $("#code-embed .nb-notebook").data("metadata"),
+            "nbformat": $("#code-embed .nb-notebook").data("nbformat"),
+            "nbformat_minor": $("#code-embed .nb-notebook").data("nbformat_minor")
+        };
+
+        // console.log(JSON.stringify(newjupyter));
+
+        return newjupyter;
+
     };
 
     // Exports

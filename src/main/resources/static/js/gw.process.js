@@ -4,8 +4,7 @@
 * 
 * @author Ziheng Sun
 *
-*/ 
-
+*/
 
 GW.process = {
 		
@@ -1452,6 +1451,8 @@ GW.process = {
 					var rendered = notebook.render();
 					
 					$("#code-embed").append(rendered);
+
+					var newjupyter = nb.getjupyterjson();
 
 				}
 				
