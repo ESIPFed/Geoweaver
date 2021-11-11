@@ -66,6 +66,11 @@
 	        <artifactId>spring-boot-devtools</artifactId>
 	        <optional>false</optional>
 	    </dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+    		<artifactId>aws-java-sdk</artifactId>
+    		<version>1.11.163</version>
+		</dependency>
 		
 		
 		<!-- below come from old settings -->
