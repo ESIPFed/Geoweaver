@@ -30,9 +30,11 @@ GW.process = {
 		
 		builtin_processes: [
 			
-			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
+			{"operation":"ShowResultMap", "params":[{"name":"FilePath", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
 			
-			{"operation":"DownloadData", "params":[{"name":"file_url", "min_occurs": 1, "max_occurs": 1}]}
+			{"operation":"DownloadData", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]},
+			
+			{"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]}
 		
 		],
 		
@@ -419,16 +421,16 @@ GW.process = {
 				cont += '    		<option value="'+GW.process.builtin_processes[i].operation +
 					'">'+GW.process.builtin_processes[i].operation + '</option>';
 				
-			}
+			} 
 			
 		   	cont += '  		</select></div>';
 		   	
-		   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-				
+			console.log(GW.process.builtin_processes[0])
+		   	for(var i=0;i<GW.process.builtin_processes.length;i++){
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
-					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
+					+GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
 					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
+					GW.process.builtin_processes[i].params[0].name+'-'+cmid+'"></input>';
 					cont += '</div>';
 				
 			}
@@ -1485,14 +1487,31 @@ GW.process = {
 				
 			   	cont += '  		</select></div>';
 			   	
-			   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-			   		
-					cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-					GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
-					'     <div class="col-sm-8"> 	<input class="form-control builtin-parameter" id="param_'+
-					GW.process.builtin_processes[0].params[i].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
-					
-					cont += '</div>';
+			   	for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+					if(GW.process.builtin_processes[i].operation == code.operation){
+
+						if (GW.process.builtin_processes[i].operation == 'AWS S3') {
+							
+							cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+							GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+							'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+							GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
+							
+							cont += '</div>';
+
+						} else {
+
+							cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+							GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+							'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+							GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
+							
+							cont += '</div>';
+
+						}
+
+					}
 					
 				}
 			   	
@@ -2033,7 +2052,7 @@ GW.process = {
 			}).done(function(msg){
 				
 				if(msg){
-					
+					console.log(msg)
 					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){
