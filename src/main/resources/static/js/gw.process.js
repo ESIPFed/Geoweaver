@@ -414,7 +414,7 @@ GW.process = {
 		showBuiltinProcess: function(code, cmid){
 			
 			var cont = `     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>
-			     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-` + cmid + `">`;
+			     <div class="col-sm-8"> <select class="form-control"  id="builtin_processes-` + cmid + `">`;
 			
 			for(var i=0;i<GW.process.builtin_processes.length;i++){
 				
@@ -425,17 +425,21 @@ GW.process = {
 			
 		   	cont += '  		</select></div>';
 		   	
-			console.log(GW.process.builtin_processes[0])
-		   	for(var i=0;i<GW.process.builtin_processes.length;i++){
+			for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
+				cont += '<div class="row paramrow">';
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
-					+GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
-					GW.process.builtin_processes[i].params[0].name+'-'+cmid+'"></input>';
-					cont += '</div>';
-				
+					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
+					cont += '</div></div>';
+
 			}
 			
 			$("#codearea-"+cmid).append(cont);
+
+			$("#builtin_processes-"+cmid).on("change", function(){
+				GW.process.refreshBuiltinParameterList("builtin_processes-"+cmid, "codearea-"+cmid);
+			});
 			
 			if(code!=null){
 				
@@ -1431,6 +1435,39 @@ GW.process = {
 			$("#process-btn-group").append(menuItem);
 			
 		},
+
+		refreshBuiltinParameterList: function(proselectid, codeareaid){
+
+			$(".paramrow").remove();
+
+			var cont = "";
+
+			var current_operation = $("#" +proselectid).find(":selected").text();
+
+			for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+				if(GW.process.builtin_processes[i].operation == current_operation){
+
+					for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						cont+= '<div class="row paramrow" style="margin-left:5px;margin-right:5px;">';
+						cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						'     <div class="col-sm-8"> 	<input type="text" class="form-control builtin-parameter" id="param_'+
+						GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
+						
+						cont += '</div></div>';
+
+					}
+
+					break;
+
+				}
+				
+			}
+			
+			$("#"+codeareaid).append(cont);
+
+		},
 		
 		displayCodeArea: function(process_id, process_name, code_type, code){
 			
@@ -1465,7 +1502,7 @@ GW.process = {
 				code = GW.general.parseResponse(code)
 				
 				var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-				'     <div class="col-sm-8"> <select class="form-control builtin-process" onchange=\"GW.process.updateBuiltin()\" id="builtin_processes">';
+				'     <div class="col-sm-8"> <select class="form-control builtin-process" id="builtin_processes">';
 				
 				for(var i=0;i<GW.process.builtin_processes.length;i++){
 					
@@ -1486,37 +1523,60 @@ GW.process = {
 				}
 				
 			   	cont += '  		</select></div>';
+
+				
 			   	
-			   	for(var i=0;i<GW.process.builtin_processes.length;i++){
+			   	// for(var i=0;i<GW.process.builtin_processes.length;i++){
 
-					if(GW.process.builtin_processes[i].operation == code.operation){
+				// 	if(GW.process.builtin_processes[i].operation == code.operation){
 
-						if (GW.process.builtin_processes[i].operation == 'AWS S3') {
+
+						// if (GW.process.builtin_processes[i].operation == 'AWS S3') {
 							
-							cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-							GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
-							'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
-							GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
 							
-							cont += '</div>';
+						// 	cont += '</div>';
 
-						} else {
+						// } else {
 
-							cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-							GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
-							'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
-							GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
+
+
+						// for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						// 	cont+= '<div class="row paramrow">';
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
 							
-							cont += '</div>';
+						// 	cont += '</div></div>';
 
-						}
+						// }
+							
+						// }
 
-					}
+				// 		break;
+
+				// 	}
 					
-				}
+				// }
 			   	
 			   	$("#code-embed").html(cont);
-			   	
+
+				$("#builtin_processes").on("change", function(){
+
+					GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed");
+					
+					// GW.process.updateBuiltin();
+
+				})
+
+				$("#builtin_processes").val(code.operation);
+
+				$("#builtin_processes").trigger("change");
+
 		   		for(var j=0;j<code.params.length;j+=1){
 		   			
 		   			$("#param_" + code.params[j].name).val(code.params[j].value);
