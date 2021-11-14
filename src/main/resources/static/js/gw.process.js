@@ -203,19 +203,21 @@ GW.process = {
 			var $holder = document.querySelector("#jupyter_area");
 
 		    var render_notebook = function (ipynb) {
-		    	GW.process.jupytercode = JSON.stringify(ipynb);
+		    	GW.process.jupytercode = ipynb;
 		        var notebook = root.notebook = nb.parse(ipynb);
 		        while ($holder.hasChildNodes()) {
 		            $holder.removeChild($holder.lastChild);
 		        }
 		        $holder.appendChild(notebook.render());
-		        Prism.highlightAll();
+		        nb.postlisten();
+				Prism.highlightAll();
+
 		    };
 
 		    var load_file = function (file) {
 		        var reader = new FileReader();
 		        reader.onload = function (e) {
-		        	GW.process.jupytercode = JSON.stringify(this.result);
+		        	GW.process.jupytercode = this.result;
 		            var parsed = JSON.parse(this.result);
 		            render_notebook(parsed);
 		        };
@@ -371,6 +373,7 @@ GW.process = {
 					var notebook = nb.parse(code);
 					var rendered = notebook.render();
 					$("#code-embed").append(rendered);
+					nb.postlisten();
 				}
 
 				GW.process.replace_jupyter_jsframe.closeFrame();
@@ -407,6 +410,7 @@ GW.process = {
 				var notebook = nb.parse(code);
 				var rendered = notebook.render();
 				$("#jupyter_area-"+cmid).append(rendered);
+				nb.postlisten();
 			}
 			
 		},
@@ -499,7 +503,7 @@ GW.process = {
 				
 			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
-				code = GW.process.jupytercode;
+				code = JSON.stringify(GW.process.jupytercode);
 				
 			}else if($("#processcategory"+cmid).val()=="python"){
 				
@@ -1490,6 +1494,8 @@ GW.process = {
 					var rendered = notebook.render();
 					
 					$("#code-embed").append(rendered);
+
+					nb.postlisten();
 
 					var newjupyter = nb.getjupyterjson();
 

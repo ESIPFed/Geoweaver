@@ -41,8 +41,13 @@
         }
     };
 
-    var splitText = function(){
+    var splitText = function(text){
 
+        if (text.join) {
+            return text; //array
+        } else {
+            return text.split("\n").map(x => x + "\n");
+        }
 
     };
 
@@ -91,16 +96,25 @@
             holder.setAttribute("data-prompt-number", this.cell.number);
         }
         var pre_el = makeElement("pre");
-        var code_el = makeElement("code");
         var notebook = cell.worksheet.notebook;
         var m = notebook.metadata;
         var lang = this.cell.raw.language || m.language || (m.kernelspec && m.kernelspec.language) || (m.language_info && m.language_info.name);
+        // var code_el = makeElement("code");
+        var code_el = makeElement("textarea", ["jupyter-code-input","lang-" + lang]);
         code_el.setAttribute("data-language", lang);
-        code_el.className = "lang-" + lang;
+        // code_el.style.cssText += 'width:100%; border:none; resize:none;';
+        code_el.style["width"] = "100%";
+        code_el.style["border"] = "none";
+        code_el.style["resize"] = "none";
+        code_el.style["overflow-y"] = "hidden;";
         code_el.innerHTML = nb.highlighter(escapeHTML(joinText(this.raw)), pre_el, code_el, lang);
         pre_el.appendChild(code_el);
         holder.appendChild(pre_el);
+
         this.el = holder;
+
+        
+
         return holder;
     };
 
@@ -332,9 +346,12 @@
                 if(el.innerHTML.indexOf("<pre")!=-1){
                     if (event.ctrlKey && event.which == 13) {
                         //save the current cell and update the whole notebook
+                        // console.log("label 1: " + JSON.stringify($(el).data("raw")));
                         var newcode = unescapeHtml($(el).find("pre")[0].innerHTML);
-                        // console.log(newcode);
+                        // console.log("label 2: " + newcode);
                         rawjoined = newcode;
+                        $(el).data("raw").source = splitText(newcode);
+                        // console.log("label 3: " + JSON.stringify($(el).data("raw")));
                         if (root.renderMathInElement != null) {
                             el.innerHTML = nb.sanitizer(newcode);
                             root.renderMathInElement(el, { delimiters: math_delimiters });
@@ -345,26 +362,15 @@
                             el.innerHTML = nb.sanitizer(nb.markdown(newcode));
                         }
                         //send request to save the notebook
-                        
                         el.setAttribute('contenteditable', 'false');
+                        //save the changes to database
+                        GW.process.jupytercode = nb.getjupyterjson();
+                        GW.process.editSwitch();
+
                     }
                 }
 				
 			});
-
-            // $(el).on('click', function(){
-            //     alert("Edit markdown cell single clicked");
-            //     if (root.renderMathInElement != null) {
-            //         el.innerHTML = nb.sanitizer(joined);
-            //         root.renderMathInElement(el, { delimiters: math_delimiters });
-            //         el.innerHTML = nb.sanitizer(nb.markdown(
-            //             el.innerHTML
-            //             .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
-            //         ));
-            //     } else {
-            //         el.innerHTML = nb.sanitizer(nb.markdown(joined));
-            //     }
-            // });
 
             return el;
         },
@@ -388,6 +394,22 @@
             var output_els = this.outputs.forEach(function (o) {
                 cell_el.appendChild(o.render());
             });
+
+            $($(cell_el).find('textarea')[0]).bind('keydown', function(event) {
+                if (event.ctrlKey && event.which == 13) {
+                    //save the current cell and update the whole notebook
+                    // console.log("code label 1: " + JSON.stringify($(cell_el).data("raw")));
+                    var newcode = $(this).val();
+                    // console.log("code label 2: " + newcode);
+                    $(cell_el).data("raw").source = splitText(newcode);
+                    // console.log("code label 3: " + JSON.stringify($(cell_el).data("raw")));
+                    //save the changes to database
+                    GW.process.jupytercode = nb.getjupyterjson();
+                    GW.process.editSwitch();
+    
+                }
+            });
+
             return cell_el;
         }
     };
@@ -445,6 +467,23 @@
 
     nb.parse = function (nbjson, config) {
         return new nb.Notebook(nbjson, config);
+    };
+
+    nb.postlisten = function(){
+
+        $('.nb-jupyter-code-input').each(function () {
+
+            this.style.height = (this.scrollHeight) + 'px';
+            // this.setAttribute('style', this.getAttribute('style') + 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+
+        }).on('input', function () {
+            
+            this.style.height = 'auto';
+            
+            this.style.height = (this.scrollHeight) + 'px';
+
+        });
+
     };
 
     nb.getjupyterjson = function(){
