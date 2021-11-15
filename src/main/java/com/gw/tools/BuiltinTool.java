@@ -6,6 +6,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.util.List;
 import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
 
 import javax.websocket.Session;
 
@@ -39,7 +42,9 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.Bucket;
-
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 
 @Service
 @Scope("prototype")
@@ -62,7 +67,70 @@ public class BuiltinTool {
 
     Logger logger = Logger.getLogger(this.getClass());
 
-    
+    private static String bucket;
+    private static String AwsFileName;
+    private static String AWSfilesDelete[];
+
+
+    public AmazonS3 authAWS(JSONArray params){
+
+        String accessKey = "";
+        String SecretKey = "";
+        String region = "";
+
+        for (int i = 0; i < params.size(); i++) {
+
+            JSONObject itemObj = (JSONObject)params.get(i);
+            // System.out.println("{{Looping Through}}: "+itemObj.get("name") + " ----- " + itemObj.get("value"));
+
+            if (itemObj.get("name").equals("Access Key")){
+                accessKey = itemObj.get("value").toString();
+
+            } else if (itemObj.get("name").equals("Secret Key")) {
+                SecretKey = itemObj.get("value").toString();
+
+            } else if (itemObj.get("name").equals("Bucket")) {
+                bucket = itemObj.get("value").toString();
+
+            } else if (itemObj.get("name").equals("Region")) {
+                region = itemObj.get("value").toString();
+
+            } else if (itemObj.get("name").equals("File name")) {
+                AwsFileName = itemObj.get("value").toString();
+
+            } else if (itemObj.get("name").equals("File names")) {
+                String filesDelete = itemObj.get("value").toString();
+                AWSfilesDelete = filesDelete.split(",");
+            }
+        }
+
+        System.out.println("{{Builtin Paramas AcessKey}}: "+accessKey);
+        System.out.println("{{Builtin Paramas SecretKey}}: "+SecretKey);
+        System.out.println("{{Builtin Paramas Bucket}}: "+bucket);
+        System.out.println("{{Builtin Paramas Region}}: "+region);
+        
+        // Authenticate with AWS using `AccessKey` & `SecretKey`
+        AWSCredentials awsCreds = new BasicAWSCredentials(
+            accessKey, 
+            SecretKey
+        );
+
+        System.out.println("{{AWS Creds}}: "+awsCreds.toString());
+
+        // // Configure AWS Client using AWS Creds
+        AmazonS3 s3client = AmazonS3ClientBuilder
+            .standard()
+            .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+            .withRegion(region)
+            .build();
+
+        System.out.println("{{AWS Client}}: "+s3client.toString());
+
+        return s3client;
+
+
+    }
+
 	public void saveHistory(String processid, String script, String history_id, String indicator){
 
 		History history = histool.getHistoryById(history_id);
@@ -123,59 +191,13 @@ public class BuiltinTool {
             his = histool.getHistoryById(history_id);
 
             JSONObject obj = (JSONObject)new JSONParser().parse(code);
-                
             String operation = (String)obj.get("operation");
             JSONArray params = (JSONArray)obj.get("params");
 
-            if (operation.equals("AWS S3")) {
 
-                String providedParams = (String)((JSONObject)params.get(0)).get("value");
-                String[] parsedParams = providedParams.split(" ");
-                System.out.println("{{Parsed Params}}: "+Arrays.toString(parsedParams));
-                // System.out.println(parsedParams[5]);
+            if (operation.equals("AWS S3 List File(s)")) {
 
-                String accessKey = "";
-                String SecretKey = "";
-                String bucket = "";
-                String region = "";
-
-                for (int i = 0; i < parsedParams.length; i++) {
-                    // System.out.println("{{Looping Through}}: "+parsedParams[i]);
-                    if (parsedParams[i].toLowerCase().equals("-accesskey")){
-                        accessKey = parsedParams[i+1];
-
-                    } else if (parsedParams[i].toLowerCase().equals("-secretkey")) {
-                        SecretKey = parsedParams[i+1];
-
-                    } else if (parsedParams[i].toLowerCase().equals("-bucket")) {
-                        bucket = parsedParams[i+1];
-
-                    } else if (parsedParams[i].toLowerCase().equals("-region")) {
-                        region = parsedParams[i+1];
-                    }
-                }
-
-                System.out.println("{{Builtin Paramas AcessKey}}: "+accessKey);
-                System.out.println("{{Builtin Paramas SecretKey}}: "+SecretKey);
-                System.out.println("{{Builtin Paramas Bucket}}: "+bucket);
-                System.out.println("{{Builtin Paramas Region}}: "+region);
-                
-                // Authenticate with AWS using `AccessKey` & `SecretKey`
-                AWSCredentials awsCreds = new BasicAWSCredentials(
-                    accessKey, 
-                    SecretKey
-                );
-
-                System.out.println("{{AWS Creds}}: "+awsCreds.toString());
-
-                // // Configure AWS Client using AWS Creds
-                AmazonS3 s3client = AmazonS3ClientBuilder
-                    .standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                    .withRegion(region)
-                    .build();
-
-                System.out.println("{{AWS Client}}: "+s3client.toString());
+                AmazonS3 s3client = authAWS(params);
 
                 List<Bucket> buckets = s3client.listBuckets();
                 sendMessageWebSocket(history_id, httpsessionid, "############### Buckets ###########");
@@ -188,28 +210,62 @@ public class BuiltinTool {
 
 
                 ListObjectsV2Result result = s3client.listObjectsV2(bucket);
-                System.out.println("{{AWS Bucket Objects}}: " + result.getObjectSummaries().toString());
+                // System.out.println("{{AWS Bucket Objects}}: " + result.getObjectSummaries().toString());
                 // resp = result.getObjectSummaries().toString();
                 
                 sendMessageWebSocket(history_id, httpsessionid, "\n############### Files ###########");
                 sendMessageWebSocket(history_id, httpsessionid, "Available Files in selected bucket:");
                 List<S3ObjectSummary> objects = result.getObjectSummaries();
                 for (S3ObjectSummary os : objects) {
-                    // System.out.println("{{AWS Bucket Objects}}: " + os.getKey());
+                    System.out.println("{{AWS Bucket Objects}}: " + os.getKey());
                     sendMessageWebSocket(history_id, httpsessionid, "- "+os.getKey());
                 }
                 sendMessageWebSocket(history_id, httpsessionid, "######### End of Files ###########");
                 
 
 
-                S3Object s3object = s3client.getObject("geoweaver", "TestData.csv");
-                S3ObjectInputStream inputStream = s3object.getObjectContent();
-                resp = inputStream.toString();
-
-                // sendMessageWebSocket(history_id, httpsessionid, resp);
 
 
-            }else {
+
+            } else if (operation.equals("AWS S3 Download File")) {
+
+
+                AmazonS3 s3client = authAWS(params);
+
+                String fileloc = bt.getFileTransferFolder() + AwsFileName;
+
+
+                S3Object s3object = s3client.getObject(new GetObjectRequest(bucket,AwsFileName));
+                
+                BufferedReader reader = new BufferedReader(new InputStreamReader(s3object.getObjectContent()));
+
+                sendMessageWebSocket(history_id, httpsessionid, "\nSaving \""+AwsFileName+"\" to " + fileloc);
+                
+                sendMessageWebSocket(history_id, httpsessionid, "\n############### File Contents ###########");
+
+
+                String line = null;
+                String fileContents = new String();
+                while ((line = reader.readLine()) != null)
+                {
+                    System.out.println(line);
+                    sendMessageWebSocket(history_id, httpsessionid, line);
+                    fileContents += line + "\n";
+                }
+                
+                bt.writeString2File(fileContents, fileloc);
+
+            } else if (operation.equals("AWS S3 Delete File(s)")) {
+
+                AmazonS3 s3client = authAWS(params);
+
+                DeleteObjectsRequest delObjReq = new DeleteObjectsRequest(bucket)
+                    .withKeys(AWSfilesDelete);
+                    s3client.deleteObjects(delObjReq);
+
+                sendMessageWebSocket(history_id, httpsessionid, "File(s) " + Arrays.toString(AWSfilesDelete) + " Deleted!");
+
+            } else {
 
                 String filename = null;
                 
@@ -235,9 +291,10 @@ public class BuiltinTool {
                 String fileloc = bt.getFileTransferFolder() + filename;
                 
                 if(bt.islocal(host)) {
-
+                    
+                    System.out.println(fileloc);
                     // if (fileExtension.equals(".png") || fileExtension.equals(".jpg")){
-
+                    
                     resp = ft.download_local(filepath, fileloc);
                     
                     sendMessageWebSocket(history_id, httpsessionid, resp);
@@ -249,7 +306,7 @@ public class BuiltinTool {
                         
                     // }
                     
-
+                    
                 }else {
 
                     ft.scp_download(host, pswd, filepath, fileloc);

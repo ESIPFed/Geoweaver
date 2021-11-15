@@ -34,7 +34,11 @@ GW.process = {
 			
 			{"operation":"DownloadData", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]},
 			
-			{"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]}
+			{"operation":"AWS S3 List File(s)", "params":[{"name":"Access Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Secret Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Bucket", "min_occurs": 1, "max_occurs": 1}, {"name":"Region", "min_occurs": 1, "max_occurs": 1}]},
+
+			{"operation":"AWS S3 Download File", "params":[{"name":"Access Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Secret Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Bucket", "min_occurs": 1, "max_occurs": 1}, {"name":"Region", "min_occurs": 1, "max_occurs": 1}, {"name":"File name", "min_occurs": 1, "max_occurs": 1}]},
+			
+			{"operation":"AWS S3 Delete File(s)", "params":[{"name":"Access Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Secret Key", "min_occurs": 1, "max_occurs": 1}, {"name":"Bucket", "min_occurs": 1, "max_occurs": 1}, {"name":"Region", "min_occurs": 1, "max_occurs": 1}, {"name":"File names", "min_occurs": 1, "max_occurs": 1}]}
 		
 		],
 		
@@ -1865,7 +1869,7 @@ GW.process = {
 			});
 
 			pcode = JSON.stringify(pcode);
-			
+			console.log(pcode)
 			this.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
 			
 		},
@@ -2088,7 +2092,7 @@ GW.process = {
 		},
 		
 		sendExecuteRequest: function(req, dialog, button){
-			
+					
 			GW.process.clearProcessLogging();
 
 			var newhistid = GW.general.makeid(12);
