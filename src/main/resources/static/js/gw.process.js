@@ -34,7 +34,7 @@ GW.process = {
 			
 			{"operation":"DownloadData", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]},
 			
-			{"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]}
+			// {"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]} //not working on remote host, comment out until it is ready
 		
 		],
 		
@@ -1481,7 +1481,7 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 
-				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
+				$("#code-embed").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
 				
 				if(code != null && code != "null"){
 

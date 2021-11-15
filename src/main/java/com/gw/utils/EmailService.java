@@ -8,9 +8,8 @@ import com.google.api.services.gmail.Gmail;
 import com.gw.jpa.GWUser;
 import com.gw.tools.UserTool;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,6 +17,8 @@ public class EmailService {
 
 	@Autowired
 	UserTool ut;
+
+	Logger logger = Logger.getLogger(this.getClass());
 
 	public void send_resetpassword(GWUser user, String site_url){
 
@@ -30,6 +31,10 @@ public class EmailService {
 		String token = new RandomString(30).nextString();
 
 		String reset_url = site_url + "/../../user/reset_password?token=" + token;
+
+		logger.info("******************************");
+		logger.info("Password Reset URL for "+ user.getUsername()+" : " + reset_url);
+		logger.info("******************************");
 
 		ut.token2userid.put(token, user.getId());
 
