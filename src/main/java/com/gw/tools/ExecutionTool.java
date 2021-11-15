@@ -96,7 +96,7 @@ public class ExecutionTool {
                 
             }else if("builtin".equals(category)) {
                 
-                resp = rt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
+                resp = rt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin, basedir);
                 
             }else if("jupyter".equals(category)){
                 

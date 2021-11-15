@@ -13,9 +13,11 @@ import com.gw.ssh.SSHSession;
 import com.gw.tasks.GeoweaverProcessTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
+import com.gw.tools.BuiltinTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class RemotehostTool {
 	
 	@Autowired
 	BaseTool bt;
+
+	@Autowired
+	BuiltinTool bint;
 
 	@Autowired
 	EnvironmentTool et;
@@ -225,7 +230,7 @@ public class RemotehostTool {
 	 * @param isjoin
 	 * @return
 	 */
-	public String executeBuiltInProcess(String history_id, String id, String hid, String pswd, String token, boolean isjoin) {
+	public String executeBuiltInProcess(String history_id, String id, String hid, String pswd, String token, boolean isjoin, String basedir) {
 		
 		String resp = null;
 		
@@ -239,6 +244,9 @@ public class RemotehostTool {
 
 			this.saveHistory(id, code, history_id);
 			
+			
+
+			
 			//get host ip, port, user name and password
 			
 //			String[] hostdetails = HostTool.getHostDetailsById(hid);
@@ -250,6 +258,29 @@ public class RemotehostTool {
 				token = new RandomString(12).nextString();
 				
 			}
+
+			session.login(hid, pswd, token, false);
+
+			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+
+			resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin, basedir);
+			
+			JSONObject jsonresp = new JSONObject(resp);
+			if (jsonresp.has("fileloc")) {
+
+				String fileloc = jsonresp.getString("fileloc");
+				if(basedir!=null && !"~".equals(basedir)) {
+					
+					ft.scp_upload(hid, pswd, fileloc, basedir, true);
+					
+				}else {
+					
+					ft.scp_upload(hid, pswd, fileloc);
+					
+				}
+
+			}
+
 			
 			// GeoweaverProcessTask t = new GeoweaverProcessTask();
 			
@@ -270,11 +301,11 @@ public class RemotehostTool {
 			
 			// String historyid = t.getHistory_id();
 			
-			resp = "{\"history_id\": \""+history_id+
+			// resp = "{\"history_id\": \""+history_id+
 					
-					"\", \"token\": \""+token+
+			// 		"\", \"token\": \""+token+
 					
-					"\", \"ret\": \"success\"}";
+			// 		"\", \"ret\": \"success\"}";
 			
 		} catch (Exception e) {
 			

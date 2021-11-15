@@ -173,7 +173,7 @@ public class BuiltinTool {
 
     }
 
-    public String executeCommonTasks(String history_id, String pid, String host, String pswd, String httpsessionid, boolean isjoin){
+    public String executeCommonTasks(String history_id, String pid, String host, String pswd, String httpsessionid, boolean isjoin, String basedir){
 
         String resp = null;
 
@@ -254,6 +254,28 @@ public class BuiltinTool {
                 }
                 
                 bt.writeString2File(fileContents, fileloc);
+
+                // if(basedir!=null && !"~".equals(basedir)) {
+				
+                //     ft.scp_upload(history_id, pswd, fileloc, basedir, true);
+                    
+                // }else {
+                    
+                //     ft.scp_upload(history_id, pswd, fileloc, basedir, true);
+                    
+                // }
+
+                resp = bt.isNull(resp)? "{\"history_id\": \""+history_id+
+                            
+                "\", \"token\": \""+httpsessionid+
+
+                "\", \"operation\":\""+operation+ 
+                
+                "\", \"fileloc\": \"" + fileloc + 
+                
+                "\", \"ret\": \"success\"}": resp; 
+
+                return resp;
 
             } else if (operation.equals("AWS S3 Delete File(s)")) {
 
