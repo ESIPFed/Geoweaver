@@ -30,9 +30,11 @@ GW.process = {
 		
 		builtin_processes: [
 			
-			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
+			{"operation":"ShowResultMap", "params":[{"name":"FilePath", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
 			
-			{"operation":"DownloadData", "params":[{"name":"file_url", "min_occurs": 1, "max_occurs": 1}]}
+			{"operation":"DownloadData", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]},
+			
+			// {"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]} //not working on remote host, comment out until it is ready
 		
 		],
 		
@@ -201,19 +203,21 @@ GW.process = {
 			var $holder = document.querySelector("#jupyter_area");
 
 		    var render_notebook = function (ipynb) {
-		    	GW.process.jupytercode = JSON.stringify(ipynb);
+		    	GW.process.jupytercode = ipynb;
 		        var notebook = root.notebook = nb.parse(ipynb);
 		        while ($holder.hasChildNodes()) {
 		            $holder.removeChild($holder.lastChild);
 		        }
 		        $holder.appendChild(notebook.render());
-		        Prism.highlightAll();
+		        nb.postlisten();
+				Prism.highlightAll();
+
 		    };
 
 		    var load_file = function (file) {
 		        var reader = new FileReader();
 		        reader.onload = function (e) {
-		        	GW.process.jupytercode = JSON.stringify(this.result);
+		        	GW.process.jupytercode = this.result;
 		            var parsed = JSON.parse(this.result);
 		            render_notebook(parsed);
 		        };
@@ -369,6 +373,7 @@ GW.process = {
 					var notebook = nb.parse(code);
 					var rendered = notebook.render();
 					$("#code-embed").append(rendered);
+					nb.postlisten();
 				}
 
 				GW.process.replace_jupyter_jsframe.closeFrame();
@@ -405,6 +410,7 @@ GW.process = {
 				var notebook = nb.parse(code);
 				var rendered = notebook.render();
 				$("#jupyter_area-"+cmid).append(rendered);
+				nb.postlisten();
 			}
 			
 		},
@@ -412,28 +418,32 @@ GW.process = {
 		showBuiltinProcess: function(code, cmid){
 			
 			var cont = `     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>
-			     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-` + cmid + `">`;
+			     <div class="col-sm-8"> <select class="form-control"  id="builtin_processes-` + cmid + `">`;
 			
 			for(var i=0;i<GW.process.builtin_processes.length;i++){
 				
 				cont += '    		<option value="'+GW.process.builtin_processes[i].operation +
 					'">'+GW.process.builtin_processes[i].operation + '</option>';
 				
-			}
+			} 
 			
 		   	cont += '  		</select></div>';
 		   	
-		   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-				
+			for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
+				cont += '<div class="row paramrow">';
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
 					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
 					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
-					cont += '</div>';
-				
+					cont += '</div></div>';
+
 			}
 			
 			$("#codearea-"+cmid).append(cont);
+
+			$("#builtin_processes-"+cmid).on("change", function(){
+				GW.process.refreshBuiltinParameterList("builtin_processes-"+cmid, "codearea-"+cmid);
+			});
 			
 			if(code!=null){
 				
@@ -493,7 +503,7 @@ GW.process = {
 				
 			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
-				code = GW.process.jupytercode;
+				code = JSON.stringify(GW.process.jupytercode);
 				
 			}else if($("#processcategory"+cmid).val()=="python"){
 				
@@ -1429,6 +1439,39 @@ GW.process = {
 			$("#process-btn-group").append(menuItem);
 			
 		},
+
+		refreshBuiltinParameterList: function(proselectid, codeareaid){
+
+			$(".paramrow").remove();
+
+			var cont = "";
+
+			var current_operation = $("#" +proselectid).find(":selected").text();
+
+			for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+				if(GW.process.builtin_processes[i].operation == current_operation){
+
+					for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						cont+= '<div class="row paramrow" style="margin-left:5px;margin-right:5px;">';
+						cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						'     <div class="col-sm-8"> 	<input type="text" class="form-control builtin-parameter" id="param_'+
+						GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
+						
+						cont += '</div></div>';
+
+					}
+
+					break;
+
+				}
+				
+			}
+			
+			$("#"+codeareaid).append(cont);
+
+		},
 		
 		displayCodeArea: function(process_id, process_name, code_type, code){
 			
@@ -1438,7 +1481,7 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 
-				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
+				$("#code-embed").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
 				
 				if(code != null && code != "null"){
 
@@ -1452,6 +1495,8 @@ GW.process = {
 					
 					$("#code-embed").append(rendered);
 
+					nb.postlisten();
+
 					var newjupyter = nb.getjupyterjson();
 
 				}
@@ -1463,7 +1508,7 @@ GW.process = {
 				code = GW.general.parseResponse(code)
 				
 				var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-				'     <div class="col-sm-8"> <select class="form-control builtin-process" onchange=\"GW.process.updateBuiltin()\" id="builtin_processes">';
+				'     <div class="col-sm-8"> <select class="form-control builtin-process" id="builtin_processes">';
 				
 				for(var i=0;i<GW.process.builtin_processes.length;i++){
 					
@@ -1484,20 +1529,60 @@ GW.process = {
 				}
 				
 			   	cont += '  		</select></div>';
+
+				
 			   	
-			   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-			   		
-					cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-					GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
-					'     <div class="col-sm-8"> 	<input class="form-control builtin-parameter" id="param_'+
-					GW.process.builtin_processes[0].params[i].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
+			   	// for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+				// 	if(GW.process.builtin_processes[i].operation == code.operation){
+
+
+						// if (GW.process.builtin_processes[i].operation == 'AWS S3') {
+							
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
+							
+						// 	cont += '</div>';
+
+						// } else {
+
+
+
+						// for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						// 	cont+= '<div class="row paramrow">';
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
+							
+						// 	cont += '</div></div>';
+
+						// }
+							
+						// }
+
+				// 		break;
+
+				// 	}
 					
-					cont += '</div>';
-					
-				}
+				// }
 			   	
 			   	$("#code-embed").html(cont);
-			   	
+
+				$("#builtin_processes").on("change", function(){
+
+					GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed");
+					
+					// GW.process.updateBuiltin();
+
+				})
+
+				$("#builtin_processes").val(code.operation);
+
+				$("#builtin_processes").trigger("change");
+
 		   		for(var j=0;j<code.params.length;j+=1){
 		   			
 		   			$("#param_" + code.params[j].name).val(code.params[j].value);
@@ -2033,7 +2118,7 @@ GW.process = {
 			}).done(function(msg){
 				
 				if(msg){
-					
+					console.log(msg)
 					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){

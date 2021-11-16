@@ -164,8 +164,6 @@ public class GmailAPI {
              JSONObject json = new JSONObject(buffer.toString().trim());
 
              accessToken = json.getString("access_token");
-             System.err.print("accessToken\n");
-             System.err.print(accessToken);
 
         } catch (Exception ex) {
             ex.printStackTrace();
