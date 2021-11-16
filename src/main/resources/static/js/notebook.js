@@ -352,20 +352,6 @@
 				
 			});
 
-            // $(el).on('click', function(){
-            //     alert("Edit markdown cell single clicked");
-            //     if (root.renderMathInElement != null) {
-            //         el.innerHTML = nb.sanitizer(joined);
-            //         root.renderMathInElement(el, { delimiters: math_delimiters });
-            //         el.innerHTML = nb.sanitizer(nb.markdown(
-            //             el.innerHTML
-            //             .replace(/&gt;/g, ">") // Necessary to enable blockquote syntax
-            //         ));
-            //     } else {
-            //         el.innerHTML = nb.sanitizer(nb.markdown(joined));
-            //     }
-            // });
-
             return el;
         },
         heading: function () {
