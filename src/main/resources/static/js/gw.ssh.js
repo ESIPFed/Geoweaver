@@ -286,6 +286,8 @@ GW.ssh = {
 				$(".dot-flashing").removeClass("visible")
 				$(".dot-flashing").addClass("invisible")
 
+				
+
 			}else if(content=="disconnected"){
 				$(".dot-flashing").removeClass("visible")
 				$(".dot-flashing").addClass("invisible")

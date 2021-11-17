@@ -11,11 +11,11 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.8</version>
+	<version>0.9.9</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		
@@ -66,6 +66,11 @@
 	        <artifactId>spring-boot-devtools</artifactId>
 	        <optional>false</optional>
 	    </dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+    		<artifactId>aws-java-sdk</artifactId>
+    		<version>1.11.163</version>
+		</dependency>
 		
 		
 		<!-- below come from old settings -->

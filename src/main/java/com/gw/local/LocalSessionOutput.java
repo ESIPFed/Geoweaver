@@ -150,10 +150,10 @@ public class LocalSessionOutput  implements Runnable{
 
 		}
 
-		// ht.saveHistory(h);
-		historyrespository.save(h);
+		ht.saveHistory(h);
+		// historyrespository.save(h);
 
-		log.debug("print out history_output: " + h.getHistory_output());
+		// log.debug("print out history_output: " + h.getHistory_output());
 
 	}
 	
@@ -181,8 +181,8 @@ public class LocalSessionOutput  implements Runnable{
 
 		}
 
-		// ht.saveHistory(h);
-		historyrespository.save(h);
+		ht.saveHistory(h);
+		// historyrespository.save(h);
 
 		log.debug("print out history_output: " + h.getHistory_output());
 

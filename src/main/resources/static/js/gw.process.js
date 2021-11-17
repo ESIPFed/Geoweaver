@@ -4,10 +4,7 @@
 * 
 * @author Ziheng Sun
 *
-*/ 
-
-
-
+*/
 
 GW.process = {
 		
@@ -33,9 +30,11 @@ GW.process = {
 		
 		builtin_processes: [
 			
-			{"operation":"ShowResultMap", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
+			{"operation":"ShowResultMap", "params":[{"name":"FilePath", "min_occurs": 1, "max_occurs": 1}]}, //multiple occurs are something for later
 			
-			{"operation":"DownloadData", "params":[{"name":"file_url", "min_occurs": 1, "max_occurs": 1}]}
+			{"operation":"DownloadData", "params":[{"name":"resultfile", "min_occurs": 1, "max_occurs": 1}]},
+			
+			// {"operation":"AWS S3", "params":[{"name":"AWS Parameters", "min_occurs": 1, "max_occurs": 1}]} //not working on remote host, comment out until it is ready
 		
 		],
 		
@@ -204,19 +203,21 @@ GW.process = {
 			var $holder = document.querySelector("#jupyter_area");
 
 		    var render_notebook = function (ipynb) {
-		    	GW.process.jupytercode = JSON.stringify(ipynb);
+		    	GW.process.jupytercode = ipynb;
 		        var notebook = root.notebook = nb.parse(ipynb);
 		        while ($holder.hasChildNodes()) {
 		            $holder.removeChild($holder.lastChild);
 		        }
 		        $holder.appendChild(notebook.render());
-		        Prism.highlightAll();
+		        nb.postlisten();
+				Prism.highlightAll();
+
 		    };
 
 		    var load_file = function (file) {
 		        var reader = new FileReader();
 		        reader.onload = function (e) {
-		        	GW.process.jupytercode = JSON.stringify(this.result);
+		        	GW.process.jupytercode = this.result;
 		            var parsed = JSON.parse(this.result);
 		            render_notebook(parsed);
 		        };
@@ -318,11 +319,10 @@ GW.process = {
 
 			GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
 
-			var content = ''+
-				GW.process.getProcessDialogTemplate()+
-				'';
-			
-			content += '';
+			// var content = ''+
+			// 	GW.process.getProcessDialogTemplate()+
+			// 	'';
+			// content += '';
 
 			var content = `<div class="modal-body">
 					<div class="row"  style="font-size:12px;">
@@ -361,6 +361,10 @@ GW.process = {
 
 			$("#upload_replace_jupyter_confirm_btn").click(function(){
 
+				$("#code-embed").html("");
+
+				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
+
 				let code = GW.process.jupytercode;
 
 				if(code!=null && typeof code != 'undefined'){
@@ -369,6 +373,7 @@ GW.process = {
 					var notebook = nb.parse(code);
 					var rendered = notebook.render();
 					$("#code-embed").append(rendered);
+					nb.postlisten();
 				}
 
 				GW.process.replace_jupyter_jsframe.closeFrame();
@@ -405,6 +410,7 @@ GW.process = {
 				var notebook = nb.parse(code);
 				var rendered = notebook.render();
 				$("#jupyter_area-"+cmid).append(rendered);
+				nb.postlisten();
 			}
 			
 		},
@@ -412,28 +418,32 @@ GW.process = {
 		showBuiltinProcess: function(code, cmid){
 			
 			var cont = `     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>
-			     <div class="col-sm-8"> <select class="form-control" id="builtin_processes-` + cmid + `">`;
+			     <div class="col-sm-8"> <select class="form-control"  id="builtin_processes-` + cmid + `">`;
 			
 			for(var i=0;i<GW.process.builtin_processes.length;i++){
 				
 				cont += '    		<option value="'+GW.process.builtin_processes[i].operation +
 					'">'+GW.process.builtin_processes[i].operation + '</option>';
 				
-			}
+			} 
 			
 		   	cont += '  		</select></div>';
 		   	
-		   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-				
+			for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
+				cont += '<div class="row paramrow">';
 				cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'
 					+GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
 					'     <div class="col-sm-8"> 	<input class="form-control parameter" id="param_'+
 					GW.process.builtin_processes[0].params[i].name+'-'+cmid+'"></input>';
-					cont += '</div>';
-				
+					cont += '</div></div>';
+
 			}
 			
 			$("#codearea-"+cmid).append(cont);
+
+			$("#builtin_processes-"+cmid).on("change", function(){
+				GW.process.refreshBuiltinParameterList("builtin_processes-"+cmid, "codearea-"+cmid);
+			});
 			
 			if(code!=null){
 				
@@ -493,7 +503,7 @@ GW.process = {
 				
 			}else if($("#processcategory"+cmid).val()=="jupyter"){
 				
-				code = GW.process.jupytercode;
+				code = JSON.stringify(GW.process.jupytercode);
 				
 			}else if($("#processcategory"+cmid).val()=="python"){
 				
@@ -699,7 +709,7 @@ GW.process = {
 					"      <td>"+msg[i].id+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
 					status_col +
-					"      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
+					"      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
 				
 				if(msg[i].status == "Running"){
 					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.process.stop('"+msg[i].id+"')\">Stop</a>";
@@ -823,6 +833,7 @@ GW.process = {
 		 */
 		showHistoryDetails: function(history_id){
 			
+			console.log("history id: " + history_id);
 
 			$.ajax({
 				
@@ -833,6 +844,8 @@ GW.process = {
 				data: "type=process&id=" + history_id
 				
 			}).done(function(msg){
+
+				console.log("Log Message: " + msg);
 				
 				if(msg==""){
 					
@@ -852,9 +865,9 @@ GW.process = {
 
 				GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
 				
-			}).fail(function(){
+			}).fail(function(jxr, status){
 				
-				
+				console.error("Fail to get log.");
 			});
 			
 			
@@ -957,6 +970,8 @@ GW.process = {
 				}
 				
 				msg = GW.general.parseResponse(msg);
+
+				GW.process.display(msg);
 				
 				GW.process.displayOutput(msg);
 				
@@ -1424,6 +1439,39 @@ GW.process = {
 			$("#process-btn-group").append(menuItem);
 			
 		},
+
+		refreshBuiltinParameterList: function(proselectid, codeareaid){
+
+			$(".paramrow").remove();
+
+			var cont = "";
+
+			var current_operation = $("#" +proselectid).find(":selected").text();
+
+			for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+				if(GW.process.builtin_processes[i].operation == current_operation){
+
+					for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						cont+= '<div class="row paramrow" style="margin-left:5px;margin-right:5px;">';
+						cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						'     <div class="col-sm-8"> 	<input type="text" class="form-control builtin-parameter" id="param_'+
+						GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
+						
+						cont += '</div></div>';
+
+					}
+
+					break;
+
+				}
+				
+			}
+			
+			$("#"+codeareaid).append(cont);
+
+		},
 		
 		displayCodeArea: function(process_id, process_name, code_type, code){
 			
@@ -1433,21 +1481,23 @@ GW.process = {
 			
 			if(code_type == "jupyter"){
 
-				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
+				$("#code-embed").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
 				
 				if(code != null && code != "null"){
 
 					code = GW.general.parseResponse(code);
 					
+					GW.process.jupytercode = code;
+
 					var notebook = nb.parse(code);
 					
 					var rendered = notebook.render();
 					
-					code = rendered;
+					$("#code-embed").append(rendered);
 
-					
-					
-					$("#code-embed").append(code);
+					nb.postlisten();
+
+					var newjupyter = nb.getjupyterjson();
 
 				}
 				
@@ -1458,7 +1508,7 @@ GW.process = {
 				code = GW.general.parseResponse(code)
 				
 				var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-				'     <div class="col-sm-8"> <select class="form-control builtin-process" onchange=\"GW.process.updateBuiltin()\" id="builtin_processes">';
+				'     <div class="col-sm-8"> <select class="form-control builtin-process" id="builtin_processes">';
 				
 				for(var i=0;i<GW.process.builtin_processes.length;i++){
 					
@@ -1479,20 +1529,60 @@ GW.process = {
 				}
 				
 			   	cont += '  		</select></div>';
+
+				
 			   	
-			   	for(var i=0;i<GW.process.builtin_processes[0].params.length;i++){
-			   		
-					cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-					GW.process.builtin_processes[0].params[i].name+'</u>: </label>'+
-					'     <div class="col-sm-8"> 	<input class="form-control builtin-parameter" id="param_'+
-					GW.process.builtin_processes[0].params[i].name+'" onchange=\"GW.process.updateBuiltin()\" ></input>';
+			   	// for(var i=0;i<GW.process.builtin_processes.length;i++){
+
+				// 	if(GW.process.builtin_processes[i].operation == code.operation){
+
+
+						// if (GW.process.builtin_processes[i].operation == 'AWS S3') {
+							
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
+							
+						// 	cont += '</div>';
+
+						// } else {
+
+
+
+						// for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
+						// 	cont+= '<div class="row paramrow">';
+						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
+						// 	GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
+						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
+						// 	GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
+							
+						// 	cont += '</div></div>';
+
+						// }
+							
+						// }
+
+				// 		break;
+
+				// 	}
 					
-					cont += '</div>';
-					
-				}
+				// }
 			   	
 			   	$("#code-embed").html(cont);
-			   	
+
+				$("#builtin_processes").on("change", function(){
+
+					GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed");
+					
+					// GW.process.updateBuiltin();
+
+				})
+
+				$("#builtin_processes").val(code.operation);
+
+				$("#builtin_processes").trigger("change");
+
 		   		for(var j=0;j<code.params.length;j+=1){
 		   			
 		   			$("#param_" + code.params[j].name).val(code.params[j].value);
@@ -1763,6 +1853,8 @@ GW.process = {
 			var oper = $(".builtin-process").val()
 			
 			var pcode = {operation: oper, params: []}
+
+			var confidential = $('input[name="confidential_process"]:checked').val()
 			
 			$('.builtin-parameter').each(function(i, obj) {
 				
@@ -1780,7 +1872,7 @@ GW.process = {
 
 			pcode = JSON.stringify(pcode);
 			
-			this.updateRaw(pid, pname, plang, pdesc, pcode);
+			this.updateRaw(pid, pname, plang, pdesc, pcode, confidential);
 			
 		},
 		
@@ -1984,7 +2076,7 @@ GW.process = {
 			console.log("{{GW.process.js}}: "+msg.path)
 			var filename = msg.path.replace(/^.*[\\\/]/, '')
 
-			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"650\" height=\"415\"> ");
+			GW.ssh.echo("<img src=\"../download/temp/"+filename+"\" width=\"100%\" > ");
 
 			if(oper == "ShowResultMap"){
 				
@@ -2026,7 +2118,7 @@ GW.process = {
 			}).done(function(msg){
 				
 				if(msg){
-					
+					console.log(msg)
 					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){
@@ -2092,200 +2184,199 @@ GW.process = {
 		executeProcess: function(pid, hid, lang){
 			
             var req = {
-		    		
-		    		processId: pid,
-		    		
-		    		hostId: hid,
-		    		
-		    		desc: lang,
+				
+				processId: pid,
+				
+				hostId: hid,
+				
+				desc: lang,
 
-					lang: lang
+				lang: lang
 		    		
 		    }
             
             if(req.lang == "python" || req.lang == "jupyter"){
             	
-	            	//check if there is cached environment for this host
-	            	
-	            	var cached_env = GW.host.findEnvCache(hid);
-	            	
-	            	if(cached_env!=null){
-	            		
-	            		req.env = cached_env;
-	            		
-	            		GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	                	
-	            	}else{
-	            		
-	                	// retrieve the environment list of a host
-	            		
-	                	$.ajax({
-	                		
-	                		url: "env",
-	                		
-	                		method: "POST",
-	                		
-	                		data: "hid=" + hid
-	                		
-	                	}).done(function(msg){
-	                		
-	                		msg = GW.general.parseResponse(msg);
-	                		
-	                		if(GW.process.env_frame != null){
-	                			
-	                			try{
-	                				
-	                				GW.process.env_frame.closeFrame();
-	                				
-	                			}catch(e){}
-	                			
-	                			GW.process.env_frame = null;
-	                			
-	                		}
-	                		
-	                		var envselector = "<div class=\"form-group\">"+
-	                			"<label for=\"env-select\">Select Environment:</label>"+
-	                			"<select id=\"env-select\" class=\"form-control\"> "+
-	                			"	<option value=\"default\">Default</option>"+
-	                			"	<option value=\"new\">New</option>";
-	                		
-	                		GW.process.envlist = msg;
-	    						
-	                		for(var i=0;i<msg.length;i+=1){
-	                			
-	                			envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
-	                			
-	                		}
-	                		
-	                		envselector += "</select>";
-	                		
-	                		var content = '<div class="modal-body" style="font-size: 12px;">'+
-	                			"<form> "+
-		    					"    <div class=\"row\"> "+
-									envselector +
-								"    </div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"	<div class=\"form-group row\"> "+
-								"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
-								"    <div class=\"col-sm-8\"> "+
-								"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
-								"    </div> "+
-								"  	</div>"+
-								"</form>"+
-								"	<div class=\"form-group col-sm-10\">"+
-							    "		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" >"+
-							    "		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
-							    "   </div></div>";
-	                		
-	                		content += '<div class="modal-footer">' +
-	        				"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
-	        				"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-	        				'</div>';
-	                		
-	                		GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.lang + " environment")
-	                		
-	            			$("#env-select").change(function(e){
+				//check if there is cached environment for this host
+				
+				var cached_env = GW.host.findEnvCache(hid);
+				
+				if(cached_env!=null){
+					
+					req.env = cached_env;
+					
+					GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+					
+				}else{
+					
+					// retrieve the environment list of a host
+					
+					$.ajax({
+						
+						url: "env",
+						
+						method: "POST",
+						
+						data: "hid=" + hid
+						
+					}).done(function(msg){
+						
+						msg = GW.general.parseResponse(msg);
+						
+						if(GW.process.env_frame != null){
+							
+							try{
 								
-								if($(this).val() == 'default'){
+								GW.process.env_frame.closeFrame();
+								
+							}catch(e){}
+							
+							GW.process.env_frame = null;
+							
+						}
+						
+						var envselector = "<div class=\"form-group\">"+
+							"<label for=\"env-select\">Select Environment:</label>"+
+							"<select id=\"env-select\" class=\"form-control\"> "+
+							"	<option value=\"default\">Default</option>"+
+							"	<option value=\"new\">New</option>";
+						
+						GW.process.envlist = msg;
+							
+						for(var i=0;i<msg.length;i+=1){
+							
+							envselector += "<option value=\""+msg[i].id+"\">"+msg[i].name+"</option>";
+							
+						}
+						
+						envselector += "</select>";
+						
+						var content = '<div class="modal-body" style="font-size: 12px;">'+
+							"<form> "+
+							"    <div class=\"row\"> "+
+								envselector +
+							"    </div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"bin\">Python Command:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"bin\" placeholder=\"python3\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Environment Name:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"env\" placeholder=\"my-conda-env\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"	<div class=\"form-group row\"> "+
+							"    <label class=\"control-label col-sm-4\" for=\"env\">Base Directory:</label> "+
+							"    <div class=\"col-sm-8\"> "+
+							"      <input type=\"text\" class=\"form-control\" id=\"basedir\" placeholder=\"/tmp/\" disabled> "+
+							"    </div> "+
+							"  	</div>"+
+							"</form>"+
+							"	<div class=\"form-group col-sm-10\">"+
+							"		<input type=\"checkbox\" class=\"form-check-input\" id=\"remember\" >"+
+							"		<label class=\"form-check-label\" for=\"remember\">Don't ask again for this host</label>"+
+							"   </div></div>";
+						
+						content += '<div class="modal-footer">' +
+						"	<button type=\"button\" id=\"process-confirm-btn\" class=\"btn btn-outline-primary\">Confirm</button> "+
+						"	<button type=\"button\" id=\"process-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+						'</div>';
+						
+						GW.process.env_frame = GW.process.createJSFrameDialog(520, 340, content, "Set " + req.lang + " environment")
+						
+						$("#env-select").change(function(e){
+							
+							if($(this).val() == 'default'){
+								
+								$("#bin").prop('disabled', true);
+								
+								$("#env").prop('disabled', true);
+								
+								$("#basedir").prop('disabled', true);
+								
+							}else{
+								
+								$("#bin").prop('disabled', false);
+								
+								$("#env").prop('disabled', false);
+								
+								$("#basedir").prop('disabled', false);
+								
+								if($(this).val() != 'new'){
 									
-									$("#bin").prop('disabled', true);
+									var envid = $(this).val();
 									
-									$("#env").prop('disabled', true);
-									
-									$("#basedir").prop('disabled', true);
-									
-								}else{
-									
-									$("#bin").prop('disabled', false);
-									
-									$("#env").prop('disabled', false);
-									
-									$("#basedir").prop('disabled', false);
-									
-									if($(this).val() != 'new'){
+									for(var i=0;i<GW.process.envlist.length;i+=1){
 										
-										var envid = $(this).val();
+										var env = GW.process.envlist[i];
 										
-										for(var i=0;i<GW.process.envlist.length;i+=1){
+										if(env.id == envid){
 											
-											var env = GW.process.envlist[i];
-											
-											if(env.id == envid){
+												$("#bin").val(env.bin);
 												
-		        									$("#bin").val(env.bin);
-		        									
-		        									$("#env").val(env.pyenv);
-		        									
-		        									$("#basedir").val(env.basedir);
-		        									
-		        									break;
-		        									
-											}
-											
+												$("#env").val(env.pyenv);
+												
+												$("#basedir").val(env.basedir);
+												
+												break;
+												
 										}
 										
 									}
 									
 								}
 								
-							})
+							}
 							
-							$("#process-confirm-btn").click(function(){
+						})
+						
+						$("#process-confirm-btn").click(function(){
+							
+							if($(this).val() == 'default'){
 								
-								if($(this).val() == 'default'){
-	    	                		
-	    	                		req.env = { bin: "default", pyenv: "default", basedir: "default" };
-	    	                		
-	    	                	}else{
-	    	                		
-	    	                		req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
-	    	                		
-	    	                	}
-	    	                	
-	    	                	if($("#remember").prop('checked')){
-	    	                		
-	    	                		GW.host.setEnvCache(hid, req.env);
-	    	                		
-	    	                	}
-	    	                	
-	    	                	GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	    	                	
-	    	                	GW.process.env_frame.closeFrame();
+								req.env = { bin: "default", pyenv: "default", basedir: "default" };
 								
-							});
-	            			
-	            			$("#process-cancel-btn").click(function(){
-	            				
-	            				GW.process.env_frame.closeFrame();
-	            				
-	            			});
-	                		
-	                	}).fail(function(jxr, status){
-	        				
-	        				console.error("fail to get the environment on this host");
-	        				
-	        			});
-	        			
-	            		
-	            	}
-            	
-    			
-	    		}else{
-	    			
-	    			GW.host.start_auth_single(hid, req, GW.process.executeCallback );
-	    			
-	    		}
+							}else{
+								
+								req.env = { bin: $("#bin").val(), pyenv: $("#env").val(), basedir: $("#basedir").val() };
+								
+							}
+							
+							if($("#remember").prop('checked')){
+								
+								GW.host.setEnvCache(hid, req.env);
+								
+							}
+							
+							GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+							
+							GW.process.env_frame.closeFrame();
+							
+						});
+						
+						$("#process-cancel-btn").click(function(){
+							
+							GW.process.env_frame.closeFrame();
+							
+						});
+						
+					}).fail(function(jxr, status){
+						
+						console.error("fail to get the environment on this host");
+						
+					});
+					
+					
+				}
+				
+			}else{
+				
+				GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+				
+			}
 			
 		},
 		

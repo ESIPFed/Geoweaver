@@ -3,6 +3,7 @@ package com.gw.tasks;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.websocket.Session;
 
@@ -446,21 +447,27 @@ public class GeoweaverProcessTask  extends Task {
 		
 		History history = hist.getHistoryById(this.history_id);
 		
+		if(ExecutionStatus.RUNNING.equals(history.getHistory_output())){
+
+			bt.sleep(1); //wait for 1 seconds
+			history = hist.getHistoryById(this.history_id);
+		}
+
 		history.setHistory_begin_time(this.history_begin_time);
 		
 		history.setHistory_end_time(this.history_end_time);
 		
 		history.setHistory_process(this.pid);
 		
-		if(!bt.isNull(this.history_input)) history.setHistory_input(this.history_input);
+		if(!bt.isNull(this.history_input) && bt.isNull(history.getHistory_input())) history.setHistory_input(this.history_input);
 		
-		if(!bt.isNull(this.history_output)) history.setHistory_output(this.history_output);
+		if(!bt.isNull(this.history_output)) history.setHistory_output(this.history_output); //save the error message to the output
 		//if the process is already failed, don't update the status again because it is already failed
 		if(!ExecutionStatus.FAILED.equals(history.getIndicator()))history.setIndicator(this.curstatus.toString());
 		
 		history.setHost_id(this.host);
 		
-		hist.saveHistory(history);
+		if(!ExecutionStatus.RUNNING.equals(history.getHistory_output())) hist.saveHistory(history); //only save if the historyoutput is not Running.
     	
 	}
 
@@ -470,7 +477,6 @@ public class GeoweaverProcessTask  extends Task {
 	public void updateEverything(){
 
 		saveHistory();
-
 
 		if(!bt.isNull(this.workflow_history_id)){
 
@@ -487,6 +493,8 @@ public class GeoweaverProcessTask  extends Task {
 	public void responseCallback() {
 
 		logger.debug("Process "+ this.history_id +" is finished!");
+
+		logger.info("What is the history output? " + this.history_output);
 
 		this.updateEverything();
 

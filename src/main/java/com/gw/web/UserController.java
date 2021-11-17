@@ -1,7 +1,5 @@
 package com.gw.web;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,23 +10,21 @@ import com.gw.jpa.GWUser;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.EmailMessage;
 import com.gw.utils.EmailService;
 import com.gw.utils.HttpUtil;
 import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 @Controller 
 @RequestMapping(value="/user")  
@@ -88,14 +84,14 @@ public class UserController {
      * @return
      */
     @GetMapping("/reset_password")
-    public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
+    public String showResetPasswordForm(@RequestParam(name="token")String token, Model model) {
 
         if(!bt.isNull(token)){
 
             System.err.print(token);
             // User user = userService.getByResetPasswordToken(token);
-            String userid = ut.token2userid.get(token);
-            Date created_date = ut.token2date.get(token);
+            String userid = UserTool.token2userid.get(token);
+            Date created_date = UserTool.token2date.get(token);
     
             if(!bt.isNull(userid)){
     
@@ -126,9 +122,8 @@ public class UserController {
             
         }
 
-
-         
         return "reset_password";
+        
     }
     
     /**
@@ -142,10 +137,10 @@ public class UserController {
         String token = request.getParameter("token");
         String password = request.getParameter("password");
          
-        String userid = ut.token2userid.get(token);
+        String userid = UserTool.token2userid.get(token);
 
         //invalidate the toke right away
-        ut.token2userid.remove(token);
+        UserTool.token2userid.remove(token);
 
         String resp = "{\"status\": \"failed\"}";
 
@@ -153,9 +148,9 @@ public class UserController {
 
             GWUser user = ut.getUserById(userid);
 
-            Date created_date = ut.token2date.get(token);
+            Date created_date = UserTool.token2date.get(token);
             
-            ut.token2date.remove(token);
+            UserTool.token2date.remove(token);
 
             long time_difference =  new Date().getTime() - created_date.getTime();
 
