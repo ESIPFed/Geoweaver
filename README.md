@@ -4,9 +4,9 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity including SSH client (e.g., Putty), FTP client, and scientific workflow software. 
+Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, and workflow orchestration software. 
 
-It can be run from local machines.
+It can be run from both local and remote (distributed) machines.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
