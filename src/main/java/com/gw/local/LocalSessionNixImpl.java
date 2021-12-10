@@ -171,7 +171,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
 
-			bt.sleep(1000);
+			bt.sleep(1);
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
