@@ -290,7 +290,7 @@ public class SSHSessionImpl implements SSHSession {
             
         } catch (Throwable e) {
         }
-        // bt.printoutCallStack();
+        bt.printoutCallStack();
         log.info("session finalized");
     }
     
