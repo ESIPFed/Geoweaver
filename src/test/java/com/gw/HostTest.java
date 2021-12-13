@@ -63,7 +63,7 @@ public class HostTest {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String bultinjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_ssh_host.json" );
+		String bultinjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_ssh_host.txt" );
     	HttpEntity request = new HttpEntity<>(bultinjson, headers);
 		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add", 
 			request, 

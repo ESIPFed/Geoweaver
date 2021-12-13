@@ -190,22 +190,7 @@ class GeneralTests {
 
 	}
 
-	// This test could easily fail due to the environment differences
-	// @Test
-	void testReadEnvironment(){
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String testjson = bt.readStringFromFile(this.testResourceFiles()+ "/readenvironment.json" ); //so far, it only tests localhost
-    	HttpEntity request = new HttpEntity<>(testjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/readEnvironment", 
-			request, 
-			String.class);
-		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		// assertThat(result).contains("id");
-
-	}
+	
 
 
 	@Test
