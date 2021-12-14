@@ -19,6 +19,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
   * [Dependencies](#dependencies)
   * [Quick Install (Recommended Linux, Mac, Windows)](#quick-install)
   * [Build from source](#build-from-source)
+  * [Reset Password for Localhost](#reset-password-for-localhost)
 - [Demo](#demo)
 - [Tutorial](#tutorial)
 - [Citation](#citation)

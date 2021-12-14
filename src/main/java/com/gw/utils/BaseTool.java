@@ -1009,22 +1009,6 @@ public class BaseTool {
 	}
 	
 	/**
-	 * Parse VCI date
-	 * @param datestr
-	 * @return
-	 */
-	public Date parseVCIDate(String datestr){
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		Date d = null;
-		try {
-			d = format.parse(datestr);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Fail to parse Date from string."+ e.getLocalizedMessage());
-		}
-		return d;
-	}
-	/**
 	 * Get the root file path of Geoweaver
 	 * @return
 	 */
@@ -1073,7 +1057,7 @@ public class BaseTool {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
-            System.out.println("\tnull websocket trace at " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+            System.out.println("\tnull trace at " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
         }
     }
 

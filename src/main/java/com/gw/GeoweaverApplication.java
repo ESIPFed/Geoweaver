@@ -5,6 +5,7 @@ import java.io.Console;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
@@ -40,23 +41,32 @@ public class GeoweaverApplication {
             }
 
             console.printf("Reset Geoweaver Localhost password%n");
-            char[] passwordArray = console.readPassword("Enter your secret password: ");
+            char[] passwordArray = console.readPassword("Enter password: ");
             // console.printf("Password entered was: %s%n", new String(passwordArray));
+            char[] secondpasswordArray = console.readPassword("Retype password: ");
 
+            if(Arrays.equals(passwordArray, secondpasswordArray)){
 
-            String originalpassword = new String(passwordArray);
-        
-            BaseTool bt = new BaseTool();
+                String originalpassword = new String(passwordArray);
+            
+                BaseTool bt = new BaseTool();
 
-            bt.setLocalhostPassword(originalpassword, true);
+                bt.setLocalhostPassword(originalpassword, true);
 
-            console.printf("Password updated.");
+                System.out.println("NOTE: Password updated.");
+
+            }else{
+
+                System.err.println("ERROR: The two entered passwords don't match.");
+
+            }
+
 
         }else{
 
             SpringApplication.run(GeoweaverApplication.class, args);
 
-            // openHomePage();	
+            openHomePage();	
 
             addDefaultPublicUser();
 
@@ -115,15 +125,15 @@ public class GeoweaverApplication {
 
                 String initialpassword = new RandomString(30).nextString();
 
-                System.out.println("\n~~~~~~~~~\n");
+                System.out.println("\n============\n");
 
-                System.out.println("Default Password for Localhost Execution: " + initialpassword+ "\n");
+                System.out.println("Default password for Localhost: \n\n    " + initialpassword+ "\n\n");
 
-                System.out.println("Please copy and remember the password in a safe place. This message only shows once.");
+                System.out.println("Please copy and save the password in a safe place");
 
-                System.out.println("To change the password, please use command: java -jar geoweaver.jar resetpassword");
+                System.out.println("Change password: <java -jar geoweaver.jar resetpassword>");
 
-                System.out.println("\n~~~~~~~~~\n");
+                System.out.println("\n============\n");
                 
                 bt.setLocalhostPassword(initialpassword, false);
 

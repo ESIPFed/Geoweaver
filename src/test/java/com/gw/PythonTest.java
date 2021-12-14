@@ -22,6 +22,9 @@ import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +59,7 @@ public class PythonTest {
 	}
     
     @Test
-    public void testPythonProcess() throws JsonMappingException, JsonProcessingException{
+    public void testPythonProcess() throws JsonMappingException, JsonProcessingException, ParseException{
 
         HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -73,13 +76,30 @@ public class PythonTest {
 		Map<String,Object> map = mapper.readValue(result, Map.class);
 		String pid = String.valueOf(map.get("id"));
 
-		//run the python process
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		pythonjson = bt.readStringFromFile(bt.testResourceFiles()+ "/run_python_process.json" );
-		pythonjson = pythonjson.replace("jsff21", pid);
+		//get key
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/key", 
+			null, 
+			String.class);
+
+		JSONParser jsonParser=new JSONParser();
+
+		JSONObject jsonobj = (JSONObject)jsonParser.parse(result);
+
+		String rsakey = jsonobj.get("rsa_public").toString();
+		assertNotNull(rsakey);
+
+		//encode the password
+		String encryppswd = "";
+
 		
-    	request = new HttpEntity<>(pythonjson, headers);
-		// String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+		//run the python process
+		// headers.setContentType(MediaType.APPLICATION_JSON);
+		// pythonjson = bt.readStringFromFile(bt.testResourceFiles()+ "/run_python_process.txt" );
+		// pythonjson = pythonjson.replace("jsff21", pid);
+		// pythonjson = pythonjson.replace("<pswdencrypt>", encryppswd);
+		
+    	// request = new HttpEntity<>(pythonjson, headers);
+		// result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
 		// 	request, 
 		// 	String.class);
 		// logger.debug("the result is: " + result);

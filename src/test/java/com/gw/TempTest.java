@@ -1,4 +1,4 @@
-package com;
+package com.gw;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +24,7 @@ public class TempTest {
     public static void main(String[] args){
         TempTest tester = new TempTest();
         BaseTool bt = new BaseTool();
-        String testjson = bt.readStringFromFile(tester.testResourceFiles()+ "/conda.json" );
+        String testjson = bt.readStringFromFile(tester.testResourceFiles()+ "/conda.txt" );
         Scanner scanner = new Scanner(testjson);
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();

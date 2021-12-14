@@ -1,0 +1,1 @@
+hostid=100001&pswd=<pswdencrypt>&token=NkXys5hTdCRpOgpaYkEOJuUNSJ

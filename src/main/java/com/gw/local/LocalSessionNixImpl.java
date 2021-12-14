@@ -22,6 +22,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.OSValidator;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,7 +172,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
 
-			bt.sleep(1000);
+			bt.sleep(1);
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
@@ -304,7 +305,7 @@ public class LocalSessionNixImpl implements LocalSession {
     	
     	try {
     		
-    		log.info("save to local file: " + python);
+    		//log.info("save to local file: " + python);
     		
     		GWProcess pro = pt.getProcessById(processid);
     		
@@ -432,121 +433,149 @@ public class LocalSessionNixImpl implements LocalSession {
 
 	void readWhere(String hostid, String password) throws IOException, InterruptedException{
 
-		//read existing environments
-		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+		try{
+
+			//read existing environments
+			List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 			
-		List<String> cmds = new ArrayList();
-		cmds.add("whereis");
-		cmds.add("python");
+			if(!OSValidator.isMac()){
 
-		List<String> stdout = bt.executeLocal(cmds);
+				List<String> cmds = new ArrayList();
+				cmds.add("whereis");
+				cmds.add("python");
 
-		//get all the python path
-		for(String line: stdout){
+				List<String> stdout = bt.executeLocal(cmds);
 
-			if(!bt.isNull(line)){
+				//get all the python path
+				for(String line: stdout){
 
-				if(line.startsWith("python")){
+					if(!bt.isNull(line)){
 
-					String pythonarraystr = line.substring(8);
+						if(line.startsWith("python")){
 
-            		String[] pythonarray = pythonarraystr.split(" ");
+							String pythonarraystr = line.substring(8);
 
-					for(String pypath : pythonarray){
+							String[] pythonarray = pythonarraystr.split("\\s+");
 
-						if(!bt.isNull(pypath)){
-		
-							pypath = pypath.trim();
-		
-							et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
-		
+							for(String pypath : pythonarray){
+
+								if(!bt.isNull(pypath)){
+				
+									pypath = pypath.trim();
+				
+									et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+				
+								}
+				
+							}
+
 						}
-		
-					}
 
+					}
+					
+				}
+
+			}else{
+
+				List<String> cmds = new ArrayList();
+				cmds.add("sh");
+				cmds.add("-c");
+				cmds.add("ls /usr/bin/python*");
+
+				List<String> stdout = bt.executeLocal(cmds);
+
+				//get all the python path
+				for(String line: stdout){
+
+					if(!bt.isNull(line)){
+
+						String pythonarraystr = line;
+
+						String[] pythonarray = pythonarraystr.split("\\s+");
+
+						for(String pypath : pythonarray){
+
+							if(!bt.isNull(pypath)){
+			
+								pypath = pypath.trim();
+			
+								et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
+			
+							}
+			
+						}
+
+					}
+					
 				}
 
 			}
+
 			
-			
 
-			// Environment theenv = ht.getEnvironmentByBin(line, old_envlist);
+		}catch(Exception e){
 
-			// if(bt.isNull(theenv)){
+			e.printStackTrace();
 
-			// 	Environment env = new Environment();
-			// 	env.setId(new RandomString(6).nextString());
-			// 	env.setBin(line);
-			// 	env.setName(line);
-			// 	env.setHost(hostid);
-			// 	// env.setBasedir(line); //the execution place which is unknown at this point
-			// 	if(line.contains("conda"))
-			// 		env.setPyenv("anaconda");
-			// 	else
-			// 		env.setPyenv("pip");
-			// 	env.setSettings(""); //set the list of dependencies like requirements.json or .yaml
-			// 	env.setType("python"); //could be python or shell. R is not supported yet. 
-			// 	env.setBasedir("~");
-			// 	ht.saveEnvironment(env);
-
-			// }else{
-
-			// 	//if want to update the settings, do it here
-
-			// }
-			
 		}
+
 	}
 
 	void readConda(String hostid, String password) throws IOException, InterruptedException{
 
-		//read existing environments
-		List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
-			
-		List<String> cmds = new ArrayList();
-		cmds.add("conda");
-		cmds.add("env");
-		cmds.add("list");
+		try{
 
-		List<String> stdout = bt.executeLocal(cmds);
+			//read existing environments
+			List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
+				
+			List<String> cmds = new ArrayList();
+			cmds.add("conda");
+			cmds.add("env");
+			cmds.add("list");
 
-		if(stdout.size()>0 && stdout.get(0).startsWith("# conda")){
+			List<String> stdout = bt.executeLocal(cmds);
 
-			//get all the python path
-			for(String line: stdout){
+			if(stdout.size()>0 && stdout.get(0).startsWith("# conda")){
 
-				if(!bt.isNull(line) && !line.startsWith("#")){
+				//get all the python path
+				for(String line: stdout){
 
-					String[] vals = line.split("\\s+");
+					if(!bt.isNull(line) && !line.startsWith("#")){
 
-					if(vals.length<2) continue;
+						String[] vals = line.split("\\s+");
 
-					String bin = vals[vals.length-1]+"/bin/python";
+						if(vals.length<2) continue;
 
-					String name = bt.isNull(vals[0])?bin:vals[0];
+						String bin = vals[vals.length-1]+"/bin/python";
 
-					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
+						String name = bt.isNull(vals[0])?bin:vals[0];
 
-					if(bt.isNull(theenv)){
+						Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
 
-						et.addNewEnvironment(bin, old_envlist, hostid, name);
+						if(bt.isNull(theenv)){
 
-					}else{
+							et.addNewEnvironment(bin, old_envlist, hostid, name);
 
-						//if want to update the settings, do it here
+						}else{
+
+							//if want to update the settings, do it here
+
+						}
 
 					}
-
+					
 				}
-				
+
+			}else{
+
+				log.debug("Conda environments are not found.");
+
 			}
-
-		}else{
-
-			log.debug("Conda environments are not found.");
-
+			
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-	
+		
 	}
 
 	@Override
