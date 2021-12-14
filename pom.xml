@@ -26,6 +26,8 @@
 		<thymeleaf-version>[3.0.12,)</thymeleaf-version>
 
 		<start-class>com.gw.GeoweaverApplication</start-class>
+
+		<log4j2.version>2.15.0</log4j2.version>
 		
 	</properties>
 	
