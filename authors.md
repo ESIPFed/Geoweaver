@@ -1,11 +1,9 @@
 
-Dr. Ziheng Sun, GMU CSISS, zsun@gmu.edu (Principal Investigator)
+Geoweaver is a community effort and many community members have contributed their time and effort in it. 
 
-Dr. Liping Di, GMU CSISS, ldi@gmu.edu
+Please see full contributor list below:
 
-Many thanks to Dr. Annie Burgess for providing constructive advices and designing logo for Geoweaver.
-
-[developers](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
+[developer list](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 
 
 
