@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyPair;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Workflow;
+import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
@@ -50,6 +52,9 @@ public class PythonTest {
     @LocalServerPort
 	private int port;
 
+	@Autowired
+	RSAEncryptTool rsatool;
+
     Logger logger  = Logger.getLogger(this.getClass());
 
     @Test
@@ -59,7 +64,7 @@ public class PythonTest {
 	}
     
     @Test
-    public void testPythonProcess() throws JsonMappingException, JsonProcessingException, ParseException{
+    public void testPythonProcess() throws Exception{
 
         HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -89,8 +94,12 @@ public class PythonTest {
 		assertNotNull(rsakey);
 
 		//encode the password
-		String encryppswd = "";
+		
+		KeyPair kpair = rsatool.buildKeyPair();
 
+		String encryppswd = rsatool.byte2Base64(rsatool.encrypt(kpair.getPublic(), "111111"));
+
+		
 		
 		//run the python process
 		// headers.setContentType(MediaType.APPLICATION_JSON);
