@@ -528,10 +528,8 @@ public class GeoweaverController {
 		
 		try {
 			
-			
 			String type = request.getParameter("type");
 			
-
 			logger.debug("enter logs " + type);
 			
 			String id = request.getParameter("id");

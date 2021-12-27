@@ -1,0 +1,10 @@
+{
+    "type":"process",
+    "lang":"python",
+    "desc":"python",
+    "name":"test2",
+    "id":"<python_process_id>",
+    "owner":"111111",
+    "confidential":"FALSE",
+    "code":"# Write first python in Geoweaver\nimport os\n\nprint(\"Hello World\")\n\nprint(\"Testing weather forecasting\")"
+ }
