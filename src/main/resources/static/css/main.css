@@ -305,3 +305,45 @@ form .progress {
   border-radius: 20px;
   border: 3px solid rgb(255, 255, 255);
 }
+
+.table-color {
+  background-color: rgb(28, 28, 28); 
+  color: white;
+  padding: 5px;
+}
+
+.code__container {
+  display: flex;
+
+  /* Misc */
+  border: 1px solid #cbd5e0;
+  height: 16rem;
+  width: 100%;
+}
+
+.container__left {
+  /* Initially, the left takes 3/4 width */
+  width: 50%;
+
+  /* Misc */
+  /* align-items: center; */
+  display: flex;
+  /* justify-content: center; */
+}
+
+.container__right {
+  /* Take the remaining width */
+  flex: 1;
+  padding: 10px;
+  /* Misc */
+  /* align-items: center; */
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.resizer {
+  background-color: #cbd5e0;
+  cursor: ew-resize;
+  height: 100%;
+  width: 2px;
+}

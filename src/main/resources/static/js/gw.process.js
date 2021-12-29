@@ -689,7 +689,7 @@ GW.process = {
 		
 		getTable: function(msg){
 			
-			var content = "<table class=\"table\" style=\"background-color: silver;\" id=\"history_table\"> "+
+			var content = "<table class=\"table table-color\" id=\"history_table\"> "+
 			"  <thead> "+
 			"    <tr> "+
 			"      <th scope=\"col\">Execution Id</th> "+
@@ -1208,6 +1208,69 @@ GW.process = {
 			});
 			
 		},
+
+		activateResizer: function(){
+
+			// Query the element
+			const resizer = document.getElementById('dragMe');
+			const leftSide = resizer.previousElementSibling;
+			const rightSide = resizer.nextElementSibling;
+		
+			// The current position of mouse
+			let x = 0;
+			let y = 0;
+			let leftWidth = 0;
+		
+			// Handle the mousedown event
+			// that's triggered when user drags the resizer
+			const mouseDownHandler = function (e) {
+				// Get the current mouse position
+				x = e.clientX;
+				y = e.clientY;
+				leftWidth = leftSide.getBoundingClientRect().width;
+		
+				// Attach the listeners to `document`
+				document.addEventListener('mousemove', mouseMoveHandler);
+				document.addEventListener('mouseup', mouseUpHandler);
+			};
+		
+			const mouseMoveHandler = function (e) {
+				// How far the mouse has been moved
+				const dx = e.clientX - x;
+				const dy = e.clientY - y;
+		
+				const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+				leftSide.style.width = `${newLeftWidth}%`;
+		
+				resizer.style.cursor = 'col-resize';
+				document.body.style.cursor = 'col-resize';
+		
+				leftSide.style.userSelect = 'none';
+				leftSide.style.pointerEvents = 'none';
+		
+				rightSide.style.userSelect = 'none';
+				rightSide.style.pointerEvents = 'none';
+			};
+		
+			const mouseUpHandler = function () {
+				resizer.style.removeProperty('cursor');
+				document.body.style.removeProperty('cursor');
+		
+				leftSide.style.removeProperty('user-select');
+				leftSide.style.removeProperty('pointer-events');
+		
+				rightSide.style.removeProperty('user-select');
+				rightSide.style.removeProperty('pointer-events');
+		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', mouseMoveHandler);
+				document.removeEventListener('mouseup', mouseUpHandler);
+			};
+		
+			// Attach the handler
+			resizer.addEventListener('mousedown', mouseDownHandler);
+		
+		},
 		
 		display: function(msg){
 			
@@ -1321,14 +1384,17 @@ GW.process = {
 			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
 			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px);left:0; margin:0; padding: 0; \">";
 			
-			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
+			content += "<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
-				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" >"+
+				// "				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" >"+
+				"					<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
 				// "					<h4 class=\"border-bottom\">Code"+
 				// "					</h4> "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
-				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
+				'				<div class="resizer" id="dragMe"></div> '+
+				// "				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
+				"				<div id=\"single-console-content\" class=\"container__right\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
 				"					<h4>Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"overflow-wrap: break-word;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
@@ -1345,7 +1411,7 @@ GW.process = {
 
 			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;\">";
 
-			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
+			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >'+
 			'   </div>';
 			
 			content += "</div>";
@@ -1387,6 +1453,8 @@ GW.process = {
 			})
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
+
+			GW.process.activateResizer();
 			
 		},
 		
