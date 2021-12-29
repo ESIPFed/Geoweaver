@@ -1050,7 +1050,7 @@ GW.process = {
 			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
-		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit. </p>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to apply edits. </p>'+
 		       ' </form></div>';
 			
 			return content;
@@ -1302,8 +1302,8 @@ GW.process = {
 
 			owner = msg.owner;
 
-			var confidential_field = '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential </div>'+
-			'     <div class="col-sm-3" style="padding-left:30px;">';
+			var confidential_field = '     <div class="col-sm-1 col-form-label control-label">Confidential </div>'+
+			'     <div class="col-sm-2" style="padding-left:30px;">';
 
 			if(msg.confidential=="FALSE"){
 
@@ -1337,9 +1337,9 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 			
-			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
-		       '     <div class="col-sm-3" style="padding:0;">'+
+			content += '  <div class="row" style="padding:0px;margin:0px;font-size: 12px;"> '+
+		       '     <div class="col-sm-1 col-form-label control-label">Category</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
 			   '    			<option value="shell">Shell</option>'+
 			   '    			<option value="builtin">Built-In Process</option>'+
@@ -1349,51 +1349,43 @@ GW.process = {
 			   '    			<option value="matlab">Matlab</option>'+*/
 			   '  			</select>'+
 		       '     </div>'+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</div>'+
-		       '     <div class="col-sm-4" style="padding:0;">'+
+		       '     <div class="col-sm-1 col-form-label control-label">Name</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processname"></input>'+
-	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
-		       '   </div>' + 
-		       '   <div class="row" style="padding:0px;margin:0px;">'+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
-		       '     <div class="col-sm-3" style="padding:0;">'+
+		       '     <div class="col-sm-1 col-form-label control-label">ID</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
-	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
-			   confidential_field+
+			   		confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" >'+
 			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
-			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
-			   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
+			//    '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
+			//    '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
 			   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
 			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
 			   '			</p>'+
 			   '		 </div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group">'+
+			   
+			   '		</div>'+
 			   '   </div>' ;
 			
 			content += "<div class=\"subtab tab titleshadow\" data-intro=\"this is a tab inside the process tab panel\">"+
-			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
-			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
-			process_id+"', '" + process_name+"')\">History</button>"+
-		 	" </div>";
+				"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
+				"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
+				process_id+"', '" + process_name+"')\">History</button>"+
+				" </div>";
 			
-			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
 			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px);left:0; margin:0; padding: 0; \">";
 			
 			content += "<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
-				// "			<div class=\"row\">"+
-				// "				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" >"+
 				"					<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
-				// "					<h4 class=\"border-bottom\">Code"+
-				// "					</h4> "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				'				<div class="resizer" id="dragMe"></div> '+
-				// "				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
 				"				<div id=\"single-console-content\" class=\"container__right\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
 				"					<h4>Logging</h4> "+
 				"					<div id=\"process-log-window\" style=\"overflow-wrap: break-word;\"> </div> "+
@@ -1403,7 +1395,6 @@ GW.process = {
 				'						</div>'+
 				'   				</div>'+
 				"				</div>";
-				// "			</div>";
 
 			content += '</div>'+
 				
@@ -1486,21 +1477,21 @@ GW.process = {
 
 		displayToolbar: function(process_id, process_name, code_type){
 			
-			var menuItem = " <p align=\"right\">"+
+			var menuItem = " <p class=\"h6\" align=\"right\">"+
 			
-			"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
+			"<button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
         	
-			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
 			
-			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> "+
+			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
 			
-			"<i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
+			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
         	
-			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> "+
+			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"> Run</i> </button> "+
 			
-			"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
         	
-			process_id+"','process')\"></i>"+
+			process_id+"','process')\"> Delete</i>  </button>"+
 			
 			"</p>";
 			
