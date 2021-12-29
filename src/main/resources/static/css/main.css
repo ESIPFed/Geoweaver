@@ -276,9 +276,32 @@ form .progress {
 }
 
 .generalshadow {
-  box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset;
+  /* box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset; */
+  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .titleshadow {
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px inset;
+  box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* render scrollbar color */
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(28, 28, 28);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgb(71, 71, 71);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(28, 28, 28);
+  border-radius: 20px;
+  border: 3px solid rgb(255, 255, 255);
 }

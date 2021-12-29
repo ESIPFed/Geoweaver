@@ -1323,14 +1323,14 @@ GW.process = {
 			
 			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				// "			<div class=\"row\">"+
-				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;\" >"+
+				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" >"+
 				// "					<h4 class=\"border-bottom\">Code"+
 				// "					</h4> "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
-				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
-				"					<h4 style=\"color:black\">Logging</h4> "+
-				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
+				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
+				"					<h4>Logging</h4> "+
+				"					<div id=\"process-log-window\" style=\"overflow-wrap: break-word;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >'+
 				'							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>'+
