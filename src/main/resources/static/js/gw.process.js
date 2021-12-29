@@ -1362,8 +1362,8 @@ GW.process = {
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" >'+
 			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
-			//    '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
-			//    '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
+			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
+			   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
 			   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
 			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
 			   '			</p>'+
@@ -1379,7 +1379,7 @@ GW.process = {
 				process_id+"', '" + process_name+"')\">History</button>"+
 				" </div>";
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px);left:0; margin:0; padding: 0; \">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">";
 			
 			content += "<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
 				"					<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
@@ -1433,13 +1433,11 @@ GW.process = {
 
 			$("#log_switch").change(function(){
 				if(!this.checked){
-					$("#single-console-content").hide()
-					$("#process_code_window").removeClass("col-md-6");
-					$("#process_code_window").addClass("col-md-12");
+					$(".container__right").hide()
+					$(".container__left").css('width', '100%');
 				}else{
-					$("#single-console-content").show()
-					$("#process_code_window").removeClass("col-md-12");
-					$("#process_code_window").addClass("col-md-6");
+					$(".container__right").show()
+					$(".container__left").css('width', '50%');
 				}
 			})
 
@@ -1487,7 +1485,7 @@ GW.process = {
 			
 			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
         	
-			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"> Run</i> </button> "+
+			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
 			
 			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
         	
