@@ -888,9 +888,11 @@ public class WorkflowTool {
 		return h;
 	}
 
-	public String saveWorkflowFromFolder(String foldername) throws ParseException {
+	public String saveWorkflowFromFolder(String wid, String foldername) throws ParseException {
 
 		JSONParser jsonparser = new JSONParser();
+
+		foldername = foldername.substring(0, foldername.lastIndexOf("."));
 
 		String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
 	

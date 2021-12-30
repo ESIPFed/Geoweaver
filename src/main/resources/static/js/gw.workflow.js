@@ -460,7 +460,7 @@ GW.workflow = {
 
 					if(confirm("The upload workflow is valid. Do you want to proceed to save it into the database?")){
 
-						GW.workflow.saveUploadWorkflow(msg.id);
+						GW.workflow.saveUploadWorkflow(msg.id, filename);
 
 					}
 
@@ -485,7 +485,7 @@ GW.workflow = {
 
 	},
 
-	saveUploadWorkflow: function(id){
+	saveUploadWorkflow: function(id, filename){
 
 		$.ajax({
 	
@@ -493,7 +493,7 @@ GW.workflow = {
 			
 			method: "POST",
 			
-			data: "id=" + id
+			data: "id=" + id + "&filename=" + filename
 			
 		}).done(function(msg){
 
