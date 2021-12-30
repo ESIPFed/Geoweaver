@@ -90,7 +90,7 @@ GW.workflow = {
 						
 						workflowdescription = val;
 						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" value=\""+val+"\" /></textarea ></div>";
+							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
 						
 					}else if(i=="confidential"){
 						
@@ -541,18 +541,18 @@ GW.workflow = {
 				confidential = $('input[name="confidential_workflow"]:checked').val()
 				
 			}
-
-			var newname = "";
 			
 			var req = {
 					
 					"type": "workflow",
 
-					"name": newname,
+					"name": $('#display_workflow_name_field').val(),
 					
 					"id": this.loaded_workflow,
 
 					"confidential": confidential,
+
+					"description": $('#display_workflow_description_field').val(),
 
 					"owner": GW.user.current_userid,
 
@@ -613,8 +613,6 @@ GW.workflow = {
 			msg = $.parseJSON(msg);
 			
 			GW.workflow.loaded_workflow = msg.id;
-
-			
 			
 			GW.workspace.theGraph.load(msg);
 			
