@@ -1477,19 +1477,21 @@ GW.process = {
 			
 			var menuItem = " <p class=\"h6\" align=\"right\">"+
 			
-			"<button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
+			"<button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.history('"+
         	
-			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
+			process_id+"', '" + process_name+"')\"><i class=\"fa fa-history subalignicon\"  data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
 			
-			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.editSwitch()\">"+
 			
-			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
+			"<i class=\"fa fa-edit subalignicon\"  data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
+			
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.runProcess('"+
         	
-			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
+			process_id+"', '" + process_name + "', '" + code_type +"')\" ><i class=\"fa fa-play subalignicon\"  data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
 			
-			" <button type=\"button\" class=\"btn btn-outline-primary\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.menu.del('"+
         	
-			process_id+"','process')\"> Delete</i>  </button>"+
+			process_id+"','process')\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" > Delete</i>  </button>"+
 			
 			"</p>";
 			
