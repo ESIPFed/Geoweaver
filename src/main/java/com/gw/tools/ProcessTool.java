@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -736,6 +737,13 @@ public class ProcessTool {
 		
 		try {
 			
+			// ObjectMapper objectMapper = new ObjectMapper();
+			
+			// //Set pretty printing of json
+			// objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+			
+			// resp.append(objectMapper.writeValueAsString(recent_processes));
+
 			resp.append("[");
 			
 			int num = 0;
@@ -752,7 +760,7 @@ public class ProcessTool {
 				
 				resp.append("{ \"id\": \"").append(process_obj[0]).append("\", ");
 				
-				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
+				resp.append("\"name\": \"").append(process_obj[14]).append("\", ");
 				
 				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
 				

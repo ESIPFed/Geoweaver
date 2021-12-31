@@ -128,7 +128,11 @@ public class BaseTool {
 
 	public String getLocalhostPassword(){
 
+		logger.info("get existing workspace dir: " + workspace);
+
 		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
+
+		logger.info("new workspace dir: " + workspace);
 
 		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret";
 

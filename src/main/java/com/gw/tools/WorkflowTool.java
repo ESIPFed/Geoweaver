@@ -573,7 +573,7 @@ public class WorkflowTool {
 				
 				resp.append("{ \"id\": \"").append(recent_his[0]).append("\", "); //history id
 				
-				resp.append("\"name\": \"").append(recent_his[12]).append("\", ");
+				resp.append("\"name\": \"").append(recent_his[13]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(recent_his[2]).append("\", ");
 				
