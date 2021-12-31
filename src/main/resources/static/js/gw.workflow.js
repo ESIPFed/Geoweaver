@@ -139,21 +139,21 @@ GW.workflow = {
 		
 		"<p align=\"right\">"+
 		
-		"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
+		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.history('"+
     	
-		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+		workflowid+"', '" + workflowname+"')\"><i class=\"fa fa-history subalignicon\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button> "+
 		
-		"<i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
+		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.add('"+
     	
-		workflowid+"', '"+workflowname+"', false)\"></i> "+
+		workflowid+"', '"+workflowname+"', false)\"><i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\"></i> Run </button> "+
 
-		"<i class=\"fa fa-share subalignicon\" onclick=\"GW.workflow.landingpage('"+
+		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.landingpage('"+
     	
-		workflowid+"', '" + workflowname+"')\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> "+
+		workflowid+"', '" + workflowname+"')\"><i class=\"fa fa-share subalignicon\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> Share </button> "+
 		
-		"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
+		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('"+
     	
-		workflowid+"','workflow')\"></i>"+
+		workflowid+"','workflow')\" ><i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\"></i> Delete </button>"+
 		
 		"</p></div>"+
 
