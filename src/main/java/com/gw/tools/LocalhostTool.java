@@ -402,7 +402,7 @@ public class LocalhostTool {
 	 */
 	public void cleanAllPython(String hid) {
 		
-		String folderpath = workspace_folder_path + "/" + hid + "/";
+		String folderpath = bt.normalizedPath(workspace_folder_path) + "/" + hid + "/";
 		
 		File folder = new File(folderpath);
 		
@@ -427,7 +427,7 @@ public class LocalhostTool {
 	 */
 	public void localizeJupyter(String code, String name, String token) {
 		
-		File workfolder = new File(workspace_folder_path + "/" + token);
+		File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + token);
 		
 		if(!workfolder.exists()) {
 			
@@ -462,7 +462,7 @@ public class LocalhostTool {
 		
 		try {
 			
-			String folderpath = workspace_folder_path + "/" + hid + "/";
+			String folderpath = bt.normalizedPath(workspace_folder_path) + "/" + hid + "/";
 			
 			new File(folderpath).mkdirs(); //make a temporary folder
 			

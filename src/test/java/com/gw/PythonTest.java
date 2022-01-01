@@ -103,13 +103,7 @@ public class PythonTest {
 		// cityRepository = Mockito.mock(CityRepository.class);
     	// cityService = new CityServiceImpl(cityRepository);
 	}
-
-    @Test
-	void contextLoads() {
-		
-		
-	}
-
+	
     
     @Test
     public void testPythonProcess() throws Exception{

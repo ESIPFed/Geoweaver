@@ -89,15 +89,15 @@ public class EnvironmentTest {
 
         String encryptpswd = ""; //how to encrypt pswd here
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String testjson = bt.readStringFromFile(this.testResourceFiles()+ "/readenvironment.txt" ); //so far, it only tests localhost
-        testjson.replace("<pswdencrypt>", encryptpswd);
-    	HttpEntity request = new HttpEntity<>(testjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/readEnvironment", 
-			request, 
-			String.class);
-		logger.debug("the result is: " + result);
+		// HttpHeaders headers = new HttpHeaders();
+		// headers.setContentType(MediaType.APPLICATION_JSON);
+		// String testjson = bt.readStringFromFile(this.testResourceFiles()+ "/readenvironment.txt" ); //so far, it only tests localhost
+        // testjson.replace("<pswdencrypt>", encryptpswd);
+    	// HttpEntity request = new HttpEntity<>(testjson, headers);
+		// String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/readEnvironment", 
+		// 	request, 
+		// 	String.class);
+		// logger.debug("the result is: " + result);
 		// assertThat(result).contains("id");
 
 	}
