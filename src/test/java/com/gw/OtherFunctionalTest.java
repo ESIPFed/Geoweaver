@@ -2,14 +2,17 @@ package com.gw;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
 
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.LocalhostTool;
 import com.gw.tools.ProcessTool;
+import com.gw.tools.UserSession;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -18,22 +21,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class OtherFunctionalTest {
 
 	@InjectMocks
-    @Autowired
-	UserTool ut;
-
-	@InjectMocks
 	@Autowired
 	BaseTool bt;
-
-    @Autowired
-	private TestRestTemplate testrestTemplate;
 
     @LocalServerPort
 	private int port;
@@ -53,6 +48,10 @@ public class OtherFunctionalTest {
 	@InjectMocks
 	@Autowired
 	LocalhostTool ltmock;
+
+    @InjectMocks
+	@Autowired
+	UserTool utmock;
 
 
     @Test
@@ -75,24 +74,40 @@ public class OtherFunctionalTest {
     }
 
     @Test
-    void testUserLogin() throws Exception{
+    void testUserAuth() throws Exception{
 
-        //test sign up a fake user
+		utmock = Mockito.spy(utmock);
+		// doNothing().when(utmock).authenticate(anyString());
+        assertFalse(utmock.isAuth("nonauthorizeduser", "non-ip"));
 
-
-        //test sign in using the user
-
-
-        //test sign out
-
-
-		ltmock = Mockito.spy(ltmock);
-		doNothing().when(ltmock).authenticate(anyString());
-
-        //test deleting the user
-
-
+        
 
     }
+
+    @Test
+    void testUserSession(){
+
+        utmock = Mockito.spy(utmock);
+
+        utmock.bindSessionUser("xyzsession", "xyzuser", "x.x.x.x");
+        
+        when(utmock.isAuth("xyzsession", "x.x.x.x")).thenReturn(true);
+
+        assertEquals(utmock.getAuthUserId("xyzsession", "x.x.x.x"), "xyzuser");
+
+        UserSession us = new UserSession();
+        us.setJssessionid("xyzsession_expired");
+        us.setIp_address("x.x.x.x");
+        long oldtime = new Date().getTime() - 25*60*60*1000;
+        us.setCreated_time(new Date(oldtime));
+        utmock.authsession2user.add(us);
+        
+        utmock.cleanExpiredAuth();
+        when(utmock.isAuth("xyzsession_expired", "x.x.x.x")).thenReturn(true);
+        assertEquals(utmock.getAuthUserId("xyzsession_expired", "x.x.x.x"), "111111");
+
+    }
+
+
     
 }
