@@ -450,12 +450,6 @@ public class LocalhostTool {
 	 */
 	public void localizeAllPython(String hid) {
 		
-//		StringBuffer sql = new StringBuffer("select name,code from process_type where description = 'python';");
-//		
-//		logger.info(sql.toString());
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		Collection<GWProcess> pythonprocesses = processrepository.findPythonProcess();
 		
 		String code = null, name = null;

@@ -620,7 +620,7 @@ GW.process = {
 				
 				for(var i=0;i<msg.length;i++){
 					
-					var status_col = GW.process.getStatusCol(msg[i].id, msg[i].status);
+					var status_col = GW.history.getProcessStatusCol(msg[i].id, msg[i].status);
 					
 					var detailbtn = null;
 					
@@ -657,86 +657,6 @@ GW.process = {
 			
 		},
 		
-		getStatusCol: function(hid, status){
-			
-			var status_col = "      <td id=\"status_"+hid+"\" ><span class=\"label label-warning\">Pending</span></td> ";
-			
-			if(status == "Done"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-success\">Done</span></td> ";
-				
-			}else if(status == "Failed"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-danger\">Failed</span></td> ";
-				
-			}else if(status == "Running"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-warning\">Running <i class=\"fa fa-spinner fa-spin visible\" style=\"font-size:10px;color:red\"></i></span></td> ";
-				
-			}else if(status == "Stopped"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-default\">Stopped</span></td> ";
-				
-			}else{
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
-				
-			}
-			
-			return status_col;
-			
-		},
-		
-		getTable: function(msg){
-			
-			var content = "<table class=\"table table-color\" id=\"history_table\"> "+
-			"  <thead> "+
-			"    <tr> "+
-			"      <th scope=\"col\">Execution Id</th> "+
-			"      <th scope=\"col\">Begin Time</th> "+
-			"      <th scope=\"col\">Status</th> "+
-			"      <th scope=\"col\">Action</th> "+
-			"    </tr> "+
-			"  </thead> "+
-			"  <tbody> ";
-
-			
-			for(var i=0;i<msg.length;i++){
-				
-				var status_col = this.getStatusCol(msg[i].id, msg[i].status);
-				
-				content += "    <tr> "+
-					"      <td>"+msg[i].id+"</td> "+
-					"      <td>"+msg[i].begin_time+"</td> "+
-					status_col +
-					"      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
-				
-				if(msg[i].status == "Running"){
-					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.process.stop('"+msg[i].id+"')\">Stop</a>";
-				}
-				
-				content += "	   </td> "+
-					"    </tr>";
-				
-			}
-			
-			content += "</tbody>";
-			
-			// create an interactive chart to show all the data
-			
-			content = 
-			// "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
-			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
-			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
-			"</div>" + content ;
-			
-			return content;
-			
-		},
-		
-		
-		
-		
 		/**
 		 * list all the history execution of the process
 		 */
@@ -762,7 +682,9 @@ GW.process = {
 				
 				msg = GW.general.parseResponse(msg);
 				
-				$("#process-history-container").html(GW.process.getTable(msg));
+				$("#process-history-container").html(GW.history.getProcessHistoryTable(msg));
+
+				GW.history.applyBootstrapTable('process-history-table');
 				
 				GW.chart.renderProcessHistoryChart(msg);
 				
@@ -776,11 +698,6 @@ GW.process = {
 
 				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
 				
-				//the code has bug, when it scrolls to the location, the header toolbar is gone. Reason unknown.
-//				var elmnt = document.getElementById("process-history-container");
-//				 
-//				elmnt.scrollIntoView(true);
-				
 			}).fail(function(jxr, status){
 				
 				console.error(status);
@@ -788,7 +705,7 @@ GW.process = {
 			});
 			
 		},
-		
+
 		stop: function(history_id){
 			
 			console.log("Send stop request to stop the running process");

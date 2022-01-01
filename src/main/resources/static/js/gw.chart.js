@@ -170,26 +170,27 @@ GW.chart = {
 			
 			var labels = [], succeed = [], failed = [], running = [], unknown = [];
 			
-//			2019-12-05 15:27:13
-			
 //			{
-//				"id": "ek10vz3vx4hw",
-//				"begin_time": "2019-12-05 15:27:13",
-//				"end_time": "2019-12-05 15:27:14",
-//				"output": "start to prepare landsat into training dataset<br/>./geoweaver-e2hwnqorms4j.sh: line 5: cd: /home/zsun/dl-cdl/bin/: No such file or directory<br/>test ctrl+s<br/>mkdir: cannot create directory â??../data/cdl-projected/â??: No such file or directory<br/>../data/cdl-raw//*cdls.img<br/> gdalwarp -overwrite -t_srs EPSG:32614 -of GTiff ../data/cdl-raw//*cdls.img ../data/cdl-projected/*cdls.img_32614.tif<br/>ERROR 4: ../data/cdl-raw//*cdls.img: No such file or directory<br/>mkdir: cannot create directory â??../data/landsat-unzip/â??: No such file or directory<br/>mkdir: cannot create directory â??../data/tileindex/â??: No such file or directory<br/>mkdir: cannot create directory â??../data/cdl-cut/â??: No such file or directory<br/>../data/landsat//*<br/>get file name: *<br/>current date is: <br/>found band1 image: ../data/landsat-unzip//**band1*<br/>already unzipped<br/>../data/landsat-unzip//*band1*<br/>get band name: *band1*<br/>current date is: <br/>found band1 image: ../data/cdl-cut//**band1*<br/>./geoweaver-e2hwnqorms4j.sh: line 95: [: -lt: unary operator expected<br/>there is no CDL fro this year or the scene has already been cutted, skipping<br/>end the data preparation<br/>",
-//				"status": "Done",
-//				"host": "kps1gf"
-//			}
+// 	"history_id":"BSoARJLDm5cD",
+// 	"history_input":"\n",
+// 	"history_output":"3.9.7 \n",
+// 	"history_begin_time":1641022884104,
+// 	"history_end_time":1641022889227,
+// 	"history_notes":null,
+// 	"history_process":"beqbtr",
+// 	"host_id":null,
+// 	"indicator":"Done"
+//  }
 			
 			//sort the array ascending from early to later
 			
 			for(var i=0;i<msg.length;i+=1){
 				
-				var current_time = new Date(msg[i].begin_time);
+				var current_time = new Date(msg[i].history_begin_time);
 				
 				for(var j=i+1;j<msg.length;j+=1){
 					
-					var next_time = new Date(msg[j].begin_time);
+					var next_time = new Date(msg[j].history_begin_time);
 					
 					if(current_time.getTime() > next_time.getTime()){
 						
@@ -214,7 +215,7 @@ GW.chart = {
 			
 			for(var i=0;i<msg.length;i+=1){
 				
-				var current = new Date(msg[i].begin_time);
+				var current = new Date(msg[i].history_begin_time);
 				
 				if(previous==null){
 					
@@ -222,15 +223,15 @@ GW.chart = {
 					
 					labels.push(this.getYYYYMMDD(current));
 					
-					if(msg[i].status=="Done"){
+					if(msg[i].indicator=="Done"){
 						
 						suc_times += 1
 						
-					}else if(msg[i].status == "Failed"){
+					}else if(msg[i].indicator == "Failed"){
 						
 						fail_times += 1
 						
-					}else if(msg[i].status == "Running"){
+					}else if(msg[i].indicator == "Running"){
 						
 						running_times += 1
 						
@@ -254,15 +255,15 @@ GW.chart = {
 					
 				}else if(this.isInSameDay(current, previous)){
 					
-					if(msg[i].status=="Done"){
+					if(msg[i].indicator=="Done"){
 						
 						suc_times += 1
 						
-					}else if(msg[i].status == "Failed"){
+					}else if(msg[i].indicator == "Failed"){
 						
 						fail_times += 1
 						
-					}else if(msg[i].status == "Running"){
+					}else if(msg[i].indicator == "Running"){
 						
 						running_times += 1
 						
@@ -300,15 +301,15 @@ GW.chart = {
 					
 					suc_times = 0, fail_times = 0, running_times = 0, unknown_times = 0;
 					
-					if(msg[i].status=="Done"){
+					if(msg[i].indicator=="Done"){
 						
 						suc_times += 1
 						
-					}else if(msg[i].status == "Failed"){
+					}else if(msg[i].indicator == "Failed"){
 						
 						fail_times += 1
 						
-					}else if(msg[i].status == "Running"){
+					}else if(msg[i].indicator == "Running"){
 						
 						running_times += 1
 						
