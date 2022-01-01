@@ -684,7 +684,7 @@ GW.process = {
 				
 				$("#process-history-container").html(GW.history.getProcessHistoryTable(msg));
 
-				GW.history.applyBootstrapTable('process-history-table');
+				GW.history.applyBootstrapTable('process_history_table');
 				
 				GW.chart.renderProcessHistoryChart(msg);
 				
