@@ -176,4 +176,187 @@ class GeneralTests {
 
 	}
 
+
+	// Geoweaver/web/search
+	@Test
+	@DisplayName("Testing search of host, process, and workflow...")
+	void testSearchGlobal(){
+
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	
+		// Search for all available hosts
+		logger.debug("\n\n##############\nTesting search of all hosts\n##############\n");
+		HttpEntity request = new HttpEntity<>("type=host", headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("[");
+		// logger.debug("Result contains specific host: " + result.contains("New Host GoogleE"));
+
+		// Search for all available processes
+		logger.debug("\n\n##############\nTesting search of all processes\n##############\n");
+		request = new HttpEntity<>("type=process", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		assertThat(result).contains("[");
+
+
+		// Search for all available workflows
+		logger.debug("\n\n##############\nTesting search of all workflows\n##############\n");
+		request = new HttpEntity<>("type=workflow", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			request, 
+			String.class);
+		logger.debug("the result is: " + result);
+		assertThat(result).contains("[");
+	}
+
+
+	@Test
+	@DisplayName("Testing search of specific host.")
+	void testSearchHost() throws Exception{
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		// Add new host
+		String bultinjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_ssh_host.txt" );
+    	HttpEntity request = new HttpEntity<>(bultinjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add", 
+			request, 
+			String.class);
+		logger.debug("Adding host result: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
+    	
+		// Search for recently created host
+		logger.debug("\n\n##############\nTesting search of specific host\n##############\n");
+		HttpEntity searchRequest = new HttpEntity<>("type=host", headers);
+		String searchResult = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			searchRequest, 
+			String.class);
+		logger.debug("Search result of all hosts: " + searchResult);
+		// assertThat(controller).isNotNull();
+		assertThat(searchResult).contains("New Host");
+		logger.debug("Result contains specific host: " + searchResult.contains("New Host"));
+
+
+		//Remove the added host
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+		String hid = String.valueOf(map.get("id"));
+
+
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    	HttpEntity DeleteRequest = new HttpEntity<>("id="+hid+"&type=host", headers);
+		String DeleteResult = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			DeleteRequest, 
+			String.class);
+		logger.debug("Delete added host result: " + DeleteResult);
+		// assertThat(controller).isNotNull();
+		assertThat(DeleteResult).contains("done");
+
+	}
+
+	@Test
+	@DisplayName("Testing search of specific python process.")
+	void testSearchPythonProcess() throws Exception {
+
+		// Add Python Process
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String pythonjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_python_process.json" );
+    	HttpEntity request = new HttpEntity<>(pythonjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
+			request, 
+			String.class);
+		logger.debug("Adding python process result: " + result);
+		// assertThat(controller).isNotNull();
+		assertThat(result).contains("id");
+
+
+		// Search for specific python processes
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		logger.debug("\n\n##############\nTesting search of specific python process\n##############\n");
+		HttpEntity SearchRequest = new HttpEntity<>("type=process", headers);
+		String SearchResult = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			SearchRequest, 
+			String.class);
+		logger.debug("Search result of all python processes: " + SearchResult);
+		assertThat(SearchResult).contains("testpython2");
+		logger.debug("Result contains specific python process: " + SearchResult.contains("testpython2"));
+
+
+
+		// Delete added python process
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+		String pid = String.valueOf(map.get("id"));
+
+
+    	HttpEntity DeleteRequest = new HttpEntity<>("id="+pid+"&type=process", headers);
+		String DeleteResult = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			DeleteRequest, 
+			String.class);
+		logger.debug("Delete added python process result: " + DeleteResult);
+		// assertThat(controller).isNotNull();
+		assertThat(DeleteResult).contains("done");
+		
+	}
+
+	@Test
+	@DisplayName("Testing search of specific workflow.")
+	void testSearchWorkflow() throws Exception{
+
+		// Add workflow
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		String workflowjson = bt.readStringFromFile(this.testResourceFiles()+ "/add_workflow.json" );
+    	HttpEntity request = new HttpEntity<>(workflowjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/workflow", 
+			request, 
+			String.class);
+		logger.debug("Addedd Workflow: " + result);
+		assertThat(result).contains("id");
+
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String,Object> map = mapper.readValue(result, Map.class);
+
+		String pid = String.valueOf(map.get("id"));
+		assertNotNull(pid);
+
+
+		// Search for specific workflow
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		logger.debug("\n\n##############\nTesting search of specific workflow\n##############\n");
+		request = new HttpEntity<>("type=workflow", headers);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/search", 
+			request, 
+			String.class);
+		logger.debug("Search result of all workflows: " + result);
+		assertThat(result).contains("t2");
+		logger.debug("Result contains specific workflow: " + result.contains("t2"));
+
+
+		// Delete added workflow
+    	HttpEntity DeleteRequest = new HttpEntity<>("id="+map.get("id")+"&type=workflow", headers);
+		String DeleteResult = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
+			DeleteRequest, 
+			String.class);
+		logger.debug("Delete added workflow result: " + DeleteResult);
+		// assertThat(controller).isNotNull();
+		assertThat(DeleteResult).contains("done");
+
+
+		
+
+	}
+
+
 }
