@@ -83,16 +83,15 @@ class GeneralTests {
    	void testSubscriptionMessage() {
 		
       	GWUser u = ut.getUserById("111111");
-
-      	assertEquals(u.getUsername(), "publicuser");
+		if(!bt.isNull(u)) assertEquals(u.getUsername(), "publicuser");
+		
    	}
 
 	@Test
 	@DisplayName("Testing if the front page is accessible..")
 	void testFrontPage(){
+		
 		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/geoweaver", String.class);
-		// logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
 		assertThat(result).contains("Geoweaver");
 		
 	}
@@ -319,7 +318,7 @@ class GeneralTests {
 			DeleteRequest, 
 			String.class);
 		assertThat(DeleteResult).contains("done");
-		
+
 	}
 
 
