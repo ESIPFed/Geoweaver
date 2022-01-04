@@ -620,7 +620,7 @@ GW.process = {
 				
 				for(var i=0;i<msg.length;i++){
 					
-					var status_col = GW.process.getStatusCol(msg[i].id, msg[i].status);
+					var status_col = GW.history.getProcessStatusCol(msg[i].id, msg[i].status);
 					
 					var detailbtn = null;
 					
@@ -657,86 +657,6 @@ GW.process = {
 			
 		},
 		
-		getStatusCol: function(hid, status){
-			
-			var status_col = "      <td id=\"status_"+hid+"\" ><span class=\"label label-warning\">Pending</span></td> ";
-			
-			if(status == "Done"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-success\">Done</span></td> ";
-				
-			}else if(status == "Failed"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-danger\">Failed</span></td> ";
-				
-			}else if(status == "Running"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-warning\">Running <i class=\"fa fa-spinner fa-spin visible\" style=\"font-size:10px;color:red\"></i></span></td> ";
-				
-			}else if(status == "Stopped"){
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-default\">Stopped</span></td> ";
-				
-			}else{
-				
-				status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
-				
-			}
-			
-			return status_col;
-			
-		},
-		
-		getTable: function(msg){
-			
-			var content = "<table class=\"table\" style=\"background-color: silver;\" id=\"history_table\"> "+
-			"  <thead> "+
-			"    <tr> "+
-			"      <th scope=\"col\">Execution Id</th> "+
-			"      <th scope=\"col\">Begin Time</th> "+
-			"      <th scope=\"col\">Status</th> "+
-			"      <th scope=\"col\">Action</th> "+
-			"    </tr> "+
-			"  </thead> "+
-			"  <tbody> ";
-
-			
-			for(var i=0;i<msg.length;i++){
-				
-				var status_col = this.getStatusCol(msg[i].id, msg[i].status);
-				
-				content += "    <tr> "+
-					"      <td>"+msg[i].id+"</td> "+
-					"      <td>"+msg[i].begin_time+"</td> "+
-					status_col +
-					"      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a> &nbsp;";
-				
-				if(msg[i].status == "Running"){
-					content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.process.stop('"+msg[i].id+"')\">Stop</a>";
-				}
-				
-				content += "	   </td> "+
-					"    </tr>";
-				
-			}
-			
-			content += "</tbody>";
-			
-			// create an interactive chart to show all the data
-			
-			content = 
-			// "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
-			"<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
-			"<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
-			"</div>" + content ;
-			
-			return content;
-			
-		},
-		
-		
-		
-		
 		/**
 		 * list all the history execution of the process
 		 */
@@ -762,7 +682,9 @@ GW.process = {
 				
 				msg = GW.general.parseResponse(msg);
 				
-				$("#process-history-container").html(GW.process.getTable(msg));
+				$("#process-history-container").html(GW.history.getProcessHistoryTable(msg));
+
+				GW.history.applyBootstrapTable('process_history_table');
 				
 				GW.chart.renderProcessHistoryChart(msg);
 				
@@ -776,11 +698,6 @@ GW.process = {
 
 				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
 				
-				//the code has bug, when it scrolls to the location, the header toolbar is gone. Reason unknown.
-//				var elmnt = document.getElementById("process-history-container");
-//				 
-//				elmnt.scrollIntoView(true);
-				
 			}).fail(function(jxr, status){
 				
 				console.error(status);
@@ -788,7 +705,7 @@ GW.process = {
 			});
 			
 		},
-		
+
 		stop: function(history_id){
 			
 			console.log("Send stop request to stop the running process");
@@ -1050,7 +967,7 @@ GW.process = {
 			   confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row required" id="codearea-'+GW.process.cmid+'"></div>'+
-		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit. </p>'+
+		       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to apply edits. </p>'+
 		       ' </form></div>';
 			
 			return content;
@@ -1208,6 +1125,69 @@ GW.process = {
 			});
 			
 		},
+
+		activateResizer: function(){
+
+			// Query the element
+			const resizer = document.getElementById('dragMe');
+			const leftSide = resizer.previousElementSibling;
+			const rightSide = resizer.nextElementSibling;
+		
+			// The current position of mouse
+			let x = 0;
+			let y = 0;
+			let leftWidth = 0;
+		
+			// Handle the mousedown event
+			// that's triggered when user drags the resizer
+			const mouseDownHandler = function (e) {
+				// Get the current mouse position
+				x = e.clientX;
+				y = e.clientY;
+				leftWidth = leftSide.getBoundingClientRect().width;
+		
+				// Attach the listeners to `document`
+				document.addEventListener('mousemove', mouseMoveHandler);
+				document.addEventListener('mouseup', mouseUpHandler);
+			};
+		
+			const mouseMoveHandler = function (e) {
+				// How far the mouse has been moved
+				const dx = e.clientX - x;
+				const dy = e.clientY - y;
+		
+				const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+				leftSide.style.width = `${newLeftWidth}%`;
+		
+				resizer.style.cursor = 'col-resize';
+				document.body.style.cursor = 'col-resize';
+		
+				leftSide.style.userSelect = 'none';
+				leftSide.style.pointerEvents = 'none';
+		
+				rightSide.style.userSelect = 'none';
+				rightSide.style.pointerEvents = 'none';
+			};
+		
+			const mouseUpHandler = function () {
+				resizer.style.removeProperty('cursor');
+				document.body.style.removeProperty('cursor');
+		
+				leftSide.style.removeProperty('user-select');
+				leftSide.style.removeProperty('pointer-events');
+		
+				rightSide.style.removeProperty('user-select');
+				rightSide.style.removeProperty('pointer-events');
+		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', mouseMoveHandler);
+				document.removeEventListener('mouseup', mouseUpHandler);
+			};
+		
+			// Attach the handler
+			resizer.addEventListener('mousedown', mouseDownHandler);
+		
+		},
 		
 		display: function(msg){
 			
@@ -1239,8 +1219,8 @@ GW.process = {
 
 			owner = msg.owner;
 
-			var confidential_field = '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential </div>'+
-			'     <div class="col-sm-3" style="padding-left:30px;">';
+			var confidential_field = '     <div class="col-sm-1 col-form-label control-label">Confidential </div>'+
+			'     <div class="col-sm-2" style="padding-left:30px;">';
 
 			if(msg.confidential=="FALSE"){
 
@@ -1274,9 +1254,9 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\" style=\"height:100%;\">";
 			
-			content += '  <div class="row" style="padding:0px;margin:0px;"> '+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Category</div>'+
-		       '     <div class="col-sm-3" style="padding:0;">'+
+			content += '  <div class="row" style="padding:0px;margin:0px;font-size: 12px;"> '+
+		       '     <div class="col-sm-1 col-form-label control-label">Category</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
 			   '    			<option value="shell">Shell</option>'+
 			   '    			<option value="builtin">Built-In Process</option>'+
@@ -1286,19 +1266,15 @@ GW.process = {
 			   '    			<option value="matlab">Matlab</option>'+*/
 			   '  			</select>'+
 		       '     </div>'+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Name</div>'+
-		       '     <div class="col-sm-4" style="padding:0;">'+
+		       '     <div class="col-sm-1 col-form-label control-label">Name</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processname"></input>'+
-	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
-		       '   </div>' + 
-		       '   <div class="row" style="padding:0px;margin:0px;">'+
-		       '     <div style="font-size: 12px;" class="col-sm-2 col-form-label control-label">ID</div>'+
-		       '     <div class="col-sm-3" style="padding:0;">'+
+		       '     <div class="col-sm-1 col-form-label control-label">ID</div>'+
+		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
-	//		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		       '     </div>'+
-			   confidential_field+
+			   		confidential_field+
 		       '   </div>'+
 		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" >'+
@@ -1309,43 +1285,41 @@ GW.process = {
 			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
 			   '			</p>'+
 			   '		 </div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group"><div class=\"toast align-items-right text-white bg-success border-0\" style=\" width: fit-content; float: right; \" role="alert" aria-live="assertive" aria-atomic="true"> <div class="d-flex"> <div class="toast-body"> Editing enabled! </div> </div> </div></div>'+
+		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group">'+
+			   
+			   '		</div>'+
 			   '   </div>' ;
 			
 			content += "<div class=\"subtab tab titleshadow\" data-intro=\"this is a tab inside the process tab panel\">"+
-			"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
-			"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
-			process_id+"', '" + process_name+"')\">History</button>"+
-		 	" </div>";
+				"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
+				"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
+				process_id+"', '" + process_name+"')\">History</button>"+
+				" </div>";
 			
-			// content += "<div id=\"main-process-info-code\" class=\"tabcontent-process\" style=\"height:calc(100% - 145px); left:0; margin:0; padding: 5px;padding-bottom:25px; border: 1px solid gray;\">";
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px);left:0; margin:0; padding: 0; \">";
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">";
 			
-			content += "<div class=\"row\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
-				// "			<div class=\"row\">"+
-				"				<div id=\"process_code_window\" class=\"col col-md-6\" style=\"height:100%; padding:0; overflow-y:scroll;\" >"+
-				// "					<h4 class=\"border-bottom\">Code"+
-				// "					</h4> "+
+			content += "<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
+				"					<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
-				"				<div id=\"single-console-content\" class=\"col col-md-6\" style=\"height:100%;overflow-y: scroll;\"> "+
-				"					<h4 style=\"color:black\">Logging</h4> "+
-				"					<div id=\"process-log-window\" style=\"padding-left: 8px;padding-top: 19px; overflow-wrap: break-word; border-left:1px solid gray;\"> </div> "+
+				'				<div class="resizer" id="dragMe"></div> '+
+				"				<div id=\"single-console-content\" class=\"container__right\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
+				"					<h4>Logging</h4> "+
+				"					<div id=\"process-log-window\" style=\"overflow-wrap: break-word;\"> </div> "+
 				'   				<div class="row" style="padding:0px; margin:0px;" >'+
 				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >'+
 				'							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>'+
 				'						</div>'+
 				'   				</div>'+
 				"				</div>";
-				// "			</div>";
 
 			content += '</div>'+
 				
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 165px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;\">";
+			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;\">";
 
-			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; " >'+
+			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >'+
 			'   </div>';
 			
 			content += "</div>";
@@ -1376,17 +1350,17 @@ GW.process = {
 
 			$("#log_switch").change(function(){
 				if(!this.checked){
-					$("#single-console-content").hide()
-					$("#process_code_window").removeClass("col-md-6");
-					$("#process_code_window").addClass("col-md-12");
+					$(".container__right").hide()
+					$(".container__left").css('width', '100%');
 				}else{
-					$("#single-console-content").show()
-					$("#process_code_window").removeClass("col-md-12");
-					$("#process_code_window").addClass("col-md-6");
+					$(".container__right").show()
+					$(".container__left").css('width', '50%');
 				}
 			})
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
+
+			GW.process.activateResizer();
 			
 		},
 		
@@ -1418,21 +1392,23 @@ GW.process = {
 
 		displayToolbar: function(process_id, process_name, code_type){
 			
-			var menuItem = " <p align=\"right\">"+
+			var menuItem = " <p class=\"h6\" align=\"right\">"+
 			
-			"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
+			"<button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.history('"+
         	
-			process_id+"', '" + process_name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
+			process_id+"', '" + process_name+"')\"><i class=\"fa fa-history subalignicon\"  data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
 			
-			"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> "+
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.editSwitch()\">"+
 			
-			"<i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
+			"<i class=\"fa fa-edit subalignicon\"  data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
+			
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.runProcess('"+
         	
-			process_id+"', '" + process_name + "', '" + code_type +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i> "+
+			process_id+"', '" + process_name + "', '" + code_type +"')\" ><i class=\"fa fa-play subalignicon\"  data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
 			
-			"<i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
+			" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.menu.del('"+
         	
-			process_id+"','process')\"></i>"+
+			process_id+"','process')\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" > Delete</i>  </button>"+
 			
 			"</p>";
 			

@@ -164,7 +164,7 @@ public class WorkflowTool {
 
 		}
 
-		json.deleteCharAt(json.length() - 1);
+		if(json.length()>1) json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
@@ -573,7 +573,7 @@ public class WorkflowTool {
 				
 				resp.append("{ \"id\": \"").append(recent_his[0]).append("\", "); //history id
 				
-				resp.append("\"name\": \"").append(recent_his[12]).append("\", ");
+				resp.append("\"name\": \"").append(recent_his[13]).append("\", ");
 				
 				resp.append("\"end_time\": \"").append(recent_his[2]).append("\", ");
 				
@@ -601,16 +601,14 @@ public class WorkflowTool {
 
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history where id = '").append(hid).append("';");
-		
 		try {
+
+			Optional<History> hisopt = historyrepository.findById(hid);
+
+			if(hisopt.isPresent()){
+
+				History h = hisopt.get();
 			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-			
-			History h = historyrepository.findById(hid).get();
-			
-//			if(rs.next()) {
-				
 				resp.append("{ \"hid\": \"").append(h.getHistory_id()).append("\", ");
 				
 				resp.append("\"process\": \"").append(h.getHistory_process()).append("\", ");
@@ -626,8 +624,8 @@ public class WorkflowTool {
 				resp.append("\"input\":").append(list2JSON(processes)).append(", ");
 				
 				resp.append("\"output\":").append(list2JSON(histories)).append(" }");
-				
-//			}
+
+			}
 			
 		} catch (Exception e) {
 		
@@ -888,9 +886,11 @@ public class WorkflowTool {
 		return h;
 	}
 
-	public String saveWorkflowFromFolder(String foldername) throws ParseException {
+	public String saveWorkflowFromFolder(String wid, String foldername) throws ParseException {
 
 		JSONParser jsonparser = new JSONParser();
+
+		foldername = foldername.substring(0, foldername.lastIndexOf("."));
 
 		String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
 	

@@ -262,7 +262,7 @@ public class HostTool {
 
 		hostlist.forEach((host)->{json.append(toJSON(host)).append(",");});
 
-		json.deleteCharAt(json.length() - 1);
+		if(json.length()>1) json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		

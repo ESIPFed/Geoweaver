@@ -144,15 +144,16 @@ function switchTab(ele, name){
 
 	}
 	  
-  }
-  
-  function openCity(evt, name) {
+}
+
+function openCity(evt, name) {
 	switchTab(evt.currentTarget, name);
-  }
-  
-  $(document).ready(function(){
-	  console.log("trigger click event");
-	  //$("main-content-tab").trigger("click")
-	  switchTab(document.getElementById("main-general-tab"), "main-general");
-	  
-  });
+}
+
+$(document).ready(function(){
+
+	console.log("trigger click event");
+	//$("main-content-tab").trigger("click")
+	switchTab(document.getElementById("main-general-tab"), "main-general");
+	
+});

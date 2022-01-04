@@ -35,6 +35,14 @@ GW.general = {
 			
 		},
 
+		toDateString: function(longdate){
+			
+			var date = new Date(longdate);
+
+            return date.toLocaleString();
+
+		},
+
 		closeOtherFrames: function(frame){
 
 			try{

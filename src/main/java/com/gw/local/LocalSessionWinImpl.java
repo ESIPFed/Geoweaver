@@ -199,7 +199,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		String rand = new RandomString(3).nextString();
     		
-    		tempfile = workspace_folder_path + "/gw-" + token + "-" + rand + ".sh";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + rand + ".sh";
 
     		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
@@ -262,7 +262,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path + "/" + token)); // this folder is only used to find data files, not the execution command
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token)); // this folder is only used to find data files, not the execution command
     		
     		String pythonfilename = pro.getName();
     		

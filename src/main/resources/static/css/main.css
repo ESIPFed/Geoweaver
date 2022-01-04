@@ -276,9 +276,80 @@ form .progress {
 }
 
 .generalshadow {
-  box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset;
+  /* box-shadow: rgba(0, 0, 0, 0.4) 2px 1px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px 0px, rgba(0, 0, 0, 0.2) 2px 1px 0px inset; */
+  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .titleshadow {
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px inset;
+  box-shadow: 2px 0px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* render scrollbar color */
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(28, 28, 28);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgb(71, 71, 71);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(28, 28, 28);
+  border-radius: 20px;
+  border: 3px solid rgb(255, 255, 255);
+}
+
+.table-color {
+  background-color: rgb(28, 28, 28); 
+  color: rgb(211, 211, 211);
+  padding: 5px;
+}
+
+.table-color tbody tr td {
+
+  background-color: rgb(28, 28, 28); 
+
+}
+
+.code__container {
+  display: flex;
+
+  /* Misc */
+  border: 1px solid #cbd5e0;
+  height: 16rem;
+  width: 100%;
+}
+
+.container__left {
+  /* Initially, the left takes 3/4 width */
+  width: 50%;
+
+  /* Misc */
+  /* align-items: center; */
+  display: flex;
+  /* justify-content: center; */
+}
+
+.container__right {
+  /* Take the remaining width */
+  flex: 1;
+  padding: 10px;
+  /* Misc */
+  /* align-items: center; */
+  /* display: flex; */
+  /* justify-content: center; */
+}
+
+.resizer {
+  background-color: #cbd5e0;
+  cursor: ew-resize;
+  height: 100%;
+  width: 2px;
 }

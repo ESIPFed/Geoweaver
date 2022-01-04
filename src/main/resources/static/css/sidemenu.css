@@ -314,7 +314,7 @@ body {
 	
 }
 
-.CodeMirror { border: 1px solid silver; }
+.CodeMirror { border: none; }
 .CodeMirror-empty { outline: 1px solid #c22; }
 .CodeMirror-empty.CodeMirror-focused { outline: none; }
 .CodeMirror pre.CodeMirror-placeholder { color: #999; }

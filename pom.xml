@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.10</version>
+	<version>0.9.11</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
@@ -324,7 +324,7 @@
         <dependency>
 		    <groupId>com.h2database</groupId>
 		    <artifactId>h2</artifactId>
-		    <version>1.4.199</version>
+		    <version>1.4.200</version>
 		    <!-- <scope>test</scope> -->
 		</dependency>
 		

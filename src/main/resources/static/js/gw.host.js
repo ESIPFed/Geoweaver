@@ -1925,7 +1925,7 @@ GW.host = {
 			"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"compareHistoryBtn\" >Compare</button> "+
 			"<button type=\"button\" class=\"btn btn-primary btn-sm\" id=\"refreshHostHistoryBtn\" >Refresh</button> </div>"+
 			
-			"<table class=\"table host_history_table\"> "+
+			"<table class=\"table host_history_table table-color\"> "+
 			"  <thead> "+
 			"    <tr> "+
 			"      <th scope=\"col\"><input type=\"checkbox\" id=\"all-selected\" ></th> "+

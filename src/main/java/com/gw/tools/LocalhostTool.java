@@ -402,7 +402,7 @@ public class LocalhostTool {
 	 */
 	public void cleanAllPython(String hid) {
 		
-		String folderpath = workspace_folder_path + "/" + hid + "/";
+		String folderpath = bt.normalizedPath(workspace_folder_path) + "/" + hid + "/";
 		
 		File folder = new File(folderpath);
 		
@@ -427,7 +427,7 @@ public class LocalhostTool {
 	 */
 	public void localizeJupyter(String code, String name, String token) {
 		
-		File workfolder = new File(workspace_folder_path + "/" + token);
+		File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + token);
 		
 		if(!workfolder.exists()) {
 			
@@ -450,19 +450,13 @@ public class LocalhostTool {
 	 */
 	public void localizeAllPython(String hid) {
 		
-//		StringBuffer sql = new StringBuffer("select name,code from process_type where description = 'python';");
-//		
-//		logger.info(sql.toString());
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		Collection<GWProcess> pythonprocesses = processrepository.findPythonProcess();
 		
 		String code = null, name = null;
 		
 		try {
 			
-			String folderpath = workspace_folder_path + "/" + hid + "/";
+			String folderpath = bt.normalizedPath(workspace_folder_path) + "/" + hid + "/";
 			
 			new File(folderpath).mkdirs(); //make a temporary folder
 			

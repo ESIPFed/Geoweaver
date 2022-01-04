@@ -5,9 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -125,7 +127,7 @@ public class ProcessTool {
 
 		}
 
-		json.deleteCharAt(json.length() - 1);
+		if(json.length()>1) json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
@@ -735,6 +737,13 @@ public class ProcessTool {
 		
 		try {
 			
+			// ObjectMapper objectMapper = new ObjectMapper();
+			
+			// //Set pretty printing of json
+			// objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+			
+			// resp.append(objectMapper.writeValueAsString(recent_processes));
+
 			resp.append("[");
 			
 			int num = 0;
@@ -751,7 +760,7 @@ public class ProcessTool {
 				
 				resp.append("{ \"id\": \"").append(process_obj[0]).append("\", ");
 				
-				resp.append("\"name\": \"").append(process_obj[12]).append("\", ");
+				resp.append("\"name\": \"").append(process_obj[14]).append("\", ");
 				
 				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
 				
@@ -808,51 +817,57 @@ public class ProcessTool {
 		
 		try {
 			
-			History hist = historyrepository.findById(hid).get();
+			Optional<History> resop = historyrepository.findById(hid);
 
-			if(!bt.isNull(hist)) {
+			if(resop.isPresent()){
 
-				GWProcess thep = processrepository.findById(hist.getHistory_process()).get();
-				
-				resp.append("{ \"hid\": \"").append(hist.getHistory_id()).append("\", ");
-				
-				resp.append("\"id\": \"").append(hist.getHistory_process()).append("\", ");
-				
-				resp.append("\"name\": \"").append(thep.getName()).append("\", ");
-				
-				resp.append("\"notes\": \"").append(hist.getHistory_notes()).append("\", ");
-				
-				resp.append("\"begin_time\":\"").append(hist.getHistory_begin_time()).append("\", ");
-				
-				resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
-				
-				String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
+				History hist = resop.get();
 
-			// 	if(!bt.isNull(hist.getHistory_input()) && (hist.getHistory_input().contains("bash\\\n") || hist.getHistory_input().contains("\\\nimport") 
-			// || hist.getHistory_input().contains("\\\"operation\\\"") || hist.getHistory_input().contains("\\\"cells\\\""))){
-				
-			// 		input_code = this.unescape(hist.getHistory_input());
+				if(!bt.isNull(hist)) {
 
-			// 	}else{
-				
-			// 		input_code = bt.escape(hist.getHistory_input());
-				
-			// 	}
-				
-				resp.append("\"input\":\"").append(input_code).append("\", ");
-				
-				String output_code = bt.escape(String.valueOf(hist.getHistory_output()));
-				
-				resp.append("\"output\":\"").append(output_code).append("\", ");
-				
-				resp.append("\"lang\":\"").append(thep.getLang()).append("\", ");
-				
-				resp.append("\"host\":\"").append(hist.getHost_id()).append("\", ");
+					GWProcess thep = processrepository.findById(hist.getHistory_process()).get();
+					
+					resp.append("{ \"hid\": \"").append(hist.getHistory_id()).append("\", ");
+					
+					resp.append("\"id\": \"").append(hist.getHistory_process()).append("\", ");
+					
+					resp.append("\"name\": \"").append(thep.getName()).append("\", ");
+					
+					resp.append("\"notes\": \"").append(hist.getHistory_notes()).append("\", ");
+					
+					resp.append("\"begin_time\":\"").append(hist.getHistory_begin_time()).append("\", ");
+					
+					resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
+					
+					String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
 
-				resp.append("\"confidential\":\"").append(thep.getConfidential()).append("\", ");
-				
-				resp.append("\"status\":\"").append(hist.getIndicator()).append("\" }");
-				
+				// 	if(!bt.isNull(hist.getHistory_input()) && (hist.getHistory_input().contains("bash\\\n") || hist.getHistory_input().contains("\\\nimport") 
+				// || hist.getHistory_input().contains("\\\"operation\\\"") || hist.getHistory_input().contains("\\\"cells\\\""))){
+					
+				// 		input_code = this.unescape(hist.getHistory_input());
+
+				// 	}else{
+					
+				// 		input_code = bt.escape(hist.getHistory_input());
+					
+				// 	}
+					
+					resp.append("\"input\":\"").append(input_code).append("\", ");
+					
+					String output_code = bt.escape(String.valueOf(hist.getHistory_output()));
+					
+					resp.append("\"output\":\"").append(output_code).append("\", ");
+					
+					resp.append("\"lang\":\"").append(thep.getLang()).append("\", ");
+					
+					resp.append("\"host\":\"").append(hist.getHost_id()).append("\", ");
+
+					resp.append("\"confidential\":\"").append(thep.getConfidential()).append("\", ");
+					
+					resp.append("\"status\":\"").append(hist.getIndicator()).append("\" }");
+					
+				}
+
 			}
 			
 		} catch (Exception e) {

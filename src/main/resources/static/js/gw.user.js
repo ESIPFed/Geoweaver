@@ -322,29 +322,27 @@ GW.user = {
 
         GW.user.closeOtherFrames();
 
-        var content = "<div class=\"modal-body\" style=\"font-size: 12px;\" id=\"profile_dialog_body\">"+
+        var content = `<div class="modal-body" style="font-size: 12px;" id="profile_dialog_body">
+            <div class="row">
+            <div class="col-md-12">
+                User Name: <input type="text" id="username" class="input-lg" name="username" value="`+
+                message.username+
+        `   " disabled="disabled"  placeholder="username">
+            </div>
+            <div class="col-md-12">
+                Email: <input type="text" id="email" class="input-lg" name="email" value="`+
+               message.email+
+        `   " disabled="disabled" placeholder="email">
+            </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <button onclick="GW.user.closeOtherFrames()"  class="btn btn-lg btn-primary">Ok</button>
+                </div>
+            </div>
         
-        "<div class=\"row\">"+
-        
-        "   <div class=\"col-md-12\">"+
-        '       User Name: <input type="text" id="username" class=\"input-lg\" name="username" value="'+message.username+'" disabled="disabled"  placeholder="username">'+
-        "   </div>"+
-        "   <div class=\"col-md-12\">"+
-        '       Email: <input type="text" id="email" class=\"input-lg\" name="email" value="'+message.email+'" disabled="disabled" placeholder="email">'+
-        "   </div>"+
-        "</div>"+
-
-
-        "<div class=\"row\">"+
-        '   <div class=\"col-md-12\">'+
-        
-        "       <button onclick=\"GW.user.closeOtherFrames()\"  class=\"btn btn-lg btn-primary\">Ok</button>"+
-
-        "   </div>"+
-        "</div>"+
-        
-        
-        "</div>";
+        </div>`;
         
         this.profile_frame = GW.process.createJSFrameDialog(300, 400, content, "Profile")
 
@@ -486,7 +484,7 @@ GW.user = {
         '       <input type="text" id="email" class=\"input-lg\" name="email" placeholder="email"/>'+
         "   </div>"+
         "   <div class=\"col-md-12\">"+
-        '       Do you agree our <a href=\"\">User Terms</a>: <input class="form-check-input" type="radio" name="term_agree" id="agree_yes"> yes <input class="form-check-input" type="radio" name="term_agree" id="agree_no"> no '+
+        '       Do you agree our <a href=\"javascript:GW.about.showTerms()\" >User Terms</a>: <input class="form-check-input" type="radio" name="term_agree" id="agree_yes"> yes <input class="form-check-input" type="radio" name="term_agree" id="agree_no"> no '+
         "   </div>"+
         "</div>"+
 

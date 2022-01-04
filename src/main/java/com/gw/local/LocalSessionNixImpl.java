@@ -81,9 +81,6 @@ public class LocalSessionNixImpl implements LocalSession {
     private String           tempfile;
     
     @Value("${geoweaver.workspace}")
-    private String           workspace;
-    
-    
     private String           workspace_folder_path;
 
 	private Process          process;
@@ -162,9 +159,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		workspace_folder_path = bt.normalizedPath(workspace);
-    		
-    		tempfile = workspace_folder_path + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
 
     		// script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
     		
@@ -176,7 +171,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)));
     		
     		builder.command(tempfile);
     		
@@ -224,9 +219,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		workspace_folder_path = bt.normalizedPath(workspace);
-    		
-    		tempfile = workspace_folder_path + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
 
     		bt.writeString2File(notebookjson, tempfile);
     		
@@ -247,7 +240,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(workspace_folder_path));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)));
     		
 			if(bt.isNull(bin)){
 			
@@ -311,9 +304,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		workspace_folder_path = bt.normalizedPath(workspace);
-    		
-    		builder.directory(new File(workspace_folder_path + "/" + token));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
     		
     		String pythonfilename = pro.getName();
     		
