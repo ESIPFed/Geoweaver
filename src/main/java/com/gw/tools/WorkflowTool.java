@@ -164,7 +164,7 @@ public class WorkflowTool {
 
 		}
 
-		json.deleteCharAt(json.length() - 1);
+		if(json.length()>1) json.deleteCharAt(json.length() - 1);
 		
 		json.append("]");
 		
