@@ -601,16 +601,14 @@ public class WorkflowTool {
 
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history where id = '").append(hid).append("';");
-		
 		try {
+
+			Optional<History> hisopt = historyrepository.findById(hid);
+
+			if(hisopt.isPresent()){
+
+				History h = hisopt.get();
 			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-			
-			History h = historyrepository.findById(hid).get();
-			
-//			if(rs.next()) {
-				
 				resp.append("{ \"hid\": \"").append(h.getHistory_id()).append("\", ");
 				
 				resp.append("\"process\": \"").append(h.getHistory_process()).append("\", ");
@@ -626,8 +624,8 @@ public class WorkflowTool {
 				resp.append("\"input\":").append(list2JSON(processes)).append(", ");
 				
 				resp.append("\"output\":").append(list2JSON(histories)).append(" }");
-				
-//			}
+
+			}
 			
 		} catch (Exception e) {
 		

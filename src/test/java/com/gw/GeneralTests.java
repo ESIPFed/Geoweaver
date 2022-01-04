@@ -9,8 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.jpa.GWUser;
 import com.gw.tools.UserTool;
@@ -142,11 +140,6 @@ class GeneralTests {
 		assertThat(result).contains("[");
 	}
 
-	
-
-	
-
-
 	@Test
 	void testJSONEscape(){
 
@@ -172,7 +165,6 @@ class GeneralTests {
 
 			logger.debug("cell is not detected");
 		}
-
 
 	}
 

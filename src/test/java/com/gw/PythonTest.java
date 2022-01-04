@@ -115,10 +115,6 @@ public class PythonTest {
 		// run the python process
 		ltmock = Mockito.spy(ltmock);
 		doNothing().when(ltmock).authenticate(anyString());
-		// when(ltmock.executePythonProcess(anyString(), anyString(), 
-		// 		anyString(), anyString(), anyString(), anyBoolean(), anyString(), 
-		// 		anyString(), anyString()))
-		// 	.thenCallRealMethod();
 
 		String historyid = new RandomString(12).nextString();
 
