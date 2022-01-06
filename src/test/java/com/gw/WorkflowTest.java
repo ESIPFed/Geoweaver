@@ -1,59 +1,41 @@
 package com.gw;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
-import net.bytebuddy.utility.RandomString;
-
-import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.security.KeyPair;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-
-
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gw.jpa.GWUser;
-import com.gw.tools.UserTool;
-import com.gw.utils.BaseTool;
+import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.LocalhostTool;
+import com.gw.tools.UserTool;
 import com.gw.tools.WorkflowTool;
-import com.gw.ssh.RSAEncryptTool;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.JSONObject;
-
+import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
+
+import net.bytebuddy.utility.RandomString;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WorkflowTest {
@@ -127,8 +109,6 @@ public class WorkflowTest {
 		String pid = String.valueOf(map.get("id"));
 		assertNotNull(pid);
 
-
-		
 		//Get RSA key
 		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/key", 
         null, String.class);
@@ -147,7 +127,6 @@ public class WorkflowTest {
 		String encryppswd = RSAEncryptTool.byte2Base64(RSAEncryptTool.encrypt(kpair.getPublic(), "testpswd"));
         logger.debug("Encrypted Password: "+ encryppswd);
 
-		
 		// Execute workflow
 		ltmock = Mockito.spy(ltmock);
 		doNothing().when(ltmock).authenticate(anyString());
@@ -162,16 +141,12 @@ public class WorkflowTest {
 		String resp = wtmock.one_history(historyid);
 		logger.debug("WORKFLOW EXECUTION HISTORY: "+resp);
 		assertThat(resp).contains("\"hid\": \""+historyid+"\"");
-
-
+		
 		// remove the history
 		hist.deleteById(historyid);
 		resp = wtmock.one_history(historyid); // This gives back a "NoSuchElementException: No value present", which should be correct given the history was deleted?
 		assertThat(resp).isEmpty();
 
-
-
-		
 		//Remove Workflow
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     	HttpEntity DeleteRequest = new HttpEntity<>("id="+map.get("id")+"&type=workflow", headers);
