@@ -1,9 +1,12 @@
 package com.gw.tools;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,7 +49,7 @@ public class UserTool {
     private final String LOCALHOST_IPV4 = "127.0.0.1";
 	private final String LOCALHOST_IPV6 = "0:0:0:0:0:0:0:1";
 
-    static List<UserSession> authsession2user = new ArrayList();
+    public static List<UserSession> authsession2user = new ArrayList();
 
     public static Map<String, String> token2userid = new HashMap();
 
@@ -93,20 +96,33 @@ public class UserTool {
 
     public void cleanExpiredAuth(){
 
-        for(UserSession u : UserTool.authsession2user){
-
+        Iterator<UserSession> iterator = UserTool.authsession2user.iterator();
+        Set<UserSession> removed = new HashSet<UserSession>();
+        while(iterator.hasNext()){
+            UserSession u = iterator.next();
             long difference_In_Time
             = new Date().getTime() - u.getCreated_time().getTime();
 
-            if(difference_In_Time>TIMEOUT_THRESHOLD){
-
-                logger.debug("Found Session Expired, removing..");
-
-                UserTool.authsession2user.remove(u);
-
+            if(difference_In_Time>TIMEOUT_THRESHOLD && !removed.contains(u)){
+                removed.add(u);
             }
-
         }
+        UserTool.authsession2user.removeAll(removed);
+
+        // for(UserSession u : UserTool.authsession2user){
+
+        //     long difference_In_Time
+        //     = new Date().getTime() - u.getCreated_time().getTime();
+
+        //     if(difference_In_Time>TIMEOUT_THRESHOLD){
+
+        //         logger.debug("Found Session Expired, removing..");
+
+        //         UserTool.authsession2user.remove(u);
+
+        //     }
+
+        // }
 
     }
 

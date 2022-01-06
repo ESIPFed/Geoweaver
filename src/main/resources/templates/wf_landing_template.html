@@ -12,10 +12,7 @@
 		<link href="../css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
 		<link href="../css/bootstrap-dialog.min.css" rel="stylesheet"/>
 		
-   		<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/2.5.3/css/bootstrap-colorpicker.min.css" rel="stylesheet" /> -->
    		<link href="../css/bootstrap-colorpicker.min.css" rel="stylesheet" />
-		
-		<!-- <link href="../css/font-awesome.css" rel="stylesheet" /> -->
 		
 		<link href="../css/all.min.css" rel="stylesheet" />
 		
@@ -33,9 +30,7 @@
 		<link rel="stylesheet" href="../js/codemirror/theme/yonce.css">
 		<link rel="stylesheet" href="../js/codemirror/theme/zenburn.css">
 		
-		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/jquery.dm-uploader.min.css?v=v10" rel="stylesheet" /> -->
     	<link rel="stylesheet" href="../css/jquery.dm-uploader.min.css" />
-   		<!-- <link href="https://danielmg.org/assets/demo/uploader/css/main.css?v=v10" rel="stylesheet" /> -->
    		<link rel="stylesheet" href="../css/main.css" />
    		
    		<link rel="stylesheet" href="../css/prism.css" />
@@ -65,14 +60,6 @@
 		<script type="text/javascript" src="../js/dataTables.cellEdit.js"></script>
 		
 		<script type="text/javascript" src="../js/imageviewer.min.js"></script>
-		
-		<!-- <script src="https://danielmg.org/assets/demo/uploader/js/jquery.dm-uploader.min.js?v=v10"></script>
-	    
-	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-main.js?v=v10"></script>
-		    
-	    <script src="https://danielmg.org/assets/demo/uploader/js/ui-multiple.js?v=v10"></script>
-	  	
-	    <script src="https://danielmg.org/assets/demo/uploader/js/configs/no-queue.js?v=v10"></script> -->
 	    
 	    <script type="text/javascript" src="../js/jquery.dm-uploader.min.js"></script>
 	    
@@ -127,22 +114,11 @@
 
 		<div class="main-body" style="margin-top: 70px;">
 
-			<!-- Breadcrumb -->
-			<!-- <nav aria-label="breadcrumb" class="main-breadcrumb">
-				<ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="index.html">Home</a></li>
-				<li class="breadcrumb-item"><a href="javascript:void(0)">User</a></li>
-				<li class="breadcrumb-item active" aria-current="page">User Profile</li>
-				</ol>
-			</nav> -->
-			<!-- /Breadcrumb -->
-		
 			<div class="row gutters-sm">
 				<div class="col-md-2 mb-3">
 					<div class="card">
 						<div class="card-body">
 						<div class="d-flex flex-column align-items-center text-center">
-							<!-- <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" class="rounded-circle" width="150"> -->
 							<i class="fa fa-user" style="font-size:100px;color:gray"></i>
 							<div class="mt-3">
 								<h4 th:text="${user.username}"></h4>
@@ -216,10 +192,6 @@
 
 
 									</tbody>
-									<!-- <tr th:each="node : ${nodes}">
-									<td th:text="${node.title}">First Name</td>
-									<td th:text="${node.id}">Last Name</td>
-									</tr> -->
 								</table>
 							</div>
 						</div>
@@ -232,7 +204,6 @@
 							<div class="panel-heading">Workflow Graph</div>
 							<div class="panel-body">
 								<div class="text-secondary border border-primary rounded" style="border-style: solid; border-width: 1px; border-color: black; margin-right:5px; width: 100%;" id="workspace">
-									<!-- <p id="connection_list"></p> -->
 								</div>
 							</div>
 						</div>
@@ -284,17 +255,6 @@
 				<!-- The news, activities, and related information column -->
 				<div class="col-md-2">
 
-					<!--<div class="card mb-3">
-						<div class="card-body">
-							<div class="mt-3">
-								<h4>Recent Activities</h4>
-								<p class="text-secondary mb-1">XXX created workflow "EmissionAI"</p>
-								<p class="text-secondary mb-1">XXX created workflow "CMAQAI"</p>
-							</div>
-							<hr>
-						</div>
-					</div>
-					<hr/>-->
 					<div class="card mb-3">
 						<div class="card-body">
 							<div class="mt-3">
@@ -377,22 +337,11 @@
 				nodejson = GW.general.parseResponse(nodejson);
 				connectionjson = GW.general.parseResponse(connectionjson);
 
-				// for(var i=0;i<connectionjson.length;i+=1){
-
-				// 	$("#connection_table").append('<tr >'+
-				// 					'<td >'+connectionjson[i].title+'</td>'+
-				// 					'<td >'+connectionjson[i].id+'</td>'+
-				// 					'</tr>');
-
-				// }
-
 				GW.workspace.addListeners();
 
 				var svg = d3.select("#workspace").append("svg")
 					.attr("preserveAspectRatio", "xMinYMin meet")
-					.attr("viewBox", "0 0 960 500")	
-	    	        // .attr("width", "500")
-	    	        // .attr("height", "400");
+					.attr("viewBox", "0 0 960 500")
 
 				GW.workspace.svg = svg;
 	    	  
@@ -413,18 +362,6 @@
 				var blob = new Blob([JSON.stringify(entire_wf_json)], 
 						{type: "text/plain;charset=utf-8"});
 				window.saveAs(blob, "geoweaver.json");
-
-				// if(thisGraph.nodes.length!=0){
-				// 	var saveEdges = [];
-				// 	thisGraph.edges.forEach(function(val, i){
-				// 	saveEdges.push({source: val.source.id, target: val.target.id});
-				// 	});
-				// 	var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-				// 			{type: "text/plain;charset=utf-8"});
-				// 	window.saveAs(blob, "geoweaver.json");
-				// }else{
-				// 	alert("No nodes are present!");
-				// }
 
 			}
 

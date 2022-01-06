@@ -16,11 +16,11 @@ edu = {
 							
 					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project",
 					
-					version: "0.9.10",
+					version: "0.9.11",
 					
 					author: "open source contributors",
 					
-					institute: "NASA, NSF, George Mason University, ESIP, University of Texas Austin, University of Washington, University of Idaho, "
+					institute: "George Mason University, ESIP, University of Texas Austin, University of Washington, University of Idaho, etc"
 					
 				}
 			}

@@ -36,10 +36,7 @@ class GeneralTests {
 
 	@Autowired
 	private TestRestTemplate testrestTemplate;
-
-
-	@Autowired
-	OtherFunctionalTest oft;
+	
 
 	Logger logger  = Logger.getLogger(this.getClass());
 
@@ -82,9 +79,6 @@ class GeneralTests {
 		return absolutePath;
 	}
 
-	
-
-	
 
 	@Test
    	@DisplayName("Subscription message service test ")
@@ -148,47 +142,7 @@ class GeneralTests {
 		assertThat(result).contains("[");
 	}
 
-	@Test
-	@DisplayName("Testing adding workflow...")
-	void testAddWorkflow() throws JsonMappingException, JsonProcessingException{
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String jupyterjson = bt.readStringFromFile(this.testResourceFiles()+ "/add_workflow.json" );
-    	HttpEntity request = new HttpEntity<>(jupyterjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/workflow", 
-			request, 
-			String.class);
-		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("id");
-
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String,Object> map = mapper.readValue(result, Map.class);
-
-		String workflowname = String.valueOf(map.get("name"));
-
-		assertNotNull(workflowname);
-
-		//test workflow landing page
-		String wid = String.valueOf(map.get("id"));
-		result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/landing/" + wid, String.class);
-		// logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("Workflow Owner");
-		
-		//test removing the workflow
-		// id=2avx48&type=workflow
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    	request = new HttpEntity<>("id="+map.get("id")+"&type=workflow", headers);
-		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
-			request, 
-			String.class);
-		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("done");
-
-	}
+	
 
 	
 

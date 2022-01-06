@@ -1,36 +1,14 @@
 package com.gw;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.stereotype.Service;
-
-import net.bytebuddy.utility.RandomString;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gw.jpa.GWUser;
-import com.gw.jpa.Workflow;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
@@ -38,27 +16,23 @@ import com.gw.tools.LocalhostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
-import com.gw.web.GeoweaverController;
 
 import org.apache.log4j.Logger;
-import org.aspectj.lang.annotation.Before;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
+import net.bytebuddy.utility.RandomString;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PythonTest {
@@ -95,21 +69,6 @@ public class PythonTest {
 
 
     Logger logger  = Logger.getLogger(this.getClass());
-
-	@BeforeEach
-	void setup(){
-		
-		// doNothing().when(lt.authenticate(""));
-		// cityRepository = Mockito.mock(CityRepository.class);
-    	// cityService = new CityServiceImpl(cityRepository);
-	}
-
-    @Test
-	void contextLoads() {
-		
-		
-	}
-
     
     @Test
     public void testPythonProcess() throws Exception{

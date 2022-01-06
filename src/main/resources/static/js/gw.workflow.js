@@ -1033,52 +1033,6 @@ GW.workflow = {
 		
 	},
 
-
-
-	getStatusCol: function(single_msg){
-
-		// var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-				
-		// if(single_msg.end_time!=null && single_msg.end_time != single_msg.begin_time){
-			
-		// 	status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-			
-		// }else if(single_msg.end_time == single_msg.begin_time && single_msg.output != null){
-			
-		// 	status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-			
-		// }
-
-		var status_col = "      <td id=\"status_"+single_msg.id+"\">";
-			
-		if(single_msg.status == "Done"){
-			
-			status_col += "       <span class=\"label label-success\">Done</span>  ";
-			
-		}else if(single_msg.status == "Failed"){
-			
-			status_col += "       <span class=\"label label-danger\">Failed</span>  ";
-			
-		}else if(single_msg.status == "Running"){
-			
-			status_col += "       <span class=\"label label-warning\">Running</span>  ";
-			
-		}else if(single_msg.status == "Stopped"){
-			
-			status_col += "       <span class=\"label label-default\">Stopped</span>  ";
-			
-		}else{
-			
-			status_col += "       <span class=\"label label-primary\">Unknown</span>  ";
-			
-		}
-
-		status_col += "</td>";
-
-		return status_col;
-
-	},
-	
 	recent: function(number){
 
 		$.ajax({
@@ -1115,7 +1069,7 @@ GW.workflow = {
 			
 			for(var i=0;i<msg.length;i++){
 				
-				var status_col = GW.workflow.getStatusCol(msg[i]);
+				var status_col = GW.history.getWorkflowStatusCol(msg[i].id, msg[i].status);
 				
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
@@ -1149,51 +1103,7 @@ GW.workflow = {
 		
 	},
 	
-	getTable: function(msg){
-		
-		var content = "<div class=\"modal-body\" style=\"font-size:12px;\" ><table class=\"table\"> "+
-		"  <thead> "+
-		"    <tr> "+
-		"      <th scope=\"col\">Execution Id</th> "+
-		"      <th scope=\"col\">Begin Time</th> "+
-		"      <th scope=\"col\">Status</th> "+
-		"      <th scope=\"col\">Action</th> "+
-		"    </tr> "+
-		"  </thead> "+
-		"  <tbody> ";
-
-		
-		for(var i=0;i<msg.length;i++){
-			
-			var status_col = GW.workflow.getStatusCol(msg[i]);
-			
-			content += "    <tr> "+
-				"      <td>"+msg[i].id+"</td> "+
-				"      <td>"+msg[i].begin_time+"</td> "+
-				status_col +
-				"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a> &nbsp;";
-			
-			if(msg[i].status == "Running"){
-				
-				content += "		<a href=\"javascript:void(0)\" id=\"stopbtn_"+msg[i].id+"\" onclick=\"GW.workflow.stop('"+msg[i].id+"')\">Stop</a> ";
-			}
-				
-			content += "   </td> </tr>";
-			
-		}
-		
-		content += "</tbody></table></div>";
-		
-		// create an interactive chart to show all the data
-		
-		content = "<div id=\"workflow-chart-container\" width=\"200\" height=\"100\">"+
-		"<canvas id=\"workflow-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
-		"</div>" + 
-		content;
-		
-		return content;
-		
-	},
+	
 
 	stop: function(workflow_history_id){
 
@@ -1256,9 +1166,11 @@ GW.workflow = {
 			
 			msg = $.parseJSON(msg);
 			
-			var content = GW.workflow.getTable(msg);
+			var content = GW.history.getWorkflowHistoryTable(msg);
 			
 			$("#workflow-history-container").html(content);
+
+			GW.history.applyBootstrapTable('workflow-history-table');
 
 			GW.chart.renderWorkflowHistoryChart(msg);
 

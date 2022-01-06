@@ -1,6 +1,7 @@
 package com.gw.web;
 
 import java.util.Date;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -51,16 +52,14 @@ public class UserController {
         String resp = "";
 
         try{
+            Optional<GWUser> userop = userRepository.findById(newUser.getId());
 
-            Iterable<GWUser> users = userRepository.findAll();
-            for (GWUser user : users) {
-                if (user.getId().equals(newUser.getId())) {
-                    
-                    System.out.println("User  exists!");
+            if(userop.isPresent()){
 
-                    resp = "{\"status\":\"success\", \"username\":\""+user.getUsername()+"\", \"email\": \""+user.getEmail()+"\" }";
-
-                }
+                GWUser user = userop.get();
+                
+                resp = "{\"status\":\"success\", \"username\":\""+user.getUsername()+"\", \"email\": \""+user.getEmail()+"\" }";
+            
             }
 
             if(bt.isNull(resp)){
