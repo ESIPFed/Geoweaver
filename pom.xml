@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>0.9.11</version>
+	<version>1.0.0-alpha</version>
 	<name>geoweaver</name>
 	<description>A workflow management for hybrid AI experiments of various scales</description>
 	
@@ -444,6 +444,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-info</id>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
