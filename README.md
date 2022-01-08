@@ -20,6 +20,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
   * [Quick Install (Recommended Linux, Mac, Windows)](#quick-install)
   * [Build from source](#build-from-source)
   * [Reset Password for Localhost](#reset-password-for-localhost)
+  * [Set up HTTP Proxy](#set-up-http-proxy)
 - [Demo](#demo)
 - [Tutorial](#tutorial)
 - [Citation](#citation)

@@ -32,3 +32,7 @@ This guide uses Apache 2.4.39. It should work for any newer version. For older v
 
 3. Restart Apache using: `service apache restart`. Geoweaver should now be accessible at `http://<your_server_domain>/Geoweaver`.
 
+## Nginx Proxy for Geoweaver
+
+TBD
+
