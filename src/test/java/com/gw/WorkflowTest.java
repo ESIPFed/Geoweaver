@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -56,6 +57,9 @@ public class WorkflowTest {
     @InjectMocks
 	@Autowired
 	ExecutionTool et;
+
+	@Autowired
+	BuildProperties buildProperties;
 
 	// @InjectMocks
 	// @Autowired
@@ -157,4 +161,6 @@ public class WorkflowTest {
 		assertThat(DeleteResult).contains("done");
 
 	}
+
+	
 }

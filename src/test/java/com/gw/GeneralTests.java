@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -44,10 +45,20 @@ class GeneralTests {
 	@Autowired
 	BaseTool bt;
 
+	@Autowired
+	BuildProperties buildProperties;
+
 	@Test
 	void contextLoads() {
 		
 		
+	}
+
+	@Test
+	void testBuildInfo(){
+
+		logger.info("The current version is " + buildProperties.getVersion());
+
 	}
 
 	@Test
