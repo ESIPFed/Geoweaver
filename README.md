@@ -87,13 +87,19 @@ java -jar geoweaver.jar resetpassword
 
 # Tutorial
 
+## [Create and Manipulate Hosts](docs/host.md)
+
+## [Create and Run Processes](docs/process.md)
+
+## [Create, Run, and Export Workflows](docs/workflow.md)
+
 [Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
 
 # Citation
 
-If you found Geoweaver helpful in your research, please cite us: 
+If you found Geoweaver helpful in your research, please cite: 
 
-Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
+Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
 # Dependencies
 
@@ -108,6 +114,8 @@ This project is impossible without the support of several fantastic open source 
 [CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
 
 [JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
+
+# [Community](docs/authors.md)
 
 # License
 
