@@ -78,6 +78,8 @@ Geoweaver will automatically create a password for localhost. It will only show 
 java -jar geoweaver.jar resetpassword
 ```
 
+## [Set up HTTP Proxy](docs/http-proxy.md)
+
 # Demo
 
 [A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
