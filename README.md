@@ -4,7 +4,7 @@
 
 2018 ESIP Lab Incubator Project
 
-Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, and workflow orchestration software. 
+Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. 
 
 It can be run from both local and remote (distributed) machines.
 
@@ -20,6 +20,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
   * [Quick Install (Recommended Linux, Mac, Windows)](#quick-install)
   * [Build from source](#build-from-source)
   * [Reset Password for Localhost](#reset-password-for-localhost)
+  * [Set up HTTP Proxy](#set-up-http-proxy)
 - [Demo](#demo)
 - [Tutorial](#tutorial)
 - [Citation](#citation)
@@ -29,18 +30,11 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 
 # Software Goals
 
-1) turning large-scale distributed deep network into manageable modernized workflows;
+Only two things basically:
 
-2) boosting higher utilization ratio of the existing cyberinfrastructures by separating scientists from
-tedious technical details;
+1. Make it time affordable for less-coder scientists (who know nothing about WfMS) to manage their data processing workflows
 
-3) enhancing the frequency and accuracy of classified land cover land use maps for agricultural purposes;
-
-4) enabling the tracking of provenance by recording the execution logs in structured tables to evaluate the
-quality of the result maps;
-
-5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
-Landsat image time series.
+2. Preserve all the model run history and share them along with the code files
 
 # Installation
 
@@ -78,19 +72,27 @@ Geoweaver will automatically create a password for localhost. It will only show 
 java -jar geoweaver.jar resetpassword
 ```
 
+## [Set up HTTP Proxy](docs/http-proxy.md)
+
 # Demo
 
 [A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
 
 # Tutorial
 
+## [Create and Manipulate Hosts](docs/host.md)
+
+## [Create and Run Processes](docs/process.md)
+
+## [Create, Run, and Export Workflows](docs/workflow.md)
+
 [Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
 
 # Citation
 
-If you found Geoweaver helpful in your research, please cite us: 
+If you found Geoweaver helpful in your research, please cite: 
 
-Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
+Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
 # Dependencies
 
@@ -105,6 +107,8 @@ This project is impossible without the support of several fantastic open source 
 [CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
 
 [JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
+
+# [Community](docs/authors.md)
 
 # License
 
