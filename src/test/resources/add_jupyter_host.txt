@@ -1,0 +1,1 @@
+type=host&hostname=TestHost&hostip=&hostport=&url=http%3A%2F%2Flocalhost%3A8888%2F&hosttype=jupyter&confidential=FALSE&ownerid=111111

@@ -11,6 +11,7 @@ import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
 import org.apache.log4j.Logger;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,30 +22,29 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HostTest {
+public class HostTest extends HelperMethods {
 
-    @Autowired
+	@Autowired
 	UserTool ut;
 
 	@Autowired
 	BaseTool bt;
 
-    @Autowired
+	@Autowired
 	private TestRestTemplate testrestTemplate;
 
-    @LocalServerPort
+	@LocalServerPort
 	private int port;
 
-    Logger logger  = Logger.getLogger(this.getClass());
+	Logger logger = Logger.getLogger(this.getClass());
 
-    // @Test
+	// @Test
 	void contextLoads() {
-		
-		
+
 	}
 
 	@Test
-	void testLocalhostPassword(){
+	void testLocalhostPassword() {
 
 		bt.setLocalhostPassword("password", false);
 
@@ -58,35 +58,58 @@ public class HostTest {
 
 	}
 
-    @Test
-	void testSSHHost() throws JsonMappingException, JsonProcessingException{
+	@Test
+	void testSSHHost() throws JsonMappingException, JsonProcessingException {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String bultinjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_ssh_host.txt" );
-    	HttpEntity request = new HttpEntity<>(bultinjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add", 
-			request, 
-			String.class);
+		String bultinjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_ssh_host.txt");
+		HttpEntity request = new HttpEntity<>(bultinjson, headers);
+		String result = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/add",
+				request,
+				String.class);
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String,Object> map = mapper.readValue(result, Map.class);
+		Map<String, Object> map = mapper.readValue(result, Map.class);
 		String hid = String.valueOf(map.get("id"));
 
-		//remove the added host
+		// remove the added host
 		// id=2avx48&type=process
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    	request = new HttpEntity<>("id="+hid+"&type=host", headers);
-		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
-			request, 
-			String.class);
+		request = new HttpEntity<>("id=" + hid + "&type=host", headers);
+		result = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/del",
+				request,
+				String.class);
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("done");
 
 	}
-    
+
+	@Test
+	@DisplayName("Test /detail endpoint for host type")
+	void testHostDetail() throws Exception {
+
+		// Add Host
+		String hid = AddHost();
+
+		// Get host details
+		HttpHeaders postHeaders = new HttpHeaders();
+		postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity postRequest = new HttpEntity<>("id=" + hid + "&type=host", postHeaders);
+		String Postresult = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/detail",
+				postRequest, String.class);
+		assertThat(Postresult).contains("id");
+
+		// Delete created Host
+		deleteResource(hid, "host");
+
+	}
+
 }
