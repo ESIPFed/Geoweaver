@@ -10,24 +10,6 @@ It can be run from both local and remote (distributed) machines.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
-[Geoweaver Online API](https://zihengsun.github.io/Geoweaver/)
-
-##### Table of Contents
-
-- [Software Goals](#software-goals)
-- [Installation](#installation)
-  * [Dependencies](#dependencies)
-  * [Quick Install (Recommended Linux, Mac, Windows)](#quick-install)
-  * [Build from source](#build-from-source)
-  * [Reset Password for Localhost](#reset-password-for-localhost)
-  * [Set up HTTP Proxy](#set-up-http-proxy)
-- [Demo](#demo)
-- [Tutorial](#tutorial)
-- [Citation](#citation)
-- [Dependencies](#dependencies)
-- [License](#license)
-
-
 # Software Goals
 
 Only two things basically:
@@ -36,57 +18,21 @@ Only two things basically:
 
 2. Preserve all the model run history and share them along with the code files
 
-# Installation
+# [Installation](install.md)
 
-## Dependencies
+# [Tutorial](https://zihengsun.github.io/Geoweaver/)
 
-Java 1.8+ (OpenJDK 8 or higher)
+* [Create and Manipulate Hosts](host.md)
 
-!(only for install via docker) [Docker](https://docs.docker.com/install/) 18.09.1+
+* [Create and Run Processes](process.md)
 
-!(only for install via docker) [Docker-compose](https://docs.docker.com/compose/install/) 1.23.1+ 
+* [Create, Run, and Export Workflows](workflow.md)
 
-## Quick Install
-
-(Recommended for Linux, Mac, and Windows)
-
-* Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
-
-* Step 2: Run the command: 
-
-```shell
-java -jar geoweaver.jar 
-```
-
-* Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
-
-## Build from source
-
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver jar package will be under the directory: `Geoweaver/target/Geoweaver-<version>.jar`. 
-
-## Reset Password for Localhost
-
-Geoweaver will automatically create a password for localhost. It will only show once at first run of Geoweaver. It is recommended to copy and save it at a safe place. If forget or missed that password, please run the following command to reset:
-
-```
-java -jar geoweaver.jar resetpassword
-```
-
-## [Set up HTTP Proxy](http-proxy.md)
+* [Jupyter Recording](https://andrewmagill.github.io/#/)
 
 # Demo
 
-[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
-
-# Tutorial
-
-## [Create and Manipulate Hosts](host.md)
-
-## [Create and Run Processes](process.md)
-
-## [Create, Run, and Export Workflows](workflow.md)
-
-[Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
+[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available.
 
 # Citation
 

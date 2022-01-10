@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Processes in Geoweaver - Geoweaver</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Processes in Geoweaver";
+    var mkdocs_page_input_path = "process.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Geoweaver</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../authors/">Authors</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../host/">Host in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../http-proxy/">How to set up HTTP Proxy for Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Processes in Geoweaver</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-process">What is Process?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-new-python-process">Create a new Python process</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-python-process">Run Python Process</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-code-scripts">Supported Code Scripts</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#shell">Shell</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#python">Python</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#notebook">NoteBook</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#build-in-process">Build In Process</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../workflow/">Workflow in Geoweaver</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Geoweaver</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Processes in Geoweaver</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="processes-in-geoweaver">Processes in Geoweaver</h1>
+<h2 id="what-is-process">What is Process?</h2>
+<p><code>Process</code> means code scripts to process data. </p>
+<p>You can understand it as source code like Python. However, <code>Process</code> in Geoweaver is more dedicated to the <strong>source code for data processing</strong>. </p>
+<p>Note: It is not designed for <strong>everything</strong>. You might be able to run any code like starting a HTTP server, or starting a GUI software, but it would be inappropriate and might cause issues. <strong>We recommend users to restrict the Process code to be something that is finishable (no hanging), algorithmic, and data oriented</strong>. </p>
+<h2 id="create-a-new-python-process">Create a new Python process</h2>
+<ol>
+<li>
+<p>Click the plus icon button after <code>Process</code> on the right panel.</p>
+</li>
+<li>
+<p>Select <code>Python</code> from the <code>Language</code> dropdown select.</p>
+</li>
+<li>
+<p>Input <code>helloworld</code> for the name.</p>
+</li>
+<li>
+<p>Add code to the code area. For example:</p>
+</li>
+</ol>
+<pre><code class="language-Python">print(&quot;hello world&quot;)
+</code></pre>
+<ol>
+<li>Click <code>Add</code> on the bottom. A new process node <code>helloworld</code> will be added to the <code>Process</code>&gt;<code>Python</code> tree.</li>
+</ol>
+<h2 id="run-python-process">Run Python Process</h2>
+<ol>
+<li>
+<p>Click on the newly added <code>helloworld</code> process. An information panel will show in the main area.</p>
+</li>
+<li>
+<p>Click the play button to run the process. In the popup window, select <code>Localhost</code> and click <code>Execute</code>. </p>
+</li>
+<li>
+<p>A dialog will show to specify Python environment, click <code>Confirm</code> to the <code>default</code>. </p>
+</li>
+<li>
+<p>In the password dialog, input your password for <code>Localhost</code>. Click <code>confirm</code>.</p>
+</li>
+</ol>
+<p>If you see hello world printed in the logging window, it means you have successfully created and run your first process in Geoweaver. </p>
+<p>Congratulations! You did it!</p>
+<h2 id="supported-code-scripts">Supported Code Scripts</h2>
+<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
+<h3 id="shell">Shell</h3>
+<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted.</p>
+<h3 id="python">Python</h3>
+<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs.</p>
+<h3 id="notebook">NoteBook</h3>
+<p>Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database.</p>
+<p>Running notebook in Geoweaver will be equivalent to running <code>jupyter nbconvert --inplace --allow-errors --to notebook --execute &lt;notebook_file_path&gt;</code>.</p>
+<p><strong>New notebook snapshots generated by every run will be all saved in the Geoweaver database</strong>. No more worries on forgetting the results of your previous experiment configuration! Everything is covered.</p>
+<h3 id="build-in-process">Build In Process</h3>
+<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users. These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. This section is under intensive development right and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../workflow/" class="btn btn-neutral float-right" title="Workflow in Geoweaver">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../install/" class="btn btn-neutral" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../install/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../workflow/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
