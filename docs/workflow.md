@@ -1,6 +1,12 @@
 
 # Workflow in Geoweaver
 
+## What is Workflow?
+
+In Geoweaver, Workflow denotes a pipeline linking multiple (>2) Processes. Isolated Process (not connected to any other Processes) is allowed in Geoweaver.
+
+**WARNING: Loop is not allowed among the child Process nodes**. The Workflow graph is directed and acyclic (please refer to [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph)).
+
 ## Create and run a workflow
 
 1. Click twice on the plus icon button after any process (e.g., `helloworld` Python process created in the [Process tutorial](process.md)). The main work area will switch to the "Weaver" tab and two circles containing `helloworld` should appear in the workspace.
