@@ -23,7 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class JupyterTest extends HelperMethods {
+public class JupyterTest extends AbstractHelperMethodsTest {
 
 	@Autowired
 	UserTool ut;
@@ -140,8 +140,9 @@ public class JupyterTest extends HelperMethods {
 
 		assertThat(Postresult).contains("removed_history_ids");
 
-		// Delete created Host
-		deleteResource(jid, "host");
+		// Delete created host
+		String deleteResult = deleteResource(jid, "host");
+		assertThat(deleteResult).contains("done");
 
 	}
 
@@ -165,8 +166,9 @@ public class JupyterTest extends HelperMethods {
 		logger.debug("/delNoNotesHistory result: " + Postresult);
 		assertThat(Postresult).contains("removed_history_ids");
 
-		// Delete created Host
-		deleteResource(jid, "host");
+		// Delete created host
+		String deleteResult = deleteResource(jid, "host");
+		assertThat(deleteResult).contains("done");
 
 	}
 

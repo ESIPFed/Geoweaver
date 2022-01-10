@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HostTest extends HelperMethods {
+public class HostTest extends AbstractHelperMethodsTest {
 
 	@Autowired
 	UserTool ut;
@@ -107,9 +107,9 @@ public class HostTest extends HelperMethods {
 				postRequest, String.class);
 		assertThat(Postresult).contains("id");
 
-		// Delete created Host
-		deleteResource(hid, "host");
-
+		// Delete created host
+		String deleteResult = deleteResource(hid, "host");
+		assertThat(deleteResult).contains("done");
 	}
 
 }

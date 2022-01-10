@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EnvironmentTest extends HelperMethods {
+public class EnvironmentTest extends AbstractHelperMethodsTest {
 
     @Autowired
     UserTool ut;
@@ -115,12 +115,17 @@ public class EnvironmentTest extends HelperMethods {
                 postRequest, String.class);
         assertThat(Postresult).contains("[");
 
-        deleteResource(hid, "host");
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
     }
 
     @Test
     @DisplayName("Test /listhostwithenvironments endpoint")
     void testListHostWithEnvironments() throws Exception {
+
+        // Add Host
+        String hid = AddHost();
 
         HttpHeaders postHeaders = new HttpHeaders();
         postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -135,6 +140,10 @@ public class EnvironmentTest extends HelperMethods {
         assertThat(Postresult).contains("type");
         assertThat(Postresult).contains("url");
         assertThat(Postresult).contains("envs");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
 
     }
 
@@ -161,6 +170,10 @@ public class EnvironmentTest extends HelperMethods {
                 postRequest, String.class);
         logger.debug("/readEnvironment results: " + Postresult);
         assertThat(Postresult).contains("success");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
 
     }
 

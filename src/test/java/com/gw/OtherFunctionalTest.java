@@ -29,7 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class OtherFunctionalTest extends HelperMethods {
+public class OtherFunctionalTest extends AbstractHelperMethodsTest {
 
     @InjectMocks
     @Autowired
@@ -128,6 +128,10 @@ public class OtherFunctionalTest extends HelperMethods {
                 postRequest, String.class);
         System.out.println("/addLocalFile results: " + Postresult);
         assertThat(Postresult).contains("id");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
 
     }
 
@@ -238,8 +242,9 @@ public class OtherFunctionalTest extends HelperMethods {
         logger.debug("Post result: " + Postresult);
         assertThat(Postresult.contains("success"));
 
-        // Delete created Host
-        deleteResource(hid, "host");
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
 
     }
 

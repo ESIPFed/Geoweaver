@@ -16,7 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-public abstract class HelperMethods {
+public abstract class AbstractHelperMethodsTest {
 
     @InjectMocks
     @Autowired

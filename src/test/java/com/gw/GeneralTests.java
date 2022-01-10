@@ -30,7 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GeneralTests extends HelperMethods {
+class GeneralTests extends AbstractHelperMethodsTest {
 
 	@LocalServerPort
 	private int port;
@@ -436,7 +436,9 @@ class GeneralTests extends HelperMethods {
 		System.out.println("/checkLiveSession results: " + Postresult);
 		assertThat(Postresult).contains("exist");
 
-		deleteResource(hid, "host");
+		// Delete created host
+		String deleteResult = deleteResource(hid, "host");
+		assertThat(deleteResult).contains("done");
 	}
 
 }

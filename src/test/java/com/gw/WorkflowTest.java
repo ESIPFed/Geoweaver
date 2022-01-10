@@ -45,7 +45,7 @@ import org.springframework.http.MediaType;
 import net.bytebuddy.utility.RandomString;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class WorkflowTest extends HelperMethods {
+public class WorkflowTest extends AbstractHelperMethodsTest {
     @InjectMocks
     @Autowired
     UserTool ut;
