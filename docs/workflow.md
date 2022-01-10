@@ -19,9 +19,9 @@
 
 ## Export and share a workflow
 
-1. Click  when the workflow is present in the Weaver workspace.
+1. Click the downward icon button in the floating toolbar when the workflow is present in the Weaver workspace.
 
-2. In the popup window, there are two options: `workflow with process code` and `workflow with process code and history`. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow.
+2. There will be two downloading options: `workflow with process code` and `workflow with process code and history`. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. **The second option is recommended.**
 
 3. Click `Confirm`. A ZIP file will be automatically downloaded to your machine.
 
