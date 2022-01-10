@@ -19,16 +19,22 @@
 
 ## Export and share a workflow
 
-1. Click the downward icon button in the floating toolbar when the workflow is present in the Weaver workspace.
+To export a workflow into a zip file:
 
-2. There will be two downloading options: `workflow with process code` and `workflow with process code and history`. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. **The second option is recommended.**
+1. Choose a workflow in the Workflow tree menu and click on it. 
 
-3. Click `Confirm`. A ZIP file will be automatically downloaded to your machine.
+2. Click the downward icon button in the floating toolbar when the workflow is present in the Weaver workspace.
 
-4. To import a workflow, click . In the upload window, select the ZIP file, click `Start`.
+3. There will be two downloading options: `workflow with process code` and `workflow with process code and history`. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. **The second option is recommended.**
 
-5. Once the uploading finished, if the workflow file is valid, it will ask `The upload workflow is valid. Do you want to proceed to save it into the database?` Click `OK`.
+4. Click `Confirm`. A ZIP file will be automatically downloaded to your machine.
 
-6. The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse.
+To import a shared workflow:
+
+1. Click the upward icon button in the floating toolbar of Weaver. In the shown window, click `Open the File Browser` and choose the Geoweaver ZIP file you received. Click `Start`.
+
+2. Once the uploading finished and if the workflow file is valid, it will ask `The upload workflow is valid. Do you want to proceed to save it into the database?` Click `OK`. 
+
+3. The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. If you check the process and workflow history, you will see all the previous logs are also there. 
 
 Congratulations you have learnt how to create, run, export, and share a workflow in Geoweaver!
