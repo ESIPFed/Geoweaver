@@ -74,10 +74,6 @@ java -jar geoweaver.jar resetpassword
 
 ## [Set up HTTP Proxy](docs/http-proxy.md)
 
-# Demo
-
-[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
-
 # Tutorial
 
 ## [Create and Manipulate Hosts](docs/host.md)
@@ -87,6 +83,10 @@ java -jar geoweaver.jar resetpassword
 ## [Create, Run, and Export Workflows](docs/workflow.md)
 
 [Geoweaver Tutorial](https://andrewmagill.github.io/#/) - A beginner tutorial about what Geoweaver can do and how it works
+
+# Demo
+
+[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available in George Mason University.
 
 # Citation
 
