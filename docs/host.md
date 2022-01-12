@@ -28,19 +28,39 @@ User Name: testuser
 
 ## Read Python Environment
 
-TBD
+1. Click the second icon from the left (python icon) at the bottom right corner of the "Host Details" page.
+
+2. Input the `Host User Password` of your account on the server in the shown dialog pop up.
+
+3. An "Environment List" section will appear below the "Host Details" section showing all the available python environments on the connected server.
 
 ## File Browser
 
-TBD
+1. Click the second icon from the right (next to the red minus button) in the "Host Details" page.
+
+2. Input the `Host User Password` of your account on the server in the shown dialog pop up.
+
+3. Click Confirm.
 
 ## File Uploader
 
-TBD
+1. Click the upload file icon (the middle icon) at the bottom right corner of the "Host Details" page.
+
+2. Input the `Host Password` of your account on the server in the shown dialog pop up.
+
+3. A file upload section will appear below the "Host Details" section with drag and drop or file browser capability.
+
+4. Choose the desired file to upload, and click the start button below the "File Uploader Section" to initiate the upload.
+
+5. A progress bar with a status above will indicate the progress of the upload.
 
 ## Edit a Host
 
-TBD
+1. Click the edit icon (first icon) at the bottom right corner of the "Host Details" page.
+
+2. Change the desired fields.
+
+3. Click the same edit icon as the first step. The changes have now been updated.
 
 ## Supported Hosts
 
