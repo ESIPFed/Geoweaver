@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Workflow in Geoweaver - Geoweaver</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Workflow in Geoweaver";
+    var mkdocs_page_input_path = "workflow.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Geoweaver</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../authors/">Authors</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../host/">Host in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../http-proxy/">How to set up HTTP Proxy for Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../process/">Processes in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Workflow in Geoweaver</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-workflow">What is Workflow?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-and-run-a-workflow">Create and run a workflow</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#export-and-share-a-workflow">Export and share a workflow</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Geoweaver</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Workflow in Geoweaver</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="workflow-in-geoweaver">Workflow in Geoweaver</h1>
+<h2 id="what-is-workflow">What is Workflow?</h2>
+<p>In Geoweaver, Workflow denotes a pipeline linking multiple (&gt;2) Processes. Isolated Process (not connected to any other Processes) is allowed in Geoweaver.</p>
+<p><strong>WARNING: Loop is not allowed among the child Process nodes</strong>. The Workflow graph is directed and acyclic (please refer to <a href="https://en.wikipedia.org/wiki/Directed_acyclic_graph">DAG</a>).</p>
+<h2 id="create-and-run-a-workflow">Create and run a workflow</h2>
+<ol>
+<li>
+<p>Click twice on the plus icon button after any process (e.g., <code>helloworld</code> Python process created in the <a href="../process/">Process tutorial</a>). The main work area will switch to the "Weaver" tab and two circles containing <code>helloworld</code> should appear in the workspace.</p>
+</li>
+<li>
+<p>Link the two circles by dragging from one circle and dropping on another circle while pressing <code>SHIFT</code> on the keyboard.</p>
+</li>
+<li>
+<p>Click the plus button in the <code>Options</code> toolbar floating in the Weaver workspace. In the popup window, input <code>HelloWorldWorkflow</code> for the workflow name, and type <code>Testing hello world</code> in the Description field. Click <code>Confirm</code>.</p>
+</li>
+<li>
+<p>To run the workflow, click . In the popup window, select <code>1one-host</code> option. Choose localhost and set the environment to the default. Click <code>Run</code>.</p>
+</li>
+<li>
+<p>In the password dialog, enter the password for localhost.</p>
+</li>
+<li>
+<p>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</p>
+</li>
+<li>
+<p>Double click on the circles to check the real time output. If users need more details, click <code>Details</code> button in the popup information window.</p>
+</li>
+</ol>
+<h2 id="export-and-share-a-workflow">Export and share a workflow</h2>
+<p>To export a workflow into a zip file:</p>
+<ol>
+<li>
+<p>Choose a workflow in the Workflow tree menu and click on it. </p>
+</li>
+<li>
+<p>Click the downward icon button in the floating toolbar when the workflow is present in the Weaver workspace.</p>
+</li>
+<li>
+<p>There will be two downloading options: <code>workflow with process code</code> and <code>workflow with process code and history</code>. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. <strong>The second option is recommended.</strong></p>
+</li>
+<li>
+<p>Click <code>Confirm</code>. A ZIP file will be automatically downloaded to your machine.</p>
+</li>
+</ol>
+<p>To import a shared workflow:</p>
+<ol>
+<li>
+<p>Click the upward icon button in the floating toolbar of Weaver. In the shown window, click <code>Open the File Browser</code> and choose the Geoweaver ZIP file you received. Click <code>Start</code>.</p>
+</li>
+<li>
+<p>Once the uploading finished and if the workflow file is valid, it will ask <code>The upload workflow is valid. Do you want to proceed to save it into the database?</code> Click <code>OK</code>. </p>
+</li>
+<li>
+<p>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. If you check the process and workflow history, you will see all the previous logs are also there. </p>
+</li>
+</ol>
+<p>Congratulations you have learnt how to create, run, export, and share a workflow in Geoweaver!</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../process/" class="btn btn-neutral" title="Processes in Geoweaver"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../process/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

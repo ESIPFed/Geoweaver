@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
   
   <script>
     // Current page data
@@ -25,9 +25,8 @@
   
   <script src="js/jquery-2.1.1.min.js" defer></script>
   <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
-  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -41,7 +40,7 @@
         <a href="." class="icon icon-home"> Geoweaver</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -50,9 +49,31 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
-    </li>
     </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="authors/">Authors</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="host/">Host in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="http-proxy/">How to set up HTTP Proxy for Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="install/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="process/">Processes in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="workflow/">Workflow in Geoweaver</a>
                     </li>
                 </ul>
       </div>
@@ -84,242 +105,68 @@
   
   <hr/>
 </div>
+
           <div role="main">
             <div class="section">
               
-                <p><a href="https://travis-ci.org/ESIPFed/Geoweaver"><img alt="Build Status" src="https://travis-ci.org/ESIPFed/Geoweaver.svg?branch=master" /></a> <a href="https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/issues"><img alt="Issues" src="https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg" /></a> <a href="https://codecov.io/"><img alt="Coverage" src="https://img.shields.io/badge/covarege-100%25-success.svg" /></a></p>
+                <p><a href="https://travis-ci.org/ESIPFed/Geoweaver"><img alt="Build Status" src="https://travis-ci.org/ZihengSun/Geoweaver.svg?branch=master" /></a> <a href="https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg" /></a> <a href="https://github.com/ESIPFed/Geoweaver/issues"><img alt="Issues" src="https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg" /></a> <a href="https://codecov.io/"><img alt="Coverage" src="https://img.shields.io/badge/coverage-100%25-success.svg" /></a></p>
 <h1 id="geoweaver"><a href="https://esipfed.github.io/Geoweaver/">Geoweaver</a></h1>
 <p>2018 ESIP Lab Incubator Project</p>
-<p>Geoweaver is a browser-based software allowing users to easily compose and execute full-stack deep learning workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity including SSH client (e.g., Putty), FTP client, and scientific workflow software. </p>
-<p>It can be run from local machines.</p>
+<p>Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. </p>
+<p>It can be run from both local and remote (distributed) machines.</p>
 <p>GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! </p>
-<p><a href="https://zihengsun.github.io/Geoweaver/">Geoweaver Online API</a></p>
-<h5 id="table-of-contents">Table of Contents</h5>
-<ul>
-<li><a href="#software-goals">Software Goals</a></li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#dependencies">Dependencies</a></li>
-<li><a href="#quick-install">Quick Install (Recommended)</a></li>
-<li><a href="#developer-install">Developer Install</a><ul>
-<li><a href="#linux">Linux</a></li>
-<li><a href="#mac">Mac</a></li>
-<li><a href="#windows">Windows</a></li>
-<li><a href="#docker">Docker</a></li>
-<li><a href="#tomcat-war">Tomcat War</a></li>
-<li><a href="#cloud-vm-template">Cloud VM Template</a></li>
-</ul>
-</li>
-<li><a href="#build-from-source">Build from source</a></li>
-<li><a href="#demo">Demo</a></li>
-<li><a href="#tutorial">Tutorial</a></li>
-<li><a href="#citation">Citation</a></li>
-<li><a href="#dependencies">Dependencies</a></li>
-<li><a href="#license">License</a></li>
-</ul>
 <h1 id="software-goals">Software Goals</h1>
-<p>1) turning large-scale distributed deep network into manageable modernized workflows;</p>
-<p>2) boosting higher utilization ratio of the existing cyberinfrastructures by separating scientists from
-tedious technical details;</p>
-<p>3) enhancing the frequency and accuracy of classified land cover land use maps for agricultural purposes;</p>
-<p>4) enabling the tracking of provenance by recording the execution logs in structured tables to evaluate the
-quality of the result maps;</p>
-<p>5) proof the effectiveness of operationally using large-scale distributed deep learning models in classifying
-Landsat image time series.</p>
-<h1 id="installation">Installation</h1>
-<h2 id="dependencies">Dependencies</h2>
-<p>Java 1.8+ (OpenJDK 8 or higher)</p>
-<p>!(only for install via docker) <a href="https://docs.docker.com/install/">Docker</a> 18.09.1+</p>
-<p>!(only for install via docker) <a href="https://docs.docker.com/compose/install/">Docker-compose</a> 1.23.1+ </p>
-<h2 id="quick-install">Quick Install</h2>
-<p>(Recommended)</p>
-<ul>
+<p>Only two things basically:</p>
+<ol>
 <li>
-<p>Step 1: Download the latest version of <a href="https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar">geoweaver.jar</a></p>
+<p>Make it time affordable for less-coder scientists (who know nothing about WfMS) to manage their data processing workflows</p>
 </li>
 <li>
-<p>Step 2: Run the command: </p>
+<p>Preserve all the model run history and share them along with the code files</p>
 </li>
-</ul>
-<pre><code class="shell">java -jar geoweaver.jar 
-</code></pre>
-
-<ul>
-<li>Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!</li>
-</ul>
-<h2 id="developer-install">Developer Install</h2>
-<p>This section is dedicated for developer users who have better background on web technologies and familiar with MySQL, H2, tomcat, docker, and maven. If you are familiar with neither of them, we strongly suggest you use the "Quick Install" way to install Geoweaver. </p>
-<h3 id="linux">Linux</h3>
-<p>This way works for most linux releases, e.g., Ubuntu, CentOS, RedHat, OpenBSD, etc.</p>
-<ul>
-<li>Step 1: clone the github repo</li>
-</ul>
-<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
-</code></pre>
-
-<ul>
-<li>Step 2: enter the folder and start the install</li>
-</ul>
-<pre><code class="shell">cd Geoweaver
-chmod 755 install-linux.sh
-./install-linux.sh
-</code></pre>
-
+</ol>
+<h1 id="installation"><a href="install/">Installation</a></h1>
+<h1 id="tutorial"><a href="https://zihengsun.github.io/Geoweaver/">Tutorial</a></h1>
 <ul>
 <li>
-<p>Once the script stops, Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it. </p>
+<p><a href="host/">Create and Manipulate Hosts</a></p>
 </li>
 <li>
-<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
-</li>
-</ul>
-<h3 id="mac">Mac</h3>
-<ul>
-<li>Step 1: clone the github repo</li>
-</ul>
-<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
-</code></pre>
-
-<ul>
-<li>Step 2: enter the folder and start the install</li>
-</ul>
-<pre><code class="shell">cd Geoweaver
-chmod 755 install-mac.sh
-./install-mac.sh
-</code></pre>
-
-<ul>
-<li>
-<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.</p>
+<p><a href="process/">Create and Run Processes</a></p>
 </li>
 <li>
-<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.sh</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.sh</code></p>
-</li>
-</ul>
-<h3 id="windows">Windows</h3>
-<ul>
-<li>Step 1: clone the github repo</li>
-</ul>
-<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
-</code></pre>
-
-<ul>
-<li>Step 2: enter the folder and start the install</li>
-</ul>
-<pre><code class="shell">cd Geoweaver
-./install-windows.bat
-</code></pre>
-
-<ul>
-<li>
-<p>Once the script stops, the Geoweaver should already be up and running. Enter URL http://127.0.0.1:8070/Geoweaver/web/geoweaver in browser to open it.</p>
+<p><a href="workflow/">Create, Run, and Export Workflows</a></p>
 </li>
 <li>
-<p>Optional: To stop Geoweaver, type: <code>install/apache-tomcat-9.0.22/bin/shutdown.bat</code>. To start Geoweaver again, type: <code>install/apache-tomcat-9.0.22/bin/startup.bat</code></p>
+<p><a href="https://andrewmagill.github.io/#/">Jupyter Recording</a></p>
 </li>
 </ul>
-<h3 id="docker">Docker</h3>
-<p>We use <code>docker-compose</code> to establish the containers for Geoweaver. As the DockerHub is not very friendly for docker-compose yaml at present, we only suggest manual to start from GitHub repo. It only has three steps.</p>
-<h4 id="install">Install</h4>
-<ul>
-<li>Clone this repo to your machine </li>
-</ul>
-<pre><code class="shell">git clone https://github.com/ESIPFed/Geoweaver.git
-</code></pre>
-
-<ul>
-<li>Enter the repo and create a new folder <code>target</code>. Download a Geoweaver war package from the <a href="https://github.com/ESIPFed/Geoweaver/releases">release page</a> and save it in the created <code>target</code> folder.</li>
-</ul>
-<pre><code class="shell">cd Geoweaver &amp;&amp; mkdir target &amp;&amp; cd target
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
-</code></pre>
-
-<ul>
-<li>Run docker to start rolling. After the command is finished, Geoweaver should be up and running. </li>
-</ul>
-<pre><code class="shell">cd .. &amp;&amp; docker-compose up -d
-</code></pre>
-
-<p>The address is:</p>
-<pre><code class="html">http://your-ip:your-port/Geoweaver/web/geoweaver
-</code></pre>
-
-<p>Replace the <code>your-ip</code>, <code>your-port</code> with the real domain of your tomcat. For example, <code>localhost:8070</code>.</p>
-<p>Notice: Make sure the local services like mysql and tomcat are shut down before starting <code>docker-compose</code>. Otherwise there might be port conflict error on <code>3306</code> and <code>8070</code>. Or you can change the port to some other free ports in the docker-compose.yml.</p>
-<p>If you don't have docker or docker-compose installed, these documents will help. <a href="https://docs.docker.com/install">docker</a> <a href="https://docs.docker.com/compose/install/">docker-compose</a></p>
-<h4 id="shutdown">Shutdown</h4>
-<p>To stop Geoweaver, type:</p>
-<pre><code class="shell">docker stop $(docker ps -aq)
-</code></pre>
-
-<h3 id="tomcat-war">Tomcat War</h3>
-<h4 id="install_1">Install</h4>
-<ul>
-<li>Download <a href="https://github.com/ESIPFed/Geoweaver/releases">the latest release war</a> and copy it to the webapps directory of Tomcat (e.g. /usr/local/tomcat). Start Tomcat. </li>
-</ul>
-<pre><code class="shell">
-wget https://github.com/ESIPFed/Geoweaver/releases/download/v0.7.1/Geoweaver.war -O Geoweaver.war
-cp Geoweaver.war /usr/local/tomcat/webapps/
-/usr/local/tomcat/bin/startup.sh
-
-</code></pre>
-
-<ul>
-<li>After the tomcat is fully started, configure the database connection. The configuration files are <code>WEB-INF/classes/config.properties</code> </li>
-</ul>
-<pre><code class="shell">nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/config.properties
-nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
-</code></pre>
-
-<p>Fill the fields with correct values. (database url, default: jdbc:mysql://localhost:3306/cyberconnector) and <code>WEB-INF/classes/cc_secret.properties</code> (database username and password: database_user=root database_password=xxxxxxxx). </p>
-<p>(<strong>Note: the MySQL database must be initiated by the SQL file under the folder Geoweaver/docker/db first. If you are using H2 database, please copy the two files: geoweaver.mv.db and geoweaver.trace.db to your user home directory before you start tomcat. </strong>)</p>
-<pre><code class="shell">mysql -u root -p &lt; docker/db/gw.sql
-</code></pre>
-
-<ul>
-<li>Enter the following URL into browser address bar to open Geoweaver:</li>
-</ul>
-<pre><code class="html">http://your-ip:your-port/Geoweaver/web/geoweaver
-</code></pre>
-
-<h4 id="shutdown_1">Shutdown</h4>
-<p>To stop Geoweaver, use:</p>
-<pre><code class="shell">/usr/local/tomcat/bin/shutdown.sh
-</code></pre>
-
-<h3 id="cloud-vm-template">Cloud VM Template</h3>
-<h4 id="install_2">Install</h4>
-<p>We provide a ready-to-use cloud template for you to install on mainstream cloud platforms like AWS, Google Cloud, Azure, OpenStack and CloudStack. Please go <a href="http://cloud.csiss.gmu.edu/public/geoweaver-0.6.8.qcow2">here</a> to download the template (3.1 Gigabytes). The username and password of the instance would be <code>csiss</code> and <code>password</code> respectively. </p>
-<p>To start Geoweaver, go to directory /home/csiss/Geoweaver and execute docker-compose up -d. With no accident, Geoweaver will be up and running. </p>
-<pre><code class="shell">cd /home/csiss/Geoweaver &amp;&amp; docker-compose up -d
-</code></pre>
-
-<h4 id="shutdown_2">Shutdown</h4>
-<p>To stop Geoweaver, use:</p>
-<pre><code class="shell">docker stop $(docker ps -aq)
-</code></pre>
-
-<h2 id="build-from-source">Build from source</h2>
-<p>Use maven to build. In the command line go to the root folder and execute <code>mvn install</code>. After a success build, the Geoweaver jar package will be under the directory: <code>Geoweaver/target/Geoweaver-&lt;version&gt;.jar</code>. </p>
 <h1 id="demo">Demo</h1>
-<p><a href="https://cloud.csiss.gmu.edu/Geoweaver">A live demo site</a> is available in George Mason University.</p>
-<h1 id="tutorial">Tutorial</h1>
-<p><a href="https://andrewmagill.github.io/#/">Geoweaver Tutorial</a> - A beginner tutorial about what Geoweaver can do and how it works</p>
+<p><a href="https://cloud.csiss.gmu.edu/Geoweaver">A live demo site</a> is available.</p>
 <h1 id="citation">Citation</h1>
-<p>If you found Geoweaver helpful in your research, please cite us: </p>
-<p>Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.</p>
-<h1 id="dependencies_1">Dependencies</h1>
+<p>If you found Geoweaver helpful in your research, please cite: </p>
+<p>Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.</p>
+<h1 id="dependencies">Dependencies</h1>
 <p>This project is impossible without the support of several fantastic open source libraries.</p>
 <p><a href="https://github.com/d3/d3">d3.js</a> - BSD 3-Clause</p>
 <p><a href="https://github.com/cjrd/directed-graph-creator">graph-creator</a> - MIT License</p>
 <p><a href="https://github.com/twbs/bootstrap">bootstrap</a> - MIT License</p>
 <p><a href="https://github.com/codemirror/CodeMirror">CodeMirror</a> - MIT License</p>
 <p><a href="https://github.com/jcubic/jquery.terminal">JQuery Terminal</a> - MIT License</p>
+<h1 id="community"><a href="authors/">Community</a></h1>
 <h1 id="license">License</h1>
 <p>MIT</p>
               
             </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="authors/" class="btn btn-neutral float-right" title="Authors">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
   
 
   <hr/>
@@ -340,13 +187,16 @@ nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
   </div>
 
   <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-      
-    </span>
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="authors/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
     <script src="js/theme.js" defer></script>
       <script src="search/main.js" defer></script>
     <script defer>
@@ -359,6 +209,6 @@ nano /usr/local/tomcat/webapps/Geoweaver/WEB-INF/classes/cc_secret.properties
 </html>
 
 <!--
-MkDocs version : 1.1.2
-Build Date UTC : 2021-03-09 19:28:43.767084+00:00
+MkDocs version : 1.2.3
+Build Date UTC : 2022-01-10 03:49:48.390477+00:00
 -->

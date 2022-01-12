@@ -3,6 +3,7 @@ package com.gw.jpa;
 
 import java.util.Date;
 
+import javax.persistence.Lob;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,10 +21,12 @@ public class History {
 //	@GeneratedValue(strategy=GenerationType.AUTO)
     private String			 history_id;
 	
+	@Lob
 	@Column(columnDefinition = "LONGTEXT")
     private String			 history_input;
     
     //maximum jupyter notebook 100mb
+	@Lob
     @Column(columnDefinition = "LONGTEXT")
     private String			 history_output;
     

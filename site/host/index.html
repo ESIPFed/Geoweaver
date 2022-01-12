@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Host in Geoweaver - Geoweaver</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Host in Geoweaver";
+    var mkdocs_page_input_path = "host.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Geoweaver</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../authors/">Authors</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Host in Geoweaver</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-is-host">What is Host?</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-host">Create a Host</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#read-python-environment">Read Python Environment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-browser">File Browser</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-uploader">File Uploader</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#edit-a-host">Edit a Host</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-hosts">Supported Hosts</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ssh-server">SSH Server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jupyter-notebook-server">Jupyter NoteBook Server</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jupyter-hub">Jupyter Hub</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jupyter-lab">Jupyter Lab</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../http-proxy/">How to set up HTTP Proxy for Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../process/">Processes in Geoweaver</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../workflow/">Workflow in Geoweaver</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Geoweaver</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Host in Geoweaver</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="host-in-geoweaver">Host in Geoweaver</h1>
+<h2 id="what-is-host">What is Host?</h2>
+<p>In Geoweaver, <code>Host</code> means computing machines. It is where the code gets executed, data gets processed, and history is generated. </p>
+<p>In most time, <code>Host</code> is dedicated to be the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host <code>Localhost</code> which means the current machine Geoweaver is sitting on. For most people, <code>Localhost</code> is all they need. They can run all their processes on <code>Localhost</code>. </p>
+<p>For cool kids, they might want to run their processes on remote servers, e.g., AWS EC2 instances, HPC. In that case, Geoweaver provides convenient options to enroll remote servers and run your code there but manage all of these distributed work in one place. This is a life-saving feature for multiple-server users. No kidding. </p>
+<p>This tutorial will show how to enroll a new <code>Host</code> and make it ready for running processes in Geoweaver. </p>
+<h2 id="create-a-host">Create a Host</h2>
+<ol>
+<li>
+<p>Click the plus button after <code>Host</code> on the right panel.</p>
+</li>
+<li>
+<p>Input <code>Host Name</code>, <code>Host IP</code>, <code>Port</code>, and <code>User Name</code> of your server in the shown dialog. Here is an example:</p>
+</li>
+</ol>
+<pre><code>Host Name: Test Server
+Host IP: 127.0.0.1
+Port: 22
+User Name: testuser
+</code></pre>
+<ol>
+<li>Click <code>Add</code>. A new host node <code>Test Server</code> will show under the <code>Host</code>&gt;<code>SSH Server</code> tree node. </li>
+</ol>
+<h2 id="read-python-environment">Read Python Environment</h2>
+<p>TBD</p>
+<h2 id="file-browser">File Browser</h2>
+<p>TBD</p>
+<h2 id="file-uploader">File Uploader</h2>
+<p>TBD</p>
+<h2 id="edit-a-host">Edit a Host</h2>
+<p>TBD</p>
+<h2 id="supported-hosts">Supported Hosts</h2>
+<h3 id="ssh-server">SSH Server</h3>
+<p>SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client.</p>
+<p>Geoweaver provides a Host category called SSH Server to manage all the remote servers with SSH enabled. There is a builtin SSH console to login and type command lines to directly run scripts. Geoweaver also provides a file browser and uploader for users to transfer the files from/to remote servers. Geoweaver can be considered as two-in-one alternative for SSH client and FTP client.</p>
+<h3 id="jupyter-notebook-server">Jupyter NoteBook Server</h3>
+<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
+<p>In Geoweaver, you can manage multiple Jupyter Notebook server in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
+<h3 id="jupyter-hub">Jupyter Hub</h3>
+<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs.</p>
+<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
+<h3 id="jupyter-lab">Jupyter Lab</h3>
+<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
+<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../http-proxy/" class="btn btn-neutral float-right" title="How to set up HTTP Proxy for Geoweaver">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../authors/" class="btn btn-neutral" title="Authors"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../authors/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../http-proxy/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
