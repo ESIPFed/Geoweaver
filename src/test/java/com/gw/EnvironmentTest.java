@@ -6,11 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -18,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,78 +25,156 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EnvironmentTest {
-    
-    @Autowired
-	UserTool ut;
-
-	@Autowired
-	BaseTool bt;
+public class EnvironmentTest extends AbstractHelperMethodsTest {
 
     @Autowired
-	private TestRestTemplate testrestTemplate;
+    UserTool ut;
+
+    @Autowired
+    BaseTool bt;
+
+    @Autowired
+    private TestRestTemplate testrestTemplate;
 
     @LocalServerPort
-	private int port;
+    private int port;
 
-    Logger logger  = Logger.getLogger(this.getClass());
+    Logger logger = Logger.getLogger(this.getClass());
 
     // @Test
-	void contextLoads() {
-		
-		
-	}
+    void contextLoads() {
 
-    
-	String getRSAKey() throws ParseException{
+    }
 
-		//get key
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/key", 
-			null, 
-			String.class);
+    String getRSAKey() throws ParseException {
 
-		JSONParser jsonParser=new JSONParser();
+        // get key
+        String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/key",
+                null,
+                String.class);
 
-		JSONObject jsonobj = (JSONObject)jsonParser.parse(result);
+        JSONParser jsonParser = new JSONParser();
 
-		String rsakey = jsonobj.get("rsa_public").toString();
-		assertNotNull(rsakey);
+        JSONObject jsonobj = (JSONObject) jsonParser.parse(result);
+
+        String rsakey = jsonobj.get("rsa_public").toString();
+        assertNotNull(rsakey);
 
         return rsakey;
-        
 
-	}
+    }
 
     @Test
-	String testResourceFiles(){
+    String testResourceFiles() {
 
-		Path resourceDirectory = Paths.get("src","test","resources");
-		String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path resourceDirectory = Paths.get("src", "test", "resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
 
-		logger.debug(absolutePath);
-		assertTrue(absolutePath.contains("resources"));
-		return absolutePath;
-	}
+        logger.debug(absolutePath);
+        assertTrue(absolutePath.contains("resources"));
+        return absolutePath;
+    }
 
     // This test could easily fail due to the environment differences
-	@Test
-	void testReadEnvironment() throws ParseException{
+    // @Test
+    // void testReadEnvironment() throws ParseException{
 
-        String rsa_key = getRSAKey();
+    // String rsa_key = getRSAKey();
 
-        String encryptpswd = ""; //how to encrypt pswd here
+    // String encryptpswd = ""; //how to encrypt pswd here
 
-		// HttpHeaders headers = new HttpHeaders();
-		// headers.setContentType(MediaType.APPLICATION_JSON);
-		// String testjson = bt.readStringFromFile(this.testResourceFiles()+ "/readenvironment.txt" ); //so far, it only tests localhost
-        // testjson.replace("<pswdencrypt>", encryptpswd);
-    	// HttpEntity request = new HttpEntity<>(testjson, headers);
-		// String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/readEnvironment", 
-		// 	request, 
-		// 	String.class);
-		// logger.debug("the result is: " + result);
-		// assertThat(result).contains("id");
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.setContentType(MediaType.APPLICATION_JSON);
+    // String testjson = bt.readStringFromFile(this.testResourceFiles()+
+    // "/readenvironment.txt" ); //so far, it only tests localhost
+    // testjson.replace("<pswdencrypt>", encryptpswd);
+    // HttpEntity request = new HttpEntity<>(testjson, headers);
+    // String result = this.testrestTemplate.postForObject("http://localhost:" +
+    // this.port + "/Geoweaver/web/readEnvironment",
+    // request,
+    // String.class);
+    // logger.debug("the result is: " + result);
+    // assertThat(result).contains("id");
 
-	}
+    // }
+
+    @Test
+    @DisplayName("Test /env endpoint")
+    void testHostEnv() throws Exception {
+
+        // Add Host
+        String hid = AddHost();
+
+        HttpHeaders postHeaders = new HttpHeaders();
+        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Get host enviroments
+        HttpEntity postRequest = new HttpEntity<>("id=" + hid, postHeaders);
+        String Postresult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/env",
+                postRequest, String.class);
+        assertThat(Postresult).contains("[");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
+    }
+
+    @Test
+    @DisplayName("Test /listhostwithenvironments endpoint")
+    void testListHostWithEnvironments() throws Exception {
+
+        // Add Host
+        String hid = AddHost();
+
+        HttpHeaders postHeaders = new HttpHeaders();
+        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Get host enviroments
+        // HttpEntity postRequest = new HttpEntity<>("id="+hid, postHeaders);
+        String Postresult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/listhostwithenvironments",
+                null, String.class);
+        System.out.println("/end result: " + Postresult);
+        assertThat(Postresult).contains("id");
+        assertThat(Postresult).contains("type");
+        assertThat(Postresult).contains("url");
+        assertThat(Postresult).contains("envs");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
+
+    }
+
+    // @Test
+    @DisplayName("Test /readEnvironment endpoint")
+    void testReadEnvironment() throws Exception {
+        /*
+         * Endpoint requires ssh into remote host to read enviroments.
+         * Test cannot be executed.
+         */
+
+        // Add Host
+        String hid = AddHost();
+
+        String pswd = "testpswd";
+
+        HttpHeaders postHeaders = new HttpHeaders();
+        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Get Live session of host
+        HttpEntity postRequest = new HttpEntity<>("hostid=" + hid + "&pswd=" + pswd, postHeaders);
+        String Postresult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/readEnvironment",
+                postRequest, String.class);
+        logger.debug("/readEnvironment results: " + Postresult);
+        assertThat(Postresult).contains("success");
+
+        // Delete created host
+        String deleteResult = deleteResource(hid, "host");
+        assertThat(deleteResult).contains("done");
+
+    }
 
 }
