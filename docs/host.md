@@ -28,7 +28,7 @@ User Name: testuser
 
 ## Read Python Environment
 
-1. Click the second icon from the left (python icon) at the bottom right corner of the "Host Details" page.
+1. Click the python icon button in the toolbar of the shown "Host Details" page.
 
 2. Input the `Host User Password` of your account on the server in the shown dialog pop up.
 
@@ -36,7 +36,7 @@ User Name: testuser
 
 ## File Browser
 
-1. Click the second icon from the right (next to the red minus button) in the "Host Details" page.
+1. Click the sitemap icon (the one with branches) button in the "Host Details" toolbar.
 
 2. Input the `Host User Password` of your account on the server in the shown dialog pop up.
 
@@ -44,13 +44,13 @@ User Name: testuser
 
 ## File Uploader
 
-1. Click the upload file icon (the middle icon) at the bottom right corner of the "Host Details" page.
+1. Click the uploader icon button in the "Host Details" toolbar.
 
 2. Input the `Host Password` of your account on the server in the shown dialog pop up.
 
 3. A file upload section will appear below the "Host Details" section with drag and drop or file browser capability.
 
-4. Choose the desired file to upload, and click the start button below the "File Uploader Section" to initiate the upload.
+4. Click on the `Open the File Browser` button to choose files, and click `Start` to initiate the uploading.
 
 5. A progress bar with a status above will indicate the progress of the upload.
 
@@ -58,7 +58,8 @@ User Name: testuser
 
 1. Click the edit icon (first icon) at the bottom right corner of the "Host Details" page.
 
-2. Change the desired fields.
+2. Change the field values as you wish. 
+Note: The Host Id is not editable. 
 
 3. Click the same edit icon as the first step. The changes have now been updated.
 
