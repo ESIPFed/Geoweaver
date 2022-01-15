@@ -39,7 +39,7 @@ GW.general = {
 			
 			var date = new Date(longdate);
 
-            return date.toLocaleString();
+            return date.toLocaleString("sv-SE"); //expect format: 2022-01-15 02:23:48
 
 		},
 
