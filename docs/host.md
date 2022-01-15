@@ -36,7 +36,7 @@ User Name: testuser
 
 Note: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
 
-3. An "Environment List" section will appear below the "Host Details" section showing all the available PyEnv python environments on the connected server.
+3. An `Environment List` section will appear below the `Host Details` section showing all the available PyEnv python environments on the connected server.
 
 ## File Browser
 
@@ -72,12 +72,12 @@ Note: if the selected server is localhost, password instructions are discussed [
 
 ## Edit a Host
 
-1. Click the edit icon (first icon) at the bottom right corner of the "Host Details" page.
+1. Click the edit icon (first icon) in the `Host Details` page.
 
 2. Change the field values as you wish. 
 Note: The Host Id is not editable. 
 
-3. Click the same edit icon as the first step. The changes have now been updated.
+3. Click the edit icon button again. The changes should be updated.
 
 ## Supported Hosts
 
