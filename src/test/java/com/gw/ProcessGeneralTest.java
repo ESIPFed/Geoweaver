@@ -14,6 +14,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
+import com.gw.tools.ExecutionTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -47,6 +48,9 @@ public class ProcessGeneralTest extends AbstractHelperMethodsTest{
 	@Autowired
 	BaseTool bt;
 
+	@Autowired
+	ExecutionTool et;
+
     @Test
     void testExecuteProcessAPI(){
 
@@ -70,18 +74,19 @@ public class ProcessGeneralTest extends AbstractHelperMethodsTest{
         String pid = AddPythonProcess();
 
         HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String edithostjson = bt.readStringFromFile(bt.testResourceFiles() + "/edit_python_process.txt");
-        edithostjson = edithostjson.replace("testpython2", "testpython3");
+        String edithostjson = bt.readStringFromFile(bt.testResourceFiles() + "/edit_python_process.json");
+        edithostjson = edithostjson.replace("testpython2", "testpython3")
+								   .replace("<python_process_id>", pid);
 
 		HttpEntity request = new HttpEntity<>(edithostjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/edit",
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/edit/process",
 				request,
 				String.class);
 		
 		logger.debug("the result is: " + result);
-		assertThat(result).contains("testpython3");
+		assertThat(result).contains(pid);
 
 
     }
@@ -102,6 +107,13 @@ public class ProcessGeneralTest extends AbstractHelperMethodsTest{
 				String.class);
 		logger.debug("the result is: " + result);
 		assertThat(result).contains("stopped");
+	}
+
+	@Test
+	void directTestExecutionTool(){
+
+		// et.executeProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir)
+
 	}
     
 }

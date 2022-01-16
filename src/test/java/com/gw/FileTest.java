@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -56,16 +57,80 @@ public class FileTest {
 
         bt.writeString2File(testfilecontent,  bt.getFileTransferFolder() + "/random_mars_rock.txt");
 
-        this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/file/random_mars_rock.txt", 
-                String.class, null);
+        String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/file/random_mars_rock.txt", 
+                String.class);
+		
+				assertThat(result).contains("testing_beautiful_mars_string");
 
-        String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/executeProcess",
-				request,
-				String.class);
-		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("Internal Server Error");
+		File tempfile = new File(bt.getFileTransferFolder() + "/random_mars_rock.txt");
+		
+		tempfile.delete();
+		
+		assertThat(tempfile.exists()).isFalse();
 
     }
+
+	@Test
+    void testFileDownloadController(){
+
+        String testfilecontent = bt.readStringFromFile(bt.testResourceFiles() + "/test_file.txt");
+
+        bt.writeString2File(testfilecontent,  bt.getFileTransferFolder() + "/random_mars_rock.txt");
+
+        String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/download/temp/random_mars_rock.txt", 
+                String.class);
+		
+				assertThat(result).contains("testing_beautiful_mars_string");
+
+		File tempfile = new File(bt.getFileTransferFolder() + "/random_mars_rock.txt");
+		
+		tempfile.delete();
+		
+		assertThat(tempfile.exists()).isFalse();
+
+    }
+
+
+
+
+	@Test
+	void testSSHFileUploading(){
+
+		String testfileuploadingjson = bt.readStringFromFile(bt.testResourceFiles() + "/ssh_upload.json");
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		HttpEntity request = new HttpEntity<>(testfileuploadingjson, headers);
+
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/upload",
+				request,
+				String.class);
+
+		assertThat(result).contains("Internal");
+
+	}
+
+	@Test
+	void testSSHFileRetrieve(){
+
+		String testfileretrievejson = bt.readStringFromFile(bt.testResourceFiles() + "/ssh_retrieve.json");
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		HttpEntity request = new HttpEntity<>(testfileretrievejson, headers);
+
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/retrieve",
+				request,
+				String.class);
+
+		assertThat(result).contains("Internal");
+
+	}
+
+
 
 }

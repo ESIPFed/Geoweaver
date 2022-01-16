@@ -1186,10 +1186,10 @@ public class GeoweaverController {
 	    	response.flushBuffer();
 	    	
 	    } catch (Exception ex) {
-	      
-		    	logger.error("Error writing file to output stream. Filename was " + fileName + " - " + ex);
-		    	
-		    	throw new RuntimeException("IOError writing file to output stream");
+	    
+			logger.error("Error writing file to output stream. Filename was " + fileName + " - " + ex);
+			
+			throw new RuntimeException("IOError writing file to output stream");
 	    	
 	    }
 
@@ -1310,7 +1310,6 @@ public class GeoweaverController {
 		
 		try {
 			
-
 			String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
 
 			h.setOwner(ownerid);

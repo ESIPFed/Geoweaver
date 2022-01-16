@@ -228,7 +228,6 @@ class GeneralTests extends AbstractHelperMethodsTest {
 		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add",
 				request,
 				String.class);
-		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
 		// Search for recently created host
@@ -448,6 +447,19 @@ class GeneralTests extends AbstractHelperMethodsTest {
 				"http://localhost:" + this.port + "/Geoweaver/web/error",
 				null, String.class);
 		assertThat(Postresult).contains("So sorry, something went wrong!");
+
+	}
+
+	@Test
+	void testPortalController(){
+
+		ResponseEntity<String> getresult = this.testrestTemplate.getForEntity(
+				"http://localhost:" + this.port + "/Geoweaver/geoweaver", String.class);
+		assertThat(getresult.getStatusCode().value()).isEqualTo(302);
+
+		getresult = this.testrestTemplate.getForEntity(
+				"http://localhost:" + this.port + "/Geoweaver/web", String.class);
+		assertThat(getresult.getStatusCode().value()).isEqualTo(302);
 
 	}
 

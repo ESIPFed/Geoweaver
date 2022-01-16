@@ -484,4 +484,19 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
 
     }
 
+    @Test
+    void testLandingPage() throws Exception{
+
+        GeoweaverApplication.addDefaultPublicUser();
+
+        // Add workflow
+        String wid = AddWorkflow();
+
+        String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/landing/" + wid,
+				String.class);
+
+		assertThat(result).contains("Geoweaver Workflow");
+
+    }
+
 }

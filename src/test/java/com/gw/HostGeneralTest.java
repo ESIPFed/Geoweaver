@@ -20,9 +20,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HostTest extends AbstractHelperMethodsTest {
+public class HostGeneralTest extends AbstractHelperMethodsTest {
 
 	@Autowired
 	UserTool ut;
@@ -148,5 +149,86 @@ public class HostTest extends AbstractHelperMethodsTest {
 
 
     }
+
+	@Test
+	void testSSHLoginPageRedirect(){
+
+		ResponseEntity<String> result = this.testrestTemplate.getForEntity("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh?token=venustoken",
+				String.class);
+
+		assertThat(result.getStatusCode().value()).isEqualTo(302);
+
+	}
+
+	@Test
+	void testSSHLoginPage(){
+
+		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh-login",
+				String.class);
+
+		assertThat(result).contains("SSHW Terminal Emulator");
+
+	}
+
+	@Test
+	void testSSHCommandLogin(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		String loginboxjson = bt.readStringFromFile(bt.testResourceFiles() + "/ssh_login.txt");
+
+		HttpEntity request = new HttpEntity<>(loginboxjson, headers);
+
+		ResponseEntity<String> result = this.testrestTemplate.postForEntity("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh-login",
+			request,
+			String.class);
+
+		logger.debug("the result is: " + result);
+		
+		assertThat(result.getStatusCode().value()).isEqualTo(302);
+
+	}
+
+	@Test
+	void testSSHLoginBox(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		String loginboxjson = bt.readStringFromFile(bt.testResourceFiles() + "/ssh_login_box.json");
+
+		HttpEntity request = new HttpEntity<>(loginboxjson, headers);
+
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh-login-inbox",
+			request,
+			String.class);
+
+		assertThat(result).contains("Internal");
+
+	}
+
+	@Test
+	void testSSHLogoutBox(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		HttpEntity request = new HttpEntity<>("token=saturntoken", headers);
+
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh-logout-inbox?token=venustoken",
+			request,
+			String.class);
+
+		assertThat(result).contains("done");
+
+	}
+
+	@Test
+	void testResetPassword(){
+
+		
+
+	}
 
 }

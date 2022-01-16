@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ShellTest {
+public class ProcessShellTest {
 
     
     @Autowired
@@ -71,7 +71,6 @@ public class ShellTest {
 			request, 
 			String.class);
 		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
 		assertThat(result).contains("done");
 
 	}
