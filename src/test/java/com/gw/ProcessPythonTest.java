@@ -39,7 +39,7 @@ import org.springframework.http.MediaType;
 import net.bytebuddy.utility.RandomString;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PythonTest extends AbstractHelperMethodsTest {
+public class ProcessPythonTest extends AbstractHelperMethodsTest {
 
 	@InjectMocks
 	@Autowired
@@ -63,49 +63,11 @@ public class PythonTest extends AbstractHelperMethodsTest {
 	@Autowired
 	HistoryTool hist;
 
-	@InjectMocks
-	@Autowired
-	LocalhostTool ltmock;
+	
 
 	Logger logger = Logger.getLogger(this.getClass());
 
-	public String AddPythonProcess() throws Exception {
-
-		// Add process
-		HttpHeaders processHeaders = new HttpHeaders();
-		processHeaders.setContentType(MediaType.APPLICATION_JSON);
-		String pythonjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_python_process.json");
-		HttpEntity processRequest = new HttpEntity<>(pythonjson, processHeaders);
-		String processResult = this.testrestTemplate.postForObject(
-				"http://localhost:" + this.port + "/Geoweaver/web/add/process",
-				processRequest,
-				String.class);
-		assertThat(processResult).contains("id");
-
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.readValue(processResult, Map.class);
-		String pid = String.valueOf(map.get("id"));
-
-		return pid;
-
-	}
-
-	public String ExecutePythonProcess(String pid) throws Exception {
-
-		// encode the password
-		KeyPair kpair = RSAEncryptTool.buildKeyPair();
-		String encryppswd = RSAEncryptTool.byte2Base64(RSAEncryptTool.encrypt(kpair.getPublic(), "testpswd"));
-		// run the python process
-		ltmock = Mockito.spy(ltmock);
-		doNothing().when(ltmock).authenticate(anyString());
-
-		String historyid = new RandomString(12).nextString();
-
-		ltmock.executePythonProcess(historyid, pid, historyid, encryppswd, historyid, true, "", "", "");
-
-		return historyid;
-	}
-
+	
 	@Test
 	public void testPythonProcess() throws Exception {
 		logger.info("Start to test creating, running, deleting python process..");
@@ -334,50 +296,6 @@ public class PythonTest extends AbstractHelperMethodsTest {
 
 	}
 
-	@Test
-	@DisplayName("Test /recent endpoint for process type")
-	void testProcessRecentHistory() throws Exception {
-
-		HttpHeaders postHeaders = new HttpHeaders();
-		postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-		// Get process recent history
-		HttpEntity postRequest = new HttpEntity<>("type=process&number=20", postHeaders);
-		String Postresult = this.testrestTemplate.postForObject(
-				"http://localhost:" + this.port + "/Geoweaver/web/recent",
-				postRequest, String.class);
-		assertThat(Postresult).contains("id");
-		assertThat(Postresult).contains("Done");
-		assertThat(Postresult).contains("name");
-
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayList<Map> mapped = mapper.readerForListOf(Map.class).readValue(Postresult);
-		Map map = mapped.get(0);
-
-		// SDF has a weird bug where if the milliseconds of the time string passed
-		// starts with a 0 (e.g. 2022-01-08 17:33:03.[0]39 ) SDF automatically
-		// removes the 0 from the string when parsed causing this test to fail.
-		// The milliseconds will be removed when asserting to avoid test breaking.
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-		// assert start time not empty
-		String begin_time = String.valueOf(map.get("begin_time"));
-		String[] begin_time_no_ms = begin_time.split("\\.");
-		assertNotNull(begin_time_no_ms[0]);
-		// assert start time matches format
-		Date begin_time_parsed = sdf.parse(begin_time_no_ms[0]);
-		String begin_time_format = sdf.format(begin_time_parsed);
-		assertEquals(begin_time_format, begin_time_no_ms[0]);
-
-		// assert end time not empty
-		String end_time = String.valueOf(map.get("end_time"));
-		String[] end_time_no_ms = end_time.split("\\.");
-		assertNotNull(end_time_no_ms[0]);
-		// assert end time matches format
-		Date end_time_parsed = sdf.parse(end_time_no_ms[0]);
-		String end_time_format = sdf.format(end_time_parsed);
-		assertEquals(end_time_format, end_time_no_ms[0]);
-
-	}
+	
 
 }

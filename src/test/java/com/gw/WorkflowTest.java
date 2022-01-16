@@ -163,6 +163,28 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
     }
 
     @Test
+    void testEditWorkflow() throws Exception{
+
+        String wid = AddWorkflow();
+
+        HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+        String editworkflowjson = bt.readStringFromFile(bt.testResourceFiles() + "/edit_workflow.json");
+        editworkflowjson = editworkflowjson.replace("t2", "newworkflowname")
+                                            .replace("<wid>", wid);
+
+		HttpEntity request = new HttpEntity<>(editworkflowjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/edit/workflow",
+				request,
+				String.class);
+		
+		logger.debug("the result is: " + result);
+		assertThat(result).contains(wid);
+
+    }
+
+    @Test
     @DisplayName("Test /downloadworkflow endpoint")
     void testDownloadWorkflow() throws Exception {
         /*

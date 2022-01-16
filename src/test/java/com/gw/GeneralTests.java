@@ -441,4 +441,14 @@ class GeneralTests extends AbstractHelperMethodsTest {
 		assertThat(deleteResult).contains("done");
 	}
 
+	@Test
+	void testErrorPage(){
+
+		String Postresult = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/error",
+				null, String.class);
+		assertThat(Postresult).contains("So sorry, something went wrong!");
+
+	}
+
 }

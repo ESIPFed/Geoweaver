@@ -112,4 +112,41 @@ public class HostTest extends AbstractHelperMethodsTest {
 		assertThat(deleteResult).contains("done");
 	}
 
+	@Test
+	void testRecent(){
+
+		GeoweaverApplication.addLocalhost();
+
+		HttpHeaders postHeaders = new HttpHeaders();
+		postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity postRequest = new HttpEntity<>("hostid=10001&number=10&type=host", postHeaders);
+		String Postresult = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/recent",
+				postRequest, String.class);
+		assertThat(Postresult).contains("[");
+
+	}
+
+	@Test
+	void testHostEdit() throws Exception{
+
+        String hid = AddHost();
+
+        HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        String edithostjson = bt.readStringFromFile(bt.testResourceFiles() + "/edit_ssh_host.txt");
+        edithostjson = edithostjson.replace("100001", hid).replace("Localhost", "HostNewName");
+
+		HttpEntity request = new HttpEntity<>(edithostjson, headers);
+		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/edit",
+				request,
+				String.class);
+		
+		logger.debug("the result is: " + result);
+		assertThat(result).contains("HostNewName");
+
+
+    }
+
 }

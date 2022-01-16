@@ -1,5 +1,6 @@
 package com.gw;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,58 +38,39 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.stereotype.Service;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ShellTest {
+public class UserTest {
 
-    
     @Autowired
 	UserTool ut;
 
 	@Autowired
 	BaseTool bt;
 
-    @Autowired
+	@Autowired
 	private TestRestTemplate testrestTemplate;
 
-    @LocalServerPort
+	@LocalServerPort
 	private int port;
 
-    Logger logger  = Logger.getLogger(this.getClass());
+	Logger logger = Logger.getLogger(this.getClass());
+
 
     @Test
-	void contextLoads() {
-		
-		
-	}
+    void testResetPassword(){
 
+        ut.token2date.put("dummytoken", new Date());
+        ut.token2userid.put("dummytoken", "testuser");
 
-	@Test
-	@DisplayName("Test adding shell process")
-	void testShellProcess() throws JsonMappingException, JsonProcessingException{
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		String shelljson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_shell_process.json" );
-    	HttpEntity request = new HttpEntity<>(shelljson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
-			request, 
-			String.class);
-		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("id");
-
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String,Object> map = mapper.readValue(result, Map.class);
-
-		// id=2avx48&type=process
+        HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
-		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
-			request, 
-			String.class);
+		HttpEntity request = new HttpEntity<>("token=dummytoken", headers);
+		String result = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/reset_password",
+				request,
+				String.class);
 		logger.debug("the result is: " + result);
-		// assertThat(controller).isNotNull();
-		assertThat(result).contains("done");
-
-	}
+		assertThat(result).contains("Forgot Password");
+        
+    }
     
 }

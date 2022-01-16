@@ -7,6 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.tools.HistoryTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -22,57 +23,54 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BuiltinTest {
+public class ProcessJupyterTest {
 
-    
-    @Autowired
+	@Autowired
 	UserTool ut;
 
 	@Autowired
 	BaseTool bt;
 
-    @Autowired
+	@Autowired
 	private TestRestTemplate testrestTemplate;
 
-    @LocalServerPort
+	@LocalServerPort
 	private int port;
 
-    Logger logger  = Logger.getLogger(this.getClass());
+	@Autowired
+	HistoryTool hist;
+
+	Logger logger = Logger.getLogger(this.getClass());
 
     @Test
-	void contextLoads() {
-		
-		
-	}
-
-    @Test
-	@DisplayName("Test adding builtin process")
-	void testAddBuiltinProcess() throws JsonMappingException, JsonProcessingException{
+	@DisplayName("Testing adding jupyter process...")
+	void testAddJupyterProcess() throws JsonMappingException, JsonProcessingException {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		String bultinjson = bt.readStringFromFile(bt.testResourceFiles()+ "/add_builtin_process.json" );
-    	HttpEntity request = new HttpEntity<>(bultinjson, headers);
-		String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/process", 
-			request, 
-			String.class);
+		String jupyterjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_jupyter_process.json");
+		HttpEntity request = new HttpEntity<>(jupyterjson, headers);
+		String result = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/add/process",
+				request,
+				String.class);
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("id");
 
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String,Object> map = mapper.readValue(result, Map.class);
+		Map<String, Object> map = mapper.readValue(result, Map.class);
 
-		// id=2avx48&type=process
+		// Delete jupyter process
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    	request = new HttpEntity<>("id="+map.get("id")+"&type=process", headers);
-		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/del", 
-			request, 
-			String.class);
+		request = new HttpEntity<>("id=" + map.get("id") + "&type=process", headers);
+		result = this.testrestTemplate.postForObject(
+				"http://localhost:" + this.port + "/Geoweaver/web/del",
+				request,
+				String.class);
 		logger.debug("the result is: " + result);
 		// assertThat(controller).isNotNull();
 		assertThat(result).contains("done");
 
 	}
-    
 }

@@ -1,0 +1,1 @@
+type=host&hostname=Localhost&hostip=127.0.0.1&hostport=24&url=http%3A%2F%2Flocalhost%2F&hosttype=ssh&username=publicuser&hostid=100001&confidential=FALSE

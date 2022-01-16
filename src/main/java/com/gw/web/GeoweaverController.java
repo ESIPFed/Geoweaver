@@ -970,41 +970,6 @@ public class GeoweaverController {
 		
 	}
 	
-	@RequestMapping(value = "/stopProcess", method = RequestMethod.POST)
-    public @ResponseBody String stopProcess(ModelMap model, WebRequest request, HttpSession session){
-		
-		String resp = null;
-		
-		try {
-			
-			String pid = request.getParameter("processId");
-			
-			String hisid = request.getParameter("historyId");
-			
-//			String encrypted_password = request.getParameter("pswd");
-//			
-//			String bin = request.getParameter("env[bin]");
-//			
-//			String pyenv = request.getParameter("env[pyenv]");
-//			
-//			String basedir = request.getParameter("env[basedir]");
-			
-//			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
-			
-			resp = pt.stop(hisid);
-			
-		}catch(Exception e) {
-			
-			e.printStackTrace();
-			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
-	
 	@RequestMapping(value = "/executeProcess", method = RequestMethod.POST)
     public @ResponseBody String executeProcess(ModelMap model, WebRequest request, HttpSession session){
 		
@@ -1174,83 +1139,9 @@ public class GeoweaverController {
 				
 				String url = request.getParameter("url");
 				
-//				String owner = request.getParameter("owner");
-				
 				ht.update(hostid, hostname, hostip, hostport, username, hosttype, null, url, confidential);
 				
 				resp = "{ \"hostid\" : \"" + hostid + "\", \"hostname\" : \""+ hostname + "\" }";
-				
-			}else if(type.equals("process")) {
-				
-				String lang = request.getParameter("lang");
-				
-				String name = request.getParameter("name");
-				
-				String desc = request.getParameter("desc");
-				
-				String id = request.getParameter("id");
-				
-				checkID(id);
-				
-				String code = null;
-				
-				if(lang.equals("shell")) {
-					
-					code = request.getParameter("code");
-					
-				}else if(lang.equals("builtin")) {
-					
-					String operation = request.getParameter("code[operation]");
-					
-					code = "{ \"operation\" : \"" + operation + "\", \"params\":[";
-					
-					List params = new ArrayList();
-					
-					int i=0;
-					
-					while(request.getParameter("code[params]["+i+"][name]")!=null) {
-						
-						if(i!=0) {
-							
-							code += ", ";
-							
-						}
-						
-						code += "{ \"name\": \"" + request.getParameter("code[params]["+i+"][name]") + "\", \"value\": \"" + request.getParameter("code[params]["+i+"][value]") + "\" }";
-						
-						i++;
-						
-					}
-					
-					code += "] }";
-					
-				}else if(lang.equals("jupyter")) {
-					
-					code = request.getParameter("code");
-					
-				}else {
-					
-					code = request.getParameter("code");
-					
-				}
-				
-				pt.update(id, name, lang, code, desc);
-				
-				resp = "{\"id\" : \"" + id + "\"}";
-				
-			}else if(type.equals("workflow")) {
-				
-				String wid = request.getParameter("id");
-				
-				checkID(wid);
-				
-				String nodes = request.getParameter("nodes");
-				
-				String edges = request.getParameter("edges");
-				
-				wt.update(wid, nodes, edges);
-				
-				resp = "{\"id\" : \"" + wid + "\"}";
 				
 			}else if(type.equals("history")){
 
@@ -1380,25 +1271,16 @@ public class GeoweaverController {
 	}
 
 	@RequestMapping(value = "/add/process", method = RequestMethod.POST)
-    public @ResponseBody String addProcess(ModelMap model, @RequestBody GWProcess np, Host h, WebRequest request){
+    public @ResponseBody String addProcess(ModelMap model, @RequestBody GWProcess np, WebRequest request){
 		
 		String resp = null;
 		
 		try {
 			
-			// String lang = request.getParameter("lang");
-
-			// String name = request.getParameter("name");
-			
-			// String desc = request.getParameter("desc");
-
 			String ownerid = bt.isNull(np.getOwner())?"111111":np.getOwner();
 
 			np.setOwner(ownerid);
 
-			// String confidential = request.getParameter("confidential");
-			
-			
 			String newid = new RandomString(6).nextString();
 
 			np.setId(newid);
@@ -1439,8 +1321,6 @@ public class GeoweaverController {
 
 			ht.save(h);
 			
-			// String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
-			
 			resp = "{ \"id\" : \"" + h.getId() + "\", \"name\" : \""+ h.getName() + "\", \"type\": \"" + h.getType() + "\" }";
 			
 			
@@ -1474,8 +1354,6 @@ public class GeoweaverController {
 
 			wt.save(w);
 
-			// String wid = wt.add(name, nodes, edges, ownerid);
-				
 			resp = "{\"id\" : \"" + newwid + "\", \"name\":\"" + w.getName() + "\"}";
 			
 		}catch(Exception e) {
@@ -1619,8 +1497,6 @@ public class GeoweaverController {
     	//here should validate the token
     	if(token != null){
     		
-//    		model.addAttribute("username", name);
-    		
     		SSHSession ss = sessionManager.sshSessionByToken.get(token);
     		
     		if(ss!=null) {
@@ -1697,8 +1573,6 @@ public class GeoweaverController {
         	
         	String password = RSAEncryptTool.getPassword(encrypted, session.getId());
         	
-//        	String token = request.getParameter("token");
-        	
         	String token = session.getId(); //use session id as token
         	
 			boolean success = sshSession.login(host, port, username, password, token, true);
@@ -1706,8 +1580,6 @@ public class GeoweaverController {
 			logger.debug("SSH login: " + username + "=" + success);
 					
 			logger.debug("adding SSH session for " + username);
-			
-//                sessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
 			
 			sessionManager.sshSessionByToken.put(token, sshSession); //token is session id
         		
@@ -1742,23 +1614,15 @@ public class GeoweaverController {
         	
         	String token = null;
         	
-        	if(sessionManager.sshSessionByToken.get(host+"-"+username)!=null) {
-        		
-//        		token = sessionManager.sshSessionByToken.get(host+"-"+username).getToken();
-        		
-        	}else {
+        	if(bt.isNull(sessionManager.sshSessionByToken.get(host+"-"+username))) {
         		
         		token = new RandomString(16).nextString();
-            	
-//            	SSHSession sshSession = new SSHSessionImpl();
             	
             	boolean success = sshSession.login(host, port, username, password, token, true);
             	
             	logger.debug("SSH login: "+username+"=" + success);
                         
                 logger.debug("adding SSH session for " + username);
-                
-//                sessionManager.sessionsByUsername.put(host+"-"+username, sshSession);
                 
                 sessionManager.sshSessionByToken.put(token, sshSession);
         		
@@ -1786,27 +1650,6 @@ public class GeoweaverController {
     public String ssh_login(Model model, WebRequest request, HttpSession session){
     	
     	String resp = "geoweaver-ssh-login";
-    	
-//    	String error = request.getParameter("error");
-//        String message = request.getParameter("message");
-//        String logout = request.getParameter("logout");
-        
-//        ModelAndView model  = new ModelAndView("login");
-//
-//        if (message != null) {
-//            model.addObject("message", message);
-//        }
-//
-//        if (logout != null) {
-//            model.addObject("message", "Logout successful");
-//        }
-//
-//        if (error != null) {
-//	        log.error(error);
-//            model.addObject("error", "Login was unsuccessful");
-//		}
-//		
-//        return model;
     	
     	return resp;
     	
