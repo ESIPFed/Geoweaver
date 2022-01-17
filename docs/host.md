@@ -28,19 +28,56 @@ User Name: testuser
 
 ## Read Python Environment
 
-TBD
+1. Select the desired host under `Hosts` on the right panel.
+
+2. Click the python icon button in the toolbar of the shown `Host Details` page.
+
+2. Input the `Host User Password` of your account on the remote server in the shown dialog pop up.
+
+Note: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+
+3. An `Environment List` section will appear below the `Host Details` section showing all the available PyEnv python environments on the connected server.
 
 ## File Browser
 
-TBD
+1. Select the desired host under `Hosts` on the right panel.
+
+2. Click the sitemap icon (the one with branches) button in the `Host Details` toolbar.
+
+2. Input the `Host User Password` of your account on the server in the shown dialog pop up.
+
+Note: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+
+3. Click Confirm. A `File Browser Section` will appear below showing all the available directories and files.
 
 ## File Uploader
 
-TBD
+1. Select the desired host under `Hosts` on the right panel.
+
+2. Click the uploader icon button in the `Host Details` toolbar.
+
+2. Input the `Host Password` of your account on the server in the shown dialog pop up.
+
+Note: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+
+3. A file upload section will appear below the `Host Details` section with drag and drop or file browser capability.
+![Screen Shot 2022-01-15 at 12 39 12 AM](https://user-images.githubusercontent.com/34227630/149588755-f1982927-a2b0-453f-8248-65fc5668428c.png)
+
+4. Click on the `Open the File Browser` button to choose files, and click `Start` to initiate the uploading.
+
+5. A progress bar with a status above will indicate the progress of the upload.
+
+6. The status with the message `Upload Complete` in green will show when the file is successfully uploaded, and the file is uploaded to the home directory of the logged in user.
+
 
 ## Edit a Host
 
-TBD
+1. Click the edit icon (first icon) in the `Host Details` page.
+
+2. Change the field values as you wish. 
+Note: The Host Id is not editable. 
+
+3. Click the edit icon button again. The changes should be updated.
 
 ## Supported Hosts
 
