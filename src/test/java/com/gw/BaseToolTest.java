@@ -281,5 +281,19 @@ public class BaseToolTest {
 
     }
 
+    @Test
+    void testRunLocalNuxCommand(){
+
+        bt.runLocalNuxCommand("pwd");
+
+    }
+
+    @Test
+    void testGetWebAppRootPath(){
+
+        bt.getWebAppRootPath();
+
+    }
+
 
 }
