@@ -570,7 +570,7 @@ GW.host = {
 	},
 	
 	/**
-	 * Open the SSH Connection Dialog if the host is a SSH server
+	 * Open the SSH Connection Dialog if the host is a remote server
 	 */
 	openssh: function(hostid){
 		

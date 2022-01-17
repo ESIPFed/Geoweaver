@@ -326,7 +326,7 @@ GW.test = {
                                 </li>
                                 <ul   class="sub-menu collapse" id="hosts">
                                     <li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
-                                        <a href="javascript:void(0)">SSH Server</a>
+                                        <a href="javascript:void(0)">Linux/Win/Mac</a>
                                     </li>
                                     <ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
                                     

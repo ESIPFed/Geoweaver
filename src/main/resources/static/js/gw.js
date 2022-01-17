@@ -9,18 +9,16 @@ edu = {
 			csiss: {
 				geoweaver:{
 
-					desc: "a web system to allow users to easily compose and execute full-stack " +
-							"deep learning workflows in web browsers " +
-							"by taking advantage of the distributed online spatial data facilities, high-performance " +
-							"computation platforms, and open-source deep learning libraries. ",
+					desc: "a light-weight web system to allow users to easily orchestrate and execute full-stack scientific " +
+							"workflows and automatically preserve model run history at a scientist-affordable cost. ",
 							
-					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project",
+					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project, NSF Cybertraining project",
 					
 					version: "1.0.0-alpha",
 					
 					author: "open source contributors",
 					
-					institute: "George Mason University, ESIP, University of Texas Austin, University of Washington, University of Idaho, etc"
+					institute: "George Mason University, ESIP, University of Washington, University of Idaho, University of Texas Austin, etc"
 					
 				}
 			}

@@ -71,9 +71,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-hosts">Supported Hosts</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#ssh-server">SSH Server</a>
+    <li class="toctree-l3"><a class="reference internal" href="#linuxwinmac-computers">Linux/Win/Mac Computers</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#jupyter-notebook-server">Jupyter NoteBook Server</a>
+    <li class="toctree-l3"><a class="reference internal" href="#jupyter-notebook-server-instance">Jupyter NoteBook Server Instance</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#jupyter-hub">Jupyter Hub</a>
     </li>
@@ -135,14 +135,14 @@
               
                 <h1 id="host-in-geoweaver">Host in Geoweaver</h1>
 <h2 id="what-is-host">What is Host?</h2>
-<p>In Geoweaver, <code>Host</code> means computing machines. It is where the code gets executed, data gets processed, and history is generated. </p>
-<p>In most time, <code>Host</code> is dedicated to be the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host <code>Localhost</code> which means the current machine Geoweaver is sitting on. For most people, <code>Localhost</code> is all they need. They can run all their processes on <code>Localhost</code>. </p>
-<p>For cool kids, they might want to run their processes on remote servers, e.g., AWS EC2 instances, HPC. In that case, Geoweaver provides convenient options to enroll remote servers and run your code there but manage all of these distributed work in one place. This is a life-saving feature for multiple-server users. No kidding. </p>
-<p>This tutorial will show how to enroll a new <code>Host</code> and make it ready for running processes in Geoweaver. </p>
+<p>In Geoweaver, <code>Host</code> means computing machines (<code>Linux/Windows/Mac computers</code>). It is where the code gets executed, data gets processed, and history is generated.</p>
+<p>In most time, <code>Host</code> is dedicated to be the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host <code>Localhost</code> which means the current machine Geoweaver is sitting on. For most people, <code>Localhost</code> is all they need. They can run all their processes on <code>Localhost</code>.</p>
+<p>For cool kids, they might want to run their processes on remote servers, e.g., AWS EC2 instances, HPC. In that case, Geoweaver provides convenient options to enroll remote servers and run your code there but manage all of these distributed work in one place. This is a life-saving feature for multiple-server users. No kidding.</p>
+<p>This tutorial will show how to enroll a new <code>Host</code> and make it ready for running processes in Geoweaver.</p>
 <h2 id="create-a-host">Create a Host</h2>
 <ol>
 <li>
-<p>Click the plus button after <code>Host</code> on the right panel.</p>
+<p>Click the plus button after <code>Hosts</code> on the right panel.</p>
 </li>
 <li>
 <p>Input <code>Host Name</code>, <code>Host IP</code>, <code>Port</code>, and <code>User Name</code> of your server in the shown dialog. Here is an example:</p>
@@ -154,28 +154,117 @@ Port: 22
 User Name: testuser
 </code></pre>
 <ol>
-<li>Click <code>Add</code>. A new host node <code>Test Server</code> will show under the <code>Host</code>&gt;<code>SSH Server</code> tree node. </li>
+<li>Click <code>Add</code>. A new host node <code>Test Server</code> will show under the <code>Host</code>&gt;<code>Linux/Win/Mac Computers</code> tree node.</li>
 </ol>
 <h2 id="read-python-environment">Read Python Environment</h2>
-<p>TBD</p>
+<ol>
+<li>
+<p>Select the new host under <code>Hosts</code>&gt;<code>Linux/Win/Mac Computers</code> on the right panel.</p>
+</li>
+<li>
+<p>Click the python icon button in the toolbar of the shown <code>Host Details</code> page.</p>
+</li>
+<li>
+<p>Input the <code>Host User Password</code> of your account on the remote server in the shown dialog pop up.</p>
+</li>
+</ol>
+<blockquote>
+<p><code>Note</code>: if the selected server is localhost, password instructions are discussed <a href="https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost" title="Reset Password for Localhost">here</a></p>
+</blockquote>
+<ol>
+<li>An <code>Environment List</code> section will appear below the <code>Host Details</code> section showing all the available PyEnv python environments on the connected server.</li>
+</ol>
 <h2 id="file-browser">File Browser</h2>
-<p>TBD</p>
+<ol>
+<li>
+<p>Select the new host under <code>Hosts</code>&gt;<code>Linux/Win/Mac Computers</code> on the right panel.</p>
+</li>
+<li>
+<p>Click the sitemap icon (the one with branches) button in the <code>Host Details</code> toolbar.</p>
+</li>
+<li>
+<p>Input the <code>Host User Password</code> of your account on the server in the shown dialog pop up.</p>
+</li>
+</ol>
+<blockquote>
+<p><code>Note</code>: if the selected server is localhost, password instructions are discussed <a href="https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost" title="Reset Password for Localhost">here</a></p>
+</blockquote>
+<ol>
+<li>Click Confirm. A <code>File Browser Section</code> will appear below showing all the available directories and files.</li>
+</ol>
 <h2 id="file-uploader">File Uploader</h2>
-<p>TBD</p>
+<ol>
+<li>
+<p>Select the new host under <code>Hosts</code>&gt;<code>Linux/Win/Mac Computers</code> on the right panel.</p>
+</li>
+<li>
+<p>Click the uploader icon button in the <code>Host Details</code> toolbar.</p>
+</li>
+<li>
+<p>Input the <code>Host Password</code> of your account on the server in the shown dialog pop up.</p>
+</li>
+</ol>
+<blockquote>
+<p><code>Note</code>: if the selected server is localhost, password instructions are discussed <a href="https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost" title="Reset Password for Localhost">here</a></p>
+</blockquote>
+<ol>
+<li>
+<p>A file upload section will appear below the <code>Host Details</code> section with drag and drop or file browser capability.
+<img alt="Screen Shot 2022-01-15 at 12 39 12 AM" src="https://user-images.githubusercontent.com/34227630/149588755-f1982927-a2b0-453f-8248-65fc5668428c.png" /></p>
+</li>
+<li>
+<p>Click on the <code>Open the File Browser</code> button to choose files, and click <code>Start</code> to initiate the uploading.</p>
+</li>
+<li>
+<p>A progress bar with a status above will indicate the progress of the upload.</p>
+</li>
+<li>
+<p>The status with the message <code>Upload Complete</code> in green will show when the file is successfully uploaded, and the file is uploaded to the home directory of the logged in user.</p>
+</li>
+</ol>
 <h2 id="edit-a-host">Edit a Host</h2>
-<p>TBD</p>
+<ol>
+<li>
+<p>Click the edit icon (first icon) in the <code>Host Details</code> page.</p>
+</li>
+<li>
+<p>Change the field values as you wish.</p>
+</li>
+</ol>
+<blockquote>
+<p><code>Note</code>: The Host Id is not editable.</p>
+</blockquote>
+<ol>
+<li>Click the edit icon button again. The changes should be updated.</li>
+</ol>
 <h2 id="supported-hosts">Supported Hosts</h2>
-<h3 id="ssh-server">SSH Server</h3>
-<p>SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. The service was created as a secure replacement for the unencrypted Telnet and uses cryptographic techniques to ensure that all communication to and from the remote server happens in an encrypted manner. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client.</p>
-<p>Geoweaver provides a Host category called SSH Server to manage all the remote servers with SSH enabled. There is a builtin SSH console to login and type command lines to directly run scripts. Geoweaver also provides a file browser and uploader for users to transfer the files from/to remote servers. Geoweaver can be considered as two-in-one alternative for SSH client and FTP client.</p>
-<h3 id="jupyter-notebook-server">Jupyter NoteBook Server</h3>
+<h3 id="linuxwinmac-computers">Linux/Win/Mac Computers</h3>
+<p>Geoweaver provides a Host category called <code>Linux/Win/Mac Computers</code> to manage all the <code>local</code>/<code>remote</code> machines.</p>
+<ul>
+<li>
+<p>For <code>local computers</code> (where Geoweaver is running at), Geoweaver can directly access, manage, and run commands/programs. For security reasons, it will automatically generate a password at its first boot. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to <a href="../install/">reset password</a>).</p>
+</li>
+<li>
+<p>For <code>remote computers</code> (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. </p>
+</li>
+</ul>
+<blockquote>
+<p><code>Tips</code>: SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+</blockquote>
+<h3 id="jupyter-notebook-server-instance">Jupyter NoteBook Server Instance</h3>
+<blockquote>
 <p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
-<p>In Geoweaver, you can manage multiple Jupyter Notebook server in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
+</blockquote>
+<p>In Geoweaver, you can manage multiple Jupyter Notebook instances in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
 <h3 id="jupyter-hub">Jupyter Hub</h3>
+<blockquote>
 <p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs.</p>
+</blockquote>
 <p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
 <h3 id="jupyter-lab">Jupyter Lab</h3>
+<blockquote>
 <p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
+</blockquote>
 <p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab.</p>
               
             </div>
