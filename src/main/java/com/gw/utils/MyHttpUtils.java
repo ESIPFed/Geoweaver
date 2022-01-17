@@ -70,7 +70,6 @@ public class MyHttpUtils
 					   
 // 			    }
 // 		} catch (Exception e) {
-// 				// TODO Auto-generated catch block
 // 			e.printStackTrace();
 // 		}
 // 	    theLogger.debug("Response: " + resp);
@@ -117,7 +116,6 @@ public class MyHttpUtils
 					   
 // 			    }
 // 		} catch (Exception e) {
-// 				// TODO Auto-generated catch block
 // 			e.printStackTrace();
 // 		}
 // 	    theLogger.debug("Response: " + resp);
@@ -609,7 +607,6 @@ public class MyHttpUtils
 // 			MyHttpUtils.testJupyterHubLogin();
 
 // 		} catch (Exception e) {
-// 			// TODO Auto-generated catch block
 // 			e.printStackTrace();
 // 		}
 // 	}

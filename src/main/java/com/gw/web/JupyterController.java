@@ -452,7 +452,6 @@ public class JupyterController {
 			newheaders = this.updateHeaderReferer(headers, h, realurl, request.getQueryString());
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

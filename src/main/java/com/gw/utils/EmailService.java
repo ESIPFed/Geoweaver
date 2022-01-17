@@ -36,9 +36,9 @@ public class EmailService {
 		logger.info("Password Reset URL for "+ user.getUsername()+" : " + reset_url);
 		logger.info("******************************");
 
-		ut.token2userid.put(token, user.getId());
+		UserTool.token2userid.put(token, user.getId());
 
-		ut.token2date.put(token, new Date());
+		UserTool.token2date.put(token, new Date());
 
 		message.setBody("Dear "+user.getUsername()+", <br/><br/>"+
 
@@ -64,15 +64,13 @@ public class EmailService {
 		try {
 			
 			Gmail service = GmailAPI.getGmailService();
-
-			GmailOperations gmailOperations = new GmailOperations();
-
-			MimeMessage Mimemessage = gmailOperations.createEmail(emailmessage.getTo_address(),
+			
+			MimeMessage Mimemessage = GmailOperations.createEmail(emailmessage.getTo_address(),
 					"geoweaver.app@gmail.com",
 					emailmessage.getSubject(), 
 					emailmessage.getBody());
 
-			com.google.api.services.gmail.model.Message msg = gmailOperations.createMessageWithEmail(Mimemessage);
+			com.google.api.services.gmail.model.Message msg = GmailOperations.createMessageWithEmail(Mimemessage);
 
 			service.users().messages().send("me", msg).execute();
 			

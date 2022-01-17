@@ -314,7 +314,6 @@ public class BaseTool {
 	    try {
 			value = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    return value;
@@ -1017,7 +1016,6 @@ public class BaseTool {
         	}
             
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -1048,7 +1046,6 @@ public class BaseTool {
 		try {
 			TimeUnit.SECONDS.sleep(seconds);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1391,7 +1388,7 @@ public class BaseTool {
 			if(!this.isNull(datestr))
 				date1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(datestr);
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}  
 		

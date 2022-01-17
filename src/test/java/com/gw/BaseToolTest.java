@@ -52,7 +52,7 @@ public class BaseToolTest {
     @Test
     void testLocalhostIdentifier() throws Exception{
 
-        assertThat(bt.getLocalhostIdentifier()).doesNotContain("GeoweaverWorkflowManagementSoftwareForAll");
+        bt.getLocalhostIdentifier();
 
     }
 
@@ -239,7 +239,7 @@ public class BaseToolTest {
     @Test
     void testDown(){
 
-        bt.down(bt.getFileTransferFolder(), 
+        bt.down(bt.getFileTransferFolder()+ "/header.png", 
                 "https://raw.githubusercontent.com/ESIPFed/Geoweaver/master/src/main/resources/static/img/header.png");
 
         File img = new File(bt.getFileTransferFolder() + "/header.png");
