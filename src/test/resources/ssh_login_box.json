@@ -1,0 +1,6 @@
+{
+    "host": "hostmsg.ip",
+    "port": "hostmsg.port",
+    "username": "hostmsg.username",
+    "password": "encrypted"
+}

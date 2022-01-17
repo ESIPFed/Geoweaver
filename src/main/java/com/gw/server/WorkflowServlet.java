@@ -48,7 +48,6 @@ public class WorkflowServlet {
 			// this.registerSession(session);
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 		}

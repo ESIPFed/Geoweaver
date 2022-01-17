@@ -305,7 +305,6 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //	    	JupyterRedirectServlet.removeClosedPair();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

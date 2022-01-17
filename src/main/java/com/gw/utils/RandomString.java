@@ -43,10 +43,4 @@ public class RandomString {
 		  
 	  }
 	  
-	  public static final void main(String[] args){
-		  RandomString rs = new RandomString(18);
-		  for(int i=0;i<8;i++){
-			  System.out.println(rs.nextString());
-		  }
-	  }
 }

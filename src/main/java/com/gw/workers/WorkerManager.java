@@ -195,7 +195,6 @@ public class WorkerManager {
 ////		try {
 ////			w.join();
 ////		} catch (InterruptedException e) {
-////			// TODO Auto-generated catch block
 ////			e.printStackTrace();
 ////		}
 //		if(w.isAlive()){

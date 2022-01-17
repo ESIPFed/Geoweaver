@@ -3,4 +3,8 @@ site_name: Geoweaver
 
 docs_dir: "docs"
 
-theme: readthedocs
+theme:
+  name: readthedocs
+  font:
+    text: Roboto
+  logo: 'img/header.png'

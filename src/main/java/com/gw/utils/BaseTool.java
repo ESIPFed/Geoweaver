@@ -72,7 +72,9 @@ import org.springframework.stereotype.Service;
 public class BaseTool {
 	
 	private String _classpath = null;
+
 	Logger logger = LoggerFactory.getLogger(getClass());
+
 	String path_env = null;
 	
 	@Value("${geoweaver.workspace}")
@@ -86,6 +88,17 @@ public class BaseTool {
 
 	@Autowired
 	HostRepository hostRepository;
+
+	String secretfilename = ".secret";
+
+	public String getSecretfilename() {
+		return this.secretfilename;
+	}
+
+	public void setSecretfilename(String secretfilename) {
+		this.secretfilename = secretfilename;
+	}
+	
 	
 	public BaseTool() {
 		
@@ -134,10 +147,10 @@ public class BaseTool {
 
 		logger.info("new workspace dir: " + workspace);
 
-		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret";
+		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename;
 
 		if(new File(secretfile).exists()){
-			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename);
 		}
 		
 		return null;
@@ -158,7 +171,8 @@ public class BaseTool {
 
 				workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
 	
-				this.writeString2File(encodedpassword, this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + ".secret");
+				this.writeString2File(encodedpassword, 
+									this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename);
 	
 			}
 
@@ -234,22 +248,22 @@ public class BaseTool {
 		BufferedReader bufferedReader = null;
 	
 		try {
-		bufferedReader =  req.getReader();
-		char[] charBuffer = new char[128];
-		int bytesRead;
-		while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
-			sb.append(charBuffer, 0, bytesRead);
-		}
-		} catch (IOException ex) {
-		// swallow silently -- can't get body, won't
-		} finally {
-		if (bufferedReader != null) {
-			try {
-			bufferedReader.close();
-			} catch (IOException ex) {
-			// swallow silently -- can't get body, won't
+			bufferedReader =  req.getReader();
+			char[] charBuffer = new char[128];
+			int bytesRead;
+			while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
+				sb.append(charBuffer, 0, bytesRead);
 			}
-		}
+		} catch (IOException ex) {
+			// swallow silently -- can't get body, won't
+		} finally {
+			if (bufferedReader != null) {
+				try {
+				bufferedReader.close();
+				} catch (IOException ex) {
+				// swallow silently -- can't get body, won't
+				}
+			}
 		}
 		body = sb.toString();
 		return body;
@@ -300,7 +314,6 @@ public class BaseTool {
 	    try {
 			value = URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    return value;
@@ -1003,7 +1016,6 @@ public class BaseTool {
         	}
             
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -1034,7 +1046,6 @@ public class BaseTool {
 		try {
 			TimeUnit.SECONDS.sleep(seconds);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1315,67 +1326,6 @@ public class BaseTool {
 	}
 	
 	/**
-	 * Download file through URI
-	 * @param uri
-	 * @param tempurl
-	 * @param tempdir
-	 * @return
-	 */
-	public String[] downloadURI(String uri, String tempurl, String tempdir){
-		String tempName = uri.substring(uri.lastIndexOf("/")+1);
-		String tempfilepath = tempdir+tempName;
-		if(!uri.startsWith(tempurl)&&!new File(tempfilepath).exists()){
-			logger.debug("Begin dowloading the image from the link..");
-			logger.debug("File URI: "+uri);
-			if(uri.startsWith("http")){
-				down(tempfilepath, uri);
-			}else{
-//				wget(tempfilepath, uri);
-				throw new RuntimeException("The input file url is not by http protocal.");
-			}
-	    	
-	    	logger.debug("File is saved to:" + tempfilepath);
-	    	logger.debug("Download ends successfully.");
-		}else{
-			logger.debug("The file from the link "+uri+"already exists on the server..");
-		}
-		String[] urianddir = new String[2];
-		urianddir[0] = tempurl+tempName;
-		urianddir[1] = tempfilepath;
-		return urianddir;
-	}
-	
-	public String cacheDataLocally(String url) {
-		
-		if(url.startsWith(prefixurl)){
-			
-			return url;
-			
-		}
-		
-		String folderpath = this.getFileTransferFolder();
-		
-		String folderuri = prefixurl + "/Geoweaver/" + upload_file_path + "/";
-		
-		String[] fieldurianddir = downloadURI(url, folderuri, folderpath);
-    	
-		return fieldurianddir[0];
-		
-	}
-	
-	public String reducePath(String path) {
-		
-		if(path.indexOf("..")!=-1) {
-			
-			Path filepath = Paths.get(path);
-		    path = filepath.normalize().toString().replaceAll("\\\\", "/");
-		}
-		
-		return path;
-		
-	}
-	
-	/**
 	 * Read the string from a file
 	 * @param path
 	 * @return
@@ -1405,83 +1355,7 @@ public class BaseTool {
 	    }
 		return strLine.toString().trim();
 	}
-	/**
-	 * Get day number between two dates
-	 * @param b
-	 * @param e
-	 * @return
-	 */
-	public int getDaysBetweenTwoDates(Date b, Date e){
-		return (int)((b.getTime()-e.getTime())/(1000 * 60 * 60 * 24));
-	}
-	/**
-	 * Parse string from input stream
-	 * @param in
-	 * @return
-	 */
-	public String parseStringFromInputStream(InputStream in){
-	        String output = null;
-	        try{
-	                // WORKAROUND cut the parameter name "request" of the stream
-	                BufferedReader br = new BufferedReader(new 
-	                                InputStreamReader(in,"UTF-8"));
-	                StringWriter sw = new StringWriter();
-	                int k;
-	                while ((k = br.read()) != -1) {
-	                        sw.write(k);
-	                }
-	                output = sw.toString();
 	
-	        }catch(Exception e){
-	                e.printStackTrace();
-	        }finally{
-	                try{
-	                        in.close();
-	                }catch(Exception e1){
-	                        e1.printStackTrace();
-	                }
-	        }
-	        return output;
-	}
-	/**
-	 * Read document from string
-	 * @param xmlstring
-	 * @return
-	 */
-	public Document readDocumentFromString(String xmlstring){
-        Document doc = null;
-        try{
-                doc  = DocumentHelper.parseText(xmlstring.trim());
-        }catch(Exception e){
-                throw new RuntimeException("Fail to read document from string:"+xmlstring);
-        }
-        return doc;
-	}
-	/**
-	 * Read element from string
-	 * @param xmlstring
-	 * @return
-	 */
-	public  Element readElementFromString(String xmlstring){
-	        Element ele = null;
-	        try{
-	                Document doc  = DocumentHelper.parseText(xmlstring.trim());
-	                ele = doc.getRootElement();
-	        }catch(Exception e){
-	                throw new RuntimeException("Fail to read element from string:"+xmlstring);
-	        }
-	        return ele;
-	}
-	/**
-     * Convert string to input stream
-     * @param str
-     * @return
-     * @throws IOException 
-     */
-    public InputStream convertString2InputStream(String str) throws IOException{
-        InputStream stream = IOUtils.toInputStream(str, "UTF-8");
-        return stream;
-    }
 	/**
     /**
      * Get the DATETIME format of current time
@@ -1514,7 +1388,7 @@ public class BaseTool {
 			if(!this.isNull(datestr))
 				date1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(datestr);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}  
 		
@@ -1522,93 +1396,4 @@ public class BaseTool {
 
 	}
     
-    /**
-     * Post long time request
-     * @param param
-     * @param input_url
-     * @return
-     * 
-     */
-    public String Longtime_POST(String param, String input_url){
-    	String resp = null;
-    	try{
-    		URL url = new URL(input_url);	      
-            HttpURLConnection con =(HttpURLConnection)url.openConnection();
-            con.setDoOutput(true); 
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/xml");
-            con.setConnectTimeout(36*60*60*1000); //extend the waiting time to 36 hours
-            con.setDoOutput(true);
-            con.setDoInput(true);
-            con.setUseCaches(false);
-
-            PrintWriter xmlOut = new PrintWriter(con.getOutputStream());
-            xmlOut.write(param);   
-            xmlOut.flush();
-            BufferedReader response = new BufferedReader(new InputStreamReader(con.getInputStream())); 
-            String result = "";
-            String line;
-            while((line = response.readLine())!=null){
-                result += "\n" + line;
-            }
-            resp =  result.toString();  
-    	}catch(Exception e){
-    		e.printStackTrace();
-    		throw new RuntimeException("Cann't send messages to "+input_url+". Reason: "+e.getLocalizedMessage());
-    	}
-    	return resp;
-    }
-	/**
-	 * send a HTTP POST request
-	 * @param param
-	 * @param input_url
-	 * @return
-	 */
-	public  String POST(String param,String input_url){
-        try {
-                URL url = new URL(input_url);	      
-                HttpURLConnection con =(HttpURLConnection)url.openConnection();
-                con.setDoOutput(true); 
-                con.setRequestMethod("POST");
-                con.setRequestProperty("Content-Type", "application/xml");
-                con.setDoOutput(true);
-                con.setDoInput(true);
-                con.setUseCaches(false);
-
-                PrintWriter xmlOut = new PrintWriter(con.getOutputStream());
-                xmlOut.write(param);   
-                xmlOut.flush();
-                BufferedReader response = new BufferedReader(new InputStreamReader(con.getInputStream())); 
-                String result = "";
-                String line;
-                while((line = response.readLine())!=null){
-                    result += "\n" + line;
-                }
-                return result.toString();  
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Cann't send messages to "+input_url+". Reason: "+e.getLocalizedMessage());
-            }
-    }
-	/**
-	 * Main Entry
-	 * @param args
-	 */
-	public static final void main(String[] args){
-		BaseTool tool = new BaseTool();
-		if(new File("D:\\temp\\aavthwdfvxinra0a0rsw.zip").exists())
-			System.out.println("The file exists");
-		tool.unzip("‪D:\\temp\\aavthwdfvxinra0a0rsw.zip", "C:/Users/JensenSun/Downloads/");
-////		tool.notifyUserByEmail("szhwhu@gmail.com", "A data product link.");
-////		tool.sendUserAOrderNotice("szhwhu@gmail.com", "sdfdsfewewfrewrfewrvcvdfde");
-////		tool.sendUserAResultMail("", "zsun@gmu.edu", "");
-//		
-////		String url = cacheData("http://thredds.ucar.edu/thredds/fileServer/grib/NCEP/NDFD/NWS/CONUS/CONDUIT/NDFD_NWS_CONUS_conduit_2p5km_20170613_1800.grib2");
-//		
-//		
-//		String path = tool.getWebAppRootPath();
-//		
-//		System.out.println(path);
-		
-	}
 }

@@ -1,6 +1,7 @@
 package com.gw.jpa;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,9 +21,11 @@ public class GWProcess {
 	
 	String name;
 	
+	@Lob
 	@Column(columnDefinition = "LONGTEXT")
 	String description;
 
+	@Lob
 	@Column(columnDefinition = "LONGTEXT")
 	String code;
 
