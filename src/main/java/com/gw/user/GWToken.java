@@ -1,6 +1,6 @@
 package com.gw.user;
 
-public class Token {
+public class GWToken {
 	String token;
 	long expireDate;
 	

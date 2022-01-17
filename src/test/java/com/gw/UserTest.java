@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Workflow;
 import com.gw.tools.UserTool;
+import com.gw.user.GWToken;
 import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
@@ -71,6 +72,22 @@ public class UserTest {
 		logger.debug("the result is: " + result);
 		assertThat(result).contains("Forgot Password");
         
+    }
+
+
+    @Test
+    void testToken(){
+
+        GWToken t = new GWToken();
+
+		t.setExpireDate(1000000000);
+
+		t.setToken("space fake go");
+
+		assertThat(t.getToken()).isEqualTo("space fake go");
+
+		assertThat(t.getExpireDate()).isEqualTo(1000000000);
+
     }
     
 }

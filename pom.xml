@@ -328,8 +328,14 @@
 		<dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
-		    </dependency>
+		</dependency>
 		
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>4.6.2</version>
+		</dependency>
+
 		<!-- 
 		<dependency>
             <groupId>org.hibernate</groupId>
@@ -469,6 +475,42 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- <plugin>
+				<groupId>org.jreleaser</groupId>
+				<artifactId>jreleaser-maven-plugin</artifactId>
+				<version>0.10.0</version>
+				<configuration>
+					<jreleaser>
+						<project>
+							<java>
+								<mainClass>${app.main.class}</mainClass>
+							</java>
+						</project>
+						<release>
+							<github>
+								<owner>earther</owner>
+								<overwrite>true</overwrite>
+							</github>
+						</release>
+						<distributions>
+							<app>
+								<artifacts>
+									<artifact>
+										<path>
+										${app.distribution.directory}/${project.artifactId}-${project.version}.zip
+										</path>
+									</artifact>
+									<artifact>
+										<path>
+										${app.distribution.directory}/${project.artifactId}-${project.version}.tar.gz
+										</path>
+									</artifact>
+								</artifacts>
+							</app>
+						</distributions>
+					</jreleaser>
+				</configuration>
+			</plugin> -->
 		</plugins>
 	</build>
 
