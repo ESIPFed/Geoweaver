@@ -1349,6 +1349,7 @@ public class BaseTool {
 			  }
 			  //Close the input stream
 			  in.close();
+			  fstream.close();
 		}catch (Exception e){
 			  //Catch exception if any
 			  System.err.println("Error: " + e.getMessage());

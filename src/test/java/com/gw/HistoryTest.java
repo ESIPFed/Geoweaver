@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,11 +28,13 @@ import com.gw.jpa.Workflow;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
 
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -87,6 +91,16 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 	@DisplayName("Test /recent endpoint for process type")
 	void testProcessRecentHistory() throws Exception {
 
+		String pid = AddPythonProcess();
+
+		// run the python process
+		ltmock = Mockito.spy(ltmock);
+		doNothing().when(ltmock).authenticate(anyString());
+
+		String historyid = new RandomString(12).nextString();
+
+		ltmock.executePythonProcess(historyid, pid, "100001", "dummyrsastring", historyid, true, "", "", "");
+
 		HttpHeaders postHeaders = new HttpHeaders();
 		postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -95,6 +109,7 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 		String Postresult = this.testrestTemplate.postForObject(
 				"http://localhost:" + this.port + "/Geoweaver/web/recent",
 				postRequest, String.class);
+		assertThat(Postresult).contains("[");
 		assertThat(Postresult).contains("id");
 		assertThat(Postresult).contains("Done");
 		assertThat(Postresult).contains("name");
