@@ -52,7 +52,7 @@ public class FileTest {
 
     @Test
     void testTempFileURL(){
-
+		
         String testfilecontent = bt.readStringFromFile(bt.testResourceFiles() + "/test_file.txt");
 
         bt.writeString2File(testfilecontent,  bt.getFileTransferFolder() + "/random_mars_rock.txt");
@@ -60,13 +60,7 @@ public class FileTest {
         String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/file/random_mars_rock.txt", 
                 String.class);
 		
-				assertThat(result).contains("testing_beautiful_mars_string");
-
-		File tempfile = new File(bt.getFileTransferFolder() + "/random_mars_rock.txt");
-		
-		tempfile.delete();
-		
-		assertThat(tempfile.exists()).isFalse();
+		assertThat(result).contains("testing_beautiful_mars_string");
 
     }
 
