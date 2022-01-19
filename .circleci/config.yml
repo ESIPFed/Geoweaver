@@ -22,6 +22,14 @@ jobs:
       - run:
           name: Test
           command: mvn test
+      # Preserve the coverage reports
+      # Then build docker image!
+      - run:
+          name: BuildImage
+          command: mvn spring-boot:build-image
+    store_artifacts:
+      path:  target/site/jacoco/
+    
 
 workflows:
   # Below is the definition of your workflow.
