@@ -24,7 +24,7 @@ jobs:
           command: mvn test
       # Preserve the coverage reports
       - store_artifacts:
-          path:  target/site/jacoco/
+          path:  target/site
     
 
 workflows:
