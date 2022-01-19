@@ -12,4 +12,4 @@ USER marsvegan
 
 WORKDIR /home/marsvegan
 
-CMD ["java","-jar","/opt/geoweaver.jar"]
+ENTRYPOINT ["java","-jar","/opt/geoweaver.jar"]
