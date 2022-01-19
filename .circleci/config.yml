@@ -21,7 +21,7 @@ jobs:
       # Then run your tests!
       - run:
           name: Test
-          command: mvn test
+          command: mvn test jacoco:report
       # Preserve the coverage reports
       - store_artifacts:
           path:  target/site
