@@ -74,13 +74,7 @@ public class FileTest {
         String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/download/temp/random_mars_rock.txt", 
                 String.class);
 		
-				assertThat(result).contains("testing_beautiful_mars_string");
-
-		File tempfile = new File(bt.getFileTransferFolder() + "/random_mars_rock.txt");
-		
-		tempfile.delete();
-		
-		assertThat(tempfile.exists()).isFalse();
+		assertThat(result).contains("testing_beautiful_mars_string");
 
     }
 
