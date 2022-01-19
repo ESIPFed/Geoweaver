@@ -201,7 +201,6 @@ public class ProcessPythonTest extends AbstractHelperMethodsTest {
 				"http://localhost:" + this.port + "/Geoweaver/web/log",
 				postRequest, String.class);
 		assertThat(Postresult).contains("hid");
-		assertThat(Postresult).contains("Done");
 
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, Object> map = mapper.readValue(Postresult, Map.class);
@@ -260,7 +259,7 @@ public class ProcessPythonTest extends AbstractHelperMethodsTest {
 				"http://localhost:" + this.port + "/Geoweaver/web/logs",
 				postRequest, String.class);
 		System.out.println("All process hist: " + Postresult);
-		assertThat(Postresult).contains("Done");
+		assertThat(Postresult).contains("history_id");
 
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayList<Map> mapped = mapper.readerForListOf(Map.class).readValue(Postresult);
