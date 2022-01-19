@@ -18,10 +18,6 @@ jobs:
       - run:
           name: Build
           command: mvn -B -DskipTests clean package
-      # Then build docker image!
-      - run:
-          name: BuildImage
-          command: mvn -B -DskipTests spring-boot:build-image
       # Then run your tests!
       - run:
           name: Test
