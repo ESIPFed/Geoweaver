@@ -35,11 +35,21 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 * Step 3: Run geoweaver using command:
 
-`docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun:geoweaver`
+`docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver`
 
 > *What is going on?* : `-v <YOUR_HOME_DIRECTORY>:/home/marsvegan/` is for mounting your current home directory into the docker containers. `marsvegan` is the user name within geoweaver containers. `-p 8070:8070` maps the port so you can access Geoweaver from your browser. `jensensun:geoweaver` is the published docker image url in DockerHub.
 
+> *Tip*: You can create an alias so next time you won't copy and paste such a long command:
+
+`alias geoweaver="docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"`
+
+Then start it by simply typing:
+
+`geoweaver`
+
 * Step 4: Open web browser and input `http://localhost:8070/Geoweaver`. Geoweaver should show up in a sec. That is it!
+
+
 
 ## Reset Password for Localhost
 
