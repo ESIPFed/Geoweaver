@@ -49,4 +49,10 @@ Geoweaver will automatically create a password for localhost. It will only show 
 java -jar geoweaver.jar resetpassword
 ```
 
+If you used `Docker`, use the following command:
+
+```
+docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver resetpassword
+```
+
 ## [Set up HTTP Proxy](http-proxy.md)
