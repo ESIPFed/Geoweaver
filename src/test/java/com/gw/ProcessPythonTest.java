@@ -277,7 +277,7 @@ public class ProcessPythonTest extends AbstractHelperMethodsTest {
 				"http://localhost:" + this.port + "/Geoweaver/web/logs",
 				postRequest, String.class);
 		System.out.println("Active process hist: " + Postresult);
-		assertThat(Postresult).contains("Done");
+		assertThat(Postresult).contains("history_id");
 
 		mapper = new ObjectMapper();
 		mapped = mapper.readerForListOf(Map.class).readValue(Postresult);
