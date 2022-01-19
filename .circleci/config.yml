@@ -27,8 +27,8 @@ jobs:
       - run:
           name: BuildImage
           command: mvn spring-boot:build-image
-    store_artifacts:
-      path:  target/site/jacoco/
+      - store_artifacts:
+          path:  target/site/jacoco/
     
 
 workflows:
