@@ -155,10 +155,14 @@
 <ul>
 <li>Step 3: Run geoweaver using command:</li>
 </ul>
-<p><code>docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun:geoweaver</code></p>
+<p><code>docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver</code></p>
 <blockquote>
-<p><em>What is going on?</em> : <code>-v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/</code> is for mounting your current home directory into the docker containers. <code>marsvegan</code> is the user name within geoweaver containers. <code>-p 8070:8070</code> maps the port so you can access Geoweaver from your browser. <code>jensensun:geoweaver</code> is the published docker image url in DockerHub.</p>
+<p><em>What is going on?</em> : <code>-v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/</code> is for mounting your current home directory into the docker containers. <code>marsvegan</code> is the user name within geoweaver containers. <code>-p 8070:8070</code> maps the port so you can access Geoweaver from your browser. <code>jensensun/geoweaver</code> is the published docker image url in DockerHub.</p>
+<p><em>Tip</em>: You can create an alias so next time you won't copy and paste such a long command:</p>
 </blockquote>
+<p><code>alias geoweaver="docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"</code></p>
+<p>Then start it by simply typing:</p>
+<p><code>geoweaver</code></p>
 <ul>
 <li>Step 4: Open web browser and input <code>http://localhost:8070/Geoweaver</code>. Geoweaver should show up in a sec. That is it!</li>
 </ul>

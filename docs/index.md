@@ -32,7 +32,7 @@ Only two things basically:
 
 # Demo
 
-[A live demo site](https://cloud.csiss.gmu.edu/Geoweaver) is available.
+[A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
 
 # Citation
 
