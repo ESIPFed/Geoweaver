@@ -752,14 +752,21 @@ public class WorkflowTool {
 
 				String foldername = filename.substring(0, filename.lastIndexOf("."));
 
-				bt.unzip(filepath, bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator());
+				String folder_path = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator();
 
+				bt.unzip(filepath, folder_path);
+
+				//check if there is another layer of folder with the same name
+
+				File checkanotherlayer = new File(folder_path + foldername + FileSystems.getDefault().getSeparator());
+
+				if(checkanotherlayer.exists())  folder_path += foldername + FileSystems.getDefault().getSeparator();
+				
+				String workflowjson = bt.readStringFromFile(folder_path  + "workflow.json");
 	
-				String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
+				String codefolder = folder_path + "code";
 	
-				String codefolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "code";
-	
-				String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history";
+				String historyfolder = folder_path + "history";
 	
 				if(!bt.isNull(workflowjson) ){
 
