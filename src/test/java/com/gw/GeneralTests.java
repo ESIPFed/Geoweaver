@@ -463,4 +463,15 @@ class GeneralTests extends AbstractHelperMethodsTest {
 
 	}
 
+	@Test
+	void testComputerUniqueID() throws Exception{
+
+		String firstattempt = bt.getLocalhostIdentifier();
+
+		String secondattempt = bt.getLocalhostIdentifier();
+
+		assertEquals(firstattempt, secondattempt);
+
+	}
+
 }
