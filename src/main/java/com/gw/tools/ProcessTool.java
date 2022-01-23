@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -46,7 +45,6 @@ public class ProcessTool {
 	@Autowired
 	BaseTool bt;
 
-	
 	@Value("${geoweaver.workspace}")
 	String workspace;
 	
@@ -85,7 +83,7 @@ public class ProcessTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(p);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(p);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,10 +101,6 @@ public class ProcessTool {
 	 */
 	public String list(String owner) throws SQLException {
 		
-//		history_tool.process_all_history(pid)
-		
-		// Iterator<GWProcess> pit = processrepository.findAll().iterator();
-
 		Iterator<GWProcess> pit = processrepository.findAllPublic().iterator();
 		
 		StringBuffer json = new StringBuffer("[");
@@ -175,7 +169,7 @@ public class ProcessTool {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		String jsonString = mapper.writeValueAsString(p);
+		String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(p);
 		
 		return jsonString;
 		
@@ -228,19 +222,9 @@ public class ProcessTool {
 		
 		if(!bt.isNull(code)) {
 			
-			// resp = code.replace("\\\\", "\\")
-			// 		.replace("\\\"", "\"")
-			// 		.replace("<br/>", "\n")
-			// 		.replace("\t", "	");
 			resp = StringEscapeUtils.unescapeJson(code);
 			
 		}
-		
-		
-		
-//		String resp = code.replaceAll("-.-", "/").replaceAll("-·-", "'").replaceAll("-··-", "\"").replaceAll("->-", "\\n").replaceAll("-!-", "\\r");
-//		
-//		logger.info(resp);
 		
 		return resp;
 		
@@ -329,14 +313,6 @@ public class ProcessTool {
 	 */
 	public void update(String id, String name, String lang, String code, String description) {
 		
-//		StringBuffer sql = new StringBuffer("update process_type set name = '").append(name)
-//				
-//				.append("', code = ?, description = '").append(lang).append("' where id = '").append(id).append("';");
-//		
-//		logger.info(sql.toString());
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
-		
 		GWProcess p = processrepository.findById(id).get();
 		
 		p.setName(name);
@@ -367,18 +343,6 @@ public class ProcessTool {
 		bt.writeString2File(code, filepath);
 		
 		String newid = new RandomString(6).nextString();
-		
-//		StringBuffer sql = new StringBuffer("insert into process_type (id, name, code, description) values ('");
-//		
-//		sql.append(newid).append("', '");
-//		
-//		sql.append(name).append("', ?, '");
-//		
-//		sql.append(desc).append("'); ");
-//		
-//		logger.info(sql.toString());
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {filename});
 		
 		GWProcess p = new GWProcess();
 		
@@ -424,20 +388,6 @@ public class ProcessTool {
 		
 		processrepository.save(p);
 
-//		
-//		
-//		StringBuffer sql = new StringBuffer("insert into process_type (id, name, code, description) values ('");
-//		
-//		sql.append(newid).append("', '");
-//		
-//		sql.append(name).append("', ?, '");
-//		
-//		sql.append(desc).append("'); ");
-//		
-//		logger.info(sql.toString());
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {code});
-		
 		return newid;
 		
 	}
@@ -456,45 +406,6 @@ public class ProcessTool {
 		String newid = null;
 		
 		try {
-			
-////			check if the file is already in the database. If yes, should replace the process content only instead of inserting a new row.
-//			StringBuffer sql = new StringBuffer("select * from process_type where inputs = '")
-//					.append(filepath).append("' and inputs_datatypes = '").append(hid).append("'; ");
-//			
-//			ResultSet rs = DataBaseOperation.query(sql.toString());
-//			
-//			
-//			
-//			if(rs.next()) {
-//				
-//				sql = new StringBuffer("update process_type set code = ? where inputs = '")
-//					.append(filepath).append("' and inputs_datatypes = '").append(hid).append("'; ");
-//				
-//				logger.info(sql.toString());
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
-//				
-//			}else {
-//				
-//				newid = new RandomString(6).nextString();
-//				
-//				sql = new StringBuffer("insert into process_type (id, name, code, description, inputs, inputs_datatypes) values ('");
-//				
-//				sql.append(newid).append("', '");
-//				
-//				sql.append(name).append("', ?, '");
-//				
-//				sql.append(type).append("', '");
-//				
-//				sql.append(filepath).append("', '");
-//				
-//				sql.append(hid).append("'); ");
-//				
-//				logger.info(sql.toString());
-//				
-//				DataBaseOperation.preexecute(sql.toString(), new String[] {code});
-//				
-//			}
 			
 		}catch(Exception e) {
 			
@@ -518,26 +429,14 @@ public class ProcessTool {
 		
 		String newid = null;
 		
-//		if(lang.equals("jupyter")) {
-//			
-//			newid = ProcessTool.add_database(name, lang, code, desc); //jupyter still goes to the database
-//			
-//		}else {
+		newid = add_database(name, lang, code, desc, ownerid, confidential);
 			
-			newid = add_database(name, lang, code, desc, ownerid, confidential);
-			
-//		}
-		
 		return newid;
 		
 	}
 	
 	
 	public String del(String id) {
-		
-//		StringBuffer sql = new StringBuffer("delete from process_type where id = '").append(id).append("';");
-//		
-//		DataBaseOperation.execute(sql.toString());
 		
 		processrepository.deleteById(id);
 		
@@ -554,28 +453,6 @@ public class ProcessTool {
 		
 		GWProcess p = processrepository.findById(pid).get();
 
-//		StringBuffer sql = new StringBuffer("select name from process_type where id = '").append(pid).append("';");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		String name = null;
-//		
-//		try {
-//			
-//			if(rs.next()) {
-//				
-//				name = rs.getString("name");
-//				
-//			}
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
-		
 		return p.getName();
 		
 	}
@@ -586,28 +463,6 @@ public class ProcessTool {
 	 * @return
 	 */
 	public String getCodeById(String pid) {
-		
-//		StringBuffer sql = new StringBuffer("select name,code from process_type where id = '").append(pid).append("';");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		String code = null;
-//		
-//		try {
-//			
-//			if(rs.next()) {
-//				
-//				code = rs.getString("code");
-//				
-//			}
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
 		
 		GWProcess p = processrepository.findById(pid).get();
 		
@@ -628,31 +483,7 @@ public class ProcessTool {
 	 */
 	public String getTypeById(String pid) {
 		
-//		StringBuffer sql = new StringBuffer("select description from process_type where id = '").append(pid).append("';");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-//		
-//		String desc = null;
-//		
-//		try {
-//			
-//			if(rs.next()) {
-//				
-//				desc = rs.getString("description");
-//				
-//			}
-//			
-//			DataBaseOperation.closeConnection();
-//			
-//			if(BaseTool.isNull(desc)) desc = "shell"; //default shell
-//			
-//		} catch (SQLException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
 		GWProcess p = processrepository.findById(pid).get();
-		
 		
 		return bt.isNull(p.getLang())?p.getDescription():p.getLang();
 		
@@ -679,37 +510,11 @@ public class ProcessTool {
 				
 				session.getSSHJSession().close();
 			
-			//establish SSH session and generate a token for it
-//			
-//			if(token == null) {
-//				
-//				token = new RandomString(12).nextString();
-//				
-//			}
-//			
-//			SSHSession session = new SSHSessionImpl();
-//			
-//			session.login(hid, pswd, token, false);
-//			
-//			GeoweaverController.sshSessionManager.sshSessionByToken.put(token, session);
-//			
-//			String code = "#!/bin/bash\n" + 
-//					"kill -9 " + hid;
-//			
-//			session.runBash(code, id, isjoin); 
-//			
 			history_tool.stop(hisid);
-//				
+			
 			resp = "{\"history_id\": \""+hisid+
-//					
-//					"\", \"token\": \""+token+
-//					
 					"\", \"ret\": \"stopped\"}";
 			
-//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
-			
-			//register the input/output into the database
-	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -728,22 +533,10 @@ public class ProcessTool {
 		
 		StringBuffer resp = new StringBuffer();
 		
-//		StringBuffer sql = new StringBuffer("select * from history, process_type where process_type.id = history.process ORDER BY begin_time DESC limit ")
-//				.append(limit).append(";");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
-		
 		List<Object[]> recent_processes = historyrepository.findRecentProcess(limit);
 		
 		try {
 			
-			// ObjectMapper objectMapper = new ObjectMapper();
-			
-			// //Set pretty printing of json
-			// objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-			
-			// resp.append(objectMapper.writeValueAsString(recent_processes));
-
 			resp.append("[");
 			
 			int num = 0;
@@ -841,17 +634,6 @@ public class ProcessTool {
 					
 					String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
 
-				// 	if(!bt.isNull(hist.getHistory_input()) && (hist.getHistory_input().contains("bash\\\n") || hist.getHistory_input().contains("\\\nimport") 
-				// || hist.getHistory_input().contains("\\\"operation\\\"") || hist.getHistory_input().contains("\\\"cells\\\""))){
-					
-				// 		input_code = this.unescape(hist.getHistory_input());
-
-				// 	}else{
-					
-				// 		input_code = bt.escape(hist.getHistory_input());
-					
-				// 	}
-					
 					resp.append("\"input\":\"").append(input_code).append("\", ");
 					
 					String output_code = bt.escape(String.valueOf(hist.getHistory_output()));

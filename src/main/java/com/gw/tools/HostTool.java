@@ -212,7 +212,7 @@ public class HostTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(h);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(h);
             // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {

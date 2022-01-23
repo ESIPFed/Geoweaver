@@ -34,7 +34,7 @@ User Name: testuser
 
 3. Input the `Host User Password` of your account on the remote server in the shown dialog pop up.
 
-> `Note`: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+> `Note`: if the selected server is localhost, password instructions are discussed [here](#install.md)
 
 4. An `Environment List` section will appear below the `Host Details` section showing all the available PyEnv python environments on the connected server.
 
@@ -46,7 +46,7 @@ User Name: testuser
 
 3. Input the `Host User Password` of your account on the server in the shown dialog pop up.
 
-> `Note`: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+> `Note`: if the selected server is localhost, password instructions are discussed [here](#install.md)
 
 4. Click Confirm. A `File Browser Section` will appear below showing all the available directories and files.
 
@@ -58,7 +58,7 @@ User Name: testuser
 
 3. Input the `Host Password` of your account on the server in the shown dialog pop up.
 
-> `Note`: if the selected server is localhost, password instructions are discussed [here](https://github.com/ESIPFed/Geoweaver#reset-password-for-localhost "Reset Password for Localhost")
+> `Note`: if the selected server is localhost, password instructions are discussed [here](#install.md)
 
 4. A file upload section will appear below the `Host Details` section with drag and drop or file browser capability.
 ![Screen Shot 2022-01-15 at 12 39 12 AM](https://user-images.githubusercontent.com/34227630/149588755-f1982927-a2b0-453f-8248-65fc5668428c.png)

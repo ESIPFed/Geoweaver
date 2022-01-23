@@ -171,7 +171,7 @@ public class EnvironmentTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(env);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(env);
             // logger.debug("ResultingJSONstring = " + json);
             //System.out.println(json);
         } catch (Exception e) {
