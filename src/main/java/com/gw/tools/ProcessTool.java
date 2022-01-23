@@ -85,7 +85,7 @@ public class ProcessTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(p);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(p);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,7 +175,7 @@ public class ProcessTool {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		String jsonString = mapper.writeValueAsString(p);
+		String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(p);
 		
 		return jsonString;
 		

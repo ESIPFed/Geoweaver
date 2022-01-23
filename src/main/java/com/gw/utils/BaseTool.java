@@ -13,16 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -48,11 +43,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HostRepository;
 import com.gw.jpa.Host;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarOutputStream;
@@ -61,6 +53,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.ComputerSystem;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OperatingSystem;
 
 
 
@@ -107,19 +105,32 @@ public class BaseTool {
 
 	public String getLocalhostIdentifier() throws Exception{
 
-		// return "GeoweaverWorkflowManagementSoftwareForAll";
 		String keystr = null;
 
 		try{
-			InetAddress localHost = InetAddress.getLocalHost();
 
-			NetworkInterface ni = NetworkInterface.getByInetAddress(localHost);
-			
-			byte[] hardwareAddress = ni.getHardwareAddress();
+			SystemInfo systemInfo = new SystemInfo();
+			OperatingSystem operatingSystem = systemInfo.getOperatingSystem();
+			HardwareAbstractionLayer hardwareAbstractionLayer = systemInfo.getHardware();
+			CentralProcessor centralProcessor = hardwareAbstractionLayer.getProcessor();
+			ComputerSystem computerSystem = hardwareAbstractionLayer.getComputerSystem();
 
-			keystr =  new String(hardwareAddress, StandardCharsets.UTF_8);
-		
+			String vendor = operatingSystem.getManufacturer();
+			String processorSerialNumber = computerSystem.getSerialNumber();
+			String uuid = computerSystem.getHardwareUUID();
+			String processorIdentifier = centralProcessor.getProcessorIdentifier().getIdentifier();
+			int processors = centralProcessor.getLogicalProcessorCount();
+
+			String delimiter = "-";
+
+			keystr = String.format("%08x", vendor.hashCode()) + delimiter
+					+ String.format("%08x", processorSerialNumber.hashCode()) + delimiter
+					+ String.format("%08x", uuid.hashCode()) + delimiter
+					+ String.format("%08x", processorIdentifier.hashCode()) + delimiter + processors;
+
 		}catch(Exception e){
+
+			e.printStackTrace();
 
 			keystr = "GeoweaverWorkflowManagementSoftwareForAll";
 
@@ -429,27 +440,6 @@ public class BaseTool {
         return m.matches();
 	}
 
-
-//	public String toJSONString(Object value) {
-//		String json = null;
-//		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-//
-//		try {
-//			json = ow.writeValueAsString(value);
-//
-//		} catch (JsonGenerationException e) {
-//			e.printStackTrace();
-//
-//		} catch (JsonMappingException e) {
-//			e.printStackTrace();
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return json;
-//	}
-
 	public String getErrorReturn(String message){
 
 		StringBuffer json = new StringBuffer("{\"status\": \"failed\", \"reason\":\"");
@@ -503,9 +493,7 @@ public class BaseTool {
 		String json = "{}";
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			json = mapper.writeValueAsString(h);
-			// logger.debug("ResultingJSONstring = " + json);
-			//System.out.println(json);
+			json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(h);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.management.RuntimeErrorException;
-
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
-import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
@@ -22,8 +18,8 @@ import com.gw.jpa.History;
 import com.gw.jpa.Workflow;
 import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
-import com.gw.utils.RandomString;
 import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -31,7 +27,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -64,9 +59,6 @@ public class WorkflowTool {
 	@Autowired
 	HistoryTool tool;
 
-	// @Autowired
-	// UserTool ut;
-
 	@Autowired
 	BaseTool bt;
 	
@@ -92,7 +84,6 @@ public class WorkflowTool {
         	
         	History phis = hisopt.isPresent()? hisopt.get():null;
         	
-        	// pt.stop(phis.getHistory_id());
 			if(!bt.isNull(phis))
 				tm.stopTask(phis.getHistory_id());
         	
@@ -103,9 +94,6 @@ public class WorkflowTool {
 		historyrepository.save(whis);
 
 		String resp = "{\"history_id\": \""+history_id+
-//					
-//					"\", \"token\": \""+token+
-//					
 					"\", \"ret\": \"stopped\"}";
 
         return resp;
@@ -116,7 +104,7 @@ public class WorkflowTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(w);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(w);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -348,12 +336,6 @@ public class WorkflowTool {
 		
 		try {
 			
-//			GeoweaverWorkflowTask task = new GeoweaverWorkflowTask("GW-Workflow-Run-" + token);
-			
-			// task.initialize(id, mode, hosts, pswds, token);
-			
-			// tm.addANewTask(task);
-
 			task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
 
 			task.execute();
@@ -386,12 +368,6 @@ public class WorkflowTool {
 	 */
 	public void update(String wid, String nodes, String edges) {
 		
-//		StringBuffer sql = new StringBuffer("update abstract_model set process_connection = ?, param_connection = ? where identifier = '");
-//		
-//		sql.append(wid).append("'; ");
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {nodes, edges});
-		
 		Workflow wf = workflowrepository.findById(wid).get();
 		
 		wf.setNodes(nodes);
@@ -422,27 +398,11 @@ public class WorkflowTool {
 		
 		workflowrepository.save(wf);
 		
-//		logger.info("name: " + name + "\nnodes: " + nodes + "\nedges: " + edges);
-//		
-//		StringBuffer sql = new StringBuffer("insert into abstract_model (identifier, name, namespace, process_connection, param_connection) values ('");
-//		
-//		sql.append(newid).append("', '");
-//		
-//		sql.append(name).append("', 'http://geoweaver.csiss.gmu.edu/workflow/");
-//		
-//		sql.append(name).append("', ?, ? )");
-//		
-//		DataBaseOperation.preexecute(sql.toString(), new String[] {nodes, edges});
-		
 		return newid;
 		
 	}
 	
 	public String del(String workflowid) {
-		
-//		StringBuffer sql = new StringBuffer("delete from abstract_model where identifier = '").append(workflowid).append("';");
-//		
-//		DataBaseOperation.execute(sql.toString());
 		
 		workflowrepository.deleteById(workflowid);
 		
@@ -457,10 +417,6 @@ public class WorkflowTool {
 	public String all_active_process() {
 		
 		StringBuffer resp = new StringBuffer() ;
-		
-//		StringBuffer sql = new StringBuffer("select * from history, abstract_model where history.process = abstract_model.identifier and indicator = 'Running' ORDER BY begin_time DESC;");
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
 		List<Object[]> active_his_workflow = historyrepository.findRunningWorkflow();
 		
@@ -548,10 +504,6 @@ public class WorkflowTool {
 	public String recent(int limit) {
 		
 		StringBuffer resp = new StringBuffer();
-		
-//		StringBuffer sql = new StringBuffer("select * from history, abstract_model where abstract_model.identifier = history.process ORDER BY begin_time DESC limit ").append(limit).append(";");
-//
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
 		try {
 			
@@ -944,43 +896,7 @@ public class WorkflowTool {
 
 		});
 
-		// files = new File(codefolder).listFiles();
-	
-		// if(files != null) {
-			
-		// 	for (File file : files) {
-				
-		// 		String processcode = bt.readStringFromFile(file.getAbsolutePath());
-
-		// 		GWProcess p = pt.fromJSON()
-
-		// 	}
-		// }
-
 		return workflowjson;
 	}
 	
-	// public static void main(String[] args) throws ParseException {
-		
-	// 	String jsonarray = "[{\"name\": \"1\"}, {\"name\": \"2\"}]";
-		
-	// 	JSONParser parser = new JSONParser();
-		
-	// 	JSONArray obj = (JSONArray)parser.parse(jsonarray);
-		
-	// 	System.out.println("parsed json objects: " + obj.size());
-		
-		
-	// }
-
-    // public String getOwnerNameByID(String ownerid) {
-
-	// 	String ownername = "Public User";
-		
-	// 	if(!bt.isNull(ownerid)) 
-	// 		ownername = ut.getUserById(ownerid).getUsername();
-
-    //     return ownername;
-    // }
-
 }

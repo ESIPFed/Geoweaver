@@ -58,7 +58,7 @@ public class HistoryTool {
 		String json = "{}";
         ObjectMapper mapper = new ObjectMapper();
         try {
-            json = mapper.writeValueAsString(his);
+            json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(his);
             // logger.debug("ResultingJSONstring = " + json);
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,7 +227,7 @@ public class HistoryTool {
 
 			String json = "[]";
 			ObjectMapper mapper = new ObjectMapper();
-			json = mapper.writeValueAsString(active_processes);
+			json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(active_processes);
 
 			resp.append(json);
 			
@@ -283,7 +283,7 @@ public class HistoryTool {
 
 			String json = "[]";
 			ObjectMapper mapper = new ObjectMapper();
-			json = mapper.writeValueAsString(active_processes);
+			json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(active_processes);
 
 			resp.append(json);
 			
