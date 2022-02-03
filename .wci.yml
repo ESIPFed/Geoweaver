@@ -1,0 +1,12 @@
+name: Geoweaver
+
+icon: https://raw.githubusercontent.com/ESIPFed/Geoweaver/master/docs/img/header.png
+
+headline: a lightweight workflow software to easily orchestrate pipelines from Python and shell scripts and preserve history of every execution
+
+description: Geoweaver is a web system to allow users to automatically record history and manage complicated scientific workflows in web browsers involving the online spatial data facilities, high-performance computation platforms, and open-source libraries.
+
+documentation: 
+  general: https://esipfed.github.io/Geoweaver/
+  installation: https://esipfed.github.io/Geoweaver/docs/install.html
+  tutorial: https://zihengsun.github.io/Geoweaver/

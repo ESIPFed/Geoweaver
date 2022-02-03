@@ -1,8 +1,3 @@
-/**
-* 
-* date: 20180925
-* 
-*/
 
 edu = {
 		gmu: {
@@ -14,7 +9,7 @@ edu = {
 							
 					sponsor: "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project, NSF Cybertraining project",
 					
-					version: "1.0.0-alpha",
+					version: "1.0.0-beta",
 					
 					author: "open source contributors",
 					
