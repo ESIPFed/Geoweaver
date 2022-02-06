@@ -145,13 +145,7 @@ GW.process = {
 		    		}
 				
 	        	});
-
-			// GW.process.editor.on('change', function(instance, event){
-
-			// 	GW.process.showNonSaved();
-
-			// });
-			
+				
 			GW.process.editor.on('focus', function(instance, event) {
 				
 				if(GW.process.editor.isReadOnly()){
@@ -242,7 +236,6 @@ GW.process = {
 		        e.stopPropagation();
 		        e.preventDefault();
 		        e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a 
-//		        root.document.body.style.opacity = 0.5;
 		    }, false);
 
 		    document.getElementById("controls").addEventListener('dragleave', function (e) {
@@ -253,8 +246,6 @@ GW.process = {
 		        e.stopPropagation();
 		        e.preventDefault();
 		        load_file(e.dataTransfer.files[0]);
-//		        $file_input.style.display = "none";
-//		        root.document.body.style.opacity = 1;
 		    }, false);
 
 			
@@ -1506,45 +1497,6 @@ GW.process = {
 				
 			   	cont += '  		</select></div>';
 
-				
-			   	
-			   	// for(var i=0;i<GW.process.builtin_processes.length;i++){
-
-				// 	if(GW.process.builtin_processes[i].operation == code.operation){
-
-
-						// if (GW.process.builtin_processes[i].operation == 'AWS S3') {
-							
-						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-						// 	GW.process.builtin_processes[i].params[0].name+'</u>: </label>'+
-						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
-						// 	GW.process.builtin_processes[i].params[0].name+'" onchange=\"GW.process.updateBuiltin()\" placeholder=\"-AccessKey <Value> -SecretKey <Value> -Bucket <Value> -Region <Value>\" ></textarea>';
-							
-						// 	cont += '</div>';
-
-						// } else {
-
-
-
-						// for(var j=0;j<GW.process.builtin_processes[i].params.length;j++){
-						// 	cont+= '<div class="row paramrow">';
-						// 	cont += '     <label for="parameter" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Parameter <u>'+
-						// 	GW.process.builtin_processes[i].params[j].name+'</u>: </label>'+
-						// 	'     <div class="col-sm-8"> 	<textarea class="form-control builtin-parameter" id="param_'+
-						// 	GW.process.builtin_processes[i].params[j].name+'" onchange=\"GW.process.updateBuiltin()\" ></textarea>';
-							
-						// 	cont += '</div></div>';
-
-						// }
-							
-						// }
-
-				// 		break;
-
-				// 	}
-					
-				// }
-			   	
 			   	$("#code-embed").html(cont);
 
 				$("#builtin_processes").on("change", function(){
