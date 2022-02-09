@@ -1281,17 +1281,19 @@ GW.process = {
 			   '		</div>'+
 			   '   </div>' ;
 			
-			content += "<div class=\"subtab tab titleshadow\" data-intro=\"this is a tab inside the process tab panel\">"+
-				"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
-				"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
-				process_id+"', '" + process_name+"')\">History</button>"+
-				`	<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>`+
-				" </div>";
+			content += `
+			<div id="editor-history-tab-panel" style="height:calc(100%);left:0; margin:0; padding: 0;">
+				
+				<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
+					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
+					<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+
+				process_id+`', '` + process_name+`')">History</button>
+					<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
+				</div>`;
 			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">";
-			
-			content += "<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
-				"					<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
+			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">"+
+				"			<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
+				"				<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
 				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
 				"				</div> "+
 				'				<div class="resizer" id="dragMe"></div> '+
@@ -1303,18 +1305,15 @@ GW.process = {
 				'							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>'+
 				'						</div>'+
 				'   				</div>'+
-				"				</div>";
-
-			content += '</div>'+
-				
+				"				</div>"+ 
+				'			</div>'+
 				'</div>';
 
-			content += "<div id=\"main-process-info-history\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;\">";
-
-			content += '   <div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >'+
-			'   </div>';
-			
-			content += "</div>";
+			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 130px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+			    	<div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >
+			   		</div>
+				</div>
+			</div>`;
 			
 			$("#main-process-content").html(content);
 
