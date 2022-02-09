@@ -145,7 +145,7 @@ GW.process = {
 		    		}
 				
 	        	});
-				
+
 			GW.process.editor.on('focus', function(instance, event) {
 				
 				if(GW.process.editor.isReadOnly()){
@@ -1285,6 +1285,7 @@ GW.process = {
 				"	<button class=\"tablinks-process \" id=\"main-process-info-code-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-code')\">Code</button>"+
 				"	<button class=\"tablinks-process \" id=\"main-process-info-history-tab\" onclick=\"GW.process.openCity(event, 'main-process-info-history'); GW.process.history('"+
 				process_id+"', '" + process_name+"')\">History</button>"+
+				`	<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>`+
 				" </div>";
 			
 			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">";
