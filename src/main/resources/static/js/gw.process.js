@@ -772,6 +772,8 @@ GW.process = {
 				GW.process.displayOutput(msg);
 
 				GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+
+				if(GW.editor.isfullscreen) GW.editor.switchFullScreen();
 				
 			}).fail(function(jxr, status){
 				

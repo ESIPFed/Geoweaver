@@ -4,9 +4,9 @@ GW.editor = {
 
     beforeFullscreen: {},
 
-    switchFullScreen: function(){
+    isfullscreen: false,
 
-        this.isfullscreen = !this.isfullscreen; //switch
+    switchFullScreen: function(){
 
         var editorDiv = $('#editor-history-tab-panel');
         var subtabCodeDiv = $('#main-process-info-code');
@@ -19,7 +19,7 @@ GW.editor = {
             // editor.refresh();
             subtabCodeDiv.height('calc(100% - 40px)');
             subtabHistoryDiv.height('calc(100% - 40px)');
-
+            this.isfullscreen = true;
         }
         else {
             editorDiv.removeClass('fullscreen');
@@ -28,6 +28,7 @@ GW.editor = {
             subtabCodeDiv.height('calc(100% - 130px)');
             subtabHistoryDiv.height('calc(100% - 130px)');
             // editor.refresh();
+            this.isfullscreen = false;
         }
 
     }
