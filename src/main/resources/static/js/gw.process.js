@@ -1283,7 +1283,7 @@ GW.process = {
 			   '		</div>'+
 			   '   </div>' ;
 			
-			content += `<div id="editor-history-tab-panel" style="height:calc(100%);left:0; margin:0; padding: 0;">
+			content += `<div id="editor-history-tab-panel" style="height:calc(100%);left:0; margin:0; padding: 0; background-color: rgb(28, 28, 28);">
 				
 				<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
 					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
