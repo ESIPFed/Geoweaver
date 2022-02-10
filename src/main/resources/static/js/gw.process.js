@@ -1281,33 +1281,35 @@ GW.process = {
 			   '		</div>'+
 			   '   </div>' ;
 			
-			content += `
-			<div id="editor-history-tab-panel" style="height:calc(100%);left:0; margin:0; padding: 0;">
+			content += `<div id="editor-history-tab-panel" style="height:calc(100%);left:0; margin:0; padding: 0;">
 				
 				<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
 					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
 					<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+
-				process_id+`', '` + process_name+`')">History</button>
+					process_id+`', '` + process_name+`')">History</button>
+				
 					<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
+					<button class="btn pull-right" onclick="GW.process.runProcess('`+
+					process_id+`', '`+process_name+`', '`+code_type+
+					`');" ><i class="glyphicon glyphicon-play"></i></button>
+				</div>
+				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 130px);left:0; margin:0; padding: 0; ">
+							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
+								<div id="process_code_window" class="container__left" style="height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);" >
+									<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
+								</div> 
+								<div class="resizer" id="dragMe"></div>
+								<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+									<h4>Logging</h4>
+									<div id="process-log-window" style="overflow-wrap: break-word;"> </div>
+				   				<div class="row" style="padding:0px; margin:0px;" >
+										<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+											<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
+										</div>
+				   				</div>
+								</div>
+							</div>
 				</div>`;
-			
-			content += "<div id=\"main-process-info-code\" class=\"tabcontent-process generalshadow\" style=\"height:calc(100% - 130px);left:0; margin:0; padding: 0; \">"+
-				"			<div class=\"code__container\" style=\"font-size: 12px; margin:0; height:100%;\" id=\"process-code-history-section\">"+
-				"				<div id=\"process_code_window\" class=\"container__left\" style=\"height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);\" > "+
-				"					<div class=\"col col-md-6\" id=\"code-embed\" style=\"width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px); \" ></div>"+
-				"				</div> "+
-				'				<div class="resizer" id="dragMe"></div> '+
-				"				<div id=\"single-console-content\" class=\"container__right\" style=\"height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;\"> "+
-				"					<h4>Logging</h4> "+
-				"					<div id=\"process-log-window\" style=\"overflow-wrap: break-word;\"> </div> "+
-				'   				<div class="row" style="padding:0px; margin:0px;" >'+
-				'						<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >'+
-				'							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>'+
-				'						</div>'+
-				'   				</div>'+
-				"				</div>"+ 
-				'			</div>'+
-				'</div>';
 
 			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 130px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
 			    	<div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >
@@ -1588,14 +1590,14 @@ GW.process = {
 			this.isSaved = false;
 			console.log("change event called")
 			$("#main-process-tab").html("Process*");
-
+			$("#main-process-info-code-tab").html("Process*");
 		},
 
 		showSaved: function(){
 			this.isSaved = true;
 			console.log("save event called")
 			$("#main-process-tab").html("Process");
-
+			$("#main-process-info-code-tab").html("Process");
 		},
 		
 		//edit switch should always be on
