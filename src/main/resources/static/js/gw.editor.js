@@ -17,8 +17,8 @@ GW.editor = {
             editorDiv.height('100vh');
             editorDiv.width('100vw');
             // editor.refresh();
-            subtabCodeDiv.height('100%');
-            subtabHistoryDiv.height('100%');
+            subtabCodeDiv.height('calc(100% - 40px)');
+            subtabHistoryDiv.height('calc(100% - 40px)');
 
         }
         else {
