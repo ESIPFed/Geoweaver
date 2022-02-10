@@ -1592,14 +1592,14 @@ GW.process = {
 			this.isSaved = false;
 			console.log("change event called")
 			$("#main-process-tab").html("Process*");
-			$("#main-process-info-code-tab").html("Process*");
+			$("#main-process-info-code-tab").html("Code*");
 		},
 
 		showSaved: function(){
 			this.isSaved = true;
 			console.log("save event called")
 			$("#main-process-tab").html("Process");
-			$("#main-process-info-code-tab").html("Process");
+			$("#main-process-info-code-tab").html("Code");
 		},
 		
 		//edit switch should always be on
