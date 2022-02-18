@@ -426,11 +426,22 @@ public class LocalSessionWinImpl implements LocalSession {
 
 		log.debug("for localhost session, there is nothing to manually stop. Just wait for the process to finish. That is all.");
 		
-		// if(!bt.isNull(process)) {
+		try{
+
+			if(!bt.isNull(process)) {
 			
-		// 	process.destroy();
-			
-		// }
+				process.destroy();
+				
+			}
+
+			return true;
+
+		}catch(Exception e){
+
+			return false;
+
+		}
+		
 		
 		// if(!bt.isNull(thread)) {
 			
@@ -447,8 +458,6 @@ public class LocalSessionWinImpl implements LocalSession {
 		// 	}
 			
 		// }
-		
-		return true;
 		
 	}
 

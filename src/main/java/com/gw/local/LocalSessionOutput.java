@@ -192,13 +192,13 @@ public class LocalSessionOutput  implements Runnable{
     @Override
     public void run() {
         
+		StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
+		
+		StringBuffer logs = new StringBuffer();
+			
 		try{
 			log.info("Local session output thread started");
 		
-			StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
-			
-			StringBuffer logs = new StringBuffer();
-			
 			int linenumber = 0;
 			
 			int startrecorder = -1;
@@ -352,15 +352,12 @@ public class LocalSessionOutput  implements Runnable{
 
 			e.printStackTrace();
 
-			this.updateStatus(e.getLocalizedMessage(), "Failed");
+			this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
 		
 		}finally{
 			
 			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
-
-			// cleanLogMonitor();
 			
-
 		}
 
     }
