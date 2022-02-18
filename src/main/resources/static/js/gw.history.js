@@ -92,9 +92,9 @@ GW.history = {
         return status_col;
         
     },
-
+    
     getProcessHistoryTable: function(msg){
-			
+		
         var content = "<table class=\"table table-color\" id=\"process_history_table\"> "+
         "  <thead> "+
         "    <tr> "+
@@ -106,7 +106,6 @@ GW.history = {
         "    </tr> "+
         "  </thead> "+
         "  <tbody> ";
-
         
         for(var i=0;i<msg.length;i++){
             
@@ -119,7 +118,7 @@ GW.history = {
                 status_col +
                 "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
             
-            if(msg[i].status == "Running"){
+            if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";
             }
             

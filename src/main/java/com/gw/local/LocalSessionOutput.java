@@ -205,8 +205,6 @@ public class LocalSessionOutput  implements Runnable{
 			
 			int nullnumber = 0;
 			
-			// LocalSession session = lt.getLocalSession();//GeoweaverController.sessionManager.localSessionByToken.get(token);
-			
 			this.updateStatus("Running", "Running"); //initiate the history record
 
 			sendMessage2WebSocket("Process "+this.history_id+" Started");
@@ -303,7 +301,7 @@ public class LocalSessionOutput  implements Runnable{
 						}
 						
 					}
-					
+
 					
 				} catch (Exception e) {
 					

@@ -58,6 +58,8 @@ public class LocalSessionWinImpl implements LocalSession {
     private HistoryTool      history_tool;
 	
 	private boolean			 isTerminal;
+
+	private boolean          isClose;
 	
 	private BufferedReader   input;
 	
@@ -153,6 +155,8 @@ public class LocalSessionWinImpl implements LocalSession {
 		this.history.setIndicator(ExecutionStatus.FAILED);
 		
 		this.history_tool.saveHistory(this.history);
+
+		this.isClose = true;
 		
 	}
 	
@@ -168,6 +172,8 @@ public class LocalSessionWinImpl implements LocalSession {
 		this.token = token;
 		
 		this.isTerminal = isjoin;
+
+		this.isClose = false;
 		
 		history = history_tool.initProcessHistory(history_id, processid, script);
 		
@@ -244,6 +250,10 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true;
+
 		}
     	
 		
@@ -312,6 +322,10 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true;
+
 		}
     	
 	}
@@ -384,6 +398,10 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true;
+
 		}
 		
 	}
@@ -569,6 +587,13 @@ public class LocalSessionWinImpl implements LocalSession {
 
 		return resp;
 
+	}
+
+
+	@Override
+	public boolean isClose() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	

@@ -148,6 +148,8 @@ public class LocalhostTool {
 			session.runBash(history_id, code, id, isjoin, token); 
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
 			
 			resp = "{\"history_id\": \""+history_id+
 					
@@ -307,6 +309,8 @@ public class LocalhostTool {
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
 			
 			//save environment
 			
@@ -369,6 +373,8 @@ public class LocalhostTool {
 			LocalSession session = getLocalSession();
 			
 			GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+			GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
 
 			//save environment
 			et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");

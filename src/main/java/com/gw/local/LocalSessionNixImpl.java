@@ -59,6 +59,8 @@ public class LocalSessionNixImpl implements LocalSession {
 	HistoryTool history_tool;
 	
 	private boolean			 isTerminal;
+
+	private boolean          isClose;
 	
 	private BufferedReader   input;
 	    
@@ -104,6 +106,8 @@ public class LocalSessionNixImpl implements LocalSession {
 		this.token = token;
 		
 		this.isTerminal = isjoin;
+
+		this.isClose = false;
 		
 		history = history_tool.initProcessHistory(history_id, processid, script);
 		
@@ -145,6 +149,8 @@ public class LocalSessionNixImpl implements LocalSession {
 		this.history.setIndicator(ExecutionStatus.FAILED);
 		
 		this.history_tool.saveHistory(this.history);
+
+		this.isClose = true;
 		
 	}
     
@@ -177,7 +183,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
@@ -203,6 +209,10 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true; 
+
 		}
     	
 		
@@ -254,7 +264,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
@@ -287,6 +297,10 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true;
+
 		}
 		
 	}
@@ -316,7 +330,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		builder.redirectErrorStream(true);
     		
-    		Process process = builder.start();
+    		process = builder.start();
     		
     		InputStream stdout = process.getInputStream ();
     		
@@ -348,6 +362,10 @@ public class LocalSessionNixImpl implements LocalSession {
 			
 			this.endWithError(token, e.getLocalizedMessage());
 			
+		}finally{
+
+			this.isClose = true;
+
 		}
 		
 	}
@@ -410,7 +428,17 @@ public class LocalSessionNixImpl implements LocalSession {
 	@Override
 	public boolean stop() {
 		
-		return false;
+		try{
+
+			if(!bt.isNull(process)) process.destroy();
+
+			return true;
+
+		}catch(Exception e){
+
+			return false;
+
+		}
 	}
 
 	@Override
@@ -590,6 +618,12 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		return resp;
 
+	}
+
+	@Override
+	public boolean isClose() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 
