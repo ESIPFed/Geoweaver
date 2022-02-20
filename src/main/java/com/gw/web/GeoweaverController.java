@@ -501,7 +501,7 @@ public class GeoweaverController {
 			
 			if(type.equals("process")) {
 				
-				resp = pt.stop( id);
+				resp = pt.stop(id);
 				
 			}else if(type.equals("workflow")) {
 				

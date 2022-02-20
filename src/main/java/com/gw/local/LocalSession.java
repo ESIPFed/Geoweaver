@@ -11,6 +11,14 @@ import com.gw.jpa.History;
 public interface LocalSession {
 	
     public boolean isTerminal();
+
+	/**
+	 * Check if this session is closed. 
+	 * Notice: only work for process that has waitFor enabled. the process without join doesn't work.
+	 * @return
+	 * close - true; open - false
+	 */
+	public boolean isClose(); 
     
 	public History getHistory();
 

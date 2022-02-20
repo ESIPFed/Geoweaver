@@ -23,6 +23,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +58,44 @@ public class SessionManager {
     
     public final ConcurrentHashMap<String, LocalSession> localSessionByToken = new ConcurrentHashMap<String, LocalSession>();
     
-    
+	/**
+	 * This function should clean those sessions which have been stopped but still exist in the manager
+	 */
+    public void cleanClosed(){
+
+		//clean the ssh session
+		
+		Iterator it = sshSessionByToken.entrySet().iterator();
+	    
+		while (it.hasNext()) {
+	    	
+	    	ConcurrentHashMap.Entry pair = (ConcurrentHashMap.Entry)it.next();
+	    	
+	    	SSHSession ssh = (SSHSession)pair.getValue();
+
+			String key = (String)pair.getKey();
+
+			if(!ssh.getSSHJSession().isOpen()) sshSessionByToken.remove(key);
+		
+		}
+
+		//clean the local session
+
+		it = localSessionByToken.entrySet().iterator();
+	    
+		while (it.hasNext()) {
+	    	
+	    	ConcurrentHashMap.Entry pair = (ConcurrentHashMap.Entry)it.next();
+	    	
+	    	LocalSession localsession = (LocalSession)pair.getValue();
+
+			String key = (String)pair.getKey();
+
+			if(localsession.isClose()) sshSessionByToken.remove(key);
+		
+		}
+
+	}
     
     public void closeByToken(String token) {
     	

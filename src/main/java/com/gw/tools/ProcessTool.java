@@ -14,6 +14,7 @@ import com.gw.database.ProcessRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
+import com.gw.local.LocalSession;
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
@@ -504,16 +505,19 @@ public class ProcessTool {
 		
 		try {
 			
-			SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
+			//stop remote ssh session
+			SSHSession remotesession = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
 			
-			if(!bt.isNull(session))
-				
-				session.getSSHJSession().close();
+			if(!bt.isNull(remotesession)) remotesession.getSSHJSession().close();
+
+			//stop local session
+			LocalSession localsession = GeoweaverController.sessionManager.localSessionByToken.get(hisid);
+
+			if(!bt.isNull(localsession)) localsession.stop();
 			
 			history_tool.stop(hisid);
 			
-			resp = "{\"history_id\": \""+hisid+
-					"\", \"ret\": \"stopped\"}";
+			resp = "{\"history_id\": \""+hisid+"\", \"ret\": \"stopped\"}";
 			
 		} catch (Exception e) {
 			

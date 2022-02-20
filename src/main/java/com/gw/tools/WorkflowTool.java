@@ -801,6 +801,10 @@ public class WorkflowTool {
 
 			}
 			
+		}else{
+
+			throw new RuntimeException("We only support .ZIP workflow file.");
+
 		}
 
         return respjson.toString();
@@ -851,12 +855,20 @@ public class WorkflowTool {
 
 		foldername = foldername.substring(0, foldername.lastIndexOf("."));
 
-		String workflowjson = bt.readStringFromFile(bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "workflow.json");
-	
-		String codefolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "code"+ FileSystems.getDefault().getSeparator();
+		String folder_path = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator();
 
-		String historyfolder = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator() + "history"+ FileSystems.getDefault().getSeparator();
+		File checkanotherlayer = new File(folder_path + foldername + FileSystems.getDefault().getSeparator());
 
+		if (checkanotherlayer.exists())
+			folder_path += foldername + FileSystems.getDefault().getSeparator();
+
+
+		String workflowjson = bt.readStringFromFile(folder_path + "workflow.json");
+
+		String codefolder = folder_path + "code" + FileSystems.getDefault().getSeparator();
+
+		String historyfolder = folder_path + "history" + FileSystems.getDefault().getSeparator();
+		
 		//save workflow
 		Workflow w = this.fromJSON(workflowjson);
 
