@@ -479,7 +479,7 @@ GW.workflow = {
 
 		}).fail(function(jxr, status){
 			
-			alert("Error!!! Fail to load.");
+			alert("Error!!! Fail to load. " + jxr.responseJSON.message);
 			
 		});
 

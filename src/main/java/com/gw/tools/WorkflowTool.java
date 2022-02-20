@@ -801,6 +801,10 @@ public class WorkflowTool {
 
 			}
 			
+		}else{
+
+			throw new RuntimeException("We only support .ZIP workflow file.");
+
 		}
 
         return respjson.toString();
