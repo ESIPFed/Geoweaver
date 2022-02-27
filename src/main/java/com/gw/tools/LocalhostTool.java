@@ -132,9 +132,11 @@ public class LocalhostTool {
 		try {
 
 			authenticate(pswd);
+
+			//write all the python files into local workspace folder
+			localizeAllPython(token);
 			
 			//get code of the process
-			
 			String code = pt.getCodeById(id);
 			
 			this.saveHistory(id, code, history_id);
@@ -293,6 +295,9 @@ public class LocalhostTool {
 		try {
 			
 			authenticate(pswd);
+
+			//write all the python files into local workspace folder
+			localizeAllPython(token);
 
 			//get code of the process
 			
