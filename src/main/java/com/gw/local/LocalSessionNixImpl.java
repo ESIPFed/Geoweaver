@@ -166,9 +166,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		log.info("starting command");
     		
     		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
-
-    		// script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
-    		
+			
     		bt.writeString2File(script, tempfile);
     		
     		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();

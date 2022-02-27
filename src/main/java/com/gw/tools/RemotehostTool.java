@@ -37,6 +37,9 @@ public class RemotehostTool {
 	
 	@Value("${geoweaver.temp_file_path}")
 	String temp_file_path;
+
+	@Value("${geoweaver.workspace}")
+    private String           workspace_folder_path;
 	
 	@Autowired
 	FileTool ft;
@@ -99,10 +102,6 @@ public class RemotehostTool {
 
 			this.saveHistory(id, code, history_id);
 			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
 			//establish SSH session and generate a token for it
 			
 			if(token == null) {
@@ -110,6 +109,11 @@ public class RemotehostTool {
 				token = new RandomString(12).nextString();
 				
 			}
+
+			//package all the python files into a tar
+			String packagefile = packageAllPython(token);
+			
+			ft.scp_upload(hid, pswd, packagefile); //upload the python files to the home directory
 			
 //			SSHSession session = new SSHSessionImpl();
 			
@@ -125,10 +129,6 @@ public class RemotehostTool {
 					
 					"\", \"ret\": \"success\"}";
 			
-//			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
-			
-			//register the input/output into the database
-	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -170,10 +170,6 @@ public class RemotehostTool {
 
 			this.saveHistory(id, code, history_id);
 			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
 			//establish SSH session and generate a token for it
 			
 			if(token == null) {
@@ -181,8 +177,6 @@ public class RemotehostTool {
 				token = new RandomString(12).nextString();
 				
 			}
-			
-//			SSHSession session = new SSHSessionImpl();
 			
 			session.login(hid, pswd, token, false);
 			
@@ -239,10 +233,6 @@ public class RemotehostTool {
 
 			this.saveHistory(id, code, history_id);
 			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
 			//establish SSH session and generate a token for it
 			
 			if(token == null) {
@@ -250,25 +240,6 @@ public class RemotehostTool {
 				token = new RandomString(12).nextString();
 				
 			}
-			
-			// GeoweaverProcessTask t = new GeoweaverProcessTask();
-			
-			// t.initialize(history_id, id, hid, pswd, token, isjoin,  null, null, null, null);
-			
-			// // find active websocket for this builtin process when it is running as a member process in a workflow
-			// // If this builtin process is running solo, the TaskSocket will take care of the problem.
-			
-			// if(isjoin) {
-			
-			// 	tm.runDirectly(t);
-				
-			// }else {
-			
-			// 	tm.addANewTask(t);
-				
-			// }
-			
-			// String historyid = t.getHistory_id();
 			
 			resp = "{\"history_id\": \""+history_id+
 					
@@ -296,12 +267,6 @@ public class RemotehostTool {
 	 * Package all python files into one zip file
 	 */
 	public String packageAllPython(String hid) {
-		
-//		StringBuffer sql = new StringBuffer("select name,code from process_type where description = 'python';");
-//		
-//		logger.info(sql.toString());
-//		
-//		ResultSet rs = DataBaseOperation.query(sql.toString());
 		
 		Collection<GWProcess> process_list = processrepository.findPythonProcess();
 		

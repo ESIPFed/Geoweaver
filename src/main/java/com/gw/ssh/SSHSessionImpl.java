@@ -45,6 +45,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
@@ -99,6 +100,9 @@ public class SSHSessionImpl implements SSHSession {
     private BufferedReader   input;
     
     private OutputStream     output;
+
+    @Value("${geoweaver.workspace}")
+    private String           workspace_folder_path;
 
     @Autowired
     private SSHLiveSessionOutput sessionsender;
@@ -327,24 +331,19 @@ public class SSHSessionImpl implements SSHSession {
     		
 //    		log.info("escaped command: " + python);
     		
-//    		python = python.replaceAll("\\\n", ".");
-//    		python = python.replace("\\n", "\\\\n");
-    		
     		log.info("\n command: " + python);
     		
-    		String cmdline = "";
-    		
-    		if(!bt.isNull(basedir)||"default".equals(basedir)) {
-    			
-    			cmdline += "cd " + basedir + "; ";
-    			
-    		}
+    		String cmdline = "mkdir -p "+workspace_folder_path+
+                        "; cd " + workspace_folder_path + "; ";
 
     		//new version of execution in which all the python files are copied in the host
     		
-    		cmdline += "mkdir " + token + ";";
+    		cmdline += "mkdir -p " + token + ";";
     		
-    		cmdline += "tar -xvf " + token + ".tar -C " + token + "/; ";
+    		cmdline += "tar -xf " + basedir + "/" + token + ".tar -C " + 
+                        workspace_folder_path + "/" + token + "/; ";
+
+            cmdline += "rm -f "+ basedir + "/" + token + ".tar; ";
     		
     		cmdline += "cd "+ token + "/; ";
     		
@@ -358,18 +357,15 @@ public class SSHSessionImpl implements SSHSession {
     		
     		if(bt.isNull(bin)||"default".equals(bin)) {
 
-//    			cmdline += "python python-" + history_id + ".py;";
     			cmdline += "python " + filename + "; ";
     			
     		}else {
-    			
-    			// if(!bt.isNull(pyenv)) cmdline += "source activate " + pyenv + "; "; //for demo only
     			
     			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
-    		cmdline += "cd ..; rm -R " + token + "*;"; //remove the code
+    		cmdline += "rm -rf " + workspace_folder_path+ "/" + token + ";"; //remove the code
     		
     		log.info(cmdline);
     		
@@ -424,12 +420,6 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; //this must be changed to transfer file like the python
     		
-//    		if(!(BaseTool.isNull(bin)||"default".equals(bin))) {
-//    			
-//    			cmdline += "source activate " + pyenv + "; ";
-//    			
-//    		}
-    		
     		if(bt.isNull(bin)||"default".equals(bin)) {
 
 //    			cmdline += "python python-" + history_id + ".py;";
@@ -438,11 +428,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}else {
     			
-//    			cmdline += "conda init; ";
-    			
     			cmdline += "source activate " + pyenv + "; "; //for demo only
-    			
-//    			cmdline += bin + " " + filename + "; ";
     			
     		}
     		
@@ -459,18 +445,8 @@ public class SSHSessionImpl implements SSHSession {
     		
             cmdline += "echo '*>*$$$*>*';";
 
-    		cmdline += "rm ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
+    		cmdline += "rm -f ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
     		
-    		// cmdline += "echo \"==== Geoweaver Bash Output Finished ====\"";
-    		
-//    		cmdline += "./geoweaver-" + token + ".sh;";
-    		
-//    		cmdline += "cat ./jupyter-"+token+".ipynb | while read line\r\n" + 
-//    				"do\r\n" + 
-//    				"  echo \"$line\"\r\n" + 
-//    				"done; "; // read the content of the result ipynb
-    		
-			
     		log.info(cmdline);
     		
     		Command cmd = session.exec(cmdline);
@@ -494,21 +470,6 @@ public class SSHSessionImpl implements SSHSession {
             log.info("returning to the client..");
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        
-//	        cmd = "./geoweaver-" + token + ".sh";
-//	        		
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        	
-//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//	        output.flush();
 	        
 		} catch (Exception e) {
 			
@@ -525,31 +486,34 @@ public class SSHSessionImpl implements SSHSession {
     		
     		log.info("starting command");
     		
-    		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
-    		
-    		String cmdline = "echo \"" 
+    		String cmdline = "mkdir -p "+workspace_folder_path+
+                    "; cd "+workspace_folder_path+
+                    "; mkdir -p "+ token+ 
+                    "; cd "+ token +
+                    "; echo \"" 
     				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
     				+ "\" > geoweaver-" + token + ".sh; ";
+
+            //unzip the python files into the same folder for shell to call
+            cmdline += "tar -xf ~/" + token + ".tar -C " + 
+                    workspace_folder_path + "/" + token + "/; ";
+
+            cmdline += "rm -f ~/" + token + ".tar; ";
     		
     		cmdline += "chmod +x geoweaver-" + token + ".sh; ";
     		
     		cmdline += "./geoweaver-" + token + ".sh;";
     		
-    		cmdline += "rm ./geoweaver-" + token + ".sh; "; //remove the script finally, leave no trace behind
+    		cmdline += "rm -rf ~/gw-workspace/" + token + "; "; //remove the script finally, leave no trace behind
 			
     		log.info(cmdline);
     		
     		Command cmd = session.exec(cmdline);
-//            con.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
-//            cmd.join(5, TimeUnit.SECONDS);
-//            con.writer().print("\n** exit status: " + cmd.getExitStatus());
     		
             log.info("SSH command session established");
             
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
             
-//            sender = new SSHSessionOutput(input, token);
-//            sender = new SSHCmdSessionOutput(input, token);
             cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018
@@ -566,21 +530,6 @@ public class SSHSessionImpl implements SSHSession {
             log.info("returning to the client..");
             
             if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        
-//	        cmd = "./geoweaver-" + token + ".sh";
-//	        		
-//	        output.write((cmd + '\n').getBytes());
-//			
-////	        output.flush();
-//	        	
-//	        cmd = "echo \"==== Geoweaver Bash Output Finished ====\"";
-//	        
-//	        output.write((cmd + '\n').getBytes());
-//	        output.flush();
 	        
 		} catch (Exception e) {
 			
@@ -588,23 +537,6 @@ public class SSHSessionImpl implements SSHSession {
 			
 		}
     	
-    	//feed the process code into the SSH session
-    	
-
-//		
-//		Session.Command cmd = session.getSSHJSession().exec(executebash);
-//		
-//		String output = IOUtils.readFully(cmd.getInputStream()).toString();
-//		
-//		logger.info(output);
-//		
-//		//wait until the process execution is over
-//		
-//        cmd.join(5, TimeUnit.SECONDS);
-//        
-//		cmd.close();
-//		
-//		session.logout();
 	}
 
 	@Override
