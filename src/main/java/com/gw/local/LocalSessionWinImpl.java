@@ -205,23 +205,20 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		String rand = new RandomString(3).nextString();
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + rand + ".sh";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + rand + ".sh";
 
     		// script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
     		
     		bt.writeString2File(script, tempfile);
     		
     		ProcessBuilder builder = new ProcessBuilder();
+
+			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
     		
 //    		// -- Windows --
-//
 //    		// Run a command
     		builder.command("bash.exe", "-c", tempfile); //bash.exe of cygwin must be in the $PATH
-//
-//    		// Run a bat file
-//    		processBuilder.command("C:\\Users\\mkyong\\hello.bat");
-//    		builder.command(tempfile);
-    		
+
     		builder.redirectErrorStream(true);
     		
     		process = builder.start();

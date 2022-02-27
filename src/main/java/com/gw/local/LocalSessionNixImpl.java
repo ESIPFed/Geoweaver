@@ -165,10 +165,8 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
-
-    		// script += "\necho \"==== Geoweaver Bash Output Finished ====\"";
-    		
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+			
     		bt.writeString2File(script, tempfile);
     		
     		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
@@ -176,8 +174,8 @@ public class LocalSessionNixImpl implements LocalSession {
 			bt.sleep(1);
     		
     		ProcessBuilder builder = new ProcessBuilder();
-    		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)));
+
+			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
     		
     		builder.command(tempfile);
     		
@@ -229,7 +227,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
 
     		bt.writeString2File(notebookjson, tempfile);
     		
@@ -250,7 +248,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + token));
     		
 			if(bt.isNull(bin)){
 			

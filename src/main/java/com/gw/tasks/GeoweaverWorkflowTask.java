@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.websocket.Session;
 
-import com.gw.database.EnvironmentRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
@@ -20,7 +19,6 @@ import com.gw.server.WorkflowServlet;
 import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.ProcessTool;
-import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
@@ -184,8 +182,6 @@ public class GeoweaverWorkflowTask{
 			
 		}
 
-		// wt.token2ws.put(token, socketsession.getId());
-		
 	}
 
 	public void refreshMonitor(){
@@ -229,7 +225,7 @@ public class GeoweaverWorkflowTask{
 				}
 				
 				log.debug("Send workflow process status back to the client: " + array);
-//				monitor.sendMessage(new TextMessage(array.toJSONString()));
+				
 				monitor.getBasicRemote().sendText(array.toJSONString());
 				
 			}
@@ -402,10 +398,6 @@ public class GeoweaverWorkflowTask{
 				
 				//find next process to execute - the id has two parts: process type id - process object id
 				
-				// String[] idnum = wt.findNextProcess(node2condition, flags, nodes);
-				
-				// String nextid = idnum[0];
-
 				String nextid = (String)((JSONObject)nodes.get(i)).get("id");
 
 				String nexthistoryid = (String)((JSONObject)nodes.get(i)).get("history_id");
@@ -419,8 +411,6 @@ public class GeoweaverWorkflowTask{
 				sendStatus(nodes, flags);
 
 				this.history_indicator = ExecutionStatus.READY;
-				
-				// String processTypeId = nextid.split("-")[0];
 				
 				int num = i;
 				
@@ -449,19 +439,10 @@ public class GeoweaverWorkflowTask{
 					
 					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
 
-					// new_task.setWorkflowHistoryId(this.history_id);
-
 					log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
 					
 					tm.addANewTask(new_task);
 
-					// String resp = pt.execute(processTypeId, hid, password, token, true, null, null, null); //need update the null to be python environment
-					
-					// JSONObject respobj = (JSONObject)new JSONParser().parse(resp);
-					
-					// member_historyid = (String)respobj.get("history_id");
-					
-					
 				}catch(Exception e) {
 					
 					stat = ExecutionStatus.FAILED;
@@ -476,12 +457,6 @@ public class GeoweaverWorkflowTask{
 				this.history_input += nextid + ";";
 				
 				this.history_output += nexthistoryid + ";";
-				
-//				pid2hid.put(nextid, historyid); //save the mapping between process id and history id
-				
-				// wt.updateNodeStatus(nextid, flags, nodes, stat); //once the process is finished, updated its status
-				
-				// executed_process++;
 				
 			}
 			
