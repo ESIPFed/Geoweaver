@@ -564,7 +564,7 @@ public class SSHSessionImpl implements SSHSession {
         return true;
     }
 
-    void readWhereCondaInOneCommand(String hostid) throws IOException{
+    public void readWhereCondaInOneCommand(String hostid) throws IOException{
 
         List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 

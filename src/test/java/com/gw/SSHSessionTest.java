@@ -2,13 +2,17 @@ package com.gw;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.ssh.SSHAuthenticationException;
 import com.gw.ssh.SSHSession;
+import com.gw.ssh.SSHSessionImpl;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -24,7 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SSHSessionTest {
+public class SSHSessionTest extends AbstractHelperMethodsTest{
 
 
     @Autowired
@@ -54,7 +58,16 @@ public class SSHSessionTest {
     @DisplayName("Test SSH login")
     void testLogin(){
 
-        session.login(null, null, null, null, null, false);
+        assertThrows(SSHAuthenticationException.class, ()->{session.login("100001", null, null, null, null, false);});
+
+    }
+
+    @Test
+    void testLogin2() throws Exception{
+
+        String hid = AddHost();
+
+        assertThrows(SSHAuthenticationException.class, ()->{session.login(hid, null, null, false);});
 
     }
 
@@ -98,6 +111,19 @@ public class SSHSessionTest {
 
     }
 
+    @Test
+    void testReadPython(){
+
+        session.readPythonEnvironment(null, null);
+
+    }
+
+    @Test
+    void testReadConda() throws IOException{
+
+        assertThrows(NullPointerException.class, ()->{((SSHSessionImpl)session).readWhereCondaInOneCommand(null);});
+
+    }
 
     
 }
