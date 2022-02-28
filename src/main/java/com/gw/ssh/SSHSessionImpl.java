@@ -420,17 +420,17 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; //this must be changed to transfer file like the python
     		
-    		if(bt.isNull(bin)||"default".equals(bin)) {
+//     		if(bt.isNull(bin)||"default".equals(bin)) {
 
-//    			cmdline += "python python-" + history_id + ".py;";
+// //    			cmdline += "python python-" + history_id + ".py;";
     			
-//    			cmdline += "python " + filename + "; ";
+// //    			cmdline += "python " + filename + "; ";
     			
-    		}else {
+//     		}else {
     			
-    			cmdline += "source activate " + pyenv + "; "; //for demo only
+//     			cmdline += "source activate " + pyenv + "; "; //for demo only
     			
-    		}
+//     		}
     		
             if(bt.isNull(bin)){
                 cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";

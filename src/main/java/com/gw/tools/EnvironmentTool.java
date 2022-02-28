@@ -155,8 +155,6 @@ public class EnvironmentTool {
 			
 			resp = envstr.toString();
 			
-			// logger.debug("the python environment for host: " + hid + " " + resp);
-			
 		} catch (Exception e) {
 
 			e.printStackTrace();

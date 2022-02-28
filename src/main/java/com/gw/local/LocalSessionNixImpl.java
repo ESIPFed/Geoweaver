@@ -234,18 +234,6 @@ public class LocalSessionNixImpl implements LocalSession {
     		// Get a list of all environment variables
             Map<String, String> envMap = new HashMap<String, String>(System.getenv());
             
-    		if(bt.isNull(bin)||"default".equals(bin)) {
-
-//    			cmdline += "python python-" + history_id + ".py;";
-    			
-//    			cmdline += "python " + filename + "; ";
-    			
-    		}else {
-    			
-    			Runtime.getRuntime().exec(new String[] {"source", "activate", env}).waitFor();
-    			
-    		}
-    		
     		ProcessBuilder builder = new ProcessBuilder();
     		
     		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + token));
