@@ -58,7 +58,7 @@ public class UtilsTest {
     @Test
     void testemailvalidator(){
         assertThat(EmailValidator.validate("zsun@ gmu edu")).isFalse();
-        assertThat(EmailValidator.validate("zsun@gmu.edu")).isFalse();
+        assertThat(EmailValidator.validate("zsun@gmu.edu")).isTrue();
     }
 
     @Test
