@@ -89,5 +89,31 @@ public class UserTest {
 		assertThat(t.getExpireDate()).isEqualTo(1000000000);
 
     }
+
+	@Test
+	void touch_api_endpoints(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity request = new HttpEntity<>("type=host", headers);
+		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/reset_password",
+				String.class);
+
+		result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/web/profile",
+				String.class);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/profile",
+				request,
+				String.class);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/login",
+				request,
+				String.class);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/logbackin",
+				request,
+				String.class);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/logout",
+				request,
+				String.class);
+
+	}
     
 }
