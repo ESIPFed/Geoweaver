@@ -45,14 +45,35 @@ public class JupyterControllerTest extends AbstractHelperMethodsTest {
         HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity request = new HttpEntity<>("type=host", headers);
-		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/woqgdw/api/contents/?content=1&1647141084884=",
+		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/contents/?content=1&1647141084884=",
 				String.class);
-        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/woqgdw/api/contents/Untitled.ipynb/checkpoint",
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/contents/Untitled.ipynb/checkpoint",
                 request,
                 String.class);
-        this.testrestTemplate.put("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/woqgdw/api/contents/Untitled.ipynb", request, String.class);
-        this.testrestTemplate.patchForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/woqgdw/api/contents/Untitled.ipynb", 
+        this.testrestTemplate.put("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/contents/Untitled.ipynb", request, String.class);
+        this.testrestTemplate.patchForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/contents/Untitled.ipynb", 
                 request, String.class);
+
+        result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/sessions", String.class);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/hub/login",
+                request,
+                String.class);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/lab/login",
+                request,
+                String.class);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/login",
+                request,
+                String.class);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/lab/login",
+                request,
+                String.class);
+        this.testrestTemplate.delete("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/lab/login");
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/sessions/xxxx", request, String.class);
+        result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx/api/sessions/xxxx", String.class);
+
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-proxy/xxxx", request, String.class);
+        result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-http", String.class);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/jupyter-https", request, String.class);
 
     }
     

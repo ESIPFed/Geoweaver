@@ -1882,23 +1882,4 @@ public class JupyterController {
 		
 	}
 	
-	@RequestMapping(value = "/jupyter-websocket/{hostid}", method = RequestMethod.POST)
-	public @ResponseBody String jupyter_websocket(ModelMap model, @PathVariable("hostid") String hostid, WebRequest request){
-		
-		String resp = null;
-		
-		try {
-			
-			
-			
-		}catch(Exception e) {
-			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
-
 }
