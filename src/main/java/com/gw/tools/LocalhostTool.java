@@ -134,7 +134,7 @@ public class LocalhostTool {
 			authenticate(pswd);
 
 			//write all the python files into local workspace folder
-			localizeAllPython(token);
+			localizeAllPython(history_id);
 			
 			//get code of the process
 			String code = pt.getCodeById(id);
@@ -297,7 +297,7 @@ public class LocalhostTool {
 			authenticate(pswd);
 
 			//write all the python files into local workspace folder
-			localizeAllPython(token);
+			localizeAllPython(history_id);
 
 			//get code of the process
 			
@@ -309,7 +309,7 @@ public class LocalhostTool {
 
 			String code = pt.getCodeById(id);
 			
-			localizeJupyter(code, process.getName(), token);
+			localizeJupyter(code, process.getName(), history_id);
 			
 			LocalSession session = getLocalSession();
 			
@@ -367,7 +367,7 @@ public class LocalhostTool {
 			authenticate(pswd);
 			
 			//write all the python files into local workspace folder
-			localizeAllPython(token);
+			localizeAllPython(history_id);
 			
 			//get code of the process
 			
@@ -436,9 +436,9 @@ public class LocalhostTool {
 	 * @param code
 	 * @param token
 	 */
-	public void localizeJupyter(String code, String name, String token) {
+	public void localizeJupyter(String code, String name, String history_id) {
 		
-		File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + token);
+		File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id);
 		
 		if(!workfolder.exists()) {
 			

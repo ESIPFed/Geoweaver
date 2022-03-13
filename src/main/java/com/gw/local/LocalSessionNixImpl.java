@@ -165,7 +165,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
 			
     		bt.writeString2File(script, tempfile);
     		
@@ -175,7 +175,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
 
-			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
+			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
     		
     		builder.command(tempfile);
     		
@@ -227,7 +227,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
 
     		bt.writeString2File(notebookjson, tempfile);
     		
@@ -236,7 +236,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + token));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + history_id));
     		
 			if(bt.isNull(bin)){
 			
@@ -304,7 +304,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
     		
     		String pythonfilename = pro.getName();
     		
