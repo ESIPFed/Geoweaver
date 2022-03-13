@@ -39,6 +39,8 @@ public class GeoweaverControllerTest extends AbstractHelperMethodsTest {
     @LocalServerPort
 	private int port;
 
+        Logger logger = Logger.getLogger(this.getClass());
+
     @Test
     public void call_rest_api() throws Exception{
 
@@ -50,39 +52,50 @@ public class GeoweaverControllerTest extends AbstractHelperMethodsTest {
         String result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add/host",
                         request,
                         String.class);
+                        logger.debug(result);
         
         request = new HttpEntity<>("type=process", headers);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add",
                         request,
                         String.class);
+                        logger.debug(result);
         request = new HttpEntity<>("type=workflow", headers);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/add",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/reset_password",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/closefilebrowser",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/openfilebrowser",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/retrievefile",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/download/tempfolder/filename",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/updatefile",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/readEnvironment",
                         request,
                         String.class);
+                        logger.debug(result);
         result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/executeWorkflow",
                         request,
                         String.class);
+                        logger.debug(result);
         
         
     }

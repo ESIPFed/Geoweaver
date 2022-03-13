@@ -50,6 +50,8 @@ public class UtilsTest {
 	@LocalServerPort
 	private int port;
 
+    Logger logger = Logger.getLogger(this.getClass());
+
     @Test
     void test_spatialextentvalidator(){
         SpatialExtentValidator.validate("38.479394673276445", "37.37015718405753", "-78.84201049804688", "-77.78732299804688", "ESPG:4326", "MODIS");
