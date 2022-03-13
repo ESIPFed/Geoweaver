@@ -125,22 +125,6 @@ public class JupyterController {
         return restTemplate1;
     }
 	
-//	@Bean
-//	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-//		
-//		RestTemplate restTemplate = builder.build();
-//	    
-//	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-//		requestFactory.setConnectTimeout(TIMEOUT);
-//		requestFactory.setReadTimeout(TIMEOUT);
-//		
-//		
-//
-//		restTemplate.setRequestFactory(requestFactory);
-//		
-//		return restTemplate;
-//	}
-	
 	/**
 	 * Decode the url if it has spaces or other special characters
 	 * @param referurl
