@@ -165,7 +165,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
 			
     		bt.writeString2File(script, tempfile);
     		
@@ -175,7 +175,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
 
-			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
+			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
     		
     		builder.command(tempfile);
     		
@@ -227,28 +227,16 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		log.info("starting command");
     		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + token + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
+    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".ipynb";
 
     		bt.writeString2File(notebookjson, tempfile);
     		
     		// Get a list of all environment variables
             Map<String, String> envMap = new HashMap<String, String>(System.getenv());
             
-    		if(bt.isNull(bin)||"default".equals(bin)) {
-
-//    			cmdline += "python python-" + history_id + ".py;";
-    			
-//    			cmdline += "python " + filename + "; ";
-    			
-    		}else {
-    			
-    			Runtime.getRuntime().exec(new String[] {"source", "activate", env}).waitFor();
-    			
-    		}
-    		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + token));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + history_id));
     		
 			if(bt.isNull(bin)){
 			
@@ -316,7 +304,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token));
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
     		
     		String pythonfilename = pro.getName();
     		

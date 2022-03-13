@@ -329,7 +329,7 @@ form .progress {
 
 .container__left {
   /* Initially, the left takes 3/4 width */
-  width: 50%;
+  width: 60%;
 
   /* Misc */
   /* align-items: center; */

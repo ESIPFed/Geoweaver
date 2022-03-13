@@ -111,7 +111,7 @@ public class RemotehostTool {
 			}
 
 			//package all the python files into a tar
-			String packagefile = packageAllPython(token);
+			String packagefile = packageAllPython(history_id);
 			
 			ft.scp_upload(hid, pswd, packagefile); //upload the python files to the home directory
 			
@@ -383,7 +383,7 @@ public class RemotehostTool {
 			}
 			
 			//package all the python files into a tar
-			String packagefile = packageAllPython(token);
+			String packagefile = packageAllPython(history_id);
 			
 			if(basedir!=null && !"~".equals(basedir)) {
 				
