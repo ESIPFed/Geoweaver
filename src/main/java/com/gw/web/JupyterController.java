@@ -1364,15 +1364,7 @@ public class JupyterController {
 	            
 	        }
 
-			
-//			HttpHeaders newheaders = this.updateHeaderReferer(httpheaders, h, realurl, request.getQueryString());
-			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
-
-			// RestTemplate restTemplate1 = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-			// List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-			// interceptors.add(new LoggingRequestInterceptor());
-			// restTemplate1.setInterceptors(interceptors);
 
 			String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
 			
@@ -1453,15 +1445,7 @@ public class JupyterController {
 	            
 	        }
 
-			
-//			HttpHeaders newheaders = this.updateHeaderReferer(httpheaders, h, realurl, request.getQueryString());
-			
 			HttpEntity requestentity = new HttpEntity(reqstr.toString(), newheaders);
-
-			// RestTemplate restTemplate1 = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-			// List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-			// interceptors.add(new LoggingRequestInterceptor());
-			// restTemplate1.setInterceptors(interceptors);
 
 			String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
 			
@@ -1587,11 +1571,6 @@ public class JupyterController {
 			
 			logger.info("New Headers: " + requestentity.getHeaders());
 			
-			// RestTemplate restTemplate1 = new RestTemplate(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-			// List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-			// interceptors.add(new LoggingRequestInterceptor());
-			// restTemplate1.setInterceptors(interceptors);
-
 			String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
 			
 		    ResponseEntity<String> responseEntity = restTemplate.exchange(target_url, method, requestentity, String.class);
@@ -1600,26 +1579,8 @@ public class JupyterController {
 		    
 		    if(responseEntity.getStatusCode()==HttpStatus.FOUND) {
 		    	
-//		    	MultiValueMap<String, String> headers =new LinkedMultiValueMap<String, String>();
-		    	
 		    	HttpHeaders newresponseheaders = new HttpHeaders();
 		    	
-//		    	logger.info("Redirection: " + newresponseheaders);
-//			    
-//			    logger.info("Response: " + responseEntity.getBody());
-			    
-//			    responseEntity = restTemplate.exchange(uri, method, requestentity, String.class);
-			    
-//			    responseEntity.getHeaders().compute("Location", (k, v) -> {v.clear(); v.add("/Geoweaver/web/jupyter-proxy/tree?");});
-			    
-//			    responseEntity.getHeaders().set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
-			    
-//			    respheaders.set("Location", "/Geoweaver/web/jupyter-proxy/tree?");
-			    
-//			    respheaders.setLocation(new URI("/Geoweaver/web/jupyter-proxy/tree?"));
-			    
-//			    respheaders.add("Test", "Test Value");
-			    
 			    respheaders.forEach((key, value) -> {
 			    	
 			    	if(key.toLowerCase().equals("location")) {
@@ -1636,8 +1597,6 @@ public class JupyterController {
 			    
 			    respheaders = newresponseheaders;
 			    
-//			    Set ent = respheaders.entrySet();
-			    
 			    logger.info(respheaders.toString());
 		    	
 		    }else if(responseEntity.getStatusCode()==HttpStatus.UNAUTHORIZED) {
@@ -1646,8 +1605,6 @@ public class JupyterController {
 		    	
 		    }
 		    
-//		    resp = new ResponseEntity(null, respheaders, resp.getStatusCode());
-		    
 		    resp = new ResponseEntity(
 		    		responseEntity.getBody(), 
 		    		respheaders, 
@@ -1655,17 +1612,6 @@ public class JupyterController {
 		    
 			
 		}catch (HttpStatusCodeException ex) {
-		    
-		    // http status code e.g. `404 NOT_FOUND`
-//		    logger.error(ex.getStatusCode().toString());
-		    
-		    // get response body
-//		    System.out.println(ex.getResponseBodyAsString());
-		    
-		    // get http headers
-//		    HttpHeaders headers = ex.getResponseHeaders();
-//		    System.out.println(headers.get("Content-Type"));
-//		    System.out.println(headers.get("Server"));
 		    
 		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
 		    
