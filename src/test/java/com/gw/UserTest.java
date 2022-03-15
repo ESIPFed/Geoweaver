@@ -36,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
+
 import org.springframework.stereotype.Service;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -89,5 +90,37 @@ public class UserTest {
 		assertThat(t.getExpireDate()).isEqualTo(1000000000);
 
     }
+
+	@Test
+	void touch_api_endpoints(){
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity request = new HttpEntity<>("type=host", headers);
+		String result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/user/reset_password",
+				String.class);
+				logger.debug(result);
+
+		result = this.testrestTemplate.getForObject("http://localhost:" + this.port + "/Geoweaver/user/profile",
+				String.class);
+				logger.debug(result);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/user/profile",
+				request,
+				String.class);
+				logger.debug(result);
+				result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/user/login",
+				request,
+				String.class);
+				logger.debug(result);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/user/logbackin",
+				request,
+				String.class);
+				logger.debug(result);
+		result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/user/logout",
+				request,
+				String.class);
+				logger.debug(result);
+
+	}
     
 }

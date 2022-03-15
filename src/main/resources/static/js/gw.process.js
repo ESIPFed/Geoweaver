@@ -1349,7 +1349,7 @@ GW.process = {
 					$(".container__left").css('width', '100%');
 				}else{
 					$(".container__right").show()
-					$(".container__left").css('width', '50%');
+					$(".container__left").css('width', '60%');
 				}
 			})
 

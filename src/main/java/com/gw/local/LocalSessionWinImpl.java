@@ -269,7 +269,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		ProcessBuilder builder = new ProcessBuilder();
     		
-    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + token)); // this folder is only used to find data files, not the execution command
+    		builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id)); // this folder is only used to find data files, not the execution command
     		
     		String pythonfilename = pro.getName();
     		
@@ -277,7 +277,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		if(!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
 			
-			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + token + "/" + pythonfilename;
+			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/" + pythonfilename;
     		
 			if(bt.isNull(bin)){
 				builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
@@ -345,7 +345,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 			env.put("Path", env.get("Path")+";");
 
-			String realpath = bt.normalizedPath(workspace_folder_path + "/" + token);
+			String realpath = bt.normalizedPath(workspace_folder_path + "/" + history_id);
     		
 			log.info("Setting the working directory to " + realpath);
 

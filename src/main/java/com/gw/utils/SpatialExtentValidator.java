@@ -1,10 +1,5 @@
 package com.gw.utils;
-/**
- *Class SpatialExtentValidator.java
- *@author Ziheng Sun
- *@time Sep 2, 2015 11:28:12 AM
- *Original aim is to support Geoweaver.
- */
+
 public class SpatialExtentValidator {
 	/**
 	 * Validate the input spatial extent

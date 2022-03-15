@@ -338,14 +338,14 @@ public class SSHSessionImpl implements SSHSession {
 
     		//new version of execution in which all the python files are copied in the host
     		
-    		cmdline += "mkdir -p " + token + ";";
+    		cmdline += "mkdir -p " + history_id + ";";
     		
-    		cmdline += "tar -xf " + basedir + "/" + token + ".tar -C " + 
-                        workspace_folder_path + "/" + token + "/; ";
+    		cmdline += "tar -xf " + basedir + "/" + history_id + ".tar -C " + 
+                        workspace_folder_path + "/" + history_id + "/; ";
 
-            cmdline += "rm -f "+ basedir + "/" + token + ".tar; ";
+            cmdline += "rm -f "+ basedir + "/" + history_id + ".tar; ";
     		
-    		cmdline += "cd "+ token + "/; ";
+    		cmdline += "cd "+ history_id + "/; ";
     		
 //    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
     		
@@ -365,7 +365,7 @@ public class SSHSessionImpl implements SSHSession {
     			
     		}
     		
-    		cmdline += "rm -rf " + workspace_folder_path+ "/" + token + ";"; //remove the code
+    		cmdline += "rm -rf " + workspace_folder_path+ "/" + history_id + ";"; //remove the code
     		
     		log.info(cmdline);
     		
@@ -419,18 +419,6 @@ public class SSHSessionImpl implements SSHSession {
     		notebookjson = escapeJupter(notebookjson);
     		
     		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; //this must be changed to transfer file like the python
-    		
-//     		if(bt.isNull(bin)||"default".equals(bin)) {
-
-// //    			cmdline += "python python-" + history_id + ".py;";
-    			
-// //    			cmdline += "python " + filename + "; ";
-    			
-//     		}else {
-    			
-//     			cmdline += "source activate " + pyenv + "; "; //for demo only
-    			
-//     		}
     		
             if(bt.isNull(bin)){
                 cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
@@ -488,23 +476,23 @@ public class SSHSessionImpl implements SSHSession {
     		
     		String cmdline = "mkdir -p "+workspace_folder_path+
                     "; cd "+workspace_folder_path+
-                    "; mkdir -p "+ token+ 
-                    "; cd "+ token +
+                    "; mkdir -p "+ history_id+ 
+                    "; cd "+ history_id +
                     "; echo \"" 
     				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
-    				+ "\" > geoweaver-" + token + ".sh; ";
+    				+ "\" > geoweaver-" + history_id + ".sh; ";
 
             //unzip the python files into the same folder for shell to call
-            cmdline += "tar -xf ~/" + token + ".tar -C " + 
-                    workspace_folder_path + "/" + token + "/; ";
+            cmdline += "tar -xf ~/" + history_id + ".tar -C " + 
+                    workspace_folder_path + "/" + history_id + "/; ";
 
-            cmdline += "rm -f ~/" + token + ".tar; ";
+            cmdline += "rm -f ~/" + history_id + ".tar; ";
     		
-    		cmdline += "chmod +x geoweaver-" + token + ".sh; ";
+    		cmdline += "chmod +x geoweaver-" + history_id + ".sh; ";
     		
-    		cmdline += "./geoweaver-" + token + ".sh;";
+    		cmdline += "./geoweaver-" + history_id + ".sh;";
     		
-    		cmdline += "rm -rf ~/gw-workspace/" + token + "; "; //remove the script finally, leave no trace behind
+    		cmdline += "rm -rf ~/gw-workspace/" + history_id + "; "; //remove the script finally, leave no trace behind
 			
     		log.info(cmdline);
     		
