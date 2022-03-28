@@ -367,3 +367,10 @@ form .progress {
   border: 0px solid #BBBBBB;
   opacity: 1;
 }
+
+.log_window {
+  border-radius: 10px;
+  background: #333333;
+  padding: 10px;
+  color: white;
+}

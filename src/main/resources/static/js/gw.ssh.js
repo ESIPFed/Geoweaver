@@ -10,8 +10,6 @@
  * Only one ssh session is allowed at one time. 
  * 
  * Only one running workflow is allowed at one time. 
- *  
- * @author Ziheng Sun
  * 
  */
 
@@ -44,6 +42,10 @@ GW.ssh = {
 		key : '',
 
 		checker_swich: false,
+
+		current_log_length: 0,
+
+		current_process_log_length: 0,
 		
 		username : '<sec:authentication property="principal" />',
 		
@@ -293,16 +295,28 @@ GW.ssh = {
 				$(".dot-flashing").addClass("invisible")
 			}
 			
-			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\"color:green;\">"
-			// + time 
-			+ "</span> <span style=\""+style1+"\">" + content + "</span></p>";
+			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\""+
+				style1+"\">" + content + "</span></p>";
 
+			this.current_log_length += 1  //line number plus 1
+
+			if(this.current_log_length > 5000){
+				$("#log-window").find('p:first').remove();
+				this.current_log_length -= 1
+			}
+			
 	    	$("#log-window").append(newline);
 
 			//don't output log to process log if the current executed is workflow
 			if($("#process-log-window").length && GW.workspace.currentmode == 1){
-
+				
+				if(this.current_process_log_length > 5000){
+					$("#process-log-window").find('p:first').remove();
+					this.current_process_log_length -= 1
+				}
 				$("#process-log-window").append(newline);
+				this.current_process_log_length += 1
+				
 			}
 
 	    },

@@ -1992,6 +1992,7 @@ GW.process = {
 			if($("#process-log-window").length){
 
 				$("#process-log-window").html("");
+				GW.ssh.current_process_log_length = 0;
 
 			}
 
