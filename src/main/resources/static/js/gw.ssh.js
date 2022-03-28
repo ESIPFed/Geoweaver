@@ -44,6 +44,8 @@ GW.ssh = {
 		checker_swich: false,
 
 		current_log_length: 0,
+
+		current_process_log_length: 0,
 		
 		username : '<sec:authentication property="principal" />',
 		
@@ -307,8 +309,14 @@ GW.ssh = {
 
 			//don't output log to process log if the current executed is workflow
 			if($("#process-log-window").length && GW.workspace.currentmode == 1){
-
+				
+				if(this.current_process_log_length > 5000){
+					$("#process-log-window").find('p:first').remove();
+					this.current_process_log_length -= 1
+				}
 				$("#process-log-window").append(newline);
+				this.current_process_log_length += 1
+				
 			}
 
 	    },
