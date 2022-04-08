@@ -225,7 +225,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		InputStream stdout = process.getInputStream ();
     		
-    		input = new BufferedReader(new InputStreamReader(stdout));
+    		input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
             
     		sender.init(input, token, history_id, "shell", null);
     		
@@ -294,7 +294,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
             log.info("Local session established");
             
-            input = new BufferedReader(new InputStreamReader(stdout));
+            input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
             
             sender.init(input, token, history_id, pro.getLang(), pythonfilename);
             
@@ -368,7 +368,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
             log.info("Local session established");
             
-            input = new BufferedReader(new InputStreamReader(stdout));
+            input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
             
             sender.init(input, token, history_id, "python", null);
             
