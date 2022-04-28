@@ -1065,6 +1065,29 @@ public class BaseTool {
     }
 
 	/**
+	 * Get the absolute path of the file which has workflow.json if not found,
+	 * return empty string
+	 * 
+	 * @param folderPath
+	 */
+	public String getWorkflowJsonPath(String folderPath) {
+		File[] files = new File(folderPath).listFiles();
+		for (File entry : files) {
+			// Check if it is a directory
+			if (entry.isDirectory()) {
+				// call getWorkflowJsonPath(entry)
+				return getWorkflowJsonPath(entry.getAbsolutePath());
+			} else {
+				// check if it is workflow.json
+				if (entry.getName().equals("workflow.json")) {
+					return entry.getAbsolutePath();
+				}
+			}
+		}
+		return ""; // no workflow.json found
+	}
+	
+	/**
 	 * Unzip file to folder
 	 * @param filepath
 	 * @param targetfolder

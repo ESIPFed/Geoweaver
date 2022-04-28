@@ -756,60 +756,57 @@ public class WorkflowTool {
 
 				bt.unzip(filepath, folder_path);
 
-				//check if there is another layer of folder with the same name
+				// Get the workflowjson path, by traversing the folder
+				String workflowJsonPath = bt.getWorkflowJsonPath(folder_path);
 
-				File checkanotherlayer = new File(folder_path + foldername + FileSystems.getDefault().getSeparator());
+				String workflowjson = bt.readStringFromFile(workflowJsonPath);
 
-				if(checkanotherlayer.exists())  folder_path += foldername + FileSystems.getDefault().getSeparator();
-				
-				String workflowjson = bt.readStringFromFile(folder_path  + "workflow.json");
-	
-				String codefolder = folder_path + "code";
-	
-				String historyfolder = folder_path + "history";
-	
-				if(!bt.isNull(workflowjson) ){
+				String workflowFolderPath = workflowJsonPath.substring(0,
+						workflowJsonPath.lastIndexOf("workflow.json"));
 
-					if(new File(codefolder).exists() ){
+				String codefolder = workflowFolderPath + "code";
 
-						if(new File(historyfolder).exists()){
+				String historyfolder = workflowFolderPath + "history";
+
+				if (!bt.isNull(workflowjson)) {
+
+					if (new File(codefolder).exists()) {
+
+						if (new File(historyfolder).exists()) {
 
 							logger.debug("History folder exists");
-	
+
 						}
-	
 						respjson.append(workflowjson);
 
-					}else{
+					} else {
 
 						throw new RuntimeException("Cannot import as there is only workflow.json.");
 
 					}
 
-
-				}else{
+				} else {
 
 					throw new RuntimeException("Invalid workflow package.");
 
 				}
 
-			}catch(Exception e){
+			} catch (Exception e) {
 
 				e.printStackTrace();
 
 				throw new RuntimeException(e.getLocalizedMessage());
 
 			}
-			
-		}else{
+
+		} else {
 
 			throw new RuntimeException("We only support .ZIP workflow file.");
 
 		}
 
-        return respjson.toString();
-
-    }
+		return respjson.toString();
+	}
 
 	public Workflow fromJSON(String json){
 		
@@ -857,38 +854,37 @@ public class WorkflowTool {
 
 		String folder_path = bt.getFileTransferFolder() + foldername + FileSystems.getDefault().getSeparator();
 
-		File checkanotherlayer = new File(folder_path + foldername + FileSystems.getDefault().getSeparator());
-
-		if (checkanotherlayer.exists())
-			folder_path += foldername + FileSystems.getDefault().getSeparator();
-
-
-		String workflowjson = bt.readStringFromFile(folder_path + "workflow.json");
-
-		String codefolder = folder_path + "code" + FileSystems.getDefault().getSeparator();
-
-		String historyfolder = folder_path + "history" + FileSystems.getDefault().getSeparator();
+		String workflowJsonPath = bt.getWorkflowJsonPath(folder_path);
 		
-		//save workflow
+		String workflowFolderPath = workflowJsonPath.substring(0,
+				workflowJsonPath.lastIndexOf("workflow.json"));
+
+		String workflowjson = bt.readStringFromFile(workflowJsonPath);
+
+		String codefolder = workflowFolderPath + "code" + FileSystems.getDefault().getSeparator();
+
+		String historyfolder = workflowFolderPath + "history" + FileSystems.getDefault().getSeparator();
+
+		// save workflow
 		Workflow w = this.fromJSON(workflowjson);
 
 		this.save(w);
 
-		//save history
+		// save history
 		File[] files = new File(historyfolder).listFiles();
-		
-		if(files != null) {
-			
+
+		if (files != null) {
+
 			for (File file : files) {
-				
+
 				String historyjson = bt.readStringFromFile(file.getAbsolutePath());
 
-				JSONArray historyarray = (JSONArray)jsonparser.parse(historyjson);
+				JSONArray historyarray = (JSONArray) jsonparser.parse(historyjson);
 
-				historyarray.forEach((obj)->{
+				historyarray.forEach((obj) -> {
 
-					String jsonobj = ((JSONObject)obj).toJSONString();
-					
+					String jsonobj = ((JSONObject) obj).toJSONString();
+
 					History hist = historyFromJSON(jsonobj);
 
 					historyrepository.save(hist);
@@ -899,23 +895,24 @@ public class WorkflowTool {
 
 		}
 
-		//save process
+		// save process
 		String processjson = bt.readStringFromFile(codefolder + "process.json");
 
-		JSONArray processarray = (JSONArray)jsonparser.parse(processjson);
+		JSONArray processarray = (JSONArray) jsonparser.parse(processjson);
 
 		processarray.forEach((obj) -> {
 
-			String jsonobj = ((JSONObject)obj).toJSONString();
-			
-			// should be changed to check if the process already exists. Use the existing value if the incoming value is null
-			GWProcess p = pt.fromJSON(jsonobj); 
-			
+			String jsonobj = ((JSONObject) obj).toJSONString();
+
+			// should be changed to check if the process already exists. Use the existing
+			// value if the incoming value is null
+			GWProcess p = pt.fromJSON(jsonobj);
+
 			pt.save(p);
 
 		});
 
 		return workflowjson;
 	}
-	
+
 }
