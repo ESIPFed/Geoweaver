@@ -759,6 +759,13 @@ public class WorkflowTool {
 				// Get the workflowjson path, by traversing the folder
 				String workflowJsonPath = bt.getWorkflowJsonPath(folder_path);
 
+				// if the workflowjson is not found, return invalid workflow package, cause the workflowjson is required
+				if (workflowJsonPath.equals("")) {
+
+					throw new RuntimeException("Invalid workflow package.");
+
+				}
+
 				String workflowjson = bt.readStringFromFile(workflowJsonPath);
 
 				String workflowFolderPath = workflowJsonPath.substring(0,
@@ -768,6 +775,7 @@ public class WorkflowTool {
 
 				String historyfolder = workflowFolderPath + "history";
 
+				// If the read workflowjson is not valid, return invalid workflow package, cause the workflowjson is required
 				if (!bt.isNull(workflowjson)) {
 
 					if (new File(codefolder).exists()) {
