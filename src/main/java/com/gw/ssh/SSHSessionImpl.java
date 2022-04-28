@@ -233,7 +233,7 @@ public class SSHSessionImpl implements SSHSession {
             	log.info("starting shell");
                 shell = session.startShell(); //SSH session creates SSH Shell. if shell is null, it is in command mode.
                 log.info("SSH session established");
-                input = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+                input = new BufferedReader(new InputStreamReader(shell.getInputStream()), BaseTool.BUFFER_SIZE);
                 output = shell.getOutputStream();
 //                sender = new SSHSessionOutput(input, token);
                 sessionsender.init(input, token);
@@ -373,7 +373,7 @@ public class SSHSessionImpl implements SSHSession {
     		
             log.info("SSH command session established");
             
-            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
             
 //            sender = new SSHCmdSessionOutput(input, token);
             cmdsender.init(input, token, history_id);
@@ -441,7 +441,7 @@ public class SSHSessionImpl implements SSHSession {
             
             log.info("SSH command session established");
             
-            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
             
             cmdsender.init(input, token, history_id);
             
@@ -500,7 +500,7 @@ public class SSHSessionImpl implements SSHSession {
     		
             log.info("SSH command session established");
             
-            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
             
             cmdsender.init(input, token, history_id);
             

@@ -69,6 +69,8 @@ import oshi.software.os.OperatingSystem;
 @Service
 public class BaseTool {
 	
+	public static int BUFFER_SIZE = 16384;
+
 	private String _classpath = null;
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -466,7 +468,7 @@ public class BaseTool {
 
 			process.waitFor();
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()), BaseTool.BUFFER_SIZE);
 			String s = null;
 			
 
@@ -670,7 +672,7 @@ public class BaseTool {
 			Process proc = builder.start(); // may throw IOException
 //			Process proc = Runtime.getRuntime().exec(cmd.split(" "), env);
 	        InputStream ips = proc.getInputStream();
-	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
+	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips), BaseTool.BUFFER_SIZE);
 	        String str = null;
 	        proc.waitFor();
 	        
@@ -719,7 +721,7 @@ public class BaseTool {
 			builder.redirectErrorStream(true);
 			Process proc = builder.start(); // may throw IOException
 	        InputStream ips = proc.getInputStream();
-	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
+	        BufferedReader brd = new BufferedReader(new InputStreamReader(ips), BaseTool.BUFFER_SIZE);
 	        String str = null;
 	        proc.waitFor();
 	        
@@ -988,7 +990,7 @@ public class BaseTool {
     		
             logger.debug("Local session established");
             
-            BufferedReader input = new BufferedReader(new InputStreamReader(stdout));
+            BufferedReader input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
             
             String line;
         	while ((line = input.readLine()) != null) {
@@ -1064,6 +1066,29 @@ public class BaseTool {
         }
     }
 
+	/**
+	 * Get the absolute path of the file which has workflow.json if not found,
+	 * return empty string
+	 * 
+	 * @param folderPath
+	 */
+	public String getWorkflowJsonPath(String folderPath) {
+		File[] files = new File(folderPath).listFiles();
+		for (File entry : files) {
+			// Check if it is a directory
+			if (entry.isDirectory()) {
+				// call getWorkflowJsonPath(entry)
+				return getWorkflowJsonPath(entry.getAbsolutePath());
+			} else {
+				// check if it is workflow.json
+				if (entry.getName().equals("workflow.json")) {
+					return entry.getAbsolutePath();
+				}
+			}
+		}
+		return ""; // no workflow.json found
+	}
+	
 	/**
 	 * Unzip file to folder
 	 * @param filepath

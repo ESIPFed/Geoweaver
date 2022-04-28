@@ -1672,6 +1672,8 @@ GW.host = {
 		
 		
 		$("#main-host-content").html(content);
+
+		GW.ssh.current_process_log_length = 0;
 		
 //          switchTab(document.getElementById("main-host-tab"), "main-host-info");
 		GW.general.switchTab("host");

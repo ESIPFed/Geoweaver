@@ -278,6 +278,85 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
     }
 
     @Test
+    @DisplayName("Test /preload/workflow & /load/workflow endpoints with invalid file")
+    void testPreloadWorkflowWithWrongInput() throws Exception {
+        
+         // Copy workflow zip folder to temp folder for endpoint to pick up.
+         Path toCopy = new File(bt.testResourceFiles() + "/exportedWorkflow-invalid.zip").toPath();
+         Path target = new File(bt.getFileTransferFolder() + "/exportedWorkflow-invalid.zip").toPath();
+         Files.copy(toCopy, target, StandardCopyOption.REPLACE_EXISTING);
+ 
+         HttpHeaders postHeaders = new HttpHeaders();
+         postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+ 
+         // Preload Zip file
+         HttpEntity postRequest = new HttpEntity<>("filename=exportedWorkflow-invalid.zip", postHeaders);
+         String Postresult = this.testrestTemplate.postForObject(
+                 "http://localhost:" + this.port + "/Geoweaver/web/preload/workflow",
+                 postRequest, String.class);
+         assertThat(Postresult).contains("error");
+ 
+         String wid = AddWorkflow();
+ 
+         // Get test resourcess workflow zipped folder name
+         String foldername = "exportedWorkflow-invalid.zip";
+ 
+         postHeaders = new HttpHeaders();
+         postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+ 
+         // Load workflow folder to backend
+         postRequest = new HttpEntity<>("id=" + wid + "&filename=" + foldername, postHeaders);
+         Postresult = this.testrestTemplate.postForObject(
+                 "http://localhost:" + this.port + "/Geoweaver/web/load/workflow",
+                 postRequest, String.class);
+         assertThat(Postresult).contains("error");
+ 
+         String deleteResult = deleteResource(wid, "workflow");
+         assertThat(deleteResult).contains("done");
+ 
+    }
+
+
+    @Test
+    @DisplayName("Test /preload/workflow & /load/workflow endpoints with valid file but with mismatched zip and folder names")
+    void testPreloadandLoadWorkflowWithMismatchedZipAndFolderName() throws Exception {
+        
+        // Copy workflow zip folder to temp folder for endpoint to pick up.
+        Path toCopy = new File(bt.testResourceFiles() + "/exportedMismatchWorkflowName.zip").toPath();
+        Path target = new File(bt.getFileTransferFolder() + "/exportedMismatchWorkflowName.zip").toPath();
+        Files.copy(toCopy, target, StandardCopyOption.REPLACE_EXISTING);
+
+        HttpHeaders postHeaders = new HttpHeaders();
+        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Preload Zip file
+        HttpEntity postRequest = new HttpEntity<>("filename=exportedMismatchWorkflowName.zip", postHeaders);
+        String Postresult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/preload/workflow",
+                postRequest, String.class);
+        assertThat(Postresult).contains("id");
+
+        String wid = AddWorkflow();
+
+        // Get test resourcess workflow zipped folder name
+        String foldername = "exportedMismatchWorkflowName.zip";
+
+        postHeaders = new HttpHeaders();
+        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Load workflow folder to backend
+        postRequest = new HttpEntity<>("id=" + wid + "&filename=" + foldername, postHeaders);
+        Postresult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/load/workflow",
+                postRequest, String.class);
+        assertThat(Postresult).contains("id");
+
+        String deleteResult = deleteResource(wid, "workflow");
+        assertThat(deleteResult).contains("done");
+
+    }
+
+    @Test
     @DisplayName("Test /detail endpoint for workflow resource")
     void testWorkflowDetail() throws Exception {
 
