@@ -19,48 +19,25 @@ import com.gw.utils.RandomString;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+
+import picocli.CommandLine;
  
 @SpringBootApplication
 @ServletComponentScan
 public class GeoweaverApplication {
 
     @Value("${geoweaver.workspace}")
-    private static String           workspace;
+    private static String workspace;
 
 
 	public static void main(String[] args) {
 		
 //		BasicConfigurator.configure();
 
-        if(args.length==1 && "resetpassword".equals(args[0])){
-
-            Console console = System.console();
-            if (console == null) {
-                System.out.println("Couldn't get Console instance");
-                System.exit(0);
-            }
-
-            console.printf("Reset Geoweaver Localhost password%n");
-            char[] passwordArray = console.readPassword("Enter password: ");
-            // console.printf("Password entered was: %s%n", new String(passwordArray));
-            char[] secondpasswordArray = console.readPassword("Retype password: ");
-
-            if(Arrays.equals(passwordArray, secondpasswordArray)){
-
-                String originalpassword = new String(passwordArray);
+        // if we have a command line argument, we assume it is a command
+        if(args.length > 0) {
             
-                BaseTool bt = new BaseTool();
-
-                bt.setLocalhostPassword(originalpassword, true);
-
-                System.out.println("NOTE: Password updated.");
-
-            }else{
-
-                System.err.println("ERROR: The two entered passwords don't match.");
-
-            }
-
+            System.exit(new CommandLine(new TopEntryCommand()).execute(args));
 
         }else{
 

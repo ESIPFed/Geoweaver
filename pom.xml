@@ -20,6 +20,8 @@
 	<properties>
 		
 		<org.springframework-version>[5.3.1,)</org.springframework-version>
+
+		<picocli-version>[2.0.1.RELEASE,)</picocli-version>
 		
 		<org.springboot-version>[2.4.1,)</org.springboot-version>
 		
@@ -116,6 +118,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>${picocli-version}</version>
 		</dependency>
 
 		<dependency>
