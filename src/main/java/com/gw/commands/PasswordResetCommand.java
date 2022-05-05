@@ -5,12 +5,14 @@ import java.util.Arrays;
 
 import com.gw.utils.BaseTool;
 
+import org.springframework.stereotype.Component;
+
 import picocli.CommandLine.Command;
 
 @Command(name = "resetpassword")
+@Component
 public class PasswordResetCommand implements Runnable {
 
-    @Override
     public void run() {
         Console console = System.console();
         if (console == null) {

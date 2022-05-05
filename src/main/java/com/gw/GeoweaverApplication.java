@@ -1,11 +1,9 @@
 package com.gw;
 
 import java.awt.Desktop;
-import java.io.Console;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
@@ -16,18 +14,35 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
 import picocli.CommandLine;
+import picocli.CommandLine.IFactory;
  
 @SpringBootApplication
 @ServletComponentScan
-public class GeoweaverApplication {
+public class GeoweaverApplication implements CommandLineRunner {
+
+    final TopEntryCommand topEntryCommand;
+    final IFactory factory;
+
+    public GeoweaverApplication(TopEntryCommand topEntryCommand, IFactory factory) {
+        this.topEntryCommand = topEntryCommand;
+        this.factory = factory;
+    }
 
     @Value("${geoweaver.workspace}")
     private static String workspace;
+
+    @Override
+    public void run(String... args) {
+
+        System.exit(new CommandLine(topEntryCommand, factory).execute(args));
+
+    }
 
 
 	public static void main(String[] args) {
@@ -36,8 +51,10 @@ public class GeoweaverApplication {
 
         // if we have a command line argument, we assume it is a command
         if(args.length > 0) {
-            
-            System.exit(new CommandLine(new TopEntryCommand()).execute(args));
+
+            // Do not open homepage if we are running a command
+            SpringApplication.run(GeoweaverApplication.class, args);
+
 
         }else{
 

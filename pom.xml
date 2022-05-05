@@ -21,7 +21,7 @@
 		
 		<org.springframework-version>[5.3.1,)</org.springframework-version>
 
-		<picocli-version>[2.0.1.RELEASE,)</picocli-version>
+		<picocli-version>[4.6.3,)</picocli-version>
 		
 		<org.springboot-version>[2.4.1,)</org.springboot-version>
 		
@@ -122,7 +122,7 @@
 
 		<dependency>
 			<groupId>info.picocli</groupId>
-			<artifactId>picocli</artifactId>
+			<artifactId>picocli-spring-boot-starter</artifactId>
 			<version>${picocli-version}</version>
 		</dependency>
 
