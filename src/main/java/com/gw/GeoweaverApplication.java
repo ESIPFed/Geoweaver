@@ -16,6 +16,7 @@ import com.gw.utils.RandomString;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
@@ -40,7 +41,8 @@ public class GeoweaverApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        System.exit(new CommandLine(topEntryCommand, factory).execute(args));
+        // System.exit(new CommandLine(topEntryCommand, factory).execute(args));
+        new CommandLine(topEntryCommand, factory).execute(args);
 
     }
 
@@ -53,8 +55,8 @@ public class GeoweaverApplication implements CommandLineRunner {
         if(args.length > 0) {
 
             // Do not open homepage if we are running a command
-            SpringApplication.run(GeoweaverApplication.class, args);
-
+            // Run the spring boot application and command it to exit, so that only the command is run
+            System.exit(SpringApplication.exit(new SpringApplication(GeoweaverApplication.class).run(args)));
 
         }else{
 
