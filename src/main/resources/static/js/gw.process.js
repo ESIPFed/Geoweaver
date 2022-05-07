@@ -1313,7 +1313,7 @@ GW.process = {
 							</div>
 				</div>`;
 
-			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 130px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
 			    	<div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >
 			   		</div>
 				</div>
