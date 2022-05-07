@@ -1245,9 +1245,9 @@ GW.process = {
 			
 			confidential_field += '     </div>';
 			
-			var content = "<div class=\"modal-body\" style=\"height:100%;\">";
+			var content = "<div class=\"modal-body\" style=\"height:100%;padding:5px;\">";
 			
-			content += '  <div class="row" style="padding:0px;margin:0px;font-size: 12px;"> '+
+			content += '  <div class="row" style="padding-top:10px;margin:0px;font-size: 12px;"> '+
 		       '     <div class="col-sm-1 col-form-label control-label">Category</div>'+
 		       '     <div class="col-sm-2" style="padding:0;">'+
 		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
@@ -1269,7 +1269,7 @@ GW.process = {
 		       '     </div>'+
 			   		confidential_field+
 		       '   </div>'+
-		       '   <div class="form-group row" style="padding:0px;margin:0px;" >'+
+		       '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >'+
 		       '	     <div class="col-md-6" style="padding:0;" >'+
 			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
 			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
@@ -1283,7 +1283,7 @@ GW.process = {
 			   '		</div>'+
 			   '   </div>' ;
 			
-			content += `<div id="editor-history-tab-panel" style="height:100%; width:100%; left:0; margin:0; padding: 0; background-color: rgb(28, 28, 28);">
+			content += `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
 				
 				<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
 					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
@@ -1295,7 +1295,7 @@ GW.process = {
 					`');" ><i class="glyphicon glyphicon-play"></i></button>
 					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
 				</div>
-				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 130px);left:0; margin:0; padding: 0; ">
+				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
 								<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
 									<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
