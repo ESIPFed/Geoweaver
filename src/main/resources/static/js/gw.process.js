@@ -1297,7 +1297,7 @@ GW.process = {
 				</div>
 				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 130px);left:0; margin:0; padding: 0; ">
 							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-								<div id="process_code_window" class="container__left" style="height:100%; padding:0; overflow-y:scroll;scrollbar-color: rgb(28, 28, 28);" >
+								<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
 									<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
 								</div> 
 								<div class="resizer" id="dragMe"></div>
@@ -1448,6 +1448,8 @@ GW.process = {
 			
 			$("#code-embed").html("");
 
+			$("#code-embed").css({ 'overflow-y' : 'scroll'});
+
 			$( "#process_code_window" ).css( "background-color", "white" );
 			
 			if(code_type == "jupyter"){
@@ -1530,6 +1532,8 @@ GW.process = {
 				code = val;
 
 				$( "#process_code_window" ).css( "background-color", "rgb(28,28,28)" );
+
+				$("#code-embed").css({ 'overflow-y' : ''});
 				
 				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
 //			          mode: "text/html",
