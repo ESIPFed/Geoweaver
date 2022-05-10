@@ -1,8 +1,6 @@
 package com.gw;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.stereotype.Service;
 
 import picocli.CommandLine;
 import picocli.CommandLine.IFactory;
