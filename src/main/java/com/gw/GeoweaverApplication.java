@@ -26,29 +26,13 @@ import picocli.CommandLine.IFactory;
  
 @SpringBootApplication
 @ServletComponentScan
-public class GeoweaverApplication implements CommandLineRunner {
+public class GeoweaverApplication {
 
-    final TopEntryCommand topEntryCommand;
-    final IFactory factory;
-
-    public GeoweaverApplication(TopEntryCommand topEntryCommand, IFactory factory) {
-        this.topEntryCommand = topEntryCommand;
-        this.factory = factory;
-    }
 
     @Value("${geoweaver.workspace}")
     private static String workspace;
 
-    @Override
-    public void run(String... args) {
-
-        // System.exit(new CommandLine(topEntryCommand, factory).execute(args));
-        new CommandLine(topEntryCommand, factory).execute(args);
-
-    }
-
-
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		
 //		BasicConfigurator.configure();
 
@@ -58,7 +42,7 @@ public class GeoweaverApplication implements CommandLineRunner {
             // Do not open homepage if we are running a command
             // Run the spring boot application and command it to exit, so that only the command is run
             // Create a spring boot application without tomcat
-            System.exit(SpringApplication.exit(new SpringApplication(GeoweaverApplication.class).run(args)));
+            //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
             // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
             
         }else{
