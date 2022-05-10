@@ -18,6 +18,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
 import picocli.CommandLine;
@@ -56,8 +57,10 @@ public class GeoweaverApplication implements CommandLineRunner {
 
             // Do not open homepage if we are running a command
             // Run the spring boot application and command it to exit, so that only the command is run
+            // Create a spring boot application without tomcat
             System.exit(SpringApplication.exit(new SpringApplication(GeoweaverApplication.class).run(args)));
-
+            // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
+            
         }else{
 
             SpringApplication.run(GeoweaverApplication.class, args);
