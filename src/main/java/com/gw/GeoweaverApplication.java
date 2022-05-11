@@ -41,9 +41,10 @@ public class GeoweaverApplication {
             // Create a spring boot application without tomcat
             //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
             // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
-            new SpringApplicationBuilder(GeoweaverCLI.class)
+            System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
                 .web(WebApplicationType.NONE)
-                .run(args);
+                .headless(false)
+                .run(args)));
 
 
         }else{
