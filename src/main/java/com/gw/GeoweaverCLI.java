@@ -1,10 +1,12 @@
 package com.gw;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import picocli.CommandLine;
 import picocli.CommandLine.IFactory;
 
+@SpringBootApplication
 public class GeoweaverCLI implements CommandLineRunner {
 
     final TopEntryCommand topEntryCommand;

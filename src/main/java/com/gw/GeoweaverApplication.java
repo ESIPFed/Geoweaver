@@ -20,9 +20,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-
-import picocli.CommandLine;
-import picocli.CommandLine.IFactory;
  
 @SpringBootApplication
 @ServletComponentScan
@@ -44,7 +41,11 @@ public class GeoweaverApplication {
             // Create a spring boot application without tomcat
             //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
             // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
-            
+            new SpringApplicationBuilder(GeoweaverCLI.class)
+                .web(WebApplicationType.NONE)
+                .run(args);
+
+
         }else{
 
             SpringApplication.run(GeoweaverApplication.class, args);

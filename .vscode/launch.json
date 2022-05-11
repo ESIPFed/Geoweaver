@@ -45,7 +45,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverApplication",
       "projectName": "geoweaver",
-      // "args": "resetpassword"
+      "args": "resetpassword"
     }
   ]
 }
