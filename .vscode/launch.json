@@ -9,42 +9,8 @@
       "name": "Launch GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "projectName": "geoweaver"
-    },
-    {
-      "type": "java",
-      "name": "Geoweaver Command Line",
-      "request": "launch",
-      "mainClass": "com.gw.GeoweaverApplication",
-      "args": "${command:SpecifyProgramArgs}"
-    },
-    {
-      "type": "java",
-      "name": "Launch BaseTool",
-      "request": "launch",
-      "mainClass": "com.gw.utils.BaseTool",
-      "projectName": "geoweaver"
-    },
-    {
-      "type": "java",
-      "name": "Launch ResetPassword",
-      "request": "launch",
-      "mainClass": "com.gw.tools.ResetPassword",
-      "projectName": "geoweaver"
-    },
-    {
-      "type": "java",
-      "name": "Launch TempTest",
-      "request": "launch",
-      "mainClass": "com.TempTest",
-      "projectName": "geoweaver"
-    },
-    {
-      "type": "java",
-      "name": "Launch GmailAPI",
-      "request": "launch",
-      "mainClass": "com.gw.utils.GmailAPI",
-      "projectName": "geoweaver"
+      "projectName": "geoweaver",
+      "args": "resetpassword"
     },
     {
       "type": "java",

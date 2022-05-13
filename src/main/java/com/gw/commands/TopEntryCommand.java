@@ -1,8 +1,4 @@
-package com.gw;
-
-import com.gw.commands.ListCommand;
-import com.gw.commands.PasswordResetCommand;
-import com.gw.commands.RunCommand;
+package com.gw.commands;
 
 import org.springframework.stereotype.Component;
 
