@@ -4,10 +4,13 @@ import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
+import org.springframework.stereotype.Component;
+
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+@Component
 @Command(name = "run")
 public class RunCommand implements Runnable {
 
