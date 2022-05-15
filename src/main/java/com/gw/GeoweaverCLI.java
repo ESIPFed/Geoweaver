@@ -19,6 +19,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import picocli.CommandLine;
 
+/**
+ * Besides clean code structure, another major reason to separate the CLI into a single 
+ * springbootapplication class is because some of the web environment classes 
+ * (e.g., com.gw.server) should not be instantiated 
+ */
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {"com.gw.database"})
 @ComponentScan(basePackages = {"com.gw.commands", "com.gw.database", "com.gw.jpa", 
@@ -32,11 +37,11 @@ public class GeoweaverCLI implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        BeanTool.setCLIContext(applicationContext);
+        //pass the context otherwise it will be lost after new CommandLine
+        BeanTool.setCLIContext(applicationContext); 
 
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
 
-        // System.exit(new CommandLine(topEntryCommand, factory).execute(args));
         new CommandLine(topEntryCommand).execute(args);
 
     }
@@ -47,11 +52,9 @@ public class GeoweaverCLI implements CommandLineRunner {
 
         ApplicationContext applicationContext = builder.web(WebApplicationType.NONE)
                 .bannerMode(Banner.Mode.OFF)
-                // .headless(false)
                 .run(args);
 
         System.exit(SpringApplication.exit(applicationContext));
-        // System.exit(SpringApplication.exit(SpringApplication.run(GeoweaverCLI.class, args)));
 		
     }
     
