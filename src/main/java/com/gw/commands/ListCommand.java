@@ -10,6 +10,7 @@ import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Host;
 import com.gw.jpa.Workflow;
 import com.gw.tools.HostTool;
+import com.gw.utils.BeanTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,13 +36,6 @@ class requiredCommandOptions {
 @Command(name = "list", description = "list the resources in Geoweaver")
 public class ListCommand implements Runnable {
 
-    @Bean
-    HostTool ht(){
-        return new HostTool();
-    }
-    // @Autowired
-    // HostRepository hostRepository;
-
     @Autowired
     ProcessRepository processrepository;
 
@@ -55,7 +49,8 @@ public class ListCommand implements Runnable {
     public void run() {
         Console console = System.console();
         if(requiredCommandOptions.host != null && requiredCommandOptions.host) {
-            List<Host> allhosts = ht().getAllHosts();
+            HostTool ht = BeanTool.getBean(HostTool.class);
+            List<Host> allhosts = ht.getAllHosts();
             console.printf("Listing hosts (%d)%n", allhosts.size());
             console.printf("format: id - name - ip - port - username%n");
             for(Host host : allhosts) {

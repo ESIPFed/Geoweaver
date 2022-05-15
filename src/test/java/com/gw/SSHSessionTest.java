@@ -1,6 +1,5 @@
 package com.gw;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
@@ -27,103 +26,132 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 public class SSHSessionTest extends AbstractHelperMethodsTest{
 
 
     @Autowired
-	UserTool ut;
-
-	@Autowired
-	BaseTool bt;
+    UserTool ut;
 
     @Autowired
-	private TestRestTemplate testrestTemplate;
+    BaseTool bt;
+
+    @Autowired
+    private TestRestTemplate testrestTemplate;
 
     @Autowired
     SSHSession session;
 
     @LocalServerPort
-	private int port;
+    private int port;
 
-    Logger logger  = Logger.getLogger(this.getClass());
+    Logger logger = Logger.getLogger(this.getClass());
 
     @Test
-	void contextLoads() {
-		
-		
-	}
+    void contextLoads() {
+
+    }
 
     @Test
     @DisplayName("Test SSH login")
-    void testLogin(){
+    void testLogin() {
 
-        assertThrows(SSHAuthenticationException.class, ()->{session.login("100001", null, null, null, null, false);});
+        assertThrows(SSHAuthenticationException.class, () -> {
+            session.login("100001", null, null, null, null, false);
+        });
 
     }
 
     @Test
-    void testLogin2() throws Exception{
+    void testLogin2() throws Exception {
 
         String hid = AddHost();
 
-        assertThrows(SSHAuthenticationException.class, ()->{session.login(hid, null, null, false);});
+        assertThrows(SSHAuthenticationException.class, () -> {
+            session.login(hid, null, null, false);
+        });
 
     }
 
     @Test
-	@DisplayName("Test running shell on ssh")
-	void testShellOnSSH(){
+    @DisplayName("Test running shell on ssh")
+    void testShellOnSSH() {
 
         session.runBash("", "", "", false, "");
 
     }
 
     @Test
-	@DisplayName("Test running shell on ssh")
-	void testMultiShellOnSSH(){
+    @DisplayName("Test running shell on ssh")
+    void testMultiShellOnSSH() {
 
         session.runMultipleBashes("", null, "");
 
     }
 
     @Test
-	@DisplayName("Test running python on ssh")
-	void testPythonOnSSH(){
+    @DisplayName("Test running python on ssh")
+    void testPythonOnSSH() {
 
         session.runPython("", "", "", false, "", null, null, null);
 
     }
 
     @Test
-	@DisplayName("Test running jupyter on ssh")
-	void testJupyterOnSSH(){
+    @DisplayName("Test running jupyter on ssh")
+    void testJupyterOnSSH() {
 
         session.runJupyter("", "", "", false, "", null, null, null);
 
     }
 
     @Test
-	@DisplayName("Test running jupyter on ssh")
-	void testFinalize(){
+    @DisplayName("Test running jupyter on ssh")
+    void testFinalize() {
 
         session.logout();
 
     }
 
     @Test
-    void testReadPython(){
+    void testReadPython() {
 
         session.readPythonEnvironment(null, null);
 
     }
 
     @Test
-    void testReadConda() throws IOException{
+    void testReadConda() throws IOException {
 
-        assertThrows(NullPointerException.class, ()->{((SSHSessionImpl)session).readWhereCondaInOneCommand(null);});
+        assertThrows(NullPointerException.class, () -> {
+            ((SSHSessionImpl) session).readWhereCondaInOneCommand(null);
+        });
 
     }
 
-    
+    @Test
+    void testSettersGettersSshSession() {
+
+        SSHSessionImpl instance = new SSHSessionImpl();
+
+        // instance.setHistory_process(null);
+        // instance.setSSHJSession(null);
+        // instance.setWebSocketSession(null);
+        // instance.saveHistory(null, null);
+
+        instance.getToken();
+        instance.getHost();
+        instance.getPort();
+        instance.getSSHInput();
+        instance.getSSHJSession();
+        instance.getSSHOutput();
+        instance.getSsh();
+        instance.getToken();
+        instance.getUsername();
+        instance.isTerminal();
+
+        instance.escapeJupter(null);
+
+    }
+
 }

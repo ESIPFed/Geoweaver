@@ -18,6 +18,12 @@ public class BeanTool implements ApplicationContextAware {
 		
 	}
 
+	public static void setCLIContext(ApplicationContext applicationContext) throws BeansException {
+
+		context = applicationContext;
+
+	}
+
 	public static ApplicationContext getApplicationContext() {
 		return context;
  	}
