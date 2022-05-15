@@ -28,7 +28,7 @@ public class FileDownloadController {
 	BaseTool bt;
 
 	
-//	http://localhost:8070/Geoweaver/download/temp/testoutput.nc
+    //	http://localhost:8070/Geoweaver/download/temp/testoutput.nc
 	@RequestMapping(value="/download/temp/{filename}", method=RequestMethod.GET)
 	public void  downloadFile(HttpServletRequest request, HttpServletResponse response, @PathVariable(value="filename") String filename) {
 		
@@ -42,13 +42,7 @@ public class FileDownloadController {
 			
 			if (file.exists()) {
 
-				//get the mimetype
-//					String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-//					if (mimeType == null) {
-					//unknown mimetype so set the mimetype to application/octet-stream
 				String mimeType = "application/octet-stream";
-//					}
-
 				response.setContentType(mimeType);
 
 				/**
@@ -64,8 +58,8 @@ public class FileDownloadController {
 				 */
 				response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
 
-					//Here we have mentioned it to show as attachment
-					//response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getName() + "\""));
+				//Here we have mentioned it to show as attachment
+				//response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + file.getName() + "\""));
 
 				response.setContentLength((int) file.length());
 

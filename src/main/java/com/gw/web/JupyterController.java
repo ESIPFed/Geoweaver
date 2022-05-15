@@ -82,15 +82,6 @@ public class JupyterController {
 	
 	public JupyterController(RestTemplateBuilder builder) {
 		
-////		restTemplate = new RestTemplate();
-//		restTemplate = builder.build();
-//		
-//		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-//		requestFactory.setConnectTimeout(TIMEOUT);
-//		requestFactory.setReadTimeout(TIMEOUT);
-//		
-//		restTemplate.setRequestFactory(requestFactory);
-		
 	}
 	
 	@Bean(name = "restTemplate")
@@ -98,7 +89,6 @@ public class JupyterController {
     public RestTemplate getRestTemplate() {
 		
 		RestTemplate restTemplate1 = new RestTemplate();
-//		restTemplate = builder.build();
 		
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setConnectTimeout(TIMEOUT);
@@ -108,19 +98,15 @@ public class JupyterController {
 				
 	            .setDefaultRequestConfig(RequestConfig.custom()
 	            		.setCookieSpec(CookieSpecs.STANDARD)
-						
-	            		// .setCircularRedirectsAllowed(false)
 						.setRedirectsEnabled(false)
 	            		.build())
 	            .build();
-		
-//		httpClient.getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true); 
 		
 		requestFactory.setHttpClient(httpClient);
 		
 		restTemplate1.setRequestFactory(requestFactory);
 		
-		logger.info("A new restTemplate is created");
+		logger.debug("A new restTemplate is created");
 		
         return restTemplate1;
     }
