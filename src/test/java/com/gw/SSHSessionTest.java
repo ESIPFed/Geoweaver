@@ -26,8 +26,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SSHSessionTest extends AbstractHelperMethodsTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
+public class SSHSessionTest extends AbstractHelperMethodsTest{
+
 
     @Autowired
     UserTool ut;

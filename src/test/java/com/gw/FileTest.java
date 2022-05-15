@@ -34,10 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import net.schmizz.sshj.sftp.SFTPClient;
-import net.schmizz.sshj.sftp.RemoteResourceInfo;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 public class FileTest {
 
 	@LocalServerPort

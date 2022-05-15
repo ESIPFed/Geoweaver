@@ -1,11 +1,9 @@
 package com.gw;
 
 import java.awt.Desktop;
-import java.io.Console;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
@@ -16,50 +14,37 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
  
 @SpringBootApplication
 @ServletComponentScan
 public class GeoweaverApplication {
 
+
     @Value("${geoweaver.workspace}")
-    private static String           workspace;
+    private static String workspace;
 
-
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		
 //		BasicConfigurator.configure();
 
-        if(args.length==1 && "resetpassword".equals(args[0])){
+        // if we have a command line argument, we assume it is a command
+        if(args.length > 0) {
 
-            Console console = System.console();
-            if (console == null) {
-                System.out.println("Couldn't get Console instance");
-                System.exit(0);
-            }
-
-            console.printf("Reset Geoweaver Localhost password%n");
-            char[] passwordArray = console.readPassword("Enter password: ");
-            // console.printf("Password entered was: %s%n", new String(passwordArray));
-            char[] secondpasswordArray = console.readPassword("Retype password: ");
-
-            if(Arrays.equals(passwordArray, secondpasswordArray)){
-
-                String originalpassword = new String(passwordArray);
-            
-                BaseTool bt = new BaseTool();
-
-                bt.setLocalhostPassword(originalpassword, true);
-
-                System.out.println("NOTE: Password updated.");
-
-            }else{
-
-                System.err.println("ERROR: The two entered passwords don't match.");
-
-            }
+            // Do not open homepage if we are running a command
+            // Run the spring boot application and command it to exit, so that only the command is run
+            // Create a spring boot application without tomcat
+            //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
+            // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
+            System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
+                .web(WebApplicationType.NONE)
+                .headless(false)
+                .run(args)));
 
 
         }else{

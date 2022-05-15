@@ -44,7 +44,7 @@ import org.springframework.http.MediaType;
 
 import net.bytebuddy.utility.RandomString;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 public class WorkflowTest extends AbstractHelperMethodsTest {
     @InjectMocks
     @Autowired

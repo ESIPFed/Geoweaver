@@ -20,6 +20,8 @@
 	<properties>
 		
 		<org.springframework-version>[5.3.1,)</org.springframework-version>
+
+		<picocli-version>[4.6.3,)</picocli-version>
 		
 		<org.springboot-version>[2.4.1,)</org.springboot-version>
 		
@@ -119,6 +121,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli-spring-boot-starter</artifactId>
+			<version>${picocli-version}</version>
+		</dependency>
+
+		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${org.springframework-version}</version>
@@ -197,15 +205,15 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.12</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.12</version>
+            <artifactId>slf4j-reload4j</artifactId>
+            <version>1.7.36</version>
         </dependency>
         
         <dependency>
