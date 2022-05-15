@@ -86,7 +86,8 @@ public class SSHCmdSessionOutput  implements Runnable {
 			log.debug("This is very unlikely");
 		}
 
-		if(ExecutionStatus.DONE.equals(status)){
+		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
+				|| ExecutionStatus.STOPPED.equals(status)){
 
 			h.setHistory_end_time(bt.getCurrentSQLDate());
 
