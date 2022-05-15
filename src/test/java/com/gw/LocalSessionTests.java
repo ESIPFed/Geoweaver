@@ -42,7 +42,7 @@ import org.springframework.mock.web.MockHttpSession;
 
 import net.bytebuddy.utility.RandomString;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 public class LocalSessionTests extends AbstractHelperMethodsTest {
 
     LocalSession ls;
