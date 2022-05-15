@@ -2,12 +2,16 @@ package com.gw.commands;
 
 import java.io.Console;
 import java.util.Collection;
+import java.util.List;
 
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Host;
 import com.gw.jpa.Workflow;
+import com.gw.tools.HostTool;
+import com.gw.utils.BeanTool;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +35,6 @@ class requiredCommandOptions {
 public class ListCommand implements Runnable {
 
     @Autowired
-    HostRepository hostRepository;
-
-    @Autowired
     ProcessRepository processrepository;
 
     @Autowired
@@ -46,10 +47,11 @@ public class ListCommand implements Runnable {
     public void run() {
         Console console = System.console();
         if(requiredCommandOptions.host != null && requiredCommandOptions.host) {
-            console.printf("Listing hosts (%d)%n", hostRepository.count());
+            HostTool ht = BeanTool.getBean(HostTool.class);
+            List<Host> allhosts = ht.getAllHosts();
+            console.printf("Listing hosts (%d)%n", allhosts.size());
             console.printf("format: id - name - ip - port - username%n");
-            Collection<Host> hosts = (Collection<Host>) hostRepository.findAll();
-            for(Host host : hosts) {
+            for(Host host : allhosts) {
                 console.printf("%s - %s - %s - %s - %s%n", host.getId(), host.getName(), host.getIp(), host.getPort(), host.getUsername());
             }
         }else if(requiredCommandOptions.process != null && requiredCommandOptions.process) {

@@ -1,6 +1,7 @@
 package com.gw;
 
 import com.gw.commands.TopEntryCommand;
+import com.gw.tools.HostTool;
 import com.gw.utils.BeanTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,10 @@ public class GeoweaverCLI implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        
+        BeanTool.setCLIContext(applicationContext);
 
-        TopEntryCommand topEntryCommand = applicationContext.getBean(TopEntryCommand.class);
+        TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
 
         // System.exit(new CommandLine(topEntryCommand, factory).execute(args));
         new CommandLine(topEntryCommand).execute(args);
