@@ -19,13 +19,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import picocli.CommandLine;
 
 @SpringBootApplication
-// @EnableAutoConfiguration(exclude={})
 @EnableJpaRepositories(basePackages = {"com.gw.database"})
-// @ComponentScan(excludeFilters=@ComponentScan.Filter(pattern = "com.gw.server.*"))
 @ComponentScan(basePackages = {"com.gw.commands", "com.gw.database", "com.gw.jpa", 
 "com.gw.local", "com.gw.search", "com.gw.tasks", "com.gw.tools", "com.gw.user",
 "com.gw.utils",  "com.gw.workers"})
-// @ComponentScan({"com.gw"})
 public class GeoweaverCLI implements CommandLineRunner {
 
     @Autowired
