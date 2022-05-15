@@ -10,7 +10,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "list --help"
+      "args": "list --host"
     },
     {
       "type": "java",

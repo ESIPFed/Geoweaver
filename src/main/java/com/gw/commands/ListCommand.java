@@ -27,7 +27,7 @@ class requiredCommandOptions {
 }
 
 @Component
-@Command(name = "list", description = "list details")
+@Command(name = "list", description = "list the resources in Geoweaver")
 public class ListCommand implements Runnable {
 
     @Autowired
