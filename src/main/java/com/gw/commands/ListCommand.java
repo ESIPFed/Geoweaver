@@ -2,13 +2,18 @@ package com.gw.commands;
 
 import java.io.Console;
 import java.util.Collection;
+import java.util.List;
 
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Host;
 import com.gw.jpa.Workflow;
+import com.gw.tools.HostTool;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 
 import picocli.CommandLine.ArgGroup;
@@ -30,8 +35,12 @@ class requiredCommandOptions {
 @Command(name = "list", description = "list the resources in Geoweaver")
 public class ListCommand implements Runnable {
 
-    @Autowired
-    HostRepository hostRepository;
+    @Bean
+    HostTool ht(){
+        return new HostTool();
+    }
+    // @Autowired
+    // HostRepository hostRepository;
 
     @Autowired
     ProcessRepository processrepository;
@@ -46,10 +55,10 @@ public class ListCommand implements Runnable {
     public void run() {
         Console console = System.console();
         if(requiredCommandOptions.host != null && requiredCommandOptions.host) {
-            console.printf("Listing hosts (%d)%n", hostRepository.count());
+            List<Host> allhosts = ht().getAllHosts();
+            console.printf("Listing hosts (%d)%n", allhosts.size());
             console.printf("format: id - name - ip - port - username%n");
-            Collection<Host> hosts = (Collection<Host>) hostRepository.findAll();
-            for(Host host : hosts) {
+            for(Host host : allhosts) {
                 console.printf("%s - %s - %s - %s - %s%n", host.getId(), host.getName(), host.getIp(), host.getPort(), host.getUsername());
             }
         }else if(requiredCommandOptions.process != null && requiredCommandOptions.process) {
