@@ -31,7 +31,7 @@ public class GeoweaverCLI implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        
+
         BeanTool.setCLIContext(applicationContext);
 
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
