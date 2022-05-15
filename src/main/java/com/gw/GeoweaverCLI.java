@@ -1,7 +1,10 @@
 package com.gw;
 
 import com.gw.commands.TopEntryCommand;
+import com.gw.utils.BeanTool;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -21,15 +24,15 @@ import picocli.CommandLine.IFactory;
 "com.gw.local.*", "com.gw.search.*", "com.gw.tasks.*", "com.gw.tools.*", "com.gw.user.*",
 "com.gw.utils.*",  "com.gw.workers.*"})
 public class GeoweaverCLI implements CommandLineRunner {
-
-    final TopEntryCommand topEntryCommand;
-    final IFactory factory;
+    
 
     @Override
     public void run(String... args) {
 
+        TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
+
         // System.exit(new CommandLine(topEntryCommand, factory).execute(args));
-        new CommandLine(topEntryCommand, factory).execute(args);
+        new CommandLine(topEntryCommand).execute(args);
 
     }
 
@@ -39,15 +42,11 @@ public class GeoweaverCLI implements CommandLineRunner {
 
         System.exit(SpringApplication.exit(
             builder.web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
                 // .headless(false)
                 .run(args)));
         // System.exit(SpringApplication.exit(SpringApplication.run(GeoweaverCLI.class, args)));
 		
-    }
-
-    public GeoweaverCLI(TopEntryCommand topEntryCommand, IFactory factory) {
-        this.topEntryCommand = topEntryCommand;
-        this.factory = factory;
     }
     
 }
