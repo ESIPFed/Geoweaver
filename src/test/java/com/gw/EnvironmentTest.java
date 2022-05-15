@@ -4,11 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
+import com.gw.jpa.Environment;
+import com.gw.jpa.GWUser;
+import com.gw.jpa.LogActivity;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -38,6 +42,8 @@ public class EnvironmentTest extends AbstractHelperMethodsTest {
 
     @LocalServerPort
     private int port;
+
+    Environment env;
 
     Logger logger = Logger.getLogger(this.getClass());
 
@@ -174,6 +180,64 @@ public class EnvironmentTest extends AbstractHelperMethodsTest {
         // Delete created host
         String deleteResult = deleteResource(hid, "host");
         assertThat(deleteResult).contains("done");
+
+    }
+
+    @Test
+    void testEnvs() {
+
+        Environment instance = new Environment();
+
+        instance.setHostobj(null);
+        instance.setId("");
+        instance.setName("");
+        instance.setType("");
+        instance.setBin("");
+        instance.setPyenv("");
+        instance.setBasedir("");
+        instance.setSettings("");
+        instance.getHostobj();
+        instance.getId();
+        instance.getName();
+        instance.getType();
+        instance.getBin();
+        instance.getPyenv();
+        instance.getBasedir();
+        instance.getSettings();
+
+    }
+
+    @Test
+    void testLogActivity() {
+
+        LogActivity instance = new LogActivity();
+
+        instance.setObjname(null);
+        instance.setId("");
+        instance.setOperator("");
+        instance.setCategory("");
+        instance.setObjectid("");
+        instance.setOperation("");
+        instance.getObjname();
+        instance.getId();
+        instance.getOperator();
+        instance.getCategory();
+        instance.getObjectid();
+        instance.getOperation();
+    }
+
+    @Test
+    void testGWUser() {
+
+        GWUser instance = new GWUser();
+
+        instance.setRole("");
+        instance.setRegistration_date(null);
+        instance.setLast_login_date(null);
+        instance.setLoggedIn(null);
+        instance.getRegistration_date();
+        instance.getLast_login_date();
+        instance.getLoggedIn();
 
     }
 

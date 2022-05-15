@@ -1078,7 +1078,10 @@ public class BaseTool {
 			// Check if it is a directory
 			if (entry.isDirectory()) {
 				// call getWorkflowJsonPath(entry)
-				return getWorkflowJsonPath(entry.getAbsolutePath());
+				String jsonpath = getWorkflowJsonPath(entry.getAbsolutePath());
+				if(jsonpath!=""){
+					return jsonpath;
+				}
 			} else {
 				// check if it is workflow.json
 				if (entry.getName().equals("workflow.json")) {

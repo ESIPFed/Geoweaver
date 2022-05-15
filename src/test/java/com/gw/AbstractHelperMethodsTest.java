@@ -65,8 +65,8 @@ public abstract class AbstractHelperMethodsTest {
     private int port;
 
     @InjectMocks
-	@Autowired
-	LocalhostTool ltmock;
+    @Autowired
+    LocalhostTool ltmock;
 
     Logger logger = Logger.getLogger(this.getClass());
 
@@ -94,30 +94,29 @@ public abstract class AbstractHelperMethodsTest {
         return hid;
 
     }
-    
-    @Test
-	public String testAddJupyterHost() throws Exception {
 
-		HttpHeaders hostHeaders = new HttpHeaders();
-		hostHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    public String testAddJupyterHost() throws Exception {
 
-		// Add host
-		String bultinjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_jupyter_host.txt");
-		HttpEntity hostRequest = new HttpEntity<>(bultinjson, hostHeaders);
-		String hostResult = this.testrestTemplate.postForObject(
-				"http://localhost:" + this.port + "/Geoweaver/web/add",
-				hostRequest,
-				String.class);
-		assertThat(hostResult).contains("id");
-		assertThat(hostResult).contains("jupyter");
+        HttpHeaders hostHeaders = new HttpHeaders();
+        hostHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.readValue(hostResult, Map.class);
-		String jid = String.valueOf(map.get("id"));
+        // Add host
+        String bultinjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_jupyter_host.txt");
+        HttpEntity hostRequest = new HttpEntity<>(bultinjson, hostHeaders);
+        String hostResult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/add",
+                hostRequest,
+                String.class);
+        assertThat(hostResult).contains("id");
+        assertThat(hostResult).contains("jupyter");
 
-		return jid;
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = mapper.readValue(hostResult, Map.class);
+        String jid = String.valueOf(map.get("id"));
 
-	}
+        return jid;
+
+    }
 
     public void stopProcess(String pid, String type) throws Exception {
 
@@ -150,38 +149,38 @@ public abstract class AbstractHelperMethodsTest {
 
     public String AddPythonProcess() throws Exception {
 
-		// Add process
-		HttpHeaders processHeaders = new HttpHeaders();
-		processHeaders.setContentType(MediaType.APPLICATION_JSON);
-		String pythonjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_python_process.json");
-		HttpEntity processRequest = new HttpEntity<>(pythonjson, processHeaders);
-		String processResult = this.testrestTemplate.postForObject(
-				"http://localhost:" + this.port + "/Geoweaver/web/add/process",
-				processRequest,
-				String.class);
+        // Add process
+        HttpHeaders processHeaders = new HttpHeaders();
+        processHeaders.setContentType(MediaType.APPLICATION_JSON);
+        String pythonjson = bt.readStringFromFile(bt.testResourceFiles() + "/add_python_process.json");
+        HttpEntity processRequest = new HttpEntity<>(pythonjson, processHeaders);
+        String processResult = this.testrestTemplate.postForObject(
+                "http://localhost:" + this.port + "/Geoweaver/web/add/process",
+                processRequest,
+                String.class);
 
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.readValue(processResult, Map.class);
-		String pid = String.valueOf(map.get("id"));
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = mapper.readValue(processResult, Map.class);
+        String pid = String.valueOf(map.get("id"));
 
-		return pid;
+        return pid;
 
-	}
+    }
 
-	public String ExecutePythonProcess(String pid) throws Exception {
+    public String ExecutePythonProcess(String pid) throws Exception {
 
-		// encode the password
-		KeyPair kpair = RSAEncryptTool.buildKeyPair();
-		String encryppswd = RSAEncryptTool.byte2Base64(RSAEncryptTool.encrypt(kpair.getPublic(), "testpswd"));
-		// run the python process
-		ltmock = Mockito.spy(ltmock);
-		doNothing().when(ltmock).authenticate(anyString());
+        // encode the password
+        KeyPair kpair = RSAEncryptTool.buildKeyPair();
+        String encryppswd = RSAEncryptTool.byte2Base64(RSAEncryptTool.encrypt(kpair.getPublic(), "testpswd"));
+        // run the python process
+        ltmock = Mockito.spy(ltmock);
+        doNothing().when(ltmock).authenticate(anyString());
 
-		String historyid = new RandomString(12).nextString();
+        String historyid = new RandomString(12).nextString();
 
-		ltmock.executePythonProcess(historyid, pid, historyid, encryppswd, historyid, true, "", "", "");
+        ltmock.executePythonProcess(historyid, pid, historyid, encryppswd, historyid, true, "", "", "");
 
-		return historyid;
-	}
+        return historyid;
+    }
 
 }

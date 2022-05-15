@@ -13,6 +13,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
+import com.gw.search.GWSearchTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 
@@ -177,6 +178,17 @@ class GeneralTests extends AbstractHelperMethodsTest {
 			logger.debug("cell is not detected");
 		}
 
+	}
+
+	@Test
+	void testSearchClass() {
+
+		GWSearchTool instance = new GWSearchTool();
+
+		instance.search("", "all");
+		instance.search("", "host");
+		instance.search("", "workflow");
+		instance.search(null, null);
 	}
 
 	// Geoweaver/web/search
@@ -441,7 +453,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 	}
 
 	@Test
-	void testErrorPage(){
+	void testErrorPage() {
 
 		String Postresult = this.testrestTemplate.postForObject(
 				"http://localhost:" + this.port + "/Geoweaver/web/error",
@@ -451,7 +463,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 	}
 
 	@Test
-	void testPortalController(){
+	void testPortalController() {
 
 		ResponseEntity<String> getresult = this.testrestTemplate.getForEntity(
 				"http://localhost:" + this.port + "/Geoweaver/geoweaver", String.class);
@@ -464,7 +476,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 	}
 
 	@Test
-	void testComputerUniqueID() throws Exception{
+	void testComputerUniqueID() throws Exception {
 
 		String firstattempt = bt.getLocalhostIdentifier();
 

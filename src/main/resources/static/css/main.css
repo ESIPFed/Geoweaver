@@ -309,7 +309,7 @@ form .progress {
 .table-color {
   background-color: rgb(28, 28, 28); 
   color: rgb(211, 211, 211);
-  padding: 5px;
+  /* padding: 5px; */
 }
 
 .table-color tbody tr td {
