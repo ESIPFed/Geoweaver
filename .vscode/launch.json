@@ -1,43 +1,24 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Launch BaseTool",
-            "request": "launch",
-            "mainClass": "com.gw.utils.BaseTool",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
-            "name": "Launch ResetPassword",
-            "request": "launch",
-            "mainClass": "com.gw.tools.ResetPassword",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
-            "name": "Launch TempTest",
-            "request": "launch",
-            "mainClass": "com.TempTest",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
-            "name": "Launch GmailAPI",
-            "request": "launch",
-            "mainClass": "com.gw.utils.GmailAPI",
-            "projectName": "geoweaver"
-        },
-        {
-            "type": "java",
-            "name": "Launch GeoweaverApplication",
-            "request": "launch",
-            "mainClass": "com.gw.GeoweaverApplication",
-            "projectName": "geoweaver"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch GeoweaverCLI",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "list --host"
+    },
+    {
+      "type": "java",
+      "name": "Launch GeoweaverApplication",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverApplication",
+      "projectName": "geoweaver",
+      "args": "list --help"
+    }
+  ]
 }

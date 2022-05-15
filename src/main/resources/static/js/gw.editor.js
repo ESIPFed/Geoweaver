@@ -25,8 +25,8 @@ GW.editor = {
             editorDiv.removeClass('fullscreen');
             editorDiv.height(this.beforeFullscreen.height);
             editorDiv.width(this.beforeFullscreen.width);
-            subtabCodeDiv.height('calc(100% - 130px)');
-            subtabHistoryDiv.height('calc(100% - 130px)');
+            subtabCodeDiv.height('calc(100% - 150px)');
+            subtabHistoryDiv.height('calc(100% - 150px)');
             // editor.refresh();
             this.isfullscreen = false;
         }
