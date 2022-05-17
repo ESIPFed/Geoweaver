@@ -627,13 +627,13 @@ GW.workspace = {
 	    	        nwords = words.length;
 	    	    var el = gEl.append("text")
 	    	          .attr("text-anchor","middle")
-	    	          .attr("font-size", function(d) {
-	    	              var len = title.substring(0, 50 / 3).length;
-	    	              var size = 50/3;
-	    	              size *= 10 / len;
-	    	              size += 1;
-	    	              return Math.round(size)+'px';
-	    	          })
+					  .attr("fill", "white")
+					  .attr("stroke", "black")
+					  .attr("stroke-width", '1px')
+					  .attr("stroke-linecap", 'butt')
+					  .attr("stroke-linejoin", 'miter')
+					  .attr("font-weight", 800)
+					  .attr("font-size", '24px')
 	    	          .attr("dy", "-" + (nwords-1)*7.5);
 	
 	    	    for (var i = 0; i < words.length; i++) {
@@ -1119,9 +1119,21 @@ GW.workspace = {
 	    	    // update existing nodes
 	    	    thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 	    	    thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	      .style("fill", function (d) { 
-					//   console.log("current color "+ d.id + " - " + d.color); 
-					  return d.color; });
+	    	    //   .attr("fill", function (d) { 
+				// 	//   console.log("current color "+ d.id + " - " + d.color); 
+				// 	//   return d.color; 
+				// 		return "#161616";
+				// 	})
+				  	.style("stroke", function (d) { 
+						//   console.log("current color "+ d.id + " - " + d.color); 
+						  return d.color; 
+							// return "#dadada";
+						})
+					.style("fill", function (d) { 
+						//   console.log("current color "+ d.id + " - " + d.color); 
+						  return d.color; 
+							// return "#dadada";
+						});
 	
 	    	    // add new nodes
 	    	    var newGs= thisGraph.circles.enter()
@@ -1177,12 +1189,19 @@ GW.workspace = {
 //	    	    console.log("update circile once");	
 	    	    newGs.append("circle")
 	    	      	.attr("r", String(consts.nodeRadius))
-				  	.style("stroke-width", 5)
+				  	.attr("stroke-width", 2)
+					.style('stroke', function (d) {
+						//   console.log("current color "+ d.id + " - " + d.color); 
+						  return d.color; 
+						//   return "#dadada";
+						})
 //	    	      .attr("r", function(d) { return d.r; })
-	    	      	.style("fill", function (d) { 
-					//   console.log("current color "+ d.id + " - " + d.color); 
-					  return d.color; })
-					.style("filter", "url(#drop-shadow)");; //add color
+					.attr("fill", function (d) {
+						//   console.log("current color "+ d.id + " - " + d.color); 
+						  return d.color; 
+						//   return "#dadada";
+						})
+					.attr("filter", "url(#drop-shadow)");; //add color
 	
 	    	    newGs.each(function(d){
 	    	      thisGraph.insertTitleLinebreaks(d3.select(this), d.title);

@@ -294,8 +294,6 @@ public class SSHSessionImpl implements SSHSession {
             
         } catch (Throwable e) {
         }
-        // bt.printoutCallStack();
-        // log.info("session finalized");
     }
     
     @Override
@@ -329,8 +327,6 @@ public class SSHSessionImpl implements SSHSession {
     		
     		python = escapeJupter(python);
     		
-//    		log.info("escaped command: " + python);
-    		
     		log.info("\n command: " + python);
     		
     		String cmdline = "mkdir -p "+workspace_folder_path+
@@ -347,11 +343,9 @@ public class SSHSessionImpl implements SSHSession {
     		
     		cmdline += "cd "+ history_id + "/; ";
     		
-//    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
-    		
     		cmdline += "chmod +x *.py;";
 
-    		String filename = processRepository.findById(processid).get().getName();//pt.getNameById(processid);
+    		String filename = processRepository.findById(processid).get().getName();
     		
     		filename = filename.trim().endsWith(".py")? filename: filename+".py";
     		
@@ -375,7 +369,6 @@ public class SSHSessionImpl implements SSHSession {
             
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
             
-//            sender = new SSHCmdSessionOutput(input, token);
             cmdsender.init(input, token, history_id);
             
             //moved here on 10/29/2018

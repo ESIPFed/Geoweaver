@@ -60,9 +60,9 @@ marker{
 }
 
 g.conceptG circle{
-    fill: #F6FBFF;
-    stroke: #333;
-    stroke-width: 2px;
+    /* fill: #F6FBFF; */
+    /* stroke: #333;
+    stroke-width: 2px; */
 }
 
 g.conceptG:hover circle{

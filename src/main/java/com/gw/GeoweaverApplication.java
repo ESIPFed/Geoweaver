@@ -14,17 +14,21 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 
+import org.apache.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.context.ApplicationContext;
+import org.springframework.boot.Banner;
  
 @SpringBootApplication
 @ServletComponentScan
 public class GeoweaverApplication {
 
+    static Logger logger = Logger.getLogger(GeoweaverApplication.class);
 
     @Value("${geoweaver.workspace}")
     private static String workspace;
@@ -43,13 +47,15 @@ public class GeoweaverApplication {
             // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
             System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
                 .web(WebApplicationType.NONE)
-                .headless(false)
+                .bannerMode(Banner.Mode.OFF)
                 .run(args)));
 
 
         }else{
 
-            SpringApplication.run(GeoweaverApplication.class, args);
+            ApplicationContext applicationContext = new SpringApplicationBuilder(GeoweaverApplication.class)
+                .bannerMode(Banner.Mode.OFF)
+                .run(args);
 
             openHomePage();	
 
@@ -71,7 +77,7 @@ public class GeoweaverApplication {
 
         if(h==null){
 
-            System.out.println("Localhost doesn't exist. Adding now..");
+            logger.info("Localhost doesn't exist. Adding now..");
 
             h = new Host();
 
@@ -97,7 +103,7 @@ public class GeoweaverApplication {
 
         }else{
 
-            System.out.println("Localhost exists.");
+            logger.info("Localhost exists.");
 
         }
 
@@ -110,15 +116,15 @@ public class GeoweaverApplication {
 
                 String initialpassword = new RandomString(30).nextString();
 
-                System.out.println("\n============\n");
+                logger.warn("\n============\n");
 
-                System.out.println("Default password for Localhost: \n\n    " + initialpassword+ "\n\n");
+                logger.warn("Default password for Localhost: \n\n    " + initialpassword+ "\n\n");
 
-                System.out.println("Please copy and save the password in a safe place");
+                logger.warn("Please copy and save the password in a safe place");
 
-                System.out.println("Change password: <java -jar geoweaver.jar resetpassword>");
+                logger.warn("Change password: <java -jar geoweaver.jar resetpassword>");
 
-                System.out.println("\n============\n");
+                logger.warn("\n============\n");
                 
                 bt.setLocalhostPassword(initialpassword, false);
 
@@ -147,7 +153,7 @@ public class GeoweaverApplication {
 
         if(publicuser==null){
 
-            System.out.println("Public User doesn't exist. Adding now..");
+            logger.warn("Public User doesn't exist. Adding now..");
 
             publicuser = new GWUser();
 
@@ -165,11 +171,11 @@ public class GeoweaverApplication {
 
         }else{
 
-            System.out.println("Public user exists.");
+            logger.info("Public user exists.");
 
         }
 
-        System.out.println("test what is going on");
+        logger.debug("test what is going on");
 
         //set everything that doesn't have an owner to this user
         ut.belongToPublicUser();
