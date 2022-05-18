@@ -627,7 +627,7 @@ GW.workspace = {
 	    	        nwords = words.length;
 	    	    var el = gEl.append("text")
 	    	          .attr("text-anchor","middle")
-					  .attr("fill", "white")
+					  .attr("fill", "black")
 					  .attr("stroke", "black")
 					  .attr("stroke-width", '1px')
 					  .attr("stroke-linecap", 'butt')
@@ -1131,8 +1131,8 @@ GW.workspace = {
 						})
 					.style("fill", function (d) { 
 						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-							// return "#dadada";
+						//   return d.color; 
+							return "#dadada";
 						});
 	
 	    	    // add new nodes
@@ -1198,8 +1198,8 @@ GW.workspace = {
 //	    	      .attr("r", function(d) { return d.r; })
 					.attr("fill", function (d) {
 						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-						//   return "#dadada";
+						//   return d.color; 
+						  return "#dadada";
 						})
 					.attr("filter", "url(#drop-shadow)");; //add color
 	
