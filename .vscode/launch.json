@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "GeoweaverCLI",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "args": "${command:SpecifyProgramArgs}"
+    },
+    {
+      "type": "java",
       "name": "Launch GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
@@ -17,8 +24,7 @@
       "name": "Launch GeoweaverApplication",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverApplication",
-      "projectName": "geoweaver",
-      // "args": "run --help"
+      "projectName": "geoweaver"
     }
   ]
 }

@@ -4,7 +4,6 @@ import java.io.Console;
 import java.util.Collection;
 import java.util.List;
 
-import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.Host;
