@@ -1,5 +1,9 @@
 package com.gw.commands;
 
+import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
+
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import picocli.CommandLine.Command;
@@ -10,8 +14,12 @@ import picocli.CommandLine.Command;
 @Command(subcommands = { PasswordResetCommand.class, RunCommand.class, ListCommand.class })
 public class TopEntryCommand implements Runnable {
 
+    Logger logger = Logger.getLogger(this.getClass());
+
     public void run() {
-        System.out.println("running top entry command");
+        // BaseTool bt = BeanTool.getBean(BaseTool.class);
+        // bt.printoutCallStack();
+        logger.debug("should print out all supported commands");
     }
     
 }

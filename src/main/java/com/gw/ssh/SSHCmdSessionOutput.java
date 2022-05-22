@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import  com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
@@ -83,6 +84,13 @@ public class SSHCmdSessionOutput  implements Runnable {
 			h.setHistory_id(history_id);
 
 			log.debug("This is very unlikely");
+		}
+
+		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
+				|| ExecutionStatus.STOPPED.equals(status)){
+
+			h.setHistory_end_time(bt.getCurrentSQLDate());
+
 		}
 
 		h.setHistory_output(logs);
