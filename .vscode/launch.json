@@ -18,7 +18,6 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverApplication",
       "projectName": "geoweaver",
-      "args": "list --help"
     }
   ]
 }
