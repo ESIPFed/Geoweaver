@@ -29,6 +29,9 @@ class requiredListCommandOptions {
     @Option(names = { "--workflow" }, description = "list workflows")
     Boolean workflow;
 
+    @Option(names = { "--help" }, usageHelp = true, description = "displays this help message")
+    Boolean help;
+
 }
 
 @Component

@@ -29,6 +29,9 @@ class requiredDetailCommandOptions {
     @Option(names = { "--workflow-id" }, description = "Workflow Id to get details for")
     String workflowId;
 
+    @Option(names = { "--help" }, usageHelp = true, description = "displays this help message")
+    Boolean help;
+
 }
 
 @Component
