@@ -1437,15 +1437,19 @@ GW.host = {
 
 				}
 				
-				if(dialogItself) {
-					
-					try{dialogItself.closeFrame(); }catch(e){}
-					
-				}
+				
 				
 			}else{
 				
-				console.error("Return Response is Empty");
+				console.warn("Return Response is Empty");
+
+				GW.host.showEnvironmentTable([]);
+				
+			}
+
+			if(dialogItself) {
+					
+				try{dialogItself.closeFrame(); }catch(e){}
 				
 			}
 			

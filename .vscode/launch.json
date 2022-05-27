@@ -6,19 +6,25 @@
   "configurations": [
     {
       "type": "java",
+      "name": "GeoweaverCLI",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "args": "${command:SpecifyProgramArgs}"
+    },
+    {
+      "type": "java",
       "name": "Launch GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "list --host"
+      "args": "detail --host-id roeaa3"
     },
     {
       "type": "java",
       "name": "Launch GeoweaverApplication",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverApplication",
-      "projectName": "geoweaver",
-      "args": "list --help"
+      "projectName": "geoweaver"
     }
   ]
 }
