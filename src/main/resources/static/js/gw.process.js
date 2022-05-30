@@ -1696,8 +1696,8 @@ GW.process = {
 		 */
 		addMenuItem: function(one, folder){
 			
-			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\">"+
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">" + 
+			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">"+
+				"<a href=\"javascript:void(0)\">" + 
 				one.name + "</a>"+
 				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
 				one.id+"','"+one.name+"')\"></i>"+

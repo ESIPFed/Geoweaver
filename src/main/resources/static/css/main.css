@@ -134,7 +134,7 @@ form .progress {
   cursor: pointer;
   /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 14px;
+  font-size: 18px;
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 20px;
@@ -181,7 +181,7 @@ form .progress {
   cursor: pointer;
   /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 16px;
+  font-size: 18px;
   
   padding-top: 8px;
   padding-bottom: 8px;
@@ -202,7 +202,7 @@ form .progress {
 
 .toptoolbarbtn {
 
-  font-family: "Lato"; 
+  font-family: Roboto,sans-serif;
   text-align: center; 
   transition: all 0.3s ease;
   color: rgb(0, 0, 0);
@@ -216,7 +216,7 @@ form .progress {
 
   float: right;
   margin-right: 30px;
-  font-family: "Lato";
+  font-family: Roboto,sans-serif;
 }
 
 /**

@@ -1281,11 +1281,11 @@ GW.workflow = {
 
 		if(one.name=="") one.name = "null"
 		
-		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
+		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + 
 				
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\"> " + 
-	    		
-				one.name + "</a> "+
+				"\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">"+
+				
+				"<a href=\"javascript:void(0)\"> " + one.name + "</a> "+
 				
 //				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
 //	        	

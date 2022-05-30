@@ -1,7 +1,7 @@
 .nav-side-menu {
   overflow-y: scroll;
-  font-family: verdana;
-  font-size: 12px;
+  font-family: Roboto,sans-serif;
+  font-size: 18px;
   font-weight: 200;
   background-color: white;
   /* position: fixed; */
@@ -17,7 +17,7 @@
   line-height: 50px;
   display: block;
   text-align: center;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .small-height {
@@ -98,8 +98,6 @@
 
 .nav-side-menu li {
   padding-left: 0px;
-  border-left: 3px solid #2e353d;
-  border-bottom: 1px solid #23282e;
   background-color: white;
 }
 .nav-side-menu li a {
@@ -112,7 +110,6 @@
   padding-right: 20px;
 }
 .nav-side-menu li:hover {
-  border-left: 3px solid #d19b3d;
   background-color: #999;
   color: white;
   -webkit-transition: all 1s ease;
