@@ -105,7 +105,7 @@
 		
 			<!-- Top menu bar -->
 			
-			<div class="row"  style="height: 50px; margin: 0; padding: 0; background-color:rgb(216, 34, 34);">
+			<div class="row"  style="height: 50px; margin: 0; padding: 0; ">
 				
 				<div class="tab" data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: hidden;" >
 				  <a  style="float: left; width: 75px;text-align: center; vertical-align: center; margin:5px 5px; transition: all 0.3s ease;background-color:rgb(255, 255, 255); " href="javascript:void(0)">
@@ -137,19 +137,6 @@
 					Workflow
 				  </button>
 				  
-				  
-				  
-
-				  <!-- <div class="tab" data-intro="You can click on these tabs to switch among views of different type of resources">
-					<button class="tablinks " id="main-general-tab" onclick="openCity(event, 'main-general')">Welcome</button>
-					<button class="tablinks " id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">Dashboard</button>
-					<button class="tablinks " id="main-host-tab" onclick="openCity(event, 'main-host-info')">Host</button>
-					<button class="tablinks " id="main-process-tab" onclick="openCity(event, 'main-process-info')">Process</button>
-					<button class="tablinks " id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">Workflow</button>
-					<button class="tablinks " id="main-workspace-tab" onclick="openCity(event, 'workspace')">Weaver</button>
-					<button class="tablinks " id="main-console-tab" onclick="openCity(event, 'main-console')">Console</button>
-				  </div> -->
-
 				  <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
 					<i title="login" class="fa fa-user fa-2x"></i>
 				  </button>
@@ -206,141 +193,133 @@
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
 			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
-				<div class="col col-sm-2 col-md-2 col-lg-2 small-height" id="sidemenu" style="height:calc(100%-50px); margin: 0;padding: 0;">
+				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100%-50px); margin: 0;padding: 0;">
 					
+					
+
 					<div class="nav-side-menu" >
-		
-					    
-					    <!-- <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i> -->
-					  	
-					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
-					  
-					            <ul id="menu-content" class="menu-content collapse out">
-					                <!-- <li>
-					                  <a href="javascript:void(0)">
-					                  <i class="fa fa-dashboard fa-lg"></i> Overview
-					                  </a>
-					                </li> -->
-					
-					                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
-					                  <a href="javascript:void(0)"><i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> Hosts <i class="fa fa-plus" id="newhost"></i> <span style="background-color:balack" data-toggle="collapse" data-target="#hosts" class="arrow collapsed "></span></a>  <!-- add active to see color side of host -->
-
-					                </li>
-					                <ul   class="sub-menu collapse" id="hosts">
-					                    <li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
-											<a href="javascript:void(0)">Linux/Win/Mac Computers</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
-										
-										<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
-											<a href="javascript:void(0)">Jupyter Notebook Server</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyter_target"></ul>
-										
-										<li class="jupyterhubserver folder " id="host_folder_jupyterhub" data-toggle="collapse" data-target="#host_folder_jupyterhub_target">
-											<a href="javascript:void(0)">Jupyter Hub</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyterhub_target"></ul>
-
-										<li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
-											<a href="javascript:void(0)">Jupyter Lab</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
-										
-										<!-- <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
-											<a href="javascript:void(0)">Google Earth Engine</a>
-									    </li>
-										<ul class="sub-menu collapse" id="host_folder_gee_target"></ul> -->
-					                </ul>
-					                
-					                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#proceses">
-					                  <a href="javascript:void(0)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
-					                </li>
-					                <ul class="sub-menu collapse" id="proceses">
-					                  
-					                  	<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
-											<a href="javascript:void(0)">Shell</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_shell_target"></ul>
-										
-										<li class="notebookfolder" id="process_folder_jupyter" data-toggle="collapse" data-target="#process_folder_jupyter_target">
-											<a href="javascript:void(0)">Notebook</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_jupyter_target"></ul>
-										
-										<li class="builtinfolder" id="process_folder_builtin" data-toggle="collapse" data-target="#process_folder_builtin_target">
-											<a href="javascript:void(0)">Builtin Process</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_builtin_target"></ul>
-										
-										<li class="pythonfolder" id="process_folder_python" data-toggle="collapse" data-target="#process_folder_python_target">
-											<a href="javascript:void(0)">Python</a>
-									    </li>
-										<ul class="sub-menu collapse" id="process_folder_python_target"></ul>
-					                  
-					                  
-					                </ul>
-					
-					
-					                <li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. "   data-toggle="collapse" data-target="#workflows">
-					                  <a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <!--<i class="fa fa-plus" id="newworkflow"></i>--> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
-					                </li>  
-					                <ul  class="sub-menu collapse" id="workflows">
-					                  
-					                </ul>
-									
-					
-					                <!-- <li>
-					                  <a href="javascript:void(0)">
-					                  <i class="fa fa-share fa-lg"></i> Share
-					                  </a>
-					                </li> -->
-									<li>
-										<a id="toolbar-search"  
-										data-toggle="tooltip" title="Search Process/Workflow/Hosts"
-										href="javascript:void(0)">
-											<i class="fa fa-search fa-lg" alt="search" ></i> Search
-										</a>
-									</li>
-
-									<li>
-										<a id="toolbar-history" 
-										data-toggle="tooltip" title="Process/Workflow History"
-										 href="javascript:void(0)">
-											<i class="fa fa-history fa-lg" alt="List the recent execution history"> </i> History
-										</a>
-									</li>
-									
-									<li>
-										<a id="toolbar-monitor" 
-										data-toggle="tooltip" title="Monitor Running Process/Workflow"
-										href="javascript:void(0)">
-											<i class="fa fa-film fa-lg" alt="monitor" > </i> Monitor
-										</a>
-
-									</li>
-				  
-									<li>
-										<a id="toolbar-settings" 
-										data-toggle="tooltip" title="Settings"
-										href="javascript:void(0)">
-											<i class="fa fa-cog fa-lg" alt="settings"  > </i> Settings
-										</a>
-
-									</li>
-
-									<li>
-					                  <a href="javascript:GW.tutorial.showDialog()">
-					                  	<i class="fa fa-book fa-lg"></i> Tutorial
-					                  </a>
-					                </li>
 						
-					                <li>
-					                  <a href="javascript:GW.about.showDialog()">
-					                  <i class="fa fa-info fa-lg"></i> About
-					                  </a>
-					                </li>
-					            </ul>
+					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
+							
+							<ul id="menu-content" class="menu-content collapse out">
+								
+								<li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
+									<a href="javascript:void(0)">
+										<i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i> 
+										Hosts 
+										<i class="fa fa-plus" id="newhost"></i>
+										<i class="fa fa-arrow-down" data-toggle="collapse" data-target="#hosts" ></i>
+									</a>
+								</li>
+								<ul   class="sub-menu collapse" id="hosts">
+									<li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
+										<a href="javascript:void(0)">Linux/Win/Mac Computers</a>
+									</li>
+									<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
+									
+									<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
+										<a href="javascript:void(0)">Jupyter Notebook Server</a>
+									</li>
+									<ul class="sub-menu collapse" id="host_folder_jupyter_target"></ul>
+									
+									<li class="jupyterhubserver folder " id="host_folder_jupyterhub" data-toggle="collapse" data-target="#host_folder_jupyterhub_target">
+										<a href="javascript:void(0)">Jupyter Hub</a>
+									</li>
+									<ul class="sub-menu collapse" id="host_folder_jupyterhub_target"></ul>
+
+									<li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
+										<a href="javascript:void(0)">Jupyter Lab</a>
+									</li>
+									<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
+									
+									<!-- <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
+										<a href="javascript:void(0)">Google Earth Engine</a>
+									</li>
+									<ul class="sub-menu collapse" id="host_folder_gee_target"></ul> -->
+								</ul>
+								
+								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#proceses">
+									<a href="javascript:void(0)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i> Process <i class="fa fa-plus" id="newprocess"></i> <span data-toggle="collapse" data-target="#processs" class="arrow collapsed"></span></a>
+								</li>
+								<ul class="sub-menu collapse" id="proceses">
+									
+									<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
+										<a href="javascript:void(0)">Shell</a>
+									</li>
+									<ul class="sub-menu collapse" id="process_folder_shell_target"></ul>
+									
+									<li class="notebookfolder" id="process_folder_jupyter" data-toggle="collapse" data-target="#process_folder_jupyter_target">
+										<a href="javascript:void(0)">Notebook</a>
+									</li>
+									<ul class="sub-menu collapse" id="process_folder_jupyter_target"></ul>
+									
+									<li class="builtinfolder" id="process_folder_builtin" data-toggle="collapse" data-target="#process_folder_builtin_target">
+										<a href="javascript:void(0)">Builtin Process</a>
+									</li>
+									<ul class="sub-menu collapse" id="process_folder_builtin_target"></ul>
+									
+									<li class="pythonfolder" id="process_folder_python" data-toggle="collapse" data-target="#process_folder_python_target">
+										<a href="javascript:void(0)">Python</a>
+									</li>
+									<ul class="sub-menu collapse" id="process_folder_python_target"></ul>
+									
+									
+								</ul>
+				
+				
+								<li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. "   data-toggle="collapse" data-target="#workflows">
+									<a href="javascript:void(0)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i> Workflows <!--<i class="fa fa-plus" id="newworkflow"></i>--> <span data-toggle="collapse" data-target="#workflows" class="arrow collapsed"></span></a>
+								</li>  
+								<ul  class="sub-menu collapse" id="workflows">
+									
+								</ul>
+								
+								<li>
+									<a id="toolbar-search"  
+									data-toggle="tooltip" title="Search Process/Workflow/Hosts"
+									href="javascript:void(0)">
+										<i class="fa fa-search fa-lg" alt="search" ></i> Search
+									</a>
+								</li>
+
+								<li>
+									<a id="toolbar-history" 
+									data-toggle="tooltip" title="Process/Workflow History"
+										href="javascript:void(0)">
+										<i class="fa fa-history fa-lg" alt="List the recent execution history"> </i> History
+									</a>
+								</li>
+								
+								<li>
+									<a id="toolbar-monitor" 
+									data-toggle="tooltip" title="Monitor Running Process/Workflow"
+									href="javascript:void(0)">
+										<i class="fa fa-film fa-lg" alt="monitor" > </i> Monitor
+									</a>
+
+								</li>
+				
+								<li>
+									<a id="toolbar-settings" 
+									data-toggle="tooltip" title="Settings"
+									href="javascript:void(0)">
+										<i class="fa fa-cog fa-lg" alt="settings"  > </i> Settings
+									</a>
+
+								</li>
+
+								<li>
+									<a href="javascript:GW.tutorial.showDialog()">
+									<i class="fa fa-book fa-lg"></i> Tutorial
+									</a>
+								</li>
+					
+								<li>
+									<a href="javascript:GW.about.showDialog()">
+									<i class="fa fa-info fa-lg"></i> About
+									</a>
+								</li>
+							</ul>
 					            
 					     </div>
 					     
@@ -348,7 +327,7 @@
 				</div>
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-10" style="height:100%; margin: 0; padding:0;">
+			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
 					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;"> 
 						<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
 							<h1 style="color:rgb(38, 90, 139);text-align:center;font-family:'lato', sans-serif;font-size:80px">GEOWEAVER</h1>

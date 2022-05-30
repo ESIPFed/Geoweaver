@@ -1699,17 +1699,9 @@ GW.process = {
 			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\">"+
 				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">" + 
 				one.name + "</a>"+
-//				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
-//				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
 				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
 				one.id+"','"+one.name+"')\"></i>"+
-//				"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
-//				one.id+"','process')\"></i>"+
-//				"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
-//				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i>"+
-//				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
-//				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i>"+
-			" </li>";
+				" </li>";
 			
 			if(folder!=null){
 				
@@ -1717,8 +1709,7 @@ GW.process = {
 				
 				if(!folder_ul.length){
 					
-					$("#"+GW.menu.getPanelIdByType("process"))
-						.append("<li class=\"folder\" id=\"process_folder_"+ folder +
+					$("#"+GW.menu.getPanelIdByType("process")).append("<li class=\"folder\" id=\"process_folder_"+ folder +
 						"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
 					    " <a href=\"javascript:void(0)\"> "+ folder +" </a>"+
 					    " </li>"+
