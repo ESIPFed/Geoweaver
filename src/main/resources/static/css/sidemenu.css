@@ -224,13 +224,13 @@
 
 .host:before {
   font-family: "Font Awesome 5 Free";
-  content: "\f233";
-  display: inline-block;
+  content: "\f1211";
+  display: inline-block; 
+  vertical-align: middle;
+  color: black;
+  font-weight: 900;
   padding-left: 30px;
   padding-right: 10px;
-  vertical-align: middle;
-  font-weight: 900;
-  color: black;
 }
 
 .process:before {
