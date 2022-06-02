@@ -1696,12 +1696,14 @@ GW.process = {
 		 */
 		addMenuItem: function(one, folder){
 			
-			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">"+
-				"<a href=\"javascript:void(0)\">" + 
-				one.name + "</a>"+
-				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
-				one.id+"','"+one.name+"')\"></i>"+
-				" </li>";
+			var menuItem = `<li class="process" id="process-${one.id}" 
+								onclick="var event = arguments[0] || window.event; event.stopPropagation();
+								GW.menu.details('${one.id}', 'process')">
+								<a href="javascript:void(0)">${one.name}</a>
+								<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" 
+									onclick="var event = arguments[0] || window.event; event.stopPropagation();
+									GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
+							</li>`;
 			
 			if(folder!=null){
 				
