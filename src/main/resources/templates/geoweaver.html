@@ -106,11 +106,12 @@
 			<!-- Top menu bar -->
 			
 			<div class="row"  style="height: 50px; margin: 0; padding: 0; ">
+
+				<div  style="padding:0; padding-top:10px; margin:0; text-align: center; height:100%;" class="col-md-3" href="javascript:void(0)">
+					<img src="../img/header.png" style="vertical-align: middle; " width="35px" height="35px"/>
+				</div>
 				
-				<div class="tab" data-intro="Top Bar contains button for managing the host/process/workflow in GeoWeaver database" style="overflow: hidden;" >
-				  <a  style="float: left; width: 75px;text-align: center; vertical-align: center; margin:5px 5px; transition: all 0.3s ease;background-color:rgb(255, 255, 255); " href="javascript:void(0)">
-				  	<img src="../img/header.png" width="35px" height="35px"/>
-				  </a>
+				<div class="tab col-md-9"  style="overflow: hidden; padding:0; margin:0;" >
 				  
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-general')" >
 					Home
@@ -127,26 +128,23 @@
 				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
 					Documentation
 				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >
-					Host
+				  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >X
 				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >
-					Process
+				  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >X
 				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >
-					Workflow
+				  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >X
 				  </button>
 				  
 				  <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
 					<i title="login" class="fa fa-user fa-2x"></i>
 				  </button>
 
-				  <button class="loginbtn toptoolbarbtn pull-right" id="toolbar-loginout-a">
+				  <!-- <button class="loginbtn toptoolbarbtn pull-right" id="toolbar-loginout-a">
 					<a title="source code" target="_blank" href="http://github.com/ESIPFed/Geoweaver"> <i class="fab fa-github fa-2x"></i></a>
-				  </button>
+				  </button> -->
 				  
 				  <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
-					<i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile"> Welcome</i>
+					<i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile">Hi, </i>
 				  </button>
 
 

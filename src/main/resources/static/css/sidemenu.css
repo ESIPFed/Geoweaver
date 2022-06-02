@@ -108,6 +108,9 @@
 .nav-side-menu li a {
   text-decoration: none;
   color: black;
+  width: -webkit-calc(100% - 100px);
+  width:    -moz-calc(100% - 100px);
+  width:         calc(100% - 100px);
 }
 .nav-side-menu li a i {
   padding-left: 10px;
