@@ -1699,10 +1699,14 @@ GW.process = {
 			var menuItem = `<li class="process" id="process-${one.id}" 
 								onclick="var event = arguments[0] || window.event; event.stopPropagation();
 								GW.menu.details('${one.id}', 'process')">
-								<a href="javascript:void(0)">${one.name}</a>
-								<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" 
-									onclick="var event = arguments[0] || window.event; event.stopPropagation();
-									GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
+								<div class="row bare-window">
+									<div class="col-md-9 bare-window"><span style="word-wrap:break-word;">&nbsp;&nbsp;&nbsp;${one.name}</span></div>
+									<div class="col-md-3 bare-window">
+										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" 
+										onclick="var event = arguments[0] || window.event; event.stopPropagation();
+										GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
+									</div>
+								</div>
 							</li>`;
 			
 			if(folder!=null){

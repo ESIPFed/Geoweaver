@@ -281,47 +281,58 @@
 									
 								</ul>
 								
-								<li id="toolbar-search">
-									<a data-toggle="tooltip" title="Search Process/Workflow/Hosts"
-									href="javascript:void(0)">
-										<i class="fa fa-search fa-lg" alt="search" ></i>&nbsp;&nbsp;&nbsp;Search
+
+								<li data-intro="All the other tools"   data-toggle="collapse" data-target="#tools">
+									<a href="javascript:void(0)">
+										<i class="fa fa-cogs fa-lg"  data-toggle="tooltip" ></i>&nbsp;&nbsp;&nbsp;Tools 
+										<!--<i class="fa fa-plus" id="newworkflow"></i>--> 
+										<i data-toggle="collapse" data-target="#tools" class="fas fa-caret-down pull-right"></i>
 									</a>
 								</li>
-
-								<li id="toolbar-history" >
-									<a data-toggle="tooltip" title="Process/Workflow History"
+								<ul  class="sub-menu collapse" id="tools" style="margin-left:30px;">
+									<li id="toolbar-search">
+										<a data-toggle="tooltip" title="Search Process/Workflow/Hosts"
 										href="javascript:void(0)">
-										<i class="fa fa-history fa-lg" alt="List the recent execution history"> </i>&nbsp;&nbsp;&nbsp;History
-									</a>
-								</li>
-								
-								<li id="toolbar-monitor">
-									<a data-toggle="tooltip" title="Monitor Running Process/Workflow"
-									href="javascript:void(0)">
-										<i class="fa fa-film fa-lg" alt="monitor" > </i>&nbsp;&nbsp;&nbsp;Monitor
-									</a>
-
-								</li>
-				
-								<li id="toolbar-settings">
-									<a data-toggle="tooltip" title="Settings"
-									href="javascript:void(0)">
-										<i class="fa fa-cog fa-lg" alt="settings"  > </i>&nbsp;&nbsp;&nbsp;Settings
-									</a>
-
-								</li>
-
-								<li onclick="GW.tutorial.showDialog()">
-									<a >
-									<i class="fa fa-book fa-lg"></i>&nbsp;&nbsp;&nbsp;Tutorial
-									</a>
-								</li>
+											<i class="fa fa-search fa-lg" alt="search" ></i>&nbsp;&nbsp;&nbsp;Search
+										</a>
+									</li>
+	
+									<li id="toolbar-history" >
+										<a data-toggle="tooltip" title="Process/Workflow History"
+											href="javascript:void(0)">
+											<i class="fa fa-history fa-lg" alt="List the recent execution history"> </i>&nbsp;&nbsp;&nbsp;History
+										</a>
+									</li>
+									
+									<li id="toolbar-monitor">
+										<a data-toggle="tooltip" title="Monitor Running Process/Workflow"
+										href="javascript:void(0)">
+											<i class="fa fa-film fa-lg" alt="monitor" > </i>&nbsp;&nbsp;&nbsp;Monitor
+										</a>
+	
+									</li>
 					
-								<li onclick="GW.about.showDialog()">
-									<a >
-									<i class="fa fa-info fa-lg"></i>&nbsp;&nbsp;&nbsp;About
-									</a>
-								</li>
+									<li id="toolbar-settings">
+										<a data-toggle="tooltip" title="Settings"
+										href="javascript:void(0)">
+											<i class="fa fa-cog fa-lg" alt="settings"  > </i>&nbsp;&nbsp;&nbsp;Settings
+										</a>
+	
+									</li>
+	
+									<li onclick="GW.tutorial.showDialog()">
+										<a >
+										<i class="fa fa-book fa-lg"></i>&nbsp;&nbsp;&nbsp;Tutorial
+										</a>
+									</li>
+						
+									<li onclick="GW.about.showDialog()">
+										<a >
+										<i class="fa fa-info fa-lg"></i>&nbsp;&nbsp;&nbsp;About
+										</a>
+									</li>
+								</ul>
+								
 							</ul>
 
 					            
