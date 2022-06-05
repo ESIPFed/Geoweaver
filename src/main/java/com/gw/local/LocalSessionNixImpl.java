@@ -198,6 +198,8 @@ public class LocalSessionNixImpl implements LocalSession {
             thread.start();
 
 			if(isjoin) process.waitFor();
+
+			process.exitValue();
             
             log.info("returning to the client..");
     		
@@ -608,7 +610,6 @@ public class LocalSessionNixImpl implements LocalSession {
 
 	@Override
 	public boolean isClose() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
