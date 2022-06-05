@@ -184,13 +184,15 @@ public class LocalSessionNixImpl implements LocalSession {
             
             thread.start();
 
+			sender.setProcess(process);
+
 			if(isjoin){
 
 				process.waitFor();
 
-				sender.endWithCode(token, process.exitValue());
-
 			}
+
+			
 
             log.info("returning to the client..");
     		
@@ -266,13 +268,14 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
+			sender.setProcess(process);
+
 			if(isjoin){
 
 				process.waitFor();
 
-				sender.endWithCode(token, process.exitValue());
-
 			}
+
             
 		} catch (Exception e) {
 			
@@ -334,16 +337,17 @@ public class LocalSessionNixImpl implements LocalSession {
             
             thread.start();
             
+			sender.setProcess(process);
+			
             log.info("returning to the client..");
             
 			if(isjoin){
 
 				process.waitFor();
 
-				sender.endWithCode(token, process.exitValue());
-
 			}
-            
+
+			
 		} catch (Exception e) {
 			
 			e.printStackTrace();
