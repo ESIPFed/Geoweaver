@@ -960,7 +960,7 @@ GW.host = {
 		
 		$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 				
-			"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
+			"\" onclick=\"GW.menu.details('"+one.id+"', 'host')\"> <a href=\"javascript:void(0)\" >" + 
 				
 			one.name + "</a> "+
 			

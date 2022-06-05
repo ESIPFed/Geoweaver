@@ -100,7 +100,8 @@ GW.board = {
 
             var second_splitter = (max_value-min_value)*2/3 + min_value;second_splitter = Number(second_splitter).toFixed();
 
-            GW.board.time_cost_chart.data.labels = [min_value + " - " + first_splitter + " ms", first_splitter + " - " + second_splitter + " ms", second_splitter + " - " + max_value + " ms"]
+            GW.board.time_cost_chart.data.labels = [min_value + " - " + first_splitter + " ms", first_splitter + 
+                                                    " - " + second_splitter + " ms", second_splitter + " - " + max_value + " ms"]
 
             GW.board.time_cost_chart.data.datasets[0].data = GW.board.calculateFrequency(time_costs, first_splitter, second_splitter);
 
@@ -252,8 +253,6 @@ GW.board = {
 
         //list the number of hosts, processes, and workflows
         cont += '<div class="row" style="margin:0;">'+
-
-        
         '   <div class="col-md-4" style="padding:5px;">'+
         '       <div class="panel panel-info">'+
         '           <div class="panel-heading">'+
@@ -284,16 +283,6 @@ GW.board = {
         '           </ul></div>'+
         '       </div>'+
         '   </div>'+
-
-
-    //     <div class="panel-heading">
-    //     <h3 class="panel-title">Panel title</h3>
-    //   </div>
-    //   <div class="panel-body">
-    //     Panel content
-    //   </div>
-    
-        
         '   <div class="col-md-4" style="padding:5px;">'+
         '       <div class="panel panel-warning">'+
         '           <div class="panel-heading">'+
