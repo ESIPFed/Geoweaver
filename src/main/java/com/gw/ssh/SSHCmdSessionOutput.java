@@ -73,11 +73,40 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     }
 
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, String history_id, int exitvalue){
+
+		History h = ht.getHistoryById(history_id); 
+		
+		if(exitvalue == 0){
+			
+			h.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			h.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		ht.saveHistory(h);
+
+        log.info("Exit code: " + exitvalue);
+
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
+	}
+
 	public void updateStatus(String logs, String status){
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -89,7 +118,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
 				|| ExecutionStatus.STOPPED.equals(status)){
 
-			h.setHistory_end_time(bt.getCurrentSQLDate());
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 		}
 
@@ -126,7 +155,7 @@ public class SSHCmdSessionOutput  implements Runnable {
         // while (run) {
 			
 		try {
-			
+
 			while ((line = in.readLine())!=null){
 				
 				// readLine will block if nothing to send
@@ -136,7 +165,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 				linenumber++;
 				
 				//when detected the command is finished, end this process
-				if(bt.isNull(line)) {
+				if(BaseTool.isNull(line)) {
 					
 					//if ten consective output lines are null, break this loop
 					
@@ -151,7 +180,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 							
 							log.debug("null output lines exceed 10. Disconnected.");
 							
-							this.updateStatus(logs.toString(), "Done");
+							// this.updateStatus(logs.toString(), "Done");
 							
 							break;
 							
@@ -170,8 +199,12 @@ public class SSHCmdSessionOutput  implements Runnable {
 				log.info("command thread output >> " + line);
 				
 				logs.append(line).append("\n");
+
+				if(linenumber%1==0){
+					this.updateStatus(logs.toString(), "Running");
+				}
 				
-				if(!bt.isNull(wsout) && wsout.isOpen()) {
+				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 					
 					if(prelog.toString()!=null) {
 						
@@ -191,8 +224,8 @@ public class SSHCmdSessionOutput  implements Runnable {
 				
 			}
 
-			this.updateStatus(logs.toString(), "Done");
-					
+			// this.updateStatus(logs.toString(), "Done");
+			
 			sendMessage2WebSocket("The process "+this.history_id+" is finished.");
 			
 
@@ -217,7 +250,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 	public void sendMessage2WebSocket(String msg){
 
-		if(!bt.isNull(wsout)){
+		if(!BaseTool.isNull(wsout)){
 		
 			synchronized(wsout){
 

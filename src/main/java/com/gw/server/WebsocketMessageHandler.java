@@ -69,7 +69,7 @@ public class WebsocketMessageHandler implements MessageHandler.Whole<String>{
 				}
 				
 				
-//	            	if(!bt.isNull(window)) {
+//	            	if(!BaseTool.isNull(window)) {
 //	            		
 //	            		window.writeServerMessage(message);
 //	            		

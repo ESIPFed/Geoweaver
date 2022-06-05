@@ -253,7 +253,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //	                	
 ////		                	logger.debug("send this message back to the client");
 //		                	
-//		                	if(!bt.isNull(jssession) && jssession.isOpen()) {
+//		                	if(!BaseTool.isNull(jssession) && jssession.isOpen()) {
 //		                		
 //		                		jssession.getBasicRemote().sendText(message);
 //		                		
@@ -266,7 +266,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 //		                	}
 //		                	
 //		                	
-////		                	if(!bt.isNull(window)) {
+////		                	if(!BaseTool.isNull(window)) {
 ////		                		
 ////		                		window.writeServerMessage(message);
 ////		                		
@@ -295,7 +295,7 @@ public class Java2JupyterClientEndpoint extends Endpoint
 	    	
 	    	SessionPair pair = JupyterSessionPairTool.findPairByID(this.pairid);
 	    	
-	    	if(!bt.isNull(pair)) {
+	    	if(!BaseTool.isNull(pair)) {
 	    		
 				pair.getBrowse_geoweaver_session().close();
 				pair.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().close();
@@ -325,10 +325,10 @@ public class Java2JupyterClientEndpoint extends Endpoint
      */
     public void sendMessage(String message) {
     	
-//    	if(!bt.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
+//    	if(!BaseTool.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
 //    	SessionPair pair = JupyterRedirectServlet.findPairBy2ndSession(this);
     	
-    	if(!bt.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
+    	if(!BaseTool.isNull(this.new_ws_session_between_geoweaver_and_jupyterserver)) {
     		
         	synchronized(new_ws_session_between_geoweaver_and_jupyterserver) {
             	

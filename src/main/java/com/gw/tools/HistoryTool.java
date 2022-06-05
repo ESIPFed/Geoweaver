@@ -83,7 +83,7 @@ public class HistoryTool {
 		
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 		
 		history.setHistory_input(script);
 		
@@ -149,7 +149,7 @@ public class HistoryTool {
 	 */
 	public void saveHistory(History history) {
 
-		if(bt.isNull(history.getIndicator())){
+		if(BaseTool.isNull(history.getIndicator())){
 
 			logger.error("This indicator shouldn't be null at all");
 		}
@@ -183,7 +183,7 @@ public class HistoryTool {
 		
 		String resp = null;
 		
-		if(!bt.isNull(code))
+		if(!BaseTool.isNull(code))
 		
 			resp = code.replaceAll("\\\\", "\\\\\\\\")
 					.replaceAll("\"", "\\\\\"")
@@ -380,7 +380,7 @@ public class HistoryTool {
 				
 				History h = hisint.next();
 
-				if(bt.isNull(h.getHistory_notes())){
+				if(BaseTool.isNull(h.getHistory_notes())){
 
 					idlist.append(h.getHistory_id()).append(",");
 
@@ -436,7 +436,7 @@ public class HistoryTool {
 			
 			h.setHistory_id(new RandomString(12).nextString());
 			
-			h.setHistory_begin_time(bt.getCurrentSQLDate());
+			h.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 			
 			h.setHistory_input(headers.get("referer").get(0));
 			
@@ -497,7 +497,7 @@ public class HistoryTool {
 			
 			// sql.append(history_id).append("';");
 
-			oldh.setHistory_end_time(bt.getCurrentSQLDate());
+			oldh.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 			oldh.setIndicator("Stopped");
 

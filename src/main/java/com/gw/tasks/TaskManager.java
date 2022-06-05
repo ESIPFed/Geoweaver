@@ -202,7 +202,7 @@ public class TaskManager {
 
 		List prehistoryid = thet.getPreconditionProcesses();
 
-		if(!bt.isNull(prehistoryid) && prehistoryid.size()>0){
+		if(!BaseTool.isNull(prehistoryid) && prehistoryid.size()>0){
 
 			int check = 0;
 
@@ -214,7 +214,7 @@ public class TaskManager {
 
 					String current_status = ho.get().getIndicator();
 
-					if(bt.isNull(current_status) || current_status.equals(ExecutionStatus.RUNNING) || current_status.equals(ExecutionStatus.READY)){
+					if(BaseTool.isNull(current_status) || current_status.equals(ExecutionStatus.RUNNING) || current_status.equals(ExecutionStatus.READY)){
 			
 						check = 1;
 						break;

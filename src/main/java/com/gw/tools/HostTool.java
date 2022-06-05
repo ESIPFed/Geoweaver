@@ -285,7 +285,7 @@ public class HostTool {
 		
 		Host h = new Host();
 
-		if(bt.isNull(owner)) owner = "111111"; //default to be the public user
+		if(BaseTool.isNull(owner)) owner = "111111"; //default to be the public user
 		
 		h.setId(newhostid);
 		h.setIp(hostip);
@@ -360,20 +360,20 @@ public class HostTool {
 			
 			h.setName(hostname);
 			
-			if(!bt.isNull(hostip)) h.setIp(hostip);
+			if(!BaseTool.isNull(hostip)) h.setIp(hostip);
 			
-			if(!bt.isNull(hostport)) h.setPort(hostport);
+			if(!BaseTool.isNull(hostport)) h.setPort(hostport);
 			
-			if(!bt.isNull(username)) h.setUsername(username);
+			if(!BaseTool.isNull(username)) h.setUsername(username);
 			
-			if(!bt.isNull(type)) h.setType(type);
+			if(!BaseTool.isNull(type)) h.setType(type);
 			
 			
-			if(!bt.isNull(owner)) h.setOwner(owner);
+			if(!BaseTool.isNull(owner)) h.setOwner(owner);
 			
-			if(!bt.isNull(url)) h.setUrl(url);
+			if(!BaseTool.isNull(url)) h.setUrl(url);
 
-			if(!bt.isNull(confidential)) h.setConfidential(confidential);
+			if(!BaseTool.isNull(confidential)) h.setConfidential(confidential);
 			
 			hostrepository.save(h);
 			

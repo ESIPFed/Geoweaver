@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import javax.websocket.Session;
 
 import com.gw.database.HistoryRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
@@ -77,7 +78,7 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void sendMessage2WebSocket(String msg){
 
-		if(!bt.isNull(wsout)){
+		if(!BaseTool.isNull(wsout)){
 
 			synchronized(wsout){
 
@@ -108,7 +109,7 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void refreshLogMonitor(){
 
-		if(bt.isNull(wsout) || !wsout.isOpen()){
+		if(BaseTool.isNull(wsout) || !wsout.isOpen()){
 
 			wsout = CommandServlet.findSessionById(token);
 			
@@ -122,11 +123,41 @@ public class LocalSessionOutput  implements Runnable{
 			
 	}
 
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, int exitvalue){
+
+		this.stop();
+		
+		//get the latest history
+		History h = ht.getHistoryById(this.history_id); 
+		
+		if(exitvalue == 0){
+			
+			h.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			h.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		ht.saveHistory(h);
+		
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
+	}
+
 	public void updateJupyterStatus(String logs, String status){
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -146,7 +177,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		if("Done".equals(status) || "Failed".equals(status)){
 
-			h.setHistory_end_time(bt.getCurrentSQLDate());
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 		}
 
@@ -158,7 +189,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -174,7 +205,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		if("Done".equals(status) || "Failed".equals(status)){
 
-			h.setHistory_end_time(bt.getCurrentSQLDate());
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 		}
 
@@ -213,7 +244,7 @@ public class LocalSessionOutput  implements Runnable{
 					
 					// readLine will block if nothing to send
 					
-					if(bt.isNull(in)) { 
+					if(BaseTool.isNull(in)) { 
 					
 						log.debug("Local Session Output Reader is close prematurely.");
 						
@@ -224,7 +255,7 @@ public class LocalSessionOutput  implements Runnable{
 					linenumber++;
 					
 					//when detected the command is finished, end this process
-					if(bt.isNull(line)) {
+					if(BaseTool.isNull(line)) {
 						
 						//if ten consective output lines are null, break this loop
 						if(startrecorder==-1) 
@@ -262,21 +293,13 @@ public class LocalSessionOutput  implements Runnable{
 						
 					}else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
 						
-	//                	session.saveHistory(logs.toString()); //complete the record
-						
-						// this.updateStatus(logs.toString(), "Done");
-						
-						// sendMessage2WebSocket("The process "+history_id+" is finished.");
-							
-						// break;
-						
 					}else {
 						
 						log.info("Local thread output >> " + line);
 						
 						logs.append(line).append("\n");
 						
-						if(!bt.isNull(wsout) && wsout.isOpen()) {
+						if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 							
 							if(prelog.toString()!=null) {
 								
