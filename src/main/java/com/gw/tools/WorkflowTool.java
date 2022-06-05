@@ -84,7 +84,7 @@ public class WorkflowTool {
         	
         	History phis = hisopt.isPresent()? hisopt.get():null;
         	
-			if(!bt.isNull(phis))
+			if(!BaseTool.isNull(phis))
 				tm.stopTask(phis.getHistory_id());
         	
         }
@@ -270,19 +270,19 @@ public class WorkflowTool {
 
 		Workflow wold = this.getById(w.getId());
 
-		if(!bt.isNull(wold)){
+		if(!BaseTool.isNull(wold)){
 
-			if(bt.isNull(w.getName())) w.setName(wold.getName());
+			if(BaseTool.isNull(w.getName())) w.setName(wold.getName());
 
-			if(bt.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
+			if(BaseTool.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
 
-			if(bt.isNull(w.getDescription())) w.setDescription(wold.getDescription());
+			if(BaseTool.isNull(w.getDescription())) w.setDescription(wold.getDescription());
 
-			if(bt.isNull(w.getEdges())) w.setEdges(wold.getEdges());
+			if(BaseTool.isNull(w.getEdges())) w.setEdges(wold.getEdges());
 
-			if(bt.isNull(w.getNodes())) w.setNodes(wold.getNodes());
+			if(BaseTool.isNull(w.getNodes())) w.setNodes(wold.getNodes());
 
-			if(bt.isNull(w.getOwner())) w.setOwner(wold.getOwner());
+			if(BaseTool.isNull(w.getOwner())) w.setOwner(wold.getOwner());
 
 		}
 
@@ -776,7 +776,7 @@ public class WorkflowTool {
 				String historyfolder = workflowFolderPath + "history";
 
 				// If the read workflowjson is not valid, return invalid workflow package, cause the workflowjson is required
-				if (!bt.isNull(workflowjson)) {
+				if (!BaseTool.isNull(workflowjson)) {
 
 					if (new File(codefolder).exists()) {
 

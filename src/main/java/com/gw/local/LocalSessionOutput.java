@@ -77,7 +77,7 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void sendMessage2WebSocket(String msg){
 
-		if(!bt.isNull(wsout)){
+		if(!BaseTool.isNull(wsout)){
 
 			synchronized(wsout){
 
@@ -108,7 +108,7 @@ public class LocalSessionOutput  implements Runnable{
 
 	public void refreshLogMonitor(){
 
-		if(bt.isNull(wsout) || !wsout.isOpen()){
+		if(BaseTool.isNull(wsout) || !wsout.isOpen()){
 
 			wsout = CommandServlet.findSessionById(token);
 			
@@ -126,7 +126,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -158,7 +158,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -213,7 +213,7 @@ public class LocalSessionOutput  implements Runnable{
 					
 					// readLine will block if nothing to send
 					
-					if(bt.isNull(in)) { 
+					if(BaseTool.isNull(in)) { 
 					
 						log.debug("Local Session Output Reader is close prematurely.");
 						
@@ -224,7 +224,7 @@ public class LocalSessionOutput  implements Runnable{
 					linenumber++;
 					
 					//when detected the command is finished, end this process
-					if(bt.isNull(line)) {
+					if(BaseTool.isNull(line)) {
 						
 						//if ten consective output lines are null, break this loop
 						if(startrecorder==-1) 
@@ -276,7 +276,7 @@ public class LocalSessionOutput  implements Runnable{
 						
 						logs.append(line).append("\n");
 						
-						if(!bt.isNull(wsout) && wsout.isOpen()) {
+						if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 							
 							if(prelog.toString()!=null) {
 								

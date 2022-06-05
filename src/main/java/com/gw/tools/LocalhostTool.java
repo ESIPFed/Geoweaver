@@ -72,7 +72,7 @@ public class LocalhostTool {
 
 		History history = histool.getHistoryById(history_id);
 
-		if(bt.isNull(history)){
+		if(BaseTool.isNull(history)){
 
 			history = new History();
 
@@ -241,7 +241,7 @@ public class LocalhostTool {
 			
 			// javax.websocket.Session ws = CommandServlet.findSessionById(token);
 			
-			// if(!bt.isNull(ws)) t.startMonitor(ws);
+			// if(!BaseTool.isNull(ws)) t.startMonitor(ws);
 			
 			// if(isjoin) {
 			

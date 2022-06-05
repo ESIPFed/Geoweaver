@@ -120,26 +120,6 @@ public class LocalSessionNixImpl implements LocalSession {
 	 */
 	public void endWithError(String token, String message) {
 		
-		try {
-			
-			Session wsout = CommandServlet.findSessionById(token);
-			
-			if(!bt.isNull(wsout) && wsout.isOpen() ) {
-				
-				log.info("The failed message has been sent to client");
-				if(!bt.isNull(message))
-					wsout.getBasicRemote().sendText(message);
-				
-				wsout.getBasicRemote().sendText("The process " + this.history.getHistory_id() + " is stopped.");
-				
-			}
-			
-		} catch (IOException e1) {
-			
-			e1.printStackTrace();
-			
-		}
-		
 		this.stop();
 		
 		this.history.setHistory_end_time(bt.getCurrentSQLDate());
@@ -152,6 +132,11 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		this.isClose = true;
 		
+		if(!BaseTool.isNull(message))
+		CommandServlet.sendMessageToSocket(token, message);
+	
+		CommandServlet.sendMessageToSocket(token, "The process " + this.history.getHistory_id() + " is stopped.");
+	
 	}
     
 	@Override
@@ -197,7 +182,7 @@ public class LocalSessionNixImpl implements LocalSession {
             
             thread.start();
 
-			if(isjoin) process.waitFor();
+			if(isjoin){ process.waitFor(); }
 
 			process.exitValue();
             
@@ -240,7 +225,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		builder.directory(new File(bt.normalizedPath(workspace_folder_path)+ "/" + history_id));
     		
-			if(bt.isNull(bin)){
+			if(BaseTool.isNull(bin)){
 			
 				builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--allow-errors", "--to", "notebook", "--execute", tempfile} );
 			
@@ -312,7 +297,7 @@ public class LocalSessionNixImpl implements LocalSession {
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
 
-			if(bt.isNull(bin)) bin = "python";
+			if(BaseTool.isNull(bin)) bin = "python";
     		
     		builder.command(new String[] {bin, pythonfilename} );
     		
@@ -418,7 +403,7 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 		try{
 
-			if(!bt.isNull(process)) process.destroy();
+			if(!BaseTool.isNull(process)) process.destroy();
 
 			return true;
 
@@ -456,7 +441,7 @@ public class LocalSessionNixImpl implements LocalSession {
 				//get all the python path
 				for(String line: stdout){
 
-					if(!bt.isNull(line)){
+					if(!BaseTool.isNull(line)){
 
 						if(line.startsWith("python")){
 
@@ -466,7 +451,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
 							for(String pypath : pythonarray){
 
-								if(!bt.isNull(pypath)){
+								if(!BaseTool.isNull(pypath)){
 				
 									pypath = pypath.trim();
 				
@@ -494,7 +479,7 @@ public class LocalSessionNixImpl implements LocalSession {
 				//get all the python path
 				for(String line: stdout){
 
-					if(!bt.isNull(line)){
+					if(!BaseTool.isNull(line)){
 
 						String pythonarraystr = line;
 
@@ -502,7 +487,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
 						for(String pypath : pythonarray){
 
-							if(!bt.isNull(pypath)){
+							if(!BaseTool.isNull(pypath)){
 			
 								pypath = pypath.trim();
 			
@@ -547,7 +532,7 @@ public class LocalSessionNixImpl implements LocalSession {
 				//get all the python path
 				for(String line: stdout){
 
-					if(!bt.isNull(line) && !line.startsWith("#")){
+					if(!BaseTool.isNull(line) && !line.startsWith("#")){
 
 						String[] vals = line.split("\\s+");
 
@@ -555,11 +540,11 @@ public class LocalSessionNixImpl implements LocalSession {
 
 						String bin = vals[vals.length-1]+"/bin/python";
 
-						String name = bt.isNull(vals[0])?bin:vals[0];
+						String name = BaseTool.isNull(vals[0])?bin:vals[0];
 
 						Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
 
-						if(bt.isNull(theenv)){
+						if(BaseTool.isNull(theenv)){
 
 							et.addNewEnvironment(bin, old_envlist, hostid, name);
 

@@ -77,7 +77,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 		History h = ht.getHistoryById(this.history_id);
 
-		if(bt.isNull(h)){
+		if(BaseTool.isNull(h)){
 
 			h = new History();
 
@@ -136,7 +136,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 				linenumber++;
 				
 				//when detected the command is finished, end this process
-				if(bt.isNull(line)) {
+				if(BaseTool.isNull(line)) {
 					
 					//if ten consective output lines are null, break this loop
 					
@@ -171,7 +171,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 				
 				logs.append(line).append("\n");
 				
-				if(!bt.isNull(wsout) && wsout.isOpen()) {
+				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 					
 					if(prelog.toString()!=null) {
 						
@@ -217,7 +217,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 	public void sendMessage2WebSocket(String msg){
 
-		if(!bt.isNull(wsout)){
+		if(!BaseTool.isNull(wsout)){
 		
 			synchronized(wsout){
 

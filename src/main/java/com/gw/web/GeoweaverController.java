@@ -318,14 +318,14 @@ public class GeoweaverController {
     @RequestMapping(value = "/reset_password", method = RequestMethod.GET)
     public String showResetPasswordForm(@Param(value = "token") String token, Model model) {
 
-        if(!bt.isNull(token)){
+        if(!BaseTool.isNull(token)){
 
             System.err.print(token);
             // User user = userService.getByResetPasswordToken(token);
             String userid = ut.token2userid.get(token);
             Date created_date = ut.token2date.get(token);
     
-            if(!bt.isNull(userid)){
+            if(!BaseTool.isNull(userid)){
     
                 long time_difference =  new Date().getTime() - created_date.getTime();
     
@@ -538,7 +538,7 @@ public class GeoweaverController {
 			
 			if(type.equals("process")) {
 				
-				if(bt.isNull(id)) {
+				if(BaseTool.isNull(id)) {
 					
 					if("true".equals(isactive)) {
 						
@@ -561,7 +561,7 @@ public class GeoweaverController {
 				
 			}else if(type.equals("workflow")) {
 				
-				if(bt.isNull(id)) {
+				if(BaseTool.isNull(id)) {
 					
 					if("true".equals(isactive)) {
 				
@@ -733,7 +733,7 @@ public class GeoweaverController {
 			
 			String init_path = request.getParameter("init_path");
 			
-			if(!bt.isNull(encrypted)) {
+			if(!BaseTool.isNull(encrypted)) {
 				
 				String password = RSAEncryptTool.getPassword(encrypted, session.getId());
 				
@@ -896,11 +896,11 @@ public class GeoweaverController {
 
 			String token = request.getParameter("token");
 
-			// if(bt.isNull(token)){
+			// if(BaseTool.isNull(token)){
 
 			// token = session.getId(); // the token from client is useless
 
-			String history_id = bt.isNull(request.getParameter("history_id"))? 
+			String history_id = BaseTool.isNull(request.getParameter("history_id"))? 
 				new RandomString(18).nextString(): request.getParameter("history_id");
 			
 			String[] hosts = request.getParameterValues("hosts[]");
@@ -993,7 +993,7 @@ public class GeoweaverController {
 			
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
 
-			String history_id = bt.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
+			String history_id = BaseTool.isNull(request.getParameter("history_id"))?new RandomString(12).nextString(): request.getParameter("history_id");
 
 			resp = ext.executeProcess(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 			
@@ -1277,7 +1277,7 @@ public class GeoweaverController {
 		
 		try {
 			
-			String ownerid = bt.isNull(np.getOwner())?"111111":np.getOwner();
+			String ownerid = BaseTool.isNull(np.getOwner())?"111111":np.getOwner();
 
 			np.setOwner(ownerid);
 
@@ -1310,7 +1310,7 @@ public class GeoweaverController {
 		
 		try {
 			
-			String ownerid = bt.isNull(h.getOwner())?"111111":h.getOwner();
+			String ownerid = BaseTool.isNull(h.getOwner())?"111111":h.getOwner();
 
 			h.setOwner(ownerid);
 
@@ -1343,7 +1343,7 @@ public class GeoweaverController {
 		try {
 			
 
-			String ownerid = bt.isNull(w.getOwner())?"111111":w.getOwner();
+			String ownerid = BaseTool.isNull(w.getOwner())?"111111":w.getOwner();
 
 			w.setOwner(ownerid);
 
@@ -1392,7 +1392,7 @@ public class GeoweaverController {
 
 				String confidential = request.getParameter("confidential");
 
-				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+				String ownerid = BaseTool.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 				
 				String hostid = ht.add(hostname, hostip, hostport,  username, url, hosttype, ownerid, confidential);
 				
@@ -1406,7 +1406,7 @@ public class GeoweaverController {
 				
 				String desc = request.getParameter("desc");
 
-				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+				String ownerid = BaseTool.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 
 				String confidential = request.getParameter("confidential");
 				
@@ -1464,7 +1464,7 @@ public class GeoweaverController {
 				
 				String edges = request.getParameter("edges");
 				
-				String ownerid = bt.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
+				String ownerid = BaseTool.isNull(request.getParameter("ownerid"))?"111111":request.getParameter("ownerid");
 
 				String wid = wt.add(name, nodes, edges, ownerid);
 				
@@ -1613,7 +1613,7 @@ public class GeoweaverController {
         	
         	String token = null;
         	
-        	if(bt.isNull(sessionManager.sshSessionByToken.get(host+"-"+username))) {
+        	if(BaseTool.isNull(sessionManager.sshSessionByToken.get(host+"-"+username))) {
         		
         		token = new RandomString(16).nextString();
             	
@@ -1662,7 +1662,7 @@ public class GeoweaverController {
     
     void checkID(String id) {
     	
-    	if(bt.isNull(id))
+    	if(BaseTool.isNull(id))
     		
     		throw new RuntimeException("No ID found");
     	

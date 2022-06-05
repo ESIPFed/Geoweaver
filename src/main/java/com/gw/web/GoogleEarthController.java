@@ -144,7 +144,7 @@ public class GoogleEarthController {
      * @return
      */
     String addURLProxy(String resp, String hostID) {
-        if (!bt.isNull(resp))
+        if (!BaseTool.isNull(resp))
             resp = resp.
                 replace("\"/images/GoogleEarthEngine_v1.png", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/images/GoogleEarthEngine_v1.png")
                 .replace("\"/javascript/polyfills/webcomponentsjs/webcomponents-loader.js", "\"/Geoweaver/GoogleEarth-proxy/"+hostID+"/javascript/polyfills/webcomponentsjs/webcomponents-loader.js")
@@ -235,7 +235,7 @@ public class GoogleEarthController {
 
 		List<String> cts = headers.get(key);
 
-		if (!bt.isNull(cts)) {
+		if (!BaseTool.isNull(cts)) {
 			contentType = cts.get(0);
 		}
 
@@ -439,7 +439,7 @@ public class GoogleEarthController {
 		
 		int bodylength = 0;
 
-		if(!bt.isNull(returnbody))
+		if(!BaseTool.isNull(returnbody))
 			bodylength = returnbody.length;
 
 		return updateHeader(oldheaders, bodylength, hostid);
@@ -459,7 +459,7 @@ public class GoogleEarthController {
 		
 		int bodylength = 0;
 
-		if(!bt.isNull(returnbody))
+		if(!BaseTool.isNull(returnbody))
 			try{
 				bodylength = returnbody.getBytes("UTF-8").length;
 
@@ -530,8 +530,8 @@ public class GoogleEarthController {
 				
 			byte[] newbody = null;
 			
-			if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
-			 && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+			if(!BaseTool.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			 && !(!BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
 				 
 				 newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
 
@@ -566,8 +566,8 @@ public class GoogleEarthController {
 
 			// byte[] newbody = null;
 
-			// if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
-			//  && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+			// if(!BaseTool.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			//  && !(!BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
 
 				// newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
 
@@ -613,13 +613,13 @@ public class GoogleEarthController {
 		    	
 // 		    	String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
 		    	
-// 		    	// if(bt.isNull(newbody)|| ( !bt.isNull(contenttype) && (contenttype.contains("image")
+// 		    	// if(BaseTool.isNull(newbody)|| ( !BaseTool.isNull(contenttype) && (contenttype.contains("image")
 // 				// 	|| contenttype.contains("font")) )) {
-// 				if( !bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font")) ) {
+// 				if( !BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font")) ) {
 // //			    	HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
 // //			    	
 // //			    	resp = new ResponseEntity<byte[]>(
-// //							bt.isNull(newbody)?null:newbody.getBytes("UTF-8"), 
+// //							BaseTool.isNull(newbody)?null:newbody.getBytes("UTF-8"), 
 // //				    		headers, 
 // //				    		responseEntity.getStatusCode());;
 // 		    		// find a way not send the same request twice just because the type is not byte for image/font files
@@ -629,7 +629,7 @@ public class GoogleEarthController {
 		    		
 // 		    	}else {
 		    		
-// 			    	if(bt.isNull(responseEntity.getBody())){
+// 			    	if(BaseTool.isNull(responseEntity.getBody())){
 // 						resp = new ResponseEntity<byte[]>(
 // 								null,
 // 								headers, 

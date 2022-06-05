@@ -338,7 +338,7 @@ public class RemotehostTool {
 
 		History history = histool.getHistoryById(history_id);
 
-		if(bt.isNull(history)){
+		if(BaseTool.isNull(history)){
 
 			history = new History();
 

@@ -29,7 +29,7 @@ public class SecretVar {
 		// initialize from config file
 		try {
 
-            // if(bt.isNull(credentials)){
+            // if(BaseTool.isNull(credentials)){
 
                 String configFile = bt.getGWWorkspaceFolder() + "secret.properties";
 

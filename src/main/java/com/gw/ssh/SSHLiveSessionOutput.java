@@ -114,7 +114,7 @@ public class SSHLiveSessionOutput implements Runnable {
                     
                     log.debug("shell thread output >> " + line);
                     
-                    if(!bt.isNull(wsout) && wsout.isOpen()) {
+                    if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
                         
                         log.debug("wsout message {}:{}", token, line);
 

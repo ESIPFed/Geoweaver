@@ -59,7 +59,7 @@ public class ExecutionTool {
 
         String resp = null;
 
-        if(bt.isNull(basedir)) basedir = "~";
+        if(BaseTool.isNull(basedir)) basedir = "~";
 
         if(bt.islocal(hid)) {
             

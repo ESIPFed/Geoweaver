@@ -44,7 +44,7 @@ public class PortalController {
     @RequestMapping("/web/{name}")
     public String view(@PathVariable String name, HttpSession session) {
     	
-    	if(bt.isNull(name))name = "redirect:web/geoweaver";
+    	if(BaseTool.isNull(name))name = "redirect:web/geoweaver";
     	
 //    	logger.debug("Current user: " + (String)session.getAttribute("sessionUser"));
 //    	

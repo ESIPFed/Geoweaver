@@ -359,7 +359,7 @@ public class SSHSessionImpl implements SSHSession {
 
             filename = filename.trim().endsWith(".py") ? filename : filename + ".py";
 
-            if (bt.isNull(bin) || "default".equals(bin)) {
+            if (BaseTool.isNull(bin) || "default".equals(bin)) {
 
                 cmdline += "python " + filename + "; ";
 
@@ -415,7 +415,7 @@ public class SSHSessionImpl implements SSHSession {
 
             String cmdline = "";
 
-            if (!bt.isNull(basedir) || "default".equals(basedir)) {
+            if (!BaseTool.isNull(basedir) || "default".equals(basedir)) {
 
                 cmdline += "cd " + basedir + "; ";
 
@@ -427,7 +427,7 @@ public class SSHSessionImpl implements SSHSession {
                                                                                              // transfer file like the
                                                                                              // python
 
-            if (bt.isNull(bin)) {
+            if (BaseTool.isNull(bin)) {
                 cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id
                         + ".ipynb;";
             } else {
@@ -545,9 +545,9 @@ public class SSHSessionImpl implements SSHSession {
 
     @Override
     public void setWebSocketSession(WebSocketSession session) {
-        if (!bt.isNull(sessionsender))
+        if (!BaseTool.isNull(sessionsender))
             this.sessionsender.setWebSocketSession(session); // connect WebSocket with SSH output thread
-        if (!bt.isNull(cmdsender))
+        if (!BaseTool.isNull(cmdsender))
             this.cmdsender.setWebSocketSession(session);
     }
 
@@ -602,7 +602,7 @@ public class SSHSessionImpl implements SSHSession {
 
                 for (String pypath : pythonarray) {
 
-                    if (!bt.isNull(pypath)) {
+                    if (!BaseTool.isNull(pypath)) {
 
                         pypath = pypath.trim();
 
@@ -620,7 +620,7 @@ public class SSHSessionImpl implements SSHSession {
         }
 
         // parse Conda results
-        if (!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")) { // pass if conda is not
+        if (!BaseTool.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")) { // pass if conda is not
                                                                                               // found
 
             for (int i = nextlineindex + 1; i < lines.length; i++) {
@@ -634,7 +634,7 @@ public class SSHSessionImpl implements SSHSession {
 
                     String bin = vals[vals.length - 1] + "/bin/python"; // on linux python command is under bin folder
 
-                    String name = bt.isNull(vals[0]) ? bin : vals[0];
+                    String name = BaseTool.isNull(vals[0]) ? bin : vals[0];
 
                     et.addNewEnvironment(bin, old_envlist, hostid, name);
 
@@ -666,7 +666,7 @@ public class SSHSessionImpl implements SSHSession {
         } finally {
 
             finalize();
-            // if(!bt.isNull(session))
+            // if(!BaseTool.isNull(session))
             // try {
 
             // session.close();

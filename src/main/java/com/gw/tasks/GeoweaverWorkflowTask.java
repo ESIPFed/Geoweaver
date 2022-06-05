@@ -170,7 +170,7 @@ public class GeoweaverWorkflowTask{
 		
 		Session se = WorkflowServlet.findSessionByToken(token);
 
-		if(bt.isNull(se)){
+		if(BaseTool.isNull(se)){
 
 			log.error("The monitor should never be empty");
 
@@ -246,9 +246,9 @@ public class GeoweaverWorkflowTask{
 		try {
 			log.info("close the websocket session from server side");
 			
-			if(!bt.isNull(monitor))
+			if(!BaseTool.isNull(monitor))
 				monitor.getBasicRemote().sendText("{\"workflow_status\": \"completed\", \"workflow_history_id\":\""+this.history_id+"\"}");
-			// if(!bt.isNull(monitor))
+			// if(!BaseTool.isNull(monitor))
 			// 	monitor.close();
 			
 			// wt.token2ws.remove(token);
@@ -366,7 +366,7 @@ public class GeoweaverWorkflowTask{
 			
 			Workflow w = workflowRepository.findById(wid).get();
 			
-			if(bt.isNull(w))
+			if(BaseTool.isNull(w))
 				throw new RuntimeException("no workflow is found");
 			
 			//execute the process in a while loop - for now. Improve this in future
@@ -437,7 +437,7 @@ public class GeoweaverWorkflowTask{
 					GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
 
 					Environment env = et.getEnvironmentById(envid);
-					if(bt.isNull(env)){
+					if(BaseTool.isNull(env)){
 						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
 					}else{
 						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id); //what is token?
