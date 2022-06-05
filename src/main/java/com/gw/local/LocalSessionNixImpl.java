@@ -112,6 +112,38 @@ public class LocalSessionNixImpl implements LocalSession {
 		history = history_tool.initProcessHistory(history_id, processid, script);
 		
 	}
+
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, int exitvalue){
+
+		this.stop();
+		
+		//get the latest history
+		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
+		
+		if(exitvalue == 0){
+			
+			this.history.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			this.history.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		
+		this.history_tool.saveHistory(this.history);
+
+		this.isClose = true;
+
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
+	}
 	
 	/**
 	 * If the process ends with error
@@ -182,10 +214,14 @@ public class LocalSessionNixImpl implements LocalSession {
             
             thread.start();
 
-			if(isjoin){ process.waitFor(); }
+			if(isjoin){
 
-			process.exitValue();
-            
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
+
             log.info("returning to the client..");
     		
 		} catch (Exception e) {
@@ -260,9 +296,13 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-			if(isjoin) process.waitFor();
+			if(isjoin){
 
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
             
 		} catch (Exception e) {
 			
@@ -326,8 +366,13 @@ public class LocalSessionNixImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-			if(isjoin) process.waitFor();
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin){
+
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
             
 		} catch (Exception e) {
 			

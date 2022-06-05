@@ -115,9 +115,35 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 	}
 
-	public void endWithCode(String token, String exitvalue){
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, int exitvalue){
 
+		this.stop();
+		
+		//get the latest history
+		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
+		
+		if(exitvalue == 0){
+			
+			this.history.setIndicator(ExecutionStatus.DONE);
 
+		}else{
+
+			this.history.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		
+		this.history_tool.saveHistory(this.history);
+
+		this.isClose = true;
+
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
 
 	}
 	
@@ -223,7 +249,13 @@ public class LocalSessionWinImpl implements LocalSession {
             
             thread.start();
 
-			if(isjoin) process.waitFor();
+			if(isjoin){
+
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
             
             log.info("returning to the client..");
     		
@@ -294,8 +326,13 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-			if(isjoin) process.waitFor();
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin){
+
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
 	        
             log.info("Local Session Windows Implementation is done.");
             
@@ -371,9 +408,13 @@ public class LocalSessionWinImpl implements LocalSession {
             
             log.info("returning to the client..");
             
-			if(isjoin) process.waitFor();
+			if(isjoin){
 
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+				process.waitFor();
+
+				endWithCode(token, process.exitValue());
+
+			}
 	        
 		} catch (Exception e) {
 			
@@ -395,17 +436,9 @@ public class LocalSessionWinImpl implements LocalSession {
 		throw new RuntimeException("Not Supported Yet");
 		
 	}
-
 	
-
 	@Override
 	public boolean stop() {
-
-		// log.debug("Is process alive? " + process.isAlive());
-
-		// log.debug("Is thread alive? " + thread.isAlive()); //this thread will stop by itself after the task is finished.
-
-		// if(thread.isAlive()) thread.interrupt();
 
 		log.debug("for localhost session, there is nothing to manually stop. Just wait for the process to finish. That is all.");
 		
@@ -424,23 +457,6 @@ public class LocalSessionWinImpl implements LocalSession {
 			return false;
 
 		}
-		
-		
-		// if(!BaseTool.isNull(thread)) {
-			
-		// 	thread.interrupt();
-			
-		// }
-		
-		// if(!BaseTool.isNull(input)) {
-			
-		// 	try {
-		// 		input.close();
-		// 	} catch (IOException e) {
-		// 		e.printStackTrace();
-		// 	}
-			
-		// }
 		
 	}
 
@@ -546,8 +562,6 @@ public class LocalSessionWinImpl implements LocalSession {
 
 				}
 				
-				
-				
 			}
 
 		}else{
@@ -584,12 +598,9 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Override
 	public boolean isClose() {
-		// TODO Auto-generated method stub
+
 		return false;
+
 	}
-
-	
-
-	
 
 }

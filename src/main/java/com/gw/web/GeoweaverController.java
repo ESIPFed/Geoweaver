@@ -896,10 +896,6 @@ public class GeoweaverController {
 
 			String token = request.getParameter("token");
 
-			// if(BaseTool.isNull(token)){
-
-			// token = session.getId(); // the token from client is useless
-
 			String history_id = BaseTool.isNull(request.getParameter("history_id"))? 
 				new RandomString(18).nextString(): request.getParameter("history_id");
 			
@@ -910,8 +906,7 @@ public class GeoweaverController {
 			String[] environments = request.getParameterValues("envs[]");
 			
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
-			 
-			// resp = wt.execute(id, mode, hosts, passwords, session.getId());
+			
 			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
 			
 		}catch(Exception e) {
