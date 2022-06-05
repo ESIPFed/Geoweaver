@@ -238,11 +238,7 @@ public class CommandServlet {
     public void close(final Session session) {
     	
 		try {
-
-            // printoutCallStack(); 
-
-            // session.getBasicRemote().sendText("Warning: Websocket Channel is going to close");
-			
+            
     		logger.debug("Geoweaver Shell Channel closed.");
     		
     		logger.debug("websocket session closed:" + session.getId());
@@ -290,8 +286,6 @@ public class CommandServlet {
 			Session wsout = CommandServlet.findSessionById(token);
 			
 			if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-				
-				logger.info("The failed message has been sent to client");
 				
 				wsout.getBasicRemote().sendText(message);
 				

@@ -126,7 +126,7 @@ public class SSHCmdSessionOutput  implements Runnable {
         // while (run) {
 			
 		try {
-			
+
 			while ((line = in.readLine())!=null){
 				
 				// readLine will block if nothing to send
@@ -151,7 +151,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 							
 							log.debug("null output lines exceed 10. Disconnected.");
 							
-							this.updateStatus(logs.toString(), "Done");
+							// this.updateStatus(logs.toString(), "Done");
 							
 							break;
 							
@@ -170,6 +170,10 @@ public class SSHCmdSessionOutput  implements Runnable {
 				log.info("command thread output >> " + line);
 				
 				logs.append(line).append("\n");
+
+				if(linenumber%1==0){
+					this.updateStatus(logs.toString(), "Running");
+				}
 				
 				if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
 					
@@ -192,7 +196,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 			}
 
 			this.updateStatus(logs.toString(), "Done");
-					
+			
 			sendMessage2WebSocket("The process "+this.history_id+" is finished.");
 			
 

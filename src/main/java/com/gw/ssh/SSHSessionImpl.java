@@ -133,22 +133,27 @@ public class SSHSessionImpl implements SSHSession {
 
     }
 
+    @Override
     public String getHistory_process() {
         return history.getHistory_process();
     }
 
+    @Override
     public void setHistory_process(String history_process) {
         history.setHistory_process(history_process);
     }
 
+    @Override
     public String getHistory_id() {
         return history.getHistory_id();
     }
 
+    @Override
     public SSHClient getSsh() {
         return ssh;
     }
 
+    @Override
     public Session getSSHJSession() {
         return session;
     }
@@ -157,6 +162,7 @@ public class SSHSessionImpl implements SSHSession {
         this.session = session;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -317,12 +323,11 @@ public class SSHSessionImpl implements SSHSession {
 	 * @param token
 	 * @param exitvalue
 	 */
-	public void endWithCode(String token, int exitvalue){
+	public void endWithCode(String token, String history_id, int exitvalue){
 
 		this.finalize();
 		
-		//get the latest history
-		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
+		this.history = history_tool.getHistoryById(history_id); 
 		
 		if(exitvalue == 0){
 			
@@ -338,6 +343,8 @@ public class SSHSessionImpl implements SSHSession {
 		
 		this.history_tool.saveHistory(this.history);
 
+        log.info("Exit code: " + exitvalue);
+
 		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
 
 	}
@@ -347,9 +354,11 @@ public class SSHSessionImpl implements SSHSession {
 	 * @param token
 	 * @param message
 	 */
-	public void endWithError(String token, String message) {
+	public void endWithError(String token, String history_id, String message) {
 		
 		this.finalize();
+
+        this.history = history_tool.getHistoryById(history_id); 
 		
 		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
@@ -408,7 +417,11 @@ public class SSHSessionImpl implements SSHSession {
 
             }
 
+            cmdline += "exitcode=$?;";
+
             cmdline += "rm -rf " + workspace_folder_path + "/" + history_id + ";"; // remove the code
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -437,7 +450,7 @@ public class SSHSessionImpl implements SSHSession {
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
 
-                endWithCode(token, cmd.getExitStatus());
+                endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 
@@ -445,7 +458,7 @@ public class SSHSessionImpl implements SSHSession {
 
             e.printStackTrace();
 
-            this.endWithError(token, e.getLocalizedMessage());
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
@@ -481,6 +494,8 @@ public class SSHSessionImpl implements SSHSession {
                         + history_id + ".ipynb;";
             }
 
+            cmdline += "exitcode=$?;";
+
             cmdline += "echo '*<*$$$*<*';";
 
             cmdline += "cat jupyter-" + history_id + ".ipynb;";
@@ -488,6 +503,8 @@ public class SSHSessionImpl implements SSHSession {
             cmdline += "echo '*>*$$$*>*';";
 
             cmdline += "rm -f ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -514,8 +531,8 @@ public class SSHSessionImpl implements SSHSession {
             if (isjoin){
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
-
-                endWithCode(token, cmd.getExitStatus());
+                
+                endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 
@@ -523,7 +540,7 @@ public class SSHSessionImpl implements SSHSession {
 
             e.printStackTrace();
 
-            this.endWithError(token, e.getLocalizedMessage());
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
@@ -554,7 +571,11 @@ public class SSHSessionImpl implements SSHSession {
 
             cmdline += "./geoweaver-" + history_id + ".sh;";
 
+            cmdline += "exitcode=$?;";
+
             cmdline += "rm -rf ~/gw-workspace/" + history_id + "; "; // remove the script finally, leave no trace behind
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -583,7 +604,7 @@ public class SSHSessionImpl implements SSHSession {
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
 
-                endWithCode(token, cmd.getExitStatus());
+                endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 
@@ -591,7 +612,7 @@ public class SSHSessionImpl implements SSHSession {
 
             e.printStackTrace();
 
-            this.endWithError(token, e.getLocalizedMessage());
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
