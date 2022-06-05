@@ -236,6 +236,10 @@ ul .sub-menu {
 	color: black;
 }
 
+.host:before {
+  content: " ";
+  padding-left: 10px;
+}
 
 .workflow:before {
   font-family: "Font Awesome 5 Brands"  !important;

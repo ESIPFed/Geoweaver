@@ -1702,7 +1702,7 @@ GW.process = {
 								<div class="row bare-window">
 									<div class="col-md-9 bare-window"><span style="word-wrap:break-word;">&nbsp;&nbsp;&nbsp;${one.name}</span></div>
 									<div class="col-md-3 bare-window">
-										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" 
+										<button type="button" class="btn btn-warning btn-xs pull-right right-button-vertical-center" 
 										onclick="var event = arguments[0] || window.event; event.stopPropagation();
 										GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
 									</div>
