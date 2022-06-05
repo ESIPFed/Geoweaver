@@ -284,7 +284,7 @@ public class GeoweaverProcessTask  extends Task {
 			
 			//get the nodes and edges of the workflows
 			
-			this.history_begin_time = bt.getCurrentSQLDate();
+			this.history_begin_time = BaseTool.getCurrentSQLDate();
 			
 			this.history_output = "";
 
@@ -384,7 +384,7 @@ public class GeoweaverProcessTask  extends Task {
 				}
 
 				//update workflow status
-				this.history_end_time = bt.getCurrentSQLDate();
+				this.history_end_time = BaseTool.getCurrentSQLDate();
 				wf.setHistory_end_time(this.history_begin_time);
 				wf.setIndicator(workflow_status);
 
@@ -443,7 +443,7 @@ public class GeoweaverProcessTask  extends Task {
 	
 	public void saveHistory() {
 		
-		this.history_end_time = bt.getCurrentSQLDate();
+		this.history_end_time = BaseTool.getCurrentSQLDate();
 		
 		History history = hist.getHistoryById(this.history_id);
 		

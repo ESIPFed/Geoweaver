@@ -30,15 +30,17 @@ import java.io.OutputStream;
 import java.security.PublicKey;
 import java.text.Normalizer;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.Environment;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Host;
+import com.gw.server.CommandServlet;
 import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
-import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -46,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
@@ -119,28 +120,10 @@ public class SSHSessionImpl implements SSHSession {
 
     private boolean isTerminal;
 
-    /**********************************************/
-    /** section of the geoweaver history records **/
-    /**********************************************/
-    // private String history_input;
-    //
-    // private String history_output;
-    //
-    // private String history_begin_time;
-    //
-    // private String history_end_time;
-    //
-    // private String history_process;
-    //
-
     private History history;
 
     @Autowired
     private HistoryTool history_tool;
-
-    /**********************************************/
-    /** end of history section **/
-    /**********************************************/
 
     public SSHSessionImpl() {
 
@@ -221,7 +204,6 @@ public class SSHSessionImpl implements SSHSession {
 
                 @Override
                 public List<String> findExistingAlgorithms(String hostname, int port) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
             });
@@ -307,8 +289,11 @@ public class SSHSessionImpl implements SSHSession {
 
     @Override
     public void saveHistory(String logs, String status) {
+
         history.setHistory_output(logs);
+        
         history.setIndicator(status);
+        
         this.history_tool.saveHistory(history);
 
     }
@@ -326,6 +311,60 @@ public class SSHSessionImpl implements SSHSession {
         return json;
 
     }
+
+    /**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, int exitvalue){
+
+		this.finalize();
+		
+		//get the latest history
+		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
+		
+		if(exitvalue == 0){
+			
+			this.history.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			this.history.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		this.history_tool.saveHistory(this.history);
+
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
+	}
+	
+	/**
+	 * If the process ends with error
+	 * @param token
+	 * @param message
+	 */
+	public void endWithError(String token, String message) {
+		
+		this.finalize();
+		
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		this.history.setHistory_output(message);
+		
+		this.history.setIndicator(ExecutionStatus.FAILED);
+		
+		this.history_tool.saveHistory(this.history);
+
+		if(!BaseTool.isNull(message))
+            CommandServlet.sendMessageToSocket(token, message);
+	
+		CommandServlet.sendMessageToSocket(token, "The process " + this.history.getHistory_id() + " is stopped.");
+	
+	}
 
     @Override
     public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv,
@@ -394,12 +433,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+
+                endWithCode(token, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            this.endWithError(token, e.getLocalizedMessage());
 
         }
 
@@ -465,12 +511,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+
+                endWithCode(token, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            this.endWithError(token, e.getLocalizedMessage());
 
         }
 
@@ -526,12 +579,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+
+                endWithCode(token, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            this.endWithError(token, e.getLocalizedMessage());
 
         }
 

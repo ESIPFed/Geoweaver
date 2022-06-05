@@ -348,7 +348,7 @@ public class RemotehostTool {
 
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 		
 		history.setHistory_input(script);
 

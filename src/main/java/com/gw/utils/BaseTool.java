@@ -1386,9 +1386,7 @@ public class BaseTool {
     	return currentTime;
     }
     
-    public Date getCurrentSQLDate(){
-    	
-//    	java.sql.Date newdate = new java.sql.Date(new java.util.Date().getTime());
+    public static Date getCurrentSQLDate(){
     	
     	Date newdate = new Date();
     	

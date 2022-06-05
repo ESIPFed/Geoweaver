@@ -75,7 +75,7 @@ public class BuiltinTool {
 
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 		
 		history.setHistory_input(script);
 
@@ -305,7 +305,7 @@ public class BuiltinTool {
                 }
 
                 his.setIndicator(ExecutionStatus.DONE);
-                his.setHistory_end_time(bt.getCurrentSQLDate());
+                his.setHistory_end_time(BaseTool.getCurrentSQLDate());
                 his.setHistory_output(resp);
                 histool.saveHistory(his);
             
@@ -330,7 +330,7 @@ public class BuiltinTool {
         
             his.setHistory_output(resp);
 
-            his.setHistory_end_time(bt.getCurrentSQLDate());
+            his.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
             histool.saveHistory(his);
         

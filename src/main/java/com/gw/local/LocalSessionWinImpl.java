@@ -123,7 +123,7 @@ public class LocalSessionWinImpl implements LocalSession {
 	public void endWithCode(String token, int exitvalue){
 
 		this.stop();
-		
+
 		//get the latest history
 		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
 		
@@ -137,7 +137,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 		}
 
-		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
 		this.history_tool.saveHistory(this.history);
 
@@ -156,7 +156,7 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 		this.stop();
 		
-		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
 		this.history.setHistory_output(message);
 		

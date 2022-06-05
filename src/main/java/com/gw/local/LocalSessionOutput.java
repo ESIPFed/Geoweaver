@@ -146,7 +146,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		if("Done".equals(status) || "Failed".equals(status)){
 
-			h.setHistory_end_time(bt.getCurrentSQLDate());
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 		}
 
@@ -174,7 +174,7 @@ public class LocalSessionOutput  implements Runnable{
 
 		if("Done".equals(status) || "Failed".equals(status)){
 
-			h.setHistory_end_time(bt.getCurrentSQLDate());
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
 		}
 
@@ -261,14 +261,6 @@ public class LocalSessionOutput  implements Runnable{
 						}
 						
 					}else if(line.contains("==== Geoweaver Bash Output Finished ====")) {
-						
-	//                	session.saveHistory(logs.toString()); //complete the record
-						
-						// this.updateStatus(logs.toString(), "Done");
-						
-						// sendMessage2WebSocket("The process "+history_id+" is finished.");
-							
-						// break;
 						
 					}else {
 						

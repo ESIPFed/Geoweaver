@@ -135,7 +135,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
 		}
 
-		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
 		this.history_tool.saveHistory(this.history);
 
@@ -154,7 +154,7 @@ public class LocalSessionNixImpl implements LocalSession {
 		
 		this.stop();
 		
-		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
 		this.history.setHistory_output(message);
 		

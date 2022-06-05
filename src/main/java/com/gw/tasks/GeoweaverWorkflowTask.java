@@ -138,9 +138,9 @@ public class GeoweaverWorkflowTask{
 	
 	public void saveWorkflowHistory() {
 		
-		this.history_end_time = bt.getCurrentSQLDate();
+		this.history_end_time = BaseTool.getCurrentSQLDate();
 		
-		this.history_end_time = bt.getCurrentSQLDate();
+		this.history_end_time = BaseTool.getCurrentSQLDate();
 		
 		History history = hist.getHistoryById(this.history_id);
 		
@@ -358,7 +358,7 @@ public class GeoweaverWorkflowTask{
 			
 			this.history_process = wid;
 			
-			this.history_begin_time = bt.getCurrentSQLDate();
+			this.history_begin_time = BaseTool.getCurrentSQLDate();
 			
 			this.history_input = "";
 			
