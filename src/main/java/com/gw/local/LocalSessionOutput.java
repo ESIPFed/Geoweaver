@@ -52,6 +52,8 @@ public class LocalSessionOutput  implements Runnable{
 	protected String lang;
     
 	protected String jupyterfilepath;
+
+	protected Process theprocess;
     
     
     public LocalSessionOutput() {
@@ -121,6 +123,12 @@ public class LocalSessionOutput  implements Runnable{
 
 		CommandServlet.removeSessionById(history_id);
 			
+	}
+
+	public void setProcess(Process p){
+
+		this.theprocess = p;
+
 	}
 
 	/**
@@ -353,7 +361,12 @@ public class LocalSessionOutput  implements Runnable{
 				this.updateStatus(logs.toString(), "Done");
 
 			}
-			
+
+			if(!BaseTool.isNull(theprocess)){
+
+				this.endWithCode(token, theprocess.exitValue());
+
+			}
 						
 			sendMessage2WebSocket("The process "+history_id+" is finished.");
 			
@@ -361,8 +374,6 @@ public class LocalSessionOutput  implements Runnable{
 
 			GeoweaverController.sessionManager.closeByToken(token);
 
-			
-			
 			log.info("Local session output thread ended");
 
 		}catch(Exception e){

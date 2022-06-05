@@ -217,14 +217,15 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+			
+			sender.setProcess(process);
 
 			if(isjoin){
 
 				process.waitFor();
 
-				sender.endWithCode(token, process.exitValue());
-
 			}
+
             
             log.info("returning to the client..");
     		
@@ -292,14 +293,14 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread");
             
             thread.start();
+
+			sender.setProcess(process);
             
             log.info("returning to the client..");
             
 			if(isjoin){
 
 				process.waitFor();
-
-				sender.endWithCode(token, process.exitValue());
 
 			}
 	        
@@ -376,15 +377,16 @@ public class LocalSessionWinImpl implements LocalSession {
             thread.start();
             
             log.info("returning to the client..");
+
+			sender.setProcess(process);
             
 			if(isjoin){
 
 				process.waitFor();
 
-				sender.endWithCode(token, process.exitValue());
-
 			}
-	        
+
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
