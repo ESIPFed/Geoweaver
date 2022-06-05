@@ -61,159 +61,168 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 /**
  * Geoweaver SSH session wrapper
+ * 
  * @author JensenSun
  *
  */
 @Service
 @Scope("prototype")
 public class SSHSessionImpl implements SSHSession {
-	
-	// @Autowired
-	// HostTool ht;
+
+    // @Autowired
+    // HostTool ht;
 
     @Autowired
     HostRepository hostrepo;
-	
-	@Autowired
-	BaseTool bt;
-	
+
+    @Autowired
+    BaseTool bt;
+
     @Autowired
     ProcessRepository processRepository;
 
     @Autowired
-	EnvironmentTool et;
-	
-    protected final Logger   log = LoggerFactory.getLogger(getClass());
-    
-    private SSHClient        ssh; //SSHJ creates a new client
-    
-    private String 			 hostid;
-    
-    private Session          session; //SSHJ client creates SSHJ session
-    
-    private Shell            shell; //SSHJ session creates SSHJ shell
-    
-    private String           username;
-    
-    private String			 token; //add by Ziheng on 12 Sep 2018 - token of each execution
-    
-    private BufferedReader   input;
-    
-    private OutputStream     output;
+    EnvironmentTool et;
+
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    private SSHClient ssh; // SSHJ creates a new client
+
+    private String hostid;
+
+    private Session session; // SSHJ client creates SSHJ session
+
+    private Shell shell; // SSHJ session creates SSHJ shell
+
+    private String username;
+
+    private String token; // add by Ziheng on 12 Sep 2018 - token of each execution
+
+    private BufferedReader input;
+
+    private OutputStream output;
 
     @Value("${geoweaver.workspace}")
-    private String           workspace_folder_path;
+    private String workspace_folder_path;
 
     @Autowired
     private SSHLiveSessionOutput sessionsender;
-    
+
     @Autowired
     private SSHCmdSessionOutput cmdsender;
-    
-    private Thread           thread;
-    
-    private String           host;
-    
-    private String           port;
-    
-    private boolean			 isTerminal;
-    
+
+    private Thread thread;
+
+    private String host;
+
+    private String port;
+
+    private boolean isTerminal;
+
     /**********************************************/
     /** section of the geoweaver history records **/
     /**********************************************/
-//    private String			 history_input;
-//    
-//    private String			 history_output;
-//    
-//    private String			 history_begin_time;
-//    
-//    private String			 history_end_time;
-//    
-//    private String			 history_process;
-//    
-    
-    private History          history;
-    
+    // private String history_input;
+    //
+    // private String history_output;
+    //
+    // private String history_begin_time;
+    //
+    // private String history_end_time;
+    //
+    // private String history_process;
+    //
+
+    private History history;
+
     @Autowired
-    private HistoryTool      history_tool;
-    
+    private HistoryTool history_tool;
+
     /**********************************************/
     /** end of history section **/
     /**********************************************/
-    
+
     public SSHSessionImpl() {
-    	
+
         // this id should be passed into this class in the initilizer
-    	// this.history.setHistory_id(new RandomString(12).nextString()); //create a history id everytime the process is executed
-    	
+        // this.history.setHistory_id(new RandomString(12).nextString()); //create a
+        // history id everytime the process is executed
+
     }
-    
+
     public String getHistory_process() {
-		return history.getHistory_process();
-	}
+        return history.getHistory_process();
+    }
 
-	public void setHistory_process(String history_process) {
-		history.setHistory_process(history_process);
-	}
+    public void setHistory_process(String history_process) {
+        history.setHistory_process(history_process);
+    }
 
-	public String getHistory_id() {
-		return history.getHistory_id();
-	}
-	
+    public String getHistory_id() {
+        return history.getHistory_id();
+    }
+
     public SSHClient getSsh() {
-		return ssh;
-	}
-    
-	public Session getSSHJSession() {
-		return session;
-	}
-    
-	public void setSSHJSession(Session session) {
-		this.session = session;
-	}
+        return ssh;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public Session getSSHJSession() {
+        return session;
+    }
 
-	public String getToken() {
-		return token;
-	}
+    public void setSSHJSession(Session session) {
+        this.session = session;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public String getPort() {
-		return port;
-	}
-	
-	public boolean isTerminal() {
-		
-		return isTerminal;
-	}
-	
-	public boolean login(String hostid, String password, String token, boolean isTerminal) {
-		
-		this.hostid = hostid;
+    public String getToken() {
+        return token;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public boolean isTerminal() {
+
+        return isTerminal;
+    }
+
+    public boolean login(String hostid, String password, String token, boolean isTerminal) {
+
+        this.hostid = hostid;
 
         Host h = hostrepo.findById(hostid).get();
-		
-		return this.login(h.getIp(), h.getPort(), h.getUsername(), password, token, false);
-		
-	}
 
-	@Override
-    public boolean login(String host, String port, String username, String password, String token, boolean isTerminal) throws AuthenticationException {
+        return this.login(h.getIp(), h.getPort(), h.getUsername(), password, token, false);
+
+    }
+
+    @Override
+    public boolean login(String host, String port, String username, String password, String token, boolean isTerminal)
+            throws AuthenticationException {
         try {
             logout();
             // ssh.authPublickey(System.getProperty("user.name"));
             log.info("new SSHClient");
-            ssh = new SSHClient(); //create a new SSH client
+            ssh = new SSHClient(); // create a new SSH client
             log.info("verify all hosts");
             ssh.addHostKeyVerifier(new HostKeyVerifier() {
                 public boolean verify(String arg0, int arg1, PublicKey arg2) {
                     return true; // don't bother verifying
+                }
+
+                @Override
+                public List<String> findExistingAlgorithms(String hostname, int port) {
+                    // TODO Auto-generated method stub
+                    return null;
                 }
             });
             log.info("connecting");
@@ -221,36 +230,36 @@ public class SSHSessionImpl implements SSHSession {
             log.info("authenticating: {}", username);
             ssh.authPassword(username, password);
             log.info("starting session");
-            session = ssh.startSession(); //SSH client creates new SSH session
+            session = ssh.startSession(); // SSH client creates new SSH session
             log.info("allocating PTY");
-            session.allocateDefaultPTY(); 
+            session.allocateDefaultPTY();
             this.username = username;
             this.token = token;
             this.isTerminal = isTerminal;
-            
-            if(isTerminal) {
-            	//shell
-            	log.info("starting shell");
-                shell = session.startShell(); //SSH session creates SSH Shell. if shell is null, it is in command mode.
+
+            if (isTerminal) {
+                // shell
+                log.info("starting shell");
+                shell = session.startShell(); // SSH session creates SSH Shell. if shell is null, it is in command mode.
                 log.info("SSH session established");
                 input = new BufferedReader(new InputStreamReader(shell.getInputStream()), BaseTool.BUFFER_SIZE);
                 output = shell.getOutputStream();
-//                sender = new SSHSessionOutput(input, token);
+                // sender = new SSHSessionOutput(input, token);
                 sessionsender.init(input, token);
-                //moved here on 10/29/2018
-                //all SSH shell sessions must have a output thread
+                // moved here on 10/29/2018
+                // all SSH shell sessions must have a output thread
                 thread = new Thread(sessionsender);
                 thread.setName("SSH output thread");
                 log.info("starting sending thread");
                 thread.start();
-            }else {
-            	//command
-            	//do nothing here
-            	
+            } else {
+                // command
+                // do nothing here
+
             }
-            
+
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             log.error(e.getMessage());
             finalize();
             throw new SSHAuthenticationException(e.getMessage(), e);
@@ -271,273 +280,275 @@ public class SSHSessionImpl implements SSHSession {
 
     @Override
     protected void finalize() {
-    	//stop the thread first
+        // stop the thread first
         try {
-        	if(sessionsender!=null)
-        		sessionsender.stop();
-        	if(cmdsender!=null)
-        		cmdsender.stop();
-//        	thread.interrupt();
+            if (sessionsender != null)
+                sessionsender.stop();
+            if (cmdsender != null)
+                cmdsender.stop();
+            // thread.interrupt();
         } catch (Throwable e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
         try {
-            shell.close(); //sshj shell
-        } catch (Throwable e) {
-        }
-        try {
-            session.close(); //sshj session
+            shell.close(); // sshj shell
         } catch (Throwable e) {
         }
         try {
-            ssh.disconnect(); //sshj client
-            
+            session.close(); // sshj session
         } catch (Throwable e) {
         }
-        // bt.printoutCallStack();
-        // log.info("session finalized");
+        try {
+            ssh.disconnect(); // sshj client
+
+        } catch (Throwable e) {
+        }
     }
-    
+
     @Override
-	public void saveHistory(String logs, String status) {
-		history.setHistory_output(logs);
-		history.setIndicator(status);
-    	this.history_tool.saveHistory(history);
-    	
-	}
-    
+    public void saveHistory(String logs, String status) {
+        history.setHistory_output(logs);
+        history.setIndicator(status);
+        this.history_tool.saveHistory(history);
+
+    }
+
     public static String unaccent(String src) {
-		return Normalizer
-				.normalize(src, Normalizer.Form.NFD)
-				.replaceAll("[^\\p{ASCII}]", "");
-	}
-    
-    public static String escapeJupter(String json) {
-    	
-    	json  = StringEscapeUtils.escapeJava(json);
-    	
-    	return json;
-    	
+        return Normalizer
+                .normalize(src, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
     }
-    
+
+    public static String escapeJupter(String json) {
+
+        json = StringEscapeUtils.escapeJava(json);
+
+        return json;
+
+    }
+
     @Override
-	public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-    	try {
-    		
-    		log.info("starting command: " + python);
-    		
-    		python = escapeJupter(python);
-    		
-//    		log.info("escaped command: " + python);
-    		
-    		log.info("\n command: " + python);
-    		
-    		String cmdline = "mkdir -p "+workspace_folder_path+
-                        "; cd " + workspace_folder_path + "; ";
+    public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv,
+            String basedir, String token) {
 
-    		//new version of execution in which all the python files are copied in the host
-    		
-    		cmdline += "mkdir -p " + history_id + ";";
-    		
-    		cmdline += "tar -xf " + basedir + "/" + history_id + ".tar -C " + 
-                        workspace_folder_path + "/" + history_id + "/; ";
+        try {
 
-            cmdline += "rm -f "+ basedir + "/" + history_id + ".tar; ";
-    		
-    		cmdline += "cd "+ history_id + "/; ";
-    		
-//    		cmdline += "printf \"" + python + "\" > python-" + history_id + ".py; ";
-    		
-    		cmdline += "chmod +x *.py;";
+            log.info("starting command: " + python);
 
-    		String filename = processRepository.findById(processid).get().getName();//pt.getNameById(processid);
-    		
-    		filename = filename.trim().endsWith(".py")? filename: filename+".py";
-    		
-    		if(bt.isNull(bin)||"default".equals(bin)) {
+            python = escapeJupter(python);
 
-    			cmdline += "python " + filename + "; ";
-    			
-    		}else {
-    			
-    			cmdline += bin + " " + filename + "; ";
-    			
-    		}
-    		
-    		cmdline += "rm -rf " + workspace_folder_path+ "/" + history_id + ";"; //remove the code
-    		
-    		log.info(cmdline);
-    		
-    		Command cmd = session.exec(cmdline);
-    		
-            log.info("SSH command session established");
-            
-            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
-            
-//            sender = new SSHCmdSessionOutput(input, token);
-            cmdsender.init(input, token, history_id);
-            
-            //moved here on 10/29/2018
-            //all SSH sessions must have a output thread
-            
-            thread = new Thread(cmdsender);
-            
-            thread.setName("SSH Command output thread");
-            
-            log.info("starting sending thread");
-            
-            thread.start();
-            
-            log.info("returning to the client..");
-            
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-	        
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-    	
-	}
-    
-    @Override
-	public void runJupyter(String history_id, String notebookjson, String processid, boolean isjoin, String bin, String pyenv, String basedir, String token) {
-    	
-    	try {
-    		
-    		log.info("starting command");
-    		
-    		String cmdline = "";
-    		
-    		if(!bt.isNull(basedir)||"default".equals(basedir)) {
-    			
-    			cmdline += "cd " + basedir + "; ";
-    			
-    		}
-    		
-    		notebookjson = escapeJupter(notebookjson);
-    		
-    		cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; //this must be changed to transfer file like the python
-    		
-            if(bt.isNull(bin)){
-                cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
-            }else{
-                cmdline += bin + "-m jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id + ".ipynb;";
+            log.info("\n command: " + python);
+
+            String cmdline = "mkdir -p " + workspace_folder_path +
+                    "; cd " + workspace_folder_path + "; ";
+
+            // new version of execution in which all the python files are copied in the host
+
+            cmdline += "mkdir -p " + history_id + ";";
+
+            cmdline += "tar -xf " + basedir + "/" + history_id + ".tar -C " +
+                    workspace_folder_path + "/" + history_id + "/; ";
+
+            cmdline += "rm -f " + basedir + "/" + history_id + ".tar; ";
+
+            cmdline += "cd " + history_id + "/; ";
+
+            cmdline += "chmod +x *.py;";
+
+            String filename = processRepository.findById(processid).get().getName();
+
+            filename = filename.trim().endsWith(".py") ? filename : filename + ".py";
+
+            if (bt.isNull(bin) || "default".equals(bin)) {
+
+                cmdline += "python " + filename + "; ";
+
+            } else {
+
+                cmdline += bin + " " + filename + "; ";
+
             }
-    		
+
+            cmdline += "rm -rf " + workspace_folder_path + "/" + history_id + ";"; // remove the code
+
+            log.info(cmdline);
+
+            Command cmd = session.exec(cmdline);
+
+            log.info("SSH command session established");
+
+            input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
+
+            cmdsender.init(input, token, history_id);
+
+            // moved here on 10/29/2018
+            // all SSH sessions must have a output thread
+
+            thread = new Thread(cmdsender);
+
+            thread.setName("SSH Command output thread");
+
+            log.info("starting sending thread");
+
+            thread.start();
+
+            log.info("returning to the client..");
+
+            if (isjoin)
+                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
+
+    @Override
+    public void runJupyter(String history_id, String notebookjson, String processid, boolean isjoin, String bin,
+            String pyenv, String basedir, String token) {
+
+        try {
+
+            log.info("starting command");
+
+            String cmdline = "";
+
+            if (!bt.isNull(basedir) || "default".equals(basedir)) {
+
+                cmdline += "cd " + basedir + "; ";
+
+            }
+
+            notebookjson = escapeJupter(notebookjson);
+
+            cmdline += "echo \"" + notebookjson + "\" > jupyter-" + history_id + ".ipynb; "; // this must be changed to
+                                                                                             // transfer file like the
+                                                                                             // python
+
+            if (bt.isNull(bin)) {
+                cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id
+                        + ".ipynb;";
+            } else {
+                cmdline += bin + "-m jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-"
+                        + history_id + ".ipynb;";
+            }
 
             cmdline += "echo '*<*$$$*<*';";
 
             cmdline += "cat jupyter-" + history_id + ".ipynb;";
-    		
+
             cmdline += "echo '*>*$$$*>*';";
 
-    		cmdline += "rm -f ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
-    		
-    		log.info(cmdline);
-    		
-    		Command cmd = session.exec(cmdline);
-            
+            cmdline += "rm -f ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
+
+            log.info(cmdline);
+
+            Command cmd = session.exec(cmdline);
+
             log.info("SSH command session established");
-            
+
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
-            
+
             cmdsender.init(input, token, history_id);
-            
-            //moved here on 10/29/2018
-            //all SSH sessions must have a output thread
+
+            // moved here on 10/29/2018
+            // all SSH sessions must have a output thread
             thread = new Thread(cmdsender);
-            
+
             thread.setName("SSH Command output thread");
-            
+
             log.info("starting sending thread");
-            
+
             thread.start();
-            
+
             log.info("returning to the client..");
-            
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-	        
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-    	
-	}
 
-	@Override
-	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
-    	
-    	try {
-    		
-    		log.info("starting command");
-    		
-    		String cmdline = "mkdir -p "+workspace_folder_path+
-                    "; cd "+workspace_folder_path+
-                    "; mkdir -p "+ history_id+ 
-                    "; cd "+ history_id +
-                    "; echo \"" 
-    				+ script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"") 
-    				+ "\" > geoweaver-" + history_id + ".sh; ";
+            if (isjoin)
+                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
 
-            //unzip the python files into the same folder for shell to call
-            cmdline += "tar -xf ~/" + history_id + ".tar -C " + 
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
+
+    @Override
+    public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
+
+        try {
+
+            log.info("starting command");
+
+            String cmdline = "mkdir -p " + workspace_folder_path +
+                    "; cd " + workspace_folder_path +
+                    "; mkdir -p " + history_id +
+                    "; cd " + history_id +
+                    "; echo \""
+                    + script.replaceAll("\r\n", "\n").replaceAll("\\$", "\\\\\\$").replaceAll("\"", "\\\\\"")
+                    + "\" > geoweaver-" + history_id + ".sh; ";
+
+            // unzip the python files into the same folder for shell to call
+            cmdline += "tar -xf ~/" + history_id + ".tar -C " +
                     workspace_folder_path + "/" + history_id + "/; ";
 
             cmdline += "rm -f ~/" + history_id + ".tar; ";
-    		
-    		cmdline += "chmod +x geoweaver-" + history_id + ".sh; ";
-    		
-    		cmdline += "./geoweaver-" + history_id + ".sh;";
-    		
-    		cmdline += "rm -rf ~/gw-workspace/" + history_id + "; "; //remove the script finally, leave no trace behind
-			
-    		log.info(cmdline);
-    		
-    		Command cmd = session.exec(cmdline);
-    		
+
+            cmdline += "chmod +x geoweaver-" + history_id + ".sh; ";
+
+            cmdline += "./geoweaver-" + history_id + ".sh;";
+
+            cmdline += "rm -rf ~/gw-workspace/" + history_id + "; "; // remove the script finally, leave no trace behind
+
+            log.info(cmdline);
+
+            Command cmd = session.exec(cmdline);
+
             log.info("SSH command session established");
-            
+
             input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
-            
+
             cmdsender.init(input, token, history_id);
-            
-            //moved here on 10/29/2018
-            //all SSH sessions must have a output thread
-            
+
+            // moved here on 10/29/2018
+            // all SSH sessions must have a output thread
+
             thread = new Thread(cmdsender);
-            
+
             thread.setName("SSH Command output thread");
-            
+
             log.info("starting sending thread");
-            
+
             thread.start();
-            
+
             log.info("returning to the client..");
-            
-            if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-	        
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-    	
-	}
 
-	@Override
-	public void runMultipleBashes(String history_id, String[] script, String processid) {
-		// TODO Auto-generated method stub
-		
-		
-	}
+            if (isjoin)
+                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
 
-	@Override
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
+
+    @Override
+    public void runMultipleBashes(String history_id, String[] script, String processid) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public void setWebSocketSession(WebSocketSession session) {
-        if(!bt.isNull(sessionsender))this.sessionsender.setWebSocketSession(session); //connect WebSocket with SSH output thread
-        if(!bt.isNull(cmdsender)) this.cmdsender.setWebSocketSession(session);
+        if (!bt.isNull(sessionsender))
+            this.sessionsender.setWebSocketSession(session); // connect WebSocket with SSH output thread
+        if (!bt.isNull(cmdsender))
+            this.cmdsender.setWebSocketSession(session);
     }
 
     @Override
@@ -552,74 +563,78 @@ public class SSHSessionImpl implements SSHSession {
         return true;
     }
 
-    public void readWhereCondaInOneCommand(String hostid) throws IOException{
+    public void readWhereCondaInOneCommand(String hostid) throws IOException {
 
         List<Environment> old_envlist = et.getEnvironmentsByHostId(hostid);
 
         String cmdline = "source ~/.bashrc; whereis python; conda env list";
-        
+
         log.info(cmdline);
-    
+
         Command cmd = session.exec(cmdline);
 
         String output = IOUtils.readFully(cmd.getInputStream()).toString();
 
         System.out.println(output);
-        //An Example:
-        //  ## there might be some error messages here because of the source ~/.bashrc
-        //  python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python2.7 /usr/lib/python3.8 /usr/lib/python3.6 /usr/lib/python3.7 /etc/python2.7 /etc/python /etc/python3.6 /usr/local/lib/python3.6 /usr/include/python3.6m /usr/share/python
-        //  bash: conda: command not found
-        //  # conda environments:
-        //  #
-        //                           /home/zsun/anaconda3
-        //                           /home/zsun/anaconda3/envs/ag
-        //  base                  *  /root/anaconda3
+        // An Example:
+        // ## there might be some error messages here because of the source ~/.bashrc
+        // python: /usr/bin/python3.6m /usr/bin/python3.6 /usr/lib/python2.7
+        // /usr/lib/python3.8 /usr/lib/python3.6 /usr/lib/python3.7 /etc/python2.7
+        // /etc/python /etc/python3.6 /usr/local/lib/python3.6 /usr/include/python3.6m
+        // /usr/share/python
+        // bash: conda: command not found
+        // # conda environments:
+        // #
+        // /home/zsun/anaconda3
+        // /home/zsun/anaconda3/envs/ag
+        // base * /root/anaconda3
 
         String[] lines = output.split("\n");
         int nextlineindex = 1;
-        //Parse "whereis python"
-        for(int i=0; i<lines.length; i++){
+        // Parse "whereis python"
+        for (int i = 0; i < lines.length; i++) {
 
-            if(lines[i].startsWith("python")){
+            if (lines[i].startsWith("python")) {
 
                 String pythonarraystr = lines[i].substring(8);
-    
+
                 String[] pythonarray = pythonarraystr.split(" ");
-    
-                for(String pypath : pythonarray){
-    
-                    if(!bt.isNull(pypath)){
-    
+
+                for (String pypath : pythonarray) {
+
+                    if (!bt.isNull(pypath)) {
+
                         pypath = pypath.trim();
-    
+
                         et.addNewEnvironment(pypath, old_envlist, hostid, pypath);
-    
+
                     }
-    
+
                 }
 
-                nextlineindex = i+1;
+                nextlineindex = i + 1;
 
                 break;
-    
+
             }
         }
-        
 
-        //parse Conda results
-        if(!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")){ //pass if conda is not found
+        // parse Conda results
+        if (!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")) { // pass if conda is not
+                                                                                              // found
 
-            for(int i=nextlineindex+1; i<lines.length; i++){
+            for (int i = nextlineindex + 1; i < lines.length; i++) {
 
-                if(!lines[i].startsWith("#")){ //pass comments
+                if (!lines[i].startsWith("#")) { // pass comments
 
                     String[] vals = lines[i].split("\\s+");
 
-					if(vals.length<2) continue;
+                    if (vals.length < 2)
+                        continue;
 
-					String bin = vals[vals.length-1]+"/bin/python"; //on linux python command is under bin folder
+                    String bin = vals[vals.length - 1] + "/bin/python"; // on linux python command is under bin folder
 
-					String name = bt.isNull(vals[0])?bin:vals[0];
+                    String name = bt.isNull(vals[0]) ? bin : vals[0];
 
                     et.addNewEnvironment(bin, old_envlist, hostid, name);
 
@@ -628,7 +643,6 @@ public class SSHSessionImpl implements SSHSession {
             }
 
         }
-        
 
     }
 
@@ -639,30 +653,28 @@ public class SSHSessionImpl implements SSHSession {
 
         try {
 
-           this.readWhereCondaInOneCommand(hostid);
+            this.readWhereCondaInOneCommand(hostid);
 
-        //    this.readConda();
+            // this.readConda();
 
-           resp = et.getEnvironments(hostid);
+            resp = et.getEnvironments(hostid);
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-        } finally{
+        } finally {
 
             finalize();
             // if(!bt.isNull(session))
-            //     try {
+            // try {
 
-            //         session.close();
-            //     } catch (Exception e) {
-            //         e.printStackTrace();
-            //     }
+            // session.close();
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // }
 
         }
-
-        
 
         return resp;
     }

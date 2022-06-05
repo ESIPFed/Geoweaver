@@ -221,7 +221,10 @@ GW.menu = {
 		
 		listen: function(type){
 			
-			$("#new" + type).click(function(){
+			$("#new" + type).click(function(e){
+
+				e.stopPropagation();
+		        e.preventDefault();
 				
 				if(type=="host"){
 					

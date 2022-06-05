@@ -960,7 +960,7 @@ GW.host = {
 		
 		$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 				
-			"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
+			"\" onclick=\"GW.menu.details('"+one.id+"', 'host')\"> <a href=\"javascript:void(0)\" >" + 
 				
 			one.name + "</a> "+
 			
@@ -1437,15 +1437,19 @@ GW.host = {
 
 				}
 				
-				if(dialogItself) {
-					
-					try{dialogItself.closeFrame(); }catch(e){}
-					
-				}
+				
 				
 			}else{
 				
-				console.error("Return Response is Empty");
+				console.warn("Return Response is Empty");
+
+				GW.host.showEnvironmentTable([]);
+				
+			}
+
+			if(dialogItself) {
+					
+				try{dialogItself.closeFrame(); }catch(e){}
 				
 			}
 			

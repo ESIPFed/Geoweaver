@@ -1,23 +1,23 @@
 .nav-side-menu {
   overflow-y: scroll;
-  font-family: verdana;
-  font-size: 12px;
+  font-family: Roboto,sans-serif;
+  font-size: 18px;
   font-weight: 200;
-  background-color: #2e353d;
+  background-color: white;
   /* position: fixed; */
   top: 0px;
   height: 100%;
   /* width: 100%;
-  height: 100%; */
-  min-width: 300px;
+  height: 100%; 
+  min-width: 300px;*/
   color: #e1ffff;
 }
 .nav-side-menu .brand {
-  background-color: #23282e;
+  background-color: white;
   line-height: 50px;
   display: block;
   text-align: center;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .small-height {
@@ -58,6 +58,11 @@
   height: 100%;
 }
 
+.right-button-vertical-center {
+  margin-top: 5px;
+  margin-right: 10px;
+}
+
 .nav-side-menu ul :not(collapsed) .arrow:before,
 .nav-side-menu li :not(collapsed) .arrow:before {
   font-family: "Font Awesome 5 Free";
@@ -70,6 +75,7 @@
 }
 .nav-side-menu ul .active,
 .nav-side-menu li .active {
+  color: white;
   border-left: 3px solid #d19b3d;
   background-color: #4f5b69;
 }
@@ -83,16 +89,51 @@
 }
 .nav-side-menu ul .sub-menu li,
 .nav-side-menu li .sub-menu li {
-  background-color: #181c20;
+  background-color: white;
+  color: black;
   border: none;
   line-height: 28px;
-  border-bottom: 1px solid #23282e;
   margin-left: 0px;
 }
 .nav-side-menu ul .sub-menu li:hover,
 .nav-side-menu li .sub-menu li:hover {
-  background-color: #020203;
+  background-color: #999;
+  color: white;
 }
+
+.nav-side-menu li {
+  padding-left: 0px;
+  background-color: white;
+}
+.nav-side-menu li a {
+  text-decoration: none;
+  color: black;
+  width: -webkit-calc(100% - 100px);
+  width:    -moz-calc(100% - 100px);
+  width:         calc(100% - 100px);
+}
+.nav-side-menu li a i {
+  padding-left: 10px;
+  width: 20px;
+  line-height:35px;
+  padding-right: 20px;
+}
+.nav-side-menu li:hover {
+  background-color: #999;
+  color: white;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+}
+
+ul .sub-menu {
+
+  margin-left: 30px;
+
+}
+
 /*.nav-side-menu ul .sub-menu li:before,
 .nav-side-menu li .sub-menu li:before {
   font-family: FontAwesome;
@@ -108,7 +149,7 @@
   font-family: "Font Awesome 5 Brands"  !important;
   content: "\f3e2"  !important;
   font-weight: 900;
-	
+	color: black;
 }
 
 .sshserver:before {
@@ -116,12 +157,14 @@
   font-family: "Font Awesome 5 Brands" !important; 
   font-weight: 400 !important;
   content: "\f17c" !important;
+	color: black;
 }
 
 .jupyterhubserver:before {
 	
   font-family: "Font Awesome 5 Brands"  !important;
   content: "\f3e2"  !important;
+	color: black;
 	
 }
 
@@ -129,6 +172,7 @@
 	
   font-family: "Font Awesome 5 Brands"  !important;
   content: "\f3e2"  !important;
+	color: black;
 	
 }
 
@@ -141,7 +185,7 @@
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
-	
+	color: black;
 }
 
 .shellfolder:before{
@@ -149,11 +193,11 @@
   font-family: "Font Awesome 5 Free"  !important;
   content: "\f70e"  !important;
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
-	
+	color: black;
 }
 
 .pythonfolder:before{
@@ -161,11 +205,11 @@
   font-family: "Font Awesome 5 Brands"  !important;
   content: "\f3e2"  !important;
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
-	
+	color: black;
 }
 
 .notebookfolder:before{
@@ -173,11 +217,11 @@
   font-family: "Font Awesome 5 Free"  !important;
   content: "\f518"  !important;
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
-	
+	color: black;
 }
 
 .builtinfolder:before{
@@ -185,106 +229,38 @@
   font-family: "Font Awesome 5 Free"  !important;
   content: "\f1ad"  !important;
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
-	
+	color: black;
 }
-
 
 .host:before {
-  font-family: "Font Awesome 5 Free";
-  content: "\f233";
-  display: inline-block;
-  padding-left: 30px;
-  padding-right: 10px;
-  vertical-align: middle;
-  font-weight: 900;
+  content: " ";
+  padding-left: 10px;
 }
-
-.process:before {
-  font-family: "Font Awesome 5 Free";
-  content: "\f121";
-  display: inline-block;
-  padding-left: 30px;
-  padding-right: 10px;
-  vertical-align: middle;
-  font-weight: 900;
-}
-
 
 .workflow:before {
   font-family: "Font Awesome 5 Brands"  !important;
   content: "\f18c";
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
   font-weight: 900;
+  color: black;
 }
 
 .folder:before {
   font-family: "Font Awesome 5 Free";
   content: "\f07b";
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
+  color: black;
 }
-.nav-side-menu li {
-  padding-left: 0px;
-  border-left: 3px solid #2e353d;
-  border-bottom: 1px solid #23282e;
-}
-.nav-side-menu li a {
-  text-decoration: none;
-  color: #e1ffff;
-}
-.nav-side-menu li a i {
-  padding-left: 10px;
-  width: 20px;
-  padding-right: 20px;
-}
-.nav-side-menu li:hover {
-  border-left: 3px solid #d19b3d;
-  background-color: #4f5b69;
-  -webkit-transition: all 1s ease;
-  -moz-transition: all 1s ease;
-  -o-transition: all 1s ease;
-  -ms-transition: all 1s ease;
-  transition: all 1s ease;
-}
-
-
-/* @media (max-width: 1767px) {
-  .nav-side-menu {
-    position: relative;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-  .nav-side-menu .toggle-btn {
-    display: block;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 10 !important;
-    padding: 3px;
-    background-color: #ffffff;
-    color: #000;
-    width: 40px;
-    text-align: center;
-  }
-  .brand {
-    text-align: left !important;
-    font-size: 22px;
-    padding-left: 20px;
-    line-height: 50px !important;
-  }
-}@media (min-width: 267px) {
-  
-} */
 
 .nav-side-menu .menu-list .menu-content {
     display: block;
