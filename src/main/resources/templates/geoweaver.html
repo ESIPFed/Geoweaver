@@ -409,7 +409,7 @@
 							<div class="row">       
 								<div  class="col col-md-12">
 
-									<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver Services<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
+									<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
 
 									<ul class="lead" >
 										<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#processes">Processes</a> |  <a href="#workflow">Workflow </a>
@@ -418,11 +418,15 @@
 									<hr/>
 									<a id="quickstart"></a>
 									<h2>Quick Start Guide</h2>
-									<p>You will need to know your Geoweaver password before you start.  The default password can be found when Geoweaver is first started. If you don't know the password, please use command "java -jar geoweaver.jar resetpassword" to reset it. </p>
+									<h4>0. Get Geoweaver Password</h4>
+									<ul>
+										<li>Geoweaver will automatically create a password for your local machine. You need to know that password before you start. It can be found in Terminal logs when Geoweaver is first started (only shown at the first time).</li> 
+										<li>If you missed the first start logs and don't know the password, please use command <span class="badge badge-secondary">java -jar geoweaver.jar resetpassword</span> to reset it. </li>
+									</ul>
 									
 									<h4>1. Create and run a Process</h4>
 									<ul>
-										<li>Click the <i class="fa fa-plus"></i> icon after 'Process' on the righthand menu.</li>
+										<li>Click <button type="button" class="btn btn-success btn-xs" id="newprocess">New Process</button> after 'Process' on the left menu.</li>
 										<li>Select "Python" from the Language dropdown. </li>
 										<li>Input "helloworld" for the name. </li>
 										<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
@@ -436,21 +440,25 @@
 									<h4>2. Create and Run a Workflow</h4>
 									
 									<ul>
-										<li>Click twice on <i class="fa fa-plus"></i> after the "helloworld" Python process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
+										<li>Click twice on <button type="button" class="btn btn-warning btn-xs" >Add to Weaver</button> after the "helloworld" process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
 										<li>Link the two circles by dragging from one circle and dropping on another circle while pressing "SHIFT" on the keyboard. </li>
-										<li>Click <i class="fa fa-plus-square"></i> on the "Options" toolbar on the left side of the workspace. In the popup window, input "HelloWorldWorkflow" for the workflow name, and type "Testing hello world" in the Description field. Click "Confirm".</li>
+										<li>Click <i class="fa fa-plus-square"></i> on the topleft" toolbar in Weaver. In the popup window, input "HelloWorldWorkflow" as the workflow name, and type "Testing hello world" as Description. Click "Confirm".</li>
 										<li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to the default. Click "Run".</li>
 										<li>In the password dialog, enter the password for localhost. </li>
 										<li>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</li>
 										<li>Double click on the circles to check the real time output. If users need more details, click "Details" button in the popup information window. </li>
 									</ul>
 
-									<h4>3. Export and share a Workflow</h4>
+									<h4>3. Export a Workflow</h4>
 									<ul>
 										<li>Click <i class="fa fa-download"></i> when the workflow is present in the Weaver workspace. </li>
 										<li>In the popup window, there are two options: workflow with process code / workflow with process code and history. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. </li>
 										<li>Click "Confirm". A ZIP file will be automatically downloaded to your machine.</li>
-										<li>To import a workflow, click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
+									</ul>
+										
+									<h4>4. Import a workflow</h4>
+									<ul>
+										<li>Click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
 										<li>Once the uploading finished, if the workflow file is valid, it will ask "The upload workflow is valid. Do you want to proceed to save it into the database?" Click "OK".</li>
 										<li>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. </li>
 										<li>Congratulations you have learnt how to use Geoweaver!</li>
@@ -508,7 +516,7 @@
 									<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
 										These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. 
 										Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. 
-										This section is under intensive development right and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.  
+										This section is under intensive development right now. New features supporting users to create a full-stack AI workflow without writing a single line of code are on our development schedule.  
 									</p>
 									
 									<h4>Python</h4>
@@ -534,19 +542,19 @@
 					
 					<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							<div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							<h2 style="color:black">Please select a host on the right panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
+							<h2 style="color:black">Please select a host on the left panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
 							</div>
 					</div>
 						
 					<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							<div id="main-process-content" style="height:100%;">
-							<h2 style="color:black">Please select a process on the right panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
+							<h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
 							</div>
 					</div>
 					
 					<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
 							<div id="main-workflow-content" style="height:100%; padding: 10px;">
-							<h2 style="color:black">Please select a workflow on the right panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
+							<h2 style="color:black">Please select a workflow on the left panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
 							</div>
 					</div>
 						
