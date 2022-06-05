@@ -73,6 +73,35 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     }
 
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, String history_id, int exitvalue){
+
+		History h = ht.getHistoryById(history_id); 
+		
+		if(exitvalue == 0){
+			
+			h.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			h.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		ht.saveHistory(h);
+
+        log.info("Exit code: " + exitvalue);
+
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
+	}
+
 	public void updateStatus(String logs, String status){
 
 		History h = ht.getHistoryById(this.history_id);
@@ -195,7 +224,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 				
 			}
 
-			this.updateStatus(logs.toString(), "Done");
+			// this.updateStatus(logs.toString(), "Done");
 			
 			sendMessage2WebSocket("The process "+this.history_id+" is finished.");
 			

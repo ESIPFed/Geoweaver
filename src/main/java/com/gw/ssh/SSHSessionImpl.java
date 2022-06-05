@@ -317,37 +317,6 @@ public class SSHSessionImpl implements SSHSession {
         return json;
 
     }
-
-    /**
-	 * End process with exit code
-	 * @param token
-	 * @param exitvalue
-	 */
-	public void endWithCode(String token, String history_id, int exitvalue){
-
-		this.finalize();
-		
-		this.history = history_tool.getHistoryById(history_id); 
-		
-		if(exitvalue == 0){
-			
-			this.history.setIndicator(ExecutionStatus.DONE);
-
-		}else{
-
-			this.history.setIndicator(ExecutionStatus.FAILED);
-
-		}
-
-		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
-		
-		this.history_tool.saveHistory(this.history);
-
-        log.info("Exit code: " + exitvalue);
-
-		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
-
-	}
 	
 	/**
 	 * If the process ends with error
@@ -450,7 +419,7 @@ public class SSHSessionImpl implements SSHSession {
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
 
-                endWithCode(token, history_id, cmd.getExitStatus());
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 
@@ -532,7 +501,7 @@ public class SSHSessionImpl implements SSHSession {
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
                 
-                endWithCode(token, history_id, cmd.getExitStatus());
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 
@@ -604,7 +573,7 @@ public class SSHSessionImpl implements SSHSession {
                 
                 cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
 
-                endWithCode(token, history_id, cmd.getExitStatus());
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
 
             }
 

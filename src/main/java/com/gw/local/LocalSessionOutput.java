@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import javax.websocket.Session;
 
 import com.gw.database.HistoryRepository;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
@@ -120,6 +121,36 @@ public class LocalSessionOutput  implements Runnable{
 
 		CommandServlet.removeSessionById(history_id);
 			
+	}
+
+	/**
+	 * End process with exit code
+	 * @param token
+	 * @param exitvalue
+	 */
+	public void endWithCode(String token, int exitvalue){
+
+		this.stop();
+		
+		//get the latest history
+		History h = ht.getHistoryById(this.history_id); 
+		
+		if(exitvalue == 0){
+			
+			h.setIndicator(ExecutionStatus.DONE);
+
+		}else{
+
+			h.setIndicator(ExecutionStatus.FAILED);
+
+		}
+
+		h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		ht.saveHistory(h);
+		
+		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+
 	}
 
 	public void updateJupyterStatus(String logs, String status){

@@ -115,37 +115,6 @@ public class LocalSessionWinImpl implements LocalSession {
 		
 	}
 
-	/**
-	 * End process with exit code
-	 * @param token
-	 * @param exitvalue
-	 */
-	public void endWithCode(String token, int exitvalue){
-
-		this.stop();
-
-		//get the latest history
-		this.history = history_tool.getHistoryById(this.history.getHistory_id()); 
-		
-		if(exitvalue == 0){
-			
-			this.history.setIndicator(ExecutionStatus.DONE);
-
-		}else{
-
-			this.history.setIndicator(ExecutionStatus.FAILED);
-
-		}
-
-		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
-		
-		this.history_tool.saveHistory(this.history);
-
-		this.isClose = true;
-
-		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
-
-	}
 	
 	/**
 	 * If the process ends with error
@@ -253,7 +222,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 				process.waitFor();
 
-				endWithCode(token, process.exitValue());
+				sender.endWithCode(token, process.exitValue());
 
 			}
             
@@ -330,7 +299,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 				process.waitFor();
 
-				endWithCode(token, process.exitValue());
+				sender.endWithCode(token, process.exitValue());
 
 			}
 	        
@@ -412,7 +381,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 				process.waitFor();
 
-				endWithCode(token, process.exitValue());
+				sender.endWithCode(token, process.exitValue());
 
 			}
 	        
