@@ -1938,6 +1938,7 @@ GW.host = {
 			"      <th scope=\"col\">Process</th> "+
 			"      <th scope=\"col\" style=\"width:200px;\">Notes (Click to Edit)</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">End Time</th> "+
 //              "      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
@@ -1958,6 +1959,7 @@ GW.host = {
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].notes+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td>"+msg[i].end_time+"</td> "+
 //                      status_col +
 					detailbtn + 
 					"    </tr>";
