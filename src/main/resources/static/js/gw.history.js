@@ -100,6 +100,7 @@ GW.history = {
         "    <tr> "+
         "      <th scope=\"col\">Execution Id</th> "+
         "      <th scope=\"col\">Begin Time</th> "+
+        "      <th scope=\"col\">End Time</th> "+
         "      <th scope=\"col\">Notes (Click to Edit)</th> "+
         "      <th scope=\"col\">Status</th> "+
         "      <th scope=\"col\">Action</th> "+
@@ -114,6 +115,7 @@ GW.history = {
             content += "    <tr> "+
                 "      <td>"+msg[i].history_id+"</td> "+
                 "      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> "+
+                "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
                 "	   <td>"+msg[i].history_notes+"</td>"+
                 status_col +
                 "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
@@ -193,6 +195,7 @@ GW.history = {
 		"    <tr> "+
 		"      <th scope=\"col\">Execution Id</th> "+
 		"      <th scope=\"col\">Begin Time</th> "+
+        "      <th scope=\"col\">End Time</th> "+
 		"      <th scope=\"col\">Notes (Click to Edit)</th> "+
 		"      <th scope=\"col\">Status</th> "+
 		"      <th scope=\"col\">Action</th> "+
@@ -208,6 +211,7 @@ GW.history = {
 			content += "    <tr> "+
 				"      <td>"+msg[i].history_id+"</td> "+
 				"      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> "+
+                "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
 				"      <td>"+msg[i].history_notes+"</td> "+
 				status_col +
 				"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].history_id+"')\">Check</a> &nbsp;";
