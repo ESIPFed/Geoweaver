@@ -1060,6 +1060,7 @@ GW.workflow = {
 			"    <tr> "+
 			"      <th scope=\"col\">Workflow</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">End Time</th> "+
 			"      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
@@ -1074,6 +1075,7 @@ GW.workflow = {
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td>"+msg[i].end_time+"</td> "+
 					status_col+
 					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";

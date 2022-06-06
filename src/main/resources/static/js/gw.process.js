@@ -603,6 +603,7 @@ GW.process = {
 				"    <tr> "+
 				"      <th scope=\"col\">Process</th> "+
 				"      <th scope=\"col\">Begin Time</th> "+
+				"      <th scope=\"col\">End Time</th> "+
 				"      <th scope=\"col\">Status</th> "+
 				"      <th scope=\"col\">Action</th> "+
 				"    </tr> "+
@@ -630,6 +631,7 @@ GW.process = {
 					content += "    <tr> "+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
+						"      <td>"+msg[i].end_time+"</td> "+
 						status_col +
 						detailbtn + 
 						"    </tr>";
