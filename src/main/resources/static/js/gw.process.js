@@ -13,6 +13,8 @@ GW.process = {
 		jupytercode: null,
 		
 		current_pid: null,
+
+		last_executed_process_id: null,
 		
 		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 		
@@ -1209,6 +1211,8 @@ GW.process = {
 			}
 			
 			process_id = msg.id;
+
+			GW.process.process_id = msg.id;
 			
 			process_name = msg.name;
 
@@ -2041,6 +2045,8 @@ GW.process = {
 
 			req.operation = "ShowResultMap";
 
+			GW.process.last_executed_process_id = req.processId;
+
 			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
 
 			$.ajax({
@@ -2054,7 +2060,9 @@ GW.process = {
 			}).done(function(msg){
 				
 				if(msg){
+
 					console.log(msg)
+					
 					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){
