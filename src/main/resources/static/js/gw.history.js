@@ -251,9 +251,9 @@ GW.history = {
 
         table.MakeCellsEditable({
             "onUpdate": GW.history.processHistoryTableCellUpdateCallBack,
-            "columns": [2],
+            "columns": [3],
             "allowNulls": {
-                "columns": [2],
+                "columns": [3],
                 "errorClass": 'error'
             },
             "confirmationButton": { // could also be true
@@ -262,7 +262,7 @@ GW.history = {
             },
             "inputTypes": [
                 {
-                    "column": 2,
+                    "column": 3,
                     "type": "text",
                     "options": null
                 }]
