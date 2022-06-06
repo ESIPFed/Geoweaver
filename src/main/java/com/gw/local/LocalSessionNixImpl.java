@@ -191,9 +191,7 @@ public class LocalSessionNixImpl implements LocalSession {
 				process.waitFor();
 
 			}
-
 			
-
             log.info("returning to the client..");
     		
 		} catch (Exception e) {
@@ -338,7 +336,7 @@ public class LocalSessionNixImpl implements LocalSession {
             thread.start();
             
 			sender.setProcess(process);
-			
+
             log.info("returning to the client..");
             
 			if(isjoin){
