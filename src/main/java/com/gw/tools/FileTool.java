@@ -127,8 +127,8 @@ public class FileTool {
 			
 		}finally {
             
-        	if(!bt.isNull(is))is.close();
-            if(!bt.isNull(os))os.close();
+        	if(!BaseTool.isNull(is))is.close();
+            if(!BaseTool.isNull(os))os.close();
         }
 		
     }

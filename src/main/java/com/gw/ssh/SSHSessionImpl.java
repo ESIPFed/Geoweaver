@@ -30,15 +30,17 @@ import java.io.OutputStream;
 import java.security.PublicKey;
 import java.text.Normalizer;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.gw.database.HostRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.jpa.Environment;
+import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.Host;
+import com.gw.server.CommandServlet;
 import com.gw.tools.EnvironmentTool;
 import com.gw.tools.HistoryTool;
-import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 
 import org.apache.commons.text.StringEscapeUtils;
@@ -46,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
@@ -119,28 +120,10 @@ public class SSHSessionImpl implements SSHSession {
 
     private boolean isTerminal;
 
-    /**********************************************/
-    /** section of the geoweaver history records **/
-    /**********************************************/
-    // private String history_input;
-    //
-    // private String history_output;
-    //
-    // private String history_begin_time;
-    //
-    // private String history_end_time;
-    //
-    // private String history_process;
-    //
-
     private History history;
 
     @Autowired
     private HistoryTool history_tool;
-
-    /**********************************************/
-    /** end of history section **/
-    /**********************************************/
 
     public SSHSessionImpl() {
 
@@ -150,22 +133,27 @@ public class SSHSessionImpl implements SSHSession {
 
     }
 
+    @Override
     public String getHistory_process() {
         return history.getHistory_process();
     }
 
+    @Override
     public void setHistory_process(String history_process) {
         history.setHistory_process(history_process);
     }
 
+    @Override
     public String getHistory_id() {
         return history.getHistory_id();
     }
 
+    @Override
     public SSHClient getSsh() {
         return ssh;
     }
 
+    @Override
     public Session getSSHJSession() {
         return session;
     }
@@ -174,6 +162,7 @@ public class SSHSessionImpl implements SSHSession {
         this.session = session;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -221,7 +210,6 @@ public class SSHSessionImpl implements SSHSession {
 
                 @Override
                 public List<String> findExistingAlgorithms(String hostname, int port) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
             });
@@ -307,8 +295,11 @@ public class SSHSessionImpl implements SSHSession {
 
     @Override
     public void saveHistory(String logs, String status) {
+
         history.setHistory_output(logs);
+        
         history.setIndicator(status);
+        
         this.history_tool.saveHistory(history);
 
     }
@@ -326,6 +317,32 @@ public class SSHSessionImpl implements SSHSession {
         return json;
 
     }
+	
+	/**
+	 * If the process ends with error
+	 * @param token
+	 * @param message
+	 */
+	public void endWithError(String token, String history_id, String message) {
+		
+		this.finalize();
+
+        this.history = history_tool.getHistoryById(history_id); 
+		
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
+		
+		this.history.setHistory_output(message);
+		
+		this.history.setIndicator(ExecutionStatus.FAILED);
+		
+		this.history_tool.saveHistory(this.history);
+
+		if(!BaseTool.isNull(message))
+            CommandServlet.sendMessageToSocket(token, message);
+	
+		CommandServlet.sendMessageToSocket(token, "The process " + this.history.getHistory_id() + " is stopped.");
+	
+	}
 
     @Override
     public void runPython(String history_id, String python, String processid, boolean isjoin, String bin, String pyenv,
@@ -359,7 +376,7 @@ public class SSHSessionImpl implements SSHSession {
 
             filename = filename.trim().endsWith(".py") ? filename : filename + ".py";
 
-            if (bt.isNull(bin) || "default".equals(bin)) {
+            if (BaseTool.isNull(bin) || "default".equals(bin)) {
 
                 cmdline += "python " + filename + "; ";
 
@@ -369,7 +386,11 @@ public class SSHSessionImpl implements SSHSession {
 
             }
 
+            cmdline += "exitcode=$?;";
+
             cmdline += "rm -rf " + workspace_folder_path + "/" + history_id + ";"; // remove the code
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -394,12 +415,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
@@ -415,7 +443,7 @@ public class SSHSessionImpl implements SSHSession {
 
             String cmdline = "";
 
-            if (!bt.isNull(basedir) || "default".equals(basedir)) {
+            if (!BaseTool.isNull(basedir) || "default".equals(basedir)) {
 
                 cmdline += "cd " + basedir + "; ";
 
@@ -427,13 +455,15 @@ public class SSHSessionImpl implements SSHSession {
                                                                                              // transfer file like the
                                                                                              // python
 
-            if (bt.isNull(bin)) {
+            if (BaseTool.isNull(bin)) {
                 cmdline += "jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-" + history_id
                         + ".ipynb;";
             } else {
                 cmdline += bin + "-m jupyter nbconvert --inplace --allow-erros --to notebook --execute jupyter-"
                         + history_id + ".ipynb;";
             }
+
+            cmdline += "exitcode=$?;";
 
             cmdline += "echo '*<*$$$*<*';";
 
@@ -442,6 +472,8 @@ public class SSHSessionImpl implements SSHSession {
             cmdline += "echo '*>*$$$*>*';";
 
             cmdline += "rm -f ./jupyter-" + history_id + ".ipynb; "; // remove the script finally, leave no trace behind
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -465,12 +497,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+                
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
@@ -501,7 +540,11 @@ public class SSHSessionImpl implements SSHSession {
 
             cmdline += "./geoweaver-" + history_id + ".sh;";
 
+            cmdline += "exitcode=$?;";
+
             cmdline += "rm -rf ~/gw-workspace/" + history_id + "; "; // remove the script finally, leave no trace behind
+
+            cmdline += "exit $exitcode;";
 
             log.info(cmdline);
 
@@ -526,12 +569,19 @@ public class SSHSessionImpl implements SSHSession {
 
             log.info("returning to the client..");
 
-            if (isjoin)
-                thread.join(7 * 24 * 60 * 60 * 1000); // longest waiting time - a week
+            if (isjoin){
+                
+                cmd.join(7, TimeUnit.DAYS); // longest waiting time - a week
+
+                cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
+
+            }
 
         } catch (Exception e) {
 
             e.printStackTrace();
+
+            // this.endWithError(token, history_id, e.getLocalizedMessage());
 
         }
 
@@ -545,9 +595,9 @@ public class SSHSessionImpl implements SSHSession {
 
     @Override
     public void setWebSocketSession(WebSocketSession session) {
-        if (!bt.isNull(sessionsender))
+        if (!BaseTool.isNull(sessionsender))
             this.sessionsender.setWebSocketSession(session); // connect WebSocket with SSH output thread
-        if (!bt.isNull(cmdsender))
+        if (!BaseTool.isNull(cmdsender))
             this.cmdsender.setWebSocketSession(session);
     }
 
@@ -602,7 +652,7 @@ public class SSHSessionImpl implements SSHSession {
 
                 for (String pypath : pythonarray) {
 
-                    if (!bt.isNull(pypath)) {
+                    if (!BaseTool.isNull(pypath)) {
 
                         pypath = pypath.trim();
 
@@ -620,7 +670,7 @@ public class SSHSessionImpl implements SSHSession {
         }
 
         // parse Conda results
-        if (!bt.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")) { // pass if conda is not
+        if (!BaseTool.isNull(lines[nextlineindex]) && lines[nextlineindex].startsWith("# conda")) { // pass if conda is not
                                                                                               // found
 
             for (int i = nextlineindex + 1; i < lines.length; i++) {
@@ -634,7 +684,7 @@ public class SSHSessionImpl implements SSHSession {
 
                     String bin = vals[vals.length - 1] + "/bin/python"; // on linux python command is under bin folder
 
-                    String name = bt.isNull(vals[0]) ? bin : vals[0];
+                    String name = BaseTool.isNull(vals[0]) ? bin : vals[0];
 
                     et.addNewEnvironment(bin, old_envlist, hostid, name);
 
@@ -666,7 +716,7 @@ public class SSHSessionImpl implements SSHSession {
         } finally {
 
             finalize();
-            // if(!bt.isNull(session))
+            // if(!BaseTool.isNull(session))
             // try {
 
             // session.close();

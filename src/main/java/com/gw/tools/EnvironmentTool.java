@@ -62,7 +62,7 @@ public class EnvironmentTool {
 
 		Environment theenv = this.getEnvironmentByBin(pypath, old_envlist);
 
-		if(bt.isNull(theenv)){
+		if(BaseTool.isNull(theenv)){
 
 			Environment env = new Environment();
 			env.setId(new RandomString(6).nextString());
@@ -300,7 +300,7 @@ public class EnvironmentTool {
 			
 			for(Environment env: envlist){
 
-				if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+				if(!BaseTool.isNull(env.getBin()) && env.getBin().equals(bin)){
 	
 					theenv = env;
 	
@@ -321,7 +321,7 @@ public class EnvironmentTool {
 
 		for(Environment env: envlist){
 
-			if(!bt.isNull(env.getBin()) && env.getBin().equals(bin)){
+			if(!BaseTool.isNull(env.getBin()) && env.getBin().equals(bin)){
 
 				exists = true;
 
@@ -348,7 +348,7 @@ public class EnvironmentTool {
 		
 		try {
 			
-			if(!bt.isNull(bin) && !bt.isNull(env) && !bt.isNull(basedir)){
+			if(!BaseTool.isNull(bin) && !BaseTool.isNull(env) && !BaseTool.isNull(basedir)){
 				
 				Iterator<Environment> eit = environmentrepository.findEnvByID_BIN(hostid, bin).iterator();
 				

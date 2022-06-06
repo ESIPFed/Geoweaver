@@ -361,7 +361,7 @@ public class BaseTool {
 	 * @return
 	 * true or false
 	 */
-	public boolean isNull(Object obj){
+	public static boolean isNull(Object obj){
 		boolean isnull=false;
 		if(obj==null || obj == "" || "".equals(obj)){
 			isnull = true;
@@ -1386,9 +1386,7 @@ public class BaseTool {
     	return currentTime;
     }
     
-    public Date getCurrentSQLDate(){
-    	
-//    	java.sql.Date newdate = new java.sql.Date(new java.util.Date().getTime());
+    public static Date getCurrentSQLDate(){
     	
     	Date newdate = new Date();
     	

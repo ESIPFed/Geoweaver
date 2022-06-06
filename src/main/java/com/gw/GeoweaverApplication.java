@@ -57,7 +57,7 @@ public class GeoweaverApplication {
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
 
-            openHomePage();	
+            // openHomePage();	
 
             addDefaultPublicUser();
 
@@ -112,7 +112,7 @@ public class GeoweaverApplication {
 
             BaseTool bt = BeanTool.getBean(BaseTool.class);
 
-            if(bt.isNull(bt.getLocalhostPassword())){
+            if(BaseTool.isNull(bt.getLocalhostPassword())){
 
                 String initialpassword = new RandomString(30).nextString();
 

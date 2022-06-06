@@ -114,6 +114,7 @@ public class LocalSessionWinImpl implements LocalSession {
 		this.history = history;
 		
 	}
+
 	
 	/**
 	 * If the process ends with error
@@ -122,33 +123,9 @@ public class LocalSessionWinImpl implements LocalSession {
 	 */
 	public void endWithError(String token, String message) {
 		
-		try {
-			
-			Session wsout = CommandServlet.findSessionById(token);
-			
-			// synchronized(wsout) {
-
-				if(!bt.isNull(wsout) && wsout.isOpen()) {
-					
-					log.info("The failed message has been sent to client");
-					
-					wsout.getBasicRemote().sendText(message);
-					
-					wsout.getBasicRemote().sendText("======= Process " + this.history.getHistory_id() + " ended.");
-					
-				}
-				
-			// }
-			
-		} catch (IOException e1) {
-			
-			e1.printStackTrace();
-			
-		}
-		
 		this.stop();
 		
-		this.history.setHistory_end_time(bt.getCurrentSQLDate());
+		this.history.setHistory_end_time(BaseTool.getCurrentSQLDate());
 		
 		this.history.setHistory_output(message);
 		
@@ -157,6 +134,10 @@ public class LocalSessionWinImpl implements LocalSession {
 		this.history_tool.saveHistory(this.history);
 
 		this.isClose = true;
+
+		CommandServlet.sendMessageToSocket(token, message);
+
+		CommandServlet.sendMessageToSocket(token, "======= Process " + this.history.getHistory_id() + " ended.");
 		
 	}
 	
@@ -236,8 +217,15 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread from local command");
             
             thread.start();
+			
+			sender.setProcess(process);
 
-			if(isjoin) process.waitFor();
+			if(isjoin){
+
+				process.waitFor();
+
+			}
+
             
             log.info("returning to the client..");
     		
@@ -279,7 +267,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			pythonfilename = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/" + pythonfilename;
     		
-			if(bt.isNull(bin)){
+			if(BaseTool.isNull(bin)){
 				builder.command(new String[] {"jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
 			}else{
 				builder.command(new String[] {bin, "-m", "jupyter", "nbconvert", "--inplace", "--to", "notebook", "--allow-errors", "--execute", pythonfilename} );
@@ -305,11 +293,16 @@ public class LocalSessionWinImpl implements LocalSession {
             log.info("starting sending thread");
             
             thread.start();
+
+			sender.setProcess(process);
             
             log.info("returning to the client..");
             
-			if(isjoin) process.waitFor();
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
+			if(isjoin){
+
+				process.waitFor();
+
+			}
 	        
             log.info("Local Session Windows Implementation is done.");
             
@@ -355,7 +348,7 @@ public class LocalSessionWinImpl implements LocalSession {
     		
     		if(!pythonfilename.endsWith(".py")) pythonfilename += ".py";
 
-			if(bt.isNull(bin)) bin = "python";
+			if(BaseTool.isNull(bin)) bin = "python";
     		
     		builder.command(new String[] {bin, pythonfilename} );
     		
@@ -384,11 +377,16 @@ public class LocalSessionWinImpl implements LocalSession {
             thread.start();
             
             log.info("returning to the client..");
-            
-			if(isjoin) process.waitFor();
 
-            // if(isjoin) thread.join(7*24*60*60*1000); //longest waiting time - a week
-	        
+			sender.setProcess(process);
+            
+			if(isjoin){
+
+				process.waitFor();
+
+			}
+
+
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -409,23 +407,15 @@ public class LocalSessionWinImpl implements LocalSession {
 		throw new RuntimeException("Not Supported Yet");
 		
 	}
-
 	
-
 	@Override
 	public boolean stop() {
-
-		// log.debug("Is process alive? " + process.isAlive());
-
-		// log.debug("Is thread alive? " + thread.isAlive()); //this thread will stop by itself after the task is finished.
-
-		// if(thread.isAlive()) thread.interrupt();
 
 		log.debug("for localhost session, there is nothing to manually stop. Just wait for the process to finish. That is all.");
 		
 		try{
 
-			if(!bt.isNull(process)) {
+			if(!BaseTool.isNull(process)) {
 			
 				process.destroy();
 				
@@ -438,23 +428,6 @@ public class LocalSessionWinImpl implements LocalSession {
 			return false;
 
 		}
-		
-		
-		// if(!bt.isNull(thread)) {
-			
-		// 	thread.interrupt();
-			
-		// }
-		
-		// if(!bt.isNull(input)) {
-			
-		// 	try {
-		// 		input.close();
-		// 	} catch (IOException e) {
-		// 		e.printStackTrace();
-		// 	}
-			
-		// }
 		
 	}
 
@@ -482,7 +455,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			
 			Environment theenv = et.getEnvironmentByBin(line, old_envlist);
 
-			if(bt.isNull(theenv)){
+			if(BaseTool.isNull(theenv)){
 
 				Environment env = new Environment();
 				env.setId(new RandomString(6).nextString());
@@ -525,7 +498,7 @@ public class LocalSessionWinImpl implements LocalSession {
 			//get all the python path
 			for(String line: stdout){
 
-				if(!bt.isNull(line) && !line.startsWith("#")){
+				if(!BaseTool.isNull(line) && !line.startsWith("#")){
 
 					String[] vals = line.split("\\s+");
 
@@ -533,11 +506,11 @@ public class LocalSessionWinImpl implements LocalSession {
 
 					String bin = vals[vals.length-1]+"\\python.exe";
 
-					String name = bt.isNull(vals[0])?bin:vals[0];
+					String name = BaseTool.isNull(vals[0])?bin:vals[0];
 
 					Environment theenv = et.getEnvironmentByBin(bin, old_envlist);
 
-					if(bt.isNull(theenv)){
+					if(BaseTool.isNull(theenv)){
 
 						Environment env = new Environment();
 						env.setId(new RandomString(6).nextString());
@@ -559,8 +532,6 @@ public class LocalSessionWinImpl implements LocalSession {
 					}
 
 				}
-				
-				
 				
 			}
 
@@ -598,12 +569,9 @@ public class LocalSessionWinImpl implements LocalSession {
 
 	@Override
 	public boolean isClose() {
-		// TODO Auto-generated method stub
+
 		return false;
+
 	}
-
-	
-
-	
 
 }

@@ -137,7 +137,7 @@ public class UserTool {
 
         String userid = "111111";
 
-        if(!bt.isNull(us)){
+        if(!BaseTool.isNull(us)){
 
             if(us.getIp_address().equals(ipaddress)){
 
@@ -161,15 +161,15 @@ public class UserTool {
     
     public String getClientIp(HttpServletRequest request) {
 		String ipAddress = request.getHeader("X-Forwarded-For");
-		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(BaseTool.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("Proxy-Client-IP");
 		}
 		
-		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(BaseTool.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("WL-Proxy-Client-IP");
 		}
 		
-		if(bt.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
+		if(BaseTool.isNull(ipAddress) || "unknown".equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getRemoteAddr();
 			if(LOCALHOST_IPV4.equals(ipAddress) || LOCALHOST_IPV6.equals(ipAddress)) {
 				try {
@@ -181,7 +181,7 @@ public class UserTool {
 			}
 		}
 		
-		if(!bt.isNull(ipAddress) 
+		if(!BaseTool.isNull(ipAddress) 
 				&& ipAddress.length() > 15
 				&& ipAddress.indexOf(",") > 0) {
 			ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
@@ -199,7 +199,7 @@ public class UserTool {
             UserSession us = getBySessionId(jssessionid);
 
 
-            if(!bt.isNull(us)){
+            if(!BaseTool.isNull(us)){
 
 
                 userid = us.getUserid();
@@ -273,7 +273,7 @@ public class UserTool {
 
         pt.getAllProcesses().forEach(p->{
 
-            if(bt.isNull(p.getOwner())){ 
+            if(BaseTool.isNull(p.getOwner())){ 
 
                 p.setOwner("111111");
 
@@ -281,7 +281,7 @@ public class UserTool {
 
                 pt.save(p);
 
-            }else if(bt.isNull(p.getConfidential())){
+            }else if(BaseTool.isNull(p.getConfidential())){
 
                 p.setConfidential("FALSE");
 
@@ -293,7 +293,7 @@ public class UserTool {
 
         ht.getAllHosts().forEach(h->{
 
-            if(bt.isNull(h.getOwner())){
+            if(BaseTool.isNull(h.getOwner())){
 
                 h.setOwner("111111");
 
@@ -301,7 +301,7 @@ public class UserTool {
 
                 ht.save(h);
 
-            }else if(bt.isNull(h.getConfidential())){
+            }else if(BaseTool.isNull(h.getConfidential())){
 
                 h.setConfidential("FALSE");
 
@@ -313,7 +313,7 @@ public class UserTool {
 
         wt.getAllWorkflow().forEach(w->{
 
-            if(bt.isNull(w.getOwner())){
+            if(BaseTool.isNull(w.getOwner())){
 
                 w.setOwner("111111");
 

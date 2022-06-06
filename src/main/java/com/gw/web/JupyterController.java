@@ -137,7 +137,7 @@ public class JupyterController {
 	 */
 	String addURLProxy(String resp, String hostid) {
 		
-		if(!bt.isNull(resp))
+		if(!BaseTool.isNull(resp))
 			resp = resp
 				//for jupyter notebook
 //				.replaceAll(scheme + "://" + server + ":" + port, replacement)
@@ -399,7 +399,7 @@ public class JupyterController {
     	
 		List<String> cts = headers.get(key);
     	
-    	if(!bt.isNull(cts))
+    	if(!BaseTool.isNull(cts))
     		contenttype = cts.get(0);
     	
 //    	logger.debug(key + " : " + contenttype);
@@ -953,8 +953,8 @@ public class JupyterController {
 
 			byte[] newbody = null;
 
-			if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
-			 && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+			if(!BaseTool.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			 && !(!BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
 
 				newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
 
@@ -1058,8 +1058,8 @@ public class JupyterController {
 
 			byte[] newbody = null;
 
-			if(!bt.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
-			 && !(!bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
+			if(!BaseTool.isNull(responseEntity.getBody()) && !targeturl.contains(".png") && !targeturl.contains(".woff")
+			 && !(!BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font"))) ){
 
 				newbody =  addURLProxy(new String(responseEntity.getBody()), hostid).getBytes();
 
@@ -1105,13 +1105,13 @@ public class JupyterController {
 		    	
 // 		    	String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
 		    	
-// 		    	// if(bt.isNull(newbody)|| ( !bt.isNull(contenttype) && (contenttype.contains("image")
+// 		    	// if(BaseTool.isNull(newbody)|| ( !BaseTool.isNull(contenttype) && (contenttype.contains("image")
 // 				// 	|| contenttype.contains("font")) )) {
-// 				if( !bt.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font")) ) {
+// 				if( !BaseTool.isNull(contenttype) && (contenttype.contains("image") || contenttype.contains("font")) ) {
 // //			    	HttpHeaders headers = updateHeader(responseEntity.getHeaders(), newbody, hostid);
 // //			    	
 // //			    	resp = new ResponseEntity<byte[]>(
-// //							bt.isNull(newbody)?null:newbody.getBytes("UTF-8"), 
+// //							BaseTool.isNull(newbody)?null:newbody.getBytes("UTF-8"), 
 // //				    		headers, 
 // //				    		responseEntity.getStatusCode());;
 // 		    		// find a way not send the same request twice just because the type is not byte for image/font files
@@ -1121,7 +1121,7 @@ public class JupyterController {
 		    		
 // 		    	}else {
 		    		
-// 			    	if(bt.isNull(responseEntity.getBody())){
+// 			    	if(BaseTool.isNull(responseEntity.getBody())){
 // 						resp = new ResponseEntity<byte[]>(
 // 								null,
 // 								headers, 
@@ -1273,7 +1273,7 @@ public class JupyterController {
 		
 		int bodylength = 0;
 
-		if(!bt.isNull(returnbody))
+		if(!BaseTool.isNull(returnbody))
 			bodylength = returnbody.length;
 
 		return updateHeader(oldheaders, bodylength, hostid);
@@ -1291,7 +1291,7 @@ public class JupyterController {
 	HttpHeaders updateHeader(HttpHeaders oldheaders, String returnbody, String hostid) {
 		
 		int bodylength = 0;
-		if(!bt.isNull(returnbody))
+		if(!BaseTool.isNull(returnbody))
 			try {
 				bodylength = returnbody.getBytes("UTF-8").length;
 			} catch (UnsupportedEncodingException e) {
@@ -1340,7 +1340,7 @@ public class JupyterController {
 	            
 	            map.add((String)mapElement.getKey(), ((String[])(mapElement.getValue()))[0]);
 	            
-	            if(!bt.isNull(reqstr.toString())) {
+	            if(!BaseTool.isNull(reqstr.toString())) {
 	            	
 	            	reqstr.append("&");
 	            	
@@ -1421,7 +1421,7 @@ public class JupyterController {
 	            
 	            map.add((String)mapElement.getKey(), ((String[])(mapElement.getValue()))[0]);
 	            
-	            if(!bt.isNull(reqstr.toString())) {
+	            if(!BaseTool.isNull(reqstr.toString())) {
 	            	
 	            	reqstr.append("&");
 	            	
@@ -1531,7 +1531,7 @@ public class JupyterController {
 	        	
 	        	String value = (((String[])(mapElement.getValue()))[0]);
 	        	
-	        	if(!bt.isNull(reqstr.toString())) {
+	        	if(!BaseTool.isNull(reqstr.toString())) {
 	            	
 	            	reqstr.append("&");
 	            	
