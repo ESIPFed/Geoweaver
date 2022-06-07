@@ -1,5 +1,6 @@
 package com.gw.server;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gw.ssh.SSHSession;
+import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
 /**
@@ -32,7 +34,7 @@ import com.gw.web.GeoweaverController;
 @ServerEndpoint(value = "/command-socket")
 public class CommandServlet {
 	
-	Logger logger = LoggerFactory.getLogger(getClass());
+	static Logger logger = LoggerFactory.getLogger(CommandServlet.class);
 	
 	/**
 	 * WebSocket Session between the client and Geoweaver
@@ -236,11 +238,7 @@ public class CommandServlet {
     public void close(final Session session) {
     	
 		try {
-
-            // printoutCallStack(); 
-
-            // session.getBasicRemote().sendText("Warning: Websocket Channel is going to close");
-			
+            
     		logger.debug("Geoweaver Shell Channel closed.");
     		
     		logger.debug("websocket session closed:" + session.getId());
@@ -279,6 +277,26 @@ public class CommandServlet {
         	se = peers.get(token);
         }
         return se;
+    }
+
+    public static void sendMessageToSocket(String token, String message){
+
+        try {
+			
+			Session wsout = CommandServlet.findSessionById(token);
+			
+			if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
+				
+				wsout.getBasicRemote().sendText(message);
+				
+			}
+			
+		} catch (IOException e1) {
+			
+			e1.printStackTrace();
+			
+		}
+
     }
 
     public static void removeSessionById(String token){

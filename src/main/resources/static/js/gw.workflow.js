@@ -1060,6 +1060,7 @@ GW.workflow = {
 			"    <tr> "+
 			"      <th scope=\"col\">Workflow</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">End Time</th> "+
 			"      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
@@ -1074,6 +1075,7 @@ GW.workflow = {
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td>"+msg[i].end_time+"</td> "+
 					status_col+
 					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";
@@ -1281,11 +1283,11 @@ GW.workflow = {
 
 		if(one.name=="") one.name = "null"
 		
-		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
+		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + 
 				
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\"> " + 
-	    		
-				one.name + "</a> "+
+				"\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">"+
+				
+				"<a href=\"javascript:void(0)\"> " + one.name + "</a> "+
 				
 //				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
 //	        	

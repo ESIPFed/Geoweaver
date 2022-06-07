@@ -308,16 +308,26 @@ GW.ssh = {
 	    	$("#log-window").append(newline);
 
 			//don't output log to process log if the current executed is workflow
-			if($("#process-log-window").length && GW.workspace.currentmode == 1){
+			if(GW.process.last_executed_process_id==GW.process.process_id){
+
+				if($("#process-log-window").length && GW.workspace.currentmode == 1){
 				
-				if(this.current_process_log_length > 5000){
-					$("#process-log-window").find('p:first').remove();
-					this.current_process_log_length -= 1
+					if(this.current_process_log_length > 5000){
+			
+						$("#process-log-window").find('p:first').remove();
+			
+						this.current_process_log_length -= 1
+			
+					}
+			
+					$("#process-log-window").append(newline);
+			
+					this.current_process_log_length += 1
+					
 				}
-				$("#process-log-window").append(newline);
-				this.current_process_log_length += 1
-				
+			
 			}
+			
 
 	    },
 

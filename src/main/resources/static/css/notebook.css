@@ -41,7 +41,7 @@
 .nb-raw-cell {
     white-space: pre-wrap;
     background-color: #f5f2f0;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-family: Roboto,sans-serif;
     padding: 1em;
     margin: .5em 0;
 }
@@ -59,7 +59,7 @@
 
 .nb-output:before, .nb-input:before {
     position: absolute;    
-    font-family: monospace;
+    font-family: Roboto,sans-serif;
     color: #999;
     left: -8.5em;
     width: 7em;

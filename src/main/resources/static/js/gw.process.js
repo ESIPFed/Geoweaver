@@ -13,6 +13,8 @@ GW.process = {
 		jupytercode: null,
 		
 		current_pid: null,
+
+		last_executed_process_id: null,
 		
 		editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 		
@@ -603,6 +605,7 @@ GW.process = {
 				"    <tr> "+
 				"      <th scope=\"col\">Process</th> "+
 				"      <th scope=\"col\">Begin Time</th> "+
+				"      <th scope=\"col\">End Time</th> "+
 				"      <th scope=\"col\">Status</th> "+
 				"      <th scope=\"col\">Action</th> "+
 				"    </tr> "+
@@ -630,6 +633,7 @@ GW.process = {
 					content += "    <tr> "+
 						"      <td>"+msg[i].name+"</td> "+
 						"      <td>"+msg[i].begin_time+"</td> "+
+						"      <td>"+msg[i].end_time+"</td> "+
 						status_col +
 						detailbtn + 
 						"    </tr>";
@@ -1207,6 +1211,8 @@ GW.process = {
 			}
 			
 			process_id = msg.id;
+
+			GW.process.process_id = msg.id;
 			
 			process_name = msg.name;
 
@@ -1696,20 +1702,18 @@ GW.process = {
 		 */
 		addMenuItem: function(one, folder){
 			
-			var menuItem = " <li class=\"process\" id=\"process-" + one.id + "\">"+
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'process')\">" + 
-				one.name + "</a>"+
-//				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.process.history('"+
-//				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
-				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Add an instance\" onclick=\"GW.workspace.theGraph.addProcess('"+
-				one.id+"','"+one.name+"')\"></i>"+
-//				"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this process\" onclick=\"GW.menu.del('"+
-//				one.id+"','process')\"></i>"+
-//				"<i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.edit('"+
-//				one.id+"')\" data-toggle=\"tooltip\" title=\"Edit Process\"></i>"+
-//				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.process.runProcess('"+
-//				one.id+"', '" + one.name + "', '" + one.desc +"')\" data-toggle=\"tooltip\" title=\"Run Process\"></i>"+
-			" </li>";
+			var menuItem = `<li class="process" id="process-${one.id}" 
+								onclick="var event = arguments[0] || window.event; event.stopPropagation();
+								GW.menu.details('${one.id}', 'process')">
+								<div class="row bare-window">
+									<div class="col-md-9 bare-window"><span style="word-wrap:break-word;">&nbsp;&nbsp;&nbsp;${one.name}</span></div>
+									<div class="col-md-3 bare-window">
+										<button type="button" class="btn btn-warning btn-xs pull-right right-button-vertical-center" 
+										onclick="var event = arguments[0] || window.event; event.stopPropagation();
+										GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
+									</div>
+								</div>
+							</li>`;
 			
 			if(folder!=null){
 				
@@ -1717,8 +1721,7 @@ GW.process = {
 				
 				if(!folder_ul.length){
 					
-					$("#"+GW.menu.getPanelIdByType("process"))
-						.append("<li class=\"folder\" id=\"process_folder_"+ folder +
+					$("#"+GW.menu.getPanelIdByType("process")).append("<li class=\"folder\" id=\"process_folder_"+ folder +
 						"\" data-toggle=\"collapse\" data-target=\"#process_folder_"+ folder +"_target\"> "+
 					    " <a href=\"javascript:void(0)\"> "+ folder +" </a>"+
 					    " </li>"+
@@ -2042,6 +2045,8 @@ GW.process = {
 
 			req.operation = "ShowResultMap";
 
+			GW.process.last_executed_process_id = req.processId;
+
 			GW.process.showSSHOutputLog({token: GW.main.getJSessionId(), history_id: newhistid});
 
 			$.ajax({
@@ -2055,7 +2060,9 @@ GW.process = {
 			}).done(function(msg){
 				
 				if(msg){
+
 					console.log(msg)
+					
 					msg = GW.general.parseResponse(msg);
 					
 					if(msg.ret == "success"){

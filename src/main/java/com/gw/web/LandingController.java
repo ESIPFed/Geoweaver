@@ -65,7 +65,7 @@ public class LandingController {
         //
         Workflow wf = wt.getById(workflow_id);
 
-        if(!bt.isNull(wf)){
+        if(!BaseTool.isNull(wf)){
 
             if("FALSE".equals(wf.getConfidential())){
 

@@ -147,7 +147,7 @@ public class ProcessTool {
 	
 	public String escapeJupyter(String code){
 
-		if(!bt.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport") 
+		if(!BaseTool.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport") 
 			|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\""))){
 
 				code = this.unescape(code);
@@ -161,7 +161,7 @@ public class ProcessTool {
 		
 		GWProcess p = getProcessById(id);
 
-		if(!bt.isNull(p.getCode()) && (p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
+		if(!BaseTool.isNull(p.getCode()) && (p.getCode().contains("bash\\\n") || p.getCode().contains("\\\nimport") 
 			|| p.getCode().contains("\\\"operation\\\"") || p.getCode().contains("\\\"cells\\\""))){
 
 			p.setCode(this.unescape(p.getCode()));
@@ -221,7 +221,7 @@ public class ProcessTool {
 		
 		String resp = code;
 		
-		if(!bt.isNull(code)) {
+		if(!BaseTool.isNull(code)) {
 			
 			resp = StringEscapeUtils.unescapeJson(code);
 			
@@ -272,7 +272,7 @@ public class ProcessTool {
 			
 			GWProcess p = getProcessById(h.getHistory_process());
 			
-			if(!bt.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
+			if(!BaseTool.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
 				
 				String newfilename = p.getName();
 				
@@ -486,7 +486,7 @@ public class ProcessTool {
 		
 		GWProcess p = processrepository.findById(pid).get();
 		
-		return bt.isNull(p.getLang())?p.getDescription():p.getLang();
+		return BaseTool.isNull(p.getLang())?p.getDescription():p.getLang();
 		
 		
 	}
@@ -508,12 +508,12 @@ public class ProcessTool {
 			//stop remote ssh session
 			SSHSession remotesession = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
 			
-			if(!bt.isNull(remotesession)) remotesession.getSSHJSession().close();
+			if(!BaseTool.isNull(remotesession)) remotesession.getSSHJSession().close();
 
 			//stop local session
 			LocalSession localsession = GeoweaverController.sessionManager.localSessionByToken.get(hisid);
 
-			if(!bt.isNull(localsession)) localsession.stop();
+			if(!BaseTool.isNull(localsession)) localsession.stop();
 			
 			history_tool.stop(hisid);
 			
@@ -620,7 +620,7 @@ public class ProcessTool {
 
 				History hist = resop.get();
 
-				if(!bt.isNull(hist)) {
+				if(!BaseTool.isNull(hist)) {
 
 					GWProcess thep = processrepository.findById(hist.getHistory_process()).get();
 					

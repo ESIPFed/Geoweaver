@@ -72,7 +72,7 @@ public class LocalhostTool {
 
 		History history = histool.getHistoryById(history_id);
 
-		if(bt.isNull(history)){
+		if(BaseTool.isNull(history)){
 
 			history = new History();
 
@@ -82,7 +82,7 @@ public class LocalhostTool {
 
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 		
 		history.setHistory_input(script);
 
@@ -241,7 +241,7 @@ public class LocalhostTool {
 			
 			// javax.websocket.Session ws = CommandServlet.findSessionById(token);
 			
-			// if(!bt.isNull(ws)) t.startMonitor(ws);
+			// if(!BaseTool.isNull(ws)) t.startMonitor(ws);
 			
 			// if(isjoin) {
 			

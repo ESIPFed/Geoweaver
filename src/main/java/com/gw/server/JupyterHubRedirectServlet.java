@@ -81,7 +81,7 @@ public class JupyterHubRedirectServlet{
 //		SessionPair pair = findPairBy1stSession(b2gsession);
 		SessionPair pair = JupyterSessionPairTool.findPairByID(b2gsession.getQueryString());
 		
-		if(bt.isNull(pair)) {
+		if(BaseTool.isNull(pair)) {
 			
 			Java2JupyterClientEndpoint client = BeanTool.getBean(Java2JupyterClientEndpoint.class);
 			
@@ -188,7 +188,7 @@ public class JupyterHubRedirectServlet{
     		
     		SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
     		
-    		if(bt.isNull(pair)) {
+    		if(BaseTool.isNull(pair)) {
     			
     			logger.error("Cann't find the corresponding session pair");
     			
@@ -227,7 +227,7 @@ public class JupyterHubRedirectServlet{
 //    		SessionPair pair = findPairBy1stSession(session);
     		SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
         	
-    		if(!bt.isNull(pair)) {
+    		if(!BaseTool.isNull(pair)) {
     			
     			pair.getGeoweaver_jupyter_client().getNew_ws_session_between_geoweaver_and_jupyterserver().close(); //close websocket connection
         		
