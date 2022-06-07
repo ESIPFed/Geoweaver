@@ -1188,40 +1188,70 @@ GW.workflow = {
 	},
 	
 	showProcessLog: function(workflow_history_id, process_id){
+
+		var content = `<div class="modal-body">
+					
+			<div class="row">
+		
+				<div class="col-md-12" id="dbclick_content">
+
+					Process ID: `+process_id+` <br/>
+
+					Output: <br/>
+
+				</div>
+		
+			</div>
+		
+		</div>
+
+		<div class="modal-footer">
+
+			<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
+		
+			<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+		
+		</div>`;
+
+		var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+
+		frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
+
+		GW.workspace.jsFrame = frame;
 		
 		$.ajax({
-			
-			url: "log",
-			
+
+			url: "workflow_process_log",
+		
 			method: "POST",
-			
-			data: "type=workflow&id=" + workflow_history_id
-			
+		
+			data: "workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
+		
 		}).done(function(msg){
-			
-			msg = $.parseJSON(msg);
-			
-			var process_history_id = null;
-			
-			for(var i=0;i<msg.input.length;i++){
-				
-				if(process_id == msg.input[i]){
-					
-					process_history_id = msg.output[i];
-					
-					break;
-					
-				}
-					
+
+			msg = GW.general.parseResponse(msg);
+
+			let msgout = msg.history_output;
+
+			if(msgout!=null){
+
+				msgout = msgout.replaceAll("\n", "<br/>");
+
 			}
 			
-			GW.process.getHistoryDetails(process_history_id);
-			
-		}).fail(function(){
-			
-			console.error("fail to get log of this process");
-			
-		});
+			$("#dbclick_content").append(msgout);
+
+			frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
+
+				// GW.menu.details(processid, "process");
+
+				GW.process.showHistoryDetails(msg.history_id);
+		
+				_frame.closeFrame()
+				
+			})
+
+		})
 		
 	},
 	
