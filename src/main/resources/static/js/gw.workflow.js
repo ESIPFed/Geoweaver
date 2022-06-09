@@ -1187,13 +1187,15 @@ GW.workflow = {
 		
 	},
 	
-	showProcessLog: function(workflow_history_id, process_id){
+	showProcessLog: function(workflow_history_id, process_id, process_title){
 
 		var content = `<div class="modal-body">
 					
 			<div class="row">
 		
 				<div class="col-md-12" id="dbclick_content">
+
+					Process Name: `+process_title+` <br/>
 
 					Process ID: `+process_id+` <br/>
 
