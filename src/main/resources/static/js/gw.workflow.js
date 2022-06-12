@@ -992,12 +992,6 @@ GW.workflow = {
 			
 			alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
 			
-//			for(var i=0;i<newhosts.length;i++){
-//
-//				$("#inputpswd_" + i).val("");
-//				
-//			}
-			
 			if(button) button.stopSpin();
     		
 			if(dialogItself) dialogItself.enableButtons(true);
