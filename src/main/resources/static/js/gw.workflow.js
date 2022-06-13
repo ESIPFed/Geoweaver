@@ -925,17 +925,11 @@ GW.workflow = {
 		
  		$.ajax({
 				
-				url: "executeWorkflow",
-				
-				type: "POST",
-
-				// contentType: 'application/json',
-
-				// dataType: 'json',
-				
-				// data: JSON.stringify(req)
-				
-				data: req
+			url: "executeWorkflow",
+			
+			type: "POST",
+			
+			data: req
 				
 		}).done(function(msg){
 			
@@ -1128,6 +1122,12 @@ GW.workflow = {
 //					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
 				
 				$("#status_" + workflow_history_id).html("<span class=\"label label-default\">Stopped</span>");
+
+				if(workflow_history_id == GW.workflow.history_id){
+
+					GW.monitor.switchPlayButton(true);
+
+				}
 				
 			}else{
 

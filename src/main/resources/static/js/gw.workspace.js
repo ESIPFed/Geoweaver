@@ -343,18 +343,27 @@ GW.workspace = {
     	    
     	    d3.select("#execute-workflow").on("click", function(){
 
-				GW.workflow.history_id = null; 
+				if($("#execute-workflow").hasClass("fa-stop")){
+
+					GW.workflow.stop(GW.workflow.history_id);
+
+				}else if($("#execute-workflow").hasClass("fa-play")){
+
+					GW.workflow.history_id = null; 
     	    	
-    	    	//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, save the workflow first.
-    	    	if(GW.workflow.loaded_workflow==null){
-    	    		
-        	    	GW.workflow.newDialog(true);
-        	    	
-    	    	}else{
-    	    		
-    	    		GW.workflow.run(GW.workflow.loaded_workflow);
-    	    		
-    	    	}
+					//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, 
+					//save the workflow first.
+					if(GW.workflow.loaded_workflow==null){
+						
+						GW.workflow.newDialog(true);
+						
+					}else{
+						
+						GW.workflow.run(GW.workflow.loaded_workflow);
+						
+					}
+
+				}
     	    	
     	    });
     	    
