@@ -152,8 +152,6 @@ public class TaskManager {
 
 		List<Integer> labels = new ArrayList();
 
-		// logger.debug("Before refresh: " + waitinglist);
-
 		for(int i=0;i<waitinglist.size();i++){
 
 			GeoweaverProcessTask thet = (GeoweaverProcessTask) waitinglist.get(i);
@@ -162,8 +160,7 @@ public class TaskManager {
 			
 		}
 
-		logger.debug("The waiting list is refreshed..");;
-		// logger.debug("After refresh: " + waitinglist);
+		logger.debug("The waiting list is refreshed..");
 
 	}
 
@@ -291,7 +288,10 @@ public class TaskManager {
 					if(thet.getHistory_id().equals(history_id)){
 						
 						// for task ongoing, it will be ended using pt.stop at above level.
-						// do nothing here
+						
+						thet.endPrematurely();
+
+						runninglist.remove(thet); //remove from waiting list
 		
 					}
 		
