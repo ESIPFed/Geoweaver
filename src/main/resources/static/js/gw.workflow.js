@@ -67,47 +67,43 @@ GW.workflow = {
 		
 		jQuery.each(msg, function(i, val) {
 			
-			// if(val!=null&&val!="null"&&val!=""){
+			if(typeof val =='object')
+			{
+				val = JSON.stringify(val);
+			}
+
+			if(i=="id"){
 				
-					if(typeof val =='object')
-					{
-					  val = JSON.stringify(val);
-					}
+				workflowid = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
+				
+			}else if(i=="name"){
+				
+				workflowname = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
+				
+			}else if(i=="description"){
+				
+				workflowdescription = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
+				
+			}else if(i=="confidential"){
+				
+				confidential = val;
 
-					if(i=="id"){
-						
-						workflowid = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
-						
-					}else if(i=="name"){
-						
-						workflowname = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
-						
-					}else if(i=="description"){
-						
-						workflowdescription = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
-						
-					}else if(i=="confidential"){
-						
-						confidential = val;
+			}else if(i=="owner"){
 
-					}else if(i=="owner"){
+				owner = val;
 
-						owner = val;
+			}else{
 
-					}else{
-
-						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
-						"<div class=\"col col-md-7\">"+val+"</div>";
-					}
-					
-			// }
-
+				info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
+				"<div class=\"col col-md-7\">"+val+"</div>";
+			}
+			
 		});
 
 		content += "<div class=\"col col-md-3\">Confidential</div>"+
@@ -599,6 +595,8 @@ GW.workflow = {
 	 * render the original processes in the workflow
 	 */
 	showWorkflow: function(wid){
+
+		GW.monitor.switchPlayButton(true);
 		
 		$.ajax({
 			
