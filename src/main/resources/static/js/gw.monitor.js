@@ -182,6 +182,22 @@ GW.monitor = {
 			}
 			
 		},
+
+		/**
+		 * Switch the mode of the button between play and stop.
+		 * @param {*} play_or_stop - true: play; false: stop
+		 */
+		switchPlayButton: function(play_or_stop){
+
+			if(play_or_stop){
+				$("#execute-workflow").removeClass("fa-stop")
+				$("#execute-workflow").addClass("fa-play")
+			}else{
+				$("#execute-workflow").removeClass("fa-play")
+				$("#execute-workflow").addClass("fa-stop")
+			}
+
+		},
 		
 		closeWorkspaceIndicator: function(){
 			
@@ -240,7 +256,9 @@ GW.monitor = {
 		
 		/**
 		 * 
-		 * connect with the websocket session and get message to update the workflow status in the workspace
+		 * Connect with the websocket session and get message to update the workflow status in the workspace.
+		 * 
+		 * This function is only called during the workflow execution to update the workflow graph.
 		 * 
 		 */
 		startMonitor: function(token){
@@ -268,6 +286,8 @@ GW.monitor = {
 				
 				GW.monitor.openProgressIndicator();
 
+				GW.monitor.switchPlayButton(false);
+
 //			}
 			
 		},
@@ -285,6 +305,8 @@ GW.monitor = {
 				GW.monitor.closeProgressIndicator();
 
 				GW.monitor.closeWorkspaceIndicator();
+
+				GW.monitor.switchPlayButton(true);
 				
 			// }
 			

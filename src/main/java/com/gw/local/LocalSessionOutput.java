@@ -364,8 +364,20 @@ public class LocalSessionOutput  implements Runnable{
 
 			if(!BaseTool.isNull(theprocess)){
 
-				this.endWithCode(token, theprocess.exitValue());
-
+				try{
+				
+					if(theprocess.isAlive()) theprocess.destroy();
+				
+					this.endWithCode(token, theprocess.exitValue());
+				
+				}catch(Exception e){
+				
+					e.printStackTrace();
+				
+					log.error("the process doesn't end well"+e.getLocalizedMessage());
+				
+				}
+				
 			}
 						
 			sendMessage2WebSocket("The process "+history_id+" is finished.");
