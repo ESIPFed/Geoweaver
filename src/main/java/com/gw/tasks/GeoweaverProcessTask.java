@@ -236,7 +236,7 @@ public class GeoweaverProcessTask  extends Task {
 	 * This function is called when the task is not loaded by a worker
 	 */
 	public void endPrematurely(){
-
+		
 		this.curstatus = ExecutionStatus.STOPPED;
 
 		updateEverything();
