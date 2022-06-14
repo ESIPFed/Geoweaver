@@ -264,6 +264,7 @@ GW.process = {
 			GW.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
         		lineNumbers: true,
+				// lineNumbers: false, //for test purpose 
         		
         		lineWrapping: true,
         		
@@ -278,6 +279,7 @@ GW.process = {
 	    		    //  },
 
 					 "Ctrl-Space": "autocomplete"
+					// "Ctrl-k-c": "blockComment"
         		}
         		
         	});
@@ -1545,6 +1547,7 @@ GW.process = {
 //			          mode: "text/html",
 //			          extraKeys: {"Ctrl-Space": "autocomplete"},
 						lineNumbers: true,
+						//lineNumbers: false,
 						lineWrapping: true,
 						theme: "yonce",
 						mode: "python",
@@ -1570,7 +1573,10 @@ GW.process = {
 				    		    			
 				    		    // 		}
 				    		    	
-								"Ctrl-Space": "autocomplete"
+								"Ctrl-Space": "autocomplete",
+								"Ctrl-B": "blockComment",
+								"Ctrl-/": "toggleComment",
+								"Ctrl-F-D": "foldCode"
 						}
 			    });
 				
