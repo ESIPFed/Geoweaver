@@ -55,12 +55,6 @@ GW.workspace = {
 			"<iframe width=\"100%\" height=\"600\" frameborder=\"0\" scrolling=\"no\" onload=\"GW.workspace.resizeIframe(this)\" "+
 			" id=\"jupyter-iframe\" src=\"/Geoweaver/web/jupyter-proxy/\"></iframe>"+
 			"</div>";
-				
-//			$.get("http://geobrain.csiss.gmu.edu/jupyter", function (response){ 
-//				var html = response;
-//				var html_src = 'data:text/html;charset=utf-8,' + html;
-//				$("#jupyter-iframe").attr("src" , html_src);
-//			});
 			
 			GW.workspace.jsFrame = GW.process.createJSFrameDialog(720, 640, content, "Test Jupyter Notebook Server");
 
@@ -79,9 +73,7 @@ GW.workspace = {
 					});
 					
 					GW.workflow.save(GW.workspace.theGraph.nodes, saveEdges);
-	//          	      var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-	//          	    		  {type: "text/plain;charset=utf-8"});
-	//          	      window.saveAs(blob, "geoweaver.json");
+
 				}else{
 					alert("No nodes are present!");
 				}
@@ -351,34 +343,33 @@ GW.workspace = {
     	    
     	    d3.select("#execute-workflow").on("click", function(){
 
-				GW.workflow.history_id = null; 
+				if($("#execute-workflow").hasClass("fa-stop")){
+
+					GW.workflow.stop(GW.workflow.history_id);
+
+				}else if($("#execute-workflow").hasClass("fa-play")){
+
+					GW.workflow.history_id = null; 
     	    	
-    	    	//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, save the workflow first.
-    	    	if(GW.workflow.loaded_workflow==null){
-    	    		
-        	    	GW.workflow.newDialog(true);
-        	    	
-    	    	}else{
-    	    		
-    	    		GW.workflow.run(GW.workflow.loaded_workflow);
-    	    		
-    	    	}
+					//if the current workspace is loaded with an existing workflow, run it directly. Otherwise, 
+					//save the workflow first.
+					if(GW.workflow.loaded_workflow==null){
+						
+						GW.workflow.newDialog(true);
+						
+					}else{
+						
+						GW.workflow.run(GW.workflow.loaded_workflow);
+						
+					}
+
+				}
     	    	
     	    });
     	    
     	    d3.select("#geoweaver-result").on("click", function(){
     	    	
     	    	//get the selected node id
-    	    	
-//    	    	var selectedNode = GW.workspace.theGraph.state.selectedNode;
-//    	    	
-//    	    	if(selectedNode == null){
-//    	    		
-//    	    		alert("No process is selected");
-//    	    		
-//    	    	}else{
-//    	    		GW.workflow.showProcessLog(GW.monitor.historyid, selectedNode.id);
-//    	    	}
     	    	
     	    	GW.result.showDialog("");
     	    	
@@ -396,7 +387,7 @@ GW.workspace = {
     	    		
     	    	}else{
     	    		
-    	    		GW.workflow.showProcessLog(GW.monitor.historyid, selectedNode.id);
+    	    		GW.workflow.showProcessLog(GW.workflow.history_id, selectedNode.id, selectedNode.title);
     	    		
     	    	}
     	    	
@@ -828,73 +819,7 @@ GW.workspace = {
 
 			  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
 				
-				var processid = d.id.split("-")[0];
-
-				var content = `<div class="modal-body">
-					
-					<div class="row">
-				
-						<div class="col-md-12" id="dbclick_content">
-
-							Process Name: `+d.title+` <br/>
-
-							Process ID: `+d.id+` <br/>
-
-							Output: <br/>
-
-						</div>
-				
-					</div>
-				
-				</div>
-		
-				<div class="modal-footer">
-
-					<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
-				
-					<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
-				
-				</div>`;
-
-				var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
-
-				frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
-
-				GW.workspace.jsFrame = frame;
-
-				$.ajax({
-
-					url: "workflow_process_log",
-				
-					method: "POST",
-				
-					data: "workflowhistoryid=" + GW.workflow.history_id + "&processid=" + d.id
-				
-				}).done(function(msg){
-
-					msg = GW.general.parseResponse(msg);
-
-					let msgout = msg.history_output;
-
-					if(msgout!=null){
-
-						msgout = msgout.replaceAll("\n", "<br/>");
-
-					}
-					
-					$("#dbclick_content").append(msgout);
-
-					frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
-
-						// GW.menu.details(processid, "process");
-	
-						GW.process.showHistoryDetails(msg.history_id);
-				
-						_frame.closeFrame()
-						
-					})
-
-				})
+				GW.workflow.showProcessLog(GW.workflow.history_id, d.id, d.title);
 
 			  }
 	

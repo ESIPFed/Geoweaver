@@ -485,25 +485,17 @@ public class HistoryTool {
 				
 			}
 
-			History oldh = historyrepository.findById(history_id).get();
-			
-			// String history_end_time = bt.getCurrentMySQLDatetime();
+			if(historyrepository.findById(history_id).isPresent()){
 
-			// StringBuffer sql = new StringBuffer("update history set end_time = '");
+				History oldh = historyrepository.findById(history_id).get();
 			
-			// sql.append(history_end_time);
-			
-			// sql.append("', indicator = 'Stopped' where id = '");
-			
-			// sql.append(history_id).append("';");
+				oldh.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
-			oldh.setHistory_end_time(BaseTool.getCurrentSQLDate());
+				oldh.setIndicator("Stopped");
 
-			oldh.setIndicator("Stopped");
+				historyrepository.save(oldh);
 
-			historyrepository.save(oldh);
-			
-//			DataBaseOperation.execute(sql.toString());
+			}
 			
 		}catch(Exception e) {
 			

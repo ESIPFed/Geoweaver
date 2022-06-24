@@ -137,6 +137,8 @@ GW.process = {
 	        		
 	        		lineWrapping: true,
 
+					toggleComment: true,
+
 	        		extraKeys: {
 	        			
 		    		    // "Ctrl-S": function(instance) { 
@@ -144,8 +146,15 @@ GW.process = {
 		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
 		    		    // }
-						"Ctrl-/": "toggleComment",
-						"Ctrl-Space": "autocomplete"
+						//"Ctrl-/": "toggleComment",
+						"Ctrl-Space": "autocomplete",
+						'Ctrl-/': function(){
+
+							console.log("togglecomment clicked")
+
+							GW.process.editor.execCommand('toggleComment');
+
+						}
 		    		}
 				
 	        	});
@@ -1576,6 +1585,10 @@ GW.process = {
 				    		    // 			alert("Please turn on edit mode!");
 				    		    			
 				    		    // 		}
+
+								"Ctrl-L": function(){
+									console.log("ctrl l clicked")
+								},
 				    		    	
 								"Ctrl-Space": "autocomplete",
 								"Ctrl-B": "blockComment",
