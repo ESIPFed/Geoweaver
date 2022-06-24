@@ -144,6 +144,8 @@ GW.process = {
 		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
 		    		    // }
+						"Ctrl-/": "toggleComment",
+						"Ctrl-Space": "autocomplete"
 		    		}
 				
 	        	});
@@ -278,7 +280,9 @@ GW.process = {
 	    		    	
 	    		    //  },
 
-					 "Ctrl-Space": "autocomplete"
+					 "Ctrl-Space": "autocomplete",
+					 "Ctrl-/": "toggleComment",
+					 // "Ctrl-f-l": "foldCode"
 					// "Ctrl-k-c": "blockComment"
         		}
         		
@@ -1547,14 +1551,14 @@ GW.process = {
 //			          mode: "text/html",
 //			          extraKeys: {"Ctrl-Space": "autocomplete"},
 						lineNumbers: true,
-						//lineNumbers: false,
 						lineWrapping: true,
 						theme: "yonce",
 						mode: "python",
 						readOnly: false,
 	//			          viewportMargin: Infinity,
 						value: code,
-						
+						foldGutter: true,
+    					gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 						extraKeys: {
 			        			
 				    		    // "Ctrl-S": function(instance) { 
@@ -1576,9 +1580,11 @@ GW.process = {
 								"Ctrl-Space": "autocomplete",
 								"Ctrl-B": "blockComment",
 								"Ctrl-/": "toggleComment",
-								"Ctrl-F-D": "foldCode"
+								// "Ctrl-F-D": "foldCode"
+								"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
 						}
 			    });
+				GW.process.editor.foldCode(CodeMirror.Pos(0, 0));
 				
 				GW.process.editor.on("change", function(instance, event){
 
