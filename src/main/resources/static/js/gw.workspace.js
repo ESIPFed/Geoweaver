@@ -223,12 +223,6 @@ GW.workspace = {
 					
 							<div class="col-md-12">
 
-								<!--<div class="form-check">
-									<label>
-										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowonly" >
-										<i>Workflow (JSON Only)</i>
-									</label>
-								</div>-->
 								<div class="form-check">
 									<label>
 										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscode">
@@ -237,8 +231,14 @@ GW.workspace = {
 								</div>
 								<div class="form-check">
 									<label>
-										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodehistory" checked>
-										<i>Workflow with Process Code and History (Recommended)</i>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodehistory">
+										<i>Workflow with Process Code and Only Workflow History</i>
+									</label>
+								</div>
+								<div class="form-check">
+									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodeallhistory" checked>
+										<i>Workflow with Process Code and All Process History (Recommended)</i>
 									</label>
 								</div>
 							</div>
