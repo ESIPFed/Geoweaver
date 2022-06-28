@@ -146,6 +146,8 @@ GW.process = {
 		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
 		    		    // }
+						//"Ctrl-/": "toggleComment",
+						"Ctrl-Space": "autocomplete",
 						'Ctrl-/': function(){
 
 							console.log("togglecomment clicked")
@@ -287,7 +289,9 @@ GW.process = {
 	    		    	
 	    		    //  },
 
-					 "Ctrl-Space": "autocomplete"
+					 "Ctrl-Space": "autocomplete",
+					 "Ctrl-/": "toggleComment",
+					 // "Ctrl-f-l": "foldCode"
 					// "Ctrl-k-c": "blockComment"
         		}
         		
