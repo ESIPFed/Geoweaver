@@ -280,7 +280,7 @@ GW.history = {
 
         var hisid = updatedRow.data()[0]
 
-        var newvalue = updatedRow.data()[2]
+        var newvalue = updatedRow.data()[3]
 
         GW.history.updateNotesOfAHistory(hisid, newvalue);
         
