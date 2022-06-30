@@ -24,6 +24,10 @@
     cm.toggleComment();
   };
 
+  CodeMirror.commands.blockComment = function(cm) {
+    cm.blockComment();
+  };
+
   CodeMirror.defineExtension("toggleComment", function(options) {
     if (!options) options = noOptions;
     var cm = this;

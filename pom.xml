@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.0.0-rc</version>
+	<version>1.0.0-rc2</version>
 	<name>geoweaver</name>
 	<description>A scientist-affordable workflow management software for organizing disorganized scientific workflows and preserving history of every workflow run, especially for the AI experiments which have no two identifical runs.</description>
 	

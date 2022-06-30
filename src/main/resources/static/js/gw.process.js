@@ -146,6 +146,8 @@ GW.process = {
 		    		    // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
 		    		    	
 		    		    // }
+						//"Ctrl-/": "toggleComment",
+						"Ctrl-Space": "autocomplete",
 						'Ctrl-/': function(){
 
 							console.log("togglecomment clicked")
@@ -273,6 +275,7 @@ GW.process = {
 			GW.process.editor = CodeMirror.fromTextArea(document.getElementById("codeeditor-" + cmid), {
         		
         		lineNumbers: true,
+				// lineNumbers: false, //for test purpose 
         		
         		lineWrapping: true,
         		
@@ -286,7 +289,10 @@ GW.process = {
 	    		    	
 	    		    //  },
 
-					 "Ctrl-Space": "autocomplete"
+					 "Ctrl-Space": "autocomplete",
+					 "Ctrl-/": "toggleComment",
+					 // "Ctrl-f-l": "foldCode"
+					// "Ctrl-k-c": "blockComment"
         		}
         		
         	});
@@ -1551,41 +1557,29 @@ GW.process = {
 				$("#code-embed").css({ 'overflow-y' : ''});
 				
 				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
-//			          mode: "text/html",
-//			          extraKeys: {"Ctrl-Space": "autocomplete"},
 						lineNumbers: true,
 						lineWrapping: true,
 						theme: "yonce",
 						mode: "python",
 						readOnly: false,
-	//			          viewportMargin: Infinity,
 						value: code,
-						
+						foldGutter: true,
+    					gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 						extraKeys: {
 			        			
-				    		    // "Ctrl-S": function(instance) { 
-				    		    	
-				    		    // 		if(!GW.process.editOn){
-				    		    			
-					    		//     		var process_code = GW.process.editor.getValue()
-					    		    	
-					    		//     		GW.process.updateRaw(process_id, process_name, code_type, code_type, process_code);
-
-											
-					    		    	
-				    		    // 		}else{
-				    		    			
-				    		    // 			alert("Please turn on edit mode!");
-				    		    			
-				    		    // 		}
-
 								"Ctrl-L": function(){
 									console.log("ctrl l clicked")
 								},
 				    		    	
-								"Ctrl-Space": "autocomplete"
+								"Ctrl-Space": "autocomplete",
+								"Ctrl-B": "blockComment",
+								"Ctrl-/": "toggleComment",
+								"Ctrl-F-D": "foldCode",
+								"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
 						}
 			    });
+
+				GW.process.editor.foldCode(CodeMirror.Pos(0, 0));
 				
 				GW.process.editor.on("change", function(instance, event){
 
