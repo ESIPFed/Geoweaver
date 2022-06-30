@@ -39,7 +39,10 @@ GW.general = {
 			
 			var date = new Date(longdate);
 
-            return date.toLocaleString("sv-SE"); //expect format: 2022-01-15 02:23:48
+			if(date.getFullYear()!=1969)
+            	return date.toLocaleString("sv-SE"); //expect format: 2022-01-15 02:23:48
+			else
+				return "";
 
 		},
 

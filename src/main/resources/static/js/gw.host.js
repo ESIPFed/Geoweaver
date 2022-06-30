@@ -960,7 +960,7 @@ GW.host = {
 		
 		$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
 				
-			"\"> <a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'host')\">" + 
+			"\" onclick=\"GW.menu.details('"+one.id+"', 'host')\"> <a href=\"javascript:void(0)\" >" + 
 				
 			one.name + "</a> "+
 			
@@ -1938,6 +1938,7 @@ GW.host = {
 			"      <th scope=\"col\">Process</th> "+
 			"      <th scope=\"col\" style=\"width:200px;\">Notes (Click to Edit)</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">End Time</th> "+
 //              "      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
@@ -1958,6 +1959,7 @@ GW.host = {
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].notes+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td>"+msg[i].end_time+"</td> "+
 //                      status_col +
 					detailbtn + 
 					"    </tr>";
@@ -1974,9 +1976,9 @@ GW.host = {
 
 			table.MakeCellsEditable({
 				"onUpdate": GW.host.historyTableCellUpdateCallBack,
-				"columns": [2],
+				"columns": [3],
 				"allowNulls": {
-					"columns": [2],
+					"columns": [3],
 					"errorClass": 'error'
 				},
 				"confirmationButton": { // could also be true
@@ -1985,7 +1987,7 @@ GW.host = {
 				},
 				"inputTypes": [
 					{
-						"column": 2,
+						"column": 3,
 						"type": "text",
 						"options": null
 					}]

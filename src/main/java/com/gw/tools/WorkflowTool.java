@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -80,12 +81,13 @@ public class WorkflowTool {
         
         for(String cid : child_process_ids) {
 
-			Optional<History> hisopt = historyrepository.findById(cid);
-        	
-        	History phis = hisopt.isPresent()? hisopt.get():null;
-        	
-			if(!bt.isNull(phis))
-				tm.stopTask(phis.getHistory_id());
+			if(!BaseTool.isNull(cid)){
+				
+				pt.stop(cid);
+
+				tm.stopTask(cid);
+				
+			}
         	
         }
 
@@ -270,19 +272,19 @@ public class WorkflowTool {
 
 		Workflow wold = this.getById(w.getId());
 
-		if(!bt.isNull(wold)){
+		if(!BaseTool.isNull(wold)){
 
-			if(bt.isNull(w.getName())) w.setName(wold.getName());
+			if(BaseTool.isNull(w.getName())) w.setName(wold.getName());
 
-			if(bt.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
+			if(BaseTool.isNull(w.getConfidential())) w.setConfidential(wold.getConfidential());
 
-			if(bt.isNull(w.getDescription())) w.setDescription(wold.getDescription());
+			if(BaseTool.isNull(w.getDescription())) w.setDescription(wold.getDescription());
 
-			if(bt.isNull(w.getEdges())) w.setEdges(wold.getEdges());
+			if(BaseTool.isNull(w.getEdges())) w.setEdges(wold.getEdges());
 
-			if(bt.isNull(w.getNodes())) w.setNodes(wold.getNodes());
+			if(BaseTool.isNull(w.getNodes())) w.setNodes(wold.getNodes());
 
-			if(bt.isNull(w.getOwner())) w.setOwner(wold.getOwner());
+			if(BaseTool.isNull(w.getOwner())) w.setOwner(wold.getOwner());
 
 		}
 
@@ -616,7 +618,7 @@ public class WorkflowTool {
 
 		bt.writeString2File(workflowstring, savefilepath + "workflow.json");
 
-		if("workflowwithprocesscode".equals(option) || "workflowwithprocesscodehistory".equals(option)){
+		if(option.contains("processcode")){
 
 			JSONParser jsonParser=new JSONParser();
 
@@ -670,11 +672,11 @@ public class WorkflowTool {
 
 		}
 		
-		if("workflowwithprocesscodehistory".equals(option)){
+		if(option.contains("history")){
 
 			String wfhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + wid + ".json";
 
-			//first save workflow history
+			//first save all history of the workflow
 
 			List<History> histlist = historyrepository.findByWorkflowId(wid);
 
@@ -699,13 +701,16 @@ public class WorkflowTool {
 			bt.writeString2File(workflowhistory.toString(), wfhistorysavefile);
 			
 			//second, save process history of one workflow execution into a file
+			HashSet<String> process_id_set = new HashSet<>(); 
+
 			for(History h : histlist){
 
 				String[] processhistorylist = h.getHistory_output().split(";");
 
 				prefix = "";
 
-				String processhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + h.getHistory_id() + ".json";
+				String processhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() 
+					+ h.getHistory_id() + ".json"; //all the process history of one workflow run
 
 				StringBuffer processhistorybuffer = new StringBuffer("[");
 
@@ -718,8 +723,14 @@ public class WorkflowTool {
 						processhistorybuffer.append(prefix);
   			
 						prefix = ","; 
+
+						History hist = hisop.get();
 	
-						processhistorybuffer.append(bt.toJSON(hisop.get())); 
+						processhistorybuffer.append(bt.toJSON(hist)); 
+
+						if (!process_id_set.contains(hist.getHistory_process())) 
+
+							process_id_set.add(hist.getHistory_process());
 
 					}
 
@@ -729,6 +740,33 @@ public class WorkflowTool {
 
 				bt.writeString2File(processhistorybuffer.toString(), processhistorysavefile);
 
+			}
+
+			//if need all the history of the involved processes, go into this if
+			if(option.contains("allhistory")){
+
+				for(String history_process_id : process_id_set){
+
+					histlist = historyrepository.findByProcessId(history_process_id);
+
+					StringBuffer allprocesshistorybuffer = new StringBuffer("[");
+
+					//every process has a history file
+					String allprocesshistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() 
+							+ "process_" + history_process_id + ".json";
+
+					for(History hist: histlist){
+						
+						allprocesshistorybuffer.append(bt.toJSON(hist)).append(","); 
+						
+					}
+
+					allprocesshistorybuffer.append("]");
+
+					bt.writeString2File(allprocesshistorybuffer.toString(), allprocesshistorysavefile);
+
+				}
+				
 			}
 
 		}
@@ -776,7 +814,7 @@ public class WorkflowTool {
 				String historyfolder = workflowFolderPath + "history";
 
 				// If the read workflowjson is not valid, return invalid workflow package, cause the workflowjson is required
-				if (!bt.isNull(workflowjson)) {
+				if (!BaseTool.isNull(workflowjson)) {
 
 					if (new File(codefolder).exists()) {
 

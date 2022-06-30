@@ -38,7 +38,7 @@ public class RunCommand implements Runnable {
         BaseTool bt = new BaseTool();
         WorkflowTool wt = new WorkflowTool();
 
-        if (bt.isNull(historyId)) {
+        if (BaseTool.isNull(historyId)) {
             historyId = new RandomString(18).nextString();
         }
         

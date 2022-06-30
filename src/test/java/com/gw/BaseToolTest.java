@@ -248,7 +248,7 @@ public class BaseToolTest {
     @Test
     void testGetSQLDate(){
 
-        bt.getCurrentSQLDate();
+        BaseTool.getCurrentSQLDate();
 
     }
 

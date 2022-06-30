@@ -97,7 +97,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 	void testSubscriptionMessage() {
 
 		GWUser u = ut.getUserById("111111");
-		if (!bt.isNull(u))
+		if (!BaseTool.isNull(u))
 			assertEquals(u.getUsername(), "publicuser");
 
 	}

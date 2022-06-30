@@ -97,6 +97,10 @@ form .progress {
   animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+.bare-window {
+  padding:0;
+  margin:0;
+}
 
 /* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein {
@@ -121,7 +125,7 @@ form .progress {
 
 .tab {
   overflow: hidden;
-  border: 1px solid #ccc;
+  border-bottom: 1px solid rgb(116, 115, 115);
   background-color: rgb(255, 255, 255);
 }
 
@@ -134,7 +138,7 @@ form .progress {
   cursor: pointer;
   /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 14px;
+  font-size: 18px;
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 20px;
@@ -181,7 +185,7 @@ form .progress {
   cursor: pointer;
   /* padding: 3px 3px; */
   transition: 0.3s;
-  font-size: 16px;
+  font-size: 18px;
   
   padding-top: 8px;
   padding-bottom: 8px;
@@ -202,7 +206,7 @@ form .progress {
 
 .toptoolbarbtn {
 
-  font-family: "Lato"; 
+  font-family: Roboto,sans-serif;
   text-align: center; 
   transition: all 0.3s ease;
   color: rgb(0, 0, 0);
@@ -215,8 +219,22 @@ form .progress {
 .loginbtn {
 
   float: right;
-  margin-right: 30px;
-  font-family: "Lato";
+  margin-right: 20px;
+  font-family: Roboto,sans-serif;
+}
+
+.weaver-toolbar-btn {
+
+  color:gray; 
+  padding:0; 
+  margin:0;
+  margin-top:5px; 
+  width: 30px;
+  margin: 5px;
+  /* display: block; */
+  text-align: center;
+  transition: all 0.3s ease;
+
 }
 
 /**
@@ -297,13 +315,13 @@ form .progress {
 }
 
 *::-webkit-scrollbar-track {
-  background: rgb(71, 71, 71);
+  background: rgb(218, 218, 218);
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: rgb(28, 28, 28);
   border-radius: 20px;
-  border: 3px solid rgb(255, 255, 255);
+  border: 3px solid rgb(177, 177, 177);
 }
 
 .table-color {

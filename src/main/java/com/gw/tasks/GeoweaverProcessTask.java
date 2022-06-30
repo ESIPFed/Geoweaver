@@ -195,11 +195,11 @@ public class GeoweaverProcessTask  extends Task {
 		
 		// if(bt==null) bt = new BaseTool();
 
-		if(!bt.isNull(ws)) this.startMonitor(ws);
+		if(!BaseTool.isNull(ws)) this.startMonitor(ws);
 
 		Session workflow_ws = WorkflowServlet.findSessionByToken(token);
 
-		if(!bt.isNull(workflow_ws) && !bt.isNull(this.workflow_history_id))
+		if(!BaseTool.isNull(workflow_ws) && !BaseTool.isNull(this.workflow_history_id))
 			this.workflow_monitor = workflow_ws; //hook up the workflow session
 		
 		this.curstatus = ExecutionStatus.READY;
@@ -212,7 +212,7 @@ public class GeoweaverProcessTask  extends Task {
 	 */
 	public void refreshWorkflowMonitor(){
 
-		// if(!bt.isNull(this.workflow_monitor) && !this.workflow_monitor.isOpen()){
+		// if(!BaseTool.isNull(this.workflow_monitor) && !this.workflow_monitor.isOpen()){
 		this.workflow_monitor = WorkflowServlet.findSessionByToken(token);
 		// }
 
@@ -236,7 +236,7 @@ public class GeoweaverProcessTask  extends Task {
 	 * This function is called when the task is not loaded by a worker
 	 */
 	public void endPrematurely(){
-
+		
 		this.curstatus = ExecutionStatus.STOPPED;
 
 		updateEverything();
@@ -284,7 +284,7 @@ public class GeoweaverProcessTask  extends Task {
 			
 			//get the nodes and edges of the workflows
 			
-			this.history_begin_time = bt.getCurrentSQLDate();
+			this.history_begin_time = BaseTool.getCurrentSQLDate();
 			
 			this.history_output = "";
 
@@ -324,7 +324,7 @@ public class GeoweaverProcessTask  extends Task {
 
 		try {
 
-			if(!bt.isNull(this.workflow_history_id)) {
+			if(!BaseTool.isNull(this.workflow_history_id)) {
 
 				History wf = hist.getHistoryById(workflow_history_id);
 
@@ -360,7 +360,7 @@ public class GeoweaverProcessTask  extends Task {
 					
 					obj.put("status", c_his.getIndicator());
 
-					if(bt.isNull(c_his.getIndicator()) 
+					if(BaseTool.isNull(c_his.getIndicator()) 
 						|| ExecutionStatus.READY.equals(c_his.getIndicator()) 
 						|| ExecutionStatus.RUNNING.equals(c_his.getIndicator())){
 
@@ -384,7 +384,7 @@ public class GeoweaverProcessTask  extends Task {
 				}
 
 				//update workflow status
-				this.history_end_time = bt.getCurrentSQLDate();
+				this.history_end_time = BaseTool.getCurrentSQLDate();
 				wf.setHistory_end_time(this.history_begin_time);
 				wf.setIndicator(workflow_status);
 
@@ -443,7 +443,7 @@ public class GeoweaverProcessTask  extends Task {
 	
 	public void saveHistory() {
 		
-		this.history_end_time = bt.getCurrentSQLDate();
+		this.history_end_time = BaseTool.getCurrentSQLDate();
 		
 		History history = hist.getHistoryById(this.history_id);
 		
@@ -459,9 +459,9 @@ public class GeoweaverProcessTask  extends Task {
 		
 		history.setHistory_process(this.pid);
 		
-		if(!bt.isNull(this.history_input) && bt.isNull(history.getHistory_input())) history.setHistory_input(this.history_input);
+		if(!BaseTool.isNull(this.history_input) && BaseTool.isNull(history.getHistory_input())) history.setHistory_input(this.history_input);
 		
-		if(!bt.isNull(this.history_output)) history.setHistory_output(this.history_output); //save the error message to the output
+		if(!BaseTool.isNull(this.history_output)) history.setHistory_output(this.history_output); //save the error message to the output
 		//if the process is already failed, don't update the status again because it is already failed
 		if(!ExecutionStatus.FAILED.equals(history.getIndicator()))history.setIndicator(this.curstatus.toString());
 		
@@ -478,7 +478,7 @@ public class GeoweaverProcessTask  extends Task {
 
 		saveHistory();
 
-		if(!bt.isNull(this.workflow_history_id)){
+		if(!BaseTool.isNull(this.workflow_history_id)){
 
 			refreshWorkflowMonitor();
 

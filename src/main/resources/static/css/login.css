@@ -1,6 +1,6 @@
 input.textbox { 
     background-color: #000; 
-    font-family: FreeMono, monospace;
+    font-family: Roboto,sans-serif;
     color: #aaa;
     border: solid 1px #333; 
     outline: none; 
@@ -16,7 +16,7 @@ input.textbox {
 }
 
 .button {
-    font-family: FreeMono, monospace;	
+    font-family: Roboto,sans-serif;
     border: 1px solid #333;
     background: #3a3;
 }

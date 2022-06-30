@@ -62,7 +62,7 @@ public class UserController {
             
             }
 
-            if(bt.isNull(resp)){
+            if(BaseTool.isNull(resp)){
 
                 resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
             }
@@ -85,14 +85,14 @@ public class UserController {
     @GetMapping("/reset_password")
     public String showResetPasswordForm(@RequestParam(name="token")String token, Model model) {
 
-        if(!bt.isNull(token)){
+        if(!BaseTool.isNull(token)){
 
             System.err.print(token);
             // User user = userService.getByResetPasswordToken(token);
             String userid = UserTool.token2userid.get(token);
             Date created_date = UserTool.token2date.get(token);
     
-            if(!bt.isNull(userid)){
+            if(!BaseTool.isNull(userid)){
     
                 long time_difference =  new Date().getTime() - created_date.getTime();
     
@@ -143,7 +143,7 @@ public class UserController {
 
         String resp = "{\"status\": \"failed\"}";
 
-        if(!bt.isNull(userid)){
+        if(!BaseTool.isNull(userid)){
 
             GWUser user = ut.getUserById(userid);
 
@@ -188,7 +188,7 @@ public class UserController {
                 }
             }
 
-            if(bt.isNull(resp)){
+            if(BaseTool.isNull(resp)){
 
                 resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
             }
@@ -219,7 +219,7 @@ public class UserController {
                 }
             }
 
-            if(bt.isNull(resp)){
+            if(BaseTool.isNull(resp)){
 
                 //validate the email
                 if(bt.validate(newUser.getEmail())){

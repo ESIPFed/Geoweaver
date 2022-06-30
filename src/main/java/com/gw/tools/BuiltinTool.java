@@ -67,7 +67,7 @@ public class BuiltinTool {
 
 		History history = histool.getHistoryById(history_id);
 
-		if(bt.isNull(history)){
+		if(BaseTool.isNull(history)){
 
 			history = new History();
 
@@ -75,7 +75,7 @@ public class BuiltinTool {
 
 		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
 		
-		history.setHistory_begin_time(bt.getCurrentSQLDate());
+		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 		
 		history.setHistory_input(script);
 
@@ -95,7 +95,7 @@ public class BuiltinTool {
             
             Session wsout = CommandServlet.findSessionById(httpsessionid);
 
-            if(!bt.isNull(wsout) && wsout.isOpen()){
+            if(!BaseTool.isNull(wsout) && wsout.isOpen()){
                 wsout.getBasicRemote().sendText(message);
             }
 
@@ -270,7 +270,7 @@ public class BuiltinTool {
 
                 // String historyid = t.getHistory_id();
 
-                    resp = bt.isNull(resp)? "{\"history_id\": \""+history_id+
+                    resp = BaseTool.isNull(resp)? "{\"history_id\": \""+history_id+
                             
                             "\", \"token\": \""+httpsessionid+
 
@@ -282,7 +282,7 @@ public class BuiltinTool {
 
                 }
 
-                resp = bt.isNull(resp)? "{\"history_id\": \""+history_id+
+                resp = BaseTool.isNull(resp)? "{\"history_id\": \""+history_id+
                             
                 "\", \"token\": \""+httpsessionid+
 
@@ -292,7 +292,7 @@ public class BuiltinTool {
 
                 his = histool.getHistoryById(history_id);
 
-                if(!bt.isNull(his)){
+                if(!BaseTool.isNull(his)){
 
                     if(resp.indexOf("failure")==-1) 
                     
@@ -305,7 +305,7 @@ public class BuiltinTool {
                 }
 
                 his.setIndicator(ExecutionStatus.DONE);
-                his.setHistory_end_time(bt.getCurrentSQLDate());
+                his.setHistory_end_time(BaseTool.getCurrentSQLDate());
                 his.setHistory_output(resp);
                 histool.saveHistory(his);
             
@@ -326,11 +326,11 @@ public class BuiltinTool {
 
         }
 
-        if(!bt.isNull(his)){
+        if(!BaseTool.isNull(his)){
         
             his.setHistory_output(resp);
 
-            his.setHistory_end_time(bt.getCurrentSQLDate());
+            his.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
             histool.saveHistory(his);
         

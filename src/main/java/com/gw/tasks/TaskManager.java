@@ -1,8 +1,10 @@
 package com.gw.tasks;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -30,8 +32,8 @@ import org.springframework.stereotype.Service;
 @Scope("singleton")
 public class TaskManager {
 	
-	private List<Task> waitinglist;
-	private List<Task> runninglist;
+	private CopyOnWriteArrayList<Task> waitinglist;
+	private CopyOnWriteArrayList<Task> runninglist;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -48,8 +50,8 @@ public class TaskManager {
 	int worknumber;
 	
 	{
-		waitinglist = new ArrayList();
-		runninglist = new ArrayList();
+		waitinglist = new CopyOnWriteArrayList();
+		runninglist = new CopyOnWriteArrayList();
 	}
 	/**
 	 * Add a new task to the waiting list
@@ -150,8 +152,6 @@ public class TaskManager {
 
 		List<Integer> labels = new ArrayList();
 
-		// logger.debug("Before refresh: " + waitinglist);
-
 		for(int i=0;i<waitinglist.size();i++){
 
 			GeoweaverProcessTask thet = (GeoweaverProcessTask) waitinglist.get(i);
@@ -160,34 +160,7 @@ public class TaskManager {
 			
 		}
 
-		// for(int i=0;i<waitinglist.size();i++){
-
-		// 	if(labels.get(i)==0){
-
-		// 		Task ct = waitinglist.get(i);
-
-		// 		for(int j=0;j<waitinglist.size();j++){
-
-		// 			if(labels.get(j)==1){
-
-		// 				waitinglist.set(i, waitinglist.get(j));
-
-		// 				waitinglist.set(j, ct);
-
-		// 				labels.set(j, 0);
-
-		// 				labels.set(i, 1);
-
-		// 			}
-
-		// 		}
-
-		// 	}
-
-		// }
-
-		logger.debug("The waiting list is refreshed..");;
-		// logger.debug("After refresh: " + waitinglist);
+		logger.debug("The waiting list is refreshed..");
 
 	}
 
@@ -202,7 +175,7 @@ public class TaskManager {
 
 		List prehistoryid = thet.getPreconditionProcesses();
 
-		if(!bt.isNull(prehistoryid) && prehistoryid.size()>0){
+		if(!BaseTool.isNull(prehistoryid) && prehistoryid.size()>0){
 
 			int check = 0;
 
@@ -214,7 +187,7 @@ public class TaskManager {
 
 					String current_status = ho.get().getIndicator();
 
-					if(bt.isNull(current_status) || current_status.equals(ExecutionStatus.RUNNING) || current_status.equals(ExecutionStatus.READY)){
+					if(BaseTool.isNull(current_status) || current_status.equals(ExecutionStatus.RUNNING) || current_status.equals(ExecutionStatus.READY)){
 			
 						check = 1;
 						break;
@@ -282,28 +255,53 @@ public class TaskManager {
 	 */
     public void stopTask(String history_id) {
 
-		for(Task runningtask: runninglist){
+		try{
 
-			GeoweaverProcessTask thet = (GeoweaverProcessTask) runningtask;
+			synchronized(waitinglist){
 
-			if(thet.getHistory_id().equals(history_id)){
-				//to avoid mess of the thread, we currently don't kill the running workers
-				// do nothing
+				Iterator<Task> iterator = waitinglist.iterator();
+
+    			while(iterator.hasNext()){
+
+					GeoweaverProcessTask thet = (GeoweaverProcessTask)iterator.next();
+
+					if(thet.getHistory_id().equals(history_id)){
+
+						thet.endPrematurely();
+
+						waitinglist.remove(thet); //remove from waiting list
+
+					}
+
+				}
+
 			}
 
-		}
+			synchronized(runninglist){
 
-		for(Task waitingtask: waitinglist){
+				Iterator<Task> iterator = runninglist.iterator();
+				
+    			while(iterator.hasNext()){
 
-			GeoweaverProcessTask thet = (GeoweaverProcessTask)waitingtask;
+					GeoweaverProcessTask thet = (GeoweaverProcessTask) iterator.next();
+		
+					if(thet.getHistory_id().equals(history_id)){
+						
+						// for task ongoing, it will be ended using pt.stop at above level.
+						
+						thet.endPrematurely();
 
-			if(thet.getHistory_id().equals(history_id)){
-
-				thet.endPrematurely();
-
-				waitinglist.remove(thet); //remove from waiting list
+						runninglist.remove(thet); //remove from waiting list
+		
+					}
+		
+				}
 
 			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
 
 		}
 

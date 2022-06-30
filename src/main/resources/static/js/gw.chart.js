@@ -169,19 +169,19 @@ GW.chart = {
 			this.utils.srand(Date.now());
 			
 			var labels = [], succeed = [], failed = [], running = [], unknown = [];
-			
-//			{
-// 	"history_id":"BSoARJLDm5cD",
-// 	"history_input":"\n",
-// 	"history_output":"3.9.7 \n",
-// 	"history_begin_time":1641022884104,
-// 	"history_end_time":1641022889227,
-// 	"history_notes":null,
-// 	"history_process":"beqbtr",
-// 	"host_id":null,
-// 	"indicator":"Done"
-//  }
-			
+						
+			//			{
+			// 	"history_id":"BSoARJLDm5cD",
+			// 	"history_input":"\n",
+			// 	"history_output":"3.9.7 \n",
+			// 	"history_begin_time":1641022884104,
+			// 	"history_end_time":1641022889227,
+			// 	"history_notes":null,
+			// 	"history_process":"beqbtr",
+			// 	"host_id":null,
+			// 	"indicator":"Done"
+			//  }
+						
 			//sort the array ascending from early to later
 			
 			for(var i=0;i<msg.length;i+=1){

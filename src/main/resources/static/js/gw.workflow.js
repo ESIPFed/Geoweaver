@@ -67,47 +67,43 @@ GW.workflow = {
 		
 		jQuery.each(msg, function(i, val) {
 			
-			// if(val!=null&&val!="null"&&val!=""){
+			if(typeof val =='object')
+			{
+				val = JSON.stringify(val);
+			}
+
+			if(i=="id"){
 				
-					if(typeof val =='object')
-					{
-					  val = JSON.stringify(val);
-					}
+				workflowid = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
+				
+			}else if(i=="name"){
+				
+				workflowname = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
+				
+			}else if(i=="description"){
+				
+				workflowdescription = val;
+				content += "<div class=\"col col-md-3\">"+i+"</div>"+
+					"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
+				
+			}else if(i=="confidential"){
+				
+				confidential = val;
 
-					if(i=="id"){
-						
-						workflowid = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
-						
-					}else if(i=="name"){
-						
-						workflowname = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
-						
-					}else if(i=="description"){
-						
-						workflowdescription = val;
-						content += "<div class=\"col col-md-3\">"+i+"</div>"+
-							"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
-						
-					}else if(i=="confidential"){
-						
-						confidential = val;
+			}else if(i=="owner"){
 
-					}else if(i=="owner"){
+				owner = val;
 
-						owner = val;
+			}else{
 
-					}else{
-
-						info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
-						"<div class=\"col col-md-7\">"+val+"</div>";
-					}
-					
-			// }
-
+				info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
+				"<div class=\"col col-md-7\">"+val+"</div>";
+			}
+			
 		});
 
 		content += "<div class=\"col col-md-3\">Confidential</div>"+
@@ -599,6 +595,8 @@ GW.workflow = {
 	 * render the original processes in the workflow
 	 */
 	showWorkflow: function(wid){
+
+		GW.monitor.switchPlayButton(true);
 		
 		$.ajax({
 			
@@ -925,17 +923,11 @@ GW.workflow = {
 		
  		$.ajax({
 				
-				url: "executeWorkflow",
-				
-				type: "POST",
-
-				// contentType: 'application/json',
-
-				// dataType: 'json',
-				
-				// data: JSON.stringify(req)
-				
-				data: req
+			url: "executeWorkflow",
+			
+			type: "POST",
+			
+			data: req
 				
 		}).done(function(msg){
 			
@@ -991,12 +983,6 @@ GW.workflow = {
 		}).fail(function(jxr, status){
 			
 			alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
-			
-//			for(var i=0;i<newhosts.length;i++){
-//
-//				$("#inputpswd_" + i).val("");
-//				
-//			}
 			
 			if(button) button.stopSpin();
     		
@@ -1060,6 +1046,7 @@ GW.workflow = {
 			"    <tr> "+
 			"      <th scope=\"col\">Workflow</th> "+
 			"      <th scope=\"col\">Begin Time</th> "+
+			"      <th scope=\"col\">End Time</th> "+
 			"      <th scope=\"col\">Status</th> "+
 			"      <th scope=\"col\">Action</th> "+
 			"    </tr> "+
@@ -1074,6 +1061,7 @@ GW.workflow = {
 				content += "    <tr> "+
 					"      <td>"+msg[i].name+"</td> "+
 					"      <td>"+msg[i].begin_time+"</td> "+
+					"      <td>"+msg[i].end_time+"</td> "+
 					status_col+
 					"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].id+"')\">Check</a></td> "+
 					"    </tr>";
@@ -1132,6 +1120,12 @@ GW.workflow = {
 //					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
 				
 				$("#status_" + workflow_history_id).html("<span class=\"label label-default\">Stopped</span>");
+
+				if(workflow_history_id == GW.workflow.history_id){
+
+					GW.monitor.switchPlayButton(true);
+
+				}
 				
 			}else{
 
@@ -1185,41 +1179,73 @@ GW.workflow = {
 		
 	},
 	
-	showProcessLog: function(workflow_history_id, process_id){
+	showProcessLog: function(workflow_history_id, process_id, process_title){
+
+		var content = `<div class="modal-body">
+					
+			<div class="row">
+		
+				<div class="col-md-12" id="dbclick_content">
+
+					Process Name: `+process_title+` <br/>
+
+					Process ID: `+process_id+` <br/>
+
+					Output: <br/>
+
+				</div>
+		
+			</div>
+		
+		</div>
+
+		<div class="modal-footer">
+
+			<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
+		
+			<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+		
+		</div>`;
+
+		var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
+
+		frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
+
+		GW.workspace.jsFrame = frame;
 		
 		$.ajax({
-			
-			url: "log",
-			
+
+			url: "workflow_process_log",
+		
 			method: "POST",
-			
-			data: "type=workflow&id=" + workflow_history_id
-			
+		
+			data: "workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
+		
 		}).done(function(msg){
-			
-			msg = $.parseJSON(msg);
-			
-			var process_history_id = null;
-			
-			for(var i=0;i<msg.input.length;i++){
-				
-				if(process_id == msg.input[i]){
-					
-					process_history_id = msg.output[i];
-					
-					break;
-					
-				}
-					
+
+			msg = GW.general.parseResponse(msg);
+
+			let msgout = msg.history_output;
+
+			if(msgout!=null){
+
+				msgout = msgout.replaceAll("\n", "<br/>");
+
 			}
 			
-			GW.process.getHistoryDetails(process_history_id);
-			
-		}).fail(function(){
-			
-			console.error("fail to get log of this process");
-			
-		});
+			$("#dbclick_content").append(msgout);
+
+			frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
+
+				// GW.menu.details(processid, "process");
+
+				GW.process.showHistoryDetails(msg.history_id);
+		
+				_frame.closeFrame()
+				
+			})
+
+		})
 		
 	},
 	
@@ -1281,11 +1307,11 @@ GW.workflow = {
 
 		if(one.name=="") one.name = "null"
 		
-		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + "\">"+
+		$("#"+GW.menu.getPanelIdByType("workflow")).append("<li class=\"workflow\" id=\"workflow-" + one.id + 
 				
-				"<a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\"> " + 
-	    		
-				one.name + "</a> "+
+				"\" onclick=\"GW.menu.details('"+one.id+"', 'workflow')\">"+
+				
+				"<a href=\"javascript:void(0)\"> " + one.name + "</a> "+
 				
 //				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
 //	        	

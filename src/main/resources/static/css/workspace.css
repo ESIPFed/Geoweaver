@@ -24,12 +24,18 @@ body{
 }
 
 #toolbox{
-    /* position: absolute;
-    bottom: 0;
-    left: 0; */
-    border: 2px solid #EEEEEE;
-    border-radius: 5px;
+    border-bottom: 2px solid grey;
+    border-right: 2px solid grey;
+    border-bottom-right-radius: 10px;
+    /* border-radius: 3px; */
     z-index: 5;
+    position: absolute; 
+    background-color: white; 
+    opacity: 1; 
+    margin:0; 
+    top: 0px; 
+    left: 0px;  
+    /* box-shadow:3px 3px grey; */
 }
 
 #toolbox input{
@@ -43,12 +49,6 @@ body{
 
 #hidden-file-upload{
     display: none;
-}
-
-
-
-#download-input{
-    margin: 0 0.5em;
 }
 
 .conceptG text{
