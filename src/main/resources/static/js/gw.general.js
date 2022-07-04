@@ -59,6 +59,31 @@ GW.general = {
 	
 		},
 
+		escapeCodeforHTML: function(code){
+
+			if(code!=null){
+
+				code = code.replaceAll("\n", "<br/>");
+
+			}
+
+			return code;
+
+		},
+
+		shorten_long_string: function(thestr, limit){
+
+			if(thestr.length > limit){
+
+				firsthalf = thestr.substr(0, limit)
+				thestr = firsthalf + "..."
+
+			}
+
+			return thestr;
+
+		},
+
 		makeid: function (length) {
 			var result           = '';
 			var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

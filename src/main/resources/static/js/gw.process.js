@@ -804,13 +804,7 @@ GW.process = {
 		
 		displayOutput: function(msg){
 			
-			var output = msg.output;
-
-			if(output!=null){
-
-				output = output.replaceAll("\n", "<br/>");
-
-			}
+			var output = GW.general.escapeCodeforHTML(msg.output);
 			
 			if(msg.output=="logfile"){
 				
