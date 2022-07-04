@@ -1091,9 +1091,10 @@ GW.workspace = {
 					.attr('mode', 'normal');
 
 				// Define the div for the tooltip
-				GW.workspace.tooltipdiv = d3.select("body").append("div")	
-					.attr("class", "processtooltip")				
-					.style("opacity", 0);
+				if(!GW.workspace.tooltipdiv)
+					GW.workspace.tooltipdiv = d3.select("body").append("div")	
+						.attr("class", "processtooltip")				
+						.style("opacity", 0);
 	
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
