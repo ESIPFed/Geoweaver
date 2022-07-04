@@ -62,7 +62,7 @@ GW.workspace = {
 
 		saveWorkflow: function(){
 
-			if(GW.workspace.checkIfWorkflow()){
+			if(GW.workspace.checkIfWorkflowValid()){
 
 				if(GW.workspace.theGraph.nodes.length!=0){
       	    	  
@@ -1143,29 +1143,38 @@ GW.workspace = {
 	    	  };
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.addProcess = function(id, name){
-		  			
-	    		  	var thisGraph = this;
-		  			//how to find a location
-		  			
-		  			var x = Math.floor(Math.random() * 900) + 1;
-		  			
-		  			var y = Math.floor(Math.random() * 600) + 1;
-		  			
-		  			var randomid = GW.workspace.makeid();
-		  			
-		  			var insid = id +"-"+ randomid;
-		  			
-		  			thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
-		  			
-		  			thisGraph.updateGraph();
-		  			
-		  			console.log("new process added: " + insid);
+
+				if(GW.workspace.currentmode == 1){
+
+					var thisGraph = this;
+					//how to find a location
+					
+					var x = Math.floor(Math.random() * 900) + 1;
+					
+					var y = Math.floor(Math.random() * 600) + 1;
+					
+					var randomid = GW.workspace.makeid();
+					
+					var insid = id +"-"+ randomid;
+					
+					thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
+					
+					thisGraph.updateGraph();
+					
+					console.log("new process added: " + insid);
 
 					GW.workspace.showNonSaved();
 
 					GW.general.switchTab("workspace");
+						
+					return insid;
+
+				}else{
+
+					alert("Sorry, cannot add process when the workflow is running!");
+
+				}
 		  			
-		  			return insid;
 		  			
 		  	  };
 		  	  
@@ -1385,6 +1394,32 @@ GW.workspace = {
 			
 			return workflow;
 			
+		},
+
+		checkIfWorkflowValid: function(){
+
+			var isvalid = true;
+
+			if(GW.workspace.checkIfWorkflow()){
+
+				GW.workspace.theGraph.edges.forEach(function(val, i){
+
+					if(val.source==null || val.source==null ){
+
+						isvalid = false;
+					
+					}
+				
+				});
+
+			}else{
+
+				isvalid = false;
+
+			}
+
+			return isvalid;
+
 		},
 		
 		makeid: function() {

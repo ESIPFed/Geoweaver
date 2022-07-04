@@ -2,13 +2,11 @@
  * 
  * This file contains event listeners of all the top buttons
  * 
- * @author Ziheng Sun
- * 
  */
 
 GW.toolbar = {
 		
-		monitor_switch: false,
+		monitor_switch: false, 
 		
 		init: function(){
 			
