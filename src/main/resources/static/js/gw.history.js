@@ -111,6 +111,8 @@ GW.history = {
         for(var i=0;i<msg.length;i++){
             
             var status_col = this.getProcessStatusCol(msg[i].history_id, msg[i].indicator);
+            // console.log(merge);
+            // CodeMirror.MergeView();
             
             content += "    <tr> "+
                 "      <td>"+msg[i].history_id+"</td> "+
@@ -118,7 +120,9 @@ GW.history = {
                 "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
                 "	   <td>"+msg[i].history_notes+"</td>"+
                 status_col +
-                "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
+                "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;" +
+                "      <a href=\"javascript: GW.process.showHistoryDifference('"+msg[i].history_id+"')\">View Changes</a> &nbsp;";
+                // "      <a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">View Changes</a> &nbsp;";
             
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";

@@ -523,6 +523,57 @@ GW.process = {
 			
 		},
 		
+		/**
+		 * Function to display the current and previous code history
+		 * @param {*} history_id 
+		 */
+		showHistoryDifference: function(history_id) {
+			GW.process.diffDialog(history_id);
+				
+			// frame.closeFrame();
+		},
+
+		diffDialog: function(history_id){
+			
+// get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
+
+			// var content = '<div class="modal-body">'+
+			// 	GW.process.getProcessDialogTemplate()+
+			// 	'</div>';
+
+			// content += '<div class="modal-footer">' +
+			// 	"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
+			// 	"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
+			// 	"<button type=\"button\" id=\"cancel-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Cancel</button>"+
+			// 	'</div>';
+
+			var content = '<div class="modal-body">'+
+				"Test"+
+				'<div id=\"view"\>'+'</div>'
+				'</div>';
+			
+			GW.process.createJSFrameDialog(720, 640, content, "History Details")
+			// CodeMirror.MergeView();
+			var value, orig1 = gw.process.showHistoryDetails(history_id) , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
+			// if (value == null) return;
+			console.log(orig1);
+			var target = document.getElementById("view");
+  			target.innerHTML = "";
+			CodeMirror.MergeView(target, {
+				// value: value,
+				origLeft: panes == 3 ? orig1 : null,
+				orig: orig2,
+				lineNumbers: true,
+				mode: "text/html",
+				highlightDifferences: highlight,
+				connect: connect,
+				collapseIdentical: collapse
+			  });
+			
+        	// frame.closeFrame();
+			
+		},
+
 		newDialog: function(category){
 			
 			var content = '<div class="modal-body">'+
@@ -632,14 +683,17 @@ GW.process = {
 					var status_col = GW.history.getProcessStatusCol(msg[i].id, msg[i].status);
 					
 					var detailbtn = null;
+					// var viewChanges = null;
 					
 					if(outside){
 						
 						detailbtn = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						// viewChanges = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">View Changes</a></td> ";
 						
 					}else{
 						
 						detailbtn = "      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						// viewChanges = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">View Changes</a></td> ";
 						
 					}
 					
@@ -651,6 +705,7 @@ GW.process = {
 						"      <td>"+msg[i].end_time+"</td> "+
 						status_col +
 						detailbtn + 
+						// viewChanges +
 						"    </tr>";
 					
 				}
@@ -1335,7 +1390,7 @@ GW.process = {
 				</div>`;
 
 			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-			    	<div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >
+			    	<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
 			   		</div>
 				</div>
 			</div>`;
