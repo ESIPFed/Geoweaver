@@ -13,11 +13,11 @@
     },
     {
       "type": "java",
-      "name": "Launch GeoweaverCLI",
+      "name": "Launch Run Workflow",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "detail --host-id roeaa3"
+      "args": "run -h 100001 -e 23geik 26iwyqit2wcjuex8i76r"
     },
     {
       "type": "java",
