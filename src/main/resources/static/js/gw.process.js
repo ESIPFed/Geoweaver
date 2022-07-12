@@ -654,23 +654,32 @@ GW.process = {
 				</div>
 				<div class="row">
 					<div class="col col-md-3">BeginTime</div>
-					<div class="col col-md-3">`+current_history.history_begin_time+`</div>
+					<div class="col col-md-3">`+current_history.begin_time+`</div>
 					<div class="col col-md-3">BeginTime</div>
-					<div class="col col-md-3">`+previous_history.history_begin_time+`</div>
+					<div class="col col-md-3">`+previous_history.begin_time+`</div>
 				</div>
 				<div class="row">
 					<div class="col col-md-3">EndTime</div>
-					<div class="col col-md-3">`+current_history.history_end_time+`</div>
+					<div class="col col-md-3">`+current_history.end_time+`</div>
 					<div class="col col-md-3">EndTime</div>
-					<div class="col col-md-3">`+previous_history.history_end_time+`</div>
+					<div class="col col-md-3">`+previous_history.end_time+`</div>
 				</div>
 				<div class="row">
 					<div class="col col-md-3">Notes</div>
-					<div class="col col-md-3">`+current_history.history_notes+`</div>
+					<div class="col col-md-3">`+current_history.notes+`</div>
 					<div class="col col-md-3">Notes</div>
-					<div class="col col-md-3">`+previous_history.history_notes+`</div>
+					<div class="col col-md-3">`+previous_history.notes+`</div>
 				</div>
-				<div id=\"process-difference-comparison-view"\></div>
+				<div class="row">
+					<div class="col col-md-3">Status</div>
+					<div class="col col-md-3">`+current_history.status+`</div>
+					<div class="col col-md-3">Status</div>
+					<div class="col col-md-3">`+previous_history.status+`</div>
+				</div>
+				<br/>
+				<div id=\"process-difference-comparison-code-view"\></div>
+				<br/>
+				<div id=\"process-difference-comparison-result-view"\></div>
 				</div>`;
 			
 			GW.process.createJSFrameDialog(720, 640, content, "History Details")
@@ -686,9 +695,9 @@ GW.process = {
 			// orig2 = "test2";
 			if (value == null) return;
 			// console.log(orig1);
-			var target = document.getElementById("process-difference-comparison-view");
-  			target.innerHTML = "";
-			CodeMirror.MergeView(target, {
+			var code_target = document.getElementById("process-difference-comparison-code-view");
+			code_target.innerHTML = "";
+			CodeMirror.MergeView(code_target, {
 				value: value,
 				origLeft: panes == 3 ? orig1 : null,
 				orig: orig2,
@@ -699,6 +708,20 @@ GW.process = {
 				collapseIdentical: collapse,
 				allowEditingOriginals: false
 			  });
+
+			  var result_target = document.getElementById("process-difference-comparison-result-view");
+			  result_target.innerHTML = "";
+			  CodeMirror.MergeView(result_target, {
+				  value: value,
+				  origLeft: panes == 2 ? current_history.output:null,
+				  orig: previous_history.output,
+				  lineNumbers: true,
+				  mode: "python",
+				  highlightDifferences: highlight,
+				  connect: connect,
+				  collapseIdentical: collapse,
+				  allowEditingOriginals: false
+				});
 			
 		},
 
