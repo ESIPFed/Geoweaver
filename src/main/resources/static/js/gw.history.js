@@ -118,7 +118,6 @@ GW.history = {
                 "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
                 "	   <td>"+msg[i].history_notes+"</td>"+
                 status_col +
-                // "      <a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">View Changes</a> &nbsp;";
                 "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";      
             // code to display the view changes option if in case 'i' > 0
             if(i > 0){
