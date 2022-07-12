@@ -581,7 +581,7 @@ GW.process = {
 
 				msg.code = msg.input;
 				
-				GW.process.display(msg);
+				// GW.process.display(msg);
 				
 				//GW.process.displayOutput(msg);
 
@@ -593,17 +593,16 @@ GW.process = {
 				console.log("current code: " + msg.code);
 				//GW.process.diffDialog(msg.code, "");
 				
-			
-					// ajax call for the previous history id details
-					$.ajax({
-					
-						url: "log",
-		
-						method: "POST",
-		
-						data: "type=process&id=" + previous_history_id
-		
-					}).done(function(msg_prv){
+				// ajax call for the previous history id details
+				$.ajax({
+				
+					url: "log",
+	
+					method: "POST",
+	
+					data: "type=process&id=" + previous_history_id
+	
+				}).done(function(msg_prv){
 
 					// code to display the popup and history differences
 					console.log("Previous History Log Message: " + msg_prv);
@@ -618,15 +617,10 @@ GW.process = {
 					console.log("Sorted Array: ", msg_prv);
 					msg_prv = GW.general.parseResponse(msg_prv);
 					msg_prv.code = msg_prv.input;
-					GW.process.display(msg_prv);
-					
-					//GW.process.displayOutput(msg);
-					//GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
-					//if(GW.editor.isfullscreen) GW.editor.switchFullScreen();
 
 					// code for dialogue box
 					console.log("previous code: " + msg_prv.code);
-					GW.process.diffDialog(msg.code, msg_prv.code);
+					GW.process.diffDialog(msg, msg_prv);
 					
 				}).fail(function(jxr, status){
 					
@@ -643,15 +637,41 @@ GW.process = {
 		 * @param current_code
 		 * @param previous_code
 		 */
-		diffDialog: function(current_code, previous_code){
+		diffDialog: function(current_history, previous_history){
+
+			current_code = current_history.code;
+			previous_code = previous_history.code;
 			
 			console.log("previous_code : "+previous_code);
 			console.log("current_code : "+current_code);
-		// get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
-			var content = '<div class="modal-body">'+
-				"Test"+
-				'<div id=\"view"\>'+'</div>'
-				'</div>';
+			// get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
+			var content = `<div class="modal-body">
+				<div class="row">
+					<div class="col col-md-3">ID</div>
+					<div class="col col-md-3">`+current_history.id+`</div>
+					<div class="col col-md-3">ID</div>
+					<div class="col col-md-3">`+previous_history.id+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3">BeginTime</div>
+					<div class="col col-md-3">`+current_history.history_begin_time+`</div>
+					<div class="col col-md-3">BeginTime</div>
+					<div class="col col-md-3">`+previous_history.history_begin_time+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3">EndTime</div>
+					<div class="col col-md-3">`+current_history.history_end_time+`</div>
+					<div class="col col-md-3">EndTime</div>
+					<div class="col col-md-3">`+previous_history.history_end_time+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3">Notes</div>
+					<div class="col col-md-3">`+current_history.history_notes+`</div>
+					<div class="col col-md-3">Notes</div>
+					<div class="col col-md-3">`+previous_history.history_notes+`</div>
+				</div>
+				<div id=\"process-difference-comparison-view"\></div>
+				</div>`;
 			
 			GW.process.createJSFrameDialog(720, 640, content, "History Details")
 			var value, orig1 , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
@@ -666,33 +686,20 @@ GW.process = {
 			// orig2 = "test2";
 			if (value == null) return;
 			// console.log(orig1);
-			var target = document.getElementById("view");
+			var target = document.getElementById("process-difference-comparison-view");
   			target.innerHTML = "";
 			CodeMirror.MergeView(target, {
 				value: value,
 				origLeft: panes == 3 ? orig1 : null,
 				orig: orig2,
 				lineNumbers: true,
-				mode: "text/html",
+				mode: "python",
 				highlightDifferences: highlight,
 				connect: connect,
 				collapseIdentical: collapse,
 				allowEditingOriginals: false
 			  });
 			
-        	// frame.closeFrame();
-			// code to recheck:
-			
-			// var content = '<div class="modal-body">'+
-			// 	GW.process.getProcessDialogTemplate()+
-			// 	'</div>';
-
-			// content += '<div class="modal-footer">' +
-			// 	"<button type=\"button\" id=\"add-process-"+GW.process.cmid+"\" class=\"btn btn-outline-primary\">Add</button> "+
-			// 	"<button type=\"button\" id=\"run-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Run</button>"+
-			// 	"<button type=\"button\" id=\"cancel-process-"+GW.process.cmid+"\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-			// 	'</div>';
-			// var value, orig1 = gw.process.showHistoryDetails(history_id) , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
 		},
 
 		newDialog: function(category){
