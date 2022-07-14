@@ -82,7 +82,7 @@ GW.menu = {
 			
 		},
 		
-		details: function(id, type){
+		details: function(id, type, detail_callback){
 			
 			$.ajax({
 				
@@ -95,22 +95,31 @@ GW.menu = {
 			}).done(function(msg){
 				
 				msg = $.parseJSON(msg);
-				
-				if(type=="process"){
-					
-					GW.process.display(msg);
-					
-				}else if(type=="host"){
-					
-					GW.host.display(msg);
-					
-				}else if(type=="workflow"){
-					
-					GW.workflow.display(msg);
 
-					GW.workflow.add(msg.id, msg.name, false) //load it into the weaver too
-					
+				if(detail_callback == null){
+
+					if(type=="process"){
+						
+						GW.process.display(msg);
+						
+					}else if(type=="host"){
+						
+						GW.host.display(msg);
+						
+					}else if(type=="workflow"){
+						
+						GW.workflow.display(msg);
+
+						GW.workflow.add(msg.id, msg.name, false) //load it into the weaver too
+						
+					}
+
+				}else{
+
+					detail_callback(msg);
+
 				}
+				
 				
 			});
 			

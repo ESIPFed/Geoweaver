@@ -523,6 +523,215 @@ GW.process = {
 			
 		},
 		
+		/**
+		 * Function to display the current and previous code history
+		 * @param history_id
+		 */
+		showHistoryDifference: function(history_id, previous_history_id) {
+			
+			console.log("current history id: " + history_id);
+			console.log("previous history id: " + previous_history_id);
+
+			// ajax call for the current history id details:
+			$.ajax({
+				
+				url: "log",
+				
+				method: "POST",
+				
+				data: "type=process&id=" + history_id
+				
+			}).done(function(msg){
+
+				console.log("Current History Log Message: " + msg);
+				
+				if(msg==""){
+					
+					alert("Cannot find the process history in the database.");
+					
+					return;
+					
+				}
+
+				// code for sorting the history based on the history begin time
+				// for(var i=0;i<msg.length;i+=1){
+				
+				// 	var current_time = new Date(msg[i].history_begin_time);
+					
+				// 	for(var j=i+1;j<msg.length;j+=1){
+						
+				// 		var next_time = new Date(msg[j].history_begin_time);
+						
+				// 		if(current_time.getTime() > next_time.getTime()){
+							
+				// 			var swap = msg[i];
+				// 			msg[i] = msg[j];
+				// 			msg[j] = swap;
+				// 			current_time = new Date(msg[i].begin_time);
+							
+				// 		}
+						
+				// 	}
+					
+				// }
+	
+				console.log("Sorted Array: ", msg);
+				
+				msg = GW.general.parseResponse(msg);
+
+				msg.code = msg.input;
+				
+				// GW.process.display(msg);
+				
+				//GW.process.displayOutput(msg);
+
+				//GW.process.switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+
+				//if(GW.editor.isfullscreen) GW.editor.switchFullScreen();
+
+				// current code for dialogue box
+				console.log("current code: " + msg.code);
+				//GW.process.diffDialog(msg.code, "");
+				
+				// ajax call for the previous history id details
+				$.ajax({
+				
+					url: "log",
+	
+					method: "POST",
+	
+					data: "type=process&id=" + previous_history_id
+	
+				}).done(function(msg_prv){
+
+					// code to display the popup and history differences
+					console.log("Previous History Log Message: " + msg_prv);
+		
+					if(msg_prv==""){
+						
+						alert("Cannot find the process history in the database.");
+						
+						return;
+						
+					}
+					console.log("Sorted Array: ", msg_prv);
+					msg_prv = GW.general.parseResponse(msg_prv);
+					msg_prv.code = msg_prv.input;
+
+					// code for dialogue box
+					console.log("previous code: " + msg_prv.code);
+					GW.process.diffDialog(msg, msg_prv);
+					
+				}).fail(function(jxr, status){
+					
+					console.error("Fail to get log.");
+				});
+			}).fail(function(jxr, status){
+				
+				console.error("Fail to get log.");
+			});
+		},
+
+		/**
+		 * method to show the popup with current and previous history difference
+		 * @param current_code
+		 * @param previous_code
+		 */
+		diffDialog: function(current_history, previous_history){
+
+			current_code = current_history.code;
+			previous_code = previous_history.code;
+			
+			console.log("previous_code : "+previous_code);
+			console.log("current_code : "+current_code);
+			// get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
+			var content = `<div class="modal-body">
+				<div class="row">
+					<div class="col col-md-3"><b>ID</b></div>
+					<div class="col col-md-3">`+current_history.hid+`</div>
+					<div class="col col-md-3"><b>ID</b></div>
+					<div class="col col-md-3">`+previous_history.hid+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3"><b>BeginTime</b></div>
+					<div class="col col-md-3">`+current_history.begin_time+`</div>
+					<div class="col col-md-3"><b>BeginTime</b></div>
+					<div class="col col-md-3">`+previous_history.begin_time+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3"><b>EndTime</b></div>
+					<div class="col col-md-3">`+current_history.end_time+`</div>
+					<div class="col col-md-3"><b>EndTime</b></div>
+					<div class="col col-md-3">`+previous_history.end_time+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3"><b>Notes</b></div>
+					<div class="col col-md-3">`+current_history.notes+`</div>
+					<div class="col col-md-3"><b>Notes</b></div>
+					<div class="col col-md-3">`+previous_history.notes+`</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-3"><b>Status</b></div>
+					<div class="col col-md-3">`+current_history.status+`</div>
+					<div class="col col-md-3"><b>Status</b></div>
+					<div class="col col-md-3">`+previous_history.status+`</div>
+				</div>
+				<br/>
+				<label>Code Comparision</label>
+				<br/>
+				<div id=\"process-difference-comparison-code-view"\></div>
+				<br/>
+				<br/>
+				<label>Result Comparision</label>
+				<div id=\"process-difference-comparison-result-view"\></div>
+				</div>`;
+			
+			GW.process.createJSFrameDialog(720, 640, content, "History Details")
+			var history_value, results_value, orig1 , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
+			// value = document.documentElement.innerHTML;
+
+			history_value = current_code;
+			orig1 = current_code;
+			orig2 = previous_code;
+
+			// value = "test";
+			// orig1 = "test1";
+			// orig2 = "test2";
+			if (history_value == null) return;
+			// console.log(orig1);
+			var code_target = document.getElementById("process-difference-comparison-code-view");
+			code_target.innerHTML = "";
+			CodeMirror.MergeView(code_target, {
+				value: history_value,
+				origLeft: panes == 3 ? orig1 : null,
+				orig: orig2,
+				lineNumbers: true,
+				mode: "python",
+				highlightDifferences: highlight,
+				connect: connect,
+				collapseIdentical: collapse,
+				allowEditingOriginals: false,
+				revertButtons: false // to disable the option of reverting the changes or merging the changes 
+			  });
+
+			  var result_target = document.getElementById("process-difference-comparison-result-view");
+			  results_value = current_history.output;
+			  result_target.innerHTML = "";
+			  CodeMirror.MergeView(result_target, {
+				  value: results_value,
+				  origLeft: panes == 3 ? current_history.output:null,
+				  orig: previous_history.output,
+				  lineNumbers: true,
+				  mode: "python",
+				  highlightDifferences: highlight,
+				  connect: connect,
+				  collapseIdentical: collapse,
+				  allowEditingOriginals: false,
+				  revertButtons: false // to disable the option of reverting the changes or merging the changes 
+				});
+			
+		},
+
 		newDialog: function(category){
 			
 			var content = '<div class="modal-body">'+
@@ -632,14 +841,17 @@ GW.process = {
 					var status_col = GW.history.getProcessStatusCol(msg[i].id, msg[i].status);
 					
 					var detailbtn = null;
+					// var viewChanges = null;
 					
 					if(outside){
 						
 						detailbtn = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						// viewChanges = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">View Changes</a></td> ";
 						
 					}else{
 						
 						detailbtn = "      <td><a href=\"javascript: GW.process.getHistoryDetails('"+msg[i].id+"')\">Details</a></td> ";
+						// viewChanges = "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].id+"')\">View Changes</a></td> ";
 						
 					}
 					
@@ -651,6 +863,7 @@ GW.process = {
 						"      <td>"+msg[i].end_time+"</td> "+
 						status_col +
 						detailbtn + 
+						// viewChanges +
 						"    </tr>";
 					
 				}
@@ -804,13 +1017,7 @@ GW.process = {
 		
 		displayOutput: function(msg){
 			
-			var output = msg.output;
-
-			if(output!=null){
-
-				output = output.replaceAll("\n", "<br/>");
-
-			}
+			var output = GW.general.escapeCodeforHTML(msg.output);
 			
 			if(msg.output=="logfile"){
 				
@@ -1335,7 +1542,7 @@ GW.process = {
 				</div>`;
 
 			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-			    	<div class="row" id="process-history-container" style="padding:0px;margin:0px; background-color:rgb(28, 28, 28);" >
+			    	<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
 			   		</div>
 				</div>
 			</div>`;

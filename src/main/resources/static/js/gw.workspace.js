@@ -62,7 +62,7 @@ GW.workspace = {
 
 		saveWorkflow: function(){
 
-			if(GW.workspace.checkIfWorkflow()){
+			if(GW.workspace.checkIfWorkflowValid()){
 
 				if(GW.workspace.theGraph.nodes.length!=0){
       	    	  
@@ -1089,16 +1089,56 @@ GW.workspace = {
 					.attr('in', 'SourceGraphic')
 					.attr('in2', 'the-shadow')
 					.attr('mode', 'normal');
+
+				// Define the div for the tooltip
+				if(!GW.workspace.tooltipdiv)
+					GW.workspace.tooltipdiv = d3.select("body").append("div")	
+						.attr("class", "processtooltip")				
+						.style("opacity", 0);
 	
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
 					.on("mouseover", function(d){        
 						if (state.shiftNodeDrag){
-						d3.select(this).classed(consts.connectClass, true);
+							d3.select(this).classed(consts.connectClass, true);
 						}
+
+						var process_id = d.id.split("-")[0];
+						var pageX = d3.event.pageX;
+						var pageY = d3.event.pageY;
+
+						GW.menu.details(process_id, "process", function(msg){
+
+							GW.workspace.tooltipdiv.transition()
+								.duration(200)
+								.style("opacity", .9);
+							GW.workspace.tooltipdiv.html(`
+								<table>
+									<tr>
+										<td>ID</td>
+										<td>`+msg.id+`</td>
+									</tr>
+									<tr>
+										<td>Language</td>
+										<td>`+msg.lang+`</td>
+									</tr>
+									<tr>
+										<td>Code</td>
+										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
+									</tr>
+								</table>
+							`)
+								.style("left", (pageX) + "px")
+								.style("top", (pageY) + "px");
+
+						});
+						
 					})
 					.on("mouseout", function(d){
 						d3.select(this).classed(consts.connectClass, false);
+						GW.workspace.tooltipdiv.transition()		
+							.duration(500)
+							.style("opacity", 0);
 					})
 					.on("mousedown", function(d){
 						thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
@@ -1143,29 +1183,38 @@ GW.workspace = {
 	    	  };
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.addProcess = function(id, name){
-		  			
-	    		  	var thisGraph = this;
-		  			//how to find a location
-		  			
-		  			var x = Math.floor(Math.random() * 900) + 1;
-		  			
-		  			var y = Math.floor(Math.random() * 600) + 1;
-		  			
-		  			var randomid = GW.workspace.makeid();
-		  			
-		  			var insid = id +"-"+ randomid;
-		  			
-		  			thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
-		  			
-		  			thisGraph.updateGraph();
-		  			
-		  			console.log("new process added: " + insid);
+
+				if(GW.workspace.currentmode == 1){
+
+					var thisGraph = this;
+					//how to find a location
+					
+					var x = Math.floor(Math.random() * 900) + 1;
+					
+					var y = Math.floor(Math.random() * 600) + 1;
+					
+					var randomid = GW.workspace.makeid();
+					
+					var insid = id +"-"+ randomid;
+					
+					thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
+					
+					thisGraph.updateGraph();
+					
+					console.log("new process added: " + insid);
 
 					GW.workspace.showNonSaved();
 
 					GW.general.switchTab("workspace");
+						
+					return insid;
+
+				}else{
+
+					alert("Sorry, cannot add process when the workflow is running!");
+
+				}
 		  			
-		  			return insid;
 		  			
 		  	  };
 		  	  
@@ -1385,6 +1434,32 @@ GW.workspace = {
 			
 			return workflow;
 			
+		},
+
+		checkIfWorkflowValid: function(){
+
+			var isvalid = true;
+
+			if(GW.workspace.checkIfWorkflow()){
+
+				GW.workspace.theGraph.edges.forEach(function(val, i){
+
+					if(val.source==null || val.source==null ){
+
+						isvalid = false;
+					
+					}
+				
+				});
+
+			}else{
+
+				isvalid = false;
+
+			}
+
+			return isvalid;
+
 		},
 		
 		makeid: function() {
