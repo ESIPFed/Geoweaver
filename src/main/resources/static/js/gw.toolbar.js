@@ -107,6 +107,7 @@ GW.toolbar = {
 				
 			});
 			
+			// for new dialogue
 			$("#newprocess-d").click(function(){
 				
 				GW.process.newDialog();
