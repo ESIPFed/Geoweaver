@@ -647,58 +647,62 @@ GW.process = {
 			// get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
 			var content = `<div class="modal-body">
 				<div class="row">
-					<div class="col col-md-3">ID</div>
-					<div class="col col-md-3">`+current_history.id+`</div>
-					<div class="col col-md-3">ID</div>
-					<div class="col col-md-3">`+previous_history.id+`</div>
+					<div class="col col-md-3"><b>ID</b></div>
+					<div class="col col-md-3">`+current_history.hid+`</div>
+					<div class="col col-md-3"><b>ID</b></div>
+					<div class="col col-md-3">`+previous_history.hid+`</div>
 				</div>
 				<div class="row">
-					<div class="col col-md-3">BeginTime</div>
+					<div class="col col-md-3"><b>BeginTime</b></div>
 					<div class="col col-md-3">`+current_history.begin_time+`</div>
-					<div class="col col-md-3">BeginTime</div>
+					<div class="col col-md-3"><b>BeginTime</b></div>
 					<div class="col col-md-3">`+previous_history.begin_time+`</div>
 				</div>
 				<div class="row">
-					<div class="col col-md-3">EndTime</div>
+					<div class="col col-md-3"><b>EndTime</b></div>
 					<div class="col col-md-3">`+current_history.end_time+`</div>
-					<div class="col col-md-3">EndTime</div>
+					<div class="col col-md-3"><b>EndTime</b></div>
 					<div class="col col-md-3">`+previous_history.end_time+`</div>
 				</div>
 				<div class="row">
-					<div class="col col-md-3">Notes</div>
+					<div class="col col-md-3"><b>Notes</b></div>
 					<div class="col col-md-3">`+current_history.notes+`</div>
-					<div class="col col-md-3">Notes</div>
+					<div class="col col-md-3"><b>Notes</b></div>
 					<div class="col col-md-3">`+previous_history.notes+`</div>
 				</div>
 				<div class="row">
-					<div class="col col-md-3">Status</div>
+					<div class="col col-md-3"><b>Status</b></div>
 					<div class="col col-md-3">`+current_history.status+`</div>
-					<div class="col col-md-3">Status</div>
+					<div class="col col-md-3"><b>Status</b></div>
 					<div class="col col-md-3">`+previous_history.status+`</div>
 				</div>
 				<br/>
+				<label>Code Comparision</label>
+				<br/>
 				<div id=\"process-difference-comparison-code-view"\></div>
 				<br/>
+				<br/>
+				<label>Result Comparision</label>
 				<div id=\"process-difference-comparison-result-view"\></div>
 				</div>`;
 			
 			GW.process.createJSFrameDialog(720, 640, content, "History Details")
-			var value, orig1 , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
+			var history_value, results_value, orig1 , orig2, dv, panes = 2, highlight = true, connect = "align", collapse = false;
 			// value = document.documentElement.innerHTML;
 
-			value = current_code;
+			history_value = current_code;
 			orig1 = current_code;
 			orig2 = previous_code;
 
 			// value = "test";
 			// orig1 = "test1";
 			// orig2 = "test2";
-			if (value == null) return;
+			if (history_value == null) return;
 			// console.log(orig1);
 			var code_target = document.getElementById("process-difference-comparison-code-view");
 			code_target.innerHTML = "";
 			CodeMirror.MergeView(code_target, {
-				value: value,
+				value: history_value,
 				origLeft: panes == 3 ? orig1 : null,
 				orig: orig2,
 				lineNumbers: true,
@@ -706,21 +710,24 @@ GW.process = {
 				highlightDifferences: highlight,
 				connect: connect,
 				collapseIdentical: collapse,
-				allowEditingOriginals: false
+				allowEditingOriginals: false,
+				revertButtons: false // to disable the option of reverting the changes or merging the changes 
 			  });
 
 			  var result_target = document.getElementById("process-difference-comparison-result-view");
+			  results_value = current_history.output;
 			  result_target.innerHTML = "";
 			  CodeMirror.MergeView(result_target, {
-				  value: value,
-				  origLeft: panes == 2 ? current_history.output:null,
+				  value: results_value,
+				  origLeft: panes == 3 ? current_history.output:null,
 				  orig: previous_history.output,
 				  lineNumbers: true,
 				  mode: "python",
 				  highlightDifferences: highlight,
 				  connect: connect,
 				  collapseIdentical: collapse,
-				  allowEditingOriginals: false
+				  allowEditingOriginals: false,
+				  revertButtons: false // to disable the option of reverting the changes or merging the changes 
 				});
 			
 		},
