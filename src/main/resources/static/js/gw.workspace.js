@@ -602,7 +602,6 @@ GW.workspace = {
 	    		  
 	    	  }
 	
-	    	  /* select all text in element: taken from http://stackoverflow.com/questions/6139107/programatically-select-text-in-a-contenteditable-html-element */
 	    	  GW.workspace.GraphCreator.prototype.selectElementContents = function(el) {
 	    	    var range = document.createRange();
 	    	    range.selectNodeContents(el);
@@ -610,9 +609,7 @@ GW.workspace = {
 	    	    sel.removeAllRanges();
 	    	    sel.addRange(range);
 	    	  };
-	
-	
-	    	  /* insert svg line breaks: taken from http://stackoverflow.com/questions/13241475/how-do-i-include-newlines-in-labels-in-d3-charts */
+			  
 	    	  GW.workspace.GraphCreator.prototype.insertTitleLinebreaks = function (gEl, title) {
 	    	    var words = title.split(/\s+/g),
 	    	        nwords = words.length;
@@ -633,8 +630,7 @@ GW.workspace = {
 	    	        tspan.attr('x', 0).attr('dy', '15');
 	    	    }
 	    	  };
-	
-	    	  
+
 	    	  // remove edges associated with a node
 	    	  GW.workspace.GraphCreator.prototype.spliceLinksForNode = function(node) {
 	    	    var thisGraph = this,
@@ -875,7 +871,6 @@ GW.workspace = {
   	    			
   	    		}
   	    		
-//    			thisGraph.nodes.splice(thisGraph.nodes.indexOf(selectedNode), 1);
     			thisGraph.spliceLinksForNode(selectedNode);
   	    		thisGraph.state.selectedNode = null;
   	    		thisGraph.updateGraph();
@@ -884,7 +879,6 @@ GW.workspace = {
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.removeNodes = function(pid) {
 		    	    var thisGraph = this;
-		    	    //remove the workspace object
     	    		var selectedNodes = thisGraph.getNodesById(pid);
     	    		for(var i=0;i<selectedNodes.length;i++){
     	    			thisGraph.nodes.splice(selectedNodes[i], 1);
@@ -948,7 +942,6 @@ GW.workspace = {
 					
 						var pid = selectedNode.id;
 						console.log("going to remove process: " + pid);
-	//	    	    	GW.menu.del(pid, "process");
 						thisGraph.removeNode(pid);
 					
 					} else if (selectedEdge){
@@ -981,8 +974,6 @@ GW.workspace = {
 	    	    if(state.lastKeyDown !== -1) return;
 	
 	    	    state.lastKeyDown = d3.event.keyCode;
-	    	    // var selectedNode = state.selectedNode,
-	    	    //     selectedEdge = state.selectedEdge;
 	
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
@@ -1044,19 +1035,10 @@ GW.workspace = {
 	    	    // update existing nodes
 	    	    thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 	    	    thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	    //   .attr("fill", function (d) { 
-				// 	//   console.log("current color "+ d.id + " - " + d.color); 
-				// 	//   return d.color; 
-				// 		return "#161616";
-				// 	})
 				  	.style("stroke", function (d) { 
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-							// return "#dadada";
+						  return d.color;
 						})
 					.style("fill", function (d) { 
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						//   return d.color; 
 							return "#dadada";
 						});
 	
@@ -1115,15 +1097,15 @@ GW.workspace = {
 							GW.workspace.tooltipdiv.html(`
 								<table>
 									<tr>
-										<td>ID</td>
+										<td><b>ID</b></td>
 										<td>`+msg.id+`</td>
 									</tr>
 									<tr>
-										<td>Language</td>
+										<td><b>Language</b></td>
 										<td>`+msg.lang+`</td>
 									</tr>
 									<tr>
-										<td>Code</td>
+										<td><b>Code</b></td>
 										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
 									</tr>
 								</table>

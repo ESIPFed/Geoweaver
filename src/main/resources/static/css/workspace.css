@@ -110,7 +110,8 @@ div.processtooltip {
     width: 300px;
     padding: 2px;
     font: 12px sans-serif;
-    background: lightsteelblue;
+    background: #333;
+    color: white;
     border: 0px;
     border-radius: 8px;
     pointer-events: none;	
@@ -119,5 +120,6 @@ div.processtooltip {
 div.processtooltip table tr td {
 
     padding: 5px;
+    border-bottom-style: dotted;
 
 }
