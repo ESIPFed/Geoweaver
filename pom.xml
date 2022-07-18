@@ -394,42 +394,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- <plugin>
-				<groupId>org.jreleaser</groupId>
-				<artifactId>jreleaser-maven-plugin</artifactId>
-				<version>0.10.0</version>
-				<configuration>
-					<jreleaser>
-						<project>
-							<java>
-								<mainClass>${app.main.class}</mainClass>
-							</java>
-						</project>
-						<release>
-							<github>
-								<owner>earther</owner>
-								<overwrite>true</overwrite>
-							</github>
-						</release>
-						<distributions>
-							<app>
-								<artifacts>
-									<artifact>
-										<path>
-										${app.distribution.directory}/${project.artifactId}-${project.version}.zip
-										</path>
-									</artifact>
-									<artifact>
-										<path>
-										${app.distribution.directory}/${project.artifactId}-${project.version}.tar.gz
-										</path>
-									</artifact>
-								</artifacts>
-							</app>
-						</distributions>
-					</jreleaser>
-				</configuration>
-			</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
 		</plugins>
 	</build>
 
