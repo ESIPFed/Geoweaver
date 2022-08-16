@@ -732,6 +732,57 @@ GW.process = {
 			
 		},
 
+<<<<<<< Updated upstream
+=======
+		openNav: function() {
+			// document.getElementById("mySidenav").style.width = "250px";
+			// document.getElementById("main").style.marginLeft = "250px";
+
+			// document.getElementById("sidemenu").style.width = "250px";
+			// document.getElementById("main").style.marginLeft = "250px";
+			var m = document.getElementById("main-side-menu");
+			var x = document.getElementById("sidemenu_new");
+			var y = document.getElementById("navbar");
+				if (x.style.display === "none") {
+				  x.style.display = "block";
+				  y.style.display = "none";
+				  m.style.width = "250px";
+				} else {
+				  x.style.display = "none";
+				  y.style.display = "block";
+				 // m.style.width = "130px";
+				}
+		},
+		
+		
+		closeNav: function() {
+			
+			var m = document.getElementById("main-side-menu");
+			var x = document.getElementById("sidemenu_new");
+			var y = document.getElementById("navbar");
+			if (x.style.display === "none") {
+				x.style.display = "block";
+				y.style.display = "none";
+				// m.style.width = "28px";
+			} else {
+				x.style.display = "none";
+				y.style.display = "block";
+				 m.style.width = "28px";
+			}
+		},
+
+openHostsMenu: function(id) {
+	GW.process.openNav();
+	// $('#HostsList').collapse() = false;
+	// $('#hosts').toggle = true;
+	// document.querySelector("#hosts").attributes['aria-expanded'].value = 'true'
+	//$("hosts").attr("aria-expanded","true");
+	// $('#hosts').expand();
+	$('#'+id).expand();
+	// $("#hosts").dropdown("toggle");
+},
+
+>>>>>>> Stashed changes
 		newDialog: function(category){
 			
 			var content = '<div class="modal-body">'+
