@@ -220,21 +220,19 @@
 			
 			<!-- set site margin here -->
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
+				
 			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
+ <!-- <a style="font-size:30px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">×</a>
+ <a style="font-size:30px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">☰ open</a> -->
+				<!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#sidemenu">Menu</button> -->
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100%-50px); margin: 0;padding: 0;">
-					
-					
+<!-- 
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-<<<<<<< Updated upstream
-					<div class="nav-side-menu" >
-						
-					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
-							
-							<ul id="menu-content" class="menu-content collapse out">
-								
-								<li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
-=======
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -276,9 +274,9 @@ Include the above in your HEAD tag --> <!--
 							<div id="navbar" style="position: absolute; display: none">
 							<ul style="display: inline-block">
 								<li onclick="GW.process.openHostsMenu(hosts)"><a href="javascript:void(0)" ><i class="fa fa-server fa-lg" data-toggle="collapse" data-target="#hosts"  title="Add new host"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openHostsMenu(processs)"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openHostsMenu(workflows)"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openHostsMenu(tools)"><i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i></a></li>
+								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i></a></li>
+								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i></a></li>
+								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i></a></li>
 								<a href="javascript:void(0)" class="closebtn openmainmenubtn" >&gt;&gt;</a>
 							</ul>
 							<!-- write a condition for the below open link -->
@@ -303,7 +301,6 @@ Include the above in your HEAD tag --> <!--
 
 							<ul id="menu-content" class="menu-content collapse out" style="display: inline-block">
 								<li id="HostsList" data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
->>>>>>> Stashed changes
 									<a href="javascript:void(0)" >
 										<i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i>&nbsp;&nbsp;&nbsp;Hosts 
 										<i class="fas fa-caret-down pull-right" data-toggle="collapse" data-target="#hosts" ></i>
@@ -315,6 +312,7 @@ Include the above in your HEAD tag --> <!--
 									<li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
 										<a href="javascript:void(0)">Linux/Win/Mac Computers</a>
 									</li>
+							
 									<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
 									
 									<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
@@ -341,7 +339,10 @@ Include the above in your HEAD tag --> <!--
 								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#proceses">
 									<a href="javascript:void(0)">
 										<i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i>&nbsp;&nbsp;&nbsp;Process 
+										<!-- implement code for the toggle arrow change -->
 										<i data-toggle="collapse" data-target="#processs" class="fas fa-caret-down pull-right"></i>
+										<!-- <i data-toggle="collapse" data-target="#processs" class="fas fa-caret-up pull-right"></i> -->
+										<!-- <i data-toggle="collapse" data-target="#processs" class="fa-solid fa-angle-up"></i> -->
 										<!-- <i class="fa fa-plus pull-right" id="newprocess"></i>  -->
 										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" id="newprocess">New Process</button>
 									</a>
@@ -370,7 +371,7 @@ Include the above in your HEAD tag --> <!--
 									
 									
 								</ul>
-				
+								
 				
 								<li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. "   data-toggle="collapse" data-target="#workflows">
 									<a href="javascript:void(0)">
@@ -435,19 +436,17 @@ Include the above in your HEAD tag --> <!--
 										</a>
 									</li>
 								</ul>
-								
+								<br><br>
+								<!-- <li>
+									<a style="font-size:15px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">close</a>
+								</li> -->
 							</ul>
-<<<<<<< Updated upstream
-=======
 							<!-- <a style="font-size:15px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu_new">close</a> -->
 							<!-- <a href="javascript:void(0)" class="closebtn closemainmenubtn">&gt;&gt;close</a> -->
 							</div>   
 					</div>
->>>>>>> Stashed changes
 
-					            
-					     </div>
-					     
+						<!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#sidemenu">Menu</button> -->
 					</div>
 					
 				</div>

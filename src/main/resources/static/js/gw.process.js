@@ -732,8 +732,6 @@ GW.process = {
 			
 		},
 
-<<<<<<< Updated upstream
-=======
 		openNav: function() {
 			// document.getElementById("mySidenav").style.width = "250px";
 			// document.getElementById("main").style.marginLeft = "250px";
@@ -782,8 +780,7 @@ openHostsMenu: function(id) {
 	// $("#hosts").dropdown("toggle");
 },
 
->>>>>>> Stashed changes
-		newDialog: function(category){
+newDialog: function(category){
 			
 			var content = '<div class="modal-body">'+
 				GW.process.getProcessDialogTemplate()+
