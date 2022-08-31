@@ -47,7 +47,9 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
@@ -69,9 +71,6 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 @Service
 @Scope("prototype")
 public class SSHSessionImpl implements SSHSession {
-
-    // @Autowired
-    // HostTool ht;
 
     @Autowired
     HostRepository hostrepo;

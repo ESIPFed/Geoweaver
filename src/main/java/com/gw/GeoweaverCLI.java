@@ -1,9 +1,11 @@
 package com.gw;
 
 import com.gw.commands.TopEntryCommand;
+import com.gw.ssh.SSHSessionImpl;
 import com.gw.utils.BeanTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +39,14 @@ public class GeoweaverCLI implements CommandLineRunner {
         //pass the context otherwise it will be lost after new CommandLine
         BeanTool.setCLIContext(applicationContext); 
 
+        AutowireCapableBeanFactory factory = applicationContext.getAutowireCapableBeanFactory();
+
+        SSHSessionImpl sessionimpl = factory.createBean(SSHSessionImpl.class);
+
+        System.out.print("Session impl bean is ready");
+
+        System.out.print("First check if context has sshsession " + applicationContext.containsBean("session") + "\n");
+
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
 
         new CommandLine(topEntryCommand).execute(args);
@@ -50,6 +60,8 @@ public class GeoweaverCLI implements CommandLineRunner {
         ApplicationContext applicationContext = builder.web(WebApplicationType.NONE)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
+
+        System.out.print("Second check if context has sshsession " + applicationContext.containsBean("session") + "\n");
 
         System.exit(SpringApplication.exit(applicationContext));
 		
