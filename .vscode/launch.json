@@ -17,7 +17,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "detail --host-id roeaa3"
+      "args": "run o1tuzdhg0lmvf8g4lt9w"
     },
     {
       "type": "java",

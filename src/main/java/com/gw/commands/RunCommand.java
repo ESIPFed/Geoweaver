@@ -41,7 +41,6 @@ public class RunCommand implements Runnable {
         if (BaseTool.isNull(historyId)) {
             historyId = new RandomString(18).nextString();
         }
-        
 
     }
     
