@@ -32,24 +32,25 @@ public class RunCommand implements Runnable {
     String historyId;
 
     public void run() {
+        
         System.out.println("running run command with workflow id" + workflowId + "\n");
         
-        if (workflowZipOrPathToJson != null) {
+        if (workflowZipOrPathToJson != null) 
+        
             System.out.println("workflow zip or path to json: " + workflowZipOrPathToJson);
-        }
-        BaseTool bt = BeanTool.getBean(BaseTool.class);
+
         WorkflowTool wt = BeanTool.getBean(WorkflowTool.class);
 
-        if (BaseTool.isNull(historyId)) {
-            historyId = new RandomString(18).nextString();
-        }
+        if (BaseTool.isNull(historyId)) historyId = new RandomString(18).nextString();
 
-        
+        if(BaseTool.isNull(envs)) envs = new String[]{"default_option"};
 
-        String response = wt.execute(historyId, workflowId, "one", new String[]{"10001"}, 
-            new String[]{"123456"}, new String[]{"default_option"}, "xxxxxxxxxx");
+        if(BaseTool.isNull(hostStrings)) hostStrings = new String[]{"10001"};
 
-        System.out.print(response);
+        String response = wt.execute(historyId, workflowId, "one", hostStrings, 
+                                    new String[]{"123456"}, envs, "xxxxxxxxxx");
+
+        System.out.println(response);
 
     }
     
