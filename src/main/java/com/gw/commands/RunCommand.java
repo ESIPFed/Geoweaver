@@ -1,11 +1,17 @@
 package com.gw.commands;
 
+import com.amazonaws.services.stepfunctions.model.ExecutionStatus;
+import com.gw.jpa.History;
 import com.gw.ssh.SSHSessionImpl;
+import com.gw.tools.HistoryTool;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import picocli.CommandLine.Command;
@@ -32,7 +38,7 @@ public class RunCommand implements Runnable {
     String historyId;
 
     public void run() {
-        
+
         System.out.println("running run command with workflow id" + workflowId + "\n");
         
         if (workflowZipOrPathToJson != null) 
@@ -50,7 +56,38 @@ public class RunCommand implements Runnable {
         String response = wt.execute(historyId, workflowId, "one", hostStrings, 
                                     new String[]{"123456"}, envs, "xxxxxxxxxx");
 
-        System.out.println(response);
+        System.out.println("The workflow execution has been successfully kicked off. \n" + response);
+
+        System.out.println("Waiting for its finish...");
+
+        HistoryTool ht = BeanTool.getBean(HistoryTool.class);
+
+        History hist = ht.getHistoryById(historyId);;
+
+        try {
+        
+            while(true){
+        
+                TimeUnit.SECONDS.sleep(2);
+        
+                hist = ht.getHistoryById(historyId);
+        
+                if(ht.checkIfEnd(hist)) break;
+            
+            }
+
+        } catch (InterruptedException e) {
+            
+            e.printStackTrace();
+        
+        }
+
+
+        System.out.println(String.format("Total time cost: %o seconds", 
+                           BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time())));
+        
+                           
+        System.out.println(String.format("The workflow execution is over. Final status: %s.", hist.getIndicator()));
 
     }
     

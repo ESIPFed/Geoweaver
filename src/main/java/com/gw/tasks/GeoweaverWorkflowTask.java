@@ -46,15 +46,12 @@ public class GeoweaverWorkflowTask{
 	@Autowired
 	HistoryTool hist;
 	
-	// @Autowired
-	// WorkflowTool wt;
 	@Autowired
 	WorkflowRepository workflowRepository;
 
 	@Autowired
 	EnvironmentTool et;
-
-
+	
 	@Autowired
 	TaskManager tm;
 	

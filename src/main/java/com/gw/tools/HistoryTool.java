@@ -425,6 +425,19 @@ public class HistoryTool {
 
 	}
 
+	public boolean checkIfEnd(History hist){
+
+		if(ExecutionStatus.FAILED.equals(hist.getIndicator()) || 
+			ExecutionStatus.STOPPED.equals(hist.getIndicator()) ||
+			ExecutionStatus.DONE.equals(hist.getIndicator()) ||
+			ExecutionStatus.UNKOWN.equals(hist.getIndicator()))
+				return true;
+		else
+				return false;
+                
+
+	}
+
 	/**
 	 * Save Jupyter Notebook Checkpoints into the GW database
 	 */

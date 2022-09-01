@@ -186,12 +186,6 @@ public class WorkflowTool {
 		
 	}
 
-	
-	
-	
-
-	
-	
 	/**
 	 * Find a process whose status is not executed, while all of its condition nodes are satisfied. 
 	 * @param nodemap
@@ -324,13 +318,19 @@ public class WorkflowTool {
 	/**
 	 * Execute a workflow
 	 * @param id
+	 * id that will be used to label this execution history. If none, a new history id will be generated.
 	 * @param mode
+	 * mode of execution environment, two options: one or multiple
 	 * @param hosts
+	 * list of host Ids
 	 * @param pswd
+	 * list of host password. This list should match the hosts list exactly.
 	 * @param token
+	 * token is the session id with the client browser. In Geoweaver CLI mode, it will be ignored.
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String[] envs, String token) {
+	public String execute(String history_id, String wid, String mode, 
+						  String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -348,8 +348,6 @@ public class WorkflowTool {
 					
 					"\", \"ret\": \"success\"}";
 			
-			//register the input/output into the database
-	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();

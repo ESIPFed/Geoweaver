@@ -13,17 +13,10 @@ public class BeanTool implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		
-		System.err.println("testing if this function is called");
 		context = applicationContext;
 		
 	}
-
-	// public static void setCLIContext(ApplicationContext applicationContext) throws BeansException {
-
-	// 	context = applicationContext;
-
-	// }
-
+	
 	public static ApplicationContext getApplicationContext() {
 		return context;
  	}
