@@ -224,7 +224,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 				
 			}
 
-			// this.updateStatus(logs.toString(), "Done");
+			this.updateStatus(logs.toString(), "Done");
 			
 			sendMessage2WebSocket("The process "+this.history_id+" is finished.");
 			

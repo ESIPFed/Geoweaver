@@ -62,7 +62,7 @@ GW.workspace = {
 
 		saveWorkflow: function(){
 
-			if(GW.workspace.checkIfWorkflow()){
+			if(GW.workspace.checkIfWorkflowValid()){
 
 				if(GW.workspace.theGraph.nodes.length!=0){
       	    	  
@@ -602,7 +602,6 @@ GW.workspace = {
 	    		  
 	    	  }
 	
-	    	  /* select all text in element: taken from http://stackoverflow.com/questions/6139107/programatically-select-text-in-a-contenteditable-html-element */
 	    	  GW.workspace.GraphCreator.prototype.selectElementContents = function(el) {
 	    	    var range = document.createRange();
 	    	    range.selectNodeContents(el);
@@ -610,9 +609,7 @@ GW.workspace = {
 	    	    sel.removeAllRanges();
 	    	    sel.addRange(range);
 	    	  };
-	
-	
-	    	  /* insert svg line breaks: taken from http://stackoverflow.com/questions/13241475/how-do-i-include-newlines-in-labels-in-d3-charts */
+			  
 	    	  GW.workspace.GraphCreator.prototype.insertTitleLinebreaks = function (gEl, title) {
 	    	    var words = title.split(/\s+/g),
 	    	        nwords = words.length;
@@ -633,8 +630,7 @@ GW.workspace = {
 	    	        tspan.attr('x', 0).attr('dy', '15');
 	    	    }
 	    	  };
-	
-	    	  
+
 	    	  // remove edges associated with a node
 	    	  GW.workspace.GraphCreator.prototype.spliceLinksForNode = function(node) {
 	    	    var thisGraph = this,
@@ -875,7 +871,6 @@ GW.workspace = {
   	    			
   	    		}
   	    		
-//    			thisGraph.nodes.splice(thisGraph.nodes.indexOf(selectedNode), 1);
     			thisGraph.spliceLinksForNode(selectedNode);
   	    		thisGraph.state.selectedNode = null;
   	    		thisGraph.updateGraph();
@@ -884,7 +879,6 @@ GW.workspace = {
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.removeNodes = function(pid) {
 		    	    var thisGraph = this;
-		    	    //remove the workspace object
     	    		var selectedNodes = thisGraph.getNodesById(pid);
     	    		for(var i=0;i<selectedNodes.length;i++){
     	    			thisGraph.nodes.splice(selectedNodes[i], 1);
@@ -948,7 +942,6 @@ GW.workspace = {
 					
 						var pid = selectedNode.id;
 						console.log("going to remove process: " + pid);
-	//	    	    	GW.menu.del(pid, "process");
 						thisGraph.removeNode(pid);
 					
 					} else if (selectedEdge){
@@ -981,8 +974,6 @@ GW.workspace = {
 	    	    if(state.lastKeyDown !== -1) return;
 	
 	    	    state.lastKeyDown = d3.event.keyCode;
-	    	    // var selectedNode = state.selectedNode,
-	    	    //     selectedEdge = state.selectedEdge;
 	
 	    	    switch(d3.event.keyCode) {
 		    	    case consts.BACKSPACE_KEY:
@@ -1044,19 +1035,10 @@ GW.workspace = {
 	    	    // update existing nodes
 	    	    thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 	    	    thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-	    	    //   .attr("fill", function (d) { 
-				// 	//   console.log("current color "+ d.id + " - " + d.color); 
-				// 	//   return d.color; 
-				// 		return "#161616";
-				// 	})
 				  	.style("stroke", function (d) { 
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-							// return "#dadada";
+						  return d.color;
 						})
 					.style("fill", function (d) { 
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						//   return d.color; 
 							return "#dadada";
 						});
 	
@@ -1089,16 +1071,56 @@ GW.workspace = {
 					.attr('in', 'SourceGraphic')
 					.attr('in2', 'the-shadow')
 					.attr('mode', 'normal');
+
+				// Define the div for the tooltip
+				if(!GW.workspace.tooltipdiv)
+					GW.workspace.tooltipdiv = d3.select("body").append("div")	
+						.attr("class", "processtooltip")				
+						.style("opacity", 0);
 	
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
 					.on("mouseover", function(d){        
 						if (state.shiftNodeDrag){
-						d3.select(this).classed(consts.connectClass, true);
+							d3.select(this).classed(consts.connectClass, true);
 						}
+
+						var process_id = d.id.split("-")[0];
+						var pageX = d3.event.pageX;
+						var pageY = d3.event.pageY;
+
+						GW.menu.details(process_id, "process", function(msg){
+
+							GW.workspace.tooltipdiv.transition()
+								.duration(200)
+								.style("opacity", .9);
+							GW.workspace.tooltipdiv.html(`
+								<table>
+									<tr>
+										<td><b>ID</b></td>
+										<td>`+msg.id+`</td>
+									</tr>
+									<tr>
+										<td><b>Language</b></td>
+										<td>`+msg.lang+`</td>
+									</tr>
+									<tr>
+										<td><b>Code</b></td>
+										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
+									</tr>
+								</table>
+							`)
+								.style("left", (pageX) + "px")
+								.style("top", (pageY) + "px");
+
+						});
+						
 					})
 					.on("mouseout", function(d){
 						d3.select(this).classed(consts.connectClass, false);
+						GW.workspace.tooltipdiv.transition()		
+							.duration(500)
+							.style("opacity", 0);
 					})
 					.on("mousedown", function(d){
 						thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
@@ -1143,29 +1165,38 @@ GW.workspace = {
 	    	  };
 	    	  
 	    	  GW.workspace.GraphCreator.prototype.addProcess = function(id, name){
-		  			
-	    		  	var thisGraph = this;
-		  			//how to find a location
-		  			
-		  			var x = Math.floor(Math.random() * 900) + 1;
-		  			
-		  			var y = Math.floor(Math.random() * 600) + 1;
-		  			
-		  			var randomid = GW.workspace.makeid();
-		  			
-		  			var insid = id +"-"+ randomid;
-		  			
-		  			thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
-		  			
-		  			thisGraph.updateGraph();
-		  			
-		  			console.log("new process added: " + insid);
+
+				if(GW.workspace.currentmode == 1){
+
+					var thisGraph = this;
+					//how to find a location
+					
+					var x = Math.floor(Math.random() * 900) + 1;
+					
+					var y = Math.floor(Math.random() * 600) + 1;
+					
+					var randomid = GW.workspace.makeid();
+					
+					var insid = id +"-"+ randomid;
+					
+					thisGraph.nodes.push({title: name, id: insid, x: x, y: y});
+					
+					thisGraph.updateGraph();
+					
+					console.log("new process added: " + insid);
 
 					GW.workspace.showNonSaved();
 
 					GW.general.switchTab("workspace");
+						
+					return insid;
+
+				}else{
+
+					alert("Sorry, cannot add process when the workflow is running!");
+
+				}
 		  			
-		  			return insid;
 		  			
 		  	  };
 		  	  
@@ -1385,6 +1416,32 @@ GW.workspace = {
 			
 			return workflow;
 			
+		},
+
+		checkIfWorkflowValid: function(){
+
+			var isvalid = true;
+
+			if(GW.workspace.checkIfWorkflow()){
+
+				GW.workspace.theGraph.edges.forEach(function(val, i){
+
+					if(val.source==null || val.source==null ){
+
+						isvalid = false;
+					
+					}
+				
+				});
+
+			}else{
+
+				isvalid = false;
+
+			}
+
+			return isvalid;
+
 		},
 		
 		makeid: function() {
