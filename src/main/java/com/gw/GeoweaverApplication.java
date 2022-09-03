@@ -63,6 +63,9 @@ public class GeoweaverApplication {
 
             addLocalhost();
 
+            System.out.println("GeoWeaver is started and ready for use..");
+            System.out.println("URL: http://localhost:8070/Geoweaver");
+
         }
 		
 		

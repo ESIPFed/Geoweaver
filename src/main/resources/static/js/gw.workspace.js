@@ -237,6 +237,12 @@ GW.workspace = {
 								</div>
 								<div class="form-check">
 									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodegoodhistory">
+										<i>Workflow with Process Code and Only Successfully Done History</i>
+									</label>
+								</div>
+								<div class="form-check">
+									<label>
 										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodeallhistory" checked>
 										<i>Workflow with Process Code and All Process History (Recommended)</i>
 									</label>

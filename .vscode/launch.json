@@ -9,15 +9,15 @@
       "name": "GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "${command:SpecifyProgramArgs}"
+      "args": "run help"
     },
     {
       "type": "java",
-      "name": "Launch GeoweaverCLI",
+      "name": "Launch Run Workflow",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "detail --host-id roeaa3"
+      "args": "run workflow -h 100001 -e 23geik 29k6vmj3n94y128j4aab"
     },
     {
       "type": "java",
