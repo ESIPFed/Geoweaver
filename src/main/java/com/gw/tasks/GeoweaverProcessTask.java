@@ -344,14 +344,6 @@ public class GeoweaverProcessTask  extends Task {
 
 					History c_his = hist.getHistoryById(c_history_id);
 
-					// JSONObject obj = new JSONObject();
-					
-					// obj.put("id", id);
-
-					// obj.put("history_id", history_id);
-					
-					// obj.put("status", flags[i].toString());
-
 					JSONObject obj = new JSONObject();
 
 					obj.put("id", member_process_id_list[i]);

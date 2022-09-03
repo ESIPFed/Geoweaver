@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.gw.ssh.SSHSession;
+import com.gw.ssh.SSHSessionImpl;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -166,8 +168,6 @@ public class FileTool {
 			
 			log.info("upload " + localPath + " to " + remoteLoc);
 			
-//			session.getSsh().newSCPFileTransfer().download(file_path, fileloc);
-			
 			session.getSsh().newSCPFileTransfer().upload(localPath, remoteLoc);
 			
 			//remove the local temporal files
@@ -175,10 +175,6 @@ public class FileTool {
 			if(removelocal) localfile.delete();
 			
 			session.getSsh().close();
-			
-//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
-			
-//			session.runBash(code, id, false); 
 			
 			String file_url = null;
 			
@@ -211,13 +207,7 @@ public class FileTool {
 		
 		String resp = null;
 		
-//		SSHSession session = new SSHSessionImpl();
-		
 		try {
-			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
 			
 			//establish SSH session and generate a token for it
 			
@@ -231,8 +221,6 @@ public class FileTool {
 			
 			log.info("upload " + localPath + " to " + fileloc);
 			
-//			session.getSsh().newSCPFileTransfer().download(file_path, fileloc);
-			
 			SCPFileTransfer transfer = session.getSsh().newSCPFileTransfer();
 			
 			transfer.upload(localPath, fileloc);
@@ -242,10 +230,6 @@ public class FileTool {
 			localfile.delete();
 			
 			session.getSsh().close();
-			
-//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
-			
-//			session.runBash(code, id, false); 
 			
 			String file_url = null;
 			
@@ -329,39 +313,19 @@ public class FileTool {
 		
 		try {
 			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
 			//establish SSH session and generate a token for it
 			
 			SSHSession session = token2session.get(token);
 			
 			SFTPClient ftpclient = token2ftpclient.get(token);
 			
-//			ftpclient.ls(file_path);
-			
 			List<RemoteResourceInfo> list = ftpclient.ls(file_path);
 			
 			resp = getFolderJSON(list, file_path);
 	    	
-//	    	ftpclient.close();
-//	    	
-//	    	log.info("check if the ssh is still connected : " + session.getSsh().isConnected());
-//	    	
-//	    	session.logout();
-//	    	
-//	    	log.info("check again : " + session.getSsh().isConnected());
-			
-//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
-			
-//			session.runBash(code, id, false); 
-			
 		} catch (Exception e) {
 			
 			e.printStackTrace();
-			
-//			throw new RuntimeException(e.getLocalizedMessage());
 			
 			resp = "{ \"ret\" : \"failure\", \"msg\": \""+e.getLocalizedMessage()+"\"}";
 			
@@ -380,8 +344,6 @@ public class FileTool {
 		try {
 			
 			//establish SSH session and generate a token for it
-			
-//			SSHSession session = new SSHSessionImpl();
 			
 			session.login(hid, password, null, false);
 			
@@ -415,8 +377,6 @@ public class FileTool {
 		
 		try {
 			
-//			filepath = BaseTool.reducePath(filepath);
-			
 			Set<FilePermission> perms = token2ftpclient.get(sessionid).perms(filepath);
 			
 			int permmask = FilePermission.toMask(perms);
@@ -430,8 +390,6 @@ public class FileTool {
 				String local = bt.getFileTransferFolder() + "/" + filename + new RandomString(3).nextString();
 				
 				bt.writeString2File(content, local);
-				
-//				token2ftpclient.get(sessionid).get(filepath, dest);
 				
 				log.info("Writing local file " + local + " into remote file : " + filepath);
 				
@@ -505,23 +463,11 @@ public class FileTool {
 		
 		try {
 			
-			//get host ip, port, user name and password
-			
-//			String[] hostdetails = HostTool.getHostDetailsById(hid);
-			
-			//establish SSH session and generate a token for it
-			
-//			SSHSession session = new SSHSessionImpl();
-			
 			session.login(hid, password, null, false);
 			
 			log.info("download " + file_path + " to " + dest_path);
 			
 			session.getSsh().newSCPFileTransfer().download(file_path, dest_path);
-			
-//			session.getSSHJSession().newSCPFileTransfer().download("test_file", new FileSystemFile("/tmp/"));
-			
-//			session.runBash(code, id, false); 
 			
 		} catch (Exception e) {
 			
@@ -545,8 +491,6 @@ public class FileTool {
 	 * @return
 	 */
 	public String scp_download(String hid, String password, String file_path) {
-		
-//		file_path = BaseTool.reducePath(file_path);
 		
 		String filename = new RandomString(9).nextString();
 		
