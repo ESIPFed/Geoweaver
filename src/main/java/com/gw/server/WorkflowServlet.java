@@ -141,14 +141,10 @@ public class WorkflowServlet {
     	
 		try {
 			
-			// session.getBasicRemote().sendText("Warning: Websocket Channel is going to close"); 
-
-    		logger.error("Channel closed.");
+    		logger.info("Channel closed.");
 
 			WsSession wss = (WsSession) session;
-
-			// peers.remove(wss.getHttpSessionId());
-        	
+			
 		} catch (Exception e) {
 			
 			e.printStackTrace();

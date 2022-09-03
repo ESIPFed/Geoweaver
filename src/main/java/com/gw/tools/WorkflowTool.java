@@ -683,14 +683,22 @@ public class WorkflowTool {
 			String prefix = "";
 			
 			for(History h: histlist){
-			
+
+				if("workflowwithprocesscodegoodhistory".equals(option) && 
+					!ExecutionStatus.DONE.equals(h.getIndicator())){
+						
+						continue;
+
+				}
+
 				String historystr = bt.toJSON(h);
-			
+		
 				workflowhistory.append(prefix);
-  			
+			
 				prefix = ","; 
 			
 				workflowhistory.append(historystr); 
+
 			
 			};
 
@@ -702,6 +710,13 @@ public class WorkflowTool {
 			HashSet<String> process_id_set = new HashSet<>(); 
 
 			for(History h : histlist){
+
+				if("workflowwithprocesscodegoodhistory".equals(option) && 
+					!ExecutionStatus.DONE.equals(h.getIndicator())){
+						
+						continue;
+						
+				}
 
 				String[] processhistorylist = h.getHistory_output().split(";");
 
@@ -718,12 +733,19 @@ public class WorkflowTool {
 
 					if(hisop.isPresent()){
 
+						History hist = hisop.get();
+
+						if("workflowwithprocesscodegoodhistory".equals(option) && 
+							!ExecutionStatus.DONE.equals(hist.getIndicator())){
+							
+							continue;
+								
+						}
+
 						processhistorybuffer.append(prefix);
   			
 						prefix = ","; 
 
-						History hist = hisop.get();
-	
 						processhistorybuffer.append(bt.toJSON(hist)); 
 
 						if (!process_id_set.contains(hist.getHistory_process())) 
@@ -741,7 +763,7 @@ public class WorkflowTool {
 			}
 
 			//if need all the history of the involved processes, go into this if
-			if(option.contains("allhistory")){
+			if(option.contains("allhistory") || "workflowwithprocesscodegoodhistory".equals(option)){
 
 				for(String history_process_id : process_id_set){
 
@@ -754,6 +776,13 @@ public class WorkflowTool {
 							+ "process_" + history_process_id + ".json";
 
 					for(History hist: histlist){
+
+						if("workflowwithprocesscodegoodhistory".equals(option) && 
+							!ExecutionStatus.DONE.equals(hist.getIndicator())){
+							
+							continue;
+
+						}
 						
 						allprocesshistorybuffer.append(bt.toJSON(hist)).append(","); 
 						
