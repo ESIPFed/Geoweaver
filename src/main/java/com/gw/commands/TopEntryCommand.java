@@ -9,7 +9,8 @@ import picocli.CommandLine.HelpCommand; // Default help subcommand, displays hel
 // This is the main class for the command line interface.
 // Register the commands with the CommandLine class as a subcommand.
 @Component
-@Command(subcommands = { PasswordResetCommand.class, RunCommand.class, ListCommand.class, DetailCommand.class, HelpCommand.class })
+@Command(subcommands = { HistoryCommand.class, PasswordResetCommand.class, RunCommand.class, 
+                        ListCommand.class, DetailCommand.class, HelpCommand.class })
 public class TopEntryCommand implements Runnable {
 
     Logger logger = Logger.getLogger(this.getClass());

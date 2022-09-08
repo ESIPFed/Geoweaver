@@ -9,7 +9,7 @@
       "name": "GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "run help"
+      "args": "history wv5sf4oynbs"
     },
     {
       "type": "java",
