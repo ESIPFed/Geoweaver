@@ -30,21 +30,21 @@ public class RunWorkflowCommand  implements Runnable {
     @Parameters(index = "0", description = "workflow id to run")
     String workflowId;
 
+    @Option(names = { "-f", "--workflowfile" }, description = "workflow package or path to workflow.json to run")
+    String workflowZipOrPathToJson;
+
     @Option(names = { "-h", "--hosts" }, description = "hosts to run on")
     String[] hostStrings;
 
     @Option(names = { "-e", "--environments" }, description = "environments to run on")
     String[] envs;
 
-    @Option(names = { "-f", "--workflowfile" }, description = "workflow package or path to workflow.json to run")
-    String workflowZipOrPathToJson;
-
-    @Option(names = { "--history" }, description = "workflow history id to run", required = false, defaultValue = "")
-    String historyId;
+    @Option(names = { "-p", "--passwords" }, description = "passwords to the target hosts")
+    String[] passes;
 
     public void run() {
 
-        System.out.println("running run command with workflow id" + workflowId + "\n");
+        System.out.println(String.format("Running workflow %s", workflowId));
         
         if (workflowZipOrPathToJson != null) 
         
@@ -52,18 +52,18 @@ public class RunWorkflowCommand  implements Runnable {
 
         WorkflowTool wt = BeanTool.getBean(WorkflowTool.class);
 
-        if (BaseTool.isNull(historyId)) historyId = new RandomString(18).nextString();
+        String historyId = new RandomString(18).nextString();
 
         if(BaseTool.isNull(envs)) envs = new String[]{"default_option"};
 
         if(BaseTool.isNull(hostStrings)) hostStrings = new String[]{"10001"};
 
         String response = wt.execute(historyId, workflowId, "one", hostStrings, 
-                                    new String[]{"123456"}, envs, "xxxxxxxxxx");
+                                    passes, envs, "xxxxxxxxxx");
 
-        System.out.println("The workflow execution has been successfully kicked off. \n" + response);
+        System.out.println(String.format("The workflow has been kicked off.\nHistory Id: %s", historyId));
 
-        System.out.println("Waiting for its finish...");
+        System.out.println("Waiting for it to finish");
 
         HistoryTool ht = BeanTool.getBean(HistoryTool.class);
 
@@ -92,7 +92,7 @@ public class RunWorkflowCommand  implements Runnable {
                            BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time())));
         
                            
-        System.out.println(String.format("The workflow execution is over. Final status: %s.", hist.getIndicator()));
+        System.out.println(String.format("Execution is over. Final status: %s.", hist.getIndicator()));
 
     }
     
