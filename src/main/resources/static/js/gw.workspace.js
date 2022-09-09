@@ -1086,7 +1086,7 @@ GW.workspace = {
 	
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-					.on("mouseover", function(d){        
+					.on("mouseover", function(d){
 						if (state.shiftNodeDrag){
 							d3.select(this).classed(consts.connectClass, true);
 						}
