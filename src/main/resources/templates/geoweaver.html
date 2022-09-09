@@ -220,87 +220,19 @@
 			
 			<!-- set site margin here -->
 			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-				
 			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
- <!-- <a style="font-size:30px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">×</a>
- <a style="font-size:30px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">☰ open</a> -->
-				<!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#sidemenu">Menu</button> -->
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100%-50px); margin: 0;padding: 0;">
-<!-- 
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+					
+					
 
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-Include the above in your HEAD tag --> <!--
-</head>
-<body>
-<div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="GW.process.closeNav()">×</a>
-  <a href="#">About</a>
-  <a href="#">Services</a>
-  <a href="#">Clients</a>
-  <a href="#">Contact</a>
-</div>
-
-<div id="main">
-  <h2>Sidenav Push Example</h2>
-  <p>Click on the element below to open the side navigation menu, and push this content to the right.</p>
-  <span style="font-size:30px;cursor:pointer" onclick="GW.process.openNav()">☰ open</span>
-</div>
-     
-</body>
-</html> 
-
- -->
- <!-- Code to create a static nav bar for menu and to support menu option -->
- <!-- <div> -->
-
- <!-- </div> -->
- <!-- <a href="javascript:void(0)" class="closebtn" onclick="GW.process.closeNav()">×</a> -->
- <!-- <span style="font-size:30px;cursor:pointer" onclick="GW.process.openNav()">☰ open</span> -->
-					<!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#sidemenu">Menu</button> -->
-					<div class="nav-side-menu" id="main-side-menu">
+					<div class="nav-side-menu" >
 						
 					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
-							<div id="navbar" style="position: absolute; display: none">
-							<ul style="display: inline-block">
-								<li onclick="GW.process.openHostsMenu(hosts)"><a href="javascript:void(0)" ><i class="fa fa-server fa-lg" data-toggle="collapse" data-target="#hosts"  title="Add new host"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i></a></li>
-								<li><a href="javascript:void(0)" onclick="GW.process.openNav()"><i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i></a></li>
-								<a href="javascript:void(0)" class="closebtn openmainmenubtn" >&gt;&gt;</a>
-							</ul>
-							<!-- write a condition for the below open link -->
-							<!-- <a style="font-size:15px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu_new">open</a> -->
-							<!-- <a style="font-size:15px;cursor:pointer" onclick="GW.process.openNav()">open</a> -->
-							<!-- <a href="javascript:void(0)" class="closebtn openmainmenubtn" >open</a> -->
-							</div>
-							<div id="sidemenu_new" style = "position: relative" >
-
-								<!-- <header class="header" id="header">
-									<div class="color: #000000;font-size: 1.5rem;cursor: pointer"><i id="header-toggle" class="fas fa-bars text-white"></i> </div>
-									<div class="header_img"> <img src="https://osdeibi.dev/assets/img/faces/logoround.png" alt=""> </div>
-								</header> -->
-
-								<a href="#" data-toggle="sidebar-colapse" class="bg-light list-group-item list-group-item-action d-flex align-items-center closebtn closemainmenubtn">
-									<div class="d-flex w-100 justify-content-start align-items-center">
-										<span id="collapse-icon" class="fa fa-2x mr-3">&lt;&lt;</span>
-										<i class="fa-solid fa-arrow-left"></i>
-										<!-- <span id="collapse-text" class="menu-collapsed">Collapse</span> -->
-									</div>
-								</a>
-
-							<ul id="menu-content" class="menu-content collapse out" style="display: inline-block">
-								<li id="HostsList" data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
+							
+							<ul id="menu-content" class="menu-content collapse out">
+								
+								<li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
 									<a href="javascript:void(0)" >
 										<i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i>&nbsp;&nbsp;&nbsp;Hosts 
 										<i class="fas fa-caret-down pull-right" data-toggle="collapse" data-target="#hosts" ></i>
@@ -308,11 +240,10 @@ Include the above in your HEAD tag --> <!--
 										<!-- <i class="fa fa-plus pull-right" id="newhost"></i> -->
 									</a>
 								</li>
-								<ul   class="sub-menu collapse" id="hosts" aria-expanded="false">
+								<ul   class="sub-menu collapse" id="hosts">
 									<li class=" sshserver folder" id="host_folder_ssh" data-toggle="collapse" data-target="#host_folder_ssh_target">
 										<a href="javascript:void(0)">Linux/Win/Mac Computers</a>
 									</li>
-							
 									<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
 									
 									<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
@@ -339,15 +270,12 @@ Include the above in your HEAD tag --> <!--
 								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#proceses">
 									<a href="javascript:void(0)">
 										<i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i>&nbsp;&nbsp;&nbsp;Process 
-										<!-- implement code for the toggle arrow change -->
 										<i data-toggle="collapse" data-target="#processs" class="fas fa-caret-down pull-right"></i>
-										<!-- <i data-toggle="collapse" data-target="#processs" class="fas fa-caret-up pull-right"></i> -->
-										<!-- <i data-toggle="collapse" data-target="#processs" class="fa-solid fa-angle-up"></i> -->
 										<!-- <i class="fa fa-plus pull-right" id="newprocess"></i>  -->
 										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" id="newprocess">New Process</button>
 									</a>
 								</li>
-								<ul class="sub-menu collapse" id="processs">
+								<ul class="sub-menu collapse" id="proceses">
 									
 									<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
 										<a href="javascript:void(0)">Shell</a>
@@ -371,7 +299,7 @@ Include the above in your HEAD tag --> <!--
 									
 									
 								</ul>
-								
+				
 				
 								<li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. "   data-toggle="collapse" data-target="#workflows">
 									<a href="javascript:void(0)">
@@ -389,7 +317,6 @@ Include the above in your HEAD tag --> <!--
 									<a href="javascript:void(0)">
 										<i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i>&nbsp;&nbsp;&nbsp;Tools 
 										<!--<i class="fa fa-plus" id="newworkflow"></i>--> 
-										<!-- <i data-toggle="collapse" data-target="#tools" class="fas fa-caret-down pull-right"></i> -->
 										<i data-toggle="collapse" data-target="#tools" class="fas fa-caret-down pull-right"></i>
 									</a>
 								</li>
@@ -436,17 +363,12 @@ Include the above in your HEAD tag --> <!--
 										</a>
 									</li>
 								</ul>
-								<br><br>
-								<!-- <li>
-									<a style="font-size:15px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu">close</a>
-								</li> -->
+								
 							</ul>
-							<!-- <a style="font-size:15px;cursor:pointer" data-toggle="collapse" data-target="#sidemenu_new">close</a> -->
-							<!-- <a href="javascript:void(0)" class="closebtn closemainmenubtn">&gt;&gt;close</a> -->
-							</div>   
-					</div>
 
-						<!-- <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#sidemenu">Menu</button> -->
+					            
+					     </div>
+					     
 					</div>
 					
 				</div>

@@ -1169,15 +1169,7 @@ GW.workspace = {
 				if(GW.workspace.currentmode == 1){
 
 					var thisGraph = this;
-					//how to find a location
 					
-					// var x = Math.floor(Math.random() * 900) + 1;
-					
-					// var y = Math.floor(Math.random() * 600) + 1;
-					// static way of handling the process circle position
-					// var x = 500;
-					// var y = 300;
-
 					// dynamic way of handling the process circle position:
 
 					// S1: find the total size of the current weaver tab display screen dynamically
@@ -1186,24 +1178,27 @@ GW.workspace = {
 					// also handle the additional case, where we check the new process circle is not overlapping the existing non disturbed circle
 					// check the existing circle and it's position, if the position is the same, we try to update the new circle with a new position with small change
 					
-					console.log("current number of nodes: "+thisGraph.nodes);
-					
 					var width = window.innerWidth;
+
 					var height = window.innerHeight;
-					console.log(width + " " + height);
+					
 					var x,y;
+
 					if(thisGraph.nodes.length > 0) {
+						
 						x = width/2 + thisGraph.nodes.length + 10;
+						
 						y = height/2 + thisGraph.nodes.length + 10;
+					
 					} else {
+					
 						x = width/2;
+					
 						y = height/2;
+					
 					}	
 
-					console.log(x + " updted " + y);
-			
-
-// get the div, offsetheight and offset width and calculate and apply if condition.
+					// get the div, offsetheight and offset width and calculate and apply if condition.
 
 					var randomid = GW.workspace.makeid();
 					
