@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import com.gw.jpa.Environment;
 import com.gw.tasks.TaskManager;
 
 @Service
@@ -24,16 +26,47 @@ public class ExecutionTool {
     @Autowired
     BaseTool bt;
 
+	@Autowired
+	EnvironmentTool envt;
     
 	@Autowired
 	TaskManager tm;
 
-    
-	// @Autowired
-	// GeoweaverProcessTask process_task;
-
     Logger logger = Logger.getLogger(this.getClass());
 	
+	/**
+	 * Execute process directly
+	 * @param history_id
+	 * @param id
+	 * @param hid
+	 * @param pswd
+	 * @param httpsessionid
+	 * @param isjoin
+	 * @param envid
+	 * environment id
+	 * @return
+	 */
+	public String executeProcess(String history_id, String id, String hid, String pswd, String httpsessionid, 
+    boolean isjoin, String envid) {
+		
+		String bin = null, pyenv = null, basedir = null;
+
+		Environment envobj = envt.getEnvironmentById(envid);
+
+		if(!BaseTool.isNull(envobj)){
+
+			bin = envobj.getBin();
+
+			pyenv = envobj.getPyenv();
+
+			basedir = envobj.getBasedir();
+
+		}
+
+		return executeProcess(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
+	
+	}
+
     
 	/**
 	 * Execute the process directly
@@ -120,28 +153,6 @@ public class ExecutionTool {
 
     }
 
-    /**
-	 * Execute the process using workers
-	 * This should be the method called by the controller
-	 * @param id
-	 * @param hid
-	 * @param pswd
-	 * @param httpsessionid
-	 * @param isjoin
-	 * @param bin
-	 * @param pyenv
-	 * @param basedir
-	 * @return
-	 */
-	// public String executeProcessByWorker(String history_id, String id, String hid, String pswd, String httpsessionid, 
-    //     boolean isjoin, String bin, String pyenv, String basedir) {
-
-    //     process_task.initialize(history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir,null);
-    //     tm.addANewTask(process_task);
-
-    //     return null;
-
-    // }
 
     /**
 	 * Find all the available python environments on this machine

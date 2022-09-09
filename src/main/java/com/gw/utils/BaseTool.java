@@ -1405,7 +1405,6 @@ public class BaseTool {
 	public Date parseSQLDateStr(String datestr){
 
 		// 2021-07-06 20:35:11.535
-
 		Date date1 = null;
 		try {
 			if(!this.isNull(datestr))
@@ -1417,6 +1416,14 @@ public class BaseTool {
 		
 		return date1;
 
+	}
+
+	public String formatDate(Date date){
+
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");  
+    	
+		return formatter.format(date);  
+		
 	}
     
 }
