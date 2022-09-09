@@ -46,14 +46,11 @@ public class GeoweaverWorkflowTask{
 	@Autowired
 	HistoryTool hist;
 	
-	// @Autowired
-	// WorkflowTool wt;
 	@Autowired
 	WorkflowRepository workflowRepository;
 
 	@Autowired
 	EnvironmentTool et;
-
 
 	@Autowired
 	TaskManager tm;
@@ -172,7 +169,7 @@ public class GeoweaverWorkflowTask{
 
 		if(BaseTool.isNull(se)){
 
-			log.error("The monitor should never be empty");
+			log.debug("The monitor is empty, might be in command line mode.");
 
 		}else{
 

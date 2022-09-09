@@ -29,7 +29,7 @@
 
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
-		<log4j2.version>2.15.0</log4j2.version>
+		<log4j2.version>2.17.1</log4j2.version>
 		
 	</properties>
 	
@@ -62,8 +62,9 @@
 					<groupId>log4j</groupId>
 					<artifactId>log4j</artifactId>
 				</exclusion>
-				</exclusions> 
+			</exclusions> 
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -72,6 +73,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
@@ -92,6 +94,7 @@
 	        <artifactId>spring-boot-devtools</artifactId>
 	        <optional>false</optional>
 	    </dependency>
+		
 		<dependency>
 			<groupId>com.amazonaws</groupId>
     		<artifactId>aws-java-sdk</artifactId>
@@ -129,7 +132,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.14.2</version>
+			<version>1.15.3</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.json</groupId>
@@ -227,11 +230,6 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <!-- <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
-        </dependency> -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-reload4j</artifactId>

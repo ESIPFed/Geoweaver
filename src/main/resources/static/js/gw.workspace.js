@@ -237,6 +237,12 @@ GW.workspace = {
 								</div>
 								<div class="form-check">
 									<label>
+										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodegoodhistory">
+										<i>Workflow with Process Code and Only Successfully Done History</i>
+									</label>
+								</div>
+								<div class="form-check">
+									<label>
 										<input class="form-check-input" type="radio" name="workflowdownloadoption" value="workflowwithprocesscodeallhistory" checked>
 										<i>Workflow with Process Code and All Process History (Recommended)</i>
 									</label>
@@ -1080,7 +1086,7 @@ GW.workspace = {
 	
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-					.on("mouseover", function(d){        
+					.on("mouseover", function(d){
 						if (state.shiftNodeDrag){
 							d3.select(this).classed(consts.connectClass, true);
 						}

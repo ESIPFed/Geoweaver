@@ -9,15 +9,23 @@
       "name": "GeoweaverCLI",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "${command:SpecifyProgramArgs}"
+      "args": "history tss56cwei8i"
     },
     {
       "type": "java",
-      "name": "Launch GeoweaverCLI",
+      "name": "Launch Run Process",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "detail --host-id roeaa3"
+      "args": "run process 9v4ql2 -h 100001 -e 23geik -p xxx"
+    },
+    {
+      "type": "java",
+      "name": "Launch Run Workflow",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "run workflow -h 100001 -e 23geik 29k6vmj3n94y128j4aab -p xxx"
     },
     {
       "type": "java",

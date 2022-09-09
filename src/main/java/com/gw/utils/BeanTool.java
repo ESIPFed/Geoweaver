@@ -3,8 +3,9 @@ package com.gw.utils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class BeanTool implements ApplicationContextAware {
 	
 	private static ApplicationContext context;
@@ -12,18 +13,10 @@ public class BeanTool implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		
-		System.err.print("testing if this function is called");
 		context = applicationContext;
 		
-		
 	}
-
-	public static void setCLIContext(ApplicationContext applicationContext) throws BeansException {
-
-		context = applicationContext;
-
-	}
-
+	
 	public static ApplicationContext getApplicationContext() {
 		return context;
  	}

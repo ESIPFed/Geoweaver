@@ -151,15 +151,12 @@ public class HistoryTool {
 
 		if(BaseTool.isNull(history.getIndicator())){
 
-			logger.error("This indicator shouldn't be null at all");
+			logger.warn("This indicator shouldn't be null in all scenarios");
+
 		}
 
 		synchronized(historyrepository){
 
-			// bt.printoutCallStack();
-
-			// logger.info("History  will be updated!!!!!!!!!!!! - "+history.getHistory_id() + " - " + history.getHistory_output());
-		
 			historyrepository.saveAndFlush(history);
 		
 		}
@@ -168,12 +165,6 @@ public class HistoryTool {
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
-	// public String escape_jupyter(String code) {		
-		
-	// 	return null;
-		
-	// }
-
 	/**
 	 * Escape the code text
 	 * @param code
@@ -422,6 +413,19 @@ public class HistoryTool {
 			e.printStackTrace();
 
 		}
+
+	}
+
+	public boolean checkIfEnd(History hist){
+
+		if(ExecutionStatus.FAILED.equals(hist.getIndicator()) || 
+			ExecutionStatus.STOPPED.equals(hist.getIndicator()) ||
+			ExecutionStatus.DONE.equals(hist.getIndicator()) ||
+			ExecutionStatus.UNKOWN.equals(hist.getIndicator()))
+				return true;
+		else
+				return false;
+                
 
 	}
 

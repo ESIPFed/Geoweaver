@@ -186,12 +186,6 @@ public class WorkflowTool {
 		
 	}
 
-	
-	
-	
-
-	
-	
 	/**
 	 * Find a process whose status is not executed, while all of its condition nodes are satisfied. 
 	 * @param nodemap
@@ -324,13 +318,19 @@ public class WorkflowTool {
 	/**
 	 * Execute a workflow
 	 * @param id
+	 * id that will be used to label this execution history. If none, a new history id will be generated.
 	 * @param mode
+	 * mode of execution environment, two options: one or multiple
 	 * @param hosts
+	 * list of host Ids
 	 * @param pswd
+	 * list of host password. This list should match the hosts list exactly.
 	 * @param token
+	 * token is the session id with the client browser. In Geoweaver CLI mode, it will be ignored.
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, String[] hosts, String[] pswds, String[] envs, String token) {
+	public String execute(String history_id, String wid, String mode, 
+						  String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		//use multiple threads to execute the processes
 		
@@ -348,8 +348,6 @@ public class WorkflowTool {
 					
 					"\", \"ret\": \"success\"}";
 			
-			//register the input/output into the database
-	        
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -685,14 +683,22 @@ public class WorkflowTool {
 			String prefix = "";
 			
 			for(History h: histlist){
-			
+
+				if("workflowwithprocesscodegoodhistory".equals(option) && 
+					!ExecutionStatus.DONE.equals(h.getIndicator())){
+						
+						continue;
+
+				}
+
 				String historystr = bt.toJSON(h);
-			
+		
 				workflowhistory.append(prefix);
-  			
+			
 				prefix = ","; 
 			
 				workflowhistory.append(historystr); 
+
 			
 			};
 
@@ -704,6 +710,13 @@ public class WorkflowTool {
 			HashSet<String> process_id_set = new HashSet<>(); 
 
 			for(History h : histlist){
+
+				if("workflowwithprocesscodegoodhistory".equals(option) && 
+					!ExecutionStatus.DONE.equals(h.getIndicator())){
+						
+						continue;
+						
+				}
 
 				String[] processhistorylist = h.getHistory_output().split(";");
 
@@ -720,12 +733,19 @@ public class WorkflowTool {
 
 					if(hisop.isPresent()){
 
+						History hist = hisop.get();
+
+						if("workflowwithprocesscodegoodhistory".equals(option) && 
+							!ExecutionStatus.DONE.equals(hist.getIndicator())){
+							
+							continue;
+								
+						}
+
 						processhistorybuffer.append(prefix);
   			
 						prefix = ","; 
 
-						History hist = hisop.get();
-	
 						processhistorybuffer.append(bt.toJSON(hist)); 
 
 						if (!process_id_set.contains(hist.getHistory_process())) 
@@ -743,7 +763,7 @@ public class WorkflowTool {
 			}
 
 			//if need all the history of the involved processes, go into this if
-			if(option.contains("allhistory")){
+			if(option.contains("allhistory") || "workflowwithprocesscodegoodhistory".equals(option)){
 
 				for(String history_process_id : process_id_set){
 
@@ -756,6 +776,13 @@ public class WorkflowTool {
 							+ "process_" + history_process_id + ".json";
 
 					for(History hist: histlist){
+
+						if("workflowwithprocesscodegoodhistory".equals(option) && 
+							!ExecutionStatus.DONE.equals(hist.getIndicator())){
+							
+							continue;
+
+						}
 						
 						allprocesshistorybuffer.append(bt.toJSON(hist)).append(","); 
 						

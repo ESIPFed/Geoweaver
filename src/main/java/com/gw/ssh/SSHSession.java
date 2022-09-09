@@ -27,10 +27,12 @@ import java.io.BufferedReader;
 import java.io.OutputStream;
 
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
+
 
 public interface SSHSession {
 

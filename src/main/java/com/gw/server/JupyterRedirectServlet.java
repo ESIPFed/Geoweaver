@@ -322,11 +322,8 @@ public class JupyterRedirectServlet {
     	
 		try {
 			
-//			init();
-			
-    		logger.error("Channel closed.");
+    		logger.info("Channel closed.");
     		
-//    		SessionPair pair = findPairBy1stSession(session);
     		SessionPair pair = JupyterSessionPairTool.findPairByID(session.getQueryString());
         	
     		if(!BaseTool.isNull(pair)) {

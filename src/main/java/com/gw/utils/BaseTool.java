@@ -1385,6 +1385,14 @@ public class BaseTool {
     	String currentTime = sdf.format(dt);
     	return currentTime;
     }
+
+	public static long calculateDuration(Date d1, Date d2){
+
+		long seconds = (d2.getTime()-d1.getTime())/1000;
+
+		return seconds;
+
+	}
     
     public static Date getCurrentSQLDate(){
     	
@@ -1397,7 +1405,6 @@ public class BaseTool {
 	public Date parseSQLDateStr(String datestr){
 
 		// 2021-07-06 20:35:11.535
-
 		Date date1 = null;
 		try {
 			if(!this.isNull(datestr))
@@ -1409,6 +1416,14 @@ public class BaseTool {
 		
 		return date1;
 
+	}
+
+	public String formatDate(Date date){
+
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");  
+    	
+		return formatter.format(date);  
+		
 	}
     
 }

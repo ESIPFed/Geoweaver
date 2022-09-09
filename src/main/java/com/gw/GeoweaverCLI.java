@@ -1,9 +1,12 @@
 package com.gw;
 
 import com.gw.commands.TopEntryCommand;
+import com.gw.ssh.SSHSessionImpl;
+import com.gw.tools.BuiltinTool;
 import com.gw.utils.BeanTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,17 +28,22 @@ import picocli.CommandLine;
 @EnableJpaRepositories(basePackages = {"com.gw.database"})
 @ComponentScan(basePackages = {"com.gw.commands", "com.gw.database", "com.gw.jpa", 
 "com.gw.local", "com.gw.search", "com.gw.tasks", "com.gw.tools", "com.gw.user",
-"com.gw.utils",  "com.gw.workers"})
+"com.gw.utils",  "com.gw.workers", "com.gw.ssh",})
 public class GeoweaverCLI implements CommandLineRunner {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    BeanTool beantool;
+
+
+    public void displayAllBeans() {
+        String[] allBeanNames = beantool.getApplicationContext().getBeanDefinitionNames();
+        for(String beanName : allBeanNames) {
+            System.out.println(beanName);
+        }
+    }
 
     @Override
     public void run(String... args) {
-
-        //pass the context otherwise it will be lost after new CommandLine
-        BeanTool.setCLIContext(applicationContext); 
 
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
 
@@ -45,13 +53,11 @@ public class GeoweaverCLI implements CommandLineRunner {
 
     public static void main(String[] args) throws Exception {
         
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(GeoweaverCLI.class);
+        System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
+                                    .web(WebApplicationType.NONE)
+                                    .bannerMode(Banner.Mode.OFF)
+                                    .run(args)));
 
-        ApplicationContext applicationContext = builder.web(WebApplicationType.NONE)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-
-        System.exit(SpringApplication.exit(applicationContext));
 		
     }
     
