@@ -1347,68 +1347,68 @@ GW.process = {
 
 		// add a new function and hook it up with the horizontal line
 
-activateVerticalResizer: function() {
+		activateVerticalResizer: function() {
 
-	// Query the element
-	const resizer = document.getElementById('dragMe');
-	const topElement = resizer.previousElementSibling;
-	const bottomElement = resizer.nextElementSibling;
+			// Query the element
+			const resizer = document.getElementById('dragMe');
+			const topElement = resizer.previousElementSibling;
+			const bottomElement = resizer.nextElementSibling;
 
-	// The current position of mouse
-	let x = 0;
-	let y = 0;
-	let topHeight = 0;
+			// The current position of mouse
+			let x = 0;
+			let y = 0;
+			let topHeight = 0;
 
-	// Handle the mousedown event
-	// that's triggered when user drags the resizer
-		const mouseDownHandler = function (e) {
-			// Get the current mouse position
-			x = e.clientX;
-			y = e.clientY;
-			topHeight = topElement.getBoundingClientRect().height;
-	
-			// Attach the listeners to `document`
-			document.addEventListener('mousemove', mouseMoveHandler);
-			document.addEventListener('mouseup', mouseUpHandler);
-		};
-	
-		const mouseMoveHandler = function (e) {
-			// How far the mouse has been moved
-			const dx = e.clientX - x;
-			const dy = e.clientY - y;
-	
-			const newtopHeight = ((topHeight + dx) * 100) / resizer.parentNode.getBoundingClientRect().height;
-			topElement.style.width = `${newtopHeight}%`;
-	
-			resizer.style.cursor = 'col-resize';
-			document.body.style.cursor = 'col-resize';
-	
-			topElement.style.userSelect = 'none';
-			topElement.style.pointerEvents = 'none';
-	
-			bottomElement.style.userSelect = 'none';
-			bottomElement.style.pointerEvents = 'none';
-		};
-	
-		const mouseUpHandler = function () {
-			resizer.style.removeProperty('cursor');
-			document.body.style.removeProperty('cursor');
-	
-			topElement.style.removeProperty('user-select');
-			topElement.style.removeProperty('pointer-events');
-	
-			bottomElement.style.removeProperty('user-select');
-			bottomElement.style.removeProperty('pointer-events');
-	
-			// Remove the handlers of `mousemove` and `mouseup`
-			document.removeEventListener('mousemove', mouseMoveHandler);
-			document.removeEventListener('mouseup', mouseUpHandler);
-		};
-	
-		// Attach the handler
-		resizer.addEventListener('mousedown', mouseDownHandler);
-	
-},
+			// Handle the mousedown event
+			// that's triggered when user drags the resizer
+			const mouseDownHandler = function (e) {
+				// Get the current mouse position
+				x = e.clientX;
+				y = e.clientY;
+				topHeight = topElement.getBoundingClientRect().height;
+		
+				// Attach the listeners to `document`
+				document.addEventListener('mousemove', mouseMoveHandler);
+				document.addEventListener('mouseup', mouseUpHandler);
+			};
+		
+			const mouseMoveHandler = function (e) {
+				// How far the mouse has been moved
+				const dx = e.clientX - x;
+				const dy = e.clientY - y;
+		
+				const newtopHeight = ((topHeight + dx) * 100) / resizer.parentNode.getBoundingClientRect().height;
+				topElement.style.width = `${newtopHeight}%`;
+		
+				resizer.style.cursor = 'col-resize';
+				document.body.style.cursor = 'col-resize';
+		
+				topElement.style.userSelect = 'none';
+				topElement.style.pointerEvents = 'none';
+		
+				bottomElement.style.userSelect = 'none';
+				bottomElement.style.pointerEvents = 'none';
+			};
+		
+			const mouseUpHandler = function () {
+				resizer.style.removeProperty('cursor');
+				document.body.style.removeProperty('cursor');
+		
+				topElement.style.removeProperty('user-select');
+				topElement.style.removeProperty('pointer-events');
+		
+				bottomElement.style.removeProperty('user-select');
+				bottomElement.style.removeProperty('pointer-events');
+		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', mouseMoveHandler);
+				document.removeEventListener('mouseup', mouseUpHandler);
+			};
+		
+			// Attach the handler
+			resizer.addEventListener('mousedown', mouseDownHandler);
+			
+		},
 
 
 		activateResizer: function(){
@@ -1589,8 +1589,7 @@ activateVerticalResizer: function() {
 					`');" ><i class="glyphicon glyphicon-play"></i></button>
 					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
 					<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-					<!-- <button class="btn pull-right" onclick="GW.process.rightDock()" ><i class="fas fa-chevron-right"></i></button> -->
-					 <button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
+					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
 				</div>
 				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
@@ -1905,9 +1904,9 @@ activateVerticalResizer: function() {
 				if(typeof $("#processid").val() != undefined){
 
 					GW.process.current_pid = $("#processid").val();
+					
 					GW.process.update(GW.process.current_pid);
 					
-				
 					$("#processcategory").prop( "disabled", true ); //don't allow change of process category
 					
 					$("#processname").prop( "disabled", GW.process.editOn );
@@ -1938,35 +1937,7 @@ activateVerticalResizer: function() {
 			
 		},
 
-		// right dock code for future references 
-		// rightDock: function(){
-		// 	var element = document.querySelector("#process_code_window");
-		// 	element.style.setProperty("position", "absolute");
-		// 	element.style.setProperty("right", "0px");
-		// 	element.style.setProperty("width", "50%");
-		// 	element.style.setProperty("height", "100%");
-		// 	element.style.removeProperty("left");
-
-		// 	var element = document.querySelector("#single-console-content");
-		// 	element.style.setProperty("position", "absolute");
-		// 	element.style.setProperty("left", "0px");
-		// 	element.style.setProperty("width", "50%");
-		// 	element.style.setProperty("height", "100%");
-		// 	element.style.removeProperty("right");
-		// },
-
 		bottomDock: function(){
-			// var element = document.querySelector("#process_code_window");
-			// element.style.setProperty("position", "absolute");
-			// element.style.setProperty("bottom", "0px");
-			// element.style.setProperty("width", "100%");
-			// element.style.setProperty("height", "50%");
-
-			// var element = document.querySelector("#single-console-content");
-			// element.style.setProperty("position", "relative");
-			// element.style.setProperty("top", "0px");
-			// element.style.setProperty("width", "100%");
-			// element.style.setProperty("height", "50%");
 
 			var codeContainer = document.querySelector("#process-code-history-section");
 			var resizerDrag = document.querySelector("#dragMe");
