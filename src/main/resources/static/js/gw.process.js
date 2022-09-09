@@ -1345,12 +1345,84 @@ GW.process = {
 			
 		},
 
+		// add a new function and hook it up with the horizontal line
+
+		activateVerticalResizer: function() {
+
+			console.log("vertical resizer is activated")
+
+			// Query the element
+			const resizer = document.getElementById('dragMe');
+			const topElement = resizer.previousElementSibling;
+			const bottomElement = resizer.nextElementSibling;
+			resizer.style.cursor = 'ns-resize';
+
+			// The current position of mouse
+			let x = 0;
+			let y = 0;
+			let topHeight = 0;
+
+			// Handle the mousedown event
+			// that's triggered when user drags the resizer
+			GW.process.mouseDownVerticalHandler = function (e) {
+				// Get the current mouse position
+				x = e.clientX;
+				y = e.clientY;
+				topHeight = topElement.getBoundingClientRect().height;
+		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', GW.process.mouseMoveHandler);
+				document.removeEventListener('mouseup', GW.process.mouseUpHandler);
+				// Attach the listeners to `document`
+				document.addEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+				document.addEventListener('mouseup', GW.process.mouseUpVerticalHandler);
+			};
+		
+			GW.process.mouseMoveVerticalHandler = function (e) {
+				// How far the mouse has been moved
+				const dx = e.clientX - x;
+				const dy = e.clientY - y;
+		
+				const newtopHeight = ((topHeight + dy) * 100) / resizer.parentNode.getBoundingClientRect().height;
+				topElement.style.height = `${newtopHeight}%`;
+				bottomElement.style.height = `${100-newtopHeight}%`;
+		
+				resizer.style.cursor = 'ns-resize';
+		
+				topElement.style.userSelect = 'none';
+				topElement.style.pointerEvents = 'none';
+		
+				bottomElement.style.userSelect = 'none';
+				bottomElement.style.pointerEvents = 'none';
+			};
+		
+			GW.process.mouseUpVerticalHandler = function () {
+				resizer.style.removeProperty('cursor');
+		
+				topElement.style.removeProperty('user-select');
+				topElement.style.removeProperty('pointer-events');
+		
+				bottomElement.style.removeProperty('user-select');
+				bottomElement.style.removeProperty('pointer-events');
+		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+				document.removeEventListener('mouseup', GW.process.mouseUpVerticalHandler);
+			};
+		
+			// Attach the handler
+			resizer.addEventListener('mousedown', GW.process.mouseDownVerticalHandler);
+			
+		},
+
+
 		activateResizer: function(){
 
 			// Query the element
 			const resizer = document.getElementById('dragMe');
 			const leftSide = resizer.previousElementSibling;
 			const rightSide = resizer.nextElementSibling;
+			resizer.style.cursor = 'ew-resize';
 		
 			// The current position of mouse
 			let x = 0;
@@ -1359,18 +1431,21 @@ GW.process = {
 		
 			// Handle the mousedown event
 			// that's triggered when user drags the resizer
-			const mouseDownHandler = function (e) {
+			GW.process.mouseDownHandler = function (e) {
 				// Get the current mouse position
 				x = e.clientX;
 				y = e.clientY;
 				leftWidth = leftSide.getBoundingClientRect().width;
 		
+				// Remove the handlers of `mousemove` and `mouseup`
+				document.removeEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+				document.removeEventListener('mouseup', GW.process.mouseUpVerticalHandler);
 				// Attach the listeners to `document`
-				document.addEventListener('mousemove', mouseMoveHandler);
-				document.addEventListener('mouseup', mouseUpHandler);
+				document.addEventListener('mousemove', GW.process.mouseMoveHandler);
+				document.addEventListener('mouseup', GW.process.mouseUpHandler);
 			};
 		
-			const mouseMoveHandler = function (e) {
+			GW.process.mouseMoveHandler = function (e) {
 				// How far the mouse has been moved
 				const dx = e.clientX - x;
 				const dy = e.clientY - y;
@@ -1378,8 +1453,8 @@ GW.process = {
 				const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
 				leftSide.style.width = `${newLeftWidth}%`;
 		
-				resizer.style.cursor = 'col-resize';
-				document.body.style.cursor = 'col-resize';
+				resizer.style.cursor = 'ew-resize';
+				// document.body.style.cursor = 'col-resize';
 		
 				leftSide.style.userSelect = 'none';
 				leftSide.style.pointerEvents = 'none';
@@ -1388,9 +1463,9 @@ GW.process = {
 				rightSide.style.pointerEvents = 'none';
 			};
 		
-			const mouseUpHandler = function () {
+			GW.process.mouseUpHandler = function () {
 				resizer.style.removeProperty('cursor');
-				document.body.style.removeProperty('cursor');
+				// document.body.style.removeProperty('cursor');
 		
 				leftSide.style.removeProperty('user-select');
 				leftSide.style.removeProperty('pointer-events');
@@ -1399,12 +1474,12 @@ GW.process = {
 				rightSide.style.removeProperty('pointer-events');
 		
 				// Remove the handlers of `mousemove` and `mouseup`
-				document.removeEventListener('mousemove', mouseMoveHandler);
-				document.removeEventListener('mouseup', mouseUpHandler);
+				document.removeEventListener('mousemove', GW.process.mouseMoveHandler);
+				document.removeEventListener('mouseup', GW.process.mouseUpHandler);
 			};
 		
 			// Attach the handler
-			resizer.addEventListener('mousedown', mouseDownHandler);
+			resizer.addEventListener('mousedown', GW.process.mouseDownHandler);
 		
 		},
 		
@@ -1459,13 +1534,11 @@ GW.process = {
 
 				if(msg.confidential=="TRUE"){
 
-					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> '+
-						'		<label for="confidential">Private</label>';
+					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> <label for="confidential">Private</label>';
 
 				}else{
 
-					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> '+
-						'		<label for="confidential">Private</label>';
+					confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> <label for="confidential">Private</label>';
 					
 				}
 
@@ -1522,6 +1595,8 @@ GW.process = {
 					process_id+`', '`+process_name+`', '`+code_type+
 					`');" ><i class="glyphicon glyphicon-play"></i></button>
 					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+					<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
+					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
 				</div>
 				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
@@ -1532,11 +1607,11 @@ GW.process = {
 								<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
 									<h4>Logging</h4>
 									<div id="process-log-window" style="overflow-wrap: break-word;"> </div>
-				   				<div class="row" style="padding:0px; margin:0px;" >
+									<div class="row" style="padding:0px; margin:0px;" >
 										<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
 											<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 										</div>
-				   				</div>
+									</div>
 								</div>
 							</div>
 				</div>`;
@@ -1836,9 +1911,9 @@ GW.process = {
 				if(typeof $("#processid").val() != undefined){
 
 					GW.process.current_pid = $("#processid").val();
+					
 					GW.process.update(GW.process.current_pid);
 					
-				
 					$("#processcategory").prop( "disabled", true ); //don't allow change of process category
 					
 					$("#processname").prop( "disabled", GW.process.editOn );
@@ -1867,6 +1942,46 @@ GW.process = {
 			}
 			
 			
+		},
+
+		bottomDock: function(){
+
+			var codeContainer = document.getElementById("process-code-history-section");
+			var resizerDrag = document.getElementById("dragMe");
+			resizerDrag.style.setProperty("height", "2px");
+			resizerDrag.style.setProperty("width", "100%");
+			codeContainer.style.setProperty("display", "block");
+
+			var element = document.getElementById("process_code_window");
+			element.style.setProperty("width", "100%");
+			element.style.setProperty("height", "60%");
+
+			var element = document.getElementById("single-console-content");
+			element.style.setProperty("width", "100%");
+			element.style.setProperty("height", "40%");
+
+			// activating resizer functionality
+			GW.process.activateVerticalResizer();
+		},
+
+		leftDock: function(){
+
+			var codeContainer = document.getElementById("process-code-history-section");
+			codeContainer.style.setProperty("display", "flex");
+			var resizerDrag = document.getElementById("dragMe");
+			resizerDrag.style.setProperty("height", "100%");
+			resizerDrag.style.setProperty("width", "2px");
+			
+			var element = document.getElementById("single-console-content");
+			element.style.setProperty("width", "40%");
+			element.style.setProperty("height", "100%");
+
+			var element = document.getElementById("process_code_window");
+			element.style.setProperty("width", "60%");
+			element.style.setProperty("height", "100%");
+
+			// activating resizer functionality
+			GW.process.activateResizer();
 		},
 
 		refreshProcessList: function(){
