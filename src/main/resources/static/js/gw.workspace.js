@@ -1084,49 +1084,67 @@ GW.workspace = {
 						.attr("class", "processtooltip")				
 						.style("opacity", 0);
 	
+				var ismouseinside = false
+
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
 					.on("mouseover", function(d){
+						
+						ismouseinside = true;
+
 						if (state.shiftNodeDrag){
+						
 							d3.select(this).classed(consts.connectClass, true);
+						
 						}
 
 						var process_id = d.id.split("-")[0];
+						
 						var pageX = d3.event.pageX;
+						
 						var pageY = d3.event.pageY;
 
 						GW.menu.details(process_id, "process", function(msg){
 
-							GW.workspace.tooltipdiv.transition()
-								.duration(200)
-								.style("opacity", .9);
-							GW.workspace.tooltipdiv.html(`
-								<table>
-									<tr>
-										<td><b>ID</b></td>
-										<td>`+msg.id+`</td>
-									</tr>
-									<tr>
-										<td><b>Language</b></td>
-										<td>`+msg.lang+`</td>
-									</tr>
-									<tr>
-										<td><b>Code</b></td>
-										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
-									</tr>
-								</table>
-							`)
-								.style("left", (pageX) + "px")
-								.style("top", (pageY) + "px");
+							//sometimes the mouse moves too quickly, the mouse is already out but the response doesn't arrive yet. The div will persist forever. So ismouseinside is used. 
+							if(ismouseinside){
+
+								GW.workspace.tooltipdiv.transition()
+									.duration(200)
+									.style("opacity", .9);
+								
+								GW.workspace.tooltipdiv.html(`
+									<table>
+										<tr>
+											<td><b>ID</b></td>
+											<td>`+msg.id+`</td>
+										</tr>
+										<tr>
+											<td><b>Language</b></td>
+											<td>`+msg.lang+`</td>
+										</tr>
+										<tr>
+											<td><b>Code</b></td>
+											<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
+										</tr>
+									</table>
+								`)
+									.style("left", (pageX) + "px")
+									.style("top", (pageY) + "px");
+
+							}
+							
 
 						});
 						
 					})
 					.on("mouseout", function(d){
+						console.log("mouse out listener triggered")
 						d3.select(this).classed(consts.connectClass, false);
 						GW.workspace.tooltipdiv.transition()		
-							.duration(500)
+							.duration(1)
 							.style("opacity", 0);
+						ismouseinside = false;
 					})
 					.on("mousedown", function(d){
 						thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
