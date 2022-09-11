@@ -29,6 +29,8 @@ GW.process = {
 		cmid: null,  //the id used to differentiate the dialogs
 
 		replace_jupyter_jsframe: null,
+
+		dockmode: "left",
 		
 		builtin_processes: [
 			
@@ -1647,13 +1649,24 @@ GW.process = {
 			});
 
 			$("#log_switch").change(function(){
-				if(!this.checked){
-					$(".container__right").hide()
-					$(".container__left").css('width', '100%');
-				}else{
-					$(".container__right").show()
-					$(".container__left").css('width', '60%');
+				if(GW.process.dockmode == "left"){
+					if(!this.checked){
+						$(".container__right").hide()
+						$(".container__left").css('width', '100%');
+					}else{
+						$(".container__right").show()
+						$(".container__left").css('width', '60%');
+					}
+				}else if(GW.process.dockmode == "bottom"){
+					if(!this.checked){
+						$(".container__right").hide()
+						$(".container__left").css('height', '100%');
+					}else{
+						$(".container__right").show()
+						$(".container__left").css('height', '60%');
+					}
 				}
+				
 			})
 
 			$("#clearProcessLog").click(GW.ssh.clearProcessLog);
@@ -1946,6 +1959,8 @@ GW.process = {
 
 		bottomDock: function(){
 
+			GW.process.dockmode = "bottom";
+
 			var codeContainer = document.getElementById("process-code-history-section");
 			var resizerDrag = document.getElementById("dragMe");
 			resizerDrag.style.setProperty("height", "2px");
@@ -1965,6 +1980,8 @@ GW.process = {
 		},
 
 		leftDock: function(){
+
+			GW.process.dockmode = "left";
 
 			var codeContainer = document.getElementById("process-code-history-section");
 			codeContainer.style.setProperty("display", "flex");
