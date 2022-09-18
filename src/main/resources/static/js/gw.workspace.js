@@ -306,17 +306,6 @@ GW.workspace = {
 				}else{
 					alert("No workflow in the workspace to download.");
 				}
-    	    //   if(thisGraph.nodes.length!=0){
-    	    // 	  var saveEdges = [];
-        	//       thisGraph.edges.forEach(function(val, i){
-        	//         saveEdges.push({source: val.source.id, target: val.target.id});
-        	//       });
-        	//       var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-        	//     		  {type: "text/plain;charset=utf-8"});
-        	//       window.saveAs(blob, "geoweaver.json");
-    	    //   }else{
-    	    // 	  alert("No nodes are present!");
-    	    //   }
     	      
     	    });
 
@@ -422,10 +411,6 @@ GW.workspace = {
     	    
     	    d3.select("#upload-input").on("click", function(){
 
-				// console.log("upload-input clicked")
-    	    
-    	    	// $("#hidden-file-upload").click();
-
 				GW.fileupload.showUploadWorkflowDialog();
     	    
     	    });
@@ -466,8 +451,9 @@ GW.workspace = {
 
     	    // handle delete graph
     	    d3.select("#delete-graph").on("click", function(){
-    	    //   thisGraph.deleteGraph(false);
+				
 				GW.workspace.theGraph.deleteSelectedOrAll();
+
     	    });
     	    
     	
@@ -491,7 +477,7 @@ GW.workspace = {
 	    	    BACKSPACE_KEY: 8,
 	    	    DELETE_KEY: 46,
 	    	    ENTER_KEY: 13,
-	    	    nodeRadius: 50
+	    	    nodeRadius: 20
 	    	  };
 	
 	    	  /* PROTOTYPE FUNCTIONS */
@@ -548,13 +534,10 @@ GW.workspace = {
 						}
 					}
 					
-
 					GW.workspace.showNonSaved();
 
 				}
 
-	    	    
-	    	    
 	    	  };
 	    	  
 	    	  //add on 11/2/2018
@@ -587,14 +570,14 @@ GW.workspace = {
     	            
     	            newEdges.forEach(function(e, i){
     	            	
-    	            	newEdges[i] = {source: GW.workspace.theGraph.nodes.filter(function(n){
+    	            	newEdges[i] = {
+							source: GW.workspace.theGraph.nodes.filter(function(n){
     	            			return n.id == e.source.id;
     	            		})[0],
-    	                
 	            			target: GW.workspace.theGraph.nodes.filter(function(n){
 	            				return n.id == e.target.id;
-	            			})[0]};
-    	            	
+	            			})[0]
+						};
     	            });
     	            
     	            this.edges = newEdges;
@@ -628,6 +611,7 @@ GW.workspace = {
 					  .attr("stroke-linejoin", 'miter')
 					  .attr("font-weight", 800)
 					  .attr("font-size", '24px')
+					  .attr("y", "50px")
 	    	          .attr("dy", "-" + (nwords-1)*7.5);
 	
 	    	    for (var i = 0; i < words.length; i++) {
@@ -1045,7 +1029,8 @@ GW.workspace = {
 						  return d.color;
 						})
 					.style("fill", function (d) { 
-							return "#dadada";
+							// return "#dadada";
+							return d.color;
 						});
 	
 	    	    // add new nodes
@@ -1151,15 +1136,12 @@ GW.workspace = {
 	    	      	.attr("r", String(consts.nodeRadius))
 				  	.attr("stroke-width", 2)
 					.style('stroke', function (d) {
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-						//   return "#dadada";
-						})
-//	    	      .attr("r", function(d) { return d.r; })
-					.attr("fill", function (d) {
-						//   console.log("current color "+ d.id + " - " + d.color); 
+							return "#000000";
 						//   return d.color; 
-						  return "#dadada";
+						})
+					.attr("fill", function (d) {
+						//   return "#dadada";
+							return d.color;
 						})
 					.attr("filter", "url(#drop-shadow)");; //add color
 	
