@@ -1029,7 +1029,6 @@ GW.workspace = {
 						  return d.color;
 						})
 					.style("fill", function (d) { 
-							// return "#dadada";
 							return d.color;
 						});
 	
@@ -1140,7 +1139,6 @@ GW.workspace = {
 						//   return d.color; 
 						})
 					.attr("fill", function (d) {
-						//   return "#dadada";
 							return d.color;
 						})
 					.attr("filter", "url(#drop-shadow)");; //add color
@@ -1380,7 +1378,7 @@ GW.workspace = {
 
 		getColorByFlag: function(flag){
 
-			var color = "black"
+			var color = "grey"
 
 			if(flag=="Ready"){
 								
