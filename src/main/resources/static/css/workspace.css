@@ -78,8 +78,8 @@ g.selected:hover circle{
 
 path.link {
     fill: none;
-    stroke: rgb(88, 88, 88);
-    stroke-width: 5px;
+    stroke: grey;
+    stroke-width: 3px;
     cursor: default;
 }
 
