@@ -306,17 +306,6 @@ GW.workspace = {
 				}else{
 					alert("No workflow in the workspace to download.");
 				}
-    	    //   if(thisGraph.nodes.length!=0){
-    	    // 	  var saveEdges = [];
-        	//       thisGraph.edges.forEach(function(val, i){
-        	//         saveEdges.push({source: val.source.id, target: val.target.id});
-        	//       });
-        	//       var blob = new Blob([window.JSON.stringify({"nodes": thisGraph.nodes, "edges": saveEdges})], 
-        	//     		  {type: "text/plain;charset=utf-8"});
-        	//       window.saveAs(blob, "geoweaver.json");
-    	    //   }else{
-    	    // 	  alert("No nodes are present!");
-    	    //   }
     	      
     	    });
 
@@ -422,10 +411,6 @@ GW.workspace = {
     	    
     	    d3.select("#upload-input").on("click", function(){
 
-				// console.log("upload-input clicked")
-    	    
-    	    	// $("#hidden-file-upload").click();
-
 				GW.fileupload.showUploadWorkflowDialog();
     	    
     	    });
@@ -466,8 +451,9 @@ GW.workspace = {
 
     	    // handle delete graph
     	    d3.select("#delete-graph").on("click", function(){
-    	    //   thisGraph.deleteGraph(false);
+				
 				GW.workspace.theGraph.deleteSelectedOrAll();
+
     	    });
     	    
     	
@@ -491,7 +477,7 @@ GW.workspace = {
 	    	    BACKSPACE_KEY: 8,
 	    	    DELETE_KEY: 46,
 	    	    ENTER_KEY: 13,
-	    	    nodeRadius: 50
+	    	    nodeRadius: 20
 	    	  };
 	
 	    	  /* PROTOTYPE FUNCTIONS */
@@ -548,13 +534,10 @@ GW.workspace = {
 						}
 					}
 					
-
 					GW.workspace.showNonSaved();
 
 				}
 
-	    	    
-	    	    
 	    	  };
 	    	  
 	    	  //add on 11/2/2018
@@ -587,14 +570,14 @@ GW.workspace = {
     	            
     	            newEdges.forEach(function(e, i){
     	            	
-    	            	newEdges[i] = {source: GW.workspace.theGraph.nodes.filter(function(n){
+    	            	newEdges[i] = {
+							source: GW.workspace.theGraph.nodes.filter(function(n){
     	            			return n.id == e.source.id;
     	            		})[0],
-    	                
 	            			target: GW.workspace.theGraph.nodes.filter(function(n){
 	            				return n.id == e.target.id;
-	            			})[0]};
-    	            	
+	            			})[0]
+						};
     	            });
     	            
     	            this.edges = newEdges;
@@ -628,6 +611,7 @@ GW.workspace = {
 					  .attr("stroke-linejoin", 'miter')
 					  .attr("font-weight", 800)
 					  .attr("font-size", '24px')
+					  .attr("y", "50px")
 	    	          .attr("dy", "-" + (nwords-1)*7.5);
 	
 	    	    for (var i = 0; i < words.length; i++) {
@@ -1045,7 +1029,7 @@ GW.workspace = {
 						  return d.color;
 						})
 					.style("fill", function (d) { 
-							return "#dadada";
+							return d.color;
 						});
 	
 	    	    // add new nodes
@@ -1084,49 +1068,56 @@ GW.workspace = {
 						.attr("class", "processtooltip")				
 						.style("opacity", 0);
 	
+				var ismouseinside = false
+
 	    	    newGs.classed(consts.circleGClass, true)
 					.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-					.on("mouseover", function(d){        
+					.on("mouseover", function(d){
+						ismouseinside = true;
 						if (state.shiftNodeDrag){
 							d3.select(this).classed(consts.connectClass, true);
 						}
-
 						var process_id = d.id.split("-")[0];
 						var pageX = d3.event.pageX;
 						var pageY = d3.event.pageY;
 
 						GW.menu.details(process_id, "process", function(msg){
+							//sometimes the mouse moves too quickly, the mouse is already out but the response doesn't arrive yet. The div will persist forever. So ismouseinside is used. 
+							if(ismouseinside){
 
-							GW.workspace.tooltipdiv.transition()
-								.duration(200)
-								.style("opacity", .9);
-							GW.workspace.tooltipdiv.html(`
-								<table>
-									<tr>
-										<td><b>ID</b></td>
-										<td>`+msg.id+`</td>
-									</tr>
-									<tr>
-										<td><b>Language</b></td>
-										<td>`+msg.lang+`</td>
-									</tr>
-									<tr>
-										<td><b>Code</b></td>
-										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
-									</tr>
-								</table>
-							`)
-								.style("left", (pageX) + "px")
+								GW.workspace.tooltipdiv.transition()
+									.duration(200)
+									.style("opacity", .9);
+								
+								GW.workspace.tooltipdiv.html(`
+									<table>
+										<tr>
+											<td><b>ID</b></td>
+											<td>`+msg.id+`</td>
+										</tr>
+										<tr>
+											<td><b>Language</b></td>
+											<td>`+msg.lang+`</td>
+										</tr>
+										<tr>
+											<td><b>Code</b></td>
+											<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
+										</tr>
+									</table>
+								`).style("left", (pageX) + "px")
 								.style("top", (pageY) + "px");
 
+							}
+							
 						});
 						
 					})
 					.on("mouseout", function(d){
 						d3.select(this).classed(consts.connectClass, false);
 						GW.workspace.tooltipdiv.transition()		
-							.duration(500)
+							.duration(1)
 							.style("opacity", 0);
+						ismouseinside = false;
 					})
 					.on("mousedown", function(d){
 						thisGraph.circleMouseDown.call(thisGraph, d3.select(this), d);
@@ -1144,15 +1135,11 @@ GW.workspace = {
 	    	      	.attr("r", String(consts.nodeRadius))
 				  	.attr("stroke-width", 2)
 					.style('stroke', function (d) {
-						//   console.log("current color "+ d.id + " - " + d.color); 
-						  return d.color; 
-						//   return "#dadada";
-						})
-//	    	      .attr("r", function(d) { return d.r; })
-					.attr("fill", function (d) {
-						//   console.log("current color "+ d.id + " - " + d.color); 
+							return "#000000";
 						//   return d.color; 
-						  return "#dadada";
+						})
+					.attr("fill", function (d) {
+							return d.color;
 						})
 					.attr("filter", "url(#drop-shadow)");; //add color
 	
@@ -1175,12 +1162,37 @@ GW.workspace = {
 				if(GW.workspace.currentmode == 1){
 
 					var thisGraph = this;
-					//how to find a location
 					
-					var x = Math.floor(Math.random() * 900) + 1;
+					// dynamic way of handling the process circle position:
+
+					// S1: find the total size of the current weaver tab display screen dynamically
+					// if needed get the entire window size in JS
+					// later divide it in half to get the center position values and assign 
+					// also handle the additional case, where we check the new process circle is not overlapping the existing non disturbed circle
+					// check the existing circle and it's position, if the position is the same, we try to update the new circle with a new position with small change
 					
-					var y = Math.floor(Math.random() * 600) + 1;
+					var width = window.innerWidth;
+
+					var height = window.innerHeight;
 					
+					var x,y;
+
+					if(thisGraph.nodes.length > 0) {
+						
+						x = width/2 + thisGraph.nodes.length + 10;
+						
+						y = height/2 + thisGraph.nodes.length + 10;
+					
+					} else {
+					
+						x = width/2;
+					
+						y = height/2;
+					
+					}	
+
+					// get the div, offsetheight and offset width and calculate and apply if condition.
+
 					var randomid = GW.workspace.makeid();
 					
 					var insid = id +"-"+ randomid;
@@ -1366,7 +1378,7 @@ GW.workspace = {
 
 		getColorByFlag: function(flag){
 
-			var color = "black"
+			var color = "grey"
 
 			if(flag=="Ready"){
 								
