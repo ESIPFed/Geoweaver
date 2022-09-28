@@ -463,6 +463,68 @@ public class GeoweaverController {
 		
 	}
 
+	@RequestMapping(value= "/skip_workflow_process", method = RequestMethod.POST)
+	public @ResponseBody String skip_process(ModelMap model, WebRequest request){
+
+		String resp = null;
+		
+		try {
+			
+			String workflow_id = request.getParameter("workflowid");
+			
+			String workflow_process_id = request.getParameter("processid");
+
+			String if_skipped = request.getParameter("skip");
+
+			checkID(workflow_id);
+
+			checkID(workflow_process_id);
+
+			wt.skip_process(workflow_id, workflow_process_id, if_skipped);
+
+			resp = String.format("{\"id\": \"%s\", \"message\": \"%s\"}", workflow_id, "success");
+
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+
+	}
+
+	@RequestMapping(value= "/check_workflow_process_skipped", method = RequestMethod.POST)
+	public @ResponseBody String check_skip_process(ModelMap model, WebRequest request){
+
+		String resp = null;
+		
+		try {
+			
+			String workflow_id = request.getParameter("workflowid");
+			
+			String workflow_process_id = request.getParameter("processid");
+
+			checkID(workflow_id);
+
+			checkID(workflow_process_id);
+
+			resp = String.format("{ \"if_skipped\": %s}", wt.check_process_skipped(workflow_id, workflow_process_id));
+
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+			throw new RuntimeException("failed " + e.getLocalizedMessage());
+			
+		}
+		
+		return resp;
+
+	}
+
 	@RequestMapping(value = "/workflow_process_log", method = RequestMethod.POST)
     public @ResponseBody String workflow_process_log(ModelMap model, WebRequest request){
 		

@@ -386,6 +386,9 @@ public class GeoweaverWorkflowTask{
 
 				((JSONObject)nodes.get(i)).put("history_id", new RandomString(11).nextString()); //generate history id before call the execution function
 			}
+
+			// set the status of workflow history
+			this.history_indicator = ExecutionStatus.READY;
 			
 			// all the ids in this map is history id
 			Map<String, List> node2condition = this.getNodeConditionMap(nodes, edges);
@@ -401,13 +404,11 @@ public class GeoweaverWorkflowTask{
 				
 				log.debug("this round is : " + nextid);
 				
-				String stat = ExecutionStatus.READY;
+				// String stat = ExecutionStatus.READY;
 				
-				this.updateNodeStatus(nextid, flags, nodes, stat);
+				this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.READY);
 				
 				sendStatus(nodes, flags);
-
-				this.history_indicator = ExecutionStatus.READY;
 				
 				int num = i;
 				
@@ -448,9 +449,7 @@ public class GeoweaverWorkflowTask{
 
 				}catch(Exception e) {
 					
-					stat = ExecutionStatus.FAILED;
-
-					this.updateNodeStatus(nextid, flags, nodes, stat);
+					this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.FAILED);
 				
 					sendStatus(nodes, flags);
 					

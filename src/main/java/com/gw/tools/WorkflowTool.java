@@ -988,4 +988,82 @@ public class WorkflowTool {
 		return workflowjson;
 	}
 
+	public String check_process_skipped(String workflow_id, String workflow_process_id){
+
+		try{
+
+			JSONParser parser = new JSONParser();
+
+			Workflow wf = this.getById(workflow_id);
+
+			JSONArray nodes_array = (JSONArray)parser.parse(wf.getNodes());
+
+			for(int i=0;i<nodes_array.size();i++){
+
+				String current_process_id = String.valueOf(((JSONObject)nodes_array.get(i)).get("id"));
+
+				if(workflow_process_id.equals(current_process_id)){
+
+					return String.valueOf(((JSONObject)nodes_array.get(i)).get("skip"));
+
+				}
+
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			throw new RuntimeException(String.format("Fail to get skip status of process %s in workflow %s ", 
+				workflow_process_id, workflow_id ));
+
+		}
+
+		return "false";
+
+	}
+
+	public void skip_process(String workflow_id, String workflow_process_id, String skip){
+
+		try{
+
+			Workflow wf = this.getById(workflow_id);
+
+			JSONParser parser = new JSONParser();
+
+			JSONArray nodes_array = (JSONArray)parser.parse(wf.getNodes());
+
+			for(int i=0;i<nodes_array.size();i++){
+
+				String current_process_id = String.valueOf(((JSONObject)nodes_array.get(i)).get("id"));
+
+				if(workflow_process_id.equals(current_process_id)){
+
+					((JSONObject)nodes_array.get(i)).put("skip", skip);
+
+					break;
+
+				}
+
+			}
+
+			wf.setNodes(nodes_array.toJSONString());
+
+			this.save(wf);
+
+			logger.info(String.format("Done Skip process %s in workflow %s ", 
+			workflow_process_id, workflow_id ));
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			throw new RuntimeException(String.format("Fail to skip process %s in workflow %s ", 
+				workflow_process_id, workflow_id ));
+
+		}
+
+		
+	}
+
 }
