@@ -60,6 +60,19 @@ GW.workspace = {
 
 	    },
 
+		update_skip_process: function(workflow_process_id, skip_status){
+
+			for(var i=0; i< GW.workspace.theGraph.nodes.length; i+=1){
+
+				if(GW.workspace.theGraph.nodes[i].id == workflow_process_id){
+					GW.workspace.theGraph.nodes[i].skip = skip_status;
+					break;
+				}
+
+			}
+
+		},
+
 		saveWorkflow: function(){
 
 			if(GW.workspace.checkIfWorkflowValid()){
@@ -1395,6 +1408,10 @@ GW.workspace = {
 			}else if(flag=="Failed"){
 					
 				color = "red";
+					
+			}else if(flag=="Skipped"){
+					
+				color = "darkseagreen";
 					
 			}else if(flag== null){
 

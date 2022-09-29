@@ -383,8 +383,9 @@ public class GeoweaverProcessTask  extends Task {
 				hist.saveHistory(wf);
 				if(ExecutionStatus.DONE.equals(workflow_status) 
 					|| ExecutionStatus.FAILED.equals(workflow_status) 
-					|| ExecutionStatus.STOPPED.equals(workflow_status)){
-						sendMessage2WorkflowWebsocket("{\"workflow_status\": \"completed\", \"workflow_history_id\": \""+workflow_history_id+"\"}");
+					|| ExecutionStatus.STOPPED.equals(workflow_status)
+					|| ExecutionStatus.SKIPPED.equals(workflow_status)){
+					sendMessage2WorkflowWebsocket("{\"workflow_status\": \"completed\", \"workflow_history_id\": \""+workflow_history_id+"\"}");
 				}
 				
 				

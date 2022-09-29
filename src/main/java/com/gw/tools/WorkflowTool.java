@@ -221,8 +221,9 @@ public class WorkflowTool {
 				
 				//if any of the pre- nodes is not satisfied, this node is passed. 
 				
-				if(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
-						&&checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)) {
+				if(!(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
+						|| checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)
+						|| checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.SKIPPED))) {
 					
 					satisfied = false;
 					
@@ -990,6 +991,8 @@ public class WorkflowTool {
 
 	public String check_process_skipped(String workflow_id, String workflow_process_id){
 
+		String isskip = "false";
+
 		try{
 
 			JSONParser parser = new JSONParser();
@@ -1004,7 +1007,15 @@ public class WorkflowTool {
 
 				if(workflow_process_id.equals(current_process_id)){
 
-					return String.valueOf(((JSONObject)nodes_array.get(i)).get("skip"));
+					String the_skip_str = String.valueOf(((JSONObject)nodes_array.get(i)).get("skip"));
+
+					if(!"null".equals(the_skip_str)){
+
+						isskip = the_skip_str;
+
+					}
+
+					break;
 
 				}
 
@@ -1019,7 +1030,7 @@ public class WorkflowTool {
 
 		}
 
-		return "false";
+		return isskip;
 
 	}
 

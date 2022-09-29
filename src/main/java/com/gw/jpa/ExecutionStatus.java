@@ -14,6 +14,6 @@ public class ExecutionStatus {
 			
 			READY = "Ready",
 
-			SKIPPED = "Skpped";
+			SKIPPED = "Skipped";
 	
 }

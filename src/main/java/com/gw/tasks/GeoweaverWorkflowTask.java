@@ -398,25 +398,23 @@ public class GeoweaverWorkflowTask{
 				
 				//find next process to execute - the id has two parts: process type id - process object id
 				
-				String nextid = (String)((JSONObject)nodes.get(i)).get("id");
+				String nextid = String.valueOf(((JSONObject)nodes.get(i)).get("id"));
 
-				String nexthistoryid = (String)((JSONObject)nodes.get(i)).get("history_id");
+				String nexthistoryid = String.valueOf(((JSONObject)nodes.get(i)).get("history_id"));
+
+				String skip = String.valueOf(((JSONObject)nodes.get(i)).get("skip"));
 				
 				log.debug("this round is : " + nextid);
-				
-				// String stat = ExecutionStatus.READY;
 				
 				this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.READY);
 				
 				sendStatus(nodes, flags);
 				
-				int num = i;
+				String hid = mode.equals("one")?hosts[0]:hosts[i];
 				
-				String hid = mode.equals("one")?hosts[0]:hosts[num];
-				
-				String password = mode.equals("one")?pswds[0]:pswds[num];
+				String password = mode.equals("one")?pswds[0]:pswds[i];
 
-				String envid = mode.equals("one")?envs[0]:envs[num];
+				String envid = mode.equals("one")?envs[0]:envs[i];
 				
 				//nodes
 //				[{"title":"download-landsat","id":"nhi96d-7VZhh","x":119,"y":279},
@@ -432,20 +430,34 @@ public class GeoweaverWorkflowTask{
 				
 				try {
 
-					GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
+					if("true".equals(skip)){
 
-					Environment env = et.getEnvironmentById(envid);
-					if(BaseTool.isNull(env)){
-						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
+						hist.saveSkippedHisotry(nexthistoryid, nextid, hid);
+
+						this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.SKIPPED);
+				
+						sendStatus(nodes, flags);
+
+						tm.notifyWaitinglist();
+
 					}else{
-						new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id); //what is token?
-					}
-					
-					new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
 
-					log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
-					
-					tm.addANewTask(new_task);
+						GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
+
+						Environment env = et.getEnvironmentById(envid);
+						if(BaseTool.isNull(env)){
+							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
+						}else{
+							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id); //what is token?
+						}
+						
+						new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
+
+						log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
+						
+						tm.addANewTask(new_task);
+
+					}
 
 				}catch(Exception e) {
 					

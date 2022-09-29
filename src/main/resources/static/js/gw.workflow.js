@@ -1181,17 +1181,21 @@ GW.workflow = {
 
 	skipprocess: function(workflow_history_id, process_id,){
 
+		var is_skipped = document.getElementById("skip_process_"+process_id).checked;
+
 		$.ajax({
 
 			url: "skip_workflow_process",
 		
 			method: "POST",
 		
-			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id + "&skip=" + document.getElementById("skip_process_"+process_id).checked
+			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id + "&skip=" + is_skipped
 		
 		}).done(function(msg){
 
 			msg = GW.general.parseResponse(msg);
+
+			GW.workspace.update_skip_process(process_id, is_skipped);
 
 			console.log("the process should be skipped or un-skipped now: " + msgout);
 			

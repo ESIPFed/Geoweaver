@@ -116,7 +116,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 		}
 
 		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
-				|| ExecutionStatus.STOPPED.equals(status)){
+				|| ExecutionStatus.STOPPED.equals(status) || ExecutionStatus.SKIPPED.equals(status)){
 
 			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
