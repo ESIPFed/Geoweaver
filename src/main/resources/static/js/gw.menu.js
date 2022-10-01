@@ -21,7 +21,7 @@ GW.menu = {
 			
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$('#menu_toggle_btn').click(GW.menu.close_side_panel);
+			$('#menu_toggle_btn').click(GW.menu.toggle_side_panel);
 			
 		},
 
@@ -255,20 +255,16 @@ GW.menu = {
 			
 		},
 
-		open_side_panel: function(){
+		toggle_side_panel: function(){
 
-			// document.getElementById("mySidebar").style.width = "250px";
-  			// document.getElementById("main").style.marginLeft = "250px";
-			$( "#sidemenu" ).removeClass( "invisible" ).addClass( "col-sm-3 col-md-3 col-lg-3" );
-			$( "#main_panel_div" ).removeClass( "col-md-12" ).addClass( "col-md-9" );
+			if($('#sidemenu').is(":visible")){
+				$( "#sidemenu" ).width(0).height(0).removeClass( "col col-sm-3 col-md-3 col-lg-3" );
+				$( "#main_panel_div" ).removeClass( "col-md-9" ).addClass( "col-md-12" );
+			}else{
+				$( "#sidemenu" ).width(200).removeClass( "invisible" ).addClass( "col col-sm-3 col-md-3 col-lg-3" );
+				$( "#main_panel_div" ).removeClass( "col-md-12" ).addClass( "col-md-9" );
+			}
 
 		},
-
-		close_side_panel: function(){
-			
-			$( "#sidemenu" ).removeClass( "col-sm-3 col-md-3 col-lg-3" ).addClass( "invisible" );
-			$( "#main_panel_div" ).removeClass( "col-md-9" ).addClass( "col-md-12" );
-
-		}
 		
 };
