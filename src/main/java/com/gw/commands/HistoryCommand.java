@@ -13,7 +13,7 @@ import picocli.CommandLine.Parameters;
 
 @Component
 @Command(name = "history", description = "Show a history")
-public class HistoryCommand   implements Runnable {
+public class HistoryCommand implements Runnable {
 
     @Parameters(index = "0", description = "history id")
     String history_id;
