@@ -9,7 +9,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 ## Quick Install
 
-(Applicalbe in Linux, Mac, and Windows)
+(Applicable in Linux, Mac, and Windows)
 
 * Step 1: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
 
