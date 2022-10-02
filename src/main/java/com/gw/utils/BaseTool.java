@@ -344,7 +344,8 @@ public class BaseTool {
 	 */
 	public String getFileTransferFolder() {
 		
-		String tempfolder = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + this.upload_file_path + FileSystems.getDefault().getSeparator();
+		String tempfolder = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + 
+			this.upload_file_path + FileSystems.getDefault().getSeparator();
 		
 		File tf = new File(tempfolder);
 		

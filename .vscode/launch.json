@@ -6,10 +6,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "GeoweaverCLI",
+      "name": "list workflow",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "history tss56cwei8i"
+      "args": "list --workflow"
     },
     {
       "type": "java",
@@ -17,7 +17,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "import help workflow"
+      "args": "import workflow C:\\Users\\JensenSun\\Downloads\\eddy_detection_geoweaver-0.0.2.zip"
     },
     {
       "type": "java",
