@@ -257,12 +257,18 @@ GW.menu = {
 
 		toggle_side_panel: function(){
 
-			if($('#sidemenu').is(":visible")){
-				$( "#sidemenu" ).width(0).height(0).removeClass( "col col-sm-3 col-md-3 col-lg-3" );
-				$( "#main_panel_div" ).removeClass( "col-md-9" ).addClass( "col-md-12" );
+			if($('#sidemenu').width()!=0){
+				// $("#sidemenu").removeClass("collapse show").addClass("collapsed");
+				$("#sidemenu").addClass("invisible").width(0);
+				// $( "#sidemenu" ).removeClass( "col col-sm-3 col-md-3 col-lg-3" ).addClass("invisible")
+				// // .height(0);
+				$( "#main_panel_div" ).addClass( "col-md-12" ).removeClass( "col-md-9" );
 			}else{
-				$( "#sidemenu" ).width(200).removeClass( "invisible" ).addClass( "col col-sm-3 col-md-3 col-lg-3" );
-				$( "#main_panel_div" ).removeClass( "col-md-12" ).addClass( "col-md-9" );
+				// $( "#sidemenu" ).removeClass( "invisible" ).addClass( "col col-sm-3 col-md-3 col-lg-3" )
+					// .height("calc(100vh - 50px)");
+				$("#sidemenu").removeClass("invisible").width("");
+				// $("#sidemenu").removeClass("collapsed").addClass("collapse show");
+				$( "#main_panel_div" ).addClass( "col-md-9" ).removeClass( "col-md-12" );
 			}
 
 		},
