@@ -591,11 +591,37 @@ public class WorkflowTool {
 	}
 
 	/**
+	 * Get export mode string by number id
+	 * @param mode_no
+	 * @return
+	 * mode string
+	 */
+	public String getExportModeById(int mode_no){
+
+		String mode = "workflowwithprocesscodehistory";
+
+		switch(mode_no){
+
+			case 1: mode = "workflowonly"; break;
+
+			case 2: mode = "workflowwithprocesscode"; break;
+
+			case 3: mode = "workflowwithprocesscodegoodhistory"; break;
+
+			default: mode = "workflowwithprocesscodehistory"; break;
+			
+		}
+
+		return mode;
+
+	}
+
+	/**
 	 * Download workflow 
 	 * @param wid
 	 * workflow id
 	 * @param option
-	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodehistory
+	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodegoodhistory| workflowwithprocesscodehistory
 	 * @return
 	 * @throws ParseException
 	 */

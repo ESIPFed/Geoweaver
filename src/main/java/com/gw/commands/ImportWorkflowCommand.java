@@ -18,8 +18,7 @@ import picocli.CommandLine.Parameters;
 @Component
 @Command(name = "workflow", description = "import a workflow from file")
 public class ImportWorkflowCommand implements Runnable {
-
-
+    
     @Parameters(index = "0", description = "Geoweaver workflow zip file path")
     String workflow_zip_file_path;
     

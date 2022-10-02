@@ -21,6 +21,14 @@
     },
     {
       "type": "java",
+      "name": "Export",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "export workflow c3j9yo7fobazl4mwafb0 C:\\Users\\JensenSun\\Downloads\\eddy_test_export.zip"
+    },
+    {
+      "type": "java",
       "name": "Launch Run Process",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
