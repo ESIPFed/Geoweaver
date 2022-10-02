@@ -13,6 +13,14 @@
     },
     {
       "type": "java",
+      "name": "Import",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "import help workflow"
+    },
+    {
+      "type": "java",
       "name": "Launch Run Process",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",

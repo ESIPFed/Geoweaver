@@ -6,7 +6,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "workflow", description = "import a workflow from file or folder")
+@Command(name = "workflow", description = "import a workflow from file")
 public class ImportWorkflowCommand implements Runnable {
 
 
