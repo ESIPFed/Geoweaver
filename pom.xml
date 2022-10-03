@@ -11,11 +11,11 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.0.0-rc3</version>
+	<version>1.0.0-rc4</version>
 	<name>geoweaver</name>
 	<description>A scientist-affordable workflow management software for organizing scientific workflows, preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness, especially for the AI experiments which have no two identifical runs.</description>
 	
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		

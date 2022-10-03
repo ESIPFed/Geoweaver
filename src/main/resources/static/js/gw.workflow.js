@@ -1178,6 +1178,30 @@ GW.workflow = {
 		});
 		
 	},
+
+	skipprocess: function(workflow_history_id, process_id,){
+
+		var is_skipped = document.getElementById("skip_process_"+process_id).checked;
+
+		$.ajax({
+
+			url: "skip_workflow_process",
+		
+			method: "POST",
+		
+			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id + "&skip=" + is_skipped
+		
+		}).done(function(msg){
+
+			msg = GW.general.parseResponse(msg);
+
+			GW.workspace.update_skip_process(process_id, is_skipped);
+
+			console.log("the process should be skipped or un-skipped now: " + msgout);
+			
+		})
+
+	},
 	
 	showProcessLog: function(workflow_history_id, process_id, process_title){
 
@@ -1191,6 +1215,8 @@ GW.workflow = {
 
 					Process ID: `+process_id+` <br/>
 
+					Skip: <input type="checkbox" onclick='GW.workflow.skipprocess("`+workflow_history_id+`", "`+process_id+`");' id="skip_process_`+process_id+`" > <br/>
+
 					Output: <br/>
 
 				</div>
@@ -1203,7 +1229,7 @@ GW.workflow = {
 
 			<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
 		
-			<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
+			<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">OK</button>
 		
 		</div>`;
 
@@ -1219,7 +1245,7 @@ GW.workflow = {
 		
 			method: "POST",
 		
-			data: "workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
+			data: "workflowid="+ GW.workflow.loaded_workflow +"&workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
 		
 		}).done(function(msg){
 
@@ -1245,6 +1271,25 @@ GW.workflow = {
 				
 			})
 
+		})
+
+		$.ajax({
+
+			url: "check_workflow_process_skipped",
+		
+			method: "POST",
+		
+			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id
+		
+		}).done(function(msg){
+
+			msg = GW.general.parseResponse(msg);
+
+			if(msg.if_skipped){
+				document.getElementById("skip_process_"+process_id).checked = true;
+			}else{
+				document.getElementById("skip_process_"+process_id).checked = false;
+			}
 		})
 		
 	},

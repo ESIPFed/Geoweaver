@@ -76,9 +76,7 @@ GW.main = {
 	init: function(){
 
 		$(".gw_version").html(edu.gmu.csiss.geoweaver.version);
-
 		
-
 		// $(window).off("beforeunload", GW.main.exitWarning);
 		
 		GW.user.loggedInafterrefresh();

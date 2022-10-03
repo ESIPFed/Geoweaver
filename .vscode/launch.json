@@ -6,10 +6,26 @@
   "configurations": [
     {
       "type": "java",
-      "name": "GeoweaverCLI",
+      "name": "list workflow",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "history tss56cwei8i"
+      "args": "list --workflow"
+    },
+    {
+      "type": "java",
+      "name": "Import",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "import workflow C:\\Users\\JensenSun\\Downloads\\eddy_detection_geoweaver-0.0.2.zip"
+    },
+    {
+      "type": "java",
+      "name": "Export",
+      "request": "launch",
+      "mainClass": "com.gw.GeoweaverCLI",
+      "projectName": "geoweaver",
+      "args": "export workflow c3j9yo7fobazl4mwafb0 C:\\Users\\JensenSun\\Downloads\\eddy_test_export.zip"
     },
     {
       "type": "java",

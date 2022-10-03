@@ -112,8 +112,6 @@
 		<!-- The merge addon of CodeMirror depends on the google-diff-match-patch library to compute the diffs. -->
 		<script type=text/javascript  src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
 
-
-
 		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
 		
 		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
@@ -132,103 +130,26 @@
 	
 		<div id="jsframe-container"></div>
 	
-		<div class="container" style="margin:0; padding:0; width:100%; height:100%;">
+		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
 		
 			<!-- Top menu bar -->
-			
-			<div class="row"  style="height: 50px; margin: 0; padding: 0; ">
 
-				<div  style="padding:0; padding-top:10px; margin:0; text-align: center; height:100%;" class="col-md-3" href="javascript:void(0)">
-					<img src="../img/header.png" style="vertical-align: middle; " width="35px" height="35px"/>
-				</div>
-				
-				<div class="tab col-md-9"  style="overflow: hidden; padding:0; margin:0;" >
-				  
-				  <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
-					Weaver
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')" >
-					Log
-				  </button>
-				  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
-					Status
-				  </button> 
-				  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
-					Guide
-				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-general-tab" onclick="openCity(event, 'main-general')" >
-					X
-				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >X
-				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >X
-				  </button>
-				  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >X
-				  </button>
-				  
-				  <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
-					<i title="login" class="fa fa-user fa-2x"></i>
-				  </button>
-
-				  <!-- <button class="loginbtn toptoolbarbtn pull-right" id="toolbar-loginout-a">
-					<a title="source code" target="_blank" href="http://github.com/ESIPFed/Geoweaver"> <i class="fab fa-github fa-2x"></i></a>
-				  </button> -->
-				  
-				  <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
-					<i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile">Hi, </i>
-				  </button>
-
-
-				</div>
-				
-				
-				<!-- Top Toolbar -->
-				
-				<!-- <div id="top_toolbar">
-				
-					<div id="toolbar-left" style="position: absolute; top: 5px; left: 80px; height: 50px; z-index:1;" >
-					
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-search">
-							<i class="fa fa-search"  alt="search"></i>
-						</button>
-						
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-add">
-							<i class="fa fa-plus" alt="create"></i>
-						</button>
-						
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-history">
-							<i class="fa fa-history" alt="List the recent execution history"></i>
-						</button>
-						
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-monitor">
-							<i class="fa fa-film" alt="monitor"></i>
-						</button>
-						
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-settings">
-							<i class="fa fa-cog" alt="settings"></i>
-						</button>
-						
-						<button class="btn btn-default toolbar-btn black-background white" id="toolbar-print">
-							<i class="fa fa-print" alt="print"></i>
-						</button>
-						
-					</div>
-				
-				</div> -->
-			
-			</div>
-			
 			<!-- set site margin here -->
-			<!-- <div class="row" style="height:calc(100vh - 50px); top: 50px; margin: 0; padding: 0;"> -->
-			<div class="row" style="height:calc(100vh - 50px); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
+			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
-				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100%-50px); margin: 0;padding: 0;">
-					
-					
+				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); margin: 0;padding: 0; overflow-y: hidden;">
 
+					<button class="side_menu_collapse_btn">&lt;&lt;&lt;&lt;</button>
+
+					<div class="row" style="height:50px; margin: 0; padding:0;">
+						<div style="padding:0; padding-top:10px; margin:0; text-align: center; height:100%;" class="col col-md-12" href="javascript:void(0)">
+								<img src="../img/header.png" style="vertical-align: middle; " width="35px" height="35px"/>
+						</div>
+					</div>
+					
 					<div class="nav-side-menu" >
 						
-					    <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
+						<div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
 							
 							<ul id="menu-content" class="menu-content collapse out">
 								
@@ -362,296 +283,358 @@
 										<i class="fa fa-info fa-lg"></i>&nbsp;&nbsp;&nbsp;About
 										</a>
 									</li>
+
+									<li onclick="GW.feedback.showDialog()">
+										<a >
+											<i class="fa fa-solid fa-comment"></i>&nbsp;&nbsp;&nbsp;Contact
+										</a>
+
+									</li>
+
 								</ul>
 								
 							</ul>
 
-					            
-					     </div>
-					     
+								
+						</div>
+						
 					</div>
+
 					
 				</div>
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-9" style="height:100%; margin: 0; padding:0;">
-					<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;"> 
-						<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
-							<h1 style="color:rgb(38, 90, 139);text-align:center;font-family:'lato', sans-serif;font-size:80px">GEOWEAVER</h1>
-							<p style="text-align:center" class="lead">When it comes to full-stack AI workflows <b>every step matters!</p></b>
+			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0;">
 
-							<div class="features">
-								<!-- <div class="container"> -->
-									<div class="row" style="background-color: rgb(236, 236, 236); ">
-										<div class="col-md-3 feature">
-											<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-lock-open"></i></h1>	
-											<h3>Open/Web Based</h3>
-											<p> Geoweaver is an open source web-based application allowing users to compose, execute, and share full-stack distributed AI workflows.</p>
-										</div>
-										<div class="col-md-3 feature">
-											<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-code"></i></h1>	
-											<h3>Python driven/OS of choice</h3>
-												<p>Geoweaver supports Python and shell scripting. Geowever can be installed on Linux, Mac, and Windows.</p>
+					<button class="workspace_collapse_btn">&gt;&gt;&gt;</button>
+
+					<div class="row" id="top_menu_bar_div"  style="height: 50px; margin: 0; padding: 0; ">
+
+						<div class="tab col-md-12"  style="overflow: hidden; padding:0; margin:0;" >
+						  
+						  <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
+							Weaver
+						  </button>
+						  <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')" >
+							Log
+						  </button>
+						  <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
+							Status
+						  </button> 
+						  <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
+							Guide
+						  </button>
+						  <button class="tablinks toptoolbarbtn invisible" id="main-general-tab" onclick="openCity(event, 'main-general')" >
+							X
+						  </button>
+						  <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >X
+						  </button>
+						  <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >X
+						  </button>
+						  <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >X
+						  </button>
+						  
+						  <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
+							<i title="login" class="fa fa-user fa-2x"></i>
+						  </button>
+						  
+						  <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
+							<i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile">Hi, </i>
+						  </button>
+		
+		
+						</div>
+						
+					</div>
+
+					<div id="right-page-div" class="row" style="height:calc( 100% - 50px ); left:0; margin:0; padding: 0;padding-bottom:0px;">
+
+						<div class="col col-md-12" id="main-workspace-container" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+
+
+							<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;"> 
+								<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
+									<h1 style="color:rgb(38, 90, 139);text-align:center;font-family:'lato', sans-serif;font-size:80px">GEOWEAVER</h1>
+									<p style="text-align:center" class="lead">When it comes to full-stack AI workflows <b>every step matters!</p></b>
+		
+									<div class="features">
+										<!-- <div class="container"> -->
+											<div class="row" style="background-color: rgb(236, 236, 236); ">
+												<div class="col-md-3 feature">
+													<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-lock-open"></i></h1>	
+													<h3>Open/Web Based</h3>
+													<p> Geoweaver is an open source web-based application allowing users to compose, execute, and share full-stack distributed AI workflows.</p>
+												</div>
+												<div class="col-md-3 feature">
+													<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-code"></i></h1>	
+													<h3>Python driven/OS of choice</h3>
+														<p>Geoweaver supports Python and shell scripting. Geowever can be installed on Linux, Mac, and Windows.</p>
+													</div>
+												<div class="col-md-3 feature">
+													<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-share"></i></h1>
+													<h3>Share workflows </h3>
+													<p> Full-stack workflows can be exported/imported as a single package file. That package file includes source code and execution history. </a></p>
+												</div>
+												<div class="col-md-3 feature">
+													<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-history"></i></h1>
+													<h3>Provenance </h3>
+													<p>Geoweaver records the history of each execution and each change to the code, whether in Python, Jupyter notebooks, or a shell script. </p>
+												</div>
 											</div>
-										<div class="col-md-3 feature">
-											<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-share"></i></h1>
-											<h3>Share workflows </h3>
-											<p> Full-stack workflows can be exported/imported as a single package file. That package file includes source code and execution history. </a></p>
-										</div>
-										<div class="col-md-3 feature">
-											<h1 style="color:rgb(92,184,91);text-align: center" <i class="fa fa-history"></i></h1>
-											<h3>Provenance </h3>
-											<p>Geoweaver records the history of each execution and each change to the code, whether in Python, Jupyter notebooks, or a shell script. </p>
-										</div>
+										<!-- </div> -->
 									</div>
-								<!-- </div> -->
+		
+									<section id="weaver_example">
+										<div class="row">
+											<div class="col-md-6">
+												<img class="img-responsive" src="../img/weaver_graphic.png" id="portal" alt="example weaver graphic"/>
+											</div>
+												<div class="col-md-6 nb-highlight-text">
+													<h3>Weaver: Build <b>your</b> AI workflow!</h3>
+													<h4> Geoweaver takes every step of a full-stack AI workflow and translates it into a reproducible, sharable push-button solution.</h4>
+													<button type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">Create Your First Workflow</button>
+												</div>
+											</div>
+									</section>
+		
+									<section id="bottom_info_bar">
+										<div class="row" style="background-color:rgb(0, 0, 0);">
+											<div class="col-md-6" style="color:white">
+												<p>Geoweaver (version <span class="gw_version">0.9.7</span>) is currently supported by ESIP, NSF geoinformatics program #1947893 & #1947875, and NASA ACCESS-19.
+												</p>
+											</div>
+												<div class="col-md-6 nb-highlight-text" style="color:rgb(255, 255, 255); text-align:left;" >
+													<p> Geoweaver is a <b>community effort</b> and we welcome all contributors. If you want to get involved, please create your first issue at <a href="http://github.com/ESIPFed/Geoweaver">Github.</a></p>
+												</div>
+										</div>
+									</section>
+		
+								</div>	
 							</div>
-
-							<section id="weaver_example">
-								<div class="row">
-									<div class="col-md-6">
-										<img class="img-responsive" src="../img/weaver_graphic.png" id="portal" alt="example weaver graphic"/>
-									</div>
-										<div class="col-md-6 nb-highlight-text">
-											<h3>Weaver: Build <b>your</b> AI workflow!</h3>
-											<h4> Geoweaver takes every step of a full-stack AI workflow and translates it into a reproducible, sharable push-button solution.</h4>
-											<button type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">Create Your First Workflow</button>
-										</div>
-									</div>
-							</section>
-
-							<section id="bottom_info_bar">
-								<div class="row" style="background-color:rgb(0, 0, 0);">
-									<div class="col-md-6" style="color:white">
-										<p>Geoweaver (version <span class="gw_version">0.9.7</span>) is currently supported by ESIP, NSF geoinformatics program #1947893 & #1947875, and NASA ACCESS-19.
-										</p>
-									</div>
-										<div class="col-md-6 nb-highlight-text" style="color:rgb(255, 255, 255); text-align:left;" >
-											<p> Geoweaver is a <b>community effort</b> and we welcome all contributors. If you want to get involved, please create your first issue at <a href="http://github.com/ESIPFed/Geoweaver">Github.</a></p>
-										</div>
-								</div>
-							</section>
-
-						</div>	
-					</div>
-
-					<div id="main-documentation" class="tabcontent" style="height:100%; left:0; margin:0; padding: 30px;padding-bottom:0px; overflow: auto;">
-						<div id="main-documentation-content">
-							<div class="row">       
-								<div  class="col col-md-12">
-
-									<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
-
-									<ul class="lead" >
-										<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#processes">Processes</a> |  <a href="#workflow">Workflow </a>
-									</ul>
-
-									<hr/>
-									<a id="quickstart"></a>
-									<h2>Quick Start Guide</h2>
-									<h4>0. Get Geoweaver Password</h4>
-									<ul>
-										<li>Geoweaver will automatically create a password for your local machine. You need to know that password before you start. It can be found in Terminal logs when Geoweaver is first started (only shown at the first time).</li> 
-										<li>If you missed the first start logs and don't know the password, please use command <span class="badge badge-secondary">java -jar geoweaver.jar resetpassword</span> to reset it. </li>
-									</ul>
-									
-									<h4>1. Create and run a Process</h4>
-									<ul>
-										<li>Click <button type="button" class="btn btn-success btn-xs" id="newprocess">New Process</button> after 'Process' on the left menu.</li>
-										<li>Select "Python" from the Language dropdown. </li>
-										<li>Input "helloworld" for the name. </li>
-										<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
-										<li>Click "Add" on the bottom. A new process "helloworld" will be added to the Process/Python basket.</li>
-										<li>Click on the newly added helloworld process. An informational panel will show in the main area.</li>
-										<li>Click <i class="fa fa-play subalignicon"></i> to run the process. In the popup window, select "Localhost" and click "Execute". In the popup Python environment dialog, click "Confirm" to the default. Add your password. </li>
-										<li>If you see <i style="font-family:'Courier New'">hello world </i>printed in the logging window, it means you have successfully created and run your first process in Geoweaver! Congrats!</li>
-									</ul>
-
-
-									<h4>2. Create and Run a Workflow</h4>
-									
-									<ul>
-										<li>Click twice on <button type="button" class="btn btn-warning btn-xs" >Add to Weaver</button> after the "helloworld" process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
-										<li>Link the two circles by dragging from one circle and dropping on another circle while pressing "SHIFT" on the keyboard. </li>
-										<li>Click <i class="fa fa-plus-square"></i> on the topleft" toolbar in Weaver. In the popup window, input "HelloWorldWorkflow" as the workflow name, and type "Testing hello world" as Description. Click "Confirm".</li>
-										<li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to the default. Click "Run".</li>
-										<li>In the password dialog, enter the password for localhost. </li>
-										<li>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</li>
-										<li>Double click on the circles to check the real time output. If users need more details, click "Details" button in the popup information window. </li>
-									</ul>
-
-									<h4>3. Export a Workflow</h4>
-									<ul>
-										<li>Click <i class="fa fa-download"></i> when the workflow is present in the Weaver workspace. </li>
-										<li>In the popup window, there are two options: workflow with process code / workflow with process code and history. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. </li>
-										<li>Click "Confirm". A ZIP file will be automatically downloaded to your machine.</li>
-									</ul>
-										
-									<h4>4. Import a workflow</h4>
-									<ul>
-										<li>Click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
-										<li>Once the uploading finished, if the workflow file is valid, it will ask "The upload workflow is valid. Do you want to proceed to save it into the database?" Click "OK".</li>
-										<li>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. </li>
-										<li>Congratulations you have learnt how to use Geoweaver!</li>
-
-									</ul>
-									
-									<a id="supported_hosts"></a>
-									<h2>Supported Hosts</h2>
-									
-									<h4>Linux/Win/Mac Machine</h4>
-									
-									<p>Geoweaver provides a Host category called `Linux/Win/Mac Computers` to manage all the `local`/`remote` machines.</p>
-
-									<p>For `local computers` (where Geoweaver is running at), Geoweaver can directly access, manage, and run commands/programs. For security reasons, it will automatically generate a password at its first boot. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to [reset password](install.md)).</p>
-									
-									<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
-
-									<h4>Jupyter NoteBook Server</h4>
-													
-									<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
-
-									<p>In Geoweaver, you can manage multiple Jupyter Notebook instances in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
-									
-									<h4>Jupyter Hub</h4>
-									
-									<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs. </p>
-									
-									<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
-
-									<h4>Jupyter Lab</h4>
-									
-									<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
-									
-									<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
-									
-									<!-- <h4>Google Earth Engine</h4>
-									
-									<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
-									
-									<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p> -->
-									
-									<a id="processes"></a>
-									<h2>Processes</h2>
-									
-									<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
-
-									<h4>Shell</h4>
-									
-									<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
-										
-									<h4>NoteBook</h4>
-									<p> Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database. </p>
-									
-									<h4>Build In Process</h4>
-									<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
-										These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. 
-										Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. 
-										This section is under intensive development right now. New features supporting users to create a full-stack AI workflow without writing a single line of code are on our development schedule.  
-									</p>
-									
-									<h4>Python</h4>
-									<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. 
-										Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
-									All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
-										
-									<a id="workflow"></a>
-									<h2>Workflow</h2>
+		
+							<div id="main-documentation" class="tabcontent" style="height:100%; left:0; margin:0; padding: 30px;padding-bottom:0px; overflow: auto;">
+								<div id="main-documentation-content">
+									<div class="row">       
+										<div  class="col col-md-12">
+		
+											<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
+		
+											<ul class="lead" >
+												<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#processes">Processes</a> |  <a href="#workflow">Workflow </a>
+											</ul>
+		
+											<hr/>
+											<a id="quickstart"></a>
+											<h2>Quick Start Guide</h2>
+											<h4>0. Get Geoweaver Password</h4>
+											<ul>
+												<li>Geoweaver will automatically create a password for your local machine. You need to know that password before you start. It can be found in Terminal logs when Geoweaver is first started (only shown at the first time).</li> 
+												<li>If you missed the first start logs and don't know the password, please use command <span class="badge badge-secondary">java -jar geoweaver.jar resetpassword</span> to reset it. </li>
+											</ul>
+											
+											<h4>1. Create and run a Process</h4>
+											<ul>
+												<li>Click <button type="button" class="btn btn-success btn-xs" id="newprocess">New Process</button> after 'Process' on the left menu.</li>
+												<li>Select "Python" from the Language dropdown. </li>
+												<li>Input "helloworld" for the name. </li>
+												<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
+												<li>Click "Add" on the bottom. A new process "helloworld" will be added to the Process/Python basket.</li>
+												<li>Click on the newly added helloworld process. An informational panel will show in the main area.</li>
+												<li>Click <i class="fa fa-play subalignicon"></i> to run the process. In the popup window, select "Localhost" and click "Execute". In the popup Python environment dialog, click "Confirm" to the default. Add your password. </li>
+												<li>If you see <i style="font-family:'Courier New'">hello world </i>printed in the logging window, it means you have successfully created and run your first process in Geoweaver! Congrats!</li>
+											</ul>
+		
+		
+											<h4>2. Create and Run a Workflow</h4>
+											
+											<ul>
+												<li>Click twice on <button type="button" class="btn btn-warning btn-xs" >Add to Weaver</button> after the "helloworld" process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
+												<li>Link the two circles by dragging from one circle and dropping on another circle while pressing "SHIFT" on the keyboard. </li>
+												<li>Click <i class="fa fa-plus-square"></i> on the topleft" toolbar in Weaver. In the popup window, input "HelloWorldWorkflow" as the workflow name, and type "Testing hello world" as Description. Click "Confirm".</li>
+												<li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to the default. Click "Run".</li>
+												<li>In the password dialog, enter the password for localhost. </li>
+												<li>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</li>
+												<li>Double click on the circles to check the real time output. If users need more details, click "Details" button in the popup information window. </li>
+											</ul>
+		
+											<h4>3. Export a Workflow</h4>
+											<ul>
+												<li>Click <i class="fa fa-download"></i> when the workflow is present in the Weaver workspace. </li>
+												<li>In the popup window, there are two options: workflow with process code / workflow with process code and history. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. </li>
+												<li>Click "Confirm". A ZIP file will be automatically downloaded to your machine.</li>
+											</ul>
 												
-									<p>The workflow module allows users to compose a workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides an all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
-
-								</div>													
+											<h4>4. Import a workflow</h4>
+											<ul>
+												<li>Click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
+												<li>Once the uploading finished, if the workflow file is valid, it will ask "The upload workflow is valid. Do you want to proceed to save it into the database?" Click "OK".</li>
+												<li>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. </li>
+												<li>Congratulations you have learnt how to use Geoweaver!</li>
+		
+											</ul>
+											
+											<a id="supported_hosts"></a>
+											<h2>Supported Hosts</h2>
+											
+											<h4>Linux/Win/Mac Machine</h4>
+											
+											<p>Geoweaver provides a Host category called `Linux/Win/Mac Computers` to manage all the `local`/`remote` machines.</p>
+		
+											<p>For `local computers` (where Geoweaver is running at), Geoweaver can directly access, manage, and run commands/programs. For security reasons, it will automatically generate a password at its first boot. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to [reset password](install.md)).</p>
+											
+											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+		
+											<h4>Jupyter NoteBook Server</h4>
+															
+											<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
+		
+											<p>In Geoweaver, you can manage multiple Jupyter Notebook instances in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
+											
+											<h4>Jupyter Hub</h4>
+											
+											<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs. </p>
+											
+											<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
+		
+											<h4>Jupyter Lab</h4>
+											
+											<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
+											
+											<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
+											
+											<!-- <h4>Google Earth Engine</h4>
+											
+											<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
+											
+											<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p> -->
+											
+											<a id="processes"></a>
+											<h2>Processes</h2>
+											
+											<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
+		
+											<h4>Shell</h4>
+											
+											<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
+												
+											<h4>NoteBook</h4>
+											<p> Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database. </p>
+											
+											<h4>Build In Process</h4>
+											<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
+												These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. 
+												Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. 
+												This section is under intensive development right now. New features supporting users to create a full-stack AI workflow without writing a single line of code are on our development schedule.  
+											</p>
+											
+											<h4>Python</h4>
+											<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. 
+												Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
+											All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
+												
+											<a id="workflow"></a>
+											<h2>Workflow</h2>
+														
+											<p>The workflow module allows users to compose a workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides an all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
+		
+										</div>													
+									</div>
+								</div>
 							</div>
-						</div>
-					</div>
-
-					<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-						<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+		
+							<div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+								<div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+									
+								</div>
+							</div>
 							
-						</div>
-					</div>
-					
-					<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-							<div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
-							<h2 style="color:black">Please select a host on the left panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
+							<div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+									<div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+									<h2 style="color:black">Please select a host on the left panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
+									</div>
 							</div>
-					</div>
-						
-					<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-							<div id="main-process-content" style="height:100%;">
-							<h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
+								
+							<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+									<div id="main-process-content" style="height:100%;">
+									<h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
+									</div>
 							</div>
-					</div>
-					
-					<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-							<div id="main-workflow-content" style="height:100%; padding: 10px;">
-							<h2 style="color:black">Please select a workflow on the left panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
-							</div>
-					</div>
-						
-					<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:0px;">
-						<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
-							<h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
-							<div id="log-window" class="log_window" >
 							
+							<div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+									<div id="main-workflow-content" style="height:100%; padding: 10px;">
+									<h2 style="color:black">Please select a workflow on the left panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
+									</div>
 							</div>
-							<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
-						</div>
-					</div>
-			
-					<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
-						
-						<!-- status indicator right bottom -->
-						
-						<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; right: 20px; height: 50px; z-index:1;">
-								<!--<span id="current_workflow_name" class="invisible">Current Workflow: </span>-->
+								
+							<div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:0px;">
+								<div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
+									<h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
+									<div id="log-window" class="log_window" >
+									
+									</div>
+									<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
+								</div>
+							</div>
+					
+							<div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
+								
+								<!-- status indicator right bottom -->
+								
+								<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; right: 20px; height: 50px; z-index:1;">
+										<!--<span id="current_workflow_name" class="invisible">Current Workflow: </span>-->
+											
+											
+											<h2><i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i><span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span></h2>
+								
+								</div>
+								
+								<!-- progress right bottom, above the status indicator -->
+								
+								<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;">
 									
 									
-									<h2><i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i><span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span></h2>
-						
-						</div>
-						
-						<!-- progress right bottom, above the status indicator -->
-						
-						<div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;">
+								</div>
+								
+								<div id="toolbox">
 							
+									<!-- <b style="text-align:center; padding:10px; margin-top:10px; ">Options</b> -->
+									
+									<input id="hidden-file-upload" type="file" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" />
+									
+									<i id="new-workflow" title="new workspace" class="btn fa fa-file fa-2x weaver-toolbar-btn" alt="new workspace" ></i>
+									
+									<i id="add-workflow" title="create a new workflow" class="btn fa fa-plus-square fa-2x weaver-toolbar-btn" alt="create new workflow" ></i>
+		
+									<i id="upload-input" title="import workflow" class="btn fa fa-upload fa-2x weaver-toolbar-btn" alt="import workflow" ></i>
+										
+									<i id="download-input" title="export workflow" class="btn fa fa-download fa-2x weaver-toolbar-btn" alt="export workflow" ></i>
+										
+									<i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x weaver-toolbar-btn" alt="save workflow"></i> 
+										
+									<i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x weaver-toolbar-btn" alt="execute workflow"></i> 
+										
+									<i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x weaver-toolbar-btn" alt="show object information"></i>
+										
+									<i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x weaver-toolbar-btn" alt="show process log"></i> 
+										
+									<!-- <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x weaver-toolbar-btn"  alt="get result"></i>  -->
+										
+									<i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x weaver-toolbar-btn"  alt="delete graph" ></i> 
+									
+								</div>
 							
-						</div>
-						
-						<div id="toolbox">
-					
-							<!-- <b style="text-align:center; padding:10px; margin-top:10px; ">Options</b> -->
-							
-							<input id="hidden-file-upload" type="file" title="Hidden File Upload" class="btn fa fa-alien" style="color:gray; margin:0;margin-top:5px;  padding:0;" alt="Hidden File Upload" />
-							
-							<i id="new-workflow" title="new workspace" class="btn fa fa-file fa-2x weaver-toolbar-btn" alt="new workspace" ></i>
-							
-							<i id="add-workflow" title="create a new workflow" class="btn fa fa-plus-square fa-2x weaver-toolbar-btn" alt="create new workflow" ></i>
+							</div>
 
-							<i id="upload-input" title="import workflow" class="btn fa fa-upload fa-2x weaver-toolbar-btn" alt="import workflow" ></i>
-								
-							<i id="download-input" title="export workflow" class="btn fa fa-download fa-2x weaver-toolbar-btn" alt="export workflow" ></i>
-								
-							<i id="save-workflow" title="save workflow" class="btn fa fa-save fa-2x weaver-toolbar-btn" alt="save workflow"></i> 
-								
-							<i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x weaver-toolbar-btn" alt="execute workflow"></i> 
-								
-							<i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x weaver-toolbar-btn" alt="show object information"></i>
-								
-							<i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x weaver-toolbar-btn" alt="show process log"></i> 
-								
-							<!-- <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x weaver-toolbar-btn"  alt="get result"></i>  -->
-								
-							<i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x weaver-toolbar-btn"  alt="delete graph" ></i> 
-							
 						</div>
-					
+
 					</div>
+
+					
 			    </div>
-			    
-				
-				
 
+
+				
+			    
 				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">
 				    <div class="modal-content">              
@@ -679,6 +662,7 @@
 	    <script src="../js/gw.general.js"></script>
 	    <script src="../js/gw.tutorial.js"></script>
 	    <script src="../js/gw.about.js"></script>
+		<script src="../js/gw.feedback.js"></script>
 	    <script src="../js/gw.chart.js"></script>
 	    <script src="../js/gw.workspace.js"></script>
 	    <script src="../js/gw.ssh.js"></script>

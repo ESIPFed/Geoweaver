@@ -221,8 +221,9 @@ public class WorkflowTool {
 				
 				//if any of the pre- nodes is not satisfied, this node is passed. 
 				
-				if(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
-						&&checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)) {
+				if(!(checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.DONE)
+						|| checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.FAILED)
+						|| checkNodeStatus(prenodeid, flags, nodes).equals(ExecutionStatus.SKIPPED))) {
 					
 					satisfied = false;
 					
@@ -590,11 +591,37 @@ public class WorkflowTool {
 	}
 
 	/**
+	 * Get export mode string by number id
+	 * @param mode_no
+	 * @return
+	 * mode string
+	 */
+	public String getExportModeById(int mode_no){
+
+		String mode = "workflowwithprocesscodehistory";
+
+		switch(mode_no){
+
+			case 1: mode = "workflowonly"; break;
+
+			case 2: mode = "workflowwithprocesscode"; break;
+
+			case 3: mode = "workflowwithprocesscodegoodhistory"; break;
+
+			default: mode = "workflowwithprocesscodehistory"; break;
+			
+		}
+
+		return mode;
+
+	}
+
+	/**
 	 * Download workflow 
 	 * @param wid
 	 * workflow id
 	 * @param option
-	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodehistory
+	 * workflowonly | workflowwithprocesscode | workflowwithprocesscodegoodhistory| workflowwithprocesscodehistory
 	 * @return
 	 * @throws ParseException
 	 */
@@ -986,6 +1013,94 @@ public class WorkflowTool {
 		});
 
 		return workflowjson;
+	}
+
+	public String check_process_skipped(String workflow_id, String workflow_process_id){
+
+		String isskip = "false";
+
+		try{
+
+			JSONParser parser = new JSONParser();
+
+			Workflow wf = this.getById(workflow_id);
+
+			JSONArray nodes_array = (JSONArray)parser.parse(wf.getNodes());
+
+			for(int i=0;i<nodes_array.size();i++){
+
+				String current_process_id = String.valueOf(((JSONObject)nodes_array.get(i)).get("id"));
+
+				if(workflow_process_id.equals(current_process_id)){
+
+					String the_skip_str = String.valueOf(((JSONObject)nodes_array.get(i)).get("skip"));
+
+					if(!"null".equals(the_skip_str)){
+
+						isskip = the_skip_str;
+
+					}
+
+					break;
+
+				}
+
+			}
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			throw new RuntimeException(String.format("Fail to get skip status of process %s in workflow %s ", 
+				workflow_process_id, workflow_id ));
+
+		}
+
+		return isskip;
+
+	}
+
+	public void skip_process(String workflow_id, String workflow_process_id, String skip){
+
+		try{
+
+			Workflow wf = this.getById(workflow_id);
+
+			JSONParser parser = new JSONParser();
+
+			JSONArray nodes_array = (JSONArray)parser.parse(wf.getNodes());
+
+			for(int i=0;i<nodes_array.size();i++){
+
+				String current_process_id = String.valueOf(((JSONObject)nodes_array.get(i)).get("id"));
+
+				if(workflow_process_id.equals(current_process_id)){
+
+					((JSONObject)nodes_array.get(i)).put("skip", skip);
+
+					break;
+
+				}
+
+			}
+
+			wf.setNodes(nodes_array.toJSONString());
+
+			this.save(wf);
+
+			logger.info(String.format("Done Skip process %s in workflow %s ", 
+			workflow_process_id, workflow_id ));
+
+		}catch(Exception e){
+
+			e.printStackTrace();
+
+			throw new RuntimeException(String.format("Fail to skip process %s in workflow %s ", 
+				workflow_process_id, workflow_id ));
+
+		}
+
+		
 	}
 
 }

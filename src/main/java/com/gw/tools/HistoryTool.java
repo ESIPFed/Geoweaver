@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
+import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
@@ -222,38 +223,6 @@ public class HistoryTool {
 
 			resp.append(json);
 			
-			// resp.append("[");
-			
-			// int num = 0;
-			
-			// for(;num<active_processes.size();num++) {
-				
-			// 	if(num!=0) {
-					
-			// 		resp.append(", ");
-					
-			// 	}
-				
-			// 	History h = active_processes.get(num);
-				
-			// 	resp.append("{ \"id\": \"").append(h.getHistory_id()).append("\", ");
-				
-			// 	resp.append("\"begin_time\": \"").append(h.getHistory_begin_time());
-				
-			// 	resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
-				
-			// 	resp.append("\", \"output\": \"").append(bt.escape(String.valueOf(h.getHistory_output())));
-				
-			// 	resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(h.getIndicator())));
-				
-			// 	resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(h.getHost_id())));
-				
-			// 	resp.append("\"}");
-				
-			// }
-			
-			// resp.append("]");
-			
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -421,6 +390,7 @@ public class HistoryTool {
 		if(ExecutionStatus.FAILED.equals(hist.getIndicator()) || 
 			ExecutionStatus.STOPPED.equals(hist.getIndicator()) ||
 			ExecutionStatus.DONE.equals(hist.getIndicator()) ||
+			ExecutionStatus.SKIPPED.equals(hist.getIndicator()) ||
 			ExecutionStatus.UNKOWN.equals(hist.getIndicator()))
 				return true;
 		else
@@ -510,5 +480,39 @@ public class HistoryTool {
 		}
 		
 	}
+
+    public void saveSkippedHisotry(String historyid, String workflow_process_id, String hostid) {
+
+		try {
+			
+			History h = new History();
+			
+			h.setHistory_id(historyid);
+
+			String processid = workflow_process_id.split("-")[0];
+			
+			h.setHistory_begin_time(BaseTool.getCurrentSQLDate());
+
+			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+
+			h.setHistory_input("No code saved"); //should add
+			
+			h.setHistory_output("Skipped");
+			
+			h.setHost_id(hostid);
+			
+			h.setIndicator(ExecutionStatus.SKIPPED);
+			
+			h.setHistory_process(processid);
+			
+			historyrepository.save(h);
+			
+		}catch(Exception e) {
+			
+			e.printStackTrace();
+			
+		}
+
+    }
 
 }
