@@ -392,3 +392,36 @@ form .progress {
   padding: 10px;
   color: white;
 }
+
+.side_menu_collapse_btn {
+
+  position: absolute;
+  border: none;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  box-shadow: 0px 1px 4px 1px rgba(0 ,0, 0, .3);
+  left: 100%;
+  top: 50%;
+  z-index: 999;
+  transform: translateX(-50%);
+  cursor: pointer;
+
+}
+
+.workspace_collapse_btn {
+
+  position: absolute;
+  border: none;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  box-shadow: 0px 1px 4px 1px rgba(0 ,0, 0, .3);
+  left: 0;
+  top: 50%;
+  z-index: 999;
+  visibility: hidden;
+  transform: translateX(-50%);
+  cursor: pointer;
+
+}

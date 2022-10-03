@@ -112,8 +112,6 @@
 		<!-- The merge addon of CodeMirror depends on the google-diff-match-patch library to compute the diffs. -->
 		<script type=text/javascript  src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
 
-
-
 		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
 		
 		<script type="text/javascript" src="../js/bootstrap-dialog.min.js"></script>
@@ -135,16 +133,17 @@
 		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
 		
 			<!-- Top menu bar -->
-			
+
 			<!-- set site margin here -->
 			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
 				
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); margin: 0;padding: 0; overflow-y: hidden;">
 
+					<button class="side_menu_collapse_btn">&lt;&lt;&lt;&lt;</button>
+
 					<div class="row" style="height:50px; margin: 0; padding:0;">
 						<div style="padding:0; padding-top:10px; margin:0; text-align: center; height:100%;" class="col col-md-12" href="javascript:void(0)">
 								<img src="../img/header.png" style="vertical-align: middle; " width="35px" height="35px"/>
-								<button id="menu_toggle_btn">toggle</button>
 						</div>
 					</div>
 					
@@ -297,7 +296,9 @@
 				</div>
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-9" id="main_panel_div" style="height:100%; margin: 0; padding:0;">
+			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0;">
+
+					<button class="workspace_collapse_btn">&gt;&gt;&gt;</button>
 
 					<div class="row" id="top_menu_bar_div"  style="height: 50px; margin: 0; padding: 0; ">
 
@@ -341,6 +342,7 @@
 					<div id="right-page-div" class="row" style="height:calc( 100% - 50px ); left:0; margin:0; padding: 0;padding-bottom:0px;">
 
 						<div class="col col-md-12" id="main-workspace-container" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+
 
 							<div id="main-general" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;"> 
 								<div id="main-general-content" style="height:100%; overflow-y: scroll; padding: 30px;">
@@ -621,6 +623,9 @@
 
 					
 			    </div>
+
+
+				
 			    
 				<div class="modal fade" id="resultmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">

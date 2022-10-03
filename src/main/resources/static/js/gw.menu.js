@@ -21,7 +21,9 @@ GW.menu = {
 			
 			$('[data-toggle="tooltip"]').tooltip();
 
-			$('#menu_toggle_btn').click(GW.menu.toggle_side_panel);
+			$('.side_menu_collapse_btn').click(GW.menu.toggle_side_panel)
+
+			$('.workspace_collapse_btn').click(GW.menu.toggle_side_panel)
 			
 		},
 
@@ -32,7 +34,6 @@ GW.menu = {
 			GW.process.refreshProcessList();
 
 			GW.workflow.refreshWorkflowList();
-
 
 		},
 		
@@ -258,17 +259,13 @@ GW.menu = {
 		toggle_side_panel: function(){
 
 			if($('#sidemenu').width()!=0){
-				// $("#sidemenu").removeClass("collapse show").addClass("collapsed");
 				$("#sidemenu").addClass("invisible").width(0);
-				// $( "#sidemenu" ).removeClass( "col col-sm-3 col-md-3 col-lg-3" ).addClass("invisible")
-				// // .height(0);
 				$( "#main_panel_div" ).addClass( "col-md-12" ).removeClass( "col-md-9" );
+				$(".workspace_collapse_btn").css("visibility", "visible")
 			}else{
-				// $( "#sidemenu" ).removeClass( "invisible" ).addClass( "col col-sm-3 col-md-3 col-lg-3" )
-					// .height("calc(100vh - 50px)");
 				$("#sidemenu").removeClass("invisible").width("");
-				// $("#sidemenu").removeClass("collapsed").addClass("collapse show");
 				$( "#main_panel_div" ).addClass( "col-md-9" ).removeClass( "col-md-12" );
+				$(".workspace_collapse_btn").css("visibility", "hidden")
 			}
 
 		},
