@@ -2052,8 +2052,8 @@ GW.process = {
 								onclick="var event = arguments[0] || window.event; event.stopPropagation();
 								GW.menu.details('${one.id}', 'process')">
 								<div class="row bare-window">
-									<div class="col-md-9 bare-window"><span style="word-wrap:break-word;">&nbsp;&nbsp;&nbsp;${one.name}</span></div>
-									<div class="col-md-3 bare-window">
+									<div class="col-md-2 bare-window" style="overflow: hidden; text-overflow: ellipsis; width: 180px" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
+									<div class="col-md-4 bare-window">
 										<button type="button" class="btn btn-warning btn-xs pull-right right-button-vertical-center" 
 										onclick="var event = arguments[0] || window.event; event.stopPropagation();
 										GW.workspace.theGraph.addProcess('${one.id}','${one.name}');">Add to Weaver</button>
