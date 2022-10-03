@@ -20,6 +20,10 @@ GW.menu = {
 			}
 			
 			$('[data-toggle="tooltip"]').tooltip();
+
+			$('.side_menu_collapse_btn').click(GW.menu.toggle_side_panel)
+
+			$('.workspace_collapse_btn').click(GW.menu.toggle_side_panel)
 			
 		},
 
@@ -30,7 +34,6 @@ GW.menu = {
 			GW.process.refreshProcessList();
 
 			GW.workflow.refreshWorkflowList();
-
 
 		},
 		
@@ -251,6 +254,20 @@ GW.menu = {
 				
 			});
 			
-		}
+		},
+
+		toggle_side_panel: function(){
+
+			if($('#sidemenu').width()!=0){
+				$("#sidemenu").addClass("invisible").width(0);
+				$( "#main_panel_div" ).addClass( "col-md-12" ).removeClass( "col-md-9" );
+				$(".workspace_collapse_btn").css("visibility", "visible")
+			}else{
+				$("#sidemenu").removeClass("invisible").width("");
+				$( "#main_panel_div" ).addClass( "col-md-9" ).removeClass( "col-md-12" );
+				$(".workspace_collapse_btn").css("visibility", "hidden")
+			}
+
+		},
 		
 };
