@@ -191,10 +191,10 @@ GW.monitor = {
 
 			if(play_or_stop){
 				$("#execute-workflow").removeClass("fa-stop")
-				$("#execute-workflow").addClass("fa-play")
+				$("#execute-workflow").addClass("fa-play").css("color", "gray").attr("title", "execute workflow")
 			}else{
 				$("#execute-workflow").removeClass("fa-play")
-				$("#execute-workflow").addClass("fa-stop")
+				$("#execute-workflow").addClass("fa-stop").css("color", "red").attr("title", "stop the execution")
 			}
 
 		},
