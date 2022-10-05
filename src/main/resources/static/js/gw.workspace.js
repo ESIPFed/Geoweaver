@@ -1055,7 +1055,6 @@ GW.workspace = {
 						  return d.color;
 						})
 					.style("fill", function (d) { 
-							console.log(d.id + " " + d.skip)
 							if(d.skip=="true" || d.skip==true){
 								return "url(#diagonalHatch)";
 							}else{
@@ -1177,13 +1176,11 @@ GW.workspace = {
 	    	      	.attr("r", String(consts.nodeRadius))
 				  	.attr("stroke-width", 2)
 					.style('stroke', function (d) {
-							return "#000000";
-						//   return d.color; 
-						})
+						return "#000000";
+					})
 					.attr("fill", function (d) {
 						if(d.skip=="true" || d.skip==true){
 							return "url(#diagonalHatch)";
-
 						}else{
 							return d.color;
 						}
