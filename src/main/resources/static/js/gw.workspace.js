@@ -71,6 +71,8 @@ GW.workspace = {
 
 			}
 
+			GW.workspace.theGraph.updateGraph();
+
 		},
 
 		saveWorkflow: function(){
@@ -145,6 +147,17 @@ GW.workspace = {
     	      .attr('orient', 'auto')
     	      .append('svg:path')
     	      .attr('d', 'M0,-5L10,0L0,5');
+
+			defs.append('pattern')
+				.attr('id', 'diagonalHatch')
+				.attr('patternUnits', 'userSpaceOnUse')
+				.attr('width', 4)
+				.attr('height', 4)
+				.attr('fill', '#FFF')
+			.append('path')
+				.attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+				.attr('stroke', '#000000')
+				.attr('stroke-width', 1);
 
     	    thisGraph.svg = svg;
     	    thisGraph.svgG = svg.append("g")
@@ -1042,7 +1055,12 @@ GW.workspace = {
 						  return d.color;
 						})
 					.style("fill", function (d) { 
-							return d.color;
+							console.log(d.id + " " + d.skip)
+							if(d.skip=="true" || d.skip==true){
+								return "url(#diagonalHatch)";
+							}else{
+								return d.color;
+							}
 						});
 	
 	    	    // add new nodes
@@ -1074,6 +1092,17 @@ GW.workspace = {
 					.attr('in', 'SourceGraphic')
 					.attr('in2', 'the-shadow')
 					.attr('mode', 'normal');
+
+				defs.append('pattern')
+						.attr('id', 'diagonalHatch')
+						.attr('patternUnits', 'userSpaceOnUse')
+						.attr('width', 4)
+						.attr('height', 4)
+						.attr('fill', 'AliceBlue')
+					.append('path')
+						.attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+						.attr('stroke', '#000000')
+						.attr('stroke-width', 1);
 
 				// Define the div for the tooltip
 				if(!GW.workspace.tooltipdiv)
@@ -1152,8 +1181,13 @@ GW.workspace = {
 						//   return d.color; 
 						})
 					.attr("fill", function (d) {
+						if(d.skip=="true" || d.skip==true){
+							return "url(#diagonalHatch)";
+
+						}else{
 							return d.color;
-						})
+						}
+					})
 					.attr("filter", "url(#drop-shadow)");; //add color
 	
 	    	    newGs.each(function(d){
