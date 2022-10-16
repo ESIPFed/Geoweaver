@@ -1197,7 +1197,7 @@ GW.workflow = {
 
 			GW.workspace.update_skip_process(process_id, is_skipped);
 
-			console.log("the process should be skipped or un-skipped now: " + msgout);
+			console.log("the process should be skipped or un-skipped now: " + msg);
 			
 		})
 
