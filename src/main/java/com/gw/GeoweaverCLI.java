@@ -54,6 +54,7 @@ public class GeoweaverCLI implements CommandLineRunner {
     public static void main(String[] args) throws Exception {
         
         System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
+                                    .lazyInitialization(true)
                                     .web(WebApplicationType.NONE)
                                     .bannerMode(Banner.Mode.OFF)
                                     .run(args)));
