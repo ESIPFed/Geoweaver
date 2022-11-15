@@ -313,7 +313,10 @@ public class GeoweaverProcessTask  extends Task {
 			
 		}
 		
-		System.out.println("> Fnished process: "+ pid);
+		System.out.println(String.format("> Fnished process: %s - history: %s - Status: %s", 
+			pid,
+			history_id,
+			this.curstatus.toString()));
 			
 	}
 
