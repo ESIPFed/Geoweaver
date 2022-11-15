@@ -277,6 +277,8 @@ public class GeoweaverProcessTask  extends Task {
 	public void execute() {
 
 		logger.debug(" + + + start Geoweaver Process " + pid );
+
+		System.out.println("> Start to run process: "+ pid);
 		
 		try {
 
@@ -311,6 +313,7 @@ public class GeoweaverProcessTask  extends Task {
 			
 		}
 		
+		System.out.println("> Fnished process: "+ pid);
 			
 	}
 

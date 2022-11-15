@@ -6,10 +6,10 @@
   "configurations": [
     {
       "type": "java",
-      "name": "list workflow",
+      "name": "list cli",
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
-      "args": "list --workflow"
+      "args": "list --process"
     },
     {
       "type": "java",

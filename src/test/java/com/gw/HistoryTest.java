@@ -135,8 +135,10 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 
 		// assert end time not empty
 		String end_time = String.valueOf(map.get("end_time"));
+		System.out.println(end_time);
 		String[] end_time_no_ms = end_time.split("\\.");
 		assertNotNull(end_time_no_ms[0]);
+
 		// assert end time matches format
 		Date end_time_parsed = sdf.parse(end_time_no_ms[0]);
 		String end_time_format = sdf.format(end_time_parsed);
