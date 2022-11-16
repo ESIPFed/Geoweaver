@@ -1101,13 +1101,15 @@ public class BaseTool {
 	public void unzip(String filepath, String targetfolder){
 
 		try{
-			logger.debug("Unzipping " + filepath + " to " + targetfolder);
+
+			System.out.println("Unzipping " + filepath + " to " + targetfolder);
 			String fileZip = filepath;
 			File destDir = new File(targetfolder);
 			byte[] buffer = new byte[1024];
 			ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
 			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
+				System.out.println(destDir + " - " + zipEntry);
 				File newFile = newFile(destDir, zipEntry);
 				if (zipEntry.isDirectory()) {
 					if (!newFile.isDirectory() && !newFile.mkdirs()) {
@@ -1137,6 +1139,8 @@ public class BaseTool {
 
 			e.printStackTrace();
 
+			throw new RuntimeException(e.getLocalizedMessage());
+
 		}
 
 	}
@@ -1147,7 +1151,8 @@ public class BaseTool {
 		String destDirPath = destinationDir.getCanonicalPath();
 		String destFilePath = destFile.getCanonicalPath();
 	
-		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+		// System.out.println("destFilePath: "+destFilePath+" destDirPath: "+destDirPath);
+		if (!destFilePath.startsWith(destDirPath)) {
 			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
 		}
 	
