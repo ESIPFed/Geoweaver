@@ -32,7 +32,7 @@ public class ImportWorkflowCommand implements Runnable {
             //first, unzip the file
             File source_file = new File(workflow_zip_file_path);
             String filename = source_file.getName();
-            Files.copy(source_file.toPath(), 
+            Files.copy(source_file.toPath(),
                     new File(bt.getFileTransferFolder() + filename).toPath(), StandardCopyOption.REPLACE_EXISTING);
             
             //second, precheck the folder is valid geoweaver package

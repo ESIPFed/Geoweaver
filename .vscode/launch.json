@@ -17,7 +17,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "import workflow C:\\Users\\JensenSun\\Downloads\\eddy_detection_geoweaver-0.0.2.zip"
+      "args": "import workflow '/Users/joe/Downloads/bwmstg2ttkuz78c4jj64 (35).zip'"
     },
     {
       "type": "java",

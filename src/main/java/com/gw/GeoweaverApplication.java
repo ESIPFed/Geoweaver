@@ -46,6 +46,7 @@ public class GeoweaverApplication {
             //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
             // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
             System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
+                .lazyInitialization(true)
                 .web(WebApplicationType.NONE)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args)));

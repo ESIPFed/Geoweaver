@@ -1226,13 +1226,15 @@ GW.process = {
 	    	
             frame.on('closeButton', 'click', (_frame, evt) => {
                 _frame.closeFrame();
-                
+                GW.workspace.if_any_frame_on = false;
             });
             
 	    	//Show the window
 	    	frame.show();
 	    	
 	    	frame.setPosition((window.innerWidth - width) / 2, (window.innerHeight -height) / 2, 'LEFT_TOP');
+
+			GW.workspace.if_any_frame_on = true;
 	    	
 	    	return frame;
 			
