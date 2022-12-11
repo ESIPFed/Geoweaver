@@ -14,6 +14,8 @@ GW.workspace = {
 
 		keymap : {},
 
+		if_any_frame_on: false,
+
 		showNonSaved: function(){
 
 			console.log("changes happened")
@@ -995,7 +997,9 @@ GW.workspace = {
 		    	    case consts.BACKSPACE_KEY:
 		    	    case consts.DELETE_KEY:
 		    	    //   d3.event.preventDefault();
-					  this.deleteSelected();
+					  //only delete the process nodes when there is no dialog in sight
+					  if(!GW.workspace.if_any_frame_on)
+					  	this.deleteSelected();
 		    	      break;
 	    	    }
 	    	  };
