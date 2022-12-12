@@ -28,7 +28,7 @@ import picocli.CommandLine;
 @EnableJpaRepositories(basePackages = {"com.gw.database"})
 @ComponentScan(basePackages = {"com.gw.commands", "com.gw.database", "com.gw.jpa", 
 "com.gw.local", "com.gw.search", "com.gw.tasks", "com.gw.tools", "com.gw.user",
-"com.gw.utils",  "com.gw.workers", "com.gw.ssh",}, lazyInit = true)
+"com.gw.utils",  "com.gw.workers", "com.gw.ssh",})
 public class GeoweaverCLI implements CommandLineRunner {
 
     @Autowired

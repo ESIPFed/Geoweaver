@@ -19,13 +19,13 @@
 
 	<properties>
 		
-		<org.springframework-version>[5.3.1,)</org.springframework-version>
+		<org.springframework-version>5.3.1</org.springframework-version>
 
-		<picocli-version>[4.6.3,)</picocli-version>
+		<picocli-version>4.6.3</picocli-version>
 		
-		<org.springboot-version>[2.4.1,)</org.springboot-version>
+		<org.springboot-version>2.4.1</org.springboot-version>
 		
-		<thymeleaf-version>[3.0.12,)</thymeleaf-version>
+		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
 
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
@@ -101,6 +101,13 @@
     		<version>1.11.163</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api since servlet api 5.0-->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+
 		
 		<!-- below come from old settings -->
 		<dependency>
