@@ -2189,10 +2189,10 @@ GW.host = {
 //             '       <input type="text" class="form-control" id="hosttype" value="Host Type">'+
 		   '        <select class="form-control" id="hosttype"> '+
 		   '            <option value="ssh">SSH Linux/Macintosh/Windows</option> '+
-		   '            <option value="jupyter">Jupyter Notebook</option> '+
-		   '            <option value="jupyterhub">JupyterHub</option> '+
-		   '            <option value="jupyterlab">Jupyter Lab</option> '+
-		   '            <option value="gee">Google Earth Engine</option>'+
+		//    '            <option value="jupyter">Jupyter Notebook</option> '+
+		//    '            <option value="jupyterhub">JupyterHub</option> '+
+		//    '            <option value="jupyterlab">Jupyter Lab</option> '+
+		//    '            <option value="gee">Google Earth Engine</option>'+
 		   '        </select> '+
 		   '     </div>'+
 		   '   </div>'+
