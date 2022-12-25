@@ -25,7 +25,6 @@ import com.gw.utils.BaseTool;
 
 /**
  * The servlet for uploading a file
- * @author Ziheng Sun
  */
 @WebServlet(name = "FileUploadServlet", urlPatterns = {"/FileUploadServlet"})
 public class FileUploadServlet extends HttpServlet {

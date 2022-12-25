@@ -1,7 +1,5 @@
 /**
- * 
- * author: Ziheng Sun
- * 
+ * All things related to Host section on the left menu: host listing, creation, browsing, and editing. 
  */
 GW.host = {
         

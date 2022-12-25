@@ -1,9 +1,6 @@
 package com.gw.utils;
 /**
-*Class Message.java
-*@author Ziheng Sun
-*@time Jan 27, 2017 11:08:53 PM
-*Original aim is to support Geoweaver.
+* Class Message.java
 */
 public class Message {
 	

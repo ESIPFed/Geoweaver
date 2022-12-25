@@ -3,9 +3,6 @@
 # Installation script for Geoweaver on Mac Servers
 # Tested on Mac OS
 #
-# author: Ziheng Sun
-# date: 08/20/2019
-#
 
 echo "Create install folder and enter it"
 

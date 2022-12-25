@@ -1,7 +1,3 @@
-/**
- * Author: ZIheng Sun
- * Date: 4 Oct 2018
- */
 
 GW.menu = {
 		

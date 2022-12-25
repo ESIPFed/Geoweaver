@@ -1,9 +1,5 @@
 /**
-*
 * Geoweaver Process
-* 
-* @author Ziheng Sun
-*
 */
 
 GW.process = {

@@ -3,9 +3,6 @@
 # Installation script for Geoweaver on Linux Servers
 # Tested on Ubuntu, CentOS
 #
-# author: Ziheng Sun
-# date: 08/15/2019
-#
 
 echo "Create install folder and enter it"
 

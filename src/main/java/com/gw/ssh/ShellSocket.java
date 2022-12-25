@@ -17,9 +17,6 @@ import com.gw.web.GeoweaverController;
 
 /**
  * Replaced by the TerminalServlet
- * Created by usta on 20.02.2015.
- * Modified by Ziheng Sun on 19 Sep 2018
- * 
  */
 @Deprecated
 public class ShellSocket implements WebSocketHandler {

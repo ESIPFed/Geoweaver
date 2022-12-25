@@ -1,7 +1,4 @@
-/**
- * author: Ziheng Sun
- * date: 20180925
- */
+
 GW.workspace = {
 		
 		theGraph: null,

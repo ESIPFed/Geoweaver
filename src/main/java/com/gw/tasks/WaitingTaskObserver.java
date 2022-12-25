@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 /**
  *Class WaitingTaskObserver.java
- *@author Ziheng Sun
  *@time Aug 11, 2015 12:19:04 PM
  *Original aim is to support Geoweaver.
  */

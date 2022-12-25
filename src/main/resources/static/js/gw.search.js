@@ -1,6 +1,5 @@
 /**
  * Geoweaver Search Module
- * @author Ziheng Sun
  */
 
 GW.search = {
