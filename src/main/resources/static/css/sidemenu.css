@@ -36,7 +36,30 @@
 
 }
 
+/* search bar */
+.search-form{
+  position: relative;
+  padding: 5px;
+}
 
+.search-form .fa-search{
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: #9ca3af;
+}
+
+.search-form-input{
+  height: 30px;
+  text-indent: 33px;
+  border-radius: 10px;
+}
+
+.search-form-input:focus{
+  box-shadow: none;
+}
+
+/* end of search bar */
 
 .nav-side-menu .toggle-btn {
   display: none;
