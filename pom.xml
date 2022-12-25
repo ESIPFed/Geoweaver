@@ -27,7 +27,7 @@
 		
 		<org.springboot-version>2.4.1</org.springboot-version>
 		
-		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
+		<thymeleaf-version>3.0.13.RELEASE</thymeleaf-version>
 
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
