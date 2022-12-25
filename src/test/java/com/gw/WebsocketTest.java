@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.websocket.Session;
 
-import com.amazonaws.services.opsworkscm.model.Server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

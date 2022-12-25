@@ -99,11 +99,11 @@
 	        <optional>false</optional>
 	    </dependency>
 		
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amazonaws</groupId>
     		<artifactId>aws-java-sdk</artifactId>
     		<version>1.11.163</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api since servlet api 5.0-->
 		<dependency>

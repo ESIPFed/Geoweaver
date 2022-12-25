@@ -15,7 +15,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.amazonaws.annotation.SdkTestInternalApi;
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
 import com.gw.utils.BaseTool;
