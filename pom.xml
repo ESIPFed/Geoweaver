@@ -13,13 +13,15 @@
 	<artifactId>geoweaver</artifactId>
 	<version>1.0.0-rc6</version>
 	<name>geoweaver</name>
-	<description>A scientist-affordable workflow management software for organizing scientific workflows, preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness, especially for the AI experiments which have no two identifical runs.</description>
+	<description>A lightweight workflow management software for organizing data analysis workflows, 
+	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
+	especially for the AI experiments which have no two identifical runs.</description>
 	
 	<packaging>jar</packaging>
 
 	<properties>
 		
-		<org.springframework-version>5.3.1</org.springframework-version>
+		<org.springframework-version>5.3.23</org.springframework-version>
 
 		<picocli-version>4.6.3</picocli-version>
 		
@@ -30,6 +32,8 @@
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
 		<log4j2.version>2.17.1</log4j2.version>
+
+		<junit-version>4.13.2</junit-version>
 		
 	</properties>
 	
@@ -113,9 +117,23 @@
 		<dependency>
 	        <groupId>junit</groupId>
 	        <artifactId>junit</artifactId>
-	        <version>4.13.1</version>
 	        <scope>test</scope>
 	    </dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.9.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
+		</dependency>
 	    <dependency>
 		    <groupId>org.kamranzafar</groupId>
 		    <artifactId>jtar</artifactId>
@@ -353,7 +371,6 @@
 	</dependencies>
 
 	<build>
-		
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
