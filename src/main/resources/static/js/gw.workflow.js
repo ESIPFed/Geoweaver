@@ -1381,6 +1381,12 @@ GW.workflow = {
 		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
 	},
 
+	refreshSearchList: function(){
+
+		GW.search.filterMenuListUtil("workflows", "workflows", "workflow");
+
+	},
+
 	refreshWorkflowList: function(){
 
 		$.ajax({

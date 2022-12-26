@@ -16,7 +16,6 @@ GW.host = {
 	local_hid: null,
 	
 	editOn: false,
-
 	
 	clearCache: function(){
 		
@@ -780,15 +779,24 @@ GW.host = {
 						
 					});
 					
-					
 				});
 				
 			}
 			
-			
-			
 		});
 		
+	},
+
+	cleanMenu: function(){
+
+		$("#host_folder_ssh_target").html("");
+
+		$("#host_folder_jupyter_target").html("");
+		
+		$("#host_folder_jupyterhub_target").html("");
+		
+		$("#host_folder_gee_target").html("");
+	
 	},
 
 	refreshHostListForExecution:function(){
@@ -808,11 +816,6 @@ GW.host = {
 			GW.host.host_environment_list_cache = msg;
 			
 			console.log("Start to refresh the host list..");
-			
-			$("#host_folder_ssh_target").html("");
-			$("#host_folder_jupyter_target").html("");
-			$("#host_folder_jupyterhub_target").html("");
-			$("#host_folder_gee_target").html("");
 			
 			GW.host.list(msg);
 			
@@ -904,6 +907,12 @@ GW.host = {
 		return theenv;
 
 	},
+
+	refreshSearchList: function(){
+
+		GW.search.filterMenuListUtil("host_folder_ssh_target", "hosts", "host");
+
+	},
 	
 	//refresh host list for the menu
 	refreshHostList: function(){
@@ -922,27 +931,7 @@ GW.host = {
 			
 			console.log("Start to refresh the host list..");
 			
-			$("#host_folder_ssh_target").html("");
-			$("#host_folder_jupyter_target").html("");
-			$("#host_folder_jupyterhub_target").html("");
-			$("#host_folder_gee_target").html("");
-			
 			GW.host.list(msg);
-			
-			// if($(".hostselector")) {
-
-			//  for(var i=0;i<msg.length;i++){
-					
-			//      //right now only SSH host can run processes
-			//      if(msg[i].type == "ssh"){
-
-			//          $(".hostselector").append("<option id=\""+msg[i].id+"\">"+msg[i].name+"</option>");
-
-			//      }
-					
-			//  }
-				
-			// }
 			
 		}).fail(function(jxr, status){
 			
@@ -955,14 +944,14 @@ GW.host = {
 	addMenuItem: function(one){
 		
 		console.log("Add host to the tree")
-		
-		$("#host_folder_"+one.type+"_target").append(" <li class=\"host\" id=\"host-" + one.id + 
+
+		var one_item = ` <li class="host" id="host-` + one.id + 
 				
-			"\" onclick=\"GW.menu.details('"+one.id+"', 'host')\"> <a href=\"javascript:void(0)\" >" + 
+				`" onclick="GW.menu.details('` + one.id + `', 'host')"> <a href="javascript:void(0)" >` + 
 				
-			one.name + "</a> "+
-			
-		" </li>");
+				one.name + `</a></li>`;
+
+		$("#host_folder_"+one.type+"_target").append(one_item);
 		
 	},
 
@@ -974,6 +963,8 @@ GW.host = {
 	},
 	
 	list: function(msg){
+
+		GW.host.cleanMenu();
 		
 		for(var i=0;i<msg.length;i++){
 			
