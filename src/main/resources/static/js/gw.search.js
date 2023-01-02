@@ -16,6 +16,28 @@ GW.search = {
 
 			GW.menu.refreshSearchResults();
 
+			if(GW.search.keywords != ""){
+
+				$("#clean_search_field").css("visibility", "visible")
+
+			}else{
+
+				$("#clean_search_field").css("visibility", "hidden")
+
+			}
+
+		});
+
+		$("#clean_search_field").click(function(){
+
+			$("#instant_search_bar").val("")
+
+			GW.search.keywords = "";
+
+			$("#clean_search_field").css("visibility", "hidden")
+
+			GW.menu.refreshSearchResults();
+
 		});
 	},
 
