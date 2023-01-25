@@ -1,9 +1,6 @@
 package com.gw.utils;
 /**
  *Class EmailValidator.java
- *@author Ziheng Sun
- *@time Sep 2, 2015 5:34:55 PM
- *Original aim is to support Geoweaver.
  */
 public class EmailValidator {
 	/**

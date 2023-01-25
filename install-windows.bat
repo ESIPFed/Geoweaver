@@ -2,9 +2,6 @@ rem
 rem Installation script for Geoweaver on Windows Servers
 rem Tested on Windows
 rem
-rem author: Ziheng Sun
-rem date: 08/15/2019
-rem
 
 @echo off
 

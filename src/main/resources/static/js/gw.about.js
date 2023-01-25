@@ -1,8 +1,6 @@
 /**
  * 
- * About Geoweaver
- * 
- * @author Ziheng Sun
+ * About Geoweaver Page
  * 
  */
 

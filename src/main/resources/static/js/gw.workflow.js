@@ -1,9 +1,5 @@
 /**
-*
 * Geoweaver Process
-* 
-* @author Ziheng Sun
-*
 */     
 
 GW.workflow = {
@@ -1383,6 +1379,12 @@ GW.workflow = {
 		console.log("EXPAND Workflow")
 		
 		$("#"+GW.menu.getPanelIdByType("workflow")).collapse("show");
+	},
+
+	refreshSearchList: function(){
+
+		GW.search.filterMenuListUtil("workflows", "workflows", "workflow");
+
 	},
 
 	refreshWorkflowList: function(){

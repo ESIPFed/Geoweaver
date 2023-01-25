@@ -1,7 +1,3 @@
-/**
- * Author: ZIheng Sun
- * Date: 4 Oct 2018
- */
 
 GW.menu = {
 		
@@ -24,6 +20,8 @@ GW.menu = {
 			$('.side_menu_collapse_btn').click(GW.menu.toggle_side_panel)
 
 			$('.workspace_collapse_btn').click(GW.menu.toggle_side_panel)
+
+			GW.search.init() // initialize the search bar
 			
 		},
 
@@ -34,6 +32,16 @@ GW.menu = {
 			GW.process.refreshProcessList();
 
 			GW.workflow.refreshWorkflowList();
+
+		},
+
+		refreshSearchResults: function(){
+
+			GW.host.refreshSearchList();
+
+			GW.process.refreshSearchList();
+
+			GW.workflow.refreshSearchList();
 
 		},
 		

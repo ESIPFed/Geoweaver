@@ -1,8 +1,3 @@
-/**
- * 
- * @author Ziheng Sun
- * 
- */
 
 GW.settings = {
 		

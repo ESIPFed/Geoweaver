@@ -1,9 +1,5 @@
 /**
-*
 * Geoweaver Process
-* 
-* @author Ziheng Sun
-*
 */
 
 GW.process = {
@@ -2003,6 +1999,18 @@ GW.process = {
 			GW.process.activateResizer();
 		},
 
+		refreshSearchList: function(){
+
+			GW.search.filterMenuListUtil("process_folder_shell_target", "processes", "process");
+
+			GW.search.filterMenuListUtil("process_folder_jupyter_target", "processes", "process");
+			
+			GW.search.filterMenuListUtil("process_folder_builtin_target", "processes", "process");
+			
+			GW.search.filterMenuListUtil("process_folder_python_target", "processes", "process");
+		
+		},
+
 		refreshProcessList: function(){
 			
 			$.ajax({
@@ -2107,7 +2115,6 @@ GW.process = {
 			console.log("EXPAND Process type")
 			
 			$("#process_folder_"+folder+"_target").collapse("show");
-		//	$("#"+GW.menu.getPanelIdByType("process")).collapse("show");
 			
 		},
 		
@@ -2117,11 +2124,9 @@ GW.process = {
 				
 				this.addMenuItem(msg[i], msg[i].lang==null?msg[i].description:msg[i].lang);
 				
-				//this.addWorkspace(msg[i]);
-				
 			}
 			
-			$('#processs').collapse("show");
+			$('#processes').collapse("show");
 			
 		},
 

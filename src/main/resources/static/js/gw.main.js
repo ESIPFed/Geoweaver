@@ -1,11 +1,5 @@
 /**
-*
 * Geoweaver main function
-* 
-* @author Ziheng Sun
-* 
-* @date 20 Aug 2018
-* 
 */
 
 GW.main = {

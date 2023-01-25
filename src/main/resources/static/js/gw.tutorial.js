@@ -1,10 +1,3 @@
-/**
- * 
- * author: Ziheng Sun
- * 
- * date: 11/21/2018
- * 
- */
 
 GW.tutorial = {
 		

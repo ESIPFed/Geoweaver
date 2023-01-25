@@ -2,8 +2,6 @@
  * Plugin for uploading files to the remote host
  * 
  * Code comes from https://danielmg.org/demo/java-script/uploader/no-queue (by Daniel Morales) MIT license
- * author: Ziheng Sun
- * 
  */
 
 GW.fileupload = {

@@ -1,12 +1,8 @@
-
 /**
  * 
- * Show welcome page
- * 
- * @author Ziheng Sun
+ * General methods
  * 
  */
-
 GW.general = {
 		
 		process_code_editor: null, 

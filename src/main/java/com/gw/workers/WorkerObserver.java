@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 /**
  *Class WorkerObserver.java
- *@author Ziheng Sun
- *@time Aug 11, 2015 1:20:01 PM
- *Original aim is to support Geoweaver.
  */
 @Service
 public class WorkerObserver implements Observer {

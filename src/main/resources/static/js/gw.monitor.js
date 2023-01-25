@@ -2,8 +2,6 @@
  * 
  * Workspace monitor
  * 
- * @author Ziheng Sun
- * 
  */
 
 GW.monitor = {

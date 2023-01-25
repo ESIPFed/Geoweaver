@@ -90,21 +90,3 @@ Geoweaver provides a Host category called `Linux/Win/Mac Computers` to manage al
 * For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. 
 
 > `Tips`: SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. 
-
-### Jupyter NoteBook Server Instance
-
-> Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.
-
-In Geoweaver, you can manage multiple Jupyter Notebook instances in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.
-
-### Jupyter Hub
-
-> JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs.
-
-Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.
-
-### Jupyter Lab
-
-> JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).
-
-Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab.

@@ -146,8 +146,14 @@
 								<img src="../img/header.png" style="vertical-align: middle; " width="35px" height="35px"/>
 						</div>
 					</div>
-					
+
 					<div class="nav-side-menu" >
+
+						<div class="search-form">
+							<i class="fa fa-search"></i>
+							<input type="text" class="form-control search-form-input" id="instant_search_bar" placeholder="Search anything...">
+							<i class="fa fa-times-circle" id="clean_search_field"></i>
+						</div>
 						
 						<div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
 							
@@ -167,7 +173,7 @@
 									</li>
 									<ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
 									
-									<li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
+									<!-- <li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
 										<a href="javascript:void(0)">Jupyter Notebook Server</a>
 									</li>
 									<ul class="sub-menu collapse" id="host_folder_jupyter_target"></ul>
@@ -180,7 +186,7 @@
 									<li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
 										<a href="javascript:void(0)">Jupyter Lab</a>
 									</li>
-									<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
+									<ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul> -->
 									
 									<!-- <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
 										<a href="javascript:void(0)">Google Earth Engine</a>
@@ -188,7 +194,7 @@
 									<ul class="sub-menu collapse" id="host_folder_gee_target"></ul> -->
 								</ul>
 								
-								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#proceses">
+								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#processes">
 									<a href="javascript:void(0)">
 										<i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i>&nbsp;&nbsp;&nbsp;Process 
 										<i data-toggle="collapse" data-target="#processs" class="fas fa-caret-down pull-right"></i>
@@ -196,7 +202,7 @@
 										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" id="newprocess">New Process</button>
 									</a>
 								</li>
-								<ul class="sub-menu collapse" id="proceses">
+								<ul class="sub-menu collapse" id="processes">
 									
 									<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
 										<a href="javascript:void(0)">Shell</a>
@@ -295,7 +301,6 @@
 								
 							</ul>
 
-								
 						</div>
 						
 					</div>
@@ -484,7 +489,7 @@
 											
 											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
 		
-											<h4>Jupyter NoteBook Server</h4>
+											<!-- <h4>Jupyter NoteBook Server</h4>
 															
 											<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
 		
@@ -500,7 +505,7 @@
 											
 											<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
 											
-											<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p>
+											<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p> -->
 											
 											<!-- <h4>Google Earth Engine</h4>
 											
