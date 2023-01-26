@@ -21,13 +21,13 @@
 
 	<properties>
 		
-		<org.springframework-version>6.0.0</org.springframework-version>
+		<org.springframework-version>5.3.23</org.springframework-version>
 
 		<picocli-version>4.6.3</picocli-version>
 		
 		<org.springboot-version>2.4.1</org.springboot-version>
 		
-		<thymeleaf-version>3.0.13.RELEASE</thymeleaf-version>
+		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
 
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
