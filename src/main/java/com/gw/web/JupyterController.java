@@ -102,7 +102,7 @@ public class JupyterController {
 	            		.build())
 	            .build();
 		
-		requestFactory.setHttpClient(httpClient);
+		// requestFactory.setHttpClient(httpClient);
 		
 		restTemplate1.setRequestFactory(requestFactory);
 		
