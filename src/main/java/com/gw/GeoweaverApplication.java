@@ -34,8 +34,6 @@ public class GeoweaverApplication {
     private static String workspace;
 
     public static void main(String[] args) {
-		
-//		BasicConfigurator.configure();
 
         // if we have a command line argument, we assume it is a command
         if(args.length > 0) {
@@ -43,8 +41,6 @@ public class GeoweaverApplication {
             // Do not open homepage if we are running a command
             // Run the spring boot application and command it to exit, so that only the command is run
             // Create a spring boot application without tomcat
-            //System.exit(SpringApplication.exit(new SpringApplication(GeoweaverCLI.class).run(args)));
-            // System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverApplication.class).web(WebApplicationType.NONE).run(args)));
             System.exit(SpringApplication.exit(new SpringApplicationBuilder(GeoweaverCLI.class)
                 .lazyInitialization(true)
                 .web(WebApplicationType.NONE)
@@ -57,8 +53,6 @@ public class GeoweaverApplication {
             ApplicationContext applicationContext = new SpringApplicationBuilder(GeoweaverApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
-
-            // openHomePage();	
 
             addDefaultPublicUser();
 

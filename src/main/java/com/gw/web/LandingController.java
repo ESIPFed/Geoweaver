@@ -69,8 +69,6 @@ public class LandingController {
 
             if("FALSE".equals(wf.getConfidential())){
 
-                // String ownername = wt.getOwnerNameByID(wf.getOwner());
-
                 GWUser u = ut.getUserById(wf.getOwner());
 
                 model.addAttribute("workflow", wf);
@@ -116,7 +114,6 @@ public class LandingController {
                 model.addAttribute("historylist", historylist);
 
                 //get recent activities
-                // wt.getAllWorkflow();
                 model.addAttribute("workflowlist", wt.getWorkflowListByOwner(u.getId()));
 
             }else{

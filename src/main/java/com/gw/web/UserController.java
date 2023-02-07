@@ -88,7 +88,6 @@ public class UserController {
         if(!BaseTool.isNull(token)){
 
             System.err.print(token);
-            // User user = userService.getByResetPasswordToken(token);
             String userid = UserTool.token2userid.get(token);
             Date created_date = UserTool.token2date.get(token);
     
@@ -104,7 +103,6 @@ public class UserController {
                     model.addAttribute("token", token);
                     
                     if (user == null) {
-                        // model.addAttribute("message", "Invalid Token");
                         return "Invalid Token";
                     }
     
@@ -155,8 +153,6 @@ public class UserController {
 
             //if the token is one hour old
             if(time_difference<60*60*1000){
-
-                // userService.updatePassword(user, password);
                 ut.updatePassword(user, password);
 
                 resp = "{\"status\": \"success\"}";
@@ -364,9 +360,4 @@ public class UserController {
         return resp;
 
     }
-    // @DeleteMapping("/users/all")
-    // public UserStatus deleteUsers() {
-    //     userRepository.deleteAll();
-    //     return UserStatus.SUCCESS;
-    // }
 }

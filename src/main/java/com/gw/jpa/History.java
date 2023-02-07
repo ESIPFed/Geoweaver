@@ -123,19 +123,4 @@ public class History {
 	public void setHistory_id(String history_id) {
 		this.history_id = history_id;
 	}
-	
-	
-
-	
-//	DROP TABLE IF EXISTS `history`;
-//	CREATE TABLE IF NOT EXISTS `history` (
-//	  `id` varchar(20) CHARACTER SET latin1 NOT NULL,
-//	  `process` varchar(50) CHARACTER SET latin1 NOT NULL,
-//	  `begin_time` datetime NOT NULL,
-//	  `end_time` datetime DEFAULT NULL,
-//	  `input` longtext CHARACTER SET latin1,
-//	  `output` longtext CHARACTER SET latin1,
-//	  `host` text CHARACTER SET latin1,
-//	  `indicator` varchar(50) CHARACTER SET latin1 DEFAULT NULL
-//	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 }
