@@ -115,7 +115,6 @@ public class GoogleEarthController {
                     .build())
             .build();
 
-        // requestFactory.setHttpClient(httpClient);
         GErestTemplate.setRequestFactory(requestFactory);
 
         logger.debug("A new Google Earth restTemplate is created");

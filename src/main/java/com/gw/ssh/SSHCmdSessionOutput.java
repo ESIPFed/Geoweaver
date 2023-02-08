@@ -25,7 +25,6 @@ import com.gw.web.GeoweaverController;
  */
 @Service
 @Scope("prototype")
-//@Qualifier("SSHCmdSessionOutput")
 public class SSHCmdSessionOutput  implements Runnable {
 	
 	protected Logger log = LoggerFactory.getLogger(getClass());
@@ -49,7 +48,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 	HistoryTool ht;
 	
 	public SSHCmdSessionOutput() {
-		
+
 		//for spring
 		
 	}
@@ -145,14 +144,11 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     	int nullnumber = 0;
     	
-    	// SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(token);
-    	
     	updateStatus("Running", "Running"); //initiate the history record
 
 		sendMessage2WebSocket("Process "+this.history_id+" Started");
     	
 		String line = null;
-        // while (run) {
 			
 		try {
 
@@ -160,14 +156,12 @@ public class SSHCmdSessionOutput  implements Runnable {
 				
 				// readLine will block if nothing to send
 				
-				// String line = in.readLine();
-				
 				linenumber++;
 				
 				//when detected the command is finished, end this process
 				if(BaseTool.isNull(line)) {
 					
-					//if ten consective output lines are null, break this loop
+					//if ten consecutive output lines are null, break this loop
 					
 					if(startrecorder==-1) 
 						startrecorder = linenumber;
@@ -179,8 +173,6 @@ public class SSHCmdSessionOutput  implements Runnable {
 						if((startrecorder+nullnumber)==linenumber) {
 							
 							log.debug("null output lines exceed 10. Disconnected.");
-							
-							// this.updateStatus(logs.toString(), "Done");
 							
 							break;
 							
@@ -238,7 +230,6 @@ public class SSHCmdSessionOutput  implements Runnable {
 		}finally {
 			
 			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
-	//                session.saveHistory(logs.toString()); //write the failed record
 			
 		}
         
@@ -269,7 +260,6 @@ public class SSHCmdSessionOutput  implements Runnable {
     
     public void setWebSocketSession(WebSocketSession session) {
         log.info("received websocket session");
-//        this.out = session;
     }
     
 }

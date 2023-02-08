@@ -26,9 +26,7 @@ public class ShellSocket implements WebSocketHandler {
     private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});
     
     static Map<String, WebSocketSession> peers =new HashMap();
-    
-    //@Autowired
-//    private SSHSessionManager sessionManager = new SSHSessionManager();
+
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
@@ -50,15 +48,13 @@ public class ShellSocket implements WebSocketHandler {
             // TODO is there a better way to do this?
             // Can the client send the websocket session id and username in a REST call to link them up?
             sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(messageText);
-            
-//            if(sshSession!=null&&sshSession.getSSHInput().ready()) {
+
             if(sshSession!=null) {
             	
             	sshSession.setWebSocketSession(session);
                 
             	GeoweaverController.sessionManager.sshSessionByToken.put(session.getId(), sshSession);
-            	
-//            	GeoweaverController.sessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
+
                 
             }else {
             	
@@ -76,14 +72,8 @@ public class ShellSocket implements WebSocketHandler {
             
             sshSession.getSSHOutput().flush();
             
-//			//send Ctrl + C command to the SSH to close the connection
-//			
-//			cmd.getOutputStream().write(3);
-//			
-//		    cmd.getOutputStream().flush();
-            
             // if we receive a valid logout command, then close the websocket session.
-            // the system will logout and tidy itself up...
+            // the system will log out and tidy itself up...
             
             if (logoutCommands.contains(messageText.trim().toLowerCase())) {
                 

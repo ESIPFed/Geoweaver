@@ -9,7 +9,6 @@ import javax.persistence.Id;
 public class Workflow {
 	
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 	
 	private String name, description, owner;

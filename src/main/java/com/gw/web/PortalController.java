@@ -21,7 +21,6 @@ import com.gw.utils.BaseTool;
  * 
  */
 @Controller
-//@RequestMapping("/Geoweaver/web")
 public class PortalController {
 
 	Logger logger = Logger.getLogger(this.getClass());
@@ -45,11 +44,6 @@ public class PortalController {
     public String view(@PathVariable String name, HttpSession session) {
     	
     	if(BaseTool.isNull(name))name = "redirect:web/geoweaver";
-    	
-//    	logger.debug("Current user: " + (String)session.getAttribute("sessionUser"));
-//    	
-//    	logger.debug("Current sessionId: " + (String)session.getId());
-    	
         return name;
     }
     

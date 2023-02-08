@@ -11,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class Environment {
-	
-//	StringBuffer sql = new StringBuffer("insert into environment (id, name, type, bin, pyenv, host, basedir, settings) values ('");
 	@Id
 	String id;
 	
@@ -76,14 +74,6 @@ public class Environment {
 	public void setPyenv(String pyenv) {
 		this.pyenv = pyenv;
 	}
-
-	// public String getHost() {
-	// 	return host;
-	// }
-
-	// public void setHost(String host) {
-	// 	this.host = host;
-	// }
 
 	public String getBasedir() {
 		return basedir;
