@@ -151,7 +151,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
   
 
-   `alias geoweaver="docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"`
+    `alias geoweaver="docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"`
 
   
 
