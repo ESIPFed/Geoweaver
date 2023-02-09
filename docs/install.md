@@ -105,7 +105,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
   
 
-**Step 1**: Install Docker Desktop if you haven't (please refer to [Get Docker](https://docs.docker.com/get-docker/) to download the).
+**Step 1**: Install Docker Desktop if you haven't (please refer to [Get Docker](https://docs.docker.com/get-docker/) to download).
 
   
 
