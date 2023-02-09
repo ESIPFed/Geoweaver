@@ -192,9 +192,7 @@ Geoweaver will automatically create a password for localhost. It will only show 
   
 
 ```
-
 java -jar geoweaver.jar resetpassword
-
 ```
 
   
