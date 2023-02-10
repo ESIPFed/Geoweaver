@@ -558,9 +558,9 @@ GW.workspace = {
 							thisGraph.removeNode(pid);
 							
 						}
+
+						GW.workspace.showNonSaved();
 					}
-					
-					GW.workspace.showNonSaved();
 
 				}
 

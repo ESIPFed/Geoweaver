@@ -221,7 +221,6 @@ GW.workflow = {
 	},
 
 	switchTab: function (ele, name){
-	    		
 		console.log("Turn on the tab " + name)
 		  
 		var i, tabcontent, tablinks;
@@ -236,8 +235,6 @@ GW.workflow = {
 		document.getElementById(name).style.display = "block";
 		ele.className += " active";
 
-		// GW.process.refreshCodeEditor();
-		  
 	},
 
 	findCache: function(wid){
