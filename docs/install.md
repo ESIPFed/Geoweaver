@@ -23,7 +23,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 ## Build from source
 
-Use maven to build. In the command line go to the root folder and execute `mvn install`. After a success build, the Geoweaver jar package will be under the directory: `Geoweaver/target/Geoweaver-<version>.jar`.
+Use maven to build. In the command line, go to the root folder and execute `mvn install`. After a successful build, the Geoweaver jar package will be under the directory: `Geoweaver/target/Geoweaver-<version>.jar`.
 
 ## Install using Docker
 
@@ -39,7 +39,7 @@ Use maven to build. In the command line go to the root folder and execute `mvn i
 
 >  *What is going on?* : `-v <YOUR_HOME_DIRECTORY>:/home/marsvegan/` is for mounting your current home directory into the docker containers. `marsvegan` is the user name within geoweaver containers. `-p 8070:8070` maps the port so you can access Geoweaver from your browser. `jensensun/geoweaver` is the published docker image url in DockerHub.
 
-*Tip*: You can create an alias so next time you won't copy and paste such a long command:
+*Tip*: You can create an alias, so next time, you won't copy and paste such a long command:
 
 `alias geoweaver="docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"`
 
@@ -50,7 +50,7 @@ Then start it by simply typing: `geoweaver`
 
 ## Reset Password for Localhost
 
-Geoweaver will automatically create a password for localhost. It will only show once at first run of Geoweaver. It is recommended to copy and save it at a safe place. If forget or missed that password, please run the following command to reset:
+Geoweaver will automatically create a password for localhost. It will only show once at the first run of Geoweaver. It is recommended to copy and save it in a safe place. If you forget or miss that password, please run the following command to reset it:
 
 ```
 java -jar geoweaver.jar resetpassword

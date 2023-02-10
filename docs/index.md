@@ -16,7 +16,7 @@ It can be run from both local and remote (distributed) machines.
 
 Only two fundamental objectives:
 
-1. Make it time affordable for scientists with less-coding experience (who are unware of WfMS) to manage their data processing workflows.
+1. Make it time affordable for scientists with less-coding experience (who are unaware of WfMS) to manage their data processing workflows.
 
 2. Preserve every model run history and share them along with the code files.
 

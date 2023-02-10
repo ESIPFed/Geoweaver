@@ -5,7 +5,7 @@
 
 In Geoweaver, `Host` means computing machines (`Linux/Windows/Mac computers`). It is where the code gets executed, data gets processed, and history is generated.
 
-Mostly, `Host` is dedicated to be the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host `Localhost` which means the current machine Geoweaver is sitting on. For most people, `Localhost` is all they need. They can run all their processes on `Localhost`.
+Mostly, `Host` is dedicated to the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host `Localhost` which means the current machine Geoweaver is sitting on. For most people, `Localhost` is all they need. They can run all their processes on `Localhost`.
 
 Geoweaver has an amazing feature that's a lifesaver for multiple-server users. It allows you to enroll these servers and run your code on them without the hassle of having to manage it all separately. AWS EC2 instances and HPC are perfect examples of servers you can easily integrate with Geoweaver, and you'll be able to benefit from its time-saving benefits.
 
@@ -37,7 +37,7 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 
 2. Click the python icon button in the toolbar of the shown `Host Details` page.
 
-3. Input the `Host User Password` of your account on the remote server in the shown dialog pop up.
+3. Input the `Host User Password` of your account on the remote server in the shown dialog pop-up.
 
 >  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
 
@@ -50,11 +50,11 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 
 2. Click the sitemap icon (the one with branches) button in the `Host Details` toolbar.
 
-3. Input the `Host User Password` of your account on the server in the shown dialog pop up.
+3. Input the `Host User Password` of your account on the server in the shown dialog pop-up.
  
 >  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
 
-4. Click Confirm. A `File Browser Section` will appear below showing all the available directories and files.
+4. Click Confirm. A `File Browser Section` will appear below, showing all the available directories and files.
 
 ## File Uploader
 
@@ -62,7 +62,7 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 
 2. Click the uploader icon button in the `Host Details` toolbar.
 
-3. Input the `Host Password` of your account on the server in the shown dialog pop up.
+3. Input the `Host Password` of your account on the server in the shown dialog pop-up.
 
 >  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
 
@@ -90,9 +90,9 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 
 Geoweaver provides a Host category called `Linux/Win/Mac Computers` to manage all the `local`/`remote` machines.
 
-* For `local computers` (where Geoweaver is running at), Geoweaver can directly access, manage, and run commands/programs. For security reasons, it will automatically generate a password at its first boot. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to [reset password](install.md)).
+* For `local computers` (where Geoweaver is running), Geoweaver can directly access, manage, and run commands/programs. It will automatically generate a password at its first boot for security reasons. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to [reset password](install.md)).
 
 
-* For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers.
+* For `remote computers` (where Geoweaver is not installed but can access via networks), Geoweaver can access, manage, and run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer files from/to remote servers.
 
 >  `Tips`: SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client.
