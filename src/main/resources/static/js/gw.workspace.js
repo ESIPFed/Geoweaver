@@ -538,7 +538,7 @@ GW.workspace = {
 							thisGraph.updateGraph();
 							GW.workflow.setCurrentWorkflowName("");
 							GW.workflow.loaded_workflow = null;
-							
+							openCity(event, 'main-general');
 						}
 						
 					}else{
