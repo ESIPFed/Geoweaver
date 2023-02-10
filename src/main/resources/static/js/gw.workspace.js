@@ -539,6 +539,7 @@ GW.workspace = {
 							GW.workflow.setCurrentWorkflowName("");
 							GW.workflow.loaded_workflow = null;
 							openCity(event, 'main-general');
+							$("#main-workspace-tab").html('Weaver');
 						}
 						
 					}else{
