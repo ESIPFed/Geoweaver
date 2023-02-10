@@ -10,7 +10,7 @@ Geoweaver is an in-browser software allowing users to easily compose and execute
 
 It can be run from both local and remote (distributed) machines.
 
---- GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated!
+---GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated!
 
 # Software Goals
 
