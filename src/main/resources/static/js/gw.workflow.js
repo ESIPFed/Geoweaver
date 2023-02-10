@@ -478,6 +478,11 @@ GW.workflow = {
 	},
 
 	saveUploadWorkflow: function(id, filename){
+		let rightPane = document.getElementById("right-page-div");
+		let loadingScreen = document.getElementById("loading-state-div");
+
+		rightPane.style.display = "none";
+		loadingScreen.style.display = "block";
 
 		$.ajax({
 	
@@ -486,21 +491,25 @@ GW.workflow = {
 			method: "POST",
 			
 			data: "id=" + id + "&filename=" + filename
-			
+
+
 		}).done(function(msg){
 
+
 			msg = GW.general.parseResponse(msg);
-
 			if(msg.id){
-
 				GW.workflow.refreshWorkflowList();
 				
 				GW.menu.details(msg.id, "workflow");
 
 				GW.menu.refresh();
-				
+
+				rightPane.style.display = "block";
+				loadingScreen.style.display = "none";
 			}else{
-				
+
+				rightPane.style.display = "block";
+				loadingScreen.style.display = "none";
 				alert("Fail to save the workflow to database.");
 
 			}
