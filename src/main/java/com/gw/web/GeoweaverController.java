@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
@@ -176,23 +177,23 @@ public class GeoweaverController {
 			String id = request.getParameter("id");
 			
 			String type = request.getParameter("type");
-			
+
 			if(type.equals("host")) {
 
 				resp = ht.del(id);
-				
+
 			}else if(type.equals("process")) {
-				
+
 				resp = pt.del(id);
-				
+
 			}else if(type.equals("workflow")) {
-				
+
 				resp = wt.del(id);
-				
+
 			}else if(type.equals("history")) {
-				
+
 				resp = hist.deleteById(id);
-				
+
 			}
 			
 		}catch(Exception e) {
@@ -359,22 +360,26 @@ public class GeoweaverController {
 			
 			String type = request.getParameter("type");
 			
-			int number = Integer.parseInt(request.getParameter("number"));
-			
-			if(type.equals("process")) {
-				
-				resp = pt.recent(number);
-				
-			}else if(type.equals("workflow")) {
-				
-				resp = wt.recent(number);
-				
-			}else if(type.equals("host")) {
-				
-				String hid = request.getParameter("hostid");
-				
-				resp = ht.recent(hid, number);
-				
+			int number = Integer.parseInt(Objects.requireNonNull(request.getParameter("number")));
+
+			switch (Objects.requireNonNull(type)) {
+				case "process":
+
+					resp = pt.recent(number);
+
+					break;
+				case "workflow":
+
+					resp = wt.recent(number);
+
+					break;
+				case "host":
+
+					String hid = request.getParameter("hostid");
+
+					resp = ht.recent(hid, number);
+
+					break;
 			}
 			
 		}catch(Exception e) {
