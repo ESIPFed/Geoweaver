@@ -18,13 +18,15 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 1. Click the `New Host` button at the `Hosts` on the left panel.
  
 2. Leave the `Host Type` as default, add `Host Name`, `Host IP`, `Port`, and `User Name` of your server in the shown dialog box.
-Example:
-```
-   Host Name: Test Server
-   Host IP: 127.0.0.1
-   Port: 22
-   User Name: testuser
-```
+
+     > Example:
+
+     ```
+      Host Name: Test Server
+      Host IP: 127.0.0.1
+      Port: 22
+      User Name: testuser
+     ```
 
 3. Click on `Add`. A new host node `Test Server` (from the above example) will be shown under the `Host`>`Linux/Win/Mac Computers` tree node.
 
@@ -37,7 +39,7 @@ Example:
 
 3. Input the `Host User Password` of your account on the remote server in the shown dialog pop-up.
 
->  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
+    >  `Note:` if the selected server is localhost, password instructions are discussed [here](install.md)
 
 
 4. An `Environment List` section will appear below the `Host Details` section showing all the available PyEnv python environments on the connected server.
@@ -50,7 +52,7 @@ Example:
 
 3. Input the `Host User Password` of your account on the server in the shown dialog pop-up.
  
->  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
+     >  `Note:` if the selected server is localhost, password instructions are discussed [here](install.md)
 
 4. Click Confirm. A `File Browser Section` will appear below, showing all the available directories and files.
 
@@ -61,8 +63,8 @@ Example:
 2. Click the uploader icon button in the `Host Details` toolbar.
 
 3. Input the `Host Password` of your account on the server in the shown dialog pop-up.
-
->  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
+     
+     >  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
 
 4. A file upload section will appear below the `Host Details` section with drag and drop or file browser capability.
 
@@ -77,8 +79,8 @@ Example:
 1. Click the edit icon (first icon) in the toolbar of `Host Details` page.
 
 2. Change the field values as you wish.
-
->  `Note`: The Host Id is not editable.
+     
+     >  `Note:` The Host Id is not editable.
 
 3. Click the edit icon button again. The changes should be updated.
 
