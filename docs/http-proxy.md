@@ -1,11 +1,11 @@
 
 # How to set up HTTP Proxy for Geoweaver
 
-When deploying Geoweaver to a public server, the default port 8070 is normally blocked. To access Geoweaver, you need to set up a proxy in the HTTP server. Here is a how-to guide for Apache server.
+When deploying Geoweaver to a public server, the default port 8070 is usually blocked. To access Geoweaver, you need to set up a proxy in the HTTP server. Here is a how-to guide for the Apache server.
 
 ## Apache Proxy for Geoweaver
 
-This guide uses Apache 2.4.39. It should work for any newer version. For older version, there might be changes. Please [report](https://github.com/ESIPFed/Geoweaver/issues) if running into issues.
+This guide uses Apache 2.4.39. It should work for any newer version. For older versions, there might be changes. Please [report](https://github.com/ESIPFed/Geoweaver/issues) if running into issues.
 
 1. Open your default site HTTP configuration file `/etc/apache2/sites-available/000-default.conf`. 
 
