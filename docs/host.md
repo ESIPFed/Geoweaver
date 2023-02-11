@@ -18,8 +18,6 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 1. Click the `New Host` button at the `Hosts` on the left panel.
  
 2. Leave the `Host Type` as default, add `Host Name`, `Host IP`, `Port`, and `User Name` of your server in the shown dialog box.
-
- 
 Example:
 ```
    Host Name: Test Server
