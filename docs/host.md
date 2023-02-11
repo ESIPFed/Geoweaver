@@ -8,13 +8,13 @@ In Geoweaver, `Host` means computing machines (`Linux/Windows/Mac computers`). I
 Mostly, `Host` is dedicated to the local machine where Geoweaver is installed. Once Geoweaver is started, it will add a default Host `Localhost` which means the current machine Geoweaver is sitting on. For most people, `Localhost` is all they need. They can run all their processes on `Localhost`.
 
 Geoweaver has an amazing feature that's a lifesaver for multiple-server users. It allows you to enroll these servers and run your code on them without the hassle of having to manage it all separately. AWS EC2 instances and HPC are perfect examples of servers you can easily integrate with Geoweaver, and you'll be able to benefit from its time-saving benefits.
-  
+
 This tutorial will help how to enroll a new `Host` and make it ready for running processes in Geoweaver.
 
 ## Create a Host
 
 1. Click the `New Host` button at the `Hosts` on the left panel.
- 
+
 2. Leave the `Host Type` as default, add `Host Name`, `Host IP`, `Port`, and `User Name` of your server in the shown dialog box.
 
      > Example:
@@ -49,7 +49,7 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 2. Click the sitemap icon (the one with branches) button in the `Host Details` toolbar.
 
 3. Input the `Host User Password` of your account on the server in the shown dialog pop-up.
- 
+
      >  `Note:` if the selected server is localhost, password instructions are discussed [here](install.md)
 
 4. Click Confirm. A `File Browser Section` will appear below, showing all the available directories and files.
@@ -61,7 +61,7 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 2. Click the uploader icon button in the `Host Details` toolbar.
 
 3. Input the `Host Password` of your account on the server in the shown dialog pop-up.
-     
+
      >  `Note`: if the selected server is localhost, password instructions are discussed [here](install.md)
 
 4. A file upload section will appear below the `Host Details` section with drag and drop or file browser capability.
@@ -73,11 +73,11 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 7. The status with the message `Upload Complete` in green will show when the file is successfully uploaded, and the file is uploaded to the home directory of the logged in user.
 
 ## Edit a Host
- 
+
 1. Click the edit icon (first icon) in the toolbar of `Host Details` page.
 
 2. Change the field values as you wish.
-     
+
      >  `Note:` The Host Id is not editable.
 
 3. Click the edit icon button again. The changes should be updated.
