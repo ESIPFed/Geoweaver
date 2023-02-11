@@ -4,15 +4,13 @@ package com.gw.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.database.WorkflowRepository;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Host;
@@ -74,6 +72,9 @@ public class GeoweaverController {
 	
 	@Autowired
 	WorkflowTool wt;
+
+	@Autowired
+	WorkflowRepository workflowrepository;
 	
 	@Autowired
 	HostTool ht;
@@ -178,22 +179,38 @@ public class GeoweaverController {
 			
 			String type = request.getParameter("type");
 
-			if(type.equals("host")) {
+			switch (Objects.requireNonNull(type)) {
+				case "host":
 
-				resp = ht.del(id);
+					resp = ht.del(id);
 
-			}else if(type.equals("process")) {
+					break;
+				case "process":
 
-				resp = pt.del(id);
+					resp = pt.del(id);
 
-			}else if(type.equals("workflow")) {
+					break;
+				case "workflow":
 
-				resp = wt.del(id);
+					resp = wt.del(id);
 
-			}else if(type.equals("history")) {
+					break;
+				case "history":
 
-				resp = hist.deleteById(id);
+					resp = hist.deleteById(id);
 
+					break;
+				case "clear_nodes_edges":
+					assert id != null;
+					Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
+
+					if (optionalWorkflow.isPresent()) {
+						Workflow wf = optionalWorkflow.get();
+						wf.setEdges(Collections.emptyList().toString());
+						wf.setNodes(Collections.emptyList().toString());
+						workflowrepository.save(wf);
+					}
+					break;
 			}
 			
 		}catch(Exception e) {

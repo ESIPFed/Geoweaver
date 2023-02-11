@@ -541,6 +541,17 @@ GW.workspace = {
 							GW.workflow.loaded_workflow = null;
 							openCity(event, 'main-general');
 							$("#main-workspace-tab").html('Weaver');
+
+							let currentWorkflow = window.selectedWorkflow
+							if (currentWorkflow !== undefined) {
+								$.ajax({
+									url: "del",
+									method: "POST",
+									data: "type=clear_nodes_edges&id=" + currentWorkflow
+								})
+							} else {
+								alert("Please select a workflow to delete");
+							}
 						}
 						
 					}else{

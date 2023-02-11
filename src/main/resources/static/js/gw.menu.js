@@ -200,12 +200,12 @@ GW.menu = {
     				
     			}).done(function(msg){
     				
-    				if(msg=="done"){
+    				if(msg==="done"){
     					
     					//remove the menu item
     					$("#"+type+"-" + id).remove();
     					
-    					if(type=="process"){
+    					if(type==="process"){
     						
     						//remove the workspace object
     						GW.workspace.theGraph.removeNodes(id);
