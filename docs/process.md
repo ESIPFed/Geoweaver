@@ -17,12 +17,7 @@ You can understand it as a source code like Python. However, `Process` in Geowea
 
 3. Input example: `helloworld` in the name section.
 
-4. Type the code in the code area. 
-For instance:
-
-```Python
-print("hello world")
-```
+4. Type the code in the code area, example in python : `print("hello world")`
 
 5. Click `Add` at the bottom. A new process node `helloworld` will be added to the `Process`>`Python` tree.
 
