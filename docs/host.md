@@ -20,13 +20,13 @@ This tutorial will help how to enroll a new `Host` and make it ready for running
 2. Leave the `Host Type` as default, add `Host Name`, `Host IP`, `Port`, and `User Name` of your server in the shown dialog box.
 
  
-   Example:
-   ```
+Example:
+```
    Host Name: Test Server
    Host IP: 127.0.0.1
    Port: 22
    User Name: testuser
-    ```
+```
 
 3. Click on `Add`. A new host node `Test Server` (from the above example) will be shown under the `Host`>`Linux/Win/Mac Computers` tree node.
 
