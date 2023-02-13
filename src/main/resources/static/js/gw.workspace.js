@@ -539,7 +539,6 @@ GW.workspace = {
 							thisGraph.updateGraph();
 							GW.workflow.setCurrentWorkflowName("");
 							GW.workflow.loaded_workflow = null;
-							openCity(event, 'main-general');
 							$("#main-workspace-tab").html('Weaver');
 
 							let currentWorkflow = window.selectedWorkflow

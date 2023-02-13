@@ -214,6 +214,8 @@ GW.menu = {
     					}
     					$("#main-"+type+"-content").empty()
     					console.log("the element is removed " + type + "-" + id);
+
+						openCity(event, 'main-general');
     					
     				}else{
     					
