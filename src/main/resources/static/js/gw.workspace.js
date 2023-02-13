@@ -1,6 +1,7 @@
 
 GW.workspace = {
-		
+
+		selectedWorkflow: undefined,
 		theGraph: null,
 		
 		currentmode: 1, //1: normal; 2: monitor
@@ -538,7 +539,18 @@ GW.workspace = {
 							thisGraph.updateGraph();
 							GW.workflow.setCurrentWorkflowName("");
 							GW.workflow.loaded_workflow = null;
-							
+							$("#main-workspace-tab").html('Weaver');
+
+							let currentWorkflow = window.selectedWorkflow
+							if (currentWorkflow !== undefined) {
+								$.ajax({
+									url: "del",
+									method: "POST",
+									data: "type=clear_nodes_edges&id=" + currentWorkflow
+								})
+							} else {
+								alert("Please select a workflow to delete");
+							}
 						}
 						
 					}else{
@@ -557,9 +569,9 @@ GW.workspace = {
 							thisGraph.removeNode(pid);
 							
 						}
+
+						GW.workspace.showNonSaved();
 					}
-					
-					GW.workspace.showNonSaved();
 
 				}
 
@@ -567,34 +579,36 @@ GW.workspace = {
 	    	  
 	    	  //add on 11/2/2018
 	    	  GW.workspace.GraphCreator.prototype.load = function(workflow){
-	    		  
+
 	    		  try{
-	    			  
+
 	    			console.log("Start to load workflow..");
 
+					window.selectedWorkflow = workflow.id;
+
     	            var jsonObj = workflow;
-    	            
+
     	            this.deleteGraph(true);
-    	            
+
 					GW.workspace.showSaved();
-	    			
+
     	            var newNodes = GW.general.parseResponse(jsonObj.nodes);
-    	            
+
     	            //remove the old color status - load a brand new workflow
     	            newNodes.forEach(function(e, i){
-    	            	
-    	            	newNodes[i].color = ""; 
-    	            	
+
+    	            	newNodes[i].color = "";
+
     	            });
-    	            
+
     	            this.nodes = newNodes;
-    	            
+
     	            this.setIdCt(jsonObj.nodes.length + 1);
-    	            
+
     	            var newEdges = GW.general.parseResponse(jsonObj.edges);
-    	            
+
     	            newEdges.forEach(function(e, i){
-    	            	
+
     	            	newEdges[i] = {
 							source: GW.workspace.theGraph.nodes.filter(function(n){
     	            			return n.id == e.source.id;
@@ -604,11 +618,11 @@ GW.workspace = {
 	            			})[0]
 						};
     	            });
-    	            
+
     	            this.edges = newEdges;
-    	            
+
     	            this.updateGraph();
-    	            
+
     	          }catch(err){
     	            window.alert("Error parsing uploaded file\nerror message: " + err.message);
     	            return;
