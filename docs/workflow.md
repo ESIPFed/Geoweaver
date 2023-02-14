@@ -4,8 +4,8 @@
 ## What is Workflow?
 
 In Geoweaver, Workflow denotes a pipeline linking multiple (>2) Processes. An isolated Process (not connected to any other Processes) is allowed in Geoweaver. 
-
-> **WARNING: Loop is not allowed among the child Process nodes**. The Workflow graph is directed and acyclic (please refer to this [link](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to learn more about Directed Acyclic Graphs).
+   
+**WARNING: Loop is not allowed among the child Process nodes**. The Workflow graph is directed and acyclic (please refer to this [link](https://en.wikipedia.org/wiki/Directed_acyclic_graph) to learn more about Directed Acyclic Graphs).
 
 ## Create and run a workflow
 
@@ -18,14 +18,14 @@ In Geoweaver, Workflow denotes a pipeline linking multiple (>2) Processes. An is
 4. To run the workflow, click the play button in the toolbar floating on the 'Weaver' workspace. In the popup window, select `one-host` option. Choose `localhost` and set the environment to `default`. Click `Run`.
 
 5. In the password dialog box, enter the password for localhost.
-
-> `Note`: If you get an incorrect password error, password resetting instructions are discussed [here](install.md)
+    
+    >`Note:` If you get an incorrect password error, password resetting instructions are discussed [here](install.md)
 
 6. While the workflow is in execution mode, you can see:
-* Blue - This means the process is waiting
-* Yellow - This means the corresponding process is running
-* Green - This means the process execution is finished
-* Red - This means the process execution failed for some reason.
+    * Blue - This means the process is waiting
+    * Yellow - This means the corresponding process is running
+    * Green - This means the process execution is finished
+    * Red - This means the process execution failed for some reason.
 
 7. Double-click on the circles to check the real-time output. If users need more details, click `Details` button in the popup Process information window.
 

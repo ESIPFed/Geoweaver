@@ -17,7 +17,7 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 ```
  java -jar geoweaver.jar
- ```
+```
 
 **Step 3**: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
 
