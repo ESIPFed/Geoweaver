@@ -198,7 +198,6 @@ public class SSHSessionImpl implements SSHSession {
             throws AuthenticationException {
         try {
             logout();
-            // ssh.authPublickey(System.getProperty("user.name"));
             log.info("new SSHClient");
             ssh = new SSHClient(); // create a new SSH client
             log.info("verify all hosts");

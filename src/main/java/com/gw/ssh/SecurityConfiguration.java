@@ -27,9 +27,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	protected final Logger log = Logger.getLogger(getClass());
 
-	// @Autowired
-	// private SessionManager sessionManager;
-
 	@Bean
 	public SSHAuthenticationProvider sshAuthentication() {
 		SSHAuthenticationProvider sshAuthentication = new SSHAuthenticationProvider();
@@ -46,9 +43,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			throws Exception {
 		log.info("registering SSH authentication provider");
 		auth.authenticationProvider(sshAuthentication());
-		// auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-		// auth.apply(new
-		// SSHUserDetailsManagerConfigurer<AuthenticationManagerBuilder>());
 	}
 	
 	/**
@@ -57,8 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	public void configure(WebSecurity builder) throws Exception {
-		// builder.ignoring().antMatchers("/ssh/**").antMatchers("/static/**");
-		// builder.ignoring().antMatchers("/Geoweaver/**");
+
 	}
 
     @Override
@@ -73,36 +66,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.and()
 			.logout()
 			.and();
-    	
-//    	http.authorizeRequests().anyRequest().authenticated();
-    	
-//    	http.authorizeRequests().antMatchers("/**").permitAll().anyRequest().authenticated();
+
+
     	
     	http.cors().and().csrf().disable();
     	
     	http.headers().frameOptions().disable();
 
 		http.headers().disable(); //this must be turned off to make the JupyterHub work
-    	
-        // super.configure(http);
-//        http
-//            .authorizeRequests()
-//                .antMatchers("/Geoweaver/web/ssh/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//            .formLogin()
-//                .loginPage("/Geoweaver/web/ssh-login")
-//                .permitAll()
-//                .and()
-//            .logout()
-//                .logoutUrl("/Geoweaver/web/ssh-logout")
-//                .permitAll();
     }
     
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

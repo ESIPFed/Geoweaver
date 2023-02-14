@@ -15,8 +15,8 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 **Step 2**: Navigate to the Jar file folder and Run the command:
 
-```
- java -jar geoweaver.jar
+```shell
+java -jar geoweaver.jar
 ```
 
 **Step 3**: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!
@@ -57,7 +57,7 @@ java -jar geoweaver.jar resetpassword
 ```
 
 If you used `Docker`, use the following command:
- 
+
 ```
 docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver resetpassword
 ```

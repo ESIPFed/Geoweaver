@@ -124,56 +124,38 @@
                 <h1 id="installation">Installation</h1>
 <h2 id="dependencies">Dependencies</h2>
 <p>Java 1.8+ (OpenJDK 8 or higher)</p>
-<p>!(only for install via docker) <a href="https://docs.docker.com/install/">Docker</a> 18.09.1+</p>
+<p><a href="https://docs.docker.com/install/">Docker</a> 18.09.1+ (only for installation via docker)</p>
 <h2 id="quick-install">Quick Install</h2>
-<p>(Applicalbe in Linux, Mac, and Windows)</p>
-<ul>
-<li>
-<p>Step 1: Download the latest version of <a href="https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar">geoweaver.jar</a></p>
-</li>
-<li>
-<p>Step 2: Run the command: </p>
-</li>
-</ul>
-<pre><code class="language-shell">java -jar geoweaver.jar 
+<p>(Applicable in Linux, Mac, and Windows)</p>
+<p><strong>Step 1</strong>: Download the latest version of <a href="https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar">geoweaver.jar</a> and save it in any folder</p>
+<p><strong>Step 2</strong>: Navigate to the Jar file folder and Run the command:</p>
+<pre><code class="language-shell">java -jar geoweaver.jar
 </code></pre>
-<ul>
-<li>Step 3: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!</li>
-</ul>
+<p><strong>Step 3</strong>: Open browser and enter: http://localhost:8070/Geoweaver/ .That's it!</p>
 <h2 id="build-from-source">Build from source</h2>
-<p>Use maven to build. In the command line go to the root folder and execute <code>mvn install</code>. After a success build, the Geoweaver jar package will be under the directory: <code>Geoweaver/target/Geoweaver-&lt;version&gt;.jar</code>. </p>
+<p>Use maven to build. In the command line, go to the root folder and execute <code>mvn install</code>. After a successful build, the Geoweaver jar package will be under the directory: <code>Geoweaver/target/Geoweaver-&lt;version&gt;.jar</code>.</p>
 <h2 id="install-using-docker">Install using Docker</h2>
-<ul>
-<li>
-<p>Step 1: Install Docker Desktop if you haven't (please refer to <a href="https://docs.docker.com/get-docker/">Get Docker</a>).</p>
-</li>
-<li>
-<p>Step 2: Pull geoweaver image using command: </p>
-</li>
-</ul>
+<p><strong>Step 1</strong>: Install Docker Desktop if you haven't (please refer to <a href="https://docs.docker.com/get-docker/">Get Docker</a> to download).</p>
+<p><strong>Step 2</strong>: Pull geoweaver image using command:</p>
 <p><code>docker pull jensensun/geoweaver</code></p>
-<ul>
-<li>Step 3: Run geoweaver using command:</li>
-</ul>
+<p><strong>Step 3</strong>: Run geoweaver using command:</p>
 <p><code>docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver</code></p>
 <blockquote>
 <p><em>What is going on?</em> : <code>-v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/</code> is for mounting your current home directory into the docker containers. <code>marsvegan</code> is the user name within geoweaver containers. <code>-p 8070:8070</code> maps the port so you can access Geoweaver from your browser. <code>jensensun/geoweaver</code> is the published docker image url in DockerHub.</p>
-<p><em>Tip</em>: You can create an alias so next time you won't copy and paste such a long command:</p>
 </blockquote>
+<p><em>Tip</em>: You can create an alias, so next time, you won't copy and paste such a long command:</p>
 <p><code>alias geoweaver="docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"</code></p>
-<p>Then start it by simply typing:</p>
-<p><code>geoweaver</code></p>
-<ul>
-<li>Step 4: Open web browser and input <code>http://localhost:8070/Geoweaver</code>. Geoweaver should show up in a sec. That is it!</li>
-</ul>
+<p>Then start it by simply typing: <code>geoweaver</code></p>
+<p><strong>Step 4</strong>: Open web browser and input <code>http://localhost:8070/Geoweaver</code>. Geoweaver should show up in a sec. That is it!</p>
 <h2 id="reset-password-for-localhost">Reset Password for Localhost</h2>
-<p>Geoweaver will automatically create a password for localhost. It will only show once at first run of Geoweaver. It is recommended to copy and save it at a safe place. If forget or missed that password, please run the following command to reset:</p>
+<p>Geoweaver will automatically create a password for localhost. It will only show once at the first run of Geoweaver. It is recommended to copy and save it in a safe place. If you forget or miss that password, please run the following command to reset it:</p>
 <pre><code>java -jar geoweaver.jar resetpassword
 </code></pre>
 <p>If you used <code>Docker</code>, use the following command:</p>
 <pre><code>docker run -t -i -v &lt;YOUR_HOME_DIRECTORY&gt;:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver resetpassword
 </code></pre>
-<h2 id="set-up-http-proxy"><a href="../http-proxy/">Set up HTTP Proxy</a></h2>
+<h2 id="set-up-http-proxy">Set up HTTP Proxy</h2>
+<p><a href="../http-proxy/">Click here</a> to set up</p>
               
             </div>
           </div>

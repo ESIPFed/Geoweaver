@@ -412,7 +412,9 @@ GW.chart = {
 
 		
 		renderProcessHistoryChart: function(msg){
-			
+			msg = msg.sort(function(x, y) {
+				return x['history_begin_time'] - y['history_begin_time'];
+			})
 			this.renderUtil("process", msg);
 			
 		},

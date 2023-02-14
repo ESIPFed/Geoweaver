@@ -77,13 +77,13 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-code-scripts">Supported Code Scripts</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#shell">Shell</a>
+    <li class="toctree-l3"><a class="reference internal" href="#1-shell">1) Shell</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#python">Python</a>
+    <li class="toctree-l3"><a class="reference internal" href="#2-python">2) Python</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#notebook">NoteBook</a>
+    <li class="toctree-l3"><a class="reference internal" href="#3-notebook">3) NoteBook</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#build-in-process">Build In Process</a>
+    <li class="toctree-l3"><a class="reference internal" href="#4-build-in-process">4) Build-In Process</a>
     </li>
         </ul>
     </li>
@@ -130,57 +130,60 @@
                 <h1 id="processes-in-geoweaver">Processes in Geoweaver</h1>
 <h2 id="what-is-process">What is Process?</h2>
 <p><code>Process</code> means code scripts to process data. </p>
-<p>You can understand it as source code like Python. However, <code>Process</code> in Geoweaver is more dedicated to the <strong>source code for data processing</strong>. </p>
-<p>Note: It is not designed for <strong>everything</strong>. You might be able to run any code like starting a HTTP server, or starting a GUI software, but it would be inappropriate and might cause issues. <strong>We recommend users to restrict the Process code to be something that is finishable (no hanging), algorithmic, and data oriented</strong>. </p>
+<p>You can understand it as a source code like Python. However, <code>Process</code> in Geoweaver is more dedicated to the <strong>source code for data processing</strong>. </p>
+<blockquote>
+<p><code>Note</code>: It is not designed for <strong>everything</strong>. You can run any code, like starting an HTTP server or starting a GUI software, but it would be inappropriate and might cause issues. <strong>We recommend that users restrict the Process code to something finishable (no hanging), algorithmic, and data-oriented</strong>. </p>
+</blockquote>
 <h2 id="create-a-new-python-process">Create a new Python process</h2>
 <ol>
 <li>
-<p>Click the plus icon button after <code>Process</code> on the right panel.</p>
+<p>Click the <code>New Process</code> button after <code>Process</code> on the left panel.</p>
 </li>
 <li>
-<p>Select <code>Python</code> from the <code>Language</code> dropdown select.</p>
+<p>Select <code>Python</code> from the <code>Language</code> dropdown list.</p>
 </li>
 <li>
-<p>Input <code>helloworld</code> for the name.</p>
+<p>Input example: <code>helloworld</code> in the name section.</p>
 </li>
 <li>
-<p>Add code to the code area. For example:</p>
+<p>Type the code in the code area, example in python : <code>print("hello world")</code></p>
 </li>
-</ol>
-<pre><code class="language-Python">print(&quot;hello world&quot;)
-</code></pre>
-<ol>
-<li>Click <code>Add</code> on the bottom. A new process node <code>helloworld</code> will be added to the <code>Process</code>&gt;<code>Python</code> tree.</li>
+<li>
+<p>Click <code>Add</code> at the bottom. A new process node <code>helloworld</code> will be added to the <code>Process</code>&gt;<code>Python</code> tree.</p>
+</li>
 </ol>
 <h2 id="run-python-process">Run Python Process</h2>
 <ol>
 <li>
-<p>Click on the newly added <code>helloworld</code> process. An information panel will show in the main area.</p>
+<p>Click on the newly added <code>helloworld</code> process. An information panel will be shown in the main area.</p>
 </li>
 <li>
-<p>Click the play button to run the process. In the popup window, select <code>Localhost</code> and click <code>Execute</code>. </p>
+<p>Click the play button to run the process. In the pop-up window, select <code>Localhost</code> and click <code>Execute</code>. </p>
 </li>
 <li>
-<p>A dialog will show to specify Python environment, click <code>Confirm</code> to the <code>default</code>. </p>
+<p>A dialog box will appear to specify the Python environment; click <code>Confirm</code> to the <code>default</code>. </p>
 </li>
 <li>
-<p>In the password dialog, input your password for <code>Localhost</code>. Click <code>confirm</code>.</p>
+<p>In the password dialog box, input your password for <code>Localhost</code>. Click <code>confirm</code>.</p>
 </li>
 </ol>
-<p>If you see hello world printed in the logging window, it means you have successfully created and run your first process in Geoweaver. </p>
+<blockquote>
+<p><code>Note</code>: If you get an incorrect password error, password resetting instructions are discussed <a href="../install/">here</a></p>
+</blockquote>
+<p>If you see hello world printed in the logging window, you have successfully created and run your first process in Geoweaver. </p>
 <p>Congratulations! You did it!</p>
 <h2 id="supported-code-scripts">Supported Code Scripts</h2>
 <p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
-<h3 id="shell">Shell</h3>
-<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted.</p>
-<h3 id="python">Python</h3>
-<p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python. Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs.</p>
-<h3 id="notebook">NoteBook</h3>
-<p>Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database.</p>
+<h3 id="1-shell">1) Shell</h3>
+<p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the local host server on which Geoweaver is hosted.</p>
+<h3 id="2-python">2) Python</h3>
+<p>Python is one of the most popular AI programming languages, and most AI-related packages reside in it. Geoweaver supports Python coding and scripting on top of multiple servers while preserving and maintaining the code in one database. All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs.</p>
+<h3 id="3-notebook">3) NoteBook</h3>
+<p>Geoweaver supports running Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database.</p>
 <p>Running notebook in Geoweaver will be equivalent to running <code>jupyter nbconvert --inplace --allow-errors --to notebook --execute &lt;notebook_file_path&gt;</code>.</p>
-<p><strong>New notebook snapshots generated by every run will be all saved in the Geoweaver database</strong>. No more worries on forgetting the results of your previous experiment configuration! Everything is covered.</p>
-<h3 id="build-in-process">Build In Process</h3>
-<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users. These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding. Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. This section is under intensive development right and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.</p>
+<p><strong>New notebook snapshots generated by every run will be saved in the Geoweaver database</strong>. No more worries about forgetting the results of your previous experiment configuration! Everything is covered.</p>
+<h3 id="4-build-in-process">4) Build-In Process</h3>
+<p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users. These processes make Geoweaver a powerful AI graphical user interface for diverse user groups to learn and experiment with their AI workflows without coding. Most built-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn. This section is under intensive development, and the first stable version expects users to create a full-stack AI workflow without writing a single line of code.</p>
               
             </div>
           </div>
