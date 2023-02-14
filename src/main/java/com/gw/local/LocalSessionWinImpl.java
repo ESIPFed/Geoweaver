@@ -492,7 +492,6 @@ public class LocalSessionWinImpl implements LocalSession {
 		cmds.add("list");
 
 		List<String> stdout = bt.executeLocal(cmds);
-
 		if(stdout.get(0).startsWith("# conda")){
 
 			//get all the python path
@@ -535,7 +534,7 @@ public class LocalSessionWinImpl implements LocalSession {
 				
 			}
 
-		}else{
+		} else{
 			log.debug("Conda environments are not found.");
 		}
 
