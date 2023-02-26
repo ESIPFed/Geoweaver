@@ -1548,43 +1548,45 @@ GW.process = {
 			
 			var content = "<div class=\"modal-body\" style=\"height:100%;padding:5px;\">";
 			
-			content += '  <div class="row" style="padding-top:10px;margin:0px;font-size: 12px;"> '+
-		       '     <div class="col-sm-1 col-form-label control-label">Category</div>'+
-		       '     <div class="col-sm-2" style="padding:0;">'+
-		       '			<select class="form-control form-control-sm" id="processcategory" disabled  >'+
-			   '    			<option value="shell">Shell</option>'+
-			   '    			<option value="builtin">Built-In Process</option>'+
-			   '    			<option value="jupyter">Jupyter Notebook</option>'+
-			   '    			<option value="python">Python</option>'+
-			   /*'    			<option value="r">R</option>'+
-			   '    			<option value="matlab">Matlab</option>'+*/
-			   '  			</select>'+
-		       '     </div>'+
-		       '     <div class="col-sm-1 col-form-label control-label">Name</div>'+
-		       '     <div class="col-sm-2" style="padding:0;">'+
-		       '			<input type="text" class="form-control form-control-sm" id="processname"></input>'+
-		       '     </div>'+
-		       '     <div class="col-sm-1 col-form-label control-label">ID</div>'+
-		       '     <div class="col-sm-2" style="padding:0;">'+
-		       '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>'+
-		       '     </div>'+
-			   		confidential_field+
-		       '   </div>'+
-		       '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >'+
-		       '	     <div class="col-md-6" style="padding:0;" >'+
-			   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
-			   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
-			   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
-			   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
-			   '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>'+
-			   '			</p>'+
-			   '		 </div>'+
-		       '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group">'+
-			   
-			   '		</div>'+
-			   '   </div>' ;
+			content += `		
+				<div class="row" style="padding-top:10px;margin:0px;font-size: 12px;">
+				   <div class="col-sm-1 col-form-label control-label">Category</div>
+				   <div class="col-sm-2" style="padding:0;">
+					  <select class="form-control form-control-sm" id="processcategory" disabled  >
+						 <option value="shell">Shell</option>
+						 <option value="builtin">Built-In Process</option>
+						 <option value="jupyter">Jupyter Notebook</option>
+						 <option value="python">Python</option>
+					  </select>
+				   </div>
+				   <div class="col-sm-1 col-form-label control-label">Name</div>
+				   <div class="col-sm-2" style="padding:0;">
+					  <input type="text" class="form-control form-control-sm" id="processname"></input>
+				   </div>
+				   <div class="col-sm-1 col-form-label control-label">ID</div>
+				   <div class="col-sm-2" style="padding:0;">
+					  <input type="text" class="form-control form-control-sm" id="processid" disabled></input>
+				   </div>
+				   confidential_field
+				</div>
+				
+				<div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >
+				   <div class="col-md-6" style="padding:0;" >
+					  <p class=\\"h6\\"> <span class=\\"badge badge-secondary\\">CtrlS</span> to save edits. Click <i class=\\"fa fa-edit subalignicon\\" onclick=\\"GW.process.editSwitch()\\" data-toggle=\\"tooltip\\" title=\\"Enable Edit\\"></i> to enable edit.
+						 <label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>
+						 <input type="checkbox" style="margin-left:5px;" checked id="log_switch">
+						 <button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>  
+						 <button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>
+					  </p>
+				   </div>
+				   <div class="col-md-6 " style="padding:0;" id="process-btn-group">
+				   </div>
+				</div>
+			`;
 			
-			content += `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
+			content += `
+
+				<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
 				
 				<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
 					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
@@ -1599,28 +1601,34 @@ GW.process = {
 					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
 				</div>
 				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
-							<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-								<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
-									<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
-								</div> 
-								<div class="resizer" id="dragMe"></div>
-								<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
-									<h4>Logging</h4>
-									<div id="process-log-window" style="overflow-wrap: break-word;"> </div>
-									<div class="row" style="padding:0px; margin:0px;" >
-										<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
-											<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
-										</div>
-									</div>
+					<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
+						<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
+							<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
+						</div> 
+						<div class="resizer" id="dragMe"></div>
+						<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+							<h4>Logging</h4>
+							<div id="process-log-window" style="overflow-wrap: break-word;"> </div>
+							<div class="row" style="padding:0px; margin:0px;" >
+								<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+									<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 								</div>
 							</div>
-				</div>`;
+						</div>
+					</div>
+				</div>
+		
+		`;
 
-			content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+			content += `
+
+			<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
 			    	<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
 			   		</div>
 				</div>
-			</div>`;
+			</div>
+
+		`;
 			
 			$("#main-process-content").html(content);
 
