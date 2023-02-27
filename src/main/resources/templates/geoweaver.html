@@ -20,6 +20,8 @@
 		<link href="../css/workspace.css" rel="stylesheet" />
 		
 		<link href="../css/sidemenu.css" rel="stylesheet" />
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/css/uikit.min.css" />
 		
 		<link rel="stylesheet" href="../js/codemirror/lib/codemirror.css" />
 		
@@ -54,6 +56,8 @@
         <link rel="stylesheet" href="../css/Chart.min.css" />
 
 		<link rel="stylesheet" href="../css/loading-state.css" />
+
+		<link rel="stylesheet" href="../css/sidenav.css" />
         
         <link href="../css/introjs.min.css" rel="stylesheet" />
         
@@ -66,6 +70,10 @@
 		<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
 		
 		<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/js/uikit.min.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/js/uikit-icons.min.js"></script>
 		
 		<script type="text/javascript" src="../js/dataTables.cellEdit.js"></script>
 		
@@ -137,6 +145,43 @@
 		<div id="jsframe-container"></div>
 	
 		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
+
+			<div class="sidenav-container">
+
+				<div style="display: flex; flex-direction: row; margin: 20px;">
+					<p style="padding-top: 4px; padding-right: 10px;">Type: </p>
+					<select class="border-box-black-not-allowed" id="processcategory" disabled>
+						<option value="shell">Shell</option>
+						<option value="builtin">Built-In Process</option>
+						<option value="jupyter">Jupyter Notebook</option>
+						<option value="python">Python</option>
+					</select>
+					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
+					<input class="border-box-black-allowed" id="processname" type="text" />
+				</div>
+
+<!--				<div class="row" style="padding-top:10px;margin:0;font-size: 12px;">-->
+<!--					<div class="col-sm-1 col-form-label control-label">Category</div>-->
+<!--					<div class="col-sm-2" style="padding:0;">-->
+<!--						<select class="form-control form-control-sm" id="processcategory" disabled  >-->
+<!--							<option value="shell">Shell</option>-->
+<!--							<option value="builtin">Built-In Process</option>-->
+<!--							<option value="jupyter">Jupyter Notebook</option>-->
+<!--							<option value="python">Python</option>-->
+<!--						</select>-->
+<!--					</div>-->
+<!--					<div class="col-sm-1 col-form-label control-label">Name</div>-->
+<!--					<div class="col-sm-2" style="padding:0;">-->
+<!--						<input type="text" class="form-control form-control-sm" id="processname"/>-->
+<!--					</div>-->
+<!--					<div class="col-sm-1 col-form-label control-label">ID</div>-->
+<!--					<div class="col-sm-2" style="padding:0;">-->
+<!--						<input type="text" class="form-control form-control-sm" id="processid" disabled/>-->
+<!--					</div>-->
+<!--					confidential_field-->
+<!--				</div>-->
+
+			</div>
 		
 			<!-- Top menu bar -->
 

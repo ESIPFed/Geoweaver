@@ -1545,11 +1545,13 @@ GW.process = {
 			}
 			
 			confidential_field += '     </div>';
-			
-			var content = "<div class=\"modal-body\" style=\"height:100%;padding:5px;\">";
-			
+
+			let content = `
+				<div class="modal-body" style="height:100%;padding:5px;">
+			`;
+
 			content += `		
-				<div class="row" style="padding-top:10px;margin:0px;font-size: 12px;">
+				<div class="row" style="padding-top:10px;margin:0;font-size: 12px;">
 				   <div class="col-sm-1 col-form-label control-label">Category</div>
 				   <div class="col-sm-2" style="padding:0;">
 					  <select class="form-control form-control-sm" id="processcategory" disabled  >
@@ -1561,18 +1563,18 @@ GW.process = {
 				   </div>
 				   <div class="col-sm-1 col-form-label control-label">Name</div>
 				   <div class="col-sm-2" style="padding:0;">
-					  <input type="text" class="form-control form-control-sm" id="processname"></input>
+					  <input type="text" class="form-control form-control-sm" id="processname"/>
 				   </div>
 				   <div class="col-sm-1 col-form-label control-label">ID</div>
 				   <div class="col-sm-2" style="padding:0;">
-					  <input type="text" class="form-control form-control-sm" id="processid" disabled></input>
+					  <input type="text" class="form-control form-control-sm" id="processid" disabled/>
 				   </div>
 				   confidential_field
 				</div>
 				
-				<div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >
+				<div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0;" >
 				   <div class="col-md-6" style="padding:0;" >
-					  <p class=\\"h6\\"> <span class=\\"badge badge-secondary\\">CtrlS</span> to save edits. Click <i class=\\"fa fa-edit subalignicon\\" onclick=\\"GW.process.editSwitch()\\" data-toggle=\\"tooltip\\" title=\\"Enable Edit\\"></i> to enable edit.
+					  <p class="h6"> <span class="badge badge-secondary">CtrlS</span> to save edits. Click <i class="fa fa-edit subalignicon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to enable edit.
 						 <label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>
 						 <input type="checkbox" style="margin-left:5px;" checked id="log_switch">
 						 <button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>  

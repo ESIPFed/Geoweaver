@@ -1,0 +1,27 @@
+.sidenav-container {
+    position: absolute;
+    z-index: 100;
+
+    background-color: white;
+    right: 0;
+    margin-top: 52px;
+    width: 40%;
+    height: 100vh;
+    border: 1px dashed lightgray;
+}
+
+.border-box-black-not-allowed {
+    padding: 4px;
+    border: 1px solid lightgray;
+    cursor: not-allowed !important;
+    height: 30px;
+    width: 150px;
+}
+
+.border-box-black-allowed {
+    padding: 4px;
+    border: 1px solid lightgray;
+    cursor: text !important;
+    height: 30px;
+    width: 150px;
+}
