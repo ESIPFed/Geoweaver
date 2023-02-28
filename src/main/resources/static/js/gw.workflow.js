@@ -1204,6 +1204,16 @@ GW.workflow = {
 		})
 
 	},
+
+	showSidenav: function() {
+		let sidenav = document.getElementById('sidenav-editor');
+		sidenav.style.display = 'block';
+	},
+
+	hideSidenav: function() {
+		let sidenav = document.getElementById('sidenav-editor');
+		sidenav.style.display = 'none';
+	},
 	
 	showProcessLog: function(workflow_history_id, process_id, process_title){
 
@@ -1211,7 +1221,7 @@ GW.workflow = {
 					
 			<div class="row">
 		
-				<div class="col-md-12" id="dbclick_content">
+				<div class="col-md-12">
 
 					Process Name: `+process_title+` <br/>
 

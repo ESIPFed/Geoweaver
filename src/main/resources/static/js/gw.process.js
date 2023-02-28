@@ -923,7 +923,7 @@ GW.process = {
 				console.log("Scroll to the history section.")
 
 				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
-				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history-sidenav");
+				// GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history-sidenav");
 				
 			}).fail(function(jxr, status){
 				
@@ -1055,6 +1055,7 @@ GW.process = {
 			
 			// $("#console-output").html(output);
 			$("#process-log-window").html(output);
+			$("#process-log-window-sidenav").html(output);
 			
 			$("#closeLog").click(function(){
 				
@@ -1489,8 +1490,12 @@ GW.process = {
 		
 		},
 		
-		display: function(msg){
-			
+		display: function(msg, renderFullScreen=false){
+
+			if (renderFullScreen) {
+				GW.workflow.hideSidenav();
+			}
+
 			GW.process.editOn = false;
 
 			var code = null;
@@ -1640,10 +1645,12 @@ GW.process = {
 			
 			$("#main-process-content").html(content);
 
-			switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+			if (renderFullScreen) {
+				switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+				GW.general.switchTab("process");
+			}
 
-			GW.general.switchTab("process");
-			
+			console.log(msg);
 			$("#processcategory").val(code_type);
 			$("#processcategory-sidenav").val(code_type)
 			
@@ -2111,7 +2118,7 @@ GW.process = {
 			
 			var menuItem = `<li class="process" id="process-${one.id}" 
 								onclick="var event = arguments[0] || window.event; event.stopPropagation();
-								GW.menu.details('${one.id}', 'process')">
+								GW.menu.details('${one.id}', 'process', null, true)">
 								<div class="row bare-window">
 									<div class="col-md-2 bare-window" style="overflow: hidden; text-overflow: ellipsis; width: 180px" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
 									<div class="col-md-4 bare-window">
@@ -2403,6 +2410,7 @@ GW.process = {
 			if($("#process-log-window").length){
 
 				$("#process-log-window").html("");
+				$("#process-log-window-sidenav").html("");
 				GW.ssh.current_process_log_length = 0;
 
 			}

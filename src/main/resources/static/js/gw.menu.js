@@ -93,7 +93,7 @@ GW.menu = {
 			
 		},
 		
-		details: function(id, type, detail_callback){
+		details: function(id, type, detail_callback, renderFullScreen){
 			
 			$.ajax({
 				
@@ -111,7 +111,7 @@ GW.menu = {
 
 					if(type=="process"){
 						
-						GW.process.display(msg);
+						GW.process.display(msg, renderFullScreen);
 						
 					}else if(type=="host"){
 						

@@ -167,7 +167,7 @@ GW.general = {
 				
 			}else if(name=="process"){
 				
-				switchTab(document.getElementById("main-process-tab"), "main-process-info");
+				switchTab(document.getElementById("main-process-tab"), "main-process-info", true);
 				
 			}else if(name=="workflow"){
 				
