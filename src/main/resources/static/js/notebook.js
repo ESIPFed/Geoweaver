@@ -496,11 +496,17 @@
 
         });
 
+        $("#code-embed-sidenav .nb-cell").each(function(index){
+
+            cells.push($(this).data("raw"));
+
+        });
+
         var newjupyter = {
             "cells": cells,
-            "metadata": $("#code-embed .nb-notebook").data("metadata"),
-            "nbformat": $("#code-embed .nb-notebook").data("nbformat"),
-            "nbformat_minor": $("#code-embed .nb-notebook").data("nbformat_minor")
+            "metadata": $("#code-embed-sidenav .nb-notebook").data("metadata"),
+            "nbformat": $("#code-embed-sidenav .nb-notebook").data("nbformat"),
+            "nbformat_minor": $("#code-embed-sidenav .nb-notebook").data("nbformat_minor")
         };
 
         // console.log(JSON.stringify(newjupyter));

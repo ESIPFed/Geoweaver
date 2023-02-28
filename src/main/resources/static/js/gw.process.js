@@ -368,8 +368,10 @@ GW.process = {
 			$("#upload_replace_jupyter_confirm_btn").click(function(){
 
 				$("#code-embed").html("");
+				$("#code-embed-sidenav").html("");
 
 				$("#code-embed").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
+				$("#code-embed-sidenav").append(`<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`);
 
 				let code = GW.process.jupytercode;
 
@@ -379,6 +381,7 @@ GW.process = {
 					var notebook = nb.parse(code);
 					var rendered = notebook.render();
 					$("#code-embed").append(rendered);
+					$("#code-embed-sidenav").append(rendered);
 					nb.postlisten();
 				}
 
@@ -904,6 +907,7 @@ GW.process = {
 				msg = GW.general.parseResponse(msg);
 				
 				$("#process-history-container").html(GW.history.getProcessHistoryTable(msg));
+				$("#process-history-container-sidenav").html(GW.history.getProcessHistoryTable(msg));
 
 				GW.history.applyBootstrapTable('process_history_table');
 				
@@ -912,12 +916,14 @@ GW.process = {
 				$("#closeHistory").click(function(){
 					
 					$("#process-history-container").html("");
+					$("#process-history-container-sidenav").html("");
 					
 				});
 				
 				console.log("Scroll to the history section.")
 
 				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
+				GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history-sidenav");
 				
 			}).fail(function(jxr, status){
 				
@@ -1639,10 +1645,13 @@ GW.process = {
 			GW.general.switchTab("process");
 			
 			$("#processcategory").val(code_type);
+			$("#processcategory-sidenav").val(code_type)
 			
 			$("#processname").val(process_name);
+			$("#processname-sidenav").val(process_name)
 			
 			$("#processid").val(process_id);
+			$("#processid-sidenav").val(process_id);
 			
 			GW.process.displayCodeArea(process_id, process_name, code_type,  code);
 			
@@ -1771,14 +1780,17 @@ GW.process = {
 		displayCodeArea: function(process_id, process_name, code_type, code){
 			
 			$("#code-embed").html("");
+			$("#code-embed-sidenav").html("");
 
 			$("#code-embed").css({ 'overflow-y' : 'scroll'});
+			$("#code-embed-sidenav").css({ 'overflow-y' : 'scroll'});
 
 			$( "#process_code_window" ).css( "background-color", "white" );
 			
 			if(code_type == "jupyter"){
 
 				$("#code-embed").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
+				$("#code-embed-sidenav").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
 				
 				if(code != null && code != "null"){
 
@@ -1791,6 +1803,7 @@ GW.process = {
 					var rendered = notebook.render();
 					
 					$("#code-embed").append(rendered);
+					$("#code-embed-sidenav").append(rendered);
 
 					nb.postlisten();
 
@@ -1828,18 +1841,22 @@ GW.process = {
 			   	cont += '  		</select></div>';
 
 			   	$("#code-embed").html(cont);
+				$("#code-embed-sidenav").html(cont);
 
 				$("#builtin_processes").on("change", function(){
 
 					GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed");
+					GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed-sidenav");
 					
 					// GW.process.updateBuiltin();
 
 				})
 
 				$("#builtin_processes").val(code.operation);
+				$("#builtin_processes_sidenav").val(code.operation);
 
 				$("#builtin_processes").trigger("change");
+				$("#builtin_processes_sidenav").trigger("change");
 
 		   		for(var j=0;j<code.params.length;j+=1){
 		   			
@@ -1858,6 +1875,7 @@ GW.process = {
 				$( "#process_code_window" ).css( "background-color", "rgb(28,28,28)" );
 
 				$("#code-embed").css({ 'overflow-y' : ''});
+				$("#code-embed-sidenav").css({ 'overflow-y' : ''});
 				
 				GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
 						lineNumbers: true,
@@ -1881,6 +1899,29 @@ GW.process = {
 								"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
 						}
 			    });
+
+				GW.process.editor = CodeMirror(document.getElementById("code-embed-sidenav"), {
+					lineNumbers: true,
+					lineWrapping: true,
+					theme: "yonce",
+					mode: "python",
+					readOnly: false,
+					value: code,
+					foldGutter: true,
+					gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+					extraKeys: {
+
+						"Ctrl-L": function(){
+							console.log("ctrl l clicked")
+						},
+
+						"Ctrl-Space": "autocomplete",
+						"Ctrl-B": "blockComment",
+						"Ctrl-/": "toggleComment",
+						"Ctrl-F-D": "foldCode",
+						"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
+					}
+				});
 
 				GW.process.editor.foldCode(CodeMirror.Pos(0, 0));
 				

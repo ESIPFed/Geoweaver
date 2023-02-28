@@ -10,7 +10,9 @@ GW.editor = {
 
         var editorDiv = $('#editor-history-tab-panel');
         var subtabCodeDiv = $('#main-process-info-code');
+        var subtabCodeDivSidenav = $('#main-process-info-code-sidenav');
         var subtabHistoryDiv = $('#main-process-info-history');
+        var subtabHistoryDivSidenav = $('#main-process-info-history-sidenav');
         if (!editorDiv.hasClass('fullscreen')) {
             this.beforeFullscreen = { height: editorDiv.height(), width: editorDiv.width() }
             editorDiv.addClass('fullscreen');
@@ -18,7 +20,9 @@ GW.editor = {
             editorDiv.width('100vw');
             // editor.refresh();
             subtabCodeDiv.height('calc(100% - 40px)');
+            subtabCodeDivSidenav.height('calc(100% - 40px)');
             subtabHistoryDiv.height('calc(100% - 40px)');
+            subtabHistoryDivSidenav.height('calc(100% - 40px)');
             this.isfullscreen = true;
         }
         else {
