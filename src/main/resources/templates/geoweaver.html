@@ -205,24 +205,9 @@
 					</div>
 				</div>
 
-				<div style="overflow: scroll">
-					<div class="modal-body">
+				<div id="execution_context"></div>
 
-						<div class="row">
 
-							<div class="col-md-12">
-
-								Process Name: `+process_title+` <br/>
-
-								Process ID: `+process_id+` <br/>
-
-								Skip: <input type="checkbox" onclick='GW.workflow.skipprocess("`+workflow_history_id+`", "`+process_id+`");' id="skip_process_`+process_id+`" > <br/>
-
-								Output: <br/>
-							</div>
-						</div>
-					</div>
-				</div>
 
 
 			</div>
@@ -655,7 +640,7 @@
 							</div>
 								
 							<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-									<div id="main-process-content" style="height:100%;">
+									<div id="main-process-content" style="height:100%; width: 100%;">
 									<h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
 									</div>
 							</div>
