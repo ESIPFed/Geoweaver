@@ -1490,11 +1490,7 @@ GW.process = {
 		
 		},
 		
-		display: function(msg, renderFullScreen=false){
-
-			if (renderFullScreen) {
-				GW.workflow.hideSidenav();
-			}
+		display: function(msg){
 
 			GW.process.editOn = false;
 

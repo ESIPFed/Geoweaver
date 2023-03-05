@@ -90,12 +90,19 @@
 		<script type="text/javascript" src="../js/codemirror/lib/codemirror.js"></script>
 		
 		<script type="text/javascript" src="../js/codemirror/addon/display/placeholder.js"></script>
+
 		<script type="text/javascript" src="../js/codemirror/addon/comment/comment.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/foldcode.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/foldgutter.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/brace-fold.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/indent-fold.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/xml-fold.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/comment-fold.js"></script>
 		
 		<script type="text/javascript" src="../js/codemirror/mode/shell/shell.js"></script>
@@ -103,26 +110,41 @@
 		<script type="text/javascript" src="../js/codemirror/mode/python/python.js"></script>
 		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/xml-fold.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/markdown-fold.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/fold/comment-fold.js"></script>
 		
 		<!-- autocomplete scripts -->
 		<script type="text/javascript" src="../js/codemirror/addon/hint/css-hint.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/hint/show-hint.js"></script>
+		
 		<link rel="stylesheet" href="../js/codemirror/addon/hint/show-hint.css" />
+		
 		<script type="text/javascript" src="../js/codemirror/addon/search/search.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/search/searchcursor.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/search/jump-to-line.js"></script>
+		
 		<script type="text/javascript" src="../js/codemirror/addon/dialog/dialog.js"></script>
+		
 		<link rel="stylesheet" href="../js/codemirror/addon/dialog/dialog.css" />
 		
 		<!-- references for merge addon of code mirror -->
 		<script type="text/javascript" src="../js/codemirror/addon/merge/merge.js"></script>
+		
 		<link rel="stylesheet" href="../js/codemirror/addon/merge/merge.css">
+		
 		<script type=text/javascript  src="../js/codemirror/mode/xml/xml.js"></script>
+		
 		<script type=text/javascript  src="../js/codemirror/mode/css/css.js"></script>
+		
 		<script type=text/javascript  src="../js/codemirror/mode/javascript/javascript.js"></script>
+		
 		<script type=text/javascript  src="../js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+		
 		<!-- The merge addon of CodeMirror depends on the google-diff-match-patch library to compute the diffs. -->
 		<script type=text/javascript  src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
 
@@ -145,73 +167,7 @@
 		<div id="jsframe-container"></div>
 	
 		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
-
-			<div class="sidenav-container" id="sidenav-editor" style="display: none">
-
-				<div onclick=GW.workflow.hideSidenav() style="display: flex; flex-direction: row-reverse; margin-right: 20px; margin-top: 2px;">
-					<img src="../img/close-sidenav.png" alt="close" width="20" height="20" />
-				</div>
-
-				<div style="display: flex; flex-direction: row; margin-top: 20px; margin-left: 20px;">
-					<p style="padding-top: 4px; padding-right: 10px;">Type: </p>
-					<select class="border-box-black-not-allowed" id="processcategory-sidenav" disabled>
-						<option value="shell">Shell</option>
-						<option value="builtin">Built-In Process</option>
-						<option value="jupyter">Jupyter Notebook</option>
-						<option value="python">Python</option>
-					</select>
-					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
-					<input class="border-box-black-allowed" id="processname-sidenav" type="text" />
-
-
-				</div>
-
-				<div style="display: flex; flex-direction: row; margin-left: 20px;">
-					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
-					<input class="border-box-black-allowed" id="processid-sidenav" type="text"  disabled/>
-<!--					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
-				</div>
-
-				<div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
-					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
-					<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+process_id+`', '` + process_name+`')">History</button>
-					<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
-					<button class="btn pull-right" onclick="GW.process.runProcess('`+ process_id+`', '`+process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
-					<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
-				</div>
-
-				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
-					<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-						<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
-							<div class="col col-md-6" id="code-embed-sidenav" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
-						</div>
-						<div class="resizer" id="dragMe"></div>
-						<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
-							<h4>Logging</h4>
-							<div id="process-log-window-sidenav" style="overflow-wrap: break-word;"> </div>
-							<div class="row" style="padding:0px; margin:0px;" >
-								<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
-									<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-					<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
-					</div>
-				</div>
-
-				<div id="execution_context"></div>
-
-
-
-
-			</div>
-		
+			
 			<!-- Top menu bar -->
 
 			<!-- set site margin here -->
@@ -569,30 +525,6 @@
 											
 											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
 		
-											<!-- <h4>Jupyter NoteBook Server</h4>
-															
-											<p>Jupyter Notebook is an open source web application that allows you to create and share documents that contain live code, equations, visualization, and narrative text.</p>
-		
-											<p>In Geoweaver, you can manage multiple Jupyter Notebook instances in one place. It will provide a proxy for you to record your usage history during eidting the notebooks. All the history will be automatically recorded when you click Save button or shortcut inside the Jupyter Notebook. The history will be retrievable in Geoweaver database and people can always go back and verify their experiments using the history button of the Jupyter host in Geoweaver.</p>
-											
-											<h4>Jupyter Hub</h4>
-											
-											<p>JupyterHub is a multi-user version of the Jupyter Notebook designed for companies, classrooms and research labs. </p>
-											
-											<p>Geoweaver supports JupyterHub in a similar way to the Jupyter Notebook. People can manage multiple JupyterHub servers in Geoweaver. They can record their usage history in each JupyterHub in Geoweaver database which is queriable in future, even the original JupyterHub is gone. With the history, people can clearly understand what happens and reproduce the experiments with minimum efforts in a new environment.</p>
-		
-											<h4>Jupyter Lab</h4>
-											
-											<p>JupyterLab is a web-based interactive development environment for Jupyter notebooks, code, and data. It is more like a combination of Jupyter Notebook and many other useful tools (e.g., file browser, data visualization module, status monitor, etc).</p>
-											
-											<p>Geoweaver supports Jupyter Lab in a similar to Jupyter Notebook and JupyterHub. People can manage multiple JupyterLab in Geoweaver and Geoweaver provides a proxy to monitor the traffic between users and Jupyter Lab and record the history in its database. The history database will persist even after the computing server the JupyterLab was hosted is gone. Geoweaver will significantly improve the management of distributed JupyterLab and enhance the transparency, reusuability, and reproducibility of all the work done in JupyterLab. </p> -->
-											
-											<!-- <h4>Google Earth Engine</h4>
-											
-											<p > Google Earth Engine is a planetary-scale platform for Earth science data powered by Google Cloud infrastructure. It combines a multi-petabyte catalog of satellite imagery and geospatial datases with planetary-scale analysis capabilities. It has become very popular among scientists worldwide.</p>
-											
-											<p>Geoweaver provides a proxy to Google Earth Engine so users can reserve their coding history in Google Earth Engine. When people click on Save button or press ctrl-s in GEE code editor, it will be caputred by Geoweaver and saved into its database. Users can browse their history afterawards, and label them using notes to compare the results of different configuration more easily. It will also increase the reusability of the experiments and build public trust in the products. </p> -->
-											
 											<a id="processes"></a>
 											<h2>Processes</h2>
 											
@@ -737,6 +669,72 @@
 				  </div>
 				</div>
 				
+			</div>
+
+			<div class="sidenav-container" id="sidenav-editor" style="display: none">
+
+				<div onclick=GW.workflow.hideSidenav() style="display: flex; flex-direction: row-reverse; margin-right: 20px; margin-top: 2px;">
+					<img src="../img/close-sidenav.png" alt="close" width="20" height="20" />
+				</div>
+
+				<div style="display: flex; flex-direction: row; margin-top: 20px; margin-left: 20px;">
+					<p style="padding-top: 4px; padding-right: 10px;">Type: </p>
+					<select class="border-box-black-not-allowed" id="processcategory-sidenav" disabled>
+						<option value="shell">Shell</option>
+						<option value="builtin">Built-In Process</option>
+						<option value="jupyter">Jupyter Notebook</option>
+						<option value="python">Python</option>
+					</select>
+					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
+					<input class="border-box-black-allowed" id="processname-sidenav" type="text" />
+
+
+				</div>
+
+				<div style="display: flex; flex-direction: row; margin-left: 20px;">
+					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
+					<input class="border-box-black-allowed" id="processid-sidenav" type="text"  disabled/>
+<!--					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
+				</div>
+
+				<div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
+					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
+					<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+process_id+`', '` + process_name+`')">History</button>
+					<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
+					<button class="btn pull-right" onclick="GW.process.runProcess('`+ process_id+`', '`+process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
+					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+					<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
+					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
+				</div>
+
+				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
+					<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
+						<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
+							<div class="col col-md-6" id="code-embed-sidenav" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
+						</div>
+						<div class="resizer" id="dragMe"></div>
+						<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+							<h4>Logging</h4>
+							<div id="process-log-window-sidenav" style="overflow-wrap: break-word;"> </div>
+							<div class="row" style="padding:0px; margin:0px;" >
+								<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+									<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+					<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
+					</div>
+				</div>
+
+				<div id="execution_context"></div>
+
+
+
+
 			</div>
 			
 			<!-- The actual snackbar showing the saved/code update message -->
