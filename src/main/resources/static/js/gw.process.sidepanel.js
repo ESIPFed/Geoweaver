@@ -80,7 +80,7 @@ GW.process.sidepanel = {
             <div style="display: flex; flex-direction: row;">
                 <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
                 <input class="border-box-black-allowed" id="prompt-process-processid" type="text"  disabled/>
-                <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>
+                <!--<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
             </div>
         `
         $("#prompt-panel-main").append(process_metadata_content)
@@ -98,11 +98,11 @@ GW.process.sidepanel = {
             </div>
 
             <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
-                <div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
+                <div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="prompt-process-code-history-section">
                     <div id="prompt-process-process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
                         <div class="col col-md-6" id="prompt-process-code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
                     </div>
-                    <div class="resizer" id="dragMe"></div>
+                    <div class="resizer" id="prompt-process-dragMe"></div>
                     <div id="prompt-process-single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
                         <h4>Logging</h4>
                         <div id="prompt-process-process-log-window" style="overflow-wrap: break-word;"> </div>
@@ -115,7 +115,7 @@ GW.process.sidepanel = {
                 </div>
             </div>
 
-            <div id="prompt-process-main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+            <div id="prompt-process-main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 250px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
                 <div class="row" id="prompt-process-process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
                 </div>
             </div>
@@ -137,6 +137,21 @@ GW.process.sidepanel = {
 
         // activate buttons
 
+        GW.process.sidepanel.bottomDock()  // default bottomdock to save space
+
+    },
+
+    leftDock: function(){
+
+        GW.process.util.leftDock("prompt-process-code-history-section", "prompt-process-process_code_window", 
+            "prompt-process-single-console-content", "prompt-process-dragMe")
+
+    },
+
+    bottomDock: function(){
+
+        GW.process.util.bottomDock("prompt-process-code-history-section", "prompt-process-process_code_window", 
+            "prompt-process-single-console-content", "prompt-process-dragMe")
 
     },
 

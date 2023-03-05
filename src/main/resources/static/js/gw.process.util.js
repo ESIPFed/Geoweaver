@@ -136,6 +136,185 @@ GW.process.util = {
 		
 	},
 
+    activateResizer: function(resizer_line_id){
+
+        // Query the element
+        const resizer = document.getElementById(resizer_line_id);
+        const leftSide = resizer.previousElementSibling;
+        const rightSide = resizer.nextElementSibling;
+        resizer.style.cursor = 'ew-resize';
+    
+        // The current position of mouse
+        let x = 0;
+        let y = 0;
+        let leftWidth = 0;
+    
+        // Handle the mousedown event
+        // that's triggered when user drags the resizer
+        GW.process.mouseDownHandler = function (e) {
+            // Get the current mouse position
+            x = e.clientX;
+            y = e.clientY;
+            leftWidth = leftSide.getBoundingClientRect().width;
+    
+            // Remove the handlers of `mousemove` and `mouseup`
+            document.removeEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+            document.removeEventListener('mouseup', GW.process.mouseUpVerticalHandler);
+            // Attach the listeners to `document`
+            document.addEventListener('mousemove', GW.process.mouseMoveHandler);
+            document.addEventListener('mouseup', GW.process.mouseUpHandler);
+        };
+    
+        GW.process.mouseMoveHandler = function (e) {
+            // How far the mouse has been moved
+            const dx = e.clientX - x;
+            const dy = e.clientY - y;
+    
+            const newLeftWidth = ((leftWidth + dx) * 100) / resizer.parentNode.getBoundingClientRect().width;
+            leftSide.style.width = `${newLeftWidth}%`;
+    
+            resizer.style.cursor = 'ew-resize';
+            // document.body.style.cursor = 'col-resize';
+    
+            leftSide.style.userSelect = 'none';
+            leftSide.style.pointerEvents = 'none';
+    
+            rightSide.style.userSelect = 'none';
+            rightSide.style.pointerEvents = 'none';
+        };
+    
+        GW.process.mouseUpHandler = function () {
+            resizer.style.removeProperty('cursor');
+            // document.body.style.removeProperty('cursor');
+    
+            leftSide.style.removeProperty('user-select');
+            leftSide.style.removeProperty('pointer-events');
+    
+            rightSide.style.removeProperty('user-select');
+            rightSide.style.removeProperty('pointer-events');
+    
+            // Remove the handlers of `mousemove` and `mouseup`
+            document.removeEventListener('mousemove', GW.process.mouseMoveHandler);
+            document.removeEventListener('mouseup', GW.process.mouseUpHandler);
+        };
+    
+        // Attach the handler
+        resizer.addEventListener('mousedown', GW.process.mouseDownHandler);
+    
+    },
+
+	activateVerticalResizer: function(resizer_line_id) {
+
+		console.log("vertical resizer is activated")
+
+		// Query the element
+		const resizer = document.getElementById(resizer_line_id);
+		const topElement = resizer.previousElementSibling;
+		const bottomElement = resizer.nextElementSibling;
+		resizer.style.cursor = 'ns-resize';
+
+		// The current position of mouse
+		let x = 0;
+		let y = 0;
+		let topHeight = 0;
+
+		// Handle the mousedown event
+		// that's triggered when user drags the resizer
+		GW.process.mouseDownVerticalHandler = function (e) {
+			// Get the current mouse position
+			x = e.clientX;
+			y = e.clientY;
+			topHeight = topElement.getBoundingClientRect().height;
+	
+			// Remove the handlers of `mousemove` and `mouseup`
+			document.removeEventListener('mousemove', GW.process.mouseMoveHandler);
+			document.removeEventListener('mouseup', GW.process.mouseUpHandler);
+			// Attach the listeners to `document`
+			document.addEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+			document.addEventListener('mouseup', GW.process.mouseUpVerticalHandler);
+		};
+	
+		GW.process.mouseMoveVerticalHandler = function (e) {
+			// How far the mouse has been moved
+			const dx = e.clientX - x;
+			const dy = e.clientY - y;
+	
+			const newtopHeight = ((topHeight + dy) * 100) / resizer.parentNode.getBoundingClientRect().height;
+			topElement.style.height = `${newtopHeight}%`;
+			bottomElement.style.height = `${100-newtopHeight}%`;
+	
+			resizer.style.cursor = 'ns-resize';
+	
+			topElement.style.userSelect = 'none';
+			topElement.style.pointerEvents = 'none';
+	
+			bottomElement.style.userSelect = 'none';
+			bottomElement.style.pointerEvents = 'none';
+		};
+	
+		GW.process.mouseUpVerticalHandler = function () {
+			resizer.style.removeProperty('cursor');
+	
+			topElement.style.removeProperty('user-select');
+			topElement.style.removeProperty('pointer-events');
+	
+			bottomElement.style.removeProperty('user-select');
+			bottomElement.style.removeProperty('pointer-events');
+	
+			// Remove the handlers of `mousemove` and `mouseup`
+			document.removeEventListener('mousemove', GW.process.mouseMoveVerticalHandler);
+			document.removeEventListener('mouseup', GW.process.mouseUpVerticalHandler);
+		};
+	
+		// Attach the handler
+		resizer.addEventListener('mousedown', GW.process.mouseDownVerticalHandler);
+		
+	},
+
+    bottomDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
+
+		GW.process.dockmode = "bottom";
+
+		var codeContainer = document.getElementById(history_section_id);
+		var resizerDrag = document.getElementById(resize_line_id);
+		resizerDrag.style.setProperty("height", "2px");
+		resizerDrag.style.setProperty("width", "100%");
+		codeContainer.style.setProperty("display", "block");
+
+		var element = document.getElementById(code_window_id);
+		element.style.setProperty("width", "100%");
+		element.style.setProperty("height", "60%");
+
+		var element = document.getElementById(console_content_id);
+		element.style.setProperty("width", "100%");
+		element.style.setProperty("height", "40%");
+
+		// activating resizer functionality
+		GW.process.util.activateVerticalResizer(resize_line_id);
+	},
+
+	leftDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
+
+		GW.process.dockmode = "left";
+
+		var codeContainer = document.getElementById(history_section_id);
+		codeContainer.style.setProperty("display", "flex");
+		var resizerDrag = document.getElementById(resize_line_id);
+		resizerDrag.style.setProperty("height", "100%");
+		resizerDrag.style.setProperty("width", "2px");
+		
+		var element = document.getElementById(code_window_id);
+		element.style.setProperty("width", "40%");
+		element.style.setProperty("height", "100%");
+
+		var element = document.getElementById(console_content_id);
+		element.style.setProperty("width", "60%");
+		element.style.setProperty("height", "100%");
+
+		// activating resizer functionality
+		GW.process.util.activateResizer(resize_line_id);
+	},
+
     displayToolbar: function(process_id, process_name, code_type, process_btn_group_id){
 
         var menuItem = " <p class=\"h6\" align=\"right\">"+
