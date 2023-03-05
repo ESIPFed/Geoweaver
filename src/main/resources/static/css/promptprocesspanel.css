@@ -70,7 +70,7 @@
 
 .cd-panel__container {
     /*...*/
-    position: fixed;
+    position: absolute;
     background-color: white;
     width: 30%;
     height: 100%;

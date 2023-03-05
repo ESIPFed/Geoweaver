@@ -248,7 +248,8 @@ GW.history = {
                   targets: [1],
                 }
             ],
-            order: [[ 1, "desc" ]]
+            order: [[ 1, "desc" ]],
+            "bDestroy": true,
         });
 
         table.MakeCellsEditable({

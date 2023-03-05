@@ -86,13 +86,19 @@ GW.process.sidepanel = {
         $("#prompt-panel-main").append(process_metadata_content)
 
         // add process code and history combo
-        let process_code_history_content = `
+        let process_code_history_content = `<div id="prompt-process-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
             <div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
                 <button class="tablinks-process" id="prompt-process-main-process-info-code-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-code')">Code</button>
                 <button class="tablinks-process" id="prompt-process-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-history'); GW.process.sidepanel.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
-                <button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
-                <button class="btn pull-right" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-                <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+
+                <!-- TODO: play button, save button, full screen button-->
+                <!--
+                    <button class="btn pull-right" onclick="GW.process.sidepanel.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
+                    <button class="btn pull-right" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
+                    <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+                -->
+
+
                 <button class="btn pull-right" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
                 <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
             </div>
@@ -121,7 +127,7 @@ GW.process.sidepanel = {
             </div>
 
             <div id="prompt-process-execution_context"></div>
-        `
+        </div>`
         $("#prompt-panel-main").append(process_code_history_content)
 
         // fill in values
@@ -138,6 +144,12 @@ GW.process.sidepanel = {
         // activate buttons
 
         GW.process.sidepanel.bottomDock()  // default bottomdock to save space
+
+    },
+
+    switchFullScreen: function(){
+
+        GW.editor.switchFullScreenUtil('#prompt-process-editor-history-tab-panel', '#prompt-process-main-process-info-code', '#prompt-process-main-process-info-history')
 
     },
 
