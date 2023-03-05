@@ -37,7 +37,7 @@ GW.process.sidepanel = {
         }).done(function(msg){
 
             msg = $.parseJSON(msg);
-            
+
             GW.process.sidepanel.display(msg)
 
         })
@@ -66,7 +66,7 @@ GW.process.sidepanel = {
         
         // add process metadata
         let process_metadata_content = `
-            <div style="display: flex; flex-direction: row; margin-top: 20px; margin-left: 20px;" >
+            <div style="display: flex; flex-direction: row;" >
                 <p style="padding-top: 4px; padding-right: 10px;">Type: </p>
                 <select class="border-box-black-not-allowed" id="prompt-process-processcategory" disabled>
                     <option value="shell">Shell</option>
@@ -77,7 +77,7 @@ GW.process.sidepanel = {
                 <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
                 <input class="border-box-black-allowed" id="prompt-process-processname" type="text" />
             </div>
-            <div style="display: flex; flex-direction: row; margin-left: 20px;">
+            <div style="display: flex; flex-direction: row;">
                 <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
                 <input class="border-box-black-allowed" id="prompt-process-processid" type="text"  disabled/>
                 <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>
@@ -88,13 +88,13 @@ GW.process.sidepanel = {
         // add process code and history combo
         let process_code_history_content = `
             <div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
-                <button class="tablinks-process" id="prompt-process-main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
-                <button class="tablinks-process" id="prompt-process-main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
+                <button class="tablinks-process" id="prompt-process-main-process-info-code-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-code')">Code</button>
+                <button class="tablinks-process" id="prompt-process-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-history'); GW.process.sidepanel.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
                 <button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
-                <button class="btn pull-right" onclick="GW.process.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-                <button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
-                <button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-                <button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
+                <button class="btn pull-right" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
+                <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+                <button class="btn pull-right" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
+                <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
             </div>
 
             <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
@@ -133,10 +133,17 @@ GW.process.sidepanel = {
 		
 		GW.process.sidepanel.editor = GW.process.util.displayCodeArea(code_type,  code, "#prompt-process-code-embed", "#prompt-process-process_code_window");
 		
-		// GW.process.displayToolbar(process_id, process_name, code_type);
+		// GW.process.util.displayToolbar(process_id, process_name, code_type, );
 
         // activate buttons
 
+
+    },
+
+    history: function(process_id, process_name){
+
+        GW.process.util.history(process_id, "#prompt-process-process-history-container", 'process_history_table', 
+			"#closeHistory", "prompt-process-main-process-info-history-tab", "prompt-process-main-process-info-history")
 
     },
 

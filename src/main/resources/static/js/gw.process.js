@@ -875,49 +875,10 @@ GW.process = {
 	/**
 	 * list all the history execution of the process
 	 */
-	history: function(pid, pname){
+	history: function(pid, pname, ){
 		
-		$.ajax({
-			
-			url: "logs",
-			
-			method: "POST",
-			
-			data: "type=process&id=" + pid
-			
-		}).done(function(msg){
-			
-			if(!msg.length){
-				
-				alert("no history found");
-				
-				return;
-				
-			}
-			
-			msg = GW.general.parseResponse(msg);
-			
-			$("#process-history-container").html(GW.history.getProcessHistoryTable(msg));
-
-			GW.history.applyBootstrapTable('process_history_table');
-			
-			GW.chart.renderProcessHistoryChart(msg);
-			
-			$("#closeHistory").click(function(){
-				
-				$("#process-history-container").html("");
-				
-			});
-			
-			console.log("Scroll to the history section.")
-
-			GW.process.switchTab(document.getElementById("main-process-info-history-tab"), "main-process-info-history");
-			
-		}).fail(function(jxr, status){
-			
-			console.error(status);
-			
-		});
+		GW.process.util.history(pid, "#process-history-container", 'process_history_table', 
+			"#closeHistory", "main-process-info-history-tab", "main-process-info-history")
 		
 	},
 
@@ -1478,6 +1439,8 @@ GW.process = {
 	},
 	
 	display: function(msg){
+
+		GW.process.sidepanel.close() //close the side panel when the normal window shows up
 		
 		GW.process.editOn = false;
 
@@ -1695,27 +1658,7 @@ GW.process = {
 
 	displayToolbar: function(process_id, process_name, code_type){
 		
-		var menuItem = " <p class=\"h6\" align=\"right\">"+
-		
-		"<button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.history('"+
-		
-		process_id+"', '" + process_name+"')\"><i class=\"fa fa-history subalignicon\"  data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
-		
-		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.editSwitch()\">"+
-		
-		"<i class=\"fa fa-edit subalignicon\"  data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
-		
-		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.runProcess('"+
-		
-		process_id+"', '" + process_name + "', '" + code_type +"')\" ><i class=\"fa fa-play subalignicon\"  data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
-		
-		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.menu.del('"+
-		
-		process_id+"','process')\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" > Delete</i>  </button>"+
-		
-		"</p>";
-		
-		$("#process-btn-group").append(menuItem);
+		GW.process.util.displayToolbar(process_id, process_name, code_type, "#process-btn-group")
 		
 	},
 

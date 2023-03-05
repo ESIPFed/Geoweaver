@@ -136,6 +136,78 @@ GW.process.util = {
 		
 	},
 
+    displayToolbar: function(process_id, process_name, code_type, process_btn_group_id){
+
+        var menuItem = " <p class=\"h6\" align=\"right\">"+
+		
+		"<button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.history('"+
+		
+		process_id+"', '" + process_name+"')\"><i class=\"fa fa-history subalignicon\"  data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button>"+
+		
+		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.editSwitch()\">"+
+		
+		"<i class=\"fa fa-edit subalignicon\"  data-toggle=\"tooltip\" title=\"Enable Edit\"></i> Edit </button>"+
+		
+		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.process.runProcess('"+
+		
+		process_id+"', '" + process_name + "', '" + code_type +"')\" ><i class=\"fa fa-play subalignicon\"  data-toggle=\"tooltip\" title=\"Run Process\"></i> Run </button> "+
+		
+		" <button type=\"button\" class=\"btn btn-outline-primary\" onclick=\"GW.menu.del('"+
+		
+		process_id+"','process')\"><i class=\"fa fa-minus subalignicon\" style=\"color:red;\"  data-toggle=\"tooltip\" title=\"Delete this process\" > Delete</i>  </button>"+
+		
+		"</p>";
+		
+		$(process_btn_group_id).append(menuItem);
+
+    },
+
+    history: function(pid, process_history_container_id, process_history_table_id, close_history, history_tab_id, history_tab_target_id){
+
+        $.ajax({
+			
+			url: "logs",
+			
+			method: "POST",
+			
+			data: "type=process&id=" + pid
+			
+		}).done(function(msg){
+			
+			if(!msg.length){
+				
+				alert("no history found");
+				
+				return;
+				
+			}
+			
+			msg = GW.general.parseResponse(msg);
+			
+			$(process_history_container_id).html(GW.history.getProcessHistoryTable(msg));
+
+			GW.history.applyBootstrapTable(process_history_table_id);
+			
+			GW.chart.renderProcessHistoryChart(msg);
+			
+			$(close_history).click(function(){
+				
+				$(process_history_container_id).html("");
+				
+			});
+			
+			console.log("Scroll to the history section.")
+
+			GW.process.switchTab(document.getElementById(history_tab_id), history_tab_target_id);
+			
+		}).fail(function(jxr, status){
+			
+			console.error(status);
+			
+		});
+
+    },
+
     refreshCodeEditor: function(){
 
 		// console.log("Process Code Editor is refreshed..");
