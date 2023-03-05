@@ -338,9 +338,10 @@ GW.chart = {
 			console.log(labels)
 			
 			console.log(succeed);
+
+			$('#'+ type + '-history-chart').html("")
 			
-			
-			var ctx = document.getElementById(type + '-history-chart').getContext('2d');
+			var ctx = document.getElementById( type + '-history-chart').getContext('2d');
 			var config = {
 				type: 'line',
 				data: {

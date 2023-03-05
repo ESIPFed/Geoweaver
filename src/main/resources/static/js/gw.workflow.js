@@ -1205,6 +1205,7 @@ GW.workflow = {
 
 	},
 	
+	
 	showProcessLog: function(workflow_history_id, process_id, process_title){
 
 		var content = `<div class="modal-body">
