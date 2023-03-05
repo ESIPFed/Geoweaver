@@ -10,9 +10,9 @@ GW.editor = {
 
         var editorDiv = $('#editor-history-tab-panel');
         var subtabCodeDiv = $('#main-process-info-code');
-        var subtabCodeDivSidenav = $('#main-process-info-code-sidenav');
+        var subtabCodeDivSidenav = $('#main-process-info-code');
         var subtabHistoryDiv = $('#main-process-info-history');
-        var subtabHistoryDivSidenav = $('#main-process-info-history-sidenav');
+        var subtabHistoryDivSidenav = $('#main-process-info-history');
         if (!editorDiv.hasClass('fullscreen')) {
             this.beforeFullscreen = { height: editorDiv.height(), width: editorDiv.width() }
             editorDiv.addClass('fullscreen');

@@ -572,7 +572,7 @@
 							</div>
 								
 							<div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
-									<div id="main-process-content" style="height:100%; width: 100%;">
+									<div id="main-process-content" style="height:100%; width:100%;">
 									<h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
 									</div>
 							</div>
@@ -679,27 +679,27 @@
 
 				<div style="display: flex; flex-direction: row; margin-top: 20px; margin-left: 20px;">
 					<p style="padding-top: 4px; padding-right: 10px;">Type: </p>
-					<select class="border-box-black-not-allowed" id="processcategory-sidenav" disabled>
+					<select class="border-box-black-not-allowed" id="prompt-process-processcategory-sidenav" disabled>
 						<option value="shell">Shell</option>
 						<option value="builtin">Built-In Process</option>
 						<option value="jupyter">Jupyter Notebook</option>
 						<option value="python">Python</option>
 					</select>
 					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
-					<input class="border-box-black-allowed" id="processname-sidenav" type="text" />
+					<input class="border-box-black-allowed" id="prompt-process-processname-sidenav" type="text" />
 
 
 				</div>
 
 				<div style="display: flex; flex-direction: row; margin-left: 20px;">
 					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
-					<input class="border-box-black-allowed" id="processid-sidenav" type="text"  disabled/>
+					<input class="border-box-black-allowed" id="prompt-process-processid-sidenav" type="text"  disabled/>
 <!--					<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
 				</div>
 
 				<div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
-					<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
-					<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+process_id+`', '` + process_name+`')">History</button>
+					<button class="tablinks-process" id="prompt-process-main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
+					<button class="tablinks-process" id="prompt-process-main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+process_id+`', '` + process_name+`')">History</button>
 					<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
 					<button class="btn pull-right" onclick="GW.process.runProcess('`+ process_id+`', '`+process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
 					<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
@@ -707,17 +707,17 @@
 					<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
 				</div>
 
-				<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
+				<div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
 					<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-						<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
-							<div class="col col-md-6" id="code-embed-sidenav" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
+						<div id="prompt-process-process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
+							<div class="col col-md-6" id="prompt-process-code-embed-sidenav" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
 						</div>
 						<div class="resizer" id="dragMe"></div>
-						<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+						<div id="prompt-process-single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
 							<h4>Logging</h4>
-							<div id="process-log-window-sidenav" style="overflow-wrap: break-word;"> </div>
+							<div id="prompt-process-process-log-window-sidenav" style="overflow-wrap: break-word;"> </div>
 							<div class="row" style="padding:0px; margin:0px;" >
-								<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+								<div class="col col-md-12" id="prompt-process-console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
 									<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 								</div>
 							</div>
@@ -725,12 +725,12 @@
 					</div>
 				</div>
 
-				<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-					<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
+				<div id="prompt-process-main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+					<div class="row" id="prompt-process-process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
 					</div>
 				</div>
 
-				<div id="execution_context"></div>
+				<div id="prompt-process-execution_context"></div>
 
 
 

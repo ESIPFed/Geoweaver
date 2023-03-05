@@ -114,44 +114,28 @@ GW.main = {
 
 GW.main.init();
 
-function switchTab(ele, name, onlyRender=false){
-
-	let i, content, tabLinks;
-
-	if (onlyRender) {
-		console.log("comes here 444");
-		tabLinks = document.getElementsByClassName("tablinks");
-		for (i = 0; i < tabLinks.length; i++) {
-			tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-		}
-		document.getElementById(name).style.display = "flex";
-		ele.className += " active";
-
-		if(name === "main-dashboard"){
-
-			GW.board.refresh();
-
-		}
-		return
+function switchTab(ele, name){
+	    		
+	console.log("Turn on the tab " + name)
+	  
+	var i, tabcontent, tablinks;
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+	  tabcontent[i].style.display = "none";
 	}
-
-	content = document.getElementsByClassName("tabcontent");
-	for (i = 0; i < content.length; i++) {
-		content[i].style.display = "none";
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+	  tablinks[i].className = tablinks[i].className.replace(" active", "");
 	}
-	tabLinks = document.getElementsByClassName("tablinks");
-	for (i = 0; i < tabLinks.length; i++) {
-		tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-	}
-	document.getElementById(name).style.display = "flex";
+	document.getElementById(name).style.display = "block";
 	ele.className += " active";
 
-	if(name === "main-dashboard"){
+	if(name=="main-dashboard"){
 
-		GW.board.refresh();
+	  GW.board.refresh();
 
 	}
-
+	  
 }
 
 function openCity(evt, name) {

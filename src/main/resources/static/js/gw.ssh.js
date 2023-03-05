@@ -315,14 +315,12 @@ GW.ssh = {
 					if(this.current_process_log_length > 5000){
 			
 						$("#process-log-window").find('p:first').remove();
-						$("#process-log-window-sidenav").find('p:first').remove();
 			
 						this.current_process_log_length -= 1
 			
 					}
 			
 					$("#process-log-window").append(newline);
-					$("#process-log-window-sidenav").append(newline);
 			
 					this.current_process_log_length += 1
 					
@@ -336,7 +334,6 @@ GW.ssh = {
 		clearProcessLog: function(){
 
 			$("#process-log-window").html("");
-			$("#process-log-window-sidenav").html("");
 
 		},
 
