@@ -187,17 +187,11 @@ GW.process = {
 			
 		}
 
-		this.refreshCodeEditor();
+		GW.process.util.refreshCodeEditor();
 		
 	},
 
-	refreshCodeEditor: function(){
-
-		// console.log("Process Code Editor is refreshed..");
-		
-		if(GW.process.editor!=null)GW.process.editor.refresh();
-
-	},
+	
 	
 	load_jupyter: function(){
 		
@@ -317,7 +311,7 @@ GW.process = {
 			
 		}
 
-		GW.process.refreshCodeEditor();
+		GW.process.util.refreshCodeEditor();
 		
 	},
 
@@ -1031,7 +1025,7 @@ GW.process = {
 
 			GW.process.editor.setValue(GW.process.unescape(msg.input));
 
-			GW.process.refreshCodeEditor();
+			GW.process.util.refreshCodeEditor();
 
 		}
 		
@@ -1695,7 +1689,7 @@ GW.process = {
 		document.getElementById(name).style.display = "block";
 		ele.className += " active";
 
-		GW.process.refreshCodeEditor();
+		GW.process.util.refreshCodeEditor();
 		  
 	},
 
@@ -1759,132 +1753,8 @@ GW.process = {
 	},
 	
 	displayCodeArea: function(process_id, process_name, code_type, code){
-		
-		$("#code-embed").html("");
 
-		$("#code-embed").css({ 'overflow-y' : 'scroll'});
-
-		$( "#process_code_window" ).css( "background-color", "white" );
-		
-		if(code_type == "jupyter"){
-
-			$("#code-embed").append(`<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`);
-			
-			if(code != null && code != "null"){
-
-				code = GW.general.parseResponse(code);
-				
-				GW.process.jupytercode = code;
-
-				var notebook = nb.parse(code);
-				
-				var rendered = notebook.render();
-				
-				$("#code-embed").append(rendered);
-
-				nb.postlisten();
-
-				var newjupyter = nb.getjupyterjson();
-
-			}
-			
-		}else if(code_type=="builtin"){
-			
-			code = code.replace(/\\/g, '\\\\');
-			
-			code = GW.general.parseResponse(code)
-			
-			var cont = '     <label for="builtinprocess" class="col-sm-4 col-form-label control-label" style="font-size:12px;" >Select a process: </label>'+
-			'     <div class="col-sm-8"> <select class="form-control builtin-process" id="builtin_processes">';
-			
-			for(var i=0;i<GW.process.builtin_processes.length;i++){
-				
-				var se = "";
-				
-				if(GW.process.builtin_processes[i].operation == code.operation){
-					
-					se = " selected=\"selected\" ";
-					
-				}
-				
-				cont += '    		<option value="'+
-					GW.process.builtin_processes[i].operation +
-					'"  ' + se + ' >'+
-					GW.process.builtin_processes[i].operation + 
-					'</option>';
-				
-			}
-			
-			   cont += '  		</select></div>';
-
-			   $("#code-embed").html(cont);
-
-			$("#builtin_processes").on("change", function(){
-
-				GW.process.refreshBuiltinParameterList("builtin_processes", "code-embed");
-				
-				// GW.process.updateBuiltin();
-
-			})
-
-			$("#builtin_processes").val(code.operation);
-
-			$("#builtin_processes").trigger("change");
-
-			   for(var j=0;j<code.params.length;j+=1){
-				   
-				   $("#param_" + code.params[j].name).val(code.params[j].value);
-				   
-			   }
-			
-		}else{
-			
-			var lang = GW.general.getCodeStyleByLang(code_type);
-			
-			val = GW.process.unescape(code);
-			
-			code = val;
-
-			$( "#process_code_window" ).css( "background-color", "rgb(28,28,28)" );
-
-			$("#code-embed").css({ 'overflow-y' : ''});
-			
-			GW.process.editor = CodeMirror(document.getElementById("code-embed"), {
-					lineNumbers: true,
-					lineWrapping: true,
-					theme: "yonce",
-					mode: "python",
-					readOnly: false,
-					value: code,
-					foldGutter: true,
-					gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-					extraKeys: {
-							
-							"Ctrl-L": function(){
-								console.log("ctrl l clicked")
-							},
-								
-							"Ctrl-Space": "autocomplete",
-							"Ctrl-B": "blockComment",
-							"Ctrl-/": "toggleComment",
-							"Ctrl-F-D": "foldCode",
-							"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
-					}
-			});
-
-			GW.process.editor.foldCode(CodeMirror.Pos(0, 0));
-			
-			GW.process.editor.on("change", function(instance, event){
-
-				GW.process.showNonSaved();
-
-			  });
-//				$(".CodeMirror").css('font-size',"10pt");
-			$(".CodeMirror").css('height',"100%");
-			$(".CodeMirror").css('max-height',"100%");
-			
-			GW.process.refreshCodeEditor();
-		}
+		GW.process.editor = GW.process.util.displayCodeArea(code_type, code, "#code-embed", "#process_code_window");
 		
 	},
 

@@ -688,6 +688,11 @@ GW.workspace = {
 			}
 			thisGraph.state.selectedNode = nodeData;
 			console.log("selected node changed : " + nodeData.id);
+
+			// show the prompt process panel
+			GW.process.sidepanel.close()
+			GW.process.sidepanel.open_panel(GW.workflow.history_id, nodeData.id, nodeData.title)
+
 		  };
 		  
 		  GW.workspace.GraphCreator.prototype.removeSelectFromNode = function(){
