@@ -151,7 +151,6 @@ function switchTab(ele, name, onlyRender=false){
 		GW.board.refresh();
 
 	}
-	// GW.workspace.hideSideNavContainer();
 
 }
 

@@ -1216,10 +1216,6 @@ GW.workflow = {
 
 	},
 
-	hideSidenav: function() {
-		let sidenav = document.getElementById('sidenav-editor');
-		sidenav.style.display = 'none';
-	},
 
 	showProcessLogAsText: function(workflow_history_id, process_id, process_title){
 		$.ajax({

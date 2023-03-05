@@ -1627,7 +1627,7 @@ GW.process = {
 					</div>
 				</div>
 		
-		`;
+			`;
 
 			content += `
 
@@ -1637,14 +1637,12 @@ GW.process = {
 				</div>
 			</div>
 
-		`;
+			`;
 			
 			$("#main-process-content").html(content);
 
-			if (renderFullScreen) {
-				switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
-				GW.general.switchTab("process");
-			}
+			switchTab(document.getElementById("main-process-info-code-tab"), "main-process-info-code");
+			GW.general.switchTab("process");
 
 			console.log(msg);
 			$("#processcategory").val(code_type);
