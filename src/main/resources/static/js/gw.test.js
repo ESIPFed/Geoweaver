@@ -211,7 +211,7 @@ GW.test = {
                     </div>
 
                     <div id="main-dashboard" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-                        <div id="main-dashboard-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+                        <div id="main-dashboard-content" style="width:100%; height:100%; overflow-y: scroll; padding: 10px; ">
                             
                         </div>
                       </div>
@@ -235,7 +235,7 @@ GW.test = {
                     </div>
                         
                     <div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:25px;">
-                        <div id="main-console-content" style="height:100%; overflow-y: scroll; margin:0; padding: 10px;">
+                        <div id="main-console-content" style="width:100%; height:100%; overflow-y: scroll; margin:0; padding: 10px;">
                           <h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
                           <div id="log-window" class="log_window">
                               

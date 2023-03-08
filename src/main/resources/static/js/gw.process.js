@@ -49,7 +49,7 @@ GW.process = {
 	
 	checkIfProcessPanelActive: function(){
 
-		return document.getElementById("main-process-info").style.display=="block";
+		return document.getElementById("main-process-info").style.display=="flex";
 
 	},
 	

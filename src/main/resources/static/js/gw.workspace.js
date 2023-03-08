@@ -524,7 +524,7 @@ GW.workspace = {
 			var thisGraph = this;
 			
 			//first check if the current view is in the workspace
-			if(document.getElementById("workspace").style.display=="block"){
+			if(document.getElementById("workspace").style.display=="flex"){
 
 				//if some objects are selected, delete the selected only. If nothing selected, delete all.
 				
@@ -935,7 +935,7 @@ GW.workspace = {
 			var selectedNode = state.selectedNode,
 				selectedEdge = state.selectedEdge;
 
-			if(document.getElementById("workspace").style.display=="block"){
+			if(document.getElementById("workspace").style.display=="flex"){
 
 				if (selectedNode){
 				
@@ -970,7 +970,7 @@ GW.workspace = {
 			var selectedNode = state.selectedNode,
 				selectedEdge = state.selectedEdge;
 
-			if(document.getElementById("workspace").style.display=="block"){
+			if(document.getElementById("workspace").style.display=="flex"){
 
 				if (selectedNode){
 				
@@ -1483,7 +1483,7 @@ GW.workspace = {
 
 	checkIfWorkspacePanelActive: function(){
 
-		return document.getElementById("workspace").style.display=="block";
+		return document.getElementById("workspace").style.display=="flex";
 
 	},
 	
