@@ -280,16 +280,23 @@ GW.workspace = {
 				</div>
 		
 				<div class="modal-footer">
-
+					<button id="export-loading-waiter" type="button" class="btn btn-outline-secondary" disabled style="display: none">
+						<div style="display: inline-flex">
+							<img id="export-loading-waiter" src="../gif/loading-spinner-black.gif" style="height: 25px; width: 25px" alt="loading..." />
+							<p style="margin: 0; padding-top: 3px">Preparing your Download</p>
+						</div>
+					</button>
 					<button type="button" id="workflow-download-confirm-btn" class="btn btn-outline-secondary">Confirm</button>
-				
 					<button type="button" id="workflow-download-cancel-btn" class="btn btn-outline-secondary">Cancel</button>
-				
 				</div>`;
 
 				GW.workspace.jsFrame = GW.process.createJSFrameDialog(620, 340, content, "Workflow Exportation Options");
 
 				$("#workflow-download-confirm-btn").click(function(){
+
+					// disable the button and show loading icon
+					$("#export-loading-waiter").css('display', 'inline-block');
+					$("#workflow-download-confirm-btn").css('display', 'none');
 
 					let exportoption = $("input[name='workflowdownloadoption']:checked").val();
 
@@ -316,6 +323,10 @@ GW.workspace = {
 							alert("Failed to export workflow.");
 
 						}
+
+						$("#export-loading-waiter").css('display', 'none');
+						$("#workflow-download-confirm-btn").css('display', 'inline-block');
+
 
 					}).fail(function(msg){
 
