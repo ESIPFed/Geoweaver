@@ -79,6 +79,7 @@
     padding:10px;
     transition: transform 0.3s 0.3s;
     border: 1px dashed lightgray;
+    z-index: 5;
 }
 
 .cd-panel--from-right .cd-panel__container {
