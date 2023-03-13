@@ -48,19 +48,19 @@ GW.workflow = {
 	},
 	
 	display: function(msg){
-		
-		var content = "<div class=\"modal-body\" style=\"height:100%;\">";
-		
+
+		let content = "<div class=\"modal-body\" style=\"height:100%;\">";
+
 		content += "<div class=\"row\" style=\"font-size: 12px;\">";
-		
-		var workflowid, workflowname, workflowdescription;
 
-		var confidential = null;
+		let workFlowID, workFlowName, workFlowDescription;
 
-		var owner = null;
+		let confidential = null;
 
-		var info_body = "";
-		
+		let owner = null;
+
+		let info_body = "";
+
 		jQuery.each(msg, function(i, val) {
 			
 			if(typeof val =='object')
@@ -68,29 +68,29 @@ GW.workflow = {
 				val = JSON.stringify(val);
 			}
 
-			if(i=="id"){
+			if(i==="id"){
 				
-				workflowid = val;
+				workFlowID = val;
 				content += "<div class=\"col col-md-3\">"+i+"</div>"+
 					"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
 				
-			}else if(i=="name"){
+			}else if(i==="name"){
 				
-				workflowname = val;
+				workFlowName = val;
 				content += "<div class=\"col col-md-3\">"+i+"</div>"+
 					"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
 				
-			}else if(i=="description"){
+			}else if(i==="description"){
 				
-				workflowdescription = val;
+				workFlowDescription = val;
 				content += "<div class=\"col col-md-3\">"+i+"</div>"+
 					"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
 				
-			}else if(i=="confidential"){
+			}else if(i==="confidential"){
 				
 				confidential = val;
 
-			}else if(i=="owner"){
+			}else if(i==="owner"){
 
 				owner = val;
 
@@ -133,19 +133,19 @@ GW.workflow = {
 		
 		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.history('"+
     	
-		workflowid+"', '" + workflowname+"')\"><i class=\"fa fa-history subalignicon\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button> "+
+		workFlowID+"', '" + workFlowName+"')\"><i class=\"fa fa-history subalignicon\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button> "+
 		
 		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.add('"+
     	
-		workflowid+"', '"+workflowname+"', false)\"><i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\"></i> Run </button> "+
+		workFlowID+"', '"+workFlowName+"', false)\"><i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\"></i> Run </button> "+
 
 		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.landingpage('"+
     	
-		workflowid+"', '" + workflowname+"')\"><i class=\"fa fa-share subalignicon\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> Share </button> "+
+		workFlowID+"', '" + workFlowName+"')\"><i class=\"fa fa-share subalignicon\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> Share </button> "+
 		
 		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('"+
     	
-		workflowid+"','workflow')\" ><i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\"></i> Delete </button>"+
+		workFlowID+"','workflow')\" ><i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\"></i> Delete </button>"+
 		
 		"</p></div>"+
 
@@ -154,7 +154,7 @@ GW.workflow = {
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-code-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-code')\">Info</button>"+
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 		
-		workflowid+"', '" + workflowname+"')\">History</button>"+
+		workFlowID+"', '" + workFlowName+"')\">History</button>"+
 		" </div>"+
 		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
@@ -174,7 +174,7 @@ GW.workflow = {
 		
 		$("#main-workflow-content").html(content);
 
-		var current_workflow_name = workflowname;
+		var current_workflow_name = workFlowName;
 
 		$("#display_workflow_name_field").focus(()=>{current_workflow_name = $("#display_workflow_name_field").val()})
 		
@@ -188,7 +188,7 @@ GW.workflow = {
 
 		})
 
-		var current_workflow_description = workflowdescription;
+		var current_workflow_description = workFlowDescription;
 
 		$("#display_workflow_description_field").focus(()=>{current_workflow_description = $("#display_workflow_description_field").val()})
 		
@@ -221,7 +221,6 @@ GW.workflow = {
 	},
 
 	switchTab: function (ele, name){
-	    		
 		console.log("Turn on the tab " + name)
 		  
 		var i, tabcontent, tablinks;
@@ -236,8 +235,6 @@ GW.workflow = {
 		document.getElementById(name).style.display = "block";
 		ele.className += " active";
 
-		// GW.process.refreshCodeEditor();
-		  
 	},
 
 	findCache: function(wid){
@@ -478,6 +475,11 @@ GW.workflow = {
 	},
 
 	saveUploadWorkflow: function(id, filename){
+		let rightPane = document.getElementById("right-page-div");
+		let loadingScreen = document.getElementById("loading-state-div");
+
+		rightPane.style.display = "none";
+		loadingScreen.style.display = "block";
 
 		$.ajax({
 	
@@ -486,21 +488,25 @@ GW.workflow = {
 			method: "POST",
 			
 			data: "id=" + id + "&filename=" + filename
-			
+
+
 		}).done(function(msg){
 
+
 			msg = GW.general.parseResponse(msg);
-
 			if(msg.id){
-
 				GW.workflow.refreshWorkflowList();
 				
 				GW.menu.details(msg.id, "workflow");
 
 				GW.menu.refresh();
-				
+
+				rightPane.style.display = "block";
+				loadingScreen.style.display = "none";
 			}else{
-				
+
+				rightPane.style.display = "block";
+				loadingScreen.style.display = "none";
 				alert("Fail to save the workflow to database.");
 
 			}
@@ -1198,6 +1204,7 @@ GW.workflow = {
 		})
 
 	},
+	
 	
 	showProcessLog: function(workflow_history_id, process_id, process_title){
 

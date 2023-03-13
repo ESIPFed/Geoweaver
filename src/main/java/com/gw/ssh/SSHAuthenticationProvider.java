@@ -50,8 +50,7 @@ public class SSHAuthenticationProvider implements AuthenticationProvider {
     
     @Autowired
     SSHSession sshSession;
-    
-    //@Autowired
+
     public SessionManager sessionManager = new SessionManager();
 
     public SSHAuthenticationProvider() {
@@ -60,17 +59,13 @@ public class SSHAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-//        SSHSession sshSession = new SSHSessionImpl();
-        //UsernamePasswordAuthenticationToken request = (UsernamePasswordAuthenticationToken) authentication;
         String username = authentication.getPrincipal().toString();
         String password = authentication.getCredentials().toString();
         log.info("SSH Authentication Provider is called: {}:{}", username, password);
         boolean success = sshSession.login("", "", username, password, "", false);
         log.info("SSH login: {}={}", username, success);
         Authentication result = new UsernamePasswordAuthenticationToken(username, password, authorities);
-        //result.setAuthenticated(success);
         log.info("adding SSH session for {}", username);
-//        sshSessionManager.sessionsByUsername.put(username, sshSession);
         return result;
     }
 

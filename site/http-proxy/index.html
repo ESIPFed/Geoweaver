@@ -117,14 +117,14 @@
 <p>When deploying Geoweaver to a public server, the default port 8070 is normally blocked. To access Geoweaver, you need to set up a proxy in the HTTP server. Here is a how-to guide for Apache server.</p>
 <h2 id="apache-proxy-for-geoweaver">Apache Proxy for Geoweaver</h2>
 <p>This guide uses Apache 2.4.39. It should work for any newer version. For older version, there might be changes. Please <a href="https://github.com/ESIPFed/Geoweaver/issues">report</a> if running into issues.</p>
-<ol>
+<ul>
 <li>
 <p>Open your default site HTTP configuration file <code>/etc/apache2/sites-available/000-default.conf</code>. </p>
 </li>
 <li>
 <p>Add the following lines into the code block of <code>&lt;VirtualHost *:80&gt;</code>:</p>
 </li>
-</ol>
+</ul>
 <pre><code>    ProxyPreserveHost On
 
     ProxyPass /Geoweaver/jupyter-socket ws://localhost:8070/Geoweaver/jupyter-socket
@@ -142,9 +142,9 @@
     ProxyPass &quot;/Geoweaver&quot; &quot;http://localhost:8070/Geoweaver&quot;
     ProxyPassReverse &quot;/Geoweaver&quot; &quot;http://localhost:8070/Geoweaver&quot;
 </code></pre>
-<ol>
+<ul>
 <li>Restart Apache using: <code>service apache restart</code>. Geoweaver should now be accessible at <code>http://&lt;your_server_domain&gt;/Geoweaver</code>.</li>
-</ol>
+</ul>
 <h2 id="nginx-proxy-for-geoweaver">Nginx Proxy for Geoweaver</h2>
 <p>TBD</p>
               

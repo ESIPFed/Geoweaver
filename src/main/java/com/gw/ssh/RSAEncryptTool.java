@@ -131,29 +131,4 @@ public class RSAEncryptTool {
         
         return cipher.doFinal(message.getBytes());
     }
-    
-//     public static void main(String [] args) throws Exception {
-//         // generate public and private keys
-//         KeyPair keyPair = buildKeyPair();
-//         PublicKey pubKey = keyPair.getPublic();
-//         PrivateKey privateKey = keyPair.getPrivate();
-        
-//         System.out.println("public key base64: " + RSAEncryptTool.byte2Base64(pubKey.getEncoded()));
-        
-//         System.out.println("private key base64: " + RSAEncryptTool.byte2Base64(privateKey.getEncoded()));
-        
-//         // sign the message
-//         byte [] signed = encrypt(pubKey, "This is a secret message");   
-        
-//         System.out.println(new String(signed));  // <<signed message>>
-        
-//         // verify the message
-//         byte[] verified = decrypt(privateKey, signed);              
-        
-//         System.out.println(new String(verified));     // This is a secret message
-    	
-// //    	System.out.println(RSAEncryptTool.getPublicKey());
-    	
-//     }
-	
 }

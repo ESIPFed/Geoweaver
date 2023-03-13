@@ -53,14 +53,12 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
 
-@Controller 
-//@RequestMapping("/Geoweaver/web")
+@Controller
 public class JupyterController {
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private String scheme = "http";
-//	private String server = "192.168.0.80";
 	private String server = "localhost";
 	private int port = 8888;
 	
@@ -102,8 +100,6 @@ public class JupyterController {
 	            		.build())
 	            .build();
 		
-		// requestFactory.setHttpClient(httpClient);
-		
 		restTemplate1.setRequestFactory(requestFactory);
 		
 		logger.debug("A new restTemplate is created");
@@ -139,47 +135,19 @@ public class JupyterController {
 		
 		if(!BaseTool.isNull(resp))
 			resp = resp
-				//for jupyter notebook
-//				.replaceAll(scheme + "://" + server + ":" + port, replacement)
 				.replace("\"/static/", "\"/Geoweaver/jupyter-proxy/"+hostid+"/static/")
 				.replace("\"/custom/custom.css\"", "\"/Geoweaver/jupyter-proxy/"+hostid+"/custom/custom.css\"")
 				.replace("\"/login", "\"/Geoweaver/jupyter-proxy/"+hostid+"/login")
 				.replace("\"/tree", "\"/Geoweaver/jupyter-proxy/"+hostid+"/tree")
-//				.replace("'contents': 'services/contents',", "'contents': 'Geoweaver/web/jupyter-proxy/services/contents',")
 				.replace("/static/base/images/logo.png", "/Geoweaver/jupyter-proxy/"+hostid+"/static/base/images/logo.png")
 				.replace("baseUrl: '/static/',", "baseUrl: '/Geoweaver/jupyter-proxy/"+hostid+"/static/',")
-				
-//				.replace("url_path_join(this.base_url, 'api/config',", "url_path_join('/Geoweaver/jupyter-proxy/"+hostid+"/', 'api/config',")
-				
-				
-//				.replace("this.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
-//				.replace("that.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
 				.replace("data-base-url=\"/\"", "data-base-url=\"/Geoweaver/jupyter-proxy/"+hostid+"/\"")
-				
-				
-//				.replace("'/Geoweaver/jupyter-proxy/"+hostid+"/', \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-				
-				//for jupyter notebook websocket
-//				.replace("this.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-//				.replace("that.base_url, \"api/kernels\"", "'/Geoweaver/jupyter-socket/"+hostid+"/', \"api/kernels\"")
-
-				//for all jupyter websocket
 				.replace("this.base_url, \"api/kernels\"", "this.base_url.replace(\"jupyter-proxy\", \"jupyter-socket\"), \"api/kernels\"")
 				.replace("that.base_url, \"api/kernels\"", "that.base_url.replace(\"jupyter-proxy\", \"jupyter-socket\"), \"api/kernels\"")
-				
-//				.replace("requirejs(['custom/custom'], function() {});", "requirejs(['Geoweaver/web/jupyter-proxy/"+hostid+"/custom/custom'], function() {});")
 				.replace("src=\"/files/", "src=\"/Geoweaver/jupyter-proxy/"+hostid+"/files/")
-				
-//				.replace("this.notebook.base_url,", "'/Geoweaver/jupyter-proxy/"+hostid+"/',")
-				
 				.replace("nbextensions : '/nbextensions'", "nbextensions : '../nbextensions'")
 				.replace("custom : '/custom',", "custom : '../custom',")
 				.replace("kernelspecs : '/kernelspecs',", "kernelspecs : '../kernelspecs',")
-//				.replace("\"nbextensions/\"", "\"Geoweaver/web/jupyter-proxy/nbextensions/\"")
-//				.replace("this.base_url", "'/Geoweaver/web/jupyter-proxy/'")
-//				.replace("static/base/images/logo.png", "Geoweaver/web/jupyter-proxy/static/base/images/logo.png")
-//				.replace("static/services/contents", "Geoweaver/web/jupyter-proxy/static/services/contents")
-//				.replace("favicon.ico", "/Geoweaver/web/jupyter-proxy/favicon.ico")
 				
 				//for jupyterhub
 				.replace("\"/hub", "\"/Geoweaver/jupyter-proxy/"+hostid+"/hub")
@@ -208,8 +176,6 @@ public class JupyterController {
 	 * @return
 	 */
 	private ResponseEntity errorControl(String message, String hostid) {
-		
-//		logger.error(message);
 		
 		HttpHeaders headers = new HttpHeaders();
 		
@@ -340,37 +306,9 @@ public class JupyterController {
 		    		newbody,  
 		    		updateHeader(responseEntity.getHeaders(), newbody, hostid), 
 		    		responseEntity.getStatusCode());
-		    
-//		    if(method.equals(HttpMethod.GET)) {
-//		    	
-//		    	String newbody = addURLProxy(responseEntity.getBody(), hostid);
-//		    	
-//			    resp = new ResponseEntity<String>(
-//			    		newbody,  
-//			    		updateHeader(responseEntity.getHeaders(), newbody, hostid), 
-//			    		responseEntity.getStatusCode());
-//		    	
-//		    }else {
-//		    	
-//		    	resp = new ResponseEntity(
-//			    		addURLProxy(responseEntity.getBody(), hostid), 
-//			    		responseEntity.getHeaders(), 
-//			    		responseEntity.getStatusCode());
-//		    	
-//		    }
+
 		    
 		}catch (HttpStatusCodeException ex) {
-		    
-		    // http status code e.g. `404 NOT_FOUND`
-//		    logger.error(ex.getStatusCode().toString());
-		    
-		    // get response body
-//		    System.out.println(ex.getResponseBodyAsString());
-		    
-		    // get http headers
-//		    HttpHeaders headers = ex.getResponseHeaders();
-//		    System.out.println(headers.get("Content-Type"));
-//		    System.out.println(headers.get("Server"));
 		    
 		    String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
 		    

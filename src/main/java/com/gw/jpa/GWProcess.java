@@ -16,7 +16,6 @@ import javax.persistence.Id;
 public class GWProcess {
 
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
 	String id;
 	
 	String name;

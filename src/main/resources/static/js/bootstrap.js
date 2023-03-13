@@ -1291,7 +1291,7 @@ if (typeof jQuery === 'undefined') {
     viewport: {
       selector: 'body',
       padding: 0
-    }
+    },
   }
 
   Tooltip.prototype.init = function (type, element, options) {

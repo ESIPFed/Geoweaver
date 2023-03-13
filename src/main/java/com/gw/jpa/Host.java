@@ -12,8 +12,6 @@ import javax.persistence.OneToMany;
 public class Host {
 
 	@Id
-//	@GeneratedValue(generator="system-uuid")
-//	@GenericGenerator(name="system-uuid", strategy = "uuid")
 	String id;
 	
 	String name, ip, port, username, owner, type, url;

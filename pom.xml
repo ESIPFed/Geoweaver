@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.0.0-rc6</version>
+	<version>1.0.0-rc7</version>
 	<name>geoweaver</name>
 	<description>A lightweight workflow management software for organizing data analysis workflows, 
 	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
@@ -126,6 +126,17 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 
 
 		<dependency>
