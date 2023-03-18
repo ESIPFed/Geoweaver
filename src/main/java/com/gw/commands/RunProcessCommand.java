@@ -18,7 +18,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "process")
+@Command(name = "process", description = "Import workflow and process into Geoweaver database")
 public class RunProcessCommand  implements Runnable {
 
     @Parameters(index = "0", description = "process id to run")

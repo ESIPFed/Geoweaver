@@ -35,7 +35,7 @@ class requiredDetailCommandOptions {
 }
 
 @Component
-@Command(name = "detail", description = "Show the detail of a resource")
+@Command(name = "detail", description = "Show the detail of a resource (workflow, process, host)")
 public class DetailCommand implements Runnable {
     
     @ArgGroup(exclusive = false, multiplicity = "1")

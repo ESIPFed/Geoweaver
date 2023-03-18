@@ -12,7 +12,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "history", description = "Show a history")
+@Command(name = "history", description = "Show a history of a process/workflow run")
 public class HistoryCommand implements Runnable {
 
     @Parameters(index = "0", description = "history id")

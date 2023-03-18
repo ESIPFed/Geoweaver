@@ -103,7 +103,7 @@ GW.process.sidepanel = {
                 <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
             </div>
 
-            <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:28rem;left:0; margin:0; padding: 0; ">
+            <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 250px);left:0; margin:0; padding: 0; ">
                 <div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="prompt-process-code-history-section">
                     <div id="prompt-process-process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
                         <div class="col col-md-6" id="prompt-process-code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
@@ -136,6 +136,8 @@ GW.process.sidepanel = {
 		$("#prompt-process-processname").val(this.current_process_name);
 		
 		$("#prompt-process-processid").val(this.current_process_id);
+
+        $("#prompt-process-main-process-info-code").hide().fadeIn('fast'); // refresh to make height full
 		
 		GW.process.sidepanel.editor = GW.process.util.displayCodeArea(code_type,  code, "#prompt-process-code-embed", "#prompt-process-process_code_window");
 		
