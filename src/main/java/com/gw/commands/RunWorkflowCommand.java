@@ -137,7 +137,7 @@ public class RunWorkflowCommand  implements Runnable {
             String sourceDirectoryPath = Path.of(Paths.get(workflowJSONPath).toAbsolutePath() + "/history/" + historyId + ".json").toString();
             ObjectMapper m = new ObjectMapper();
             try {
-                m.writeValue(new File(sourceDirectoryPath), mapper);
+                m.writerWithDefaultPrettyPrinter().writeValue(new File(sourceDirectoryPath), mapper);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
