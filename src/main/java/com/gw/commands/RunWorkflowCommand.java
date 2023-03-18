@@ -16,7 +16,6 @@ import com.gw.utils.RandomString;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.constant.Constable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -100,7 +99,7 @@ public class RunWorkflowCommand  implements Runnable {
         HistoryTool ht = BeanTool.getBean(HistoryTool.class);
 
         History hist = ht.getHistoryById(historyId);
-        List<Map<java.lang.constant.Constable, Serializable>> mapper = new ArrayList<>();
+        List<Map<String, Serializable>> mapper = new ArrayList<>();
         try {
         
             while(true){
@@ -110,7 +109,7 @@ public class RunWorkflowCommand  implements Runnable {
                 hist = ht.getHistoryById(historyId);
 
                 if (workflowJSONPath != null) {
-                    Map<Constable, Serializable> mMap = new HashMap<>();
+                    Map<String, Serializable> mMap = new HashMap<>();
                     mMap.put("history_id", hist.getHistory_id());
                     mMap.put("history_input", hist.getHistory_input());
                     mMap.put("history_output", hist.getHistory_output());
