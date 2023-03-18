@@ -65,29 +65,29 @@ GW.process.sidepanel = {
         $("#prompt-panel-main").html("");
         
         // add process metadata
-        let process_metadata_content = `
-            <div style="display: flex; flex-direction: row;" >
-                <p style="padding-top: 4px; padding-right: 10px;">Type: </p>
-                <select class="border-box-black-not-allowed" id="prompt-process-processcategory" disabled>
-                    <option value="shell">Shell</option>
-                    <option value="builtin">Built-In Process</option>
-                    <option value="jupyter">Jupyter Notebook</option>
-                    <option value="python">Python</option>
-                </select>
-                <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
-                <input class="border-box-black-allowed" id="prompt-process-processname" type="text" />
-            </div>
-            <div style="display: flex; flex-direction: row;">
-                <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
-                <input class="border-box-black-allowed" id="prompt-process-processid" type="text"  disabled/>
-                <!--<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
-            </div>
-        `
-        $("#prompt-panel-main").append(process_metadata_content)
+        // let process_metadata_content = `
+        //     <div style="display: flex; flex-direction: row;" >
+        //         <p style="padding-top: 4px; padding-right: 10px;">Type: </p>
+        //         <select class="border-box-black-not-allowed" id="prompt-process-processcategory" disabled>
+        //             <option value="shell">Shell</option>
+        //             <option value="builtin">Built-In Process</option>
+        //             <option value="jupyter">Jupyter Notebook</option>
+        //             <option value="python">Python</option>
+        //         </select>
+        //         <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
+        //         <input class="border-box-black-allowed" id="prompt-process-processname" type="text" />
+        //     </div>
+        //     <div style="display: flex; flex-direction: row;">
+        //         <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
+        //         <input class="border-box-black-allowed" id="prompt-process-processid" type="text"  disabled/>
+        //         <!--<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
+        //     </div>
+        // `
+        // $("#prompt-panel-main").append(process_metadata_content)
 
         // add process code and history combo
         let process_code_history_content = `<div id="prompt-process-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
-            <div class="subtab tab titleshadow" style="margin-top: 20px; max-width: 100%">
+            <div class="subtab tab titleshadow" style="margin-top: 0; max-width: 100%">
                 <button class="tablinks-process" id="prompt-process-main-process-info-code-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-code')">Code</button>
                 <button class="tablinks-process" id="prompt-process-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-process-main-process-info-history'); GW.process.sidepanel.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
 
@@ -103,7 +103,7 @@ GW.process.sidepanel = {
                 <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
             </div>
 
-            <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 250px);left:0; margin:0; padding: 0; ">
+            <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:100%;left:0; margin:0; padding: 0; ">
                 <div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="prompt-process-code-history-section">
                     <div id="prompt-process-process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
                         <div class="col col-md-6" id="prompt-process-code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
@@ -121,7 +121,7 @@ GW.process.sidepanel = {
                 </div>
             </div>
 
-            <div id="prompt-process-main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 250px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+            <div id="prompt-process-main-process-info-history" class="tabcontent-process generalshadow" style="height:100%; overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
                 <div class="row" id="prompt-process-process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
                 </div>
             </div>
