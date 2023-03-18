@@ -419,7 +419,7 @@ GW.workspace = {
 				
 			}else{
 				
-				GW.workflow.showProcessLog(GW.workflow.history_id, selectedNode.id, selectedNode.title);
+				GW.process.sidepanel.showProcessLog(GW.workflow.history_id, selectedNode.id, selectedNode.title);
 				
 			}
 			
@@ -860,7 +860,7 @@ GW.workspace = {
 
 		  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
 			
-			GW.workflow.showProcessLog(GW.workflow.history_id, d.id, d.title);
+			GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
 
 		  }
 

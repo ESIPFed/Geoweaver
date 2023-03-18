@@ -11,6 +11,7 @@ GW.process.sidepanel = {
     current_workflow_process_id: null,
     current_process_id: null,
     current_process_name: null,
+    dockmode: "left", 
 
     editor: null,
 
@@ -21,10 +22,10 @@ GW.process.sidepanel = {
     open_panel: function(workflow_history_id, workflow_process_id, process_name){
 
         console.log(workflow_history_id + " " + workflow_process_id + " " + process_name)
-        this.current_process_id = workflow_process_id.split("-")[0];
-        this.current_process_name = process_name;
         this.current_workflow_history_id = workflow_history_id;
         this.current_workflow_process_id = workflow_process_id;
+        this.current_process_id = workflow_process_id.split("-")[0];
+        this.current_process_name = process_name;
 
         $.ajax({
 				
@@ -38,11 +39,80 @@ GW.process.sidepanel = {
 
             msg = $.parseJSON(msg);
 
-            GW.process.sidepanel.display(msg)
+            GW.process.sidepanel.display(msg);
+
+            GW.process.sidepanel.showProcessLog(GW.process.sidepanel.current_workflow_history_id, 
+                GW.process.sidepanel.current_workflow_process_id, GW.process.sidepanel.current_process_name);
 
         })
 
+
     },
+
+
+	showProcessLog: function(workflow_history_id, process_id, process_title){
+
+        if(workflow_history_id == null){
+            
+            $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
+
+        }else{
+
+            $.ajax({
+
+                url: "workflow_process_log",
+            
+                method: "POST",
+            
+                data: "workflowid="+ GW.workflow.loaded_workflow +"&workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
+            
+            }).done(function(msg){
+    
+                msg = GW.general.parseResponse(msg);
+    
+                let msgout = msg.history_output;
+    
+                if(msgout!=null){
+    
+                    msgout = msgout.replaceAll("\n", "<br/>");
+    
+                    $("#prompt-process-process-log-window").append(msgout);
+    
+                }else{
+                    
+                    $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
+    
+                }
+    
+            }).fail(function(msg){
+    
+                $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
+    
+            })
+
+        }
+        
+
+		$.ajax({
+
+			url: "check_workflow_process_skipped",
+		
+			method: "POST",
+		
+			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id
+		
+		}).done(function(msg){
+
+			msg = GW.general.parseResponse(msg);
+
+			if(msg.if_skipped){
+				document.getElementById("prompt_panel_skip_process_"+process_id).checked = true;
+			}else{
+				document.getElementById("prompt_panel_skip_process_"+process_id).checked = false;
+			}
+		})
+		
+	},
 
     /**
      * Keep consistent with gw.process
@@ -63,27 +133,6 @@ GW.process.sidepanel = {
         $('#prompt-process-panel').addClass('cd-panel--is-visible');
 
         $("#prompt-panel-main").html("");
-        
-        // add process metadata
-        // let process_metadata_content = `
-        //     <div style="display: flex; flex-direction: row;" >
-        //         <p style="padding-top: 4px; padding-right: 10px;">Type: </p>
-        //         <select class="border-box-black-not-allowed" id="prompt-process-processcategory" disabled>
-        //             <option value="shell">Shell</option>
-        //             <option value="builtin">Built-In Process</option>
-        //             <option value="jupyter">Jupyter Notebook</option>
-        //             <option value="python">Python</option>
-        //         </select>
-        //         <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Name:</p>
-        //         <input class="border-box-black-allowed" id="prompt-process-processname" type="text" />
-        //     </div>
-        //     <div style="display: flex; flex-direction: row;">
-        //         <p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">ID:</p>
-        //         <input class="border-box-black-allowed" id="prompt-process-processid" type="text"  disabled/>
-        //         <!--<p style="margin: 0; padding-top: 4px; padding-left: 20px; padding-right: 10px;">Confidential:</p>-->
-        //     </div>
-        // `
-        // $("#prompt-panel-main").append(process_metadata_content)
 
         // add process code and history combo
         let process_code_history_content = `<div id="prompt-process-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
@@ -98,9 +147,15 @@ GW.process.sidepanel = {
                     <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
                 -->
 
-
                 <button class="btn pull-right" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
                 <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
+                <button class="btn pull-right" onclick="javascript:void(0)">Skip: <input type="checkbox"
+												 onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'
+												 id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" /></button>
+
+                <button class="btn pull-right" onclick="javascript:void(0)">Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" /></button>
+
+                
             </div>
 
             <div id="prompt-process-main-process-info-code" class="tabcontent-process generalshadow" style="height:100%;left:0; margin:0; padding: 0; ">
@@ -147,6 +202,27 @@ GW.process.sidepanel = {
 
         GW.process.sidepanel.bottomDock()  // default bottomdock to save space
 
+        $("#prompt_panel_log_switch").change(function(){
+			if(GW.process.sidepanel.dockmode == "left"){
+				if(!this.checked){
+					$(".container__right").hide()
+					$(".container__left").css('width', '100%');
+				}else{
+					$(".container__right").show()
+					$(".container__left").css('width', '60%');
+				}
+			}else if(GW.process.sidepanel.dockmode == "bottom"){
+				if(!this.checked){
+					$(".container__right").hide()
+					$(".container__left").css('height', '100%');
+				}else{
+					$(".container__right").show()
+					$(".container__left").css('height', '60%');
+				}
+			}
+			
+		})
+
     },
 
     switchFullScreen: function(){
@@ -159,6 +235,7 @@ GW.process.sidepanel = {
 
         GW.process.util.leftDock("prompt-process-code-history-section", "prompt-process-process_code_window", 
             "prompt-process-single-console-content", "prompt-process-dragMe")
+        GW.process.sidepanel.dockmode = "left";
 
     },
 
@@ -166,6 +243,7 @@ GW.process.sidepanel = {
 
         GW.process.util.bottomDock("prompt-process-code-history-section", "prompt-process-process_code_window", 
             "prompt-process-single-console-content", "prompt-process-dragMe")
+        GW.process.sidepanel.dockmode = "bottom";
 
     },
 
@@ -182,108 +260,5 @@ GW.process.sidepanel = {
 
     },
 
-
-	hideSidenav: function() {
-		let sidenav = document.getElementById('sidenav-editor');
-		sidenav.style.display = 'none';
-	},
-
-    whateverthisis: function(){
-
-        console.log("comes here 444");
-		tabLinks = document.getElementsByClassName("tablinks");
-		for (i = 0; i < tabLinks.length; i++) {
-			tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-		}
-		document.getElementById(name).style.display = "flex";
-		ele.className += " active";
-
-		if(name === "main-dashboard"){
-
-			GW.board.refresh();
-
-		}
-		return
-    },
-
-
-	showSidenav: function() {
-		let sidenav = document.getElementById('sidenav-editor');
-		sidenav.style.display = 'block';
-
-		let selectedNode = GW.workspace.theGraph.state.selectedNode;
-		let execution_context = document.getElementById('execution_context');
-		execution_context.innerHTML = GW.workflow.showProcessLogAsText(GW.workflow.history_id, selectedNode.id, selectedNode.title);
-
-
-	},
-
-
-	showProcessLogAsText: function(workflow_history_id, process_id, process_title){
-		$.ajax({
-
-			url: "workflow_process_log",
-
-			method: "POST",
-
-			data: "workflowid="+ GW.workflow.loaded_workflow +"&workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
-
-		}).done(function(msg) {
-			msg = GW.general.parseResponse(msg);
-
-			let msgout = msg.history_output;
-
-			if(msgout!=null){
-				msgout = msgout.replaceAll("\n", "<br/>");
-
-				return `
-					<div style="overflow: scroll">
-						<div class="modal-body">
-							<div class="row">
-								<div class="col-md-12">
-									Process Name: ` + process_title + ` <br/>
-									Process ID: ` + process_id + ` <br/>
-									Skip: <input type="checkbox"
-												 onClick='GW.workflow.skipprocess("` + workflow_history_id + `", "` + process_id + `");'
-												 id="skip_process_` + process_id + `"> <br/>
-									Output: <br/>
-									<p> `+ msgout +` </p>
-								</div>
-							</div>
-						</div>
-					</div>`;
-			} else {
-				return `<div style="overflow: scroll">
-					<div class="modal-body">
-						<div class="row">
-							<div class="col-md-12">
-								Process Name: ` + process_title + ` <br/>
-								Process ID: ` + process_id + ` <br/>
-								Skip: <input type="checkbox"
-											 onClick='GW.workflow.skipprocess("` + workflow_history_id + `", "` + process_id + `");'
-											 id="skip_process_` + process_id + `"> <br/>
-								Output: <br/>
-							</div>
-						</div>
-					</div>
-				</div>`;
-			}
-	    });
-
-		return `<div style="overflow: scroll">
-					<div class="modal-body">
-						<div class="row">
-							<div class="col-md-12">
-								Process Name: ` + process_title + ` <br/>
-								Process ID: ` + process_id + ` <br/>
-								Skip: <input type="checkbox"
-											 onClick='GW.workflow.skipprocess("` + workflow_history_id + `", "` + process_id + `");'
-											 id="skip_process_` + process_id + `"> <br/>
-								Output: <br/>
-							</div>
-						</div>
-					</div>
-				</div>`;
-	},
 
 }

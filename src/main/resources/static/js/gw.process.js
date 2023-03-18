@@ -1633,12 +1633,14 @@ GW.process = {
 	bottomDock: function(){
 
 		GW.process.util.bottomDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+		GW.process.dockmode = "bottom";
 
 	},
 
 	leftDock: function(){
 
 		GW.process.util.leftDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+		GW.process.dockmode = "left";
 
 	},
 
