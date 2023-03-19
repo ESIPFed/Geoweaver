@@ -443,6 +443,8 @@ GW.workspace = {
 				GW.menu.details(id, "process");
 				
 			}
+
+			GW.process.sidepanel.close()  //always close the side panel when leaving
 			
 		});
 		
