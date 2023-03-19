@@ -11,6 +11,7 @@ GW.process.sidepanel = {
     current_workflow_process_id: null,
     current_process_id: null,
     current_process_name: null,
+    current_process_category: null,
     dockmode: "left", 
 
     editor: null,
@@ -48,6 +49,39 @@ GW.process.sidepanel = {
 
 
     },
+
+    editSwitch: function(){
+
+        if($('#prompt-process-panel').hasClass('cd-panel--is-visible')){
+
+            this.update();
+
+        }
+
+    },
+
+    update: function(){
+		
+		var pcode =  GW.process.sidepanel.getCode();
+
+		var confidential = "FALSE"  // this is very rarely used right now. May improve in future.
+
+		if(this.current_process_id!=null){
+
+			if(this.current_process_lang=="builtin"){
+
+				GW.process.updateBuiltin();
+			
+            }else{
+			
+                GW.process.updateRaw(this.current_process_id, this.current_process_name, this.current_process_lang, 
+                    this.current_process_description, pcode, confidential);
+			
+            }
+			
+		}
+		
+	},
 
 
 	showProcessLog: function(workflow_history_id, process_id, process_title){
@@ -106,9 +140,9 @@ GW.process.sidepanel = {
 			msg = GW.general.parseResponse(msg);
 
 			if(msg.if_skipped){
-				document.getElementById("prompt_panel_skip_process_"+process_id).checked = true;
+                $("#prompt_panel_skip_process_"+process_id).prop('checked', true)
 			}else{
-				document.getElementById("prompt_panel_skip_process_"+process_id).checked = false;
+                $("#prompt_panel_skip_process_"+process_id).prop('checked', false)
 			}
 		})
 		
@@ -120,7 +154,14 @@ GW.process.sidepanel = {
      */
     display: function(msg){
 
+
         let code_type = msg.lang==null?msg.description: msg.lang;
+
+        GW.process.sidepanel.current_process_description = msg.description;
+
+        GW.process.sidepanel.current_process_lang = msg.lang;
+
+        GW.process.sidepanel.current_process_category = code_type
 
         let code = msg.code;
 
@@ -144,11 +185,12 @@ GW.process.sidepanel = {
                 <!--
                     <button class="btn pull-right" onclick="GW.process.sidepanel.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
                     <button class="btn pull-right" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-                    <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+                    
                 -->
 
                 <button class="btn pull-right" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
                 <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
+                <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
                 <button class="btn pull-right" onclick="javascript:void(0)">Skip: <input type="checkbox"
 												 onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'
 												 id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" /></button>
@@ -224,6 +266,56 @@ GW.process.sidepanel = {
 		})
 
     },
+
+    getCode: function(){
+
+		var code = null;
+		
+		if(GW.process.sidepanel.current_process_category=="shell"){
+			
+			code = GW.process.sidepanel.editor.getValue();
+			
+		}else if(GW.process.sidepanel.current_process_category=="builtin"){
+			
+			var params = [];
+			
+			$(".parameter").each(function(){
+				
+				var newparam = {
+						
+						name: $(this).attr('id').split("param_")[1].split(cmid)[0],
+						
+						value: $(this).val()
+						
+				}
+				
+				params.push(newparam);
+				
+			});
+			
+			code = {
+					
+					"operation" : $("#builtin_processes").val(),
+					
+					"params": params
+					
+			}
+
+			code = JSON.stringify(code);
+			
+		}else if(GW.process.sidepanel.current_process_category=="jupyter"){
+			
+			code = JSON.stringify(GW.process.jupytercode);
+			
+		}else if(GW.process.sidepanel.current_process_category=="python"){
+			
+			code = GW.process.sidepanel.editor.getValue();
+
+		}
+		
+		return code;
+		
+	},
 
     switchFullScreen: function(){
 

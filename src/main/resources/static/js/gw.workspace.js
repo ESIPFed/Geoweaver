@@ -860,7 +860,8 @@ GW.workspace = {
 
 		  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
 			
-			GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
+			// GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
+			console.log("no action taken");
 
 		  }
 

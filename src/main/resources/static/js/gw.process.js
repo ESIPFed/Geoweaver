@@ -1895,15 +1895,6 @@ GW.process = {
 			
 		}
 		
-		// GW.process.showSaved();
-			
-		
-		
-		// }else{
-			
-		// 	alert("Process name and code must be non-empty!");
-			
-		// }
 	},
 	
 	add: function(run, cmid){
