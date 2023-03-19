@@ -52,7 +52,7 @@ GW.process.sidepanel = {
 
     editSwitch: function(){
 
-        if($('#prompt-process-panel').hasClass('cd-panel--is-visible')){
+        if(this.isPresent){
 
             this.update();
 
@@ -103,12 +103,10 @@ GW.process.sidepanel = {
             }).done(function(msg){
     
                 msg = GW.general.parseResponse(msg);
-    
-                let msgout = msg.history_output;
-    
-                if(msgout!=null){
-    
-                    msgout = msgout.replaceAll("\n", "<br/>");
+
+                if("history_output" in msg && msg.history_output!=null){
+        
+                    msgout = msg.history_output.replaceAll("\n", "<br/>");
     
                     $("#prompt-process-process-log-window").append(msgout);
     
@@ -117,6 +115,7 @@ GW.process.sidepanel = {
                     $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
     
                 }
+                
     
             }).fail(function(msg){
     
@@ -349,6 +348,12 @@ GW.process.sidepanel = {
     close: function(){
 
         $('#prompt-process-panel').removeClass('cd-panel--is-visible');
+
+    },
+
+    isPresent: function(){
+
+        return $('#prompt-process-panel').hasClass('cd-panel--is-visible')
 
     },
 
