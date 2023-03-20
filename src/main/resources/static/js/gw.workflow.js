@@ -1183,7 +1183,7 @@ GW.workflow = {
 
 	skipprocess: function(workflow_history_id, process_id,){
 
-		var is_skipped = document.getElementById("skip_process_"+process_id).checked;
+		var is_skipped = document.getElementById("prompt_panel_skip_process_"+process_id).checked;
 
 		$.ajax({
 
@@ -1206,96 +1206,6 @@ GW.workflow = {
 	},
 	
 	
-	showProcessLog: function(workflow_history_id, process_id, process_title){
-
-		var content = `<div class="modal-body">
-					
-			<div class="row">
-		
-				<div class="col-md-12" id="dbclick_content">
-
-					Process Name: `+process_title+` <br/>
-
-					Process ID: `+process_id+` <br/>
-
-					Skip: <input type="checkbox" onclick='GW.workflow.skipprocess("`+workflow_history_id+`", "`+process_id+`");' id="skip_process_`+process_id+`" > <br/>
-
-					Output: <br/>
-
-				</div>
-		
-			</div>
-		
-		</div>
-
-		<div class="modal-footer">
-
-			<button type="button" id="wf-info-details-btn" class="btn btn-outline-secondary">Details</button>
-		
-			<button type="button" id="wf-info-cancel-btn" class="btn btn-outline-secondary">OK</button>
-		
-		</div>`;
-
-		var frame = GW.process.createJSFrameDialog(620, 340, content, "Process Information");
-
-		frame.on("#wf-info-cancel-btn", 'click', (_frame, evt) => {_frame.closeFrame()})
-
-		GW.workspace.jsFrame = frame;
-		
-		$.ajax({
-
-			url: "workflow_process_log",
-		
-			method: "POST",
-		
-			data: "workflowid="+ GW.workflow.loaded_workflow +"&workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
-		
-		}).done(function(msg){
-
-			msg = GW.general.parseResponse(msg);
-
-			let msgout = msg.history_output;
-
-			if(msgout!=null){
-
-				msgout = msgout.replaceAll("\n", "<br/>");
-
-			}
-			
-			$("#dbclick_content").append(msgout);
-
-			frame.on("#wf-info-details-btn", 'click', (_frame, evt) => {
-
-				// GW.menu.details(processid, "process");
-
-				GW.process.showHistoryDetails(msg.history_id);
-		
-				_frame.closeFrame()
-				
-			})
-
-		})
-
-		$.ajax({
-
-			url: "check_workflow_process_skipped",
-		
-			method: "POST",
-		
-			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id
-		
-		}).done(function(msg){
-
-			msg = GW.general.parseResponse(msg);
-
-			if(msg.if_skipped){
-				document.getElementById("skip_process_"+process_id).checked = true;
-			}else{
-				document.getElementById("skip_process_"+process_id).checked = false;
-			}
-		})
-		
-	},
 	
 	getHistoryDetails: function(history_id){
 		

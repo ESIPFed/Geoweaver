@@ -20,6 +20,7 @@ GW.general = {
 							event.preventDefault();
 							GW.host.editSwitch();
 							GW.process.editSwitch();
+							GW.process.sidepanel.editSwitch()
 							GW.workspace.saveWorkflow();
 							// alert('ctrl-s');
 							break;

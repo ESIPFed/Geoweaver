@@ -419,7 +419,7 @@ GW.workspace = {
 				
 			}else{
 				
-				GW.workflow.showProcessLog(GW.workflow.history_id, selectedNode.id, selectedNode.title);
+				GW.process.sidepanel.showProcessLog(GW.workflow.history_id, selectedNode.id, selectedNode.title);
 				
 			}
 			
@@ -443,6 +443,8 @@ GW.workspace = {
 				GW.menu.details(id, "process");
 				
 			}
+
+			GW.process.sidepanel.close()  //always close the side panel when leaving
 			
 		});
 		
@@ -860,7 +862,8 @@ GW.workspace = {
 
 		  GW.workspace.GraphCreator.prototype.circleDdlClick = function(d3node, d){
 			
-			GW.workflow.showProcessLog(GW.workflow.history_id, d.id, d.title);
+			// GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
+			console.log("no action taken");
 
 		  }
 

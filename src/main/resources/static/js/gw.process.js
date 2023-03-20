@@ -1633,12 +1633,14 @@ GW.process = {
 	bottomDock: function(){
 
 		GW.process.util.bottomDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+		GW.process.dockmode = "bottom";
 
 	},
 
 	leftDock: function(){
 
 		GW.process.util.leftDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+		GW.process.dockmode = "left";
 
 	},
 
@@ -1893,15 +1895,6 @@ GW.process = {
 			
 		}
 		
-		// GW.process.showSaved();
-			
-		
-		
-		// }else{
-			
-		// 	alert("Process name and code must be non-empty!");
-			
-		// }
 	},
 	
 	add: function(run, cmid){

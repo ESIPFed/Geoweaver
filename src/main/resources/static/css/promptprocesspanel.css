@@ -1,10 +1,10 @@
-.prompt-process-container {
+.prompt-panel-container {
     position: absolute;
     z-index: 100;
     background-color: white;
     right: 0;
     top: 52px;
-    width: 30%;
+    width: 40%;
     height: 100vh;
     border: 1px dashed lightgray;
     visibility: hidden;
@@ -30,7 +30,7 @@
     background-color: white;
     right: 0;
     top: 52px;
-    width: 30%;
+    width: 40%;
     height: 100vh;
     border: 1px dashed lightgray;
 }
@@ -48,7 +48,7 @@
     padding: 10px;
     background-color: white;
     top: 52px;
-    width: 30%;
+    width: 40%;
     height: 50px;
     transition: transform 0.3s 0s;
     transform: translateY(-50px);
@@ -72,11 +72,11 @@
     /*...*/
     position: absolute;
     background-color: white;
-    width: 30%;
+    width: 40%;
     height: 100%;
     top: 52px;
     margin-top:50px;
-    padding:10px;
+    padding:0;
     transition: transform 0.3s 0.3s;
     border: 1px dashed lightgray;
     z-index: 5;

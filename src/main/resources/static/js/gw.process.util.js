@@ -272,9 +272,7 @@ GW.process.util = {
 	},
 
     bottomDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
-
-		GW.process.dockmode = "bottom";
-
+		
 		var codeContainer = document.getElementById(history_section_id);
 		var resizerDrag = document.getElementById(resize_line_id);
 		resizerDrag.style.setProperty("height", "2px");
