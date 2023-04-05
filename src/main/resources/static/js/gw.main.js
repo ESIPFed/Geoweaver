@@ -136,7 +136,7 @@ function switchTab(ele, name){
 
 	}
 
-	if (name === "main-host-info") {
+	if (name != "main-workflow-info") {
 		GW.process.sidepanel.close();
 	}
 	  
