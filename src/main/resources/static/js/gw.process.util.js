@@ -340,7 +340,6 @@ GW.process.util = {
     },
 
     history: function(pid, process_history_container_id, process_history_table_id, close_history, history_tab_id, history_tab_target_id){
-		console.log('hhh111');
 
         $.ajax({
 			
