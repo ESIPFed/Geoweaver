@@ -350,7 +350,8 @@ GW.process.util = {
 			data: "type=process&id=" + pid
 			
 		}).done(function(msg){
-			
+			$("#prompt-panel-process-history-container").css('display', 'block');
+			$("#history-tab-loader-process-detail").css('display', 'none');
 			if(!msg.length){
 				
 				alert("no history found");
