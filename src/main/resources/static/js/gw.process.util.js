@@ -340,6 +340,7 @@ GW.process.util = {
     },
 
     history: function(pid, process_history_container_id, process_history_table_id, close_history, history_tab_id, history_tab_target_id){
+		console.log('hhh111');
 
         $.ajax({
 			
@@ -350,8 +351,15 @@ GW.process.util = {
 			data: "type=process&id=" + pid
 			
 		}).done(function(msg){
+
+			// for process dialog
 			$("#prompt-panel-process-history-container").css('display', 'block');
 			$("#history-tab-loader-process-detail").css('display', 'none');
+
+			// for main history container
+			$("#process-history-container").css('display', 'block');
+			$("#history-tab-loader-main-detail").css('display', 'none');
+
 			if(!msg.length){
 				
 				alert("no history found");
