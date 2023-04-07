@@ -1436,8 +1436,11 @@ GW.process = {
 			</div>`;
 
 		content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 180px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-				<div class="row" id="process-history-container" style="padding:0px; color:white; margin:0px; background-color:rgb(28, 28, 28);" >
-				   </div>
+				<div class="row" id="process-history-container" style="padding:0; color:white; margin:0; background-color:rgb(28, 28, 28);" ></div>
+				<div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: -100px; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
+                	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
+					<h5 style="width: 100vw; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
+				</div>
 			</div>
 		</div>`;
 		
