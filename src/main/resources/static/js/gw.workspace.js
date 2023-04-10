@@ -1093,7 +1093,7 @@ GW.workspace = {
 			thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
 			thisGraph.circles
 				.style("stroke", function (d) { 
-					return d.color;
+					return "black";
 				})
 				.style("fill", function (d) { 
 					console.log("circles together fill color: " + d.color)
@@ -1218,7 +1218,7 @@ GW.workspace = {
 				  .attr("r", String(consts.nodeRadius))
 				  .attr("stroke-width", 2)
 				.style('stroke', function (d) {
-					return "#006400";
+					return "black";
 				})
 				.style("fill", function (d) {
 					console.log("circle append called " + d.color)
