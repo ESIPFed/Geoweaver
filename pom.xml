@@ -17,7 +17,7 @@
 	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
 	especially for the AI experiments which have no two identifical runs.</description>
 	
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		
