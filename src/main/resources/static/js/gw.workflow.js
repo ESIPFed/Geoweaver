@@ -1141,7 +1141,7 @@ GW.workflow = {
 	},
 	
 	history: function(wid, name){
-		
+
 		$.ajax({
 			
 			url: "logs",

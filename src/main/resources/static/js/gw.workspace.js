@@ -610,7 +610,7 @@ GW.workspace = {
 				//remove the old color status - load a brand new workflow
 				newNodes.forEach(function(e, i){
 
-					newNodes[i].color = "";
+					newNodes[i].color = "white";
 
 				});
 
@@ -1050,6 +1050,11 @@ GW.workspace = {
 			
 			this.setIdCt(this.nodes.length);
 			
+			// remove old links
+			thisGraph.paths = thisGraph.paths.data([], function(d){
+				return String(d.source.id) + "+" + String(d.target.id);
+			  });
+			thisGraph.paths.exit().remove();
 			thisGraph.paths = thisGraph.paths.data(thisGraph.edges, function(d){
 			  return String(d.source.id) + "+" + String(d.target.id);
 			});
@@ -1079,26 +1084,29 @@ GW.workspace = {
 				state.mouseDownLink = null;
 			  });
 
-			// remove old links
-			paths.exit().remove();
+			
 			
 			// update existing nodes
+			// remove old nodes
+			thisGraph.circles = thisGraph.circles.data([], function(d){ return d.id;});
+			thisGraph.circles.exit().remove();
 			thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function(d){ return d.id;});
-			thisGraph.circles.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";})
-				  .style("stroke", function (d) { 
-					  return d.color;
-					})
+			thisGraph.circles
+				.style("stroke", function (d) { 
+					return d.color;
+				})
 				.style("fill", function (d) { 
-						if(d.skip=="true" || d.skip==true){
-							return "url(#diagonalHatch)";
-						}else{
-							return d.color;
-						}
-					});
+					console.log("circles together fill color: " + d.color)
+					if(d.skip=="true" || d.skip==true){
+						return "url(#diagonalHatch)";
+					}else{
+						return d.color;
+					}
+				})
+				.attr("transform", function(d){return "translate(" + d.x + "," + d.y + ")";});
 
 			// add new nodes
-			var newGs= thisGraph.circles.enter()
-				  .append("g");
+			var newGs= thisGraph.circles.enter().append("g");
 
 			var defs = GW.workspace.svg.append("defs");
 
@@ -1134,7 +1142,7 @@ GW.workspace = {
 					.attr('fill', 'AliceBlue')
 				.append('path')
 					.attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
-					.attr('stroke', '#000000')
+					.attr('stroke', '#006400')
 					.attr('stroke-width', 1);
 
 			// Define the div for the tooltip
@@ -1210,9 +1218,10 @@ GW.workspace = {
 				  .attr("r", String(consts.nodeRadius))
 				  .attr("stroke-width", 2)
 				.style('stroke', function (d) {
-					return "#000000";
+					return "#006400";
 				})
-				.attr("fill", function (d) {
+				.style("fill", function (d) {
+					console.log("circle append called " + d.color)
 					if(d.skip=="true" || d.skip==true){
 						return "url(#diagonalHatch)";
 					}else{
@@ -1225,8 +1234,7 @@ GW.workspace = {
 			  thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
 			});
 
-			// remove old nodes
-			thisGraph.circles.exit().remove();
+			
 		  };
 
 		  GW.workspace.GraphCreator.prototype.zoomed = function(){
@@ -1456,7 +1464,7 @@ GW.workspace = {
 
 	getColorByFlag: function(flag){
 
-		var color = "grey"
+		var color = "white"
 
 		if(flag=="Ready"){
 							
