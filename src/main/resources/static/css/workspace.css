@@ -60,20 +60,20 @@ marker{
 }
 
 g.conceptG circle{
-    stroke: #006400;
+    stroke: #000000;
 }
 
 g.conceptG:hover circle{
-    stroke: #006400;
+    stroke: #000000;
     stroke-width: 5px;
 }
 
 g.selected circle{
-    stroke: #006400;
+    stroke: #000000;
     stroke-width: 5px;
 }
 g.selected:hover circle{
-    stroke: #006400;
+    stroke: #000000;
     stroke-width: 8px;
 }
 
