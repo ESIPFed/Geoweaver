@@ -60,6 +60,7 @@ marker{
 }
 
 g.conceptG circle{
+    fill: white;
     stroke: #000000;
 }
 
