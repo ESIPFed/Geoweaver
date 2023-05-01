@@ -42,7 +42,7 @@ In Geoweaver, Workflow denotes a pipeline linking multiple (>2) Processes. An is
     * `Workflow with Process Code and Only Workflow History` - This will only download the source code and the workflow history without the process history.
     * `Workflow with Process Code and Only Successfully Done History` - This will download the source code and all history (including process history) of the successfully completed workflow, without the details of failed executions.
     * `workflow with process code and history (Recommended)`. - This will download not only the source code and workflow but also all the historical details of the previous execution of the workflow.
-     
+
 
         >  **The last option is recommended.**
 

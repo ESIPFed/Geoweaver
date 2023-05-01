@@ -8,9 +8,15 @@ GW.editor = {
 
     switchFullScreen: function(){
 
-        var editorDiv = $('#editor-history-tab-panel');
-        var subtabCodeDiv = $('#main-process-info-code');
-        var subtabHistoryDiv = $('#main-process-info-history');
+        this.switchFullScreenUtil('#editor-history-tab-panel', '#main-process-info-code', '#main-process-info-history')
+
+    },
+
+    switchFullScreenUtil: function(editor_history_tab_panel_id, main_process_info_code_id, main_process_info_history_id){
+
+        var editorDiv = $(editor_history_tab_panel_id);
+        var subtabCodeDiv = $(main_process_info_code_id);
+        var subtabHistoryDiv = $(main_process_info_history_id);
         if (!editorDiv.hasClass('fullscreen')) {
             this.beforeFullscreen = { height: editorDiv.height(), width: editorDiv.width() }
             editorDiv.addClass('fullscreen');
@@ -32,5 +38,6 @@ GW.editor = {
         }
 
     }
+
 
 }

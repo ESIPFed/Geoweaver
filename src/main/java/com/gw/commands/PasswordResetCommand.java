@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import picocli.CommandLine.Command;
 
-@Command(name = "resetpassword")
+@Command(name = "resetpassword", description = "Reset password of local host")
 @Component
 public class PasswordResetCommand implements Runnable {
 

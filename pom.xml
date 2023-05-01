@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.0.0-rc6</version>
+	<version>1.0.0-rc10</version>
 	<name>geoweaver</name>
 	<description>A lightweight workflow management software for organizing data analysis workflows, 
 	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
@@ -21,7 +21,7 @@
 
 	<properties>
 		
-		<org.springframework-version>5.3.23</org.springframework-version>
+		<org.springframework-version>5.3.26</org.springframework-version>
 
 		<picocli-version>4.6.3</picocli-version>
 		
@@ -285,7 +285,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3.3</version>
+            <version>1.5</version>
         </dependency>
 
         <!-- for geoweaver ssh -->

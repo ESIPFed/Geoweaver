@@ -1,0 +1,114 @@
+.prompt-panel-container {
+    position: absolute;
+    z-index: 100;
+    background-color: white;
+    right: 0;
+    top: 52px;
+    width: 40%;
+    height: 100vh;
+    border: 1px dashed lightgray;
+    visibility: hidden;
+    transition: visibility 0s 0.6s;
+}
+
+.prompt-panel-close-btn {
+    position: absolute;
+    display: flex; 
+    flex-direction: row-reverse;
+    right: 0;
+    margin-right: 20px;
+    margin-top: 2px;
+    transition: transform 0.3s 0s;
+}
+
+.cd-panel {
+    /*...*/
+    visibility: hidden;
+    transition: visibility 0s 0.6s;
+    background-color: grey;
+    z-index: 100;
+    background-color: white;
+    right: 0;
+    top: 52px;
+    width: 40%;
+    height: 100vh;
+    border: 1px dashed lightgray;
+}
+  
+.cd-panel.cd-panel--is-visible {
+    visibility: visible;
+    transition: visibility 0s 0s;
+}
+
+.cd-panel__header {
+    /*...*/
+    position: fixed;
+    display: flex;
+    z-index: 120;
+    padding: 10px;
+    background-color: white;
+    top: 52px;
+    width: 40%;
+    height: 50px;
+    transition: transform 0.3s 0s;
+    transform: translateY(-50px);
+    border: 1px dashed lightgray;
+}
+
+.cd-panel--from-right .cd-panel__header {
+    right: 0;
+}
+
+.cd-panel--from-left .cd-panel__header {
+    left: 0;
+}
+
+.cd-panel--is-visible .cd-panel__header {
+    transition: transform 0.3s 0.3s;
+    transform: translateY(0px);
+}
+
+.cd-panel__container {
+    /*...*/
+    position: absolute;
+    background-color: white;
+    width: 40%;
+    height: 100%;
+    top: 52px;
+    margin-top:50px;
+    padding:0;
+    transition: transform 0.3s 0.3s;
+    border: 1px dashed lightgray;
+    z-index: 5;
+}
+
+.cd-panel--from-right .cd-panel__container {
+    right: 0;
+    transform: translate3d(100%, 0, 0);
+}
+
+.cd-panel--from-left .cd-panel__container {
+    left: 0;
+    transform: translate3d(-100%, 0, 0);
+}
+
+.cd-panel--is-visible .cd-panel__container {
+    transform: translate3d(0, 0, 0);
+    transition-delay: 0s;
+}
+
+.border-box-black-not-allowed {
+    padding: 4px;
+    border: 1px solid lightgray;
+    cursor: not-allowed !important;
+    height: 30px;
+    width: 150px;
+}
+
+.border-box-black-allowed {
+    padding: 4px;
+    border: 1px solid lightgray;
+    cursor: text !important;
+    height: 30px !important;
+    width: 150px;
+}

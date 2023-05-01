@@ -12,7 +12,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "history", description = "Show a history")
+@Command(name = "history", description = "Show a history of a process/workflow run")
 public class HistoryCommand implements Runnable {
 
     @Parameters(index = "0", description = "history id")
@@ -29,7 +29,7 @@ public class HistoryCommand implements Runnable {
 
         History hist = ht.getHistoryById(history_id);
 
-        if(hist != null) {
+        if(hist != null && hist.getHistory_process() != null) {
 
             table.setHeaders(new String[] { "History Id", "Status", "Begin Time", "End Time", "Input", "Output", "Notes" });
             table.addRow(new String[] {hist.getHistory_id(), hist.getIndicator().toString(), 

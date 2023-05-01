@@ -117,10 +117,18 @@ GW.history = {
                 "      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> "+
                 "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
                 "	   <td>"+msg[i].history_notes+"</td>"+
-                status_col +
-                "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
-                // code to display the view changes option if in case 'i' > 0
-                if(i!=msg.length-1) content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+msg[i].history_id+"','"+ msg[i+1].history_id+"')\">View Changes</a> &nbsp;";
+                status_col;
+
+
+            if(!GW.process.sidepanel.isPresent()){
+                content +=  "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
+            }else{
+                content +=  "      <td><a href=\"javascript: GW.process.sidepanel.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
+            }
+            
+
+            // code to display the view changes option if in case 'i' > 0
+            if(i!=msg.length-1) content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+msg[i].history_id+"','"+ msg[i+1].history_id+"')\">View Changes</a> &nbsp;";
 
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";
@@ -248,7 +256,8 @@ GW.history = {
                   targets: [1],
                 }
             ],
-            order: [[ 1, "desc" ]]
+            order: [[ 1, "desc" ]],
+            "bDestroy": true,
         });
 
         table.MakeCellsEditable({

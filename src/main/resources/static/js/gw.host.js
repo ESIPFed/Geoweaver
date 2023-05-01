@@ -27,7 +27,7 @@ GW.host = {
 
 	checkIfHostPanelActive: function(){
 
-		return document.getElementById("main-host-info").style.display=="block";
+		return document.getElementById("main-host-info").style.display=="flex";
 
 	},
 	
@@ -1668,7 +1668,6 @@ GW.host = {
 
 		GW.ssh.current_process_log_length = 0;
 		
-//          switchTab(document.getElementById("main-host-tab"), "main-host-info");
 		GW.general.switchTab("host");
 		
 		

@@ -127,13 +127,17 @@ function switchTab(ele, name){
 	for (i = 0; i < tablinks.length; i++) {
 	  tablinks[i].className = tablinks[i].className.replace(" active", "");
 	}
-	document.getElementById(name).style.display = "block";
+	document.getElementById(name).style.display = "flex";
 	ele.className += " active";
 
-	if(name=="main-dashboard"){
+	if(name==="main-dashboard"){
 
 	  GW.board.refresh();
 
+	}
+
+	if (name != "main-workflow-info") {
+		GW.process.sidepanel.close();
 	}
 	  
 }
