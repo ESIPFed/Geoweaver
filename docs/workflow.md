@@ -37,7 +37,14 @@ In Geoweaver, Workflow denotes a pipeline linking multiple (>2) Processes. An is
 
 2. Click the downward icon button in the floating toolbar when the workflow is present in the Weaver workspace.
 
-3. There will be four downloading options: `workflow with process code` or `Workflow with Process Code and Only Workflow History` or `Workflow with Process Code and Only Successfully Done History` or `workflow with process code and history (Recommended)`. The first option will only download the source code and workflow json. The second option will only download source code the only the workflow history, without process history. The third option will download the source code and only the completed execution history of the workflow without the details of failed executions. Finally, The last option will download not only the source code and workflow but also all the historical details of the previous execution of the workflow. **The last option is recommended.**
+3. There will be four downloading options: 
+    * `workflow with process code` - This will only download the source code and workflow json. 
+    * `Workflow with Process Code and Only Workflow History` - This will only download the source code and the workflow history without the process history.
+    * `Workflow with Process Code and Only Successfully Done History` - This will download the source code and all history (including process history) of the successfully completed workflow, without the details of failed executions.
+    * `workflow with process code and history (Recommended)`. - This will download not only the source code and workflow but also all the historical details of the previous execution of the workflow.
+
+
+        >  **The last option is recommended.**
 
 4. Click `Confirm`. A ZIP file will be automatically downloaded to your machine.
 
