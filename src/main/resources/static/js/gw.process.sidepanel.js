@@ -61,25 +61,29 @@ GW.process.sidepanel = {
     },
 
     update: function(){
-		
-		var pcode =  GW.process.sidepanel.getCode();
 
-		var confidential = "FALSE"  // this is very rarely used right now. May improve in future.
+        if(this.isPresent()){
 
-		if(this.current_process_id!=null){
+            var pcode =  GW.process.sidepanel.getCode();
 
-			if(this.current_process_lang=="builtin"){
+            var confidential = "FALSE"  // this is very rarely used right now. May improve in future.
 
-				GW.process.updateBuiltin();
-			
-            }else{
-			
-                GW.process.updateRaw(this.current_process_id, this.current_process_name, this.current_process_lang, 
-                    this.current_process_description, pcode, confidential);
-			
+            if(this.current_process_id!=null){
+
+                if(this.current_process_lang=="builtin"){
+
+                    GW.process.updateBuiltin();
+                
+                }else{
+                    
+                    GW.process.updateRaw(this.current_process_id, this.current_process_name, this.current_process_lang, 
+                        this.current_process_description, pcode, confidential);
+                
+                }
+                
             }
-			
-		}
+            
+        }
 		
 	},
 
