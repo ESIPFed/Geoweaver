@@ -1002,7 +1002,6 @@ GW.process = {
 		
 		output + "</div>";
 		
-		// $("#console-output").html(output);
 		$("#process-log-window").html(output);
 		
 		$("#closeLog").click(function(){
@@ -1991,6 +1990,7 @@ GW.process = {
 		if($("#process-log-window").length){
 
 			$("#process-log-window").html("");
+
 			GW.ssh.current_process_log_length = 0;
 
 		}
@@ -2063,14 +2063,6 @@ GW.process = {
 					
 					console.log("history id: " + msg.history_id);
 					
-					// GW.process.showSSHOutputLog(msg);
-
-//						if(req.desc == "builtin"){
-//							
-//							GW.monitor.startMonitor(msg.history_id); //"builtin" operation like Show() might need post action in the client
-//							
-//						}
-					
 				}else if(msg.ret == "fail"){
 					
 					alert("Fail to execute the process.");
@@ -2078,8 +2070,6 @@ GW.process = {
 					console.error("fail to execute the process " + msg.reason);
 					
 				}
-				
-//					if(dialog) dialog.close();
 				
 				if(dialog) {
 					
@@ -2109,6 +2099,8 @@ GW.process = {
 	executeCallback: function(encrypt, req, dialogItself, button){
 		
 		req.pswd = encrypt;
+
+		GW.ssh.process_output_id = "process-log-window"
 		
 		GW.process.sendExecuteRequest(req, dialogItself, button);
 		
@@ -2117,7 +2109,13 @@ GW.process = {
 	/**
 	 * This function is to directly execute one process
 	 */
-	executeProcess: function(pid, hid, lang){
+	executeProcess: function(pid, hid, lang, callback_func){
+
+		if(callback_func == null){
+
+			callback_func = GW.process.executeCallback
+		
+		}
 		
 		var req = {
 			
@@ -2141,7 +2139,7 @@ GW.process = {
 				
 				req.env = cached_env;
 				
-				GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+				GW.host.start_auth_single(hid, req, callback_func);
 				
 			}else{
 				
@@ -2287,7 +2285,7 @@ GW.process = {
 							
 						}
 						
-						GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+						GW.host.start_auth_single(hid, req, callback_func );
 						
 						GW.process.env_frame.closeFrame();
 						
@@ -2310,7 +2308,7 @@ GW.process = {
 			
 		}else{
 			
-			GW.host.start_auth_single(hid, req, GW.process.executeCallback );
+			GW.host.start_auth_single(hid, req, callback_func );
 			
 		}
 		
@@ -2322,9 +2320,9 @@ GW.process = {
 	 * @param {*} pname 
 	 * @param {*} lang 
 	 */
-	runProcess: function(pid, pname, lang){
+	runProcess: function(pid, pname, lang, callback_func){
 
-		if(!this.isSaved){
+		if(!GW.process.isSaved){
 
 			if(confirm("You have non-saved changes in this process. Do you want to continue?")){
 
@@ -2335,10 +2333,14 @@ GW.process = {
 				return;
 
 			}
+			
+		}
 
+		if(callback_func==null){
+			callback_func = GW.process.executeCallback
 		}
 		
-		var h = this.findCache(pid);
+		var h = GW.process.findCache(pid);
 		
 		if(h==null){
 			
@@ -2439,7 +2441,7 @@ GW.process = {
 					
 				}
 				
-				GW.process.executeProcess(pid, hostid, lang);
+				GW.process.executeProcess(pid, hostid, lang, callback_func);
 				
 				GW.process.host_frame.closeFrame();
 				
@@ -2453,7 +2455,7 @@ GW.process = {
 			
 		}else{
 			
-			GW.process.executeProcess(pid, h, lang);
+			GW.process.executeProcess(pid, h, lang, callback_func);
 			
 		}
 		
