@@ -159,7 +159,6 @@ GW.process.sidepanel = {
 		
 		output + "</div>";
 		
-		// $("#console-output").html(output);
 		$("#prompt-panel-process-log-window").html(output);
 		
 		$("#retrieve-result").click(function(){
@@ -287,19 +286,18 @@ GW.process.sidepanel = {
                 <!-- TODO: play button, save button, full screen button-->
                 <!--
                     <button class="btn pull-right" onclick="GW.process.sidepanel.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
-                    <button class="btn pull-right" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-                    
                 -->
 
-                <button class="btn pull-right" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-                <button class="btn pull-right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
-                <button class="btn pull-right" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
-                <button class="btn pull-right" onclick="javascript:void(0)">Skip: <input type="checkbox"
+                
+                <button class="btn pull-right" title="dock log window on bottom" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
+                <button class="btn pull-right" title="dock log window on right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
+                <button class="btn pull-right" title="edit switch" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
+                <button class="btn pull-right" title="skip it in workflow" onclick="javascript:void(0)">Skip: <input type="checkbox"
 												 onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'
 												 id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" /></button>
 
-                <button class="btn pull-right" onclick="javascript:void(0)">Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" /></button>
-
+                <button class="btn pull-right" title="switch on/off log" onclick="javascript:void(0)">Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" /></button>
+                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
                 
             </div>
 
@@ -372,6 +370,32 @@ GW.process.sidepanel = {
 		})
 
     },
+
+    /**
+	 * Show a Run process dialog
+	 * @param {*} pid 
+	 * @param {*} pname 
+	 * @param {*} lang 
+	 */
+	runProcess: function(pid, pname, lang){
+
+        GW.process.process_id = pid;
+
+		GW.process.runProcess(pid, pname, lang, GW.process.sidepanel.executeCallback)
+		
+	},
+
+    executeCallback: function(encrypt, req, dialogItself, button){
+		
+		req.pswd = encrypt;
+
+        $("#prompt_panel_log_switch").prop('checked', true).trigger("change")
+
+        GW.ssh.process_output_id = "prompt-panel-process-log-window"
+		
+		GW.process.sendExecuteRequest(req, dialogItself, button);
+		
+	},
 
     getCode: function(){
 
