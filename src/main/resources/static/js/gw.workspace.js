@@ -199,7 +199,7 @@ GW.workspace = {
 
 					d3.event.stopPropagation();
 					  return;
-				  };
+				  }
 				  
 			   }
 
@@ -1028,7 +1028,7 @@ GW.workspace = {
 				case consts.DELETE_KEY:
 				//   d3.event.preventDefault();
 				  //only delete the process nodes when there is no dialog in sight
-				  if(!GW.workspace.if_any_frame_on)
+				  if(!GW.workspace.if_any_frame_on && !GW.process.sidepanel.isPresent())
 					  this.deleteSelected();
 				  break;
 			}

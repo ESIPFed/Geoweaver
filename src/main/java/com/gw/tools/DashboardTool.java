@@ -96,7 +96,7 @@ public class DashboardTool {
 
     }
 
-    String getAllProcessTimeCostsJSON(){
+    public String getAllProcessTimeCostsJSON(){
 
         int[] costs = getAllProcessTimeCosts();
 
