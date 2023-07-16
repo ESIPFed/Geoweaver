@@ -18,6 +18,8 @@ GW.general = {
 						case 's':
 							//need to check if the current page to call the correct method
 							event.preventDefault();
+							// clean the search bar. Every save will reset the search input bar.
+							$("#clean_search_field").click();
 							GW.host.editSwitch();
 							GW.process.editSwitch();
 							GW.process.sidepanel.editSwitch()
