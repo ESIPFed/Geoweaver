@@ -661,7 +661,7 @@ GW.workspace = {
 				  .attr("stroke-width", '1px')
 				  .attr("stroke-linecap", 'butt')
 				  .attr("stroke-linejoin", 'miter')
-				  .attr("font-weight", 400)
+				  .attr("font-weight", 500)
 				  .attr("font-size", '20px')
 				  .attr("y", "50px")
 				//   .attr("dy", "-" + (nwords-1)*7.5);
