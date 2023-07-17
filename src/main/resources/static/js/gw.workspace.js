@@ -661,16 +661,17 @@ GW.workspace = {
 				  .attr("stroke-width", '1px')
 				  .attr("stroke-linecap", 'butt')
 				  .attr("stroke-linejoin", 'miter')
-				  .attr("font-weight", 800)
-				  .attr("font-size", '24px')
+				  .attr("font-weight", 500)
+				  .attr("font-size", '20px')
 				  .attr("y", "50px")
-				  .attr("dy", "-" + (nwords-1)*7.5);
+				//   .attr("dy", "-" + (nwords-1)*7.5);
 
-			for (var i = 0; i < words.length; i++) {
-			  var tspan = el.append('tspan').text(words[i]);
-			  if (i > 0)
-				tspan.attr('x', 0).attr('dy', '15');
-			}
+			el.append('tspan').text(title);
+			// for (var i = 0; i < words.length; i++) {
+			//   var tspan = el.append('tspan').text(words[i]);
+			//   if (i > 0)
+			// 	tspan.attr('x', 0).attr('dy', '15');
+			// }
 		  };
 
 		  // remove edges associated with a node

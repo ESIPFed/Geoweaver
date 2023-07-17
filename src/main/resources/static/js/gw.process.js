@@ -1709,7 +1709,7 @@ GW.process = {
 							onclick="var event = arguments[0] || window.event; event.stopPropagation();
 							GW.menu.details('${one.id}', 'process')">
 							<div class="row bare-window">
-								<div class="col-md-8 bare-window" style="overflow: hidden; text-overflow: ellipsis;" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
+								<div class="col-md-8 bare-window" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
 								<div class="col-md-4 bare-window">
 									<button type="button" class="btn btn-warning btn-xs pull-right right-button-vertical-center" 
 									onclick="var event = arguments[0] || window.event; event.stopPropagation();
@@ -1819,56 +1819,55 @@ GW.process = {
 		
 		var req =  {
 				
-				type: "process", 
-				
-				lang: plang,
-				
-				desc: pdesc, //use the description column to store the process type
+			type: "process", 
 			
-				name: pname, 
-				
-				id: pid,
+			lang: plang,
+			
+			desc: pdesc, //use the description column to store the process type
+		
+			name: pname, 
+			
+			id: pid,
 
-				owner: GW.user.current_userid,
+			owner: GW.user.current_userid,
 
-				confidential: confidential,
-				
-				code: pcode
-				
+			confidential: confidential,
+			
+			code: pcode
+			
 		};
 		
-			$.ajax({
-				
-				url: "edit/process",
-				
-				method: "POST",
-				
-				contentType: 'application/json',
+		$.ajax({
+			
+			url: "edit/process",
+			
+			method: "POST",
+			
+			contentType: 'application/json',
 
-				dataType: 'json',
-				
-				data: JSON.stringify(req)
-				
-			}).done(function(msg){
-				
-				msg = GW.general.parseResponse(msg);
-				
-				console.log("Updated!!");
-				
-				GW.general.showToasts("Code updated.");
-				
-				console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
-				
-				GW.process.refreshProcessList();
+			dataType: 'json',
+			
+			data: JSON.stringify(req)
+			
+		}).done(function(msg){
+			
+			msg = GW.general.parseResponse(msg);
+			
+			console.log("Updated!!");
+			
+			GW.general.showToasts("Code updated.");
+			
+			console.log("If the process name is changed, the item in the menu should be changed at the same time. ");
+			
+			GW.process.refreshProcessList();
 
-				GW.process.showSaved();
-				
-			}).fail(function(jqXHR, textStatus){
-				
-				alert("Fail to update the process.");
-				
-			});
-		
+			GW.process.showSaved();
+			
+		}).fail(function(jqXHR, textStatus){
+			
+			alert("Fail to update the process.");
+			
+		});
 			
 	},
 	
