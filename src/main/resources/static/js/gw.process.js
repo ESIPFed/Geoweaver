@@ -1709,7 +1709,7 @@ GW.process = {
 							onclick="var event = arguments[0] || window.event; event.stopPropagation();
 							GW.menu.details('${one.id}', 'process')">
 							<div class="row bare-window">
-								<div class="col-md-8 bare-window" style="overflow: hidden; text-overflow: ellipsis;" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
+								<div class="col-md-8 bare-window" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" title="${one.name}"><span>&nbsp;&nbsp;&nbsp;${one.name}</span></div>
 								<div class="col-md-4 bare-window">
 									<button type="button" class="btn btn-warning btn-xs pull-right right-button-vertical-center" 
 									onclick="var event = arguments[0] || window.event; event.stopPropagation();
