@@ -453,6 +453,10 @@ GW.workspace = {
 			GW.fileupload.showUploadWorkflowDialog();
 		
 		});
+
+		d3.select("#show-full-view").on("click", function(){
+			console.log("restore the window extent to full view of workflow graph")
+		})
 		
 		d3.select("#hidden-file-upload").on("change", function(){
 			console.log("hidden-file-upload is changed")
