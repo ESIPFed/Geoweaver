@@ -233,7 +233,6 @@ GW.workspace = {
 			.on("zoomend", function(){
 				d3.select('body').style("cursor", "auto");
 			});
-		thisGraph.fullviewed = false
 
 		svg.call(thisGraph.zoom).on("dblclick.zoom", null);
 
@@ -488,9 +487,6 @@ GW.workspace = {
 			
 			console.log("found the max and min X and Y: "+maxX + " "+minX + " " + maxY + " " + minY)
 			
-			// GW.workspace.theGraph.zoomToExtent(minX, minY, maxX, maxY)
-			// GW.workspace.theGraph.zoomToExtent.call(thisGraph, minX, minY, maxX, maxY);
-
 			// add a offset to leave space for margin
 			offset_space = 80
 
@@ -514,19 +510,7 @@ GW.workspace = {
 			const translateX = (oldWidth - newWidth * newScale) / 2 - minX * newScale + offset_space/2;
 			const translateY = (oldHeight - newHeight * newScale) / 2 - minY * newScale + offset_space/2;
 
-
-			// do the transition
-
-			// this.state.justScaleTransGraph = true;
-			// console.log(`translate(${translateX},${translateY}) scale(${newScale})`)
-			// // d3.select("." + this.consts.graphClass)
-			// //   .attr("transform", "translate(" + d3.event.translate + ") scale(" + newScale + ")"); 
-			// d3.select("." + this.consts.graphClass)
-			// 	.attr("transform", `translate(${translateX},${translateY}) scale(${newScale})`);
-			// this.translate = [translateX, translateY]
-			// this.scale = newScale
-			// this.fullviewed = true
-
+			// update the zoom object and do the transition
 			thisGraph.zoom.on("zoom", function(){
 					if (d3.event.sourceEvent.shiftKey){
 					return false;
@@ -1328,80 +1312,13 @@ GW.workspace = {
 			
 		  };
 
-		  GW.workspace.GraphCreator.prototype.zoomToExtent = function(minX, minY, maxX, maxY){
-
-			// add a offset to leave space for margin
-			offset_space = 80
-
-			// calculate the translate and scale
-			newWidth = maxX - minX + offset_space
-			newHeight = maxY - minY + offset_space
-
-			const svg = GW.workspace.svg;
-
-			// Get the width and height attributes
-			const oldWidth = +svg.attr("width"); // Convert to a number
-			const oldHeight = +svg.attr("height"); // Convert to a number
-
-			const newScaleX = oldWidth / newWidth;
-			const newScaleY = oldHeight / newHeight;
-
-			// You can use either newScaleX or newScaleY depending on your requirements
-			const newScale = Math.min(newScaleX, newScaleY);
-
-			// Calculate the translation to center the new extent within the SVG
-			const translateX = (oldWidth - newWidth * newScale) / 2 - minX * newScale + offset_space/2;
-			const translateY = (oldHeight - newHeight * newScale) / 2 - minY * newScale + offset_space/2;
-
-
-			// do the transition
-
-			this.state.justScaleTransGraph = true;
-			console.log(`translate(${translateX},${translateY}) scale(${newScale})`)
-			// d3.select("." + this.consts.graphClass)
-			//   .attr("transform", "translate(" + d3.event.translate + ") scale(" + newScale + ")"); 
-			d3.select("." + this.consts.graphClass)
-				.attr("transform", `translate(${translateX},${translateY}) scale(${newScale})`);
-			this.translate = [translateX, translateY]
-			this.scale = newScale
-			this.fullviewed = true
-			// GW.workspace.svg.transition().duration(500)
-			// 	.call(this.zoom.translate(d3.event.translate).scale(d3.event.scale).event);
-			// currentTransform = d3.zoomIdentity.translate(translateX, translateY).scale(newScale);
-  			// GW.workspace.svg.transition().duration(500).call(thisGraph.zoom.transform, currentTransform);
-
-			// const customZoom = d3.behavior.zoom()
-			//   .scale(newScale)
-			//   .translate([translateX, translateY])
-			//   .on("zoom", this.zoomed);
-			
-			// // Apply the custom zoom behavior to the SVG
-			// svg.call(customZoom);
-			
-			// // Trigger the zoom event programmatically
-			// svg.transition().duration(500).call(this, customZoom.event);
-			
-		  };
-
 		  GW.workspace.GraphCreator.prototype.zoomed = function(){
 			this.state.justScaleTransGraph = true;
 			console.log("d3.event.translate: " + d3.event.translate + 
 						": d3.event.scale = " + d3.event.scale)
 			
-			if(this.fullviewed){
-				console.log(`current translate: ${this.translate}`)
-				console.log(`current scale ${this.scale}`)
-				d3.event.translate[0] = this.translate[0] + d3.event.translate[0]
-				d3.event.translate[1] = this.translate[1] + d3.event.translate[1]
-				d3.event.scale = d3.event.scale * this.scale
-				console.log("New translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")")
-				d3.select("." + this.consts.graphClass)
-				.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"); 
-				this.fullviewed = false
-			}else{
-				d3.select("." + this.consts.graphClass)
-				.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"); 
-			}
+			d3.select("." + this.consts.graphClass)
+				.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
 			
 		  };
 		  
