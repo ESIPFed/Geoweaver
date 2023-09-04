@@ -456,6 +456,67 @@ GW.workspace = {
 
 		d3.select("#show-full-view").on("click", function(){
 			console.log("restore the window extent to full view of workflow graph")
+			
+			// get the current workflow's extent
+			let maxX = -Infinity;
+			let maxY = -Infinity;
+			let minX = Infinity;
+			let minY = Infinity;
+
+			// Iterate through the list of points
+			for (let i = 0; i < GW.workspace.theGraph.nodes.length; i++) {
+				const node = GW.workspace.theGraph.nodes[i];
+
+				// Check and update maximum x and y values
+				if (node.x > maxX) {
+					maxX = node.x;
+				}
+				if (node.y > maxY) {
+					maxY = node.y;
+				}
+
+				// Check and update minimum x and y values
+				if (node.x < minX) {
+					minX = node.x;
+				}
+				if (node.y < minY) {
+					minY = node.y;
+				}
+			}
+			
+			console.log("found the max and min X and Y: "+maxX + " "+minX + " " + maxY + " " + minY)
+			
+			// GW.workspace.theGraph.zoomToExtent(minX, minY, maxX, maxY)
+			GW.workspace.theGraph.zoomToExtent.call(thisGraph, minX, minY, maxX, maxY);
+
+
+			// Standard zoom behavior:
+            // var zoom = d3.zoom()
+            //   .extent([[minX, minY], [maxX, maxY]])
+            //   .on("zoom", function () {
+			// 			svg.attr(
+			// 	"transform", d3.event.transform)
+			//  });
+            
+			 // Create a zoom behavior
+			// const zoom = d3.zoom()
+			// 	.scaleExtent([[minX, minY], [maxX, maxY]]) // Set your desired minimum and maximum scale values
+			// 	.on("zoom", zoomed);
+
+			// // Apply the zoom behavior to a selection (e.g., an SVG element)
+			// const svg = d3.select("svg");
+
+			// // Add zoom behavior to the SVG element
+			// svg.call(zoom);
+
+			// // Define the zoom handler function
+			// function zoomed(event) {
+			// 	// Inside this function, you can access the zoom transformation properties
+			// 	const { transform } = event;
+			// 	// You can use the transform properties for various purposes, e.g., to update your visual elements
+			// 	svg.attr("transform", transform);
+			// }
+
 		})
 		
 		d3.select("#hidden-file-upload").on("change", function(){
@@ -1242,8 +1303,49 @@ GW.workspace = {
 			
 		  };
 
+		  GW.workspace.GraphCreator.prototype.zoomToExtent = function(minX, minY, maxX, maxY){
+
+			// add a offset to leave space for margin
+			offset_space = 80
+
+			// calculate the translate and scale
+			newWidth = maxX - minX + offset_space
+			newHeight = maxY - minY + offset_space
+
+			const svg = GW.workspace.svg;
+
+			// Get the width and height attributes
+			const oldWidth = +svg.attr("width"); // Convert to a number
+			const oldHeight = +svg.attr("height"); // Convert to a number
+
+			const newScaleX = oldWidth / newWidth;
+			const newScaleY = oldHeight / newHeight;
+
+			// You can use either newScaleX or newScaleY depending on your requirements
+			const newScale = Math.min(newScaleX, newScaleY);
+
+			// Calculate the translation to center the new extent within the SVG
+			const translateX = (oldWidth - newWidth * newScale) / 2 - minX * newScale + offset_space/2;
+			const translateY = (oldHeight - newHeight * newScale) / 2 - minY * newScale + offset_space/2;
+
+
+			// do the transition
+
+			this.state.justScaleTransGraph = true;
+			console.log(`translate(${translateX},${translateY}) scale(${newScale})`)
+			// d3.select("." + this.consts.graphClass)
+			//   .attr("transform", "translate(" + d3.event.translate + ") scale(" + newScale + ")"); 
+			d3.event.translate = `${translateX},${translateY}`
+			d3.event.scale = newScale
+			d3.select("." + this.consts.graphClass)
+				.attr("transform", `translate(${translateX},${translateY}) scale(${newScale})`);
+			
+		  };
+
 		  GW.workspace.GraphCreator.prototype.zoomed = function(){
 			this.state.justScaleTransGraph = true;
+			console.log("d3.event.translate: " + d3.event.translate + 
+						": d3.event.scale = " + d3.event.scale)
 			d3.select("." + this.consts.graphClass)
 			  .attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"); 
 		  };
