@@ -213,7 +213,7 @@ GW.workspace = {
 		svg.on("mouseup", function(d){thisGraph.svgMouseUp.call(thisGraph, d);});
 
 		// listen for dragging
-		var dragSvg = d3.behavior.zoom()
+		thisGraph.zoom = d3.behavior.zoom()
 			.on("zoom", function(){
 				if (d3.event.sourceEvent.shiftKey){
 				  return false;
@@ -232,8 +232,8 @@ GW.workspace = {
 			.on("zoomend", function(){
 				d3.select('body').style("cursor", "auto");
 			});
-		
-		svg.call(dragSvg).on("dblclick.zoom", null);
+
+		svg.call(thisGraph.zoom).on("dblclick.zoom", null);
 
 		// listen for resize
 		window.onresize = function(){thisGraph.updateWindow(svg);};
@@ -1339,6 +1339,21 @@ GW.workspace = {
 			d3.event.scale = newScale
 			d3.select("." + this.consts.graphClass)
 				.attr("transform", `translate(${translateX},${translateY}) scale(${newScale})`);
+			// GW.workspace.svg.transition().duration(500)
+			// 	.call(this.zoom.translate(d3.event.translate).scale(d3.event.scale).event);
+			// currentTransform = d3.zoomIdentity.translate(translateX, translateY).scale(newScale);
+  			// GW.workspace.svg.transition().duration(500).call(thisGraph.zoom.transform, currentTransform);
+
+			// const customZoom = d3.behavior.zoom()
+			//   .scale(newScale)
+			//   .translate([translateX, translateY])
+			//   .on("zoom", this.zoomed);
+			
+			// // Apply the custom zoom behavior to the SVG
+			// svg.call(customZoom);
+			
+			// // Trigger the zoom event programmatically
+			// svg.transition().duration(500).call(this, customZoom.event);
 			
 		  };
 
