@@ -31,11 +31,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * 
- * This is for Linux/Mac
+ * This class represents the implementation of a local session for Linux and Mac.
+ * It provides methods for running commands and scripts on the local system.
  * 
  * @author JensenSun
- *
  */
 @Service
 @Scope("prototype")
@@ -87,7 +86,9 @@ public class LocalSessionNixImpl implements LocalSession {
 
 	private Process          process;
     
-    
+	/**
+     * Default constructor for the LocalSessionNixImpl class.
+     */
     public LocalSessionNixImpl() {
     	
     	//this is for spring
@@ -141,73 +142,94 @@ public class LocalSessionNixImpl implements LocalSession {
 	
 	}
     
+	/**
+	 * Runs a Bash script as a new process and handles its execution.
+	 * 
+	 * @param history_id The unique identifier for the history of the execution.
+	 * @param script     The Bash script to execute.
+	 * @param processid  The unique identifier for the process.
+	 * @param isjoin     A boolean flag indicating whether to wait for the script execution to complete (join).
+	 * @param token      The HTTP session token associated with the execution.
+	 */
 	@Override
 	public void runBash(String history_id, String script, String processid, boolean isjoin, String token) {
-		
-//		this.history = history_tool.initProcessHistory(history, processid, script);
-		
+		// Initialize the history object for this execution.
 		this.initHistory(history_id, script, processid, isjoin, token);
-    	
-    	try {
-    		
-    		log.info("starting command");
-    		
-    		tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+		
+		try {
+			// Log that the command execution is starting.
+			log.info("Starting command execution");
 			
-    		bt.writeString2File(script, tempfile);
-    		
-    		Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
-
+			// Create a temporary file to store the Bash script.
+			tempfile = bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/gw-" + token + "-" + history.getHistory_id() + ".sh";
+			
+			// Write the Bash script content to the temporary file.
+			bt.writeString2File(script, tempfile);
+			
+			// Change the permissions of the temporary script file to make it executable.
+			Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();
+			
+			// Wait for a short duration (1 millisecond) to ensure that the file is properly created.
 			bt.sleep(1);
-    		
-    		ProcessBuilder builder = new ProcessBuilder();
-
+			
+			// Create a ProcessBuilder for executing the Bash script.
+			ProcessBuilder builder = new ProcessBuilder();
+			
+			// Set the working directory for the process.
 			builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
-    		
-    		builder.command(tempfile);
-    		
-    		builder.redirectErrorStream(true);
-    		
-    		process = builder.start();
-    		
-    		InputStream stdout = process.getInputStream ();
-    		
-    		input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
-            
-    		sender.init(input, token, history_id, "shell", null);
-    		
-    		thread = new Thread(sender);
-            
-            thread.setName("Local Command output thread");
-            
-            log.info("starting sending thread from local command");
-            
-            thread.start();
-
+			
+			// Specify the command to execute (the path to the temporary script file).
+			builder.command(tempfile);
+			
+			// Redirect the error stream to the standard output stream.
+			builder.redirectErrorStream(true);
+			
+			// Start the process for executing the Bash script.
+			process = builder.start();
+			
+			// Get the standard output stream of the process.
+			InputStream stdout = process.getInputStream();
+			
+			// Initialize a buffered reader to read the standard output.
+			input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
+			
+			// Initialize the sender with the input stream, HTTP session token, history ID, execution type (shell), and a null value for the script.
+			sender.init(input, token, history_id, "shell", null);
+			
+			// Create a new thread for sending the script's output.
+			thread = new Thread(sender);
+			
+			// Set the name of the thread for identifying it.
+			thread.setName("Local Command output thread");
+			
+			// Log that the sending thread for local command output is starting.
+			log.info("Starting sending thread from local command");
+			
+			// Start the sending thread.
+			thread.start();
+			
+			// Set the process associated with the sender.
 			sender.setProcess(process);
-
-			if(isjoin){
-
+			
+			// If isjoin is true, wait for the process to complete.
+			if (isjoin) {
 				process.waitFor();
-
 			}
 			
-            log.info("returning to the client..");
-    		
+			// Log that the command execution has completed and is returning to the client.
+			log.info("Command execution completed, returning to the client");
 		} catch (Exception e) {
-			
+			// Handle any exceptions that occur during the execution.
 			e.printStackTrace();
 			
+			// End the execution with an error message.
 			this.endWithError(token, e.getLocalizedMessage());
-			
-		}finally{
-
-			this.isClose = true; 
-
+		} finally {
+			// Mark the execution as closed.
+			this.isClose = true;
 		}
-    	
-		
 	}
+
 
 	@Override
 	public void runJupyter(String history_id, String notebookjson, String processid, 
