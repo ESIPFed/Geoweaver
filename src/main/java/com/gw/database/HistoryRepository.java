@@ -46,6 +46,10 @@ public interface HistoryRepository extends JpaRepository<History, String>{
 			nativeQuery = true)
 	List<History> findByProcessId(String pid);
 
+	@Query(value="select * from history where history.history_process = ?1 and history.indicator != 'Skipped' ORDER BY history_begin_time DESC;",
+			nativeQuery = true)
+	List<History> findByProcessIdIgnoreUnknown(String pid);
+
 	@Query(value="select * from history where history.history_process = ?1 ORDER BY history_begin_time DESC;",
 			nativeQuery = true)
 	List<History> findByWorkflowId(String wid);
