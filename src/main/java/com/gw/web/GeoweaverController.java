@@ -54,216 +54,189 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 /**
- * 
  * Controller for SSH related activities, including all the handlers for Geoweaver.
- * 
+ * This controller handles various web requests related to Geoweaver's functionality.
  */
-
 @Controller 
 @RequestMapping(value="/web")
-//@SessionAttributes({"SSHToken"})
-//@RequestMapping("/Geoweaver/web")
 public class GeoweaverController {
 
-	Logger logger = LoggerFactory.getLogger(getClass());
-	
-	@Autowired
-	ProcessTool pt;
-	
-	@Autowired
-	WorkflowTool wt;
+    // Logger for logging controller-related activities.
+    Logger logger = LoggerFactory.getLogger(getClass());
+    
+    // Autowired tools and services required for various operations.
+    @Autowired
+    ProcessTool pt;
+    
+    @Autowired
+    WorkflowTool wt;
 
-	@Autowired
-	WorkflowRepository workflowrepository;
-	
-	@Autowired
-	HostTool ht;
-	
-	@Autowired
-	BaseTool bt;
-	
-	@Autowired
-	GWSearchTool st;
-	
-	@Autowired
-	FileTool ft;
-	
-	@Autowired
-	HistoryTool hist;
+    @Autowired
+    WorkflowRepository workflowrepository;
+    
+    @Autowired
+    HostTool ht;
+    
+    @Autowired
+    BaseTool bt;
+    
+    @Autowired
+    GWSearchTool st;
+    
+    @Autowired
+    FileTool ft;
+    
+    @Autowired
+    HistoryTool hist;
 
-	@Autowired
-	DashboardTool dbt;
+    @Autowired
+    DashboardTool dbt;
 
-	@Autowired
-	EnvironmentTool et;
+    @Autowired
+    EnvironmentTool et;
 
-	@Autowired
-	ExecutionTool ext;
-	
-	@Autowired
-	SSHSession sshSession;
-	
-	@Value("${geoweaver.upload_file_path}")
-	String upload_file_path;
+    @Autowired
+    ExecutionTool ext;
+    
+    @Autowired
+    SSHSession sshSession;
+    
+    // Configuration property for upload file path.
+    @Value("${geoweaver.upload_file_path}")
+    String upload_file_path;
 
-	@Autowired
-	UserTool ut;
-	
-	public static SessionManager sessionManager;
-	
-	static {
-		
-		sessionManager = new SessionManager();
-		
-	}
-	
-	@PreDestroy
+    @Autowired
+    UserTool ut;
+    
+    // Session manager to manage SSH sessions.
+    public static SessionManager sessionManager;
+    
+    // Static block to initialize the session manager.
+    static {
+        sessionManager = new SessionManager();
+    }
+    
+    // Destructor method to close all SSH sessions when the application is destroyed.
+    @PreDestroy
     public void destroy() {
-		
-		logger.debug("Callback triggered - @PreDestroy.");
-        
+        logger.debug("Callback triggered - @PreDestroy.");
         sessionManager.closeAll();
-        
     }
 
-	@RequestMapping(value="/delAllHistory", method= RequestMethod.POST)
-	public @ResponseBody String delAllHistory(ModelMap model, WebRequest request){
+    /**
+     * Handles a POST request to delete all history records associated with a host.
+     * @param model The ModelMap to store response data.
+     * @param request The WebRequest containing request parameters.
+     * @return A response string indicating the result of the operation.
+     */
+    @RequestMapping(value="/delAllHistory", method= RequestMethod.POST)
+    public @ResponseBody String delAllHistory(ModelMap model, WebRequest request){
+        String resp = null;
+        try{
+            String hostid = request.getParameter("id");
+            resp = hist.deleteAllHistoryByHost(hostid);
+        }catch(Exception e){
+            throw new RuntimeException("Failed: " + e.getLocalizedMessage());
+        }
+        return resp;
+    }
 
-		String resp = null;
-
-		try{
-
-			String hostid = request.getParameter("id");
-
-			resp = hist.deleteAllHistoryByHost(hostid);
-
-		}catch(Exception e){
-
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-
-		}
-
-		return resp;
-
-	}
-
-	@RequestMapping(value="/delNoNotesHistory", method = RequestMethod.POST)
-	public @ResponseBody String delNoNotesHistory(ModelMap model, WebRequest request){
-
-		String resp = null;
-
-		try{
-
-			String hostid = request.getParameter("id");
-
-			resp = hist.deleteNoNotesHistoryByHost(hostid);
-
-		}catch(Exception e){
-
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-
-		}
-
-		return resp;
-
-	}
-	
-	@RequestMapping(value = "/del", method = RequestMethod.POST)
+    /**
+     * Handles a POST request to delete history records with no notes associated with a host.
+     * @param model The ModelMap to store response data.
+     * @param request The WebRequest containing request parameters.
+     * @return A response string indicating the result of the operation.
+     */
+    @RequestMapping(value="/delNoNotesHistory", method = RequestMethod.POST)
+    public @ResponseBody String delNoNotesHistory(ModelMap model, WebRequest request){
+        String resp = null;
+        try{
+            String hostid = request.getParameter("id");
+            resp = hist.deleteNoNotesHistoryByHost(hostid);
+        }catch(Exception e){
+            throw new RuntimeException("Failed: " + e.getLocalizedMessage());
+        }
+        return resp;
+    }
+    
+    /**
+     * Handles a POST request to delete a resource (host, process, workflow, history, or clear nodes and edges).
+     * @param model The ModelMap to store response data.
+     * @param request The WebRequest containing request parameters.
+     * @return A response string indicating the result of the operation.
+     */
+    @RequestMapping(value = "/del", method = RequestMethod.POST)
     public @ResponseBody String del(ModelMap model, WebRequest request){
-		
-		String resp = null;
-		
-		try {
-			
-			String id = request.getParameter("id");
-			
-			String type = request.getParameter("type");
-
-			switch (Objects.requireNonNull(type)) {
-				case "host":
-
-					resp = ht.del(id);
-
-					break;
-				case "process":
-
-					resp = pt.del(id);
-
-					break;
-				case "workflow":
-
-					resp = wt.del(id);
-
-					break;
-				case "history":
-
-					resp = hist.deleteById(id);
-
-					break;
-				case "clear_nodes_edges":
-					assert id != null;
-					Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
-
-					if (optionalWorkflow.isPresent()) {
-						Workflow wf = optionalWorkflow.get();
-						wf.setEdges(Collections.emptyList().toString());
-						wf.setNodes(Collections.emptyList().toString());
-						workflowrepository.save(wf);
-					}
-					break;
-			}
-			
-		}catch(Exception e) {
-			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
-	
-	@RequestMapping(value = "/search", method = RequestMethod.POST)
+        String resp = null;
+        try {
+            String id = request.getParameter("id");
+            String type = request.getParameter("type");
+            switch (Objects.requireNonNull(type)) {
+                case "host":
+                    resp = ht.del(id);
+                    break;
+                case "process":
+                    resp = pt.del(id);
+                    break;
+                case "workflow":
+                    resp = wt.del(id);
+                    break;
+                case "history":
+                    resp = hist.deleteById(id);
+                    break;
+                case "clear_nodes_edges":
+                    assert id != null;
+                    Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
+                    if (optionalWorkflow.isPresent()) {
+                        Workflow wf = optionalWorkflow.get();
+                        wf.setEdges(Collections.emptyList().toString());
+                        wf.setNodes(Collections.emptyList().toString());
+                        workflowrepository.save(wf);
+                    }
+                    break;
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("Failed: " + e.getLocalizedMessage());
+        }
+        return resp;
+    }
+    
+    /**
+     * Handles a POST request to perform a search for a resource (host, process, or workflow).
+     * @param model The ModelMap to store response data.
+     * @param request The WebRequest containing request parameters.
+     * @return A response string containing the search results.
+     */
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
     public @ResponseBody String search(ModelMap model, WebRequest request){
-		
-		String resp = null;
-		
-		try {
-			
-			String type = request.getParameter("type");
-					
-			String keywords = request.getParameter("keywords");
-			
-			resp = st.search(keywords, type);
-			
-		}catch(Exception e) {
-			
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
-	
-	@RequestMapping(value = "/dashboard", method = RequestMethod.POST)
+        String resp = null;
+        try {
+            String type = request.getParameter("type");
+            String keywords = request.getParameter("keywords");
+            resp = st.search(keywords, type);
+        } catch(Exception e) {
+            throw new RuntimeException("Failed: " + e.getLocalizedMessage());
+        }
+        return resp;
+    }
+    
+    /**
+     * Handles a POST request to retrieve dashboard information.
+     * @param model The ModelMap to store response data.
+     * @param request The WebRequest containing request parameters.
+     * @return A response string containing the dashboard information.
+     */
+    @RequestMapping(value = "/dashboard", method = RequestMethod.POST)
     public @ResponseBody String dashboard(ModelMap model, WebRequest request){
-		
-		String resp = null;
-		
-		try {
-			
-			resp = dbt.getJSON();
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
-		}
-		
-		return resp;
-		
-	}
+        String resp = null;
+        try {
+            resp = dbt.getJSON();
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed: " + e.getLocalizedMessage());
+        }
+        return resp;
+    }
 
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
     public @ResponseBody String detail(ModelMap model, WebRequest request){
