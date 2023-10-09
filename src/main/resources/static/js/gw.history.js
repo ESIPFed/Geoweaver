@@ -63,8 +63,15 @@ GW.history = {
         
     },
 
+    /**
+     * Returns an HTML status column for a process history entry based on its indicator.
+     *
+     * @param {string} hid - The history ID of the process entry.
+     * @param {string} status - The status indicator.
+     * @returns {string} - HTML content for the status column.
+     */
     getProcessStatusCol: function(hid, status){
-			
+		
         var status_col = "      <td id=\"status_"+hid+"\" ><span class=\"label label-warning\">Pending</span></td> ";
         
         if(status == "Done"){
@@ -93,6 +100,12 @@ GW.history = {
         
     },
     
+    /**
+     * Generates an HTML table with process execution history data.
+     *
+     * @param {Array} msg - Array of process history data.
+     * @returns {string} - HTML content of the process execution history table.
+     */
     getProcessHistoryTable: function(msg){
 		
         var content = "<table class=\"table table-color\" id=\"process_history_table\"> "+
@@ -126,7 +139,6 @@ GW.history = {
                 content +=  "      <td><a href=\"javascript: GW.process.sidepanel.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
             }
             
-
             // code to display the view changes option if in case 'i' > 0
             if(i!=msg.length-1) content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+msg[i].history_id+"','"+ msg[i+1].history_id+"')\">View Changes</a> &nbsp;";
 
@@ -153,21 +165,15 @@ GW.history = {
         
     },
 
-    
+    /**
+     * Returns an HTML status column for a workflow history entry based on its indicator.
+     *
+     * @param {string} history_id - The history ID of the workflow entry.
+     * @param {string} indicator - The indicator value indicating the status.
+     * @returns {string} - HTML content for the status column.
+     */
 	getWorkflowStatusCol: function(history_id, indicator){
-
-		// var status_col = "      <td><span class=\"label label-warning\">Pending</span></td> ";
-				
-		// if(single_msg.end_time!=null && single_msg.end_time != single_msg.begin_time){
-			
-		// 	status_col = "      <td><span class=\"label label-success\">Done</span></td> ";
-			
-		// }else if(single_msg.end_time == single_msg.begin_time && single_msg.output != null){
-			
-		// 	status_col = "      <td><span class=\"label label-danger\">Failed</span></td> ";
-			
-		// }
-
+        
 		var status_col = "      <td id=\"status_"+history_id+"\">";
 			
 		if(indicator == "Done"){

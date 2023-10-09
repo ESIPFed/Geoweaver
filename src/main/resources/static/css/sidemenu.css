@@ -94,6 +94,7 @@
 */
 }
 
+
 .subalignicon {
   padding-left: 10px;
   padding-right: 10px;
@@ -116,6 +117,9 @@
   vertical-align: middle;
   float: right;
 }
+
+
+
 .nav-side-menu ul .active,
 .nav-side-menu li .active {
   color: white;
@@ -130,14 +134,22 @@
 .nav-side-menu li .sub-menu li.active a {
   color: #d19b3d;
 }
+
 .nav-side-menu ul .sub-menu li,
 .nav-side-menu li .sub-menu li {
-  background-color: white;
+  background-color: #d5d5d5;
   color: black;
   border: none;
   line-height: 28px;
   margin-left: 0px;
 }
+
+.nav-side-menu ul .sub-menu .process,
+.nav-side-menu ul .sub-menu .host{
+  background-color: #505050;
+  color: white;
+}
+
 .nav-side-menu ul .sub-menu li:hover,
 .nav-side-menu li .sub-menu li:hover {
   background-color: #999;
@@ -161,6 +173,7 @@
   line-height:35px;
   padding-right: 20px;
 }
+
 .nav-side-menu li:hover {
   background-color: #999;
   color: white;
@@ -173,7 +186,7 @@
 
 ul .sub-menu {
 
-  margin-left: 30px;
+  padding-left: 0px;
 
 }
 
@@ -277,11 +290,6 @@ ul .sub-menu {
   vertical-align: middle;
   font-weight: 900;
 	color: black;
-}
-
-.host:before {
-  content: " ";
-  padding-left: 10px;
 }
 
 .workflow:before {

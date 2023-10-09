@@ -49,7 +49,7 @@ GW.search = {
 
 		$("#"+parent_div_name).find("li."+li_class_name).each(function(index){
 
-			host_name_div = $( this ).find("div.col-md-2").first()
+			host_name_div = $( this ).find("div.col-md-8").first()
 
 			if(host_name_div.length == 0)
 				host_name_div = $( this ) //workflow doesn't have second level div
@@ -62,7 +62,7 @@ GW.search = {
 
 					// $(this).css("background-color", "yellow")
 					var re = new RegExp(GW.search.keywords,"g");
-					new_host_name = host_name.replace(re,"<font style='background-color: yellow;'>"+
+					new_host_name = host_name.replace(re,"<font style='background-color: yellow; color: black;'>"+
 						GW.search.keywords+"</font>")
 					host_name_div.html(new_host_name)
 
@@ -70,7 +70,7 @@ GW.search = {
 
 				}else{
 
-					var re = new RegExp("<font style='background-color: yellow;'>"+
+					var re = new RegExp("<font style='background-color: yellow; color: black;'>"+
 					GW.search.keywords+"</font>","g");
 					new_host_name = host_name.replace(re, GW.search.keywords)
 
@@ -82,7 +82,7 @@ GW.search = {
 			
 			}else{
 
-				var re = new RegExp("<font style='background-color: yellow;'>"+
+				var re = new RegExp("<font style='background-color: yellow; color: black;'>"+
 					GW.search.keywords+"</font>","g");
 				
 				new_host_name = host_name.replace(re, GW.search.keywords)

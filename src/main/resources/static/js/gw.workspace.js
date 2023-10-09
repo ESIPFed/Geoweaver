@@ -174,6 +174,7 @@ GW.workspace = {
 		thisGraph.paths = svgG.append("g").selectAll("g");
 		thisGraph.circles = svgG.append("g").selectAll("g");
 		
+		// this listens the drag of nodes
 		thisGraph.drag = d3.behavior.drag()
 			  .origin(function(d){
 				return {x: d.x, y: d.y};
@@ -199,7 +200,7 @@ GW.workspace = {
 
 					d3.event.stopPropagation();
 					  return;
-				  };
+				  }
 				  
 			   }
 
@@ -213,7 +214,7 @@ GW.workspace = {
 		svg.on("mouseup", function(d){thisGraph.svgMouseUp.call(thisGraph, d);});
 
 		// listen for dragging
-		var dragSvg = d3.behavior.zoom()
+		thisGraph.zoom = d3.behavior.zoom()
 			.on("zoom", function(){
 				if (d3.event.sourceEvent.shiftKey){
 				  return false;
@@ -232,8 +233,8 @@ GW.workspace = {
 			.on("zoomend", function(){
 				d3.select('body').style("cursor", "auto");
 			});
-		
-		svg.call(dragSvg).on("dblclick.zoom", null);
+
+		svg.call(thisGraph.zoom).on("dblclick.zoom", null);
 
 		// listen for resize
 		window.onresize = function(){thisGraph.updateWindow(svg);};
@@ -453,6 +454,78 @@ GW.workspace = {
 			GW.fileupload.showUploadWorkflowDialog();
 		
 		});
+
+		d3.select("#show-full-view").on("click", function(){
+			console.log("restore the window extent to full view of workflow graph")
+			
+			// get the current workflow's extent
+			let maxX = -Infinity;
+			let maxY = -Infinity;
+			let minX = Infinity;
+			let minY = Infinity;
+
+			// Iterate through the list of points
+			for (let i = 0; i < GW.workspace.theGraph.nodes.length; i++) {
+				const node = GW.workspace.theGraph.nodes[i];
+
+				// Check and update maximum x and y values
+				if (node.x > maxX) {
+					maxX = node.x;
+				}
+				if (node.y > maxY) {
+					maxY = node.y;
+				}
+
+				// Check and update minimum x and y values
+				if (node.x < minX) {
+					minX = node.x;
+				}
+				if (node.y < minY) {
+					minY = node.y;
+				}
+			}
+			
+			console.log("found the max and min X and Y: "+maxX + " "+minX + " " + maxY + " " + minY)
+			
+			// add a offset to leave space for margin
+			offset_space = 80
+
+			// calculate the translate and scale
+			newWidth = maxX - minX + offset_space
+			newHeight = maxY - minY + offset_space
+
+			const svg = GW.workspace.svg;
+
+			// Get the width and height attributes
+			const oldWidth = +svg.attr("width"); // Convert to a number
+			const oldHeight = +svg.attr("height"); // Convert to a number
+
+			const newScaleX = oldWidth / newWidth;
+			const newScaleY = oldHeight / newHeight;
+
+			// You can use either newScaleX or newScaleY depending on your requirements
+			const newScale = Math.min(newScaleX, newScaleY);
+
+			// Calculate the translation to center the new extent within the SVG
+			const translateX = (oldWidth - newWidth * newScale) / 2 - minX * newScale + offset_space/2;
+			const translateY = (oldHeight - newHeight * newScale) / 2 - minY * newScale + offset_space/2;
+
+			// update the zoom object and do the transition
+			thisGraph.zoom.on("zoom", function(){
+					if (d3.event.sourceEvent.shiftKey){
+						return false;
+					} else{
+						thisGraph.zoomed.call(thisGraph);
+					}
+					return true;
+				})
+
+			thisGraph.zoom.scale(newScale);
+			thisGraph.zoom.translate([translateX, translateY]);
+
+			svg.call(thisGraph.zoom.event);
+
+		})
 		
 		d3.select("#hidden-file-upload").on("change", function(){
 			console.log("hidden-file-upload is changed")
@@ -521,6 +594,7 @@ GW.workspace = {
 
 		  /* PROTOTYPE FUNCTIONS */
 		  
+		  // this drag move only works for nodes and lines
 		  GW.workspace.GraphCreator.prototype.dragmove = function(d) {
 			var thisGraph = this;
 			if (thisGraph.state.shiftNodeDrag){
@@ -636,6 +710,8 @@ GW.workspace = {
 
 				this.updateGraph();
 
+				
+
 			  }catch(err){
 				window.alert("Error parsing uploaded file\nerror message: " + err.message);
 				return;
@@ -661,16 +737,17 @@ GW.workspace = {
 				  .attr("stroke-width", '1px')
 				  .attr("stroke-linecap", 'butt')
 				  .attr("stroke-linejoin", 'miter')
-				  .attr("font-weight", 800)
-				  .attr("font-size", '24px')
+				  .attr("font-weight", 500)
+				  .attr("font-size", '20px')
 				  .attr("y", "50px")
-				  .attr("dy", "-" + (nwords-1)*7.5);
+				//   .attr("dy", "-" + (nwords-1)*7.5);
 
-			for (var i = 0; i < words.length; i++) {
-			  var tspan = el.append('tspan').text(words[i]);
-			  if (i > 0)
-				tspan.attr('x', 0).attr('dy', '15');
-			}
+			el.append('tspan').text(title);
+			// for (var i = 0; i < words.length; i++) {
+			//   var tspan = el.append('tspan').text(words[i]);
+			//   if (i > 0)
+			// 	tspan.attr('x', 0).attr('dy', '15');
+			// }
 		  };
 
 		  // remove edges associated with a node
@@ -1028,7 +1105,7 @@ GW.workspace = {
 				case consts.DELETE_KEY:
 				//   d3.event.preventDefault();
 				  //only delete the process nodes when there is no dialog in sight
-				  if(!GW.workspace.if_any_frame_on)
+				  if(!GW.workspace.if_any_frame_on && !GW.process.sidepanel.isPresent())
 					  this.deleteSelected();
 				  break;
 			}
@@ -1239,8 +1316,12 @@ GW.workspace = {
 
 		  GW.workspace.GraphCreator.prototype.zoomed = function(){
 			this.state.justScaleTransGraph = true;
+			console.log("d3.event.translate: " + d3.event.translate + 
+						": d3.event.scale = " + d3.event.scale)
+			
 			d3.select("." + this.consts.graphClass)
-			  .attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"); 
+				.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+			
 		  };
 		  
 		  GW.workspace.GraphCreator.prototype.addProcess = function(id, name){

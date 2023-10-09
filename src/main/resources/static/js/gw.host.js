@@ -947,9 +947,9 @@ GW.host = {
 
 		var one_item = ` <li class="host" id="host-` + one.id + 
 				
-				`" onclick="GW.menu.details('` + one.id + `', 'host')"> <a href="javascript:void(0)" >` + 
+				`" onclick="GW.menu.details('` + one.id + `', 'host')">&nbsp;&nbsp;&nbsp;` + 
 				
-				one.name + `</a></li>`;
+				one.name + `</li>`;
 
 		$("#host_folder_"+one.type+"_target").append(one_item);
 		

@@ -197,8 +197,8 @@
 								
 								<li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place. " data-toggle="collapse" data-target="#hosts">
 									<a href="javascript:void(0)" >
-										<i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i>&nbsp;&nbsp;&nbsp;Hosts 
-										<i class="fas fa-caret-down pull-right" data-toggle="collapse" data-target="#hosts" ></i>
+										<i class="fa fa-server fa-lg" data-toggle="tooltip" title="Add new host"></i>&nbsp;&nbsp;&nbsp;<b>Hosts</b>
+										<i class="fas fa-caret-up pull-right" data-toggle="collapse" data-target="#hosts" ></i>
 										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" id="newhost">New Host</button>
 										<!-- <i class="fa fa-plus pull-right" id="newhost"></i> -->
 									</a>
@@ -212,14 +212,13 @@
 								
 								<li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts. All the history of process execution will be saved in Geoweaver database, even the used hosts are not longer available. "  data-toggle="collapse" data-target="#processes">
 									<a href="javascript:void(0)">
-										<i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i>&nbsp;&nbsp;&nbsp;Process 
-										<i data-toggle="collapse" data-target="#processs" class="fas fa-caret-down pull-right"></i>
+										<i class="fa fa-cog fa-lg"  data-toggle="tooltip" title="Add new process"></i>&nbsp;&nbsp;&nbsp;<b>Process</b> 
+										<i data-toggle="collapse" data-target="#processs" class="fas fa-caret-up pull-right"></i>
 										<!-- <i class="fa fa-plus pull-right" id="newprocess"></i>  -->
 										<button type="button" class="btn btn-success btn-xs pull-right right-button-vertical-center" id="newprocess">New Process</button>
 									</a>
 								</li>
 								<ul class="sub-menu collapse" id="processes">
-									
 									<li class="shellfolder" id="process_folder_shell" data-toggle="collapse" data-target="#process_folder_shell_target">
 										<a href="javascript:void(0)">Shell</a>
 									</li>
@@ -239,31 +238,26 @@
 										<a href="javascript:void(0)">Python</a>
 									</li>
 									<ul class="sub-menu collapse" id="process_folder_python_target"></ul>
-									
-									
 								</ul>
 				
 				
 								<li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here. "   data-toggle="collapse" data-target="#workflows">
 									<a href="javascript:void(0)">
-										<i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i>&nbsp;&nbsp;&nbsp;Workflows 
-										<!--<i class="fa fa-plus" id="newworkflow"></i>--> 
-										<i data-toggle="collapse" data-target="#workflows" class="fas fa-caret-down pull-right"></i>
+										<i class="fa fa-cogs fa-lg"  data-toggle="tooltip" title="Add new workflow"></i>&nbsp;&nbsp;&nbsp;<b>Workflows</b>
+										<i data-toggle="collapse" data-target="#workflows" class="fas fa-caret-up pull-right"></i>
 									</a>
 								</li>  
 								<ul  class="sub-menu collapse" id="workflows">
 									
 								</ul>
-								
 
 								<li data-intro="All the other tools"   data-toggle="collapse" data-target="#tools">
 									<a href="javascript:void(0)">
-										<i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i>&nbsp;&nbsp;&nbsp;Tools 
-										<!--<i class="fa fa-plus" id="newworkflow"></i>--> 
-										<i data-toggle="collapse" data-target="#tools" class="fas fa-caret-down pull-right"></i>
+										<i class="fa fa-cube fa-lg"  data-toggle="tooltip" ></i>&nbsp;&nbsp;&nbsp;<b>Tools</b>
+										<i data-toggle="collapse" data-target="#tools" class="fas fa-caret-up pull-right"></i>
 									</a>
 								</li>
-								<ul  class="sub-menu collapse" id="tools" style="margin-left:30px;">
+								<ul  class="sub-menu collapse" id="tools">
 									<li id="toolbar-search">
 										<a data-toggle="tooltip" title="Search Process/Workflow/Hosts"
 										href="javascript:void(0)">
@@ -611,9 +605,10 @@
 									<i id="execute-workflow" title="execute workflow" class="btn fa fa-play fa-2x weaver-toolbar-btn" alt="execute workflow"></i> 
 										
 									<i id="geoweaver-details" title="information" class="btn fa fa-info fa-2x weaver-toolbar-btn" alt="show object information"></i>
-										
+									
 									<i id="geoweaver-log" title="log" class="btn fa fa-history fa-2x weaver-toolbar-btn" alt="show process log"></i> 
 										
+									<i id="show-full-view" title="show full extent view" class="btn fa fa-life-ring fa-2x weaver-toolbar-btn" alt="full extent view"></i> 
 									<!-- <i id="geoweaver-result" title="result" class="btn fa fa-tv fa-2x weaver-toolbar-btn"  alt="get result"></i>  -->
 										
 									<i id="delete-graph" title="delete graph" class="btn fa fa-trash fa-2x weaver-toolbar-btn"  alt="delete graph" ></i> 

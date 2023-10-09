@@ -729,13 +729,17 @@ public class ProcessTool {
 	 * @param pid
 	 * @return
 	 */
-	public String all_history(String pid) {
+	public String all_history(String pid, boolean ignore_skipped) {
 		
-		return history_tool.process_all_history(pid);
+		return history_tool.process_all_history(pid, ignore_skipped);
 		
 	}
 	
-	
+	public String all_history(String pid) {
+
+		return all_history(pid, true);
+
+	}
 	
 	
 }
