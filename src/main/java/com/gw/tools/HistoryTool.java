@@ -233,11 +233,16 @@ public class HistoryTool {
 		
 	}
 	
-	public String process_all_history(String pid) {
+	public String process_all_history(String pid, boolean ignoreskipped) {
 		
 		StringBuffer resp = new StringBuffer();
 		
-		List<History> active_processes = historyrepository.findByProcessId(pid);
+		List<History> active_processes = null;
+		
+		if(ignoreskipped) 
+			active_processes = historyrepository.findByProcessIdIgnoreUnknown(pid);
+		else
+			active_processes = historyrepository.findByProcessId(pid);
 		
 		try {
 

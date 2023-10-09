@@ -513,9 +513,9 @@ GW.workspace = {
 			// update the zoom object and do the transition
 			thisGraph.zoom.on("zoom", function(){
 					if (d3.event.sourceEvent.shiftKey){
-					return false;
+						return false;
 					} else{
-					thisGraph.zoomed.call(thisGraph);
+						thisGraph.zoomed.call(thisGraph);
 					}
 					return true;
 				})
@@ -709,6 +709,8 @@ GW.workspace = {
 				this.edges = newEdges;
 
 				this.updateGraph();
+
+				
 
 			  }catch(err){
 				window.alert("Error parsing uploaded file\nerror message: " + err.message);
