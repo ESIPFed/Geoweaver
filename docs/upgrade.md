@@ -1,37 +1,59 @@
 
 ## Upgrading Geoweaver to Latest Version
 
-Geoweaver is using H2 database as default database. If the new version of Geoweaver bumped the h2 database library for security reasons (for example, [this release](https://github.com/ESIPFed/Geoweaver/releases/tag/latest)), users might need to migrate your Geoweaver database too. The official document for H2 migration is [here](https://www.h2database.com/html/migration-to-v2.html) 
+### Simple Upgrade
 
-Here is how to do it for migrating Geoweaver database:
+Upgrading Geoweaver to the latest version is a straightforward process. Follow these steps to perform a simple upgrade:
 
-1. First, download the current in-use version of H2 database jar. Replace the `<old_version>` number with the current h2 version number. 
+- Download the new version of Geoweaver's JAR file:
+
+```shell
+wget https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
+```
+
+- Start Geoweaver with the updated JAR file:
+
+```shell
+java -jar geoweaver.jar
+```
+
+## Complex Upgrade (Database Migration)
+
+If you have been using Geoweaver for a while, it's important to ensure the safety of your database during the upgrade. Geoweaver relies on the H2 database as its default database. In some cases, the new version of Geoweaver may introduce changes to the H2 database library for security reasons. In such scenarios, users may need to migrate their Geoweaver database.
+
+The official documentation for H2 database migration is available [here](https://www.h2database.com/html/migration-to-v2.html) 
+
+Here are the steps to migrate your Geoweaver database:
+
+1. Begin by downloading the H2 database JAR file of the current version in use. Replace <old_version> with the current version number: 
 
 ```shell
 wget https://github.com/h2database/h2database/releases/download/version-<old_version>/h2-<old_version>.jar
 ```
 
-2. Run the command to export the data into a SQL script. Replace the `<old_version>` and `<DB_password>`.
+2. Export your data into an SQL script. Make sure to replace <old_version> and <DB_password> with your specific information:
 
 ```shell
 java -cp h2-<old_version>.jar org.h2.tools.Script -url jdbc:h2:~/h2/gw -user geoweaver -script old_gw_db.sql -password <DB_Password>
 ```
 
-3. Remove the old database files.
+3. Remove the old database files:
 
 ```shell
 rm ~/h2/* -f
 ```
 
-4. Run the command below to import the data back and create new Geoweaver database. Replace `<new_version>` and `<DB_password>`.
+4. Import the data back and create a new Geoweaver database. Use the following command, replacing <new_version> and <DB_password> with the appropriate values:
 
 ```shell
 java -cp h2-<new_version>.jar org.h2.tools.RunScript -url jdbc:h2:~/h2/gw -user geoweaver -script old_gw_db.sql -password <DB_password>
 ```
 
-5. That is it. Download the new version of Geoweaver jar and restart. Should work as usual.
+5. That's it! Download the new version of the Geoweaver JAR file and restart. Your Geoweaver installation should now work as usual:
 
 ```shell
 wget https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
 java -jar geoweaver.jar
 ```
+
+These steps should help you smoothly upgrade Geoweaver to the latest version while safeguarding your database. Any questions please feel free to report them [here](https://github.com/ESIPFed/Geoweaver/issues).
