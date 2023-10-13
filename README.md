@@ -18,6 +18,8 @@ Only two things basically:
 
 # [Installation](docs/install.md)
 
+# [Upgrade](docs/upgrade.md)
+
 # [Tutorial](https://zihengsun.github.io/Geoweaver/)
 
 * [Create and Manipulate Hosts](docs/host.md)
