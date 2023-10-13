@@ -616,30 +616,7 @@ GW.workspace = {
 				//if some objects are selected, delete the selected only. If nothing selected, delete all.
 				
 				if (!skipPrompt){
-					
-					doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
-
-					if(doDelete){
-				
-						thisGraph.nodes = [];
-						thisGraph.edges = [];
-						thisGraph.updateGraph();
-						GW.workflow.setCurrentWorkflowName("");
-						GW.workflow.loaded_workflow = null;
-						$("#main-workspace-tab").html('Weaver');
-
-						let currentWorkflow = window.selectedWorkflow
-						if (currentWorkflow !== undefined) {
-							$.ajax({
-								url: "del",
-								method: "POST",
-								data: "type=clear_nodes_edges&id=" + currentWorkflow
-							})
-						} else {
-							alert("Please select a workflow to delete");
-						}
-					}
-					
+					window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
 				}else{
 
 					if(thisGraph.state.selectedEdge){
