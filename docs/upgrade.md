@@ -25,10 +25,11 @@ The official documentation for H2 database migration is available [here](https:/
 
 Here are the steps to migrate your Geoweaver database:
 
-1. Begin by downloading the H2 database JAR file of the current version in use. Replace <old_version> with the current version number: 
+1. Begin by downloading the H2 database JAR file of both the old version and the current version. Replace <old_version> and <new_version> respectively: 
 
 ```shell
 wget https://github.com/h2database/h2database/releases/download/version-<old_version>/h2-<old_version>.jar
+wget https://github.com/h2database/h2database/releases/download/version-<new_version>/h2-<new_version>.jar
 ```
 
 2. Export your data into an SQL script. Make sure to replace <old_version> and <DB_password> with your specific information:
