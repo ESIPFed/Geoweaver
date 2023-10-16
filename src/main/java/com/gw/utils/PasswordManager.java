@@ -9,8 +9,7 @@ import java.io.FileOutputStream;
 import java.security.KeyStore;
 
 public class PasswordManager {
-
-    private static final String KEYSTORE_PATH = "~/gw-workspace/keystore.ks";
+    private static final String KEYSTORE_PATH = System.getProperty("user.home") + "/gw-workspace/keystore.ks";
     private static final String KEYSTORE_PASSWORD = "";
     private static final String SECRET_KEY_ALIAS = "GeoweaverLocalhostPassword";
     private static final String KEY_ALGORITHM = "PBE";
