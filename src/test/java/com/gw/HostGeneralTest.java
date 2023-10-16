@@ -45,7 +45,7 @@ public class HostGeneralTest extends AbstractHelperMethodsTest {
 	}
 
 	@Test
-	void testLocalhostPassword() {
+	void testLocalhostPassword() throws Exception {
 
 		bt.setLocalhostPassword("password", false);
 

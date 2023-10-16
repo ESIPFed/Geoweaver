@@ -23,7 +23,11 @@ public class PasswordResetCommand implements Runnable {
 
         if(new_password != null){
 
-            bt.setLocalhostPassword(new_password, true);
+            try {
+                bt.setLocalhostPassword(new_password, true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
             System.out.println("NOTE: Password updated.");
 
@@ -38,14 +42,17 @@ public class PasswordResetCommand implements Runnable {
 
             console.printf("Reset Geoweaver Localhost password%n");
             char[] passwordArray = console.readPassword("Enter password: ");
-            // console.printf("Password entered was: %s%n", new String(passwordArray));
             char[] secondpasswordArray = console.readPassword("Retype password: ");
 
             if(Arrays.equals(passwordArray, secondpasswordArray)){
 
                 String originalpassword = new String(passwordArray);
 
-                bt.setLocalhostPassword(originalpassword, true);
+                try {
+                    bt.setLocalhostPassword(originalpassword, true);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
                 System.out.println("NOTE: Password updated.");
 

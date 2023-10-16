@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import oshi.SystemInfo;
@@ -152,49 +153,14 @@ public class BaseTool {
 
 	}
 
-	public String getLocalhostPassword(){
-
-		logger.info("get existing workspace dir: " + workspace);
-
-		workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
-
-		logger.info("new workspace dir: " + workspace);
-
-		String secretfile = this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename;
-
-		if(new File(secretfile).exists()){
-			return this.readStringFromFile(this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename);
-		}
-		
-		return null;
-
+	public String getLocalhostPassword() throws Exception {
+		PasswordManager pwManager = new PasswordManager();
+		return pwManager.getLocalhostPassword();
 	}
 
-	public void setLocalhostPassword(String originalpassword, boolean force){
-
-		try{
-
-			String encodedpassword = getLocalhostPassword();
-
-			if(this.isNull(encodedpassword) || force){
-	
-				originalpassword = this.isNull(originalpassword)? new RandomString(30).nextString(): originalpassword;
-	
-				encodedpassword = this.get_SHA_512_SecurePassword(originalpassword, getLocalhostIdentifier());
-
-				workspace = this.isNull(workspace)?"~/gw-workspace":workspace;
-	
-				this.writeString2File(encodedpassword, 
-									this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename);
-	
-			}
-
-		}catch(Exception e){
-
-			e.printStackTrace();
-
-		}
-
+	public void setLocalhostPassword(String originalpassword, boolean force) throws Exception {
+		PasswordManager pwManager = new PasswordManager();
+		pwManager.setLocalhostPassword(originalpassword, force);
 	}
 
 	/**
