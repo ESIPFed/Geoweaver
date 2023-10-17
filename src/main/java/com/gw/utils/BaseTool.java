@@ -69,7 +69,7 @@ import oshi.software.os.OperatingSystem;
 @Service
 public class BaseTool {
 	
-	public static int BUFFER_SIZE = 16384;
+	public static int BUFFER_SIZE = 20;
 
 	private String _classpath = null;
 
@@ -746,82 +746,7 @@ public class BaseTool {
 		
 		return logrec.toString();
 		
-	 }
-	
-//	 public boolean run(String script) throws InterruptedException, IOException{
-//	// 	String scriptFile = "/usr/local/apache-tomcat-6.0.36/webapps/temp/"+getUUID()+".sh";
-//         String scriptFile = SysDir.tempdir + getUUID()+".sh";
-//         writeStringIntoFile(script, scriptFile);
-//
-//         Runtime.getRuntime().exec("chmod +x " + scriptFile).waitFor();
-//         String[] env = {"GISBASE="+SysDir.GISBASE,
-//                         "GISDBASE="+SysDir.GISDBASE,
-//                         "HOME="+SysDir.HOME,
-//                         "GISRC="+SysDir.GISRC,
-//                         "GRASS_GUI="+SysDir.GRASS_GUI,
-//                         "GIS_LOCK="+SysDir.GIS_LOCK,
-//                         "PATH="+SysDir.PATH,
-//                         "DYLD_LIBRARY_PATH="+SysDir.DYLD_LIBRARY_PATH,
-//                         "LD_LIBRARY_PATH="+SysDir.LD_LIBRARY_PATH,
-//                         "GRASS_PERL="+SysDir.GRASS_PERL,
-//                         "GRASS_PAGER="+SysDir.GRASS_PAGER};
-//         Runtime.getRuntime().exec("chmod +x " + scriptFile).waitFor();
-//         Process proc = Runtime.getRuntime().exec(scriptFile, env);
-//
-//         //[GISBASE=/usr/lib/grass64/,
-//         //GISDBASE=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419, 
-//         //HOME=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419, 
-//         //GISRC=/usr/local/apache-tomcat-6.0.36/webapps/temp/gis1366695299419/.grassrc, 
-//         //GRASS_GUI=text, 
-//         //GIS_LOCK=0, 
-//         //PATH=/usr/lib/grass64//bin:/usr/lib/grass64//scripts:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/grasslib/bin:.,
-//         //DYLD_LIBRARY_PATH=/usr/lib//lib:/usr/lib/grass64//lib:/lib:/usr/lib:/usr/local/lib:/usr/local/grasslib/lib, 
-//         //LD_LIBRARY_PATH=/usr/lib//lib:/usr/lib/grass64//lib:/lib:/usr/lib:/usr/local/lib:/usr/local/grasslib/lib,
-//         //GRASS_PERL=/usr/bin/perl, 
-//         //GRASS_ORGANIZATION=LIESMARS, 
-//         //GRASS_PAGER=more]
-//
-//       InputStream ips = proc.getInputStream();
-//       InputStream eps = proc.getErrorStream();
-//       BufferedReader brd = new BufferedReader(new InputStreamReader(ips));
-//       BufferedReader ebrd = new BufferedReader(new InputStreamReader(eps));
-//       String str = null; String estr = null;
-//       proc.waitFor();
-//       int exit_value = proc.exitValue();
-//       StringBuffer logrec = new StringBuffer();
-//       if (exit_value != 0)
-//       {
-//         err.append("The following error was generated while running the script:\n"  +scriptFile+ "\n");
-//         do
-//         {
-//           if ((estr = ebrd.readLine()) == null)
-//             continue;
-//           err.append("PROC ERR: " + estr + "\n");
-//           logrec.append( estr + "\n");
-//         }
-//         while ((str != null) || (estr != null));
-//         System.out.println(err);
-//         return false;
-//       }
-//
-//       do
-//       {
-//         if ((str = brd.readLine()) != null)
-//         {
-//           System.out.println("PROC OUT: " + str);
-//           logrec.append(str).append("\n");
-//         }
-//         if ((estr = ebrd.readLine()) == null)
-//           continue;
-//         System.out.println("PROC ERR: " + estr);
-//         logrec.append(estr).append("\n");
-//       }
-//       while ((str != null) || (estr != null));
-//       System.out.println(err);
-//       log = logrec.toString();
-//       return true;
-// 	}
-
+	}
 	
 	public String[] parseJupyterURL(String url) {
 		
@@ -831,15 +756,6 @@ public class BaseTool {
 			
 			URL aURL = new URL(url);
 
-			// logger.debug("protocol = " + aURL.getProtocol());
-			// logger.debug("authority = " + aURL.getAuthority());
-			// logger.debug("host = " + aURL.getHost());
-			// logger.debug("port = " + aURL.getPort());
-			// logger.debug("path = " + aURL.getPath());
-			// logger.debug("query = " + aURL.getQuery());
-			// logger.debug("filename = " + aURL.getFile());
-			// logger.debug("ref = " + aURL.getRef());
-			
 			cc[0] = aURL.getProtocol();
 			cc[1] = aURL.getHost();
 			

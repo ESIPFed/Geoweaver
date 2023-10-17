@@ -24,205 +24,168 @@ import com.gw.utils.BaseTool;
 import com.gw.web.GeoweaverController;
 
 /**
- * 
- * This class is used as the only websocket channel for transferring all the non-terminal SSH related message
- * 
- * @author JensenSun
+ * CommandServlet is a WebSocket server endpoint responsible for managing WebSocket connections and handling non-terminal SSH-related messages.
  *
+ * @author JensenSun
  */
-//ws://localhost:8080/geoweaver-shell-socket
 @ServerEndpoint(value = "/command-socket")
 public class CommandServlet {
-	
-	static Logger logger = LoggerFactory.getLogger(CommandServlet.class);
-	
-	/**
-	 * WebSocket Session between the client and Geoweaver
-	 */
-	private Session wsSession;
-	
-	private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});
-    
+
+    // Logger for logging WebSocket events
+    static Logger logger = LoggerFactory.getLogger(CommandServlet.class);
+
+    // List of commands that trigger user logout
+    private List<String> logoutCommands = Arrays.asList(new String[]{"logout", "quit"});
+
+    // A map to store WebSocket sessions associated with user tokens
     static Map<String, Session> peers = new HashMap();
-	
-//    private HttpSession httpSession;
-	
-	@OnOpen
+
+    /**
+     * Called when a new WebSocket connection is opened.
+     *
+     * @param session   The WebSocket session that was opened.
+     * @param config    Configuration for the WebSocket session.
+     */
+    @OnOpen
     public void open(Session session, EndpointConfig config) {
-		
-		try {
-			
-			logger.debug("Command-socket websocket channel openned");
-			
-            // this.registerSession(session);
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-		
+        try {
+            logger.debug("Command-socket WebSocket channel opened");
+            
+            // You can register the session here for further tracking
+            // For example: this.registerSession(session);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void registerSession(Session session, String token){
-
+    /**
+     * Registers a user's WebSocket session using their access token.
+     *
+     * @param session   The WebSocket session to register.
+     * @param token     The user's access token, which is used as a key to associate the session with the user.
+     */
+    public void registerSession(Session session, String token) {
+        // Cast the session to a WsSession
         WsSession wss = (WsSession) session;
-			
-		// logger.debug("Web Socket Session ID:" + wss.getHttpSessionId());
 
-		// List<String> originHeader = (List<String>)session.getUserProperties()
-		// .get("TheUpgradeOrigin");
-
-		// if(wss.getHttpSessionId()==null){
-		// 	throw new RuntimeException("The HTTP Session ID shouldn't be null.");
-		// }else{
-
-		// 	// logger.debug("Websocket original headers: " + originHeader);
-
-		// 	// Session existingsession = CommandServlet.findSessionById(wss.getHttpSessionId());
-
-		// 	// if(existingsession==null || !existingsession.isOpen()){
-
-        //     logger.debug("New Command WebSocket ID is: " + session.getId());
-
-		// 	peers.put(wss.getHttpSessionId(), session);
-
-		// 	// }
-		// }
-
+        // Associate the session with the user's token in the map
         peers.put(token, wss);
-
     }
 
+
+    /**
+     * Handles errors that occur during WebSocket communication. It logs the error message and rethrows it.
+     *
+     * @param session     The WebSocket session where the error occurred.
+     * @param throwable   The error that occurred.
+     * @throws Throwable   The rethrown error for further handling.
+     */
     @OnError
     public void error(final Session session, final Throwable throwable) throws Throwable {
-        
-    	logger.error("websocket channel error" + throwable.getLocalizedMessage());
-    	
-    	throw throwable;
-    	
+        try {
+            // Log the error message and details
+            logger.error("WebSocket channel error: " + throwable.getLocalizedMessage());
+
+            // Rethrow the error to propagate it further, e.g., for handling at a higher level
+            throw throwable;
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Handles incoming WebSocket messages, processes them, and communicates with SSH sessions if required.
+     *
+     * @param message The incoming message.
+     * @param session The WebSocket session where the message was received.
+     */
     @OnMessage
     public void echo(String message, Session session) {
-        
-    	try {
-    		
-			logger.debug("Received message: " + message);
-
+        try {
+            // Log a debug message indicating that a message has been received
+            logger.debug("Received message: " + message);
             String tokenfromclient = null;
 
-
-            if(message!=null ){
-
-                if(message.startsWith("history_id:")){
-                    
+            // Check if the received message is not null
+            if (message != null) {
+                // Check if the message starts with "history_id:"
+                if (message.startsWith("history_id:")) {
+                    // Extract the token from the message (substring from the 11th character)
                     tokenfromclient = message.substring(11);
-
+                    // Log the history ID for debugging
                     logger.debug(" - History ID: " + tokenfromclient);
-
-                }else if(message.startsWith("token:")){
-
+                }
+                // Check if the message starts with "token:"
+                else if (message.startsWith("token:")) {
+                    // Extract the token from the message (substring from the 6th character)
                     tokenfromclient = message.substring(6);
-
+                    // Log the token for debugging
                     logger.debug(" - Token: " + tokenfromclient);
-
+                    // Register the WebSocket session with the token
                     this.registerSession(session, tokenfromclient);
-
                 }
-
-				
-
             }
-        	
-            if(tokenfromclient==null){
 
-                logger.debug(" Session ID: " + session.getQueryString());
-        	
-                //        	session.getBasicRemote().sendText("Message received and Geoweaver Shell Socket Send back: " + message);
-                
-                //the session should never be managed by their session id because the js session id could change after a while of stale
+            // If the token is still null, log the session ID for debugging
+            if (tokenfromclient == null) {
+                logger.debug("Session ID: " + session.getQueryString());
+
+                // Retrieve the SSH session associated with the WebSocket session ID
                 SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
-                
-                if (sshSession == null ) {
 
-                    logger.debug("linking " + session.getId() + " - " + tokenfromclient);
+                // If there's no associated SSH session
+                if (sshSession == null) {
+                    // Log the linkage between WebSocket session and token for debugging
+                    logger.debug("Linking " + session.getId() + " - " + tokenfromclient);
 
-                    // TODO is there a better way to do this?
-                    // Can the client send the websocket session id and username in a REST call to link them up?
+                    // Attempt to retrieve the SSH session using the token
                     sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(tokenfromclient);
-                    
-    //                if(sshSession!=null&&sshSession.getSSHInput().ready()) {
-                    if(sshSession!=null) {
-                        
-    //                	sshSession.setWebSocketSession(session);
-                        
+
+                    // If an SSH session is found, associate it with the WebSocket session
+                    if (sshSession != null) {
                         GeoweaverController.sessionManager.sshSessionByToken.put(session.getId(), sshSession);
-                        
-    //                	GeoweaverController.sessionManager.sshSessionByToken.remove(messageText); //remove session, a token can only be used once
-                        
-                    }else {
-                        
-                        if(session.isOpen()) {
-                            
+                    }
+                    // If no SSH session is found
+                    else {
+                        // Check if the WebSocket session is open and send a message indicating no active SSH connection
+                        if (session.isOpen()) {
                             session.getBasicRemote().sendText("No SSH connection is active");
-                            
                         }
-                        
-    //                	session.close();
-                        
                     }
-                    
-                } else {
-                    
-                    logger.debug("message in " + session.getId() + message);
-                    
-                    sshSession.getSSHOutput().write((message + '\n').getBytes());
-                    
-                    sshSession.getSSHOutput().flush();
-                    
-    //    			//send Ctrl + C command to the SSH to close the connection
-    //    			
-    //    			cmd.getOutputStream().write(3);
-    //    			
-    //    		    cmd.getOutputStream().flush();
-                    
-                    // if we receive a valid logout command, then close the websocket session.
-                    // the system will logout and tidy itself up...
-                    
-                    if (logoutCommands.contains(message.trim().toLowerCase())) {
-                        
-                        logger.debug("valid logout command received " +  message);
-                        
-                        sshSession.logout();
-                        
-    //                	session.close(); //close WebSocket session. Notice: the SSHSession will continue to run.
-                        
-                    }
-                    
                 }
+                // If there's an associated SSH session
+                else {
+                    // Log the message received in the SSH session
+                    logger.debug("Message in " + session.getId() + ": " + message);
+                    // Write the message to the SSH session's output stream and flush it
+                    sshSession.getSSHOutput().write((message + '\n').getBytes());
+                    sshSession.getSSHOutput().flush();
 
-            }else{
-
-                //send back a message to confirm the session is active
+                    // Check if the received message is a valid logout command
+                    if (logoutCommands.contains(message.trim().toLowerCase())) {
+                        // Log the receipt of a valid logout command
+                        logger.debug("Valid logout command received: " + message);
+                        // Perform a logout on the SSH session
+                        sshSession.logout();
+                    }
+                }
+            } else {
+                // Send a message to confirm that the session is active
                 session.getBasicRemote().sendText("Session_Status:Active");
-                
-
             }
-
-        	
-            
-    	}catch(Exception e) {
-    		
-    		e.printStackTrace();
-    		
-    	}
-    	
+        } catch (Exception e) {
+            // Handle any exceptions that might occur during message processing
+            e.printStackTrace();
+        }
     }
 
-    public void printoutCallStack(){
 
+    /**
+     * Prints the call stack trace for debugging purposes.
+     */
+    public void printoutCallStack() {
         System.out.println("Printing stack trace:");
+        // Get the call stack trace elements
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
         for (int i = 1; i < elements.length; i++) {
             StackTraceElement s = elements[i];
@@ -231,84 +194,85 @@ public class CommandServlet {
     }
 
     /**
-     * Close session
-     * @param session
+     * Closes the WebSocket session.
+     *
+     * @param session The WebSocket session to be closed.
      */
     @OnClose
     public void close(final Session session) {
-    	
-		try {
+        try {
+            logger.debug("Geoweaver Shell Channel closed.");
+            logger.debug("WebSocket session closed: " + session.getId());
             
-    		logger.debug("Geoweaver Shell Channel closed.");
-    		
-    		logger.debug("websocket session closed:" + session.getId());
-    		
-            //close SSH session
-            if(GeoweaverController.sessionManager!=null) {
-            	
-            	SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
-                if (sshSession != null && sshSession.isTerminal()) { //only close when it is shell
+            // Close the associated SSH session
+            if (GeoweaverController.sessionManager != null) {
+                SSHSession sshSession = GeoweaverController.sessionManager.sshSessionByToken.get(session.getId());
+                if (sshSession != null && sshSession.isTerminal()) { // Only close when it is a shell
                     sshSession.logout();
                 }
                 GeoweaverController.sessionManager.sshSessionByToken.remove(session.getId());
-            	
             }
-
+            
+            // Remove the WebSocket session from the peers map
             // WsSession wss = (WsSession) session;
-
             // peers.remove(wss.getHttpSessionId());
-        	
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		}
-    	
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     /**
-     * Find session by id
-     * @param sessionid
-     * @return
+     * Finds a WebSocket session by its token.
+     *
+     * @param token The token used to identify the WebSocket session.
+     * @return The WebSocket session, or null if not found.
      */
     public static javax.websocket.Session findSessionById(String token) {
-    	javax.websocket.Session se = null;
+        javax.websocket.Session se = null;
         if (peers.containsKey(token)) {
-        	se = peers.get(token);
+            se = peers.get(token);
         }
         return se;
     }
 
-    public static void sendMessageToSocket(String token, String message){
-
+    /**
+     * Sends a message to a specific WebSocket session identified by its token.
+     *
+     * @param token   The token of the target WebSocket session.
+     * @param message The message to be sent.
+     */
+    public static void sendMessageToSocket(String token, String message) {
         try {
-			
-			Session wsout = CommandServlet.findSessionById(token);
-			
-			if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-				
-				wsout.getBasicRemote().sendText(message);
-				
-			}
-			
-		} catch (IOException e1) {
-			
-			e1.printStackTrace();
-			
-		}
-
+            Session wsout = CommandServlet.findSessionById(token);
+            if (!BaseTool.isNull(wsout)){
+                if(wsout.isOpen()) {
+                    wsout.getBasicRemote().sendText(message);
+                }else{
+                    CommandServlet.removeSessionById(token);
+                }
+            }else{
+                logger.warn(String.format("cannot find websocket for token %s", token));
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
-    public static void removeSessionById(String token){
-
+    /**
+     * Removes a WebSocket session from the peers map based on its token.
+     *
+     * @param token The token of the WebSocket session to be removed.
+     */
+    public static void removeSessionById(String token) {
         peers.remove(token);
-
     }
 
-    public static void cleanAll(){
-
+    /**
+     * Clears all WebSocket sessions from the peers map.
+     */
+    public static void cleanAll() {
         peers.clear();
-
     }
+
 
 }

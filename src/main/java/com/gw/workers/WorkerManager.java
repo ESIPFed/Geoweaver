@@ -172,21 +172,14 @@ public class WorkerManager {
 			
 		}
 		return num;
-//		return (SysDir.worknumber-workerlist.size());
 	}
 	/**
 	 * notify manager that it is available now
 	 * @param w
 	 */
 	public void notifyWorkerManager(Worker w){
-		
 		//check the waiting list to start running new task
-		
-//		TaskManager.notifyWaitinglist();
-		
 		tm.done(w.getTask());
-		
-//		workerlist.remove(w);
 	}
 	
 	public static final void main(String[] args){

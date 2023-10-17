@@ -348,9 +348,16 @@ GW.workspace = {
 		});
 
 		d3.select("#new-workflow").on("click", function(){
-
-			thisGraph.deleteGraph(false);
-
+			thisGraph.nodes = [];
+			thisGraph.edges = [];
+			thisGraph.selectedWorkflow = null;
+			thisGraph.svg = null;
+			thisGraph.keymap = {};
+			thisGraph.if_any_frame_on = false;
+			GW.workflow.setCurrentWorkflowName("");
+			GW.workflow.loaded_workflow = null;
+			thisGraph.updateGraph();
+			$("#main-workspace-tab").html('Weaver');
 		});
 
 		d3.select("#add-workflow").on("click", function(){
@@ -616,11 +623,11 @@ GW.workspace = {
 				//if some objects are selected, delete the selected only. If nothing selected, delete all.
 				
 				if (!skipPrompt){
-					
+
 					doDelete = window.confirm("Warning: everything in work area will be erased!!! Press OK to proceed.");
 
 					if(doDelete){
-				
+
 						thisGraph.nodes = [];
 						thisGraph.edges = [];
 						thisGraph.updateGraph();
@@ -639,7 +646,7 @@ GW.workspace = {
 							alert("Please select a workflow to delete");
 						}
 					}
-					
+
 				}else{
 
 					if(thisGraph.state.selectedEdge){

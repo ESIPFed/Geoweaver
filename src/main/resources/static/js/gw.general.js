@@ -32,6 +32,8 @@ GW.general = {
 			});
 
 			GW.general.CLIENT_TOKEN = GW.general.makeid(26);
+
+			console.log("created new client token: " + GW.general.CLIENT_TOKEN)
 			
 		},
 

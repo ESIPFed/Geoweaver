@@ -275,8 +275,9 @@ GW.ssh = {
 				$(".dot-flashing").addClass("invisible")
 			}
 			
-			var newline = "<p style=\"line-height:1.1; text-align:left;\"><span style=\""+
-				style1+"\">" + content + "</span></p>";
+			var newline = `<p style="line-height:1.1; text-align:left; margin-top: 5px; `+
+				`margin-bottom: 5px;"><span style="`+
+				style1+ `">` + content + `</span></p>`;
 
 			this.current_log_length += 1  //line number plus 1
 

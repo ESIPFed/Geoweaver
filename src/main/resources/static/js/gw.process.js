@@ -990,8 +990,6 @@ GW.process = {
 
 		}
 		
-		// output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
-		
 		output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
 		
 		"<p> Execution ended at " + msg.end_time + "</p>"+
@@ -1390,7 +1388,7 @@ GW.process = {
 		   '   </div>'+
 		   '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >'+
 		   '	     <div class="col-md-6" style="padding:0;" >'+
-		   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save edits. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to enable edit.'+
+		   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to edit.'+
 		   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
 		   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
 		   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
@@ -2031,6 +2029,8 @@ GW.process = {
 		var newhistid = GW.general.makeid(12);
 
 		req.history_id = newhistid;
+
+		console.log("current client token is: " + GW.general.CLIENT_TOKEN)
 
 		req.token = GW.general.CLIENT_TOKEN;
 

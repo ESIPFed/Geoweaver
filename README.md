@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master.svg?style=svg)](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master) [![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/coverage-100%25-success.svg)](https://codecov.io/) [![Discourse status](https://img.shields.io/discourse/status?server=https%3A%2F%2Fgeoweaver.discourse.group)](https://geoweaver.discourse.group)
+[![CircleCI](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master.svg?style=svg)](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master) [![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/coverage-100%25-success.svg)](https://codecov.io/) 
 
 # [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
@@ -17,6 +17,8 @@ Only two things basically:
 2. Preserve all the model run history and share them along with the code files
 
 # [Installation](docs/install.md)
+
+# [Upgrade](docs/upgrade.md)
 
 # [Tutorial](https://zihengsun.github.io/Geoweaver/)
 
