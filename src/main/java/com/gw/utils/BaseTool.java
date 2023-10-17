@@ -69,7 +69,7 @@ import oshi.software.os.OperatingSystem;
 @Service
 public class BaseTool {
 	
-	public static int BUFFER_SIZE = 16384;
+	public static int BUFFER_SIZE = 20;
 
 	private String _classpath = null;
 
@@ -755,7 +755,7 @@ public class BaseTool {
 		try {
 			
 			URL aURL = new URL(url);
-			
+
 			cc[0] = aURL.getProtocol();
 			cc[1] = aURL.getHost();
 			

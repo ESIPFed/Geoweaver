@@ -244,8 +244,14 @@ public class CommandServlet {
     public static void sendMessageToSocket(String token, String message) {
         try {
             Session wsout = CommandServlet.findSessionById(token);
-            if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
-                wsout.getBasicRemote().sendText(message);
+            if (!BaseTool.isNull(wsout)){
+                if(wsout.isOpen()) {
+                    wsout.getBasicRemote().sendText(message);
+                }else{
+                    CommandServlet.removeSessionById(token);
+                }
+            }else{
+                logger.warn(String.format("cannot find websocket for token %s", token));
             }
         } catch (IOException e1) {
             e1.printStackTrace();

@@ -350,7 +350,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
 			if(BaseTool.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {bin, pythonfilename} );
+    		builder.command(new String[] {bin, "-u", pythonfilename} );
     		
 			// log.info(builder.environment());
     		builder.redirectErrorStream(true);

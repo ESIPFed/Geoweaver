@@ -376,11 +376,11 @@ public class SSHSessionImpl implements SSHSession {
 
             if (BaseTool.isNull(bin) || "default".equals(bin)) {
 
-                cmdline += "python " + filename + "; ";
+                cmdline += "python -u " + filename + "; ";
 
             } else {
 
-                cmdline += bin + " " + filename + "; ";
+                cmdline += bin + " -u " + filename + "; ";
 
             }
 

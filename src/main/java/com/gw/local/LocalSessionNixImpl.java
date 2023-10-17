@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.websocket.Session;
 
+import com.fasterxml.jackson.databind.JsonSerializable.Base;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
@@ -332,7 +333,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
 			if(BaseTool.isNull(bin)) bin = "python";
     		
-    		builder.command(new String[] {bin, pythonfilename} );
+    		builder.command(new String[] {bin, "-u", pythonfilename} );
     		
     		builder.redirectErrorStream(true);
     		
