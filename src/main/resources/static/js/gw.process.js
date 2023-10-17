@@ -2032,6 +2032,8 @@ GW.process = {
 
 		req.history_id = newhistid;
 
+		console.log("current client token is: " + GW.general.CLIENT_TOKEN)
+
 		req.token = GW.general.CLIENT_TOKEN;
 
 		req.operation = "ShowResultMap";
