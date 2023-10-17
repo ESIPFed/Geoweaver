@@ -1390,7 +1390,7 @@ GW.process = {
 		   '   </div>'+
 		   '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >'+
 		   '	     <div class="col-md-6" style="padding:0;" >'+
-		   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save. <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to edit.'+
+		   '			<p class=\"h6\"> <span class=\"badge badge-secondary\">Ctrl+S</span> to save. Click <i class=\"fa fa-edit subalignicon\" onclick=\"GW.process.editSwitch()\" data-toggle=\"tooltip\" title=\"Enable Edit\"></i> to edit.'+
 		   '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>'+
 		   '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">'+
 		   ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>'+  
