@@ -990,8 +990,6 @@ GW.process = {
 
 		}
 		
-		// output = "<h4 class=\"border-bottom\">Output Log Section <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeLog\">Close</button></h4>"+
-		
 		output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
 		
 		"<p> Execution ended at " + msg.end_time + "</p>"+
