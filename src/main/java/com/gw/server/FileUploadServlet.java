@@ -114,22 +114,9 @@ public class FileUploadServlet extends HttpServlet {
             //initialize the prefix url
             if(prefix_url==null){
             	
-//            	SysDir.PREFIXURL = req.getProtocol() + "://" + req.getServerName() + ":" + req.getServerPort();
-            	
-//                prefix_url = "../"+relativePath+"/";
             	prefix_url = "download/" + relativePath + "/";
                 
             }
-            
-//            pw.println("<!DOCTYPE html>");
-//            pw.println("<html>");
-//            String head = "<head>" + 
-//		        "<title>File Uploading Response</title>" + 
-//		        "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" + 
-//		        "<script type=\"text/javascript\" src=\"js/TaskGridTool.js\"></script>"+
-//		        "</head>";
-//            pw.println(head);
-//            pw.println("<body>");
             
             DiskFileItemFactory diskFactory = new DiskFileItemFactory();
             // threshold  4M 
@@ -155,12 +142,7 @@ public class FileUploadServlet extends HttpServlet {
                 }else{
                     processUploadFile(item, pw);
                 }
-            }// end while()
-            //add some buttons for further process
-//            pw.println("<input type=\"button\" id=\"bt\" value=\"load\" onclick=\"load();\">");
-//            pw.println("<input type=\"button\" id=\"close\" value=\"close window\" onclick=\"window.close();\">");
-//            pw.println("</body>");
-//            pw.println("</html>");
+            }
         }catch(Exception e){
             e.printStackTrace();
             pw.println("ERR:"+e.getClass().getName()+":"+e.getLocalizedMessage());

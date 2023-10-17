@@ -224,44 +224,52 @@ public class LocalSessionOutput implements Runnable {
 	 */
 	@Override
 	public void run() {
+		// Initialize StringBuffer for storing pre-log content and the logs generated during execution
 		StringBuffer prelog = new StringBuffer(); // The part that is generated before the WebSocket session is started
 		StringBuffer logs = new StringBuffer();
-
+	
 		try {
-			log.info("Local session output thread started");
-
-			int linenumber = 0;
-			int startrecorder = -1;
-			int nullnumber = 0;
-
-			this.updateStatus("Running", "Running"); // Initiate the history record
-			sendMessage2WebSocket("Process " + this.history_id + " Started");
-
-			String line = null;
-
+			log.info("Local session output thread started"); // Log that the local session output thread has started
+	
+			// Initialize counters and statuses for monitoring and logging
+			int linenumber = 0;  // Line number of the current output
+			int startrecorder = -1; // Records the starting line number when the output is null
+			int nullnumber = 0; // Counts consecutive null output lines
+	
+			// Update the status of the executed command as "Running" in the history record
+			this.updateStatus("Running", "Running");
+	
+			// Send a message to the WebSocket indicating that the process has started
+			CommandServlet.sendMessageToSocket(token, "Process " + this.history_id + " Started");
+	
+			String line = null; // Initialize a variable to store each line of output
+	
+			// Read output lines until they are null (command execution is finished)
 			while ((line = in.readLine()) != null) {
 				try {
-					refreshLogMonitor();
-
+					refreshLogMonitor(); // Check and refresh the WebSocket session
+	
 					// readLine will block if nothing to send
 					if (BaseTool.isNull(in)) {
 						log.debug("Local Session Output Reader is closed prematurely.");
 						break;
 					}
-
-					linenumber++;
-
-					// When detected that the command is finished, end this process
+	
+					linenumber++; // Increment the line number
+	
+					// When null output lines are detected, track them to determine if the command is finished
 					if (BaseTool.isNull(line)) {
-						// If ten consecutive output lines are null, break this loop
+						// If ten consecutive output lines are null, consider it disconnected
 						if (startrecorder == -1)
 							startrecorder = linenumber;
 						else
 							nullnumber++;
-
+	
 						if (nullnumber == 10) {
 							if ((startrecorder + nullnumber) == linenumber) {
 								log.debug("Null output lines exceed 10. Disconnected.");
+	
+								// Depending on the language (e.g., "jupyter"), update the status
 								if ("jupyter".equals(this.lang)) {
 									this.updateJupyterStatus(logs.toString(), "Done");
 								} else {
@@ -274,23 +282,25 @@ public class LocalSessionOutput implements Runnable {
 							}
 						}
 					} else if (line.contains("==== Geoweaver Bash Output Finished ====")) {
-
+						// Handle specific marker lines if present
 					} else {
-						log.info("Local thread output >> " + line);
-						logs.append(line).append("\n");
-
+						log.info("Local thread output >> " + line); // Log each line of output
+						logs.append(line).append("\n"); // Append the line to the logs
+	
 						if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
 							if (prelog.toString() != null) {
 								line = prelog.toString() + line;
 								prelog = new StringBuffer();
 							}
-							this.sendMessage2WebSocket(line);
+							//this.sendMessage2WebSocket(line); // Send the line to the WebSocket
+							CommandServlet.sendMessageToSocket(token, line);
 						} else {
-							prelog.append(line).append("\n");
+							prelog.append(line).append("\n"); // Append to the prelog if WebSocket isn't available
 						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					// Depending on the language, update the status to "Failed"
 					if ("jupyter".equals(this.lang)) {
 						this.updateJupyterStatus(logs.toString(), "Failed");
 					} else {
@@ -301,13 +311,15 @@ public class LocalSessionOutput implements Runnable {
 					// session.saveHistory(logs.toString()); //write the failed record
 				}
 			}
-
+	
+			// Depending on the language (e.g., "jupyter"), update the status to "Done"
 			if ("jupyter".equals(this.lang)) {
 				this.updateJupyterStatus(logs.toString(), "Done");
 			} else {
 				this.updateStatus(logs.toString(), "Done");
 			}
-
+	
+			// If the process is available, attempt to stop and get its exit code
 			if (!BaseTool.isNull(theprocess)) {
 				try {
 					if (theprocess.isAlive()) theprocess.destroy();
@@ -317,20 +329,23 @@ public class LocalSessionOutput implements Runnable {
 					log.error("the process doesn't end well" + e.getLocalizedMessage());
 				}
 			}
-
-			sendMessage2WebSocket("The process " + history_id + " is finished.");
-
+	
+			// Send a message to the WebSocket indicating that the process has finished
+			CommandServlet.sendMessageToSocket(token, "The process " + history_id + " is finished.");
+	
 			// This thread will end by itself when the task is finished; you don't have to close it manually
-			GeoweaverController.sessionManager.closeByToken(token);
-
+			GeoweaverController.sessionManager.closeByToken(token); // Close the session by token
+	
 			log.info("Local session output thread ended");
 		} catch (Exception e) {
 			e.printStackTrace();
+			// Depending on the language, update the status to "Failed"
 			this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
 		} finally {
-			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+			CommandServlet.sendMessageToSocket(token, "======= Process " + this.history_id + " ended");
 		}
 	}
+	
 
     
 
