@@ -146,7 +146,7 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     	updateStatus("Running", "Running"); //initiate the history record
 
-		sendMessage2WebSocket("Process "+this.history_id+" Started");
+		CommandServlet.sendMessageToSocket(token, "Process "+this.history_id+" Started");
     	
 		String line = null;
 			
@@ -188,7 +188,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 					
 				}
 				
-				log.info("command thread output >> " + line);
+				log.debug("command thread output >> " + line);
 				
 				logs.append(line).append("\n");
 
@@ -206,7 +206,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 						
 					}
 					
-					sendMessage2WebSocket(line);
+					CommandServlet.sendMessageToSocket(token, line);
 					
 				}else {
 					
@@ -218,7 +218,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 			this.updateStatus(logs.toString(), "Done");
 			
-			sendMessage2WebSocket("The process "+this.history_id+" is finished.");
+			CommandServlet.sendMessageToSocket(token, "The process "+this.history_id+" is finished.");
 			
 
 		} catch (Exception e) {
@@ -229,7 +229,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 			
 		}finally {
 			
-			sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+			CommandServlet.sendMessageToSocket(token, "======= Process " + this.history_id + " ended");
 			
 		}
         
