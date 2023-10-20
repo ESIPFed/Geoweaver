@@ -1,0 +1,95 @@
+name: Build and Publish Geoweaver App
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Build with Maven
+        run: mvn clean install -DskipTests
+
+      - name: Upload Geoweaver Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: geoweaver-artifacts
+          path: |
+            target/*.jar
+            pom.xml
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install XML parsing tools
+        run: sudo apt install libxml2-utils
+
+      - name: Download Geoweaver Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: geoweaver-artifacts
+
+      - name: List All Files in Workspace
+        run: |
+          find "$GITHUB_WORKSPACE" -type f
+        shell: bash
+
+      - name: Extract Commit Message
+        run: echo "COMMIT_MESSAGE=$(git log --format=%B -n 1 ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Determine Tag Name
+        id: determine_tag_name
+        run: |
+          if [[ -n "${{ github.ref }}" && "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "TAG_NAME=$(echo "${{ github.ref }}" | sed 's@refs/tags/@@')" >> $GITHUB_ENV
+          else
+            echo "TAG_NAME=latest" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: Extract version from pom.xml
+        run: |
+          # Assuming pom.xml is in the root directory of your downloaded artifacts
+          VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" $GITHUB_WORKSPACE/pom.xml)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Set Release Name
+        id: set_release_name
+        run: echo "RELEASE_NAME=$VERSION" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          body: ${{ env.COMMIT_MESSAGE }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Upload JAR Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /home/runner/work/geoweaver-deployment-test/geoweaver-deployment-test/target/geoweaver.jar
+          asset_name: geoweaver.jar
+          asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
