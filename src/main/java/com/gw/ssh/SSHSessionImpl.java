@@ -791,25 +791,34 @@ public class SSHSessionImpl implements SSHSession {
         }
     }
 
+    /**
+     * Read Python and Conda environments information on a remote host and return it as a formatted string.
+     * This method reads information about Python and Conda environments by executing remote commands.
+     * The collected environment information is returned as a formatted string.
+     *
+     * @param hostid   The identifier of the remote host.
+     * @param password The password for the SSH session.
+     * @return A formatted string containing information about Python and Conda environments on the remote host.
+     */
     @Override
     public String readPythonEnvironment(String hostid, String password) {
-
         String resp = null;
 
         try {
+            // Read information about Python and Conda environments in one command.
+            readWhereCondaInOneCommand(hostid);
 
-            this.readWhereCondaInOneCommand(hostid);
-
+            // Read additional Conda environment information if needed.
             // this.readConda();
 
+            // Get a formatted string containing the environment information.
             resp = et.getEnvironments(hostid);
-
         } catch (Exception e) {
-
+            // Handle any exceptions that occur during the environment reading process.
             e.printStackTrace();
-
+            // You may want to add additional error handling here based on your use case.
         } finally {
-
+            // Perform cleanup and finalization.
             finalize();
             // if(!BaseTool.isNull(session))
             // try {
@@ -818,7 +827,6 @@ public class SSHSessionImpl implements SSHSession {
             // } catch (Exception e) {
             // e.printStackTrace();
             // }
-
         }
 
         return resp;
