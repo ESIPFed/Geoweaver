@@ -200,20 +200,28 @@ public class LocalSessionOutput implements Runnable {
 	 * @param status The execution status (e.g., "Done" or "Failed").
 	 */
 	public void updateStatus(String logs, String status) {
+
 		History h = ht.getHistoryById(this.history_id);
 
-		if (BaseTool.isNull(h)) {
+		if(BaseTool.isNull(h)){
+
 			h = new History();
+
 			h.setHistory_id(history_id);
+
 			log.debug("This is very unlikely");
 		}
 
-		h.setHistory_output(logs);
-		h.setIndicator(status);
+		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
+				|| ExecutionStatus.STOPPED.equals(status) || ExecutionStatus.SKIPPED.equals(status)){
 
-		if ("Done".equals(status) || "Failed".equals(status)) {
 			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+
 		}
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
 
 		ht.saveHistory(h);
 	}
@@ -257,6 +265,10 @@ public class LocalSessionOutput implements Runnable {
 					}
 	
 					linenumber++; // Increment the line number
+					
+					if(linenumber%1==0){
+						this.updateStatus(logs.toString(), "Running");
+					}
 	
 					// When null output lines are detected, track them to determine if the command is finished
 					if (BaseTool.isNull(line)) {
