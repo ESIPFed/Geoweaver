@@ -68,12 +68,6 @@ GW.ssh = {
 	    echo: function(content){
 		
 			if(content!=null){
-
-				// if(content.indexOf("Warning: Websocket Channel is going to close")!=-1){
-
-				// 	console.error("The WebSocket is going to close..");
-
-				// }
 				
 		    	content = content.replace(/\n/g,'<br/>')
 		    	
@@ -275,8 +269,8 @@ GW.ssh = {
 				$(".dot-flashing").addClass("invisible")
 			}
 			
-			var newline = `<p style="line-height:1.1; text-align:left; margin-top: 5px; `+
-				`margin-bottom: 5px;"><span style="`+
+			var newline = `<p style="line-height:1.1; text-align:left; margin-top: 10px; `+
+				`margin-bottom: 10px;"><span style="`+
 				style1+ `">` + content + `</span></p>`;
 
 			this.current_log_length += 1  //line number plus 1
@@ -386,13 +380,6 @@ GW.ssh = {
 			
 			}
 			
-//			$("#log-window").slideToggle(true);
-//			switchTab(document.getElementById("main-console-tab"), "main-console");
-			// GW.general.switchTab("console");
-
-			// this.send("history_id:" + msg.history_id);
-
-			// this.send("token:" + msg.token); //the websocket is still in connecting state
 			if(msg.history_id.length==12)
 				this.addlog("=======\nStart to execute Process " + msg.history_id);
 			else
@@ -401,24 +388,6 @@ GW.ssh = {
 	    },
 	    
 	    openTerminal: function(token, terminal_div_id){
-	    	
-//	        shell = $('#content').terminal(function (command, term) {
-//	        		
-//	        		send(command);
-//	        		
-//	            }, {
-//	            	
-//	                prompt: '['+user+'@'+host+': ~]# ',
-//	                
-//	                name: 'Geoweaver SSH on Web',
-//	                
-//	                scrollOnEcho: true,
-//	                
-//	                greetings: "SSH on Web started. Type 'exit' to quit. \nThis system is funded by National Science Foundation (https://nsf.gov)."
-//	                
-//	            }
-//	            
-//	        );
 	    	
 	    }
 		

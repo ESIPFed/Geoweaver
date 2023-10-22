@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.1.1</version>
+	<version>1.2.1</version>
 	<name>geoweaver</name>
 	<description>A lightweight workflow management software for organizing data analysis workflows, 
 	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
@@ -173,7 +173,7 @@
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
-		    <version>20230227</version>
+		    <version>20231013</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

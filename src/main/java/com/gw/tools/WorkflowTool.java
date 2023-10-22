@@ -340,7 +340,7 @@ public class WorkflowTool {
 		try {
 			
 			task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
-
+			
 			task.execute();
 
 			resp = "{\"history_id\": \""+task.getHistory_id()+

@@ -28,6 +28,7 @@ import com.gw.utils.OSValidator;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +94,7 @@ public class LocalSessionNixImpl implements LocalSession {
     public LocalSessionNixImpl() {
     	
     	//this is for spring
+		log.info("localsessionniximpl object is created for " + token); 
     	
     }
     
@@ -112,10 +114,10 @@ public class LocalSessionNixImpl implements LocalSession {
 		this.isClose = false;
 		
 		history = history_tool.initProcessHistory(history_id, processid, script);
+
+		// this.sender = createLocalSessionOutput(); 
 		
 	}
-
-	
 	
 	/**
 	 * If the process ends with error

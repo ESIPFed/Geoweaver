@@ -1,6 +1,7 @@
 package com.gw.local;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 import javax.websocket.Session;
 
@@ -73,7 +74,7 @@ public class LocalSessionOutput implements Runnable {
      * @param jupyterfilepath The Jupyter file path, if applicable.
      */
     public void init(BufferedReader in, String token, String history_id, String lang, String jupyterfilepath) {
-        log.info("LocalSessionOutput created");
+        log.info("LocalSessionOutput created for token "+ token);
         this.in = in;
         this.token = token;
         this.run = true;
@@ -96,21 +97,19 @@ public class LocalSessionOutput implements Runnable {
      * @param msg The message to be sent to the WebSocket.
      */
     public void sendMessage2WebSocket(String msg) {
-        if (!BaseTool.isNull(wsout)) {
-            synchronized (wsout) {
-                try {
-                    if (wsout.isOpen()) {
-                        wsout.getBasicRemote().sendText(msg);
-                    } else {
-                        log.debug("WebSocket is closed, message didn't send: " + msg);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.debug("Exception happens, message didn't send: " + msg);
+        try {
+            this.wsout = CommandServlet.findSessionById(token);
+            if (!BaseTool.isNull(wsout)){
+                if(wsout.isOpen()) {
+                    wsout.getBasicRemote().sendText(msg);
+                }else{
+                    CommandServlet.removeSessionById(token);
                 }
+            }else{
+                log.warn(String.format("cannot find websocket for token %s", token));
             }
-        } else {
-            log.debug("WebSocket is null, message didn't send: " + msg);
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -162,7 +161,7 @@ public class LocalSessionOutput implements Runnable {
 
 		ht.saveHistory(h);
 
-		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+		this.sendMessage2WebSocket("Exit Code: " + exitvalue);
 	}
 
 	/**
@@ -200,20 +199,28 @@ public class LocalSessionOutput implements Runnable {
 	 * @param status The execution status (e.g., "Done" or "Failed").
 	 */
 	public void updateStatus(String logs, String status) {
+
 		History h = ht.getHistoryById(this.history_id);
 
-		if (BaseTool.isNull(h)) {
+		if(BaseTool.isNull(h)){
+
 			h = new History();
+
 			h.setHistory_id(history_id);
+
 			log.debug("This is very unlikely");
 		}
 
-		h.setHistory_output(logs);
-		h.setIndicator(status);
+		if(ExecutionStatus.DONE.equals(status) || ExecutionStatus.FAILED.equals(status) 
+				|| ExecutionStatus.STOPPED.equals(status) || ExecutionStatus.SKIPPED.equals(status)){
 
-		if ("Done".equals(status) || "Failed".equals(status)) {
 			h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+
 		}
+
+		h.setHistory_output(logs);
+
+		h.setIndicator(status);
 
 		ht.saveHistory(h);
 	}
@@ -240,7 +247,7 @@ public class LocalSessionOutput implements Runnable {
 			this.updateStatus("Running", "Running");
 	
 			// Send a message to the WebSocket indicating that the process has started
-			CommandServlet.sendMessageToSocket(token, "Process " + this.history_id + " Started");
+			this.sendMessage2WebSocket("Process " + this.history_id + " Started");
 	
 			String line = null; // Initialize a variable to store each line of output
 	
@@ -257,6 +264,10 @@ public class LocalSessionOutput implements Runnable {
 					}
 	
 					linenumber++; // Increment the line number
+
+					if(linenumber%1==0){
+						this.updateStatus(logs.toString(), "Running");
+					}
 	
 					// When null output lines are detected, track them to determine if the command is finished
 					if (BaseTool.isNull(line)) {
@@ -285,7 +296,7 @@ public class LocalSessionOutput implements Runnable {
 					} else if (line.contains("==== Geoweaver Bash Output Finished ====")) {
 						// Handle specific marker lines if present
 					} else {
-						log.info("Local thread output >> " + line); // Log each line of output
+						log.info("Local thread output >> " + line + " - token: " + token); // Log each line of output
 						logs.append(line).append("\n"); // Append the line to the logs
 	
 						if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
@@ -293,8 +304,7 @@ public class LocalSessionOutput implements Runnable {
 								line = prelog.toString() + line;
 								prelog = new StringBuffer();
 							}
-							//this.sendMessage2WebSocket(line); // Send the line to the WebSocket
-							CommandServlet.sendMessageToSocket(token, line);
+							this.sendMessage2WebSocket(line);
 						} else {
 							prelog.append(line).append("\n"); // Append to the prelog if WebSocket isn't available
 						}
@@ -332,7 +342,7 @@ public class LocalSessionOutput implements Runnable {
 			}
 	
 			// Send a message to the WebSocket indicating that the process has finished
-			CommandServlet.sendMessageToSocket(token, "The process " + history_id + " is finished.");
+			this.sendMessage2WebSocket("The process " + history_id + " is finished.");
 	
 			// This thread will end by itself when the task is finished; you don't have to close it manually
 			GeoweaverController.sessionManager.closeByToken(token); // Close the session by token
@@ -343,7 +353,7 @@ public class LocalSessionOutput implements Runnable {
 			// Depending on the language, update the status to "Failed"
 			this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
 		} finally {
-			CommandServlet.sendMessageToSocket(token, "======= Process " + this.history_id + " ended");
+			this.sendMessage2WebSocket("======= Process " + this.history_id + " ended");
 		}
 	}
 	

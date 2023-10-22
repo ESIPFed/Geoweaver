@@ -1,9 +1,11 @@
 package com.gw.tools;
 
 import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +17,7 @@ import com.gw.tasks.TaskManager;
 public class ExecutionTool {
     
     @Autowired
-    ProcessTool pt;
-    
-	@Autowired
-	LocalhostTool lt;
-	
-	@Autowired
-	RemotehostTool rt;
-
-    @Autowired
     BaseTool bt;
-
-	@Autowired
-	EnvironmentTool envt;
     
 	@Autowired
 	TaskManager tm;
@@ -50,6 +40,8 @@ public class ExecutionTool {
     boolean isjoin, String envid) {
 		
 		String bin = null, pyenv = null, basedir = null;
+
+		EnvironmentTool envt = BeanTool.getBean(EnvironmentTool.class);
 
 		Environment envobj = envt.getEnvironmentById(envid);
 
@@ -85,6 +77,7 @@ public class ExecutionTool {
 	public String executeProcess(String history_id, String id, String hid, String pswd, String httpsessionid, 
     boolean isjoin, String bin, String pyenv, String basedir) {
 
+		ProcessTool pt = BeanTool.getBean(ProcessTool.class);
 
         String category = pt.getTypeById(id);
 
@@ -95,6 +88,8 @@ public class ExecutionTool {
         if(BaseTool.isNull(basedir)) basedir = "~";
 
         if(bt.islocal(hid)) {
+
+			LocalhostTool lt = BeanTool.getBean(LocalhostTool.class);
             
             //localhost
             if("shell".equals(category)) {
@@ -123,6 +118,7 @@ public class ExecutionTool {
         }else {
             
             //non-local remote server
+			RemotehostTool rt = BeanTool.getBean(RemotehostTool.class);
 
             if("shell".equals(category)) {
                 
@@ -166,10 +162,14 @@ public class ExecutionTool {
 
 		if(bt.islocal(hid)){
 
+			LocalhostTool lt = BeanTool.getBean(LocalhostTool.class);
+
 			resp = lt.readPythonEnvironment(hid, password);
 
 		}else{
 
+			RemotehostTool rt = BeanTool.getBean(RemotehostTool.class);
+			
 			resp = rt.readPythonEnvironment(hid, password);
 			
 		}

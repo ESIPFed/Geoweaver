@@ -391,6 +391,8 @@ GW.process.sidepanel = {
 
         $("#prompt_panel_log_switch").prop('checked', true).trigger("change")
 
+        $("#prompt-panel-process-log-window").html("") //clean up the log out area
+
         GW.ssh.process_output_id = "prompt-panel-process-log-window"
 		
 		GW.process.sendExecuteRequest(req, dialogItself, button);

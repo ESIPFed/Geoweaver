@@ -13,6 +13,7 @@ import com.gw.local.LocalSessionWinImpl;
 import com.gw.tasks.GeoweaverProcessTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
 import com.gw.utils.OSValidator;
 import com.gw.web.GeoweaverController;
 
@@ -61,12 +62,6 @@ public class LocalhostTool {
 	
 	@Autowired
 	ProcessRepository processrepository;
-	
-	@Autowired
-	LocalSessionNixImpl nixsession;
-	
-	@Autowired
-	LocalSessionWinImpl winsession;
 	
 	public void saveHistory(String processid, String script, String history_id){
 
@@ -182,11 +177,11 @@ public class LocalhostTool {
 		
 		if(OSValidator.isWindows()) {
 			
-			session = winsession;
+			session = BeanTool.getBean(LocalSessionWinImpl.class);
 			
 		}else if(OSValidator.isMac() || OSValidator.isUnix()) {
 			
-			session = nixsession;
+			session = BeanTool.getBean(LocalSessionNixImpl.class);
 			
 		}else {
 			

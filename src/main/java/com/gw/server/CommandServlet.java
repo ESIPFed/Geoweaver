@@ -241,7 +241,7 @@ public class CommandServlet {
      * @param token   The token of the target WebSocket session.
      * @param message The message to be sent.
      */
-    public static void sendMessageToSocket(String token, String message) {
+    public static Session sendMessageToSocket(String token, String message) {
         try {
             Session wsout = CommandServlet.findSessionById(token);
             if (!BaseTool.isNull(wsout)){
@@ -253,9 +253,11 @@ public class CommandServlet {
             }else{
                 logger.warn(String.format("cannot find websocket for token %s", token));
             }
+            return wsout;
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+        return null;
     }
 
     /**
