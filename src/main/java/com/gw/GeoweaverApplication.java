@@ -188,8 +188,6 @@ public class GeoweaverApplication {
 
         }
 
-        logger.debug("test what is going on");
-
         //set everything that doesn't have an owner to this user
         ut.belongToPublicUser();
 
