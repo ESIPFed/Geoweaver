@@ -73,7 +73,7 @@ public class GeoweaverApplication {
     
 	}
 
-@Bean
+    @Bean
     public Docket geoweaverAPI() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
