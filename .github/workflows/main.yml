@@ -6,6 +6,8 @@ on:
       - published
     tags:
       - '*'
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +25,32 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -DskipTests
 
+      - name: Install XML parsing tools
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Extract version from pom.xml
+        run: |
+          VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" $GITHUB_WORKSPACE/pom.xml)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Append version to DEBIAN/control
+        run: |
+          echo "Version: ${{ env.VERSION }}" >> $GITHUB_WORKSPACE/linux-deployment/DEBIAN/control
+          
+      - name: Set execute permissions for postinst script
+        run: chmod 755 $GITHUB_WORKSPACE/linux-deployment/DEBIAN/postinst
+
+      - name: Copy geoweaver.jar to linux-deployment directory
+        run: cp $GITHUB_WORKSPACE/target/geoweaver.jar $GITHUB_WORKSPACE/linux-deployment/usr/local/bin/
+
+      - name: Make geoweaver.sh executable
+        run: chmod +x $GITHUB_WORKSPACE/linux-deployment/usr/local/bin/geoweaver.sh
+
+      - name: Build deb package
+        run: |
+          cd $GITHUB_WORKSPACE/linux-deployment
+          dpkg-deb --build . geoweaver.deb
+
       - name: Upload Geoweaver Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -30,6 +58,7 @@ jobs:
           path: |
             target/*.jar
             pom.xml
+            linux-deployment/*.deb
 
   release:
     needs: build
@@ -46,11 +75,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: geoweaver-artifacts
-
-      - name: Extract version from pom.xml
-        run: |
-          VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" $GITHUB_WORKSPACE/pom.xml)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Get ID and upload URL of the latest release
         run: |
@@ -75,5 +99,15 @@ jobs:
           asset_path: /home/runner/work/geoweaver-deployment-test/geoweaver-deployment-test/target/geoweaver.jar
           asset_name: geoweaver.jar
           asset_content_type: application/java-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Upload DEB Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: /home/runner/work/geoweaver-deployment-test/geoweaver-deployment-test/linux-deployment/geoweaver.deb
+          asset_name: geoweaver.deb
+          asset_content_type: application/vnd.debian.binary-package
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
