@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Geoweaver
+Comment=Geoweaver Application
+Exec=/usr/local/bin/geoweaver.sh
+Icon=/usr/local/bin/geoweaver.png
+Terminal=false
+Type=Application
+Categories=Utility;
+
