@@ -41,7 +41,9 @@ jobs:
         run: chmod 755 $GITHUB_WORKSPACE/linux-deployment/DEBIAN/postinst
 
       - name: Copy geoweaver.jar to linux-deployment directory
-        run: cp $GITHUB_WORKSPACE/target/geoweaver.jar $GITHUB_WORKSPACE/linux-deployment/usr/local/bin/
+        run: |
+          ls $GITHUB_WORKSPACE/target/
+          cp $GITHUB_WORKSPACE/target/geoweaver.jar $GITHUB_WORKSPACE/linux-deployment/usr/local/bin/
 
       - name: Make geoweaver.sh executable
         run: chmod +x $GITHUB_WORKSPACE/linux-deployment/usr/local/bin/geoweaver.sh
@@ -84,6 +86,14 @@ jobs:
           RELEASE_ID=$(echo "$RESPONSE" | jq -r .id)
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
           echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
+          # Use the 'find' command to list all subfolders within the specified folder
+          # The '-type d' flag ensures that only directories are selected
+          subfolders=$(find "$folder_path" -type d)
+
+          # Loop through the subfolders and print their names
+          for subfolder in $subfolders; do
+              echo "$subfolder"
+          done
 
       - name: Set release title to version
         run: |
