@@ -87,6 +87,7 @@ jobs:
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
           echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
           # Use the 'find' command to list all subfolders within the specified folder
+          folder_path=$GITHUB_WORKSPACE
           # The '-type d' flag ensures that only directories are selected
           subfolders=$(find "$folder_path" -type d)
 
