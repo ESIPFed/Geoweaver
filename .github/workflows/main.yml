@@ -97,7 +97,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: /home/runner/work/geoweaver-deployment-test/Geoweaver/target/geoweaver.jar
+          asset_path: /home/runner/work/Geoweaver/Geoweaver/target/geoweaver.jar
           asset_name: geoweaver.jar
           asset_content_type: application/java-archive
         env:
@@ -107,7 +107,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: /home/runner/work/geoweaver-deployment-test/Geoweaver/linux-deployment/geoweaver.deb
+          asset_path: /home/runner/work/Geoweaver/Geoweaver/linux-deployment/geoweaver.deb
           asset_name: geoweaver.deb
           asset_content_type: application/vnd.debian.binary-package
         env:
