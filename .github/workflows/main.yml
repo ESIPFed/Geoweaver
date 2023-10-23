@@ -49,6 +49,7 @@ jobs:
       - name: Build deb package
         run: |
           cd $GITHUB_WORKSPACE/linux-deployment
+          cat DEBIAN/control
           dpkg-deb --build . geoweaver.deb
 
       - name: Upload Geoweaver Artifacts
