@@ -1,5 +1,5 @@
 Package: geoweaver
 Architecture: all
 Maintainer: Geoweaver team <geoweaver.app@gmail.com>
-Description: Geoweaver
+Description: Geoweaver, a handy prouctivity enhancement and reusable workflow managment software for data processing pipelines.
 Depends: openjdk-11-jre
