@@ -971,30 +971,23 @@ public class WorkflowTool {
 
 		this.save(w);
 
-		// save history
+
+		List<History> historyList = new ArrayList<>();
 		File[] files = new File(historyfolder).listFiles();
-
 		if (files != null) {
-
 			for (File file : files) {
-
 				String historyjson = bt.readStringFromFile(file.getAbsolutePath());
-
 				JSONArray historyarray = (JSONArray) jsonparser.parse(historyjson);
 
 				historyarray.forEach((obj) -> {
-
 					String jsonobj = ((JSONObject) obj).toJSONString();
-
 					History hist = historyFromJSON(jsonobj);
-
-					historyrepository.save(hist);
-					// historyrepository.saveJSON(jsonobj);
+					historyList.add(hist);
 				});
-
 			}
-
 		}
+
+		historyrepository.saveAll(historyList);
 
 		// save process
 		String processjson = bt.readStringFromFile(codefolder + "process.json");
