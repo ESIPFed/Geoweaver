@@ -265,6 +265,9 @@ GW.process.sidepanel = {
 
         GW.process.sidepanel.current_process_category = code_type
 
+
+        GW.ssh.current_process_log_length = 0
+
         let code = msg.code;
 
 		if(code!=null && code.includes("\\\"")){
@@ -394,6 +397,8 @@ GW.process.sidepanel = {
         $("#prompt-panel-process-log-window").html("") //clean up the log out area
 
         GW.ssh.process_output_id = "prompt-panel-process-log-window"
+
+        GW.ssh.current_process_log_length = 0
 		
 		GW.process.sendExecuteRequest(req, dialogItself, button);
 		
