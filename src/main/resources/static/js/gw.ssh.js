@@ -45,9 +45,9 @@ GW.ssh = {
 
 		checker_swich: false,
 
-		current_log_length: 0,
+		current_log_length: 0,  // length of log in log-window
 
-		current_process_log_length: 0,
+		current_process_log_length: 0, // length of log in process and prompt log-window
 		
 		username : '<sec:authentication property="principal" />',
 		
@@ -274,7 +274,7 @@ GW.ssh = {
 				style1+ `">` + content + `</span></p>`;
 
 			this.current_log_length += 1  //line number plus 1
-
+			
 			if(this.current_log_length > 5000){
 				$("#log-window").find('p:first').remove();
 				this.current_log_length -= 1
@@ -286,7 +286,7 @@ GW.ssh = {
 			if(GW.process.last_executed_process_id==GW.process.process_id){
 
 				if($("#"+GW.ssh.process_output_id).length && GW.workspace.currentmode == 1){
-				
+					
 					if(this.current_process_log_length > 5000){
 			
 						$("#"+GW.ssh.process_output_id).find('p:first').remove();
