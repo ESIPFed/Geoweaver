@@ -136,7 +136,7 @@ jobs:
           path: /Users/runner/work/Geoweaver/Geoweaver/Geoweaver.dmg
 
   release:
-    needs: [build-jar, build-macos]
+    needs: [build-jar, build-macos, build-windows]
     runs-on: ubuntu-latest
 
     steps:
