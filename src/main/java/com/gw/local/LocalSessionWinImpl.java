@@ -135,9 +135,10 @@ public class LocalSessionWinImpl implements LocalSession {
 
 		this.isClose = true;
 
-		CommandServlet.sendMessageToSocket(token, message);
+		CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+BaseTool.log_separator+message);
 
-		CommandServlet.sendMessageToSocket(token, "======= Process " + this.history.getHistory_id() + " ended.");
+		CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+BaseTool.log_separator+
+			"======= Process " + this.history.getHistory_id() + " ended.");
 		
 	}
 	

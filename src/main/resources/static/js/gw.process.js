@@ -11,6 +11,10 @@ GW.process = {
 	current_pid: null,
 
 	last_executed_process_id: null,
+
+	process_id: null,
+
+	history_id: null,
 	
 	editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 	
@@ -928,6 +932,8 @@ GW.process = {
 		
 		console.log("history id: " + history_id);
 
+		GW.process.history_id = history_id;
+
 		$.ajax({
 			
 			url: "log",
@@ -1310,6 +1316,10 @@ GW.process = {
 		var process_id = null;
 		
 		var process_name = null;
+
+		GW.workspace.currentmode = 1;
+
+        GW.ssh.process_output_id = "process-log-window"
 		
 		msg = GW.general.parseResponse(msg);
 
@@ -2061,6 +2071,8 @@ GW.process = {
 					console.log("the process is under execution.");
 					
 					console.log("history id: " + msg.history_id);
+
+					GW.process.history_id = msg.history_id
 					
 				}else if(msg.ret == "fail"){
 					

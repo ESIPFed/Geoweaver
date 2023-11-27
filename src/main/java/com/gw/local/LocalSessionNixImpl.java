@@ -139,9 +139,10 @@ public class LocalSessionNixImpl implements LocalSession {
 		this.isClose = true;
 		
 		if(!BaseTool.isNull(message))
-		CommandServlet.sendMessageToSocket(token, message);
+		CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+BaseTool.log_separator+message);
 	
-		CommandServlet.sendMessageToSocket(token, "The process " + this.history.getHistory_id() + " is stopped.");
+		CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+BaseTool.log_separator+
+			"The process " + this.history.getHistory_id() + " is stopped.");
 	
 	}
     

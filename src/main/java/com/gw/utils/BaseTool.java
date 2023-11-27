@@ -71,6 +71,8 @@ public class BaseTool {
 	
 	public static int BUFFER_SIZE = 20;
 
+	public static String log_separator = "*_*";
+
 	private String _classpath = null;
 
 	Logger logger = LoggerFactory.getLogger(getClass());

@@ -247,8 +247,18 @@ GW.ssh = {
 	    	var dt = new Date();
 	    	var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
+			cont_splits = content.split("*_*")
+
+			log_history_id = null
+
+			if(cont_splits.length>1){
+				log_history_id = cont_splits[0]
+				let newArray = cont_splits.slice(1);
+				content = newArray.join(" ")
+			}
+
 			var style1 = "";
-			if(content.includes("Start to execute") ){
+			if(content.includes("Start to execute")){
 
 				style1 = "color: blue; font-weight: bold; text-decoration: underline;";
 
@@ -261,14 +271,18 @@ GW.ssh = {
 
 				$(".dot-flashing").removeClass("visible")
 				$(".dot-flashing").addClass("invisible")
-
 				
-
 			}else if(content=="disconnected"){
 				$(".dot-flashing").removeClass("visible")
 				$(".dot-flashing").addClass("invisible")
+			}else if(log_history_id == GW.process.history_id){
+				$(".dot-flashing").removeClass("invisible")
+				$(".dot-flashing").addClass("visible")
+			}else{
+				$(".dot-flashing").removeClass("visible")
+				$(".dot-flashing").addClass("invisible")
 			}
-			
+
 			var newline = `<p style="line-height:1.1; text-align:left; margin-top: 10px; `+
 				`margin-bottom: 10px;"><span style="`+
 				style1+ `">` + content + `</span></p>`;
@@ -285,7 +299,7 @@ GW.ssh = {
 			//don't output log to process log if the current executed is workflow
 			if(GW.process.last_executed_process_id==GW.process.process_id){
 
-				if($("#"+GW.ssh.process_output_id).length && GW.workspace.currentmode == 1){
+				if($("#"+GW.ssh.process_output_id).length){
 					
 					if(this.current_process_log_length > 5000){
 			
@@ -295,7 +309,13 @@ GW.ssh = {
 			
 					}
 			
-					$("#"+GW.ssh.process_output_id).append(newline);
+					if(GW.process.history_id == log_history_id){
+
+						// only display the log if the current history id is the correct one
+						$("#"+GW.ssh.process_output_id).append(newline);
+
+					}
+					
 			
 					this.current_process_log_length += 1
 					
