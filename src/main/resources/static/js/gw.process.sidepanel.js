@@ -89,8 +89,6 @@ GW.process.sidepanel = {
 
     showHistoryDetails: function(history_id){
 		
-		console.log("history id: " + history_id);
-
         GW.process.history_id = history_id;
 
 		$.ajax({
@@ -102,9 +100,7 @@ GW.process.sidepanel = {
 			data: "type=process&id=" + history_id
 			
 		}).done(function(msg){
-
-			console.log("Log Message: " + msg);
-			
+            
 			if(msg==""){
 				
 				alert("Cannot find the process history in the database.");
@@ -117,7 +113,7 @@ GW.process.sidepanel = {
 
 			msg.code = msg.input;
 
-            GW.process.history_id = msg.history_id
+            GW.process.history_id = msg.hid
 			
 			GW.process.sidepanel.display(msg);
 			
