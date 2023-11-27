@@ -404,11 +404,11 @@ public class SSHSessionImpl implements SSHSession {
 
         // If the error message is not empty, send it to the associated socket.
         if (!BaseTool.isNull(message)) {
-            CommandServlet.sendMessageToSocket(token, message);
+            CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+ BaseTool.log_separator + message);
         }
 
         // Send a message to the socket indicating that the process is stopped.
-        CommandServlet.sendMessageToSocket(token, "The process " + this.history.getHistory_id() + " is stopped.");
+        CommandServlet.sendMessageToSocket(token, this.history.getHistory_id()+ BaseTool.log_separator + "The process " + this.history.getHistory_id() + " is stopped.");
     }
 
 

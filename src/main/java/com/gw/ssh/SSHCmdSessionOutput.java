@@ -97,7 +97,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
         log.info("Exit code: " + exitvalue);
 
-		CommandServlet.sendMessageToSocket(token, "Exit Code: " + exitvalue);
+		CommandServlet.sendMessageToSocket(token, history_id+ BaseTool.log_separator + "Exit Code: " + exitvalue);
 
 	}
 
@@ -146,7 +146,7 @@ public class SSHCmdSessionOutput  implements Runnable {
     	
     	updateStatus("Running", "Running"); //initiate the history record
 
-		CommandServlet.sendMessageToSocket(token, "Process "+this.history_id+" Started");
+		CommandServlet.sendMessageToSocket(token, history_id+ BaseTool.log_separator + "Process "+this.history_id+" Started");
     	
 		String line = null;
 			
@@ -206,7 +206,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 						
 					}
 					
-					CommandServlet.sendMessageToSocket(token, line);
+					CommandServlet.sendMessageToSocket(token, history_id+ BaseTool.log_separator+ line);
 					
 				}else {
 					
@@ -218,7 +218,7 @@ public class SSHCmdSessionOutput  implements Runnable {
 
 			this.updateStatus(logs.toString(), "Done");
 			
-			CommandServlet.sendMessageToSocket(token, "The process "+this.history_id+" is finished.");
+			CommandServlet.sendMessageToSocket(token, history_id+ BaseTool.log_separator + "The process "+this.history_id+" is finished.");
 			
 
 		} catch (Exception e) {
@@ -229,11 +229,11 @@ public class SSHCmdSessionOutput  implements Runnable {
 			
 		}finally {
 			
-			CommandServlet.sendMessageToSocket(token, "======= Process " + this.history_id + " ended");
+			CommandServlet.sendMessageToSocket(token, history_id+ BaseTool.log_separator + "======= Process " + this.history_id + " ended");
 			
 		}
         
-        GeoweaverController.sessionManager.closeByToken(token);
+        // GeoweaverController.sessionManager.closeByToken(token);
         
         log.info("SSH session output thread ended");
 

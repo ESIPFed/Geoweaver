@@ -91,6 +91,8 @@ GW.process.sidepanel = {
 		
 		console.log("history id: " + history_id);
 
+        GW.process.history_id = history_id;
+
 		$.ajax({
 			
 			url: "log",
@@ -114,6 +116,8 @@ GW.process.sidepanel = {
 			msg = GW.general.parseResponse(msg);
 
 			msg.code = msg.input;
+
+            GW.process.history_id = msg.history_id
 			
 			GW.process.sidepanel.display(msg);
 			
@@ -208,6 +212,8 @@ GW.process.sidepanel = {
                 msg = GW.general.parseResponse(msg);
 
                 if("history_output" in msg && msg.history_output!=null){
+
+                    GW.process.history_id = msg.history_id
         
                     msgout = msg.history_output.replaceAll("\n", "<br/>");
     
@@ -265,8 +271,11 @@ GW.process.sidepanel = {
 
         GW.process.sidepanel.current_process_category = code_type
 
-
         GW.ssh.current_process_log_length = 0
+
+        GW.workspace.currentmode = 2;
+
+        GW.ssh.process_output_id = "prompt-panel-process-log-window"
 
         let code = msg.code;
 

@@ -95,7 +95,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
      * @param pid The ID of the process.
      * @return A list of history records associated with the specified process ID, excluding 'Skipped' records.
      */
-    @Query(value = "select * from history where history.history_process = ?1 and history.indicator != 'Skipped' ORDER BY history_begin_time DESC;", nativeQuery = true)
+    @Query(value = "select * from history where history.history_process = ?1 and history.history_input != 'No code saved' ORDER BY history_begin_time DESC;", nativeQuery = true)
     List<History> findByProcessIdIgnoreUnknown(String pid);
 
     /**

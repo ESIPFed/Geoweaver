@@ -161,7 +161,7 @@ public class LocalSessionOutput implements Runnable {
 
 		ht.saveHistory(h);
 
-		this.sendMessage2WebSocket("Exit Code: " + exitvalue);
+		this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class LocalSessionOutput implements Runnable {
 			this.updateStatus("Running", "Running");
 	
 			// Send a message to the WebSocket indicating that the process has started
-			this.sendMessage2WebSocket("Process " + this.history_id + " Started");
+			this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator+ "Process " + this.history_id + " Started");
 	
 			String line = null; // Initialize a variable to store each line of output
 	
@@ -296,7 +296,7 @@ public class LocalSessionOutput implements Runnable {
 					} else if (line.contains("==== Geoweaver Bash Output Finished ====")) {
 						// Handle specific marker lines if present
 					} else {
-						log.info("Local thread output >> " + line + " - token: " + token); // Log each line of output
+						log.info("Local output " + theprocess.pid() + " >> " + line + " - token: " + token); // Log each line of output
 						logs.append(line).append("\n"); // Append the line to the logs
 	
 						if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
@@ -304,7 +304,7 @@ public class LocalSessionOutput implements Runnable {
 								line = prelog.toString() + line;
 								prelog = new StringBuffer();
 							}
-							this.sendMessage2WebSocket(line);
+							this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
 						} else {
 							prelog.append(line).append("\n"); // Append to the prelog if WebSocket isn't available
 						}
@@ -333,6 +333,7 @@ public class LocalSessionOutput implements Runnable {
 			// If the process is available, attempt to stop and get its exit code
 			if (!BaseTool.isNull(theprocess)) {
 				try {
+					log.info("This output thread corresponding process: " + theprocess.pid());
 					if (theprocess.isAlive()) theprocess.destroy();
 					this.endWithCode(token, theprocess.exitValue());
 				} catch (Exception e) {
@@ -342,10 +343,10 @@ public class LocalSessionOutput implements Runnable {
 			}
 	
 			// Send a message to the WebSocket indicating that the process has finished
-			this.sendMessage2WebSocket("The process " + history_id + " is finished.");
+			this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator+ "The process " + history_id + " is finished.");
 	
 			// This thread will end by itself when the task is finished; you don't have to close it manually
-			GeoweaverController.sessionManager.closeByToken(token); // Close the session by token
+			// GeoweaverController.sessionManager.closeByToken(token); // Close the session by token
 	
 			log.info("Local session output thread ended");
 		} catch (Exception e) {
@@ -353,7 +354,7 @@ public class LocalSessionOutput implements Runnable {
 			// Depending on the language, update the status to "Failed"
 			this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
 		} finally {
-			this.sendMessage2WebSocket("======= Process " + this.history_id + " ended");
+			this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + "======= Process " + this.history_id + " ended");
 		}
 	}
 	
