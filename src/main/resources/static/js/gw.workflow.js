@@ -168,6 +168,8 @@ GW.workflow = {
 	    '   </div>'+
 		"</div>"+
 		"<div id=\"main-workflow-info-checkpoint\" class='tabcontent-workflow generalshadow' style='height: calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\'>"+
+
+			"<div style='display: flex; justify-content: end'><button style='background-color: white' onclick=\"GW.workflow.createCheckpoint('"+workFlowID+"')\">Create Checkpoint</button></div>" +
 			"<div class='row' id='workflow-checkpoint-container' style='padding: 0; margin: 0'></div>" +
 		"</div>"+
 		//end of tab panel
@@ -1163,6 +1165,18 @@ GW.workflow = {
 		}).fail(err => {
 			console.error(`Checkpoint fetching failed with the error: ${err}`);
 		});
+	},
+
+	createCheckpoint: function(workflowId) {
+		$.ajax({
+			url: '/Geoweaver/api/checkpoint/create',
+			method: 'POST',
+			data: JSON.stringify({workflowId}),
+			headers: {'Content-Type': 'application/json'}
+		}).done(resp => {
+			window.alert('Created a checkpoint.');
+			GW.workflow.checkpoint(workflowId);
+		}).fail(err => console.error(`Failed to create checkpoint ${err}`))
 	},
 
 	restoreCheckpoint: function(uuid, workflowId) {
