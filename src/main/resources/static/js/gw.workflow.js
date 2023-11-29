@@ -1169,11 +1169,12 @@ GW.workflow = {
 		$.ajax({
 			url: `/Geoweaver/api/checkpoint/restoreWorkflow`,
 			method: "POST",
-			data: JSON.stringify({ uuid, workflowId })
+			data: JSON.stringify({ "uuid": uuid, "workflowId": workflowId }),
+			headers: {'Content-Type': 'application/json'}
 		}).done((resp) => {
-			window.alert('Successfully created a checkpoint.');
+			window.alert('Successfully restored to this checkpoint.');
 		}).fail(err => {
-			window.alert(`Failed to create a checkpoint: ${err}`);
+			window.alert(`Failed to create a checkpoint: ${JSON.stringify(err)}`);
 		})
 	},
 
