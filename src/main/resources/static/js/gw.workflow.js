@@ -1187,6 +1187,7 @@ GW.workflow = {
 			headers: {'Content-Type': 'application/json'}
 		}).done((resp) => {
 			window.alert('Successfully restored to this checkpoint.');
+			GW.workspace.init();
 		}).fail(err => {
 			window.alert(`Failed to create a checkpoint: ${JSON.stringify(err)}`);
 		})
