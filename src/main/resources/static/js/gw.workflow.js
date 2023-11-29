@@ -155,7 +155,7 @@ GW.workflow = {
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 
 		workFlowID+"', '" + workFlowName+"')\">History</button>"+
-		"<button class='tablinks-workflow' id='main-workflow-info-checkpoint-tab' onclick=\"GW.workflow.openCity(event, 'main-workflow-info-checkpoint')\">Checkpoint</button>" +
+		"<button class='tablinks-workflow' id='main-workflow-info-checkpoint-tab' onclick=\"GW.workflow.openCity(event, 'main-workflow-info-checkpoint'); GW.workflow.checkpoint('"+workFlowID+"')\">Checkpoint</button>" +
 		" </div>"+
 		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
@@ -1144,6 +1144,39 @@ GW.workflow = {
 
 	},
 
+	checkpoint: function(workflowId) {
+		$.ajax({
+			url: `/Geoweaver/api/checkpoint/${workflowId}`,
+			method: "GET"
+		}).done((resp) => {
+			let respCtx = JSON.stringify(resp);
+			respCtx = JSON.parse(respCtx);
+			console.log('checkpoint data:', respCtx);
+			if (!Array.isArray(respCtx) || respCtx.length === 0) {
+				console.log("Invalid or empty response");
+				return;
+			}
+			const htmlContent = GW.history.getCheckpointTable(respCtx, workflowId);
+			$("#workflow-checkpoint-container").html(htmlContent);
+			GW.history.applyBootstrapTable('workflow-checkpoint-table');
+			GW.workflow.switchTab(document.getElementById("main-workflow-info-history"), "main-workflow-info-checkpoint");
+		}).fail(err => {
+			console.error(`Checkpoint fetching failed with the error: ${err}`);
+		});
+	},
+
+	restoreCheckpoint: function(uuid, workflowId) {
+		$.ajax({
+			url: `/Geoweaver/api/checkpoint/restoreWorkflow`,
+			method: "POST",
+			data: JSON.stringify({ uuid, workflowId })
+		}).done((resp) => {
+			window.alert('Successfully created a checkpoint.');
+		}).fail(err => {
+			window.alert(`Failed to create a checkpoint: ${err}`);
+		})
+	},
+
 	history: function(wid, name){
 
 		$.ajax({
@@ -1174,8 +1207,9 @@ GW.workflow = {
 
 			GW.chart.renderWorkflowHistoryChart(msg);
 
-			GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history");
 
+			// GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history-tab");
+			GW.workflow.switchTab(document.getElementById("main-workflow-info-checkpoint"), "main-workflow-info-history");
 
 		}).fail(function(jxr, status){
 
