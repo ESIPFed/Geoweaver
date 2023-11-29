@@ -46,4 +46,6 @@ public class CheckpointController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+//    @GetMapping
 }

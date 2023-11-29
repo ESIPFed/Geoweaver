@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Scope("prototype")
@@ -40,6 +41,25 @@ public class CheckpointTool {
             return checkpointRepository.save(checkpoint);
         } else {
             throw new IllegalArgumentException("Workflow with the given Id does not exist.");
+        }
+    }
+
+    public Checkpoint restoreCheckpoint(UUID uuid, String workflowId) {
+        Optional<Checkpoint> optionalCheckpoint = checkpointRepository.findById(uuid);
+        if (optionalCheckpoint.isPresent()) {
+            Checkpoint checkpoint = optionalCheckpoint.get();
+            Optional<Workflow> optionalWorkflow = workflowRepository.findById(workflowId);
+            if (optionalWorkflow.isPresent()) {
+                Workflow workflow = optionalWorkflow.get();
+                workflow.setNodes(checkpoint.getNodes());
+                workflow.setEdges(checkpoint.getEdges());
+                workflowRepository.save(workflow);
+            } else {
+                throw new IllegalArgumentException("Workflow with the given workflowId does not exist.");
+            }
+            return checkpoint;
+        } else {
+            throw new IllegalArgumentException("checkpoint with the given uuid does not exist.");
         }
     }
 }
