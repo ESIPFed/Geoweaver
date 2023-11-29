@@ -1525,9 +1525,5 @@ public class GeoweaverController {
 			throw new RuntimeException("No ID found");
 	}
 
-	@GetMapping("/workflow/{workflowId}")
-	public List<Checkpoint> getAllCheckpoints(@PathVariable String workflowId) {
-		return checkpointTool.getCheckpointByWorkflowId(workflowId);
-	}
 
 }
