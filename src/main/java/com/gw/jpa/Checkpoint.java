@@ -26,7 +26,7 @@ public class Checkpoint {
     @Column(name = "nodes", columnDefinition = "CLOB")
     private String nodes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "workflow_id")
     private Workflow workflow;
 

@@ -2,8 +2,10 @@ package com.gw.web;
 
 import com.gw.dto.checkpoint.CheckpointCreateRequest;
 import com.gw.dto.checkpoint.CheckpointDTO;
+import com.gw.dto.checkpoint.CheckpointRestoreDTO;
 import com.gw.jpa.Checkpoint;
 import com.gw.tools.CheckpointTool;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +49,14 @@ public class CheckpointController {
         }
     }
 
-//    @GetMapping
+    @PostMapping("/restoreWorkflow")
+    public ResponseEntity<Checkpoint> restoreWorkflow(@RequestBody CheckpointRestoreDTO restoreDTO) {
+        try {
+            Checkpoint checkpointRestore = checkpointTool.restoreCheckpoint(restoreDTO.getUuid(), restoreDTO.getWorkflowId());
+            return ResponseEntity.status(HttpStatus.OK).body(checkpointRestore);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }
