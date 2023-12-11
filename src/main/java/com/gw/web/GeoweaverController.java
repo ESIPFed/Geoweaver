@@ -581,13 +581,6 @@ public class GeoweaverController {
 					if("true".equals(isactive)) {
 
 						resp = pt.all_active_process();
-//						resp = pt.all_history(id);
-
-					}else {
-
-						//return all process running history
-
-						//zero processes
 
 					}
 
