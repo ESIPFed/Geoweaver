@@ -4,18 +4,18 @@ import java.util.UUID;
 
 public class CheckpointRestoreDTO {
 
-    private UUID uuid;
-
     private String workflowId;
 
+    private String executionId;
 
-    public UUID getUuid() {
-        return uuid;
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
+
 
     public String getWorkflowId() {
         return workflowId;

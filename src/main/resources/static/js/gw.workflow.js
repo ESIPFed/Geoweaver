@@ -1177,18 +1177,20 @@ GW.workflow = {
 		}).fail(err => console.error(`Failed to create checkpoint ${err}`))
 	},
 
-	restoreCheckpoint: function(uuid, workflowId) {
-		$.ajax({
-			url: `/Geoweaver/api/checkpoint/restoreWorkflow`,
-			method: "POST",
-			data: JSON.stringify({ "uuid": uuid, "workflowId": workflowId }),
-			headers: {'Content-Type': 'application/json'}
-		}).done((resp) => {
-			window.alert('Successfully restored to this checkpoint.');
-			GW.workspace.init();
-		}).fail(err => {
-			window.alert(`Failed to create a checkpoint: ${JSON.stringify(err)}`);
-		})
+	restoreCheckpoint: function(workflowId, executionId) {
+		if (confirm("CAUTION: Restore will remove changes that are not stored in history. Proceed?")) {
+			$.ajax({
+				url: `/Geoweaver/api/checkpoint/restoreWorkflow`,
+				method: "POST",
+				data: JSON.stringify({"workflowId": workflowId, "executionId": executionId }),
+				headers: {'Content-Type': 'application/json'}
+			}).done((resp) => {
+				window.alert('Successfully restored to this checkpoint.');
+				GW.workspace.init();
+			}).fail(err => {
+				window.alert(`Failed to create a checkpoint: ${JSON.stringify(err)}`);
+			})
+		}
 	},
 
 	history: function(wid, name){
@@ -1221,9 +1223,7 @@ GW.workflow = {
 
 			GW.chart.renderWorkflowHistoryChart(msg);
 
-
-			// GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history-tab");
-			GW.workflow.switchTab(document.getElementById("main-workflow-info-checkpoint"), "main-workflow-info-history");
+			GW.workflow.switchTab(document.getElementById("main-workflow-info-history-tab"), "main-workflow-info-history");
 
 		}).fail(function(jxr, status){
 

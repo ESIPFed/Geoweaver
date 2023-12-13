@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.database.CheckpointRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.*;
 import com.gw.search.GWSearchTool;
@@ -94,6 +95,9 @@ public class GeoweaverController {
 
     @Autowired
     UserTool ut;
+
+	@Autowired
+	private CheckpointRepository checkpointRepository;
 
     // Session manager to manage SSH sessions.
     public static SessionManager sessionManager;
@@ -911,6 +915,20 @@ public class GeoweaverController {
 			String[] environments = request.getParameterValues("envs[]");
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
+
+            assert id != null;
+            Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
+			if (optionalWorkflow.isPresent()) {
+				Workflow workflow = optionalWorkflow.get();
+				Checkpoint checkpoint = new Checkpoint();
+				checkpoint.setWorkflow(workflow);
+				checkpoint.setNodes(workflow.getNodes());
+				checkpoint.setEdges(workflow.getEdges());
+				checkpoint.setCreatedAt(new Date());
+				checkpoint.setExecutionId(history_id);
+				checkpointRepository.save(checkpoint);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			// Handle exceptions and throw a runtime exception with an error message.

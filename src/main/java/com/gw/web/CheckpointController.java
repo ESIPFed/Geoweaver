@@ -52,7 +52,8 @@ public class CheckpointController {
     @PostMapping("/restoreWorkflow")
     public ResponseEntity<Checkpoint> restoreWorkflow(@RequestBody CheckpointRestoreDTO restoreDTO) {
         try {
-            Checkpoint checkpointRestore = checkpointTool.restoreCheckpoint(restoreDTO.getUuid(), restoreDTO.getWorkflowId());
+            Checkpoint checkpointRestore = checkpointTool.restoreCheckpoint(restoreDTO.getWorkflowId(),
+                    restoreDTO.getExecutionId());
             return ResponseEntity.status(HttpStatus.OK).body(checkpointRestore);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

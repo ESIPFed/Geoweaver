@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "checkpoint")
+@Table(name = "WorkflowCheckpoint")
 public class Checkpoint {
 
     @Id
@@ -17,6 +17,9 @@ public class Checkpoint {
     @Type(type = "uuid-char")
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private UUID id;
+
+    @Column(name="executionId")
+    private String executionId;
 
     @Lob
     @Column(name = "edges", columnDefinition = "CLOB")
@@ -33,6 +36,15 @@ public class Checkpoint {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
