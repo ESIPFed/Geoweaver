@@ -155,7 +155,6 @@ GW.workflow = {
 		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
 
 		workFlowID+"', '" + workFlowName+"')\">History</button>"+
-		"<button class='tablinks-workflow' id='main-workflow-info-checkpoint-tab' onclick=\"GW.workflow.openCity(event, 'main-workflow-info-checkpoint'); GW.workflow.checkpoint('"+workFlowID+"')\">Checkpoint</button>" +
 		" </div>"+
 		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
@@ -167,11 +166,10 @@ GW.workflow = {
 
 	    '   </div>'+
 		"</div>"+
-		"<div id=\"main-workflow-info-checkpoint\" class='tabcontent-workflow generalshadow' style='height: calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\'>"+
-
-			"<div style='display: flex; justify-content: end'><button style='background-color: white' onclick=\"GW.workflow.createCheckpoint('"+workFlowID+"')\">Create Checkpoint</button></div>" +
-			"<div class='row' id='workflow-checkpoint-container' style='padding: 0; margin: 0'></div>" +
-		"</div>"+
+		// "<div id=\"main-workflow-info-checkpoint\" class='tabcontent-workflow generalshadow' style='height: calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\'>"+
+			// "<div style='display: flex; justify-content: end'><button style='background-color: white' onclick=\"GW.workflow.createCheckpoint('"+workFlowID+"')\">Create Checkpoint</button></div>" +
+			// "<div class='row' id='workflow-checkpoint-container' style='padding: 0; margin: 0'></div>" +
+		// "</div>"+
 		//end of tab panel
 
 
