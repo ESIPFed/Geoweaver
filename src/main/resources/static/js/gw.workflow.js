@@ -1186,9 +1186,10 @@ GW.workflow = {
 				headers: {'Content-Type': 'application/json'}
 			}).done((resp) => {
 				window.alert('Successfully restored to this checkpoint.');
-				GW.workspace.init();
+				GW.workflow.showWorkflow(workflowId);
+				// GW.workspace.init();
 			}).fail(err => {
-				window.alert(`Failed to create a checkpoint: ${JSON.stringify(err)}`);
+				window.alert(`Failed to restore. checkpoint not found`);
 			})
 		}
 	},
