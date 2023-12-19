@@ -118,9 +118,6 @@ GW.process.util = {
 				foldGutter: true,
 				gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 				extraKeys: {
-					"Ctrl-L": function () {
-						console.log("ctrl l clicked");
-					},
 					"Ctrl-Space": function (cm) {
 						server.complete(cm); // Trigger autocomplete
 					},
@@ -130,6 +127,12 @@ GW.process.util = {
 					"Ctrl-Q": function (cm) {
 						cm.foldCode(cm.getCursor());
 					},
+					"Cmd-/": "toggleComment",
+					"Cmd-F-D": "foldCode",
+					"Cmd-Q": function (cm) {
+						cm.foldCode(cm.getCursor());
+					},
+					"Cmd-B": "blockComment"
 				},
 			});
 
