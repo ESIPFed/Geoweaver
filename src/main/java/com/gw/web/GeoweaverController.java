@@ -1,6 +1,13 @@
 package com.gw.web;
 
 
+import com.gw.tools.CheckpointTool;
+import com.gw.tools.DashboardTool;
+import com.gw.tools.EnvironmentTool;
+import com.gw.tools.ExecutionTool;
+import com.gw.tools.FileTool;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.UserTool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -12,13 +19,21 @@ import javax.servlet.http.HttpSession;
 
 import com.gw.database.CheckpointRepository;
 import com.gw.database.WorkflowRepository;
-import com.gw.jpa.*;
+import com.gw.jpa.Checkpoint;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
-import com.gw.tools.*;
+import com.gw.tools.ProcessTool;
+import com.gw.tools.SessionManager;
+import com.gw.tools.WorkflowTool;
+import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
+
+import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
+import com.gw.jpa.GWProcess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,19 +84,19 @@ public class GeoweaverController {
     GWSearchTool st;
 
     @Autowired
-    FileTool ft;
+	FileTool ft;
 
     @Autowired
-    HistoryTool hist;
+	HistoryTool hist;
 
     @Autowired
-    DashboardTool dbt;
+	DashboardTool dbt;
 
     @Autowired
-    EnvironmentTool et;
+	EnvironmentTool et;
 
     @Autowired
-    ExecutionTool ext;
+	ExecutionTool ext;
 
     @Autowired
     SSHSession sshSession;
@@ -94,7 +109,7 @@ public class GeoweaverController {
 	CheckpointTool checkpointTool;
 
     @Autowired
-    UserTool ut;
+	UserTool ut;
 
 	@Autowired
 	private CheckpointRepository checkpointRepository;
@@ -176,7 +191,6 @@ public class GeoweaverController {
                     resp = hist.deleteById(id);
                     break;
                 case "clear_nodes_edges":
-                    assert id != null;
                     Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
                     if (optionalWorkflow.isPresent()) {
                         Workflow wf = optionalWorkflow.get();
@@ -916,7 +930,6 @@ public class GeoweaverController {
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
 
-            assert id != null;
             Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
 			if (optionalWorkflow.isPresent()) {
 				Workflow workflow = optionalWorkflow.get();

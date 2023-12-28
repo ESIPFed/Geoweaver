@@ -166,14 +166,6 @@ GW.workflow = {
 
 	    '   </div>'+
 		"</div>"+
-		// "<div id=\"main-workflow-info-checkpoint\" class='tabcontent-workflow generalshadow' style='height: calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\'>"+
-			// "<div style='display: flex; justify-content: end'><button style='background-color: white' onclick=\"GW.workflow.createCheckpoint('"+workFlowID+"')\">Create Checkpoint</button></div>" +
-			// "<div class='row' id='workflow-checkpoint-container' style='padding: 0; margin: 0'></div>" +
-		// "</div>"+
-		//end of tab panel
-
-
-
 		"</div>";
 
 		$("#main-workflow-content").html(content);
@@ -1144,43 +1136,11 @@ GW.workflow = {
 
 	},
 
-	checkpoint: function(workflowId) {
-		$.ajax({
-			url: `/Geoweaver/api/checkpoint/${workflowId}`,
-			method: "GET"
-		}).done((resp) => {
-			let respCtx = JSON.stringify(resp);
-			respCtx = JSON.parse(respCtx);
-			console.log('checkpoint data:', respCtx);
-			if (!Array.isArray(respCtx) || respCtx.length === 0) {
-				console.log("Invalid or empty response");
-				return;
-			}
-			const htmlContent = GW.history.getCheckpointTable(respCtx, workflowId);
-			$("#workflow-checkpoint-container").html(htmlContent);
-			GW.history.applyBootstrapTable('workflow-checkpoint-table');
-			GW.workflow.switchTab(document.getElementById("main-workflow-info-history"), "main-workflow-info-checkpoint");
-		}).fail(err => {
-			console.error(`Checkpoint fetching failed with the error: ${err}`);
-		});
-	},
-
-	createCheckpoint: function(workflowId) {
-		$.ajax({
-			url: '/Geoweaver/api/checkpoint/create',
-			method: 'POST',
-			data: JSON.stringify({workflowId}),
-			headers: {'Content-Type': 'application/json'}
-		}).done(resp => {
-			window.alert('Created a checkpoint.');
-			GW.workflow.checkpoint(workflowId);
-		}).fail(err => console.error(`Failed to create checkpoint ${err}`))
-	},
 
 	restoreCheckpoint: function(workflowId, executionId) {
 		if (confirm("CAUTION: Restore will remove changes that are not stored in history. Proceed?")) {
 			$.ajax({
-				url: `/Geoweaver/api/checkpoint/restoreWorkflow`,
+				url: `/Geoweaver/checkpoint/restoreWorkflow`,
 				method: "POST",
 				data: JSON.stringify({"workflowId": workflowId, "executionId": executionId }),
 				headers: {'Content-Type': 'application/json'}

@@ -5,6 +5,7 @@ import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.dto.checkpoint.CheckpointCreateRequest;
+import com.gw.dto.checkpoint.CheckpointDTO;
 import com.gw.jpa.Checkpoint;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
@@ -33,6 +34,15 @@ public class CheckpointTool {
 
     public List<Checkpoint> getCheckpointByWorkflowId(String workflowId) {
         return checkpointRepository.findByWorkflowId(workflowId);
+    }
+
+    public CheckpointDTO convertToDTO(Checkpoint checkpoint) {
+        CheckpointDTO dto = new CheckpointDTO();
+        dto.setId(checkpoint.getId());
+        dto.setEdges(checkpoint.getEdges());
+        dto.setNodes(checkpoint.getNodes());
+        dto.setCreatedAt(checkpoint.getCreatedAt());
+        return dto;
     }
 
     public Checkpoint createCheckpoint(CheckpointCreateRequest createRequest) {

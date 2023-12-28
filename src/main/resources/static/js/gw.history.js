@@ -257,26 +257,6 @@ GW.history = {
 
 	},
 
-    getCheckpointTable: function(response, workflowId){
-        console.log(response, 'resp')
-        var content = "<div class=\"modal-body\" style=\"font-size:12px;\" ><table class=\"table table-color\" id=\"workflow-checkpoint-table\" > "+
-            "  <thead> "+
-            "    <tr> "+
-            "      <th scope=\"col\">Id</th> "+
-            "      <th scope=\"col\">Created At</th> "+
-            "      <th scope=\"col\">Action</th> "+
-            "    </tr> "+
-            "  </thead> "+
-            "  <tbody> ";
-
-        for(var i=0;i<response.length;i++) {
-            content += "<tr> <td>" + response[i].id + "</td> <td>" + response[i].createdAt + "</td> <td> <a href=\"javascript:void(0);\" onclick=\"GW.workflow.restoreCheckpoint('" + response[i].id + "', '" + workflowId + "')\">Restore</a> </td> </tr>";
-        }
-
-        content += "</tbody></table></div>";
-        return content;
-
-    },
 
     applyBootstrapTable: function(table_id){
 
