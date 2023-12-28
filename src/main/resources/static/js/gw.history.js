@@ -215,36 +215,35 @@ GW.history = {
 		"      <th scope=\"col\">Notes (Click to Edit)</th> "+
 		"      <th scope=\"col\">Status</th> "+
 		"      <th scope=\"col\">Action</th> "+
-        "      <th scope=\"col\">Checkpoint</th> "+
 		"    </tr> "+
 		"  </thead> "+
 		"  <tbody> ";
 
 
-		for(var i=0;i<msg.length;i++){
+        for(var i=0; i < msg.length; i++){
 
-			var status_col = GW.history.getWorkflowStatusCol(msg[i].history_id, msg[i].indicator);
+            var status_col = GW.history.getWorkflowStatusCol(msg[i].history_id, msg[i].indicator);
 
-			content += "    <tr> "+
-				"      <td>"+msg[i].history_id+"</td> "+
-				"      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> "+
-                "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
-				"      <td>"+msg[i].history_notes+"</td> "+
-				status_col +
-				"      <td><a href=\"javascript: GW.workflow.getHistoryDetails('"+msg[i].history_id+"')\">Check</a> &nbsp;";
+            content += "<tr>" +
+                "    <td>" + msg[i].history_id + "</td>" +
+                "    <td>" + GW.general.toDateString(msg[i].history_begin_time) + "</td>" +
+                "    <td>" + GW.general.toDateString(msg[i].history_end_time) + "</td>" +
+                "    <td>" + msg[i].history_notes + "</td>" +
+                status_col +
+                "    <td>" +
+                "        <a href=\"javascript: GW.workflow.getHistoryDetails('" + msg[i].history_id + "')\">Check</a> &nbsp;";
 
-			if(msg[i].indicator == "Running"){
-				content += "		<a href=\"javascript:void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.workflow.stop('"+msg[i].history_id+"')\">Stop</a> ";
+            if(msg[i].indicator === "Running"){
+                content += "<a href=\"javascript:void(0)\" id=\"stopbtn_" + msg[i].history_id + "\" onclick=\"GW.workflow.stop('" + msg[i].history_id + "')\">Stop</a> &nbsp;";
             }
-            console.log(msg[i]);
-            content += " <td><a onclick=\"GW.workflow.restoreCheckpoint('" + msg[i].history_process + "', '" + msg[i].history_id + "')\">Restore</ad></td>"
 
+            content += "<a onclick=\"GW.workflow.restoreCheckpoint('" + msg[i].history_process + "', '" + msg[i].history_id + "')\">Restore</a>" +
+                "    </td>" +
+                "</tr>";
+        }
 
-			content += "   </td> </tr>";
+        content += "</tbody></table></div>";
 
-		}
-
-		content += "</tbody></table></div>";
 
 		// create an interactive chart to show all the data
 
