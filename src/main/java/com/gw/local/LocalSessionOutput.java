@@ -296,7 +296,7 @@ public class LocalSessionOutput implements Runnable {
 					} else if (line.contains("==== Geoweaver Bash Output Finished ====")) {
 						// Handle specific marker lines if present
 					} else {
-						log.info("Local output " + theprocess.pid() + " >> " + line + " - token: " + token); // Log each line of output
+//						log.info("Local output " + theprocess.pid() + " >> " + line + " - token: " + token); // Log each line of output
 						logs.append(line).append("\n"); // Append the line to the logs
 	
 						if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
@@ -333,7 +333,7 @@ public class LocalSessionOutput implements Runnable {
 			// If the process is available, attempt to stop and get its exit code
 			if (!BaseTool.isNull(theprocess)) {
 				try {
-					log.info("This output thread corresponding process: " + theprocess.pid());
+//					log.info("This output thread corresponding process: " + theprocess.pid());
 					if (theprocess.isAlive()) theprocess.destroy();
 					this.endWithCode(token, theprocess.exitValue());
 				} catch (Exception e) {

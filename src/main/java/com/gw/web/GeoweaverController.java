@@ -1,35 +1,44 @@
 package com.gw.web;
 
 
+import com.gw.tools.CheckpointTool;
+import com.gw.tools.DashboardTool;
+import com.gw.tools.EnvironmentTool;
+import com.gw.tools.ExecutionTool;
+import com.gw.tools.FileTool;
+import com.gw.tools.HistoryTool;
+import com.gw.tools.UserTool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.gw.database.CheckpointRepository;
 import com.gw.database.WorkflowRepository;
-import com.gw.jpa.GWProcess;
-import com.gw.jpa.GWUser;
-import com.gw.jpa.Host;
-import com.gw.jpa.Workflow;
+import com.gw.jpa.Checkpoint;
 import com.gw.search.GWSearchTool;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.ssh.SSHSession;
-import com.gw.tools.DashboardTool;
-import com.gw.tools.FileTool;
-import com.gw.tools.HistoryTool;
-import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
+import com.gw.tools.HostTool;
 import com.gw.utils.BaseTool;
-import com.gw.tools.EnvironmentTool;
 import com.gw.utils.RandomString;
-import com.gw.tools.UserTool;
-import com.gw.tools.ExecutionTool;
+
+import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
+import com.gw.jpa.GWProcess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +53,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
@@ -57,65 +62,71 @@ import javax.servlet.http.HttpServletRequest;
  * Controller for SSH related activities, including all the handlers for Geoweaver.
  * This controller handles various web requests related to Geoweaver's functionality.
  */
-@Controller 
+@Controller
 @RequestMapping(value="/web")
 public class GeoweaverController {
 
     // Logger for logging controller-related activities.
     Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     // Autowired tools and services required for various operations.
     @Autowired
     ProcessTool pt;
-    
+
     @Autowired
     WorkflowTool wt;
 
     @Autowired
     WorkflowRepository workflowrepository;
-    
+
     @Autowired
     HostTool ht;
-    
+
     @Autowired
     BaseTool bt;
-    
+
     @Autowired
     GWSearchTool st;
-    
-    @Autowired
-    FileTool ft;
-    
-    @Autowired
-    HistoryTool hist;
 
     @Autowired
-    DashboardTool dbt;
+	FileTool ft;
 
     @Autowired
-    EnvironmentTool et;
+	HistoryTool hist;
 
     @Autowired
-    ExecutionTool ext;
-    
+	DashboardTool dbt;
+
+    @Autowired
+	EnvironmentTool et;
+
+    @Autowired
+	ExecutionTool ext;
+
     @Autowired
     SSHSession sshSession;
-    
+
     // Configuration property for upload file path.
     @Value("${geoweaver.upload_file_path}")
     String upload_file_path;
 
+	@Autowired
+	CheckpointTool checkpointTool;
+
     @Autowired
-    UserTool ut;
-    
+	UserTool ut;
+
+	@Autowired
+	private CheckpointRepository checkpointRepository;
+
     // Session manager to manage SSH sessions.
     public static SessionManager sessionManager;
-    
+
     // Static block to initialize the session manager.
     static {
         sessionManager = new SessionManager();
     }
-    
+
     // Destructor method to close all SSH sessions when the application is destroyed.
     @PreDestroy
     public void destroy() {
@@ -158,7 +169,7 @@ public class GeoweaverController {
         }
         return resp;
     }
-    
+
     /**
      * Handles a POST request to delete a resource (host, process, workflow, history, or clear nodes and edges).
      * @param model The ModelMap to store response data.
@@ -185,7 +196,7 @@ public class GeoweaverController {
                     resp = hist.deleteById(id);
                     break;
                 case "clear_nodes_edges":
-                    assert id != null;
+					assert id != null;
                     Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
                     if (optionalWorkflow.isPresent()) {
                         Workflow wf = optionalWorkflow.get();
@@ -200,7 +211,7 @@ public class GeoweaverController {
         }
         return resp;
     }
-    
+
     /**
      * Handles a POST request to perform a search for a resource (host, process, or workflow).
      * @param model The ModelMap to store response data.
@@ -219,7 +230,7 @@ public class GeoweaverController {
         }
         return resp;
     }
-    
+
     /**
      * Handles a POST request to retrieve dashboard information.
      * @param model The ModelMap to store response data.
@@ -240,58 +251,58 @@ public class GeoweaverController {
 
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
     public @ResponseBody String detail(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String type = request.getParameter("type");
-					
+
 			String id = request.getParameter("id");
-			
+
 			if(type.equals("host")) {
 
 				resp = ht.detail(id);
-				
+
 			}else if(type.equals("process")) {
-				
+
 				resp = pt.detail(id);
-				
+
 			}else if(type.equals("workflow")) {
-				
+
 				resp = wt.detail(id);
-				
+
 			}
-			
+
 		}catch(Exception e) {
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/key", method = RequestMethod.POST)
     public @ResponseBody String getpublickey(ModelMap model, WebRequest request, HttpSession session){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			resp = RSAEncryptTool.getPublicKey(session.getId());
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
 
 	/**
@@ -309,47 +320,47 @@ public class GeoweaverController {
             // User user = userService.getByResetPasswordToken(token);
             String userid = ut.token2userid.get(token);
             Date created_date = ut.token2date.get(token);
-    
+
             if(!BaseTool.isNull(userid)){
-    
+
                 long time_difference =  new Date().getTime() - created_date.getTime();
-    
+
                 //if the token is one hour old
                 if(time_difference<60*60*1000){
-    
+
                     GWUser user = ut.getUserById(userid);
-    
+
                     model.addAttribute("token", token);
-                    
+
                     if (user == null) {
                         // model.addAttribute("message", "Invalid Token");
                         return "Invalid Token";
                     }
-    
+
                 }
-    
+
             }
 
         }else{
 
             model.addAttribute("error", "No Token. Invalid Link. ");
-            
+
         }
 
 
-         
+
         return "reset_password_form";
     }
-	
+
 	@RequestMapping(value = "/recent", method = RequestMethod.POST)
     public @ResponseBody String recent_history(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String type = request.getParameter("type");
-			
+
 			int number = Integer.parseInt(Objects.requireNonNull(request.getParameter("number")));
 
 			switch (Objects.requireNonNull(type)) {
@@ -371,44 +382,44 @@ public class GeoweaverController {
 
 					break;
 			}
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
 
 	@RequestMapping(value = "/downloadworkflow", method = RequestMethod.POST)
     public @ResponseBody String downloadworkflow(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String option = request.getParameter("option");
-			
+
 			String wid = request.getParameter("id");
-			
+
 			resp = wt.download(wid, option);
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	/**
 	 * Get history of process or workflow
 	 * @param model
@@ -417,50 +428,50 @@ public class GeoweaverController {
 	 */
 	@RequestMapping(value = "/log", method = RequestMethod.POST)
     public @ResponseBody String one_history(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String type = request.getParameter("type");
-			
+
 			String hid = request.getParameter("id");
-			
+
 			if(type.equals("process")) {
-				
+
 				resp = pt.one_history(hid);
-				
+
 			}else if(type.equals("workflow")) {
-				
+
 				resp = wt.one_history(hid);
-				
+
 			}else if(type.equals("host")) {
-				
+
 				resp = ht.one_history(hid);
-				
+
 			}
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
 
 	@RequestMapping(value= "/skip_workflow_process", method = RequestMethod.POST)
 	public @ResponseBody String skip_process(ModelMap model, WebRequest request){
 
 		String resp = null;
-		
+
 		try {
-			
+
 			String workflow_id = request.getParameter("workflowid");
-			
+
 			String workflow_process_id = request.getParameter("processid");
 
 			String if_skipped = request.getParameter("skip");
@@ -474,13 +485,13 @@ public class GeoweaverController {
 			resp = String.format("{\"id\": \"%s\", \"message\": \"%s\"}", workflow_id, "success");
 
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
 
 	}
@@ -489,11 +500,11 @@ public class GeoweaverController {
 	public @ResponseBody String check_skip_process(ModelMap model, WebRequest request){
 
 		String resp = null;
-		
+
 		try {
-			
+
 			String workflow_id = request.getParameter("workflowid");
-			
+
 			String workflow_process_id = request.getParameter("processid");
 
 			checkID(workflow_id);
@@ -503,164 +514,157 @@ public class GeoweaverController {
 			resp = String.format("{ \"if_skipped\": %s}", wt.check_process_skipped(workflow_id, workflow_process_id));
 
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
 
 	}
 
 	@RequestMapping(value = "/workflow_process_log", method = RequestMethod.POST)
     public @ResponseBody String workflow_process_log(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String workflowhistoryid = request.getParameter("workflowhistoryid");
-			
+
 			String processid = request.getParameter("processid");
-			
+
 			resp = hist.getWorkflowProcessHistory(workflowhistoryid, processid);
 
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
     public @ResponseBody String stop(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String type = request.getParameter("type");
-			
+
 			String id = request.getParameter("id");
-			
+
 			if(type.equals("process")) {
-				
+
 				resp = pt.stop(id);
-				
+
 			}else if(type.equals("workflow")) {
-				
+
 				resp = wt.stop(id);
-				
+
 			}
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/logs", method = RequestMethod.POST)
     public @ResponseBody String all_history(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String type = request.getParameter("type");
-			
+
 			logger.debug("enter logs " + type);
-			
+
 			String id = request.getParameter("id");
-			
+
 			String isactive = request.getParameter("isactive");
-			
+
 			if(type.equals("process")) {
-				
+
 				if(BaseTool.isNull(id)) {
-					
+
 					if("true".equals(isactive)) {
-						
+
 						resp = pt.all_active_process();
-//						resp = pt.all_history(id);
-						
-					}else {
-						
-						//return all process running history
-						
-						//zero processes
-						
+
 					}
-					
+
 				}else {
-					
+
 					resp = pt.all_history(id);
-					
+
 				}
-				
+
 			}else if(type.equals("workflow")) {
-				
+
 				if(BaseTool.isNull(id)) {
-					
+
 					if("true".equals(isactive)) {
-				
+
 						resp = wt.all_active_process();
-						
+
 					}
-					
+
 				}else {
-				
+
 					resp = wt.all_history(id);
-					
+
 				}
-				
+
 			}
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	@RequestMapping(value = "/env", method = RequestMethod.POST)
     public @ResponseBody String env(ModelMap model, WebRequest request){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String hid = request.getParameter("hid");
-			
+
 			resp = et.getEnvironments(hid);
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
 
 	/**
@@ -744,7 +748,7 @@ public class GeoweaverController {
 		return resp;
 	}
 
-	
+
 	/**
 	 * Handles HTTP POST requests to close the file browser associated with a user session.
 	 *
@@ -784,7 +788,7 @@ public class GeoweaverController {
 			String hid = request.getParameter("hid");
 			String encrypted = request.getParameter("pswd");
 			String init_path = request.getParameter("init_path");
-			
+
 			if (!BaseTool.isNull(encrypted)) {
 				// If a password is encrypted, decrypt it and open the SFTP browser.
 				String password = RSAEncryptTool.getPassword(encrypted, session.getId());
@@ -836,7 +840,7 @@ public class GeoweaverController {
 	 * @return A ResponseEntity containing the requested file for download.
 	 */
 	@RequestMapping(value = "/download/{tempfolder}/{filename}", method = RequestMethod.GET)
-	public ResponseEntity<Resource> fileGetter(ModelMap model, @PathVariable(value="tempfolder") String tempfolder, 
+	public ResponseEntity<Resource> fileGetter(ModelMap model, @PathVariable(value="tempfolder") String tempfolder,
 			@PathVariable(value="filename") String filename, WebRequest request, HttpSession session) {
 		ResponseEntity<Resource> resp = null;
 		try {
@@ -924,13 +928,26 @@ public class GeoweaverController {
 			String id = request.getParameter("id");
 			String mode = request.getParameter("mode");
 			String token = request.getParameter("token");
-			String history_id = BaseTool.isNull(request.getParameter("history_id")) ? 
+			String history_id = BaseTool.isNull(request.getParameter("history_id")) ?
 					new RandomString(18).nextString() : request.getParameter("history_id");
 			String[] hosts = request.getParameterValues("hosts[]");
 			String[] encrypted_password = request.getParameterValues("passwords[]");
 			String[] environments = request.getParameterValues("envs[]");
 			String[] passwords = RSAEncryptTool.getPasswords(encrypted_password, session.getId());
 			resp = wt.execute(history_id, id, mode, hosts, passwords, environments, token);
+
+            Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
+			if (optionalWorkflow.isPresent()) {
+				Workflow workflow = optionalWorkflow.get();
+				Checkpoint checkpoint = new Checkpoint();
+				checkpoint.setWorkflow(workflow);
+				checkpoint.setNodes(workflow.getNodes());
+				checkpoint.setEdges(workflow.getEdges());
+				checkpoint.setCreatedAt(new Date());
+				checkpoint.setExecutionId(history_id);
+				checkpointRepository.save(checkpoint);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			// Handle exceptions and throw a runtime exception with an error message.
@@ -939,7 +956,7 @@ public class GeoweaverController {
 		return resp;
 	}
 
-	
+
 	/**
 	 * Add local file as a new process
 	 * @param model
@@ -949,41 +966,41 @@ public class GeoweaverController {
 	 */
 	@RequestMapping(value = "/addLocalFile", method = RequestMethod.POST)
     public @ResponseBody String addLocalFile(ModelMap model, WebRequest request, HttpSession session){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String filepath = request.getParameter("filepath");
-			
-			String hid = request.getParameter("hid"); 
-			
+
+			String hid = request.getParameter("hid");
+
 			String type = request.getParameter("type");
-			
+
 			String content = request.getParameter("content");
-			
+
 			String name = request.getParameter("name");
 
 			String ownerid = request.getParameter("ownerid");
 
 			String confidential = request.getParameter("confidential");
-			
+
 			String pid = pt.add_database(name, type, content, filepath, hid, ownerid, confidential);
-			
+
 			resp = "{\"id\" : \"" + pid + "\", \"name\":\"" + name + "\", \"desc\" : \""+ type +"\" }";
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	/**
 	 * Handles HTTP POST requests to execute a process.
 	 *
@@ -1004,7 +1021,7 @@ public class GeoweaverController {
 			String pyenv = request.getParameter("env[pyenv]");
 			String basedir = request.getParameter("env[basedir]");
 			String password = RSAEncryptTool.getPassword(encrypted_password, session.getId());
-			String history_id = BaseTool.isNull(request.getParameter("history_id")) ? 
+			String history_id = BaseTool.isNull(request.getParameter("history_id")) ?
 					new RandomString(12).nextString() : request.getParameter("history_id");
 			resp = ext.executeProcess(history_id, pid, hid, password, token, false, bin, pyenv, basedir);
 		} catch (Exception e) {
@@ -1174,39 +1191,39 @@ public class GeoweaverController {
 	 */
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
     public @ResponseBody String upload(ModelMap model, WebRequest request, HttpSession session){
-		
+
 		String resp = null;
-		
+
 		try {
-			
+
 			String rel_filepath = request.getParameter("filepath");
-			
+
 			String rel_url = "download/"+upload_file_path+"/";
-			
+
 			String filename = rel_filepath.substring(rel_url.length());
-			
+
 			String filepath = bt.getFileTransferFolder() + "/" + filename;
-			
+
 			String hid = request.getParameter("hid");
-			
+
 			String encrypted = request.getParameter("encrypted");
-			
+
 			String password = RSAEncryptTool.getPassword(encrypted, session.getId());
-			
+
 			resp = ft.scp_upload(hid, password, filepath);
-			
+
 		}catch(Exception e) {
-			
+
 			e.printStackTrace();
-			
+
 			throw new RuntimeException("failed " + e.getLocalizedMessage());
-			
+
 		}
-		
+
 		return resp;
-		
+
 	}
-	
+
 	/**
 	 * Handles HTTP POST requests to retrieve a file from a remote host and save it in Geoweaver.
 	 *
@@ -1407,7 +1424,7 @@ public class GeoweaverController {
 		}
 		return resp;
 	}
-	
+
 	/**
 	 * Handles HTTP POST requests to close an SSH session inbox.
 	 *
@@ -1501,7 +1518,7 @@ public class GeoweaverController {
 		}
 		return resp;
 	}
-    
+
     /**
 	 * Handles HTTP GET requests to display the SSH login page.
 	 *
@@ -1537,5 +1554,6 @@ public class GeoweaverController {
 		if (BaseTool.isNull(id))
 			throw new RuntimeException("No ID found");
 	}
+
 
 }
