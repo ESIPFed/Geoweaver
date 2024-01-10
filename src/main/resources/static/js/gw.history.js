@@ -257,7 +257,6 @@ GW.history = {
 
 	},
 
-
     applyBootstrapTable: function(table_id){
 
         var table = $("#"+table_id).DataTable({
