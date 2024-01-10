@@ -11,8 +11,13 @@ import com.gw.tools.UserTool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -191,6 +196,7 @@ public class GeoweaverController {
                     resp = hist.deleteById(id);
                     break;
                 case "clear_nodes_edges":
+					assert id != null;
                     Optional<Workflow> optionalWorkflow = workflowrepository.findById(id);
                     if (optionalWorkflow.isPresent()) {
                         Workflow wf = optionalWorkflow.get();
