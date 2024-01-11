@@ -131,6 +131,9 @@ public interface HistoryRepository extends JpaRepository<History, String> {
      * @param history_id The ID of the history record.
      * @return A list containing a history record and additional information about the associated process.
      */
+    @Query(value = "select * from history where history.history_id = ?1 and history.history_process=?2", nativeQuery = true)
+    List<History> findHistoryWithExecutionId(String history_id, String workflowId);
+
     @Query(value = "select * from history, gwprocess where history.history_id = ?1 and history.history_process=gwprocess.id", nativeQuery = true)
     List<Object[]> findOneHistoryofProcess(String history_id);
 }
