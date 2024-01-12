@@ -114,10 +114,6 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 		long pollingInterval = 1000;
 
 		while (System.currentTimeMillis() - startTime < timeout) {
-			Postresult = this.testrestTemplate.postForObject(
-					"http://localhost:" + this.port + "/Geoweaver/web/recent",
-					postRequest, String.class);
-
 			if (Postresult.contains("Done")) {
 				break;
 			}
