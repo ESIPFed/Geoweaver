@@ -33,9 +33,10 @@ jobs:
             echo "Tests failed."
             exit 1  # Exit with an error code to stop the workflow
           fi
-          
+
   build-jar:
     runs-on: ubuntu-latest
+    needs: tests
 
     steps:
       - name: Checkout code
