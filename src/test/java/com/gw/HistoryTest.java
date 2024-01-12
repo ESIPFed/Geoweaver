@@ -90,7 +90,6 @@ public class HistoryTest extends AbstractHelperMethodsTest{
     @Test
 	@DisplayName("Test /recent endpoint for process type")
 	void testProcessRecentHistory() throws Exception {
-
 		String pid = AddPythonProcess();
 
 		// run the python process
@@ -109,6 +108,23 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 		String Postresult = this.testrestTemplate.postForObject(
 				"http://localhost:" + this.port + "/Geoweaver/web/recent",
 				postRequest, String.class);
+
+		long startTime = System.currentTimeMillis();
+		long timeout = 10000;
+		long pollingInterval = 1000;
+
+		while (System.currentTimeMillis() - startTime < timeout) {
+			Postresult = this.testrestTemplate.postForObject(
+					"http://localhost:" + this.port + "/Geoweaver/web/recent",
+					postRequest, String.class);
+
+			if (Postresult.contains("Done")) {
+				break;
+			}
+
+			Thread.sleep(pollingInterval);
+		}
+
 		assertThat(Postresult).contains("[");
 		assertThat(Postresult).contains("id");
 		assertThat(Postresult).contains("Done");
@@ -216,5 +232,5 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 
 	}
 
-    
+
 }
