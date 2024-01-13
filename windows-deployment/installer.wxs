@@ -1,0 +1,28 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" Name="GeoweaverApp" Version="1.0.0.0" Manufacturer="YourCompany" UpgradeCode="YOUR-GUID-HERE">
+        <Package InstallerVersion="200" Compressed="yes" />
+
+        <Media Id="1" Cabinet="geoweaver.cab" EmbedCab="yes" />
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="INSTALLFOLDER" Name="GeoweaverApp" />
+            </Directory>
+        </Directory>
+
+        <Feature Id="ProductFeature" Title="GeoweaverApp" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+
+        <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="GeoweaverAppComponent" Guid="YOUR-ANOTHER-GUID-HERE">
+                <File Id="GeoweaverExecutable" Source="path\to\your\GeoweaverExecutable.exe" />
+                <!-- Add more files as needed -->
+            </Component>
+        </DirectoryRef>
+
+        <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+            <ComponentRef Id="GeoweaverAppComponent" />
+        </ComponentGroup>
+    </Product>
+</Wix>
