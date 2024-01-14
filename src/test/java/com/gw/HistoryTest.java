@@ -109,6 +109,8 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 				"http://localhost:" + this.port + "/Geoweaver/web/recent",
 				postRequest, String.class);
 
+		System.out.println("Postresult = " + Postresult);
+
 		long startTime = System.currentTimeMillis();
 		long timeout = 10000;
 		long pollingInterval = 1000;
