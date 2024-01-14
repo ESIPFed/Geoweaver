@@ -1602,20 +1602,20 @@ GW.host = {
 		if(confidential=="FALSE"){
 
 			content  += '       <input type="radio" name="confidential" value="FALSE" checked> '+
-			'       <label for="confidential">Public</label>';
+			'       <label id="public_radio" for="confidential">Public</label>';
 			
 			if(GW.user.current_userid==owner && GW.user.current_userid != "111111")
 				content += '       <input type="radio" name="confidential" value="TRUE"> '+
-				'       <label for="confidential">Private</label>';
+				'       <label id="private_radio" for="confidential">Private</label>';
 
 		}else{
 
 			content  += '       <input type="radio" name="confidential" value="FALSE"> '+
-			'       <label for="confidential">Public</label>';
+			'       <label id="public_radio" for="confidential">Public</label>';
 			
 			if(GW.user.current_userid==owner&& GW.user.current_userid != "111111")
 				content += '       <input type="radio" name="confidential" value="TRUE" checked> '+
-				'       <label for="confidential">Private</label>';
+				'       <label id="private_radio" for="confidential">Private</label>';
 
 		}
 		
@@ -2138,11 +2138,11 @@ GW.host = {
 		'     <label for="hostname" class="col-sm-3 col-form-label control-label">Confidential </label>'+
 		'     <div class="col-sm-9" style="padding-left: 30px;">'+
 		'       <input type="radio" name="confidential" value="FALSE" checked> '+
-		'       <label for="confidential">Public</label>';
+		'       <label id="public_radio" for="confidential">Public</label>';
 		
 		if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
 			content += '       <input type="radio" name="confidential" value="TRUE"> '+
-			'       <label for="confidential">Private</label>';
+			'       <label id="private_radio" for="confidential">Private</label>';
 		
 		content += '     </div>'+
 		'       </div>';

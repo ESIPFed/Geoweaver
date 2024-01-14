@@ -1089,14 +1089,14 @@ GW.process = {
 		
 		GW.process.cmid = Math.floor(Math.random() * 1000);
 
-		var confidential_field  = '     <label for="confidential" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential</label>'+
+		var confidential_field  = '     <label  id="label_conf" for="confidential" style="font-size: 12px;" class="col-sm-2 col-form-label control-label">Confidential</label>'+
 		'     <div class="col-sm-4">'+
 		'       <input type="radio" name="confidential-'+GW.process.cmid+'" value="FALSE" checked> '+
-		 '		<label for="confidential-'+GW.process.cmid+'">Public</label>';
+		 '		<label  id="public_radio" for="confidential-'+GW.process.cmid+'">Public</label>';
 		
 		if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
 			confidential_field += '       <input type="radio" name="confidential-'+GW.process.cmid+'" value="TRUE"> '+
-			'		<label for="confidential-'+GW.process.cmid+'">Private</label>';
+			'		<label  id="public_radio" for="confidential-'+GW.process.cmid+'">Private</label>';
 //		       '			<input type="text" class="form-control form-control-sm" ></input>'+
 		confidential_field += '     </div>';
 		
@@ -1336,17 +1336,17 @@ GW.process = {
 
 		}
 		
-		confidential_field += '		<label for="confidential">Public</label>';
+		confidential_field += '		<label  id="public_label" for="confidential">Public</label>';
 		
 		if(GW.user.current_userid==owner && GW.user.current_userid!="111111"){
 
 			if(msg.confidential=="TRUE"){
 
-				confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> <label for="confidential">Private</label>';
+				confidential_field += '       <input type="radio"  name="confidential_process" value="TRUE" checked> <label id="private_radio" for="confidential">Private</label>';
 
 			}else{
 
-				confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> <label for="confidential">Private</label>';
+				confidential_field += '       <input type="radio" name="confidential_process" value="TRUE" checked> <label id="private_radio"  for="confidential">Private</label>';
 				
 			}
 

@@ -108,20 +108,20 @@ GW.workflow = {
 		if(confidential=="FALSE"){
 
 			content  += '       <input type="radio" name="confidential_workflow" value="FALSE" checked> '+
-			'		<label for="confidential_workflow">Public</label>';
+			'		<label id="public_radio"  for="confidential_workflow">Public</label>';
 			
 			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
 				content += '       <input type="radio" name="confidential_workflow" value="TRUE"> '+
-				'		<label for="confidential_workflow">Private</label>';
+				'		<label id="private_radio"  for="confidential_workflow">Private</label>';
 
 		}else{
 
 			content  += '       <input type="radio" name="confidential_workflow" value="FALSE"> '+
-			'		<label for="confidential_workflow">Public</label>';
+			'		<label id="public_radio"  for="confidential_workflow">Public</label>';
 			
 			if(GW.user.current_userid==owner && GW.user.current_userid!= "111111")
 				content += '       <input type="radio" name="confidential_workflow" value="TRUE" checked> '+
-				'		<label for="confidential_workflow">Private</label>';
+				'		<label id="private_radio"  for="confidential_workflow">Private</label>';
 
 		}
 
@@ -316,14 +316,14 @@ GW.workflow = {
 		       	'     </div>'+
 		       	'   </div>'+
 			   	'   <div class="form-group row required">'+
-		       	'     <label for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
+		       	'     <label id="conf_label" for="confidential_new" class="col-sm-3 col-form-label control-label">Confidential : </label>'+
 			   	'     <div class="col-sm-9" style="padding-left: 30px;">'+
 			   	'       <input type="radio" name="confidential_new" value="FALSE" checked> '+
-			   	'		<label for="confidential_new">Public</label>';
+			   	'		<label id="public_radio"  for="confidential_new">Public</label>';
 
 				if(GW.user.current_userid!=null && GW.user.current_userid!="111111")
 					content += '       <input type="radio" name="confidential_new" value="TRUE"> '+
-					'		<label for="confidential_new">Private</label>';
+					'		<label id="private_radio"  for="confidential_new">Private</label>';
 
 				content += '     </div>'+
 					'   </div>'+
