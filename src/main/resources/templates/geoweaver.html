@@ -15,13 +15,12 @@
 		
    		<link href="../css/bootstrap-colorpicker.min.css" rel="stylesheet" />
 		
+		<!--font-awesome library-->
 		<link href="../css/all.min.css" rel="stylesheet" />
 		
 		<link href="../css/workspace.css" rel="stylesheet" />
 		
 		<link href="../css/sidemenu.css" rel="stylesheet" />
-
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/css/uikit.min.css" />
 		
 		<link rel="stylesheet" href="../js/codemirror/lib/codemirror.css" />
 		
@@ -68,10 +67,6 @@
 		<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
 		
 		<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
-
-		<script src="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/js/uikit.min.js"></script>
-
-		<script src="https://cdn.jsdelivr.net/npm/uikit@3.16.3/dist/js/uikit-icons.min.js"></script>
 		
 		<script type="text/javascript" src="../js/dataTables.cellEdit.js"></script>
 		
@@ -579,10 +574,21 @@
 								<!-- status indicator right bottom -->
 								
 								<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; right: 20px; height: 50px; z-index:1;">
-										<!--<span id="current_workflow_name" class="invisible">Current Workflow: </span>-->
-											
-											
-											<h2><i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i><span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span></h2>
+									
+									<h2>
+										
+										<i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i>
+										
+										<span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span>
+
+										<i class="btn fa fa-info-circle fa-2x" id="workflow_info" 
+											style="font-size:20px; margin: 0; padding: 0; vertical-align: middle; color:darkgray">
+											<span> metadata</span>
+										</i> 
+										
+										
+										
+									</h2>
 								
 								</div>
 								

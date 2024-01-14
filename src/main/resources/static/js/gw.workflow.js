@@ -728,7 +728,7 @@ GW.workflow = {
 		$("#current_workflow_na").html(name);
 
 	},
-
+	
 	/**
 	 * Start to collect information to run the workflow
 	 */
