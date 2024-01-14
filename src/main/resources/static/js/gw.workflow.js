@@ -141,44 +141,50 @@ GW.workflow = {
 		
 		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.history('`+
     	
-		workFlowID+`', '` + workFlowName+`')"><i class="fa fa-history subalignicon" data-toggle="tooltip" title="List history logs"></i> History </button> `+
+		workFlowID+`', '` + workFlowName+`')">
 		
-		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.add('"+
+		<i class="fa fa-history subalignicon" data-toggle="tooltip" title="List history logs"></i> History </button> 
+		
+		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.add('`+
     	
-		workFlowID+"', '"+workFlowName+"', false)\"><i class=\"fa fa-play subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\"></i> Run </button> "+
+		workFlowID+`', '`+workFlowName+`', true)">
+		
+		<i class="fa fa-play subalignicon" data-toggle="tooltip" title="Load this workflow into Weaver"></i> Run </button> 
 
-		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.landingpage('"+
+		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.landingpage('`+
     	
-		workFlowID+"', '" + workFlowName+"')\"><i class=\"fa fa-share subalignicon\" data-toggle=\"tooltip\" title=\"Go to Landing Page\"></i> Share </button> "+
+		workFlowID+`', '` + workFlowName+`')">
 		
-		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('"+
+		<i class="fa fa-share subalignicon" data-toggle="tooltip" title="Go to Landing Page"></i> Share </button> 
+		
+		<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('`+
     	
-		workFlowID+"','workflow')\" ><i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this workflow\"></i> Delete </button>"+
+		workFlowID+`,'workflow')" >
 		
-		"</p></div>"+
+		<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this workflow"></i> Delete </button>
+		
+		</p></div>
 
-		// tab panel of workflow
-		"<div class=\"subtab tab\" data-intro=\"this is a tab inside the workflow tab panel\">"+
-		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-code-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-code')\">Info</button>"+
-		"	<button class=\"tablinks-workflow \" id=\"main-workflow-info-history-tab\" onclick=\"GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('"+
+		<div class="subtab tab" data-intro="this is a tab inside the workflow tab panel">
+
+			<button class="tablinks-workflow " id="main-workflow-info-code-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-code')">Info</button>
+
+			<button class="tablinks-workflow" id="main-workflow-info-history-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('`+
 		
-		workFlowID+"', '" + workFlowName+"')\">History</button>"+
-		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 205px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
-		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
+		workFlowID+`', '` + workFlowName+`')">History</button>
+		 </div>
+		<div id="main-workflow-info-code" class="tabcontent-workflow generalshadow" style="height:calc(100% - 205px); overflow-y: scroll; left:0; margin:0; padding: 5px; ">
+			<div class="row" style="height:100%;margin:0;">`+
 			info_body+
-		"	</div>"+
-		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 205px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\">"+
-		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
+		`	</div>
+		</div>
+		<div id="main-workflow-info-history" class="tabcontent-workflow generalshadow" style="height:calc(100% - 205px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;">
+		   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >
 		
-	    '   </div>'+
-		"</div>"+
-		//end of tab panel
+	       </div>
+		</div>
 		
-		
-		
-		"</div>";
+		</div>`;
 		
 		$("#main-workflow-content").html(content);
 
