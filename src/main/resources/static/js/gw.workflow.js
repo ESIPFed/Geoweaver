@@ -61,6 +61,8 @@ GW.workflow = {
 
 		let info_body = "";
 
+		let id_combo, name_combo, desc_combo, confidential_combo;
+
 		jQuery.each(msg, function(i, val) {
 			
 			if(typeof val =='object')
@@ -71,20 +73,22 @@ GW.workflow = {
 			if(i==="id"){
 				
 				workFlowID = val;
-				content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\" id=\"display_workflow_id\">"+val+"</div>";
+				id_combo = `<div class="col col-md-1">`+i+`</div>
+					<div class="col col-md-3" id="display_workflow_id">`+val+`</div>`;
 				
 			}else if(i==="name"){
 				
 				workFlowName = val;
-				content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\"><input id=\"display_workflow_name_field\" type=\"text\" value=\""+val+"\" /></div>";
+				name_combo = `<div class="col col-md-1">`+i+`</div>
+					<div class="col col-md-3"><input class="form-control" id="display_workflow_name_field" type="text" value="`+
+					val+`" /></div>`;
 				
 			}else if(i==="description"){
 				
 				workFlowDescription = val;
-				content += "<div class=\"col col-md-3\">"+i+"</div>"+
-					"<div class=\"col col-md-7\"><textarea style=\"width:100%;\" id=\"display_workflow_description_field\" >"+val+"</textarea ></div>";
+				desc_combo = `<div class="col col-md-3">`+i+`</div>
+					<div class="col col-md-7"><textarea style="width:100%;" 
+					id="display_workflow_description_field" >`+val+`</textarea ></div>`;
 				
 			}else if(i==="confidential"){
 				
@@ -96,14 +100,16 @@ GW.workflow = {
 
 			}else{
 
-				info_body += "<div class=\"col col-md-3\">"+i+"</div>"+
-				"<div class=\"col col-md-7\">"+val+"</div>";
+				info_body += `<div class="col col-md-1">`+i+`</div>
+				<div class="col col-md-3">`+val+`</div>`;
 			}
 			
 		});
 
-		content += "<div class=\"col col-md-3\">Confidential</div>"+
-							"<div class=\"col col-md-7\">";
+		content += id_combo + name_combo
+
+		content += `<div class="col col-md-1">Confidential</div>
+							<div class="col col-md-3">`;
 					
 		if(confidential=="FALSE"){
 
@@ -126,6 +132,8 @@ GW.workflow = {
 		}
 
 		content += "</div>";
+
+		content += desc_combo
 		
 		content += "</div><div>"+
 		
