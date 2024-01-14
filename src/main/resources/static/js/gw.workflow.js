@@ -49,9 +49,9 @@ GW.workflow = {
 	
 	display: function(msg){
 
-		let content = "<div class=\"modal-body\" style=\"height:100%;\">";
+		let content = "<div class=\"modal-body\" style=\"height:100%; padding: 10px;\">";
 
-		content += "<div class=\"row\" style=\"font-size: 12px;\">";
+		content += "<div class=\"row\" style=\"font-size: 12px; margin: 0;\">";
 
 		let workFlowID, workFlowName, workFlowDescription;
 
@@ -80,14 +80,14 @@ GW.workflow = {
 				
 				workFlowName = val;
 				name_combo = `<div class="col col-md-1">`+i+`</div>
-					<div class="col col-md-3"><input class="form-control" id="display_workflow_name_field" type="text" value="`+
+					<div class="col col-md-3" style="padding: 0;"><input class="form-control" id="display_workflow_name_field" type="text" value="`+
 					val+`" /></div>`;
 				
 			}else if(i==="description"){
 				
 				workFlowDescription = val;
-				desc_combo = `<div class="col col-md-3">`+i+`</div>
-					<div class="col col-md-7"><textarea style="width:100%;" 
+				desc_combo = `<div class="col col-md-1">`+i+`</div>
+					<div class="col col-md-11" style="padding: 0;"><textarea style="width:100%;" class="form-control"
 					id="display_workflow_description_field" >`+val+`</textarea ></div>`;
 				
 			}else if(i==="confidential"){
@@ -101,7 +101,7 @@ GW.workflow = {
 			}else{
 
 				info_body += `<div class="col col-md-1">`+i+`</div>
-				<div class="col col-md-3">`+val+`</div>`;
+				<div class="col col-md-11">`+val+`</div>`;
 			}
 			
 		});
@@ -135,13 +135,13 @@ GW.workflow = {
 
 		content += desc_combo
 		
-		content += "</div><div>"+
+		content += `</div><div style="margin-top: 5px; margin-bottom: 5px;">
 		
-		"<p align=\"right\">"+
+		<p align="right">
 		
-		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.history('"+
+		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.history('`+
     	
-		workFlowID+"', '" + workFlowName+"')\"><i class=\"fa fa-history subalignicon\" data-toggle=\"tooltip\" title=\"List history logs\"></i> History </button> "+
+		workFlowID+`', '` + workFlowName+`')"><i class="fa fa-history subalignicon" data-toggle="tooltip" title="List history logs"></i> History </button> `+
 		
 		"<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.workflow.add('"+
     	
@@ -164,12 +164,12 @@ GW.workflow = {
 		
 		workFlowID+"', '" + workFlowName+"')\">History</button>"+
 		" </div>"+
-		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
+		"<div id=\"main-workflow-info-code\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 205px); overflow-y: scroll; left:0; margin:0; padding: 5px; \">"+
 		"	<div class=\"row\" style=\"height:100%;margin:0;\">"+
 			info_body+
 		"	</div>"+
 		"</div>"+
-		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 265px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\">"+
+		"<div id=\"main-workflow-info-history\" class=\"tabcontent-workflow generalshadow\" style=\"height:calc(100% - 205px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;\">"+
 		'   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >'+
 		
 	    '   </div>'+
