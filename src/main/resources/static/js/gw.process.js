@@ -141,6 +141,12 @@ GW.process = {
 
 				toggleComment: true,
 
+				mode: "shell",
+
+				lint: true, //this doesn't work for shell script.
+
+				gutters: ["CodeMirror-lint-markers"],
+
 				extraKeys: {
 					
 					// "Ctrl-S": function(instance) { 
@@ -276,6 +282,12 @@ GW.process = {
 			lineWrapping: true,
 			
 			theme: "yonce",
+
+			mode: "python",
+
+			gutters: ["CodeMirror-lint-markers"],
+
+			lint: true, //this doesn't work for Python scripts in codemirror. Need external pylint service. 
 
 			extraKeys: {
 				
