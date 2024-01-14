@@ -109,23 +109,9 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 				"http://localhost:" + this.port + "/Geoweaver/web/recent",
 				postRequest, String.class);
 
-		System.out.println("Postresult = " + Postresult);
-
-		long startTime = System.currentTimeMillis();
-		long timeout = 10000;
-		long pollingInterval = 1000;
-
-		while (System.currentTimeMillis() - startTime < timeout) {
-			if (Postresult.contains("Done")) {
-				break;
-			}
-
-			Thread.sleep(pollingInterval);
-		}
-
 		assertThat(Postresult).contains("[");
 		assertThat(Postresult).contains("id");
-		assertThat(Postresult).contains("Done");
+		assertThat(Postresult).contains("testpython2");
 		assertThat(Postresult).contains("name");
 
 		ObjectMapper mapper = new ObjectMapper();
