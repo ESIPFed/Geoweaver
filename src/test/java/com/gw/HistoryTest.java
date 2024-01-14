@@ -100,6 +100,9 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 
 		ltmock.executePythonProcess(historyid, pid, "100001", "dummyrsastring", historyid, true, "", "", "");
 
+		// sleep for 5 seconds to ensure the process is complete
+		Thread.sleep(5000);
+
 		HttpHeaders postHeaders = new HttpHeaders();
 		postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -112,6 +115,7 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 		assertThat(Postresult).contains("[");
 		assertThat(Postresult).contains("id");
 		assertThat(Postresult).contains("testpython2");
+		assertThat(Postresult).contains("Done");
 		assertThat(Postresult).contains("name");
 
 		ObjectMapper mapper = new ObjectMapper();
