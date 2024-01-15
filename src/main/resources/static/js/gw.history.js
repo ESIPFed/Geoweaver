@@ -43,6 +43,8 @@ GW.history = {
             clearInterval(GW.history.history_table_interval_id)
 
             GW.history.history_table_interval_id = null
+
+            GW.history.active_process_history_list = []
             
         }
 
