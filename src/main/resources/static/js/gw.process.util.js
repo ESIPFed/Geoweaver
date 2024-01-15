@@ -368,8 +368,12 @@ GW.process.util = {
 			}
 			
 			msg = GW.general.parseResponse(msg);
+
+			GW.history.stopAllTimers();
 			
 			$(process_history_container_id).html(GW.history.getProcessHistoryTable(msg));
+
+			GW.history.startActiveTimer();
 
 			GW.history.applyBootstrapTable(process_history_table_id);
 			
