@@ -1106,8 +1106,25 @@ GW.workflow = {
 		});
 		
 	},
-	
-	
+
+
+	restoreCheckpoint: function(workflowId, executionId) {
+		if (confirm("CAUTION: Restore will remove changes that are not stored in history. Proceed?")) {
+			$.ajax({
+				url: `/Geoweaver/checkpoint/restoreWorkflow`,
+				method: "POST",
+				data: JSON.stringify({"workflowId": workflowId, "executionId": executionId }),
+				headers: {'Content-Type': 'application/json'}
+			}).done((resp) => {
+				window.alert('Successfully restored to this checkpoint.');
+				GW.workflow.showWorkflow(workflowId);
+				// GW.workspace.init();
+			}).fail(err => {
+				window.alert(`Failed to restore. checkpoint not found`);
+			})
+		}
+	},
+
 
 	stop: function(workflow_history_id){
 
