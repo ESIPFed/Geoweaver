@@ -1,5 +1,6 @@
 package com.gw.tasks;
 
+import com.gw.tools.WorkflowTool;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -327,173 +328,121 @@ public class GeoweaverWorkflowTask{
 	 * @param nodes
 	 * @param status
 	 */
-	public void updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
-		
+	public boolean updateNodeStatus(String id, String[] flags, JSONArray nodes, String status) {
+
+		boolean isFailed = false;
+
 		for(int j=0;j<nodes.size();j++) {
-			
+
 			String prenodeid = (String)((JSONObject)nodes.get(j)).get("id");
-			
+
 			if(prenodeid.equals(id)) {
-				
 				flags[j] = status;
-				
+				if ("FAILED".equals(status)) {
+					isFailed = true;
+				}
 				break;
-				
 			}
-			
 		}
-		
+		return isFailed;
 	}
 
 	public void execute() {
-		
 		log.debug(" + + + start Geoweaver workflow " + wid + " - history id : " + this.history_id);
-		
+
 		try {
-			
-			//get the nodes and edges of the workflows
-			
+			// Initialize workflow details
 			this.history_process = wid;
-			
 			this.history_begin_time = BaseTool.getCurrentSQLDate();
-			
 			this.history_input = "";
-			
 			this.history_output = "";
-			
+
+			// Retrieve workflow information
 			Workflow w = workflowRepository.findById(wid).get();
-			
-			if(BaseTool.isNull(w))
-				throw new RuntimeException("no workflow is found");
-			
-			//execute the process in a while loop - for now. Improve this in future
-			
+			if (BaseTool.isNull(w))
+				throw new RuntimeException("No workflow is found");
+
 			JSONParser parser = new JSONParser();
-			
-			JSONArray edges = (JSONArray)parser.parse(w.getEdges());
-			
-			JSONArray nodes = (JSONArray)parser.parse(w.getNodes());
-			
+			JSONArray edges = (JSONArray) parser.parse(w.getEdges());
+			JSONArray nodes = (JSONArray) parser.parse(w.getNodes());
+
+			// Initialize node status flags
 			String[] flags = new String[nodes.size()];
-			
-			for(int i=0;i<flags.length; i++ ) {
-				
-				flags [i] = ExecutionStatus.READY;
-				
+			for (int i = 0; i < flags.length; i++) {
+				flags[i] = ExecutionStatus.READY;
 			}
 
-			for(int i=0;i<nodes.size();i++){
-
-				((JSONObject)nodes.get(i)).put("history_id", new RandomString(11).nextString()); //generate history id before call the execution function
+			// Generate history ID for each node
+			for (int i = 0; i < nodes.size(); i++) {
+				((JSONObject) nodes.get(i)).put("history_id", new RandomString(11).nextString());
 			}
 
-			// set the status of workflow history
+			// Set initial status of the workflow
 			this.history_indicator = ExecutionStatus.READY;
-			
-			// all the ids in this map is history id
 			Map<String, List> node2condition = this.getNodeConditionMap(nodes, edges);
-			
-			// while(executed_process < (nodes.size())) {
-			for(int i=0;i< nodes.size();i++){
-				
-				//find next process to execute - the id has two parts: process type id - process object id
-				
-				String nextid = String.valueOf(((JSONObject)nodes.get(i)).get("id"));
 
-				String nexthistoryid = String.valueOf(((JSONObject)nodes.get(i)).get("history_id"));
+			for (int i = 0; i < nodes.size(); i++) {
+				String nextid = String.valueOf(((JSONObject) nodes.get(i)).get("id"));
+				String nexthistoryid = String.valueOf(((JSONObject) nodes.get(i)).get("history_id"));
+				String skip = String.valueOf(((JSONObject) nodes.get(i)).get("skip"));
 
-				String skip = String.valueOf(((JSONObject)nodes.get(i)).get("skip"));
-				
-				log.debug("this round is : " + nextid);
-				
-				this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.READY);
-				
-				sendStatus(nodes, flags);
-				
-				String hid = mode.equals("one")?hosts[0]:hosts[i];
-				
-				String password = mode.equals("one")?pswds[0]:pswds[i];
+				log.debug("This round is: " + nextid);
 
-				String envid = mode.equals("one")?envs[0]:envs[i];
-				
-				//nodes
-//				[{"title":"download-landsat","id":"nhi96d-7VZhh","x":119,"y":279},
-// {"title":"filter_cloud","id":"rh1u8q-4sCmg","x":286,"y":148},
-// {"title":"filter_shadow","id":"rpnhlg-JZfyQ","x":455,"y":282},
-// {"title":"match_cdl_landsat","id":"omop8l-1p5x1","x":624,"y":152}]
-				
-				//edges
-//				[{"source":{"title":"sleep5s","id":"ac4724-jL0Ep","x":342.67081451416016,"y":268.8715720176697},
-// "target":{"title":"testbash","id":"199vsg-Xr6FZ","x":465.2892303466797,"y":41.6651611328125}},
-// {"source":{"title":"testbash","id":"199vsg-oAq2d","x":-7.481706619262695,"y":180.70700073242188},
-// "target":{"title":"sleep5s","id":"ac4724-jL0Ep","x":342.67081451416016,"y":268.8715720176697}}]
-				
+				String hid = mode.equals("one") ? hosts[0] : hosts[i];
+				String password = mode.equals("one") ? pswds[0] : pswds[i];
+				String envid = mode.equals("one") ? envs[0] : envs[i];
+
 				try {
-
-					if("true".equals(skip)){
-
+					if ("true".equals(skip)) {
 						hist.saveSkippedHisotry(nexthistoryid, nextid, hid);
-
 						this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.SKIPPED);
-				
-						sendStatus(nodes, flags);
-
-						tm.notifyWaitinglist();
-
-					}else{
-
+					} else {
 						GeoweaverProcessTask new_task = BeanTool.getBean(GeoweaverProcessTask.class);
-
 						Environment env = et.getEnvironmentById(envid);
-						if(BaseTool.isNull(env)){
-							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id); //what is token?
-						}else{
-							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id); //what is token?
+						if (BaseTool.isNull(env)) {
+							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, null, null, null, this.history_id);
+						} else {
+							new_task.initialize(nexthistoryid, nextid, hid, password, token, true, env.getBin(), env.getPyenv(), env.getBasedir(), this.history_id);
 						}
-						
 						new_task.setPreconditionProcesses(node2condition.get(nexthistoryid));
-
 						log.debug("Precondition number: " + node2condition.get(nexthistoryid).size());
-						
 						tm.addANewTask(new_task);
-
 					}
 
-				}catch(Exception e) {
-					
-					this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.FAILED);
-				
 					sendStatus(nodes, flags);
-					
+
+					// Check if the process failed
+					if (updateNodeStatus(nextid, flags, nodes, ExecutionStatus.FAILED)) {
+						WorkflowTool wt = BeanTool.getBean(WorkflowTool.class);
+						wt.stop(wid);
+						throw new RuntimeException("Process " + nextid + " failed. Stopping workflow execution.");
+					}
+
+				} catch (Exception e) {
+					this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.FAILED);
+					sendStatus(nodes, flags);
 					e.printStackTrace();
+					throw e; // Re-throw the exception to stop the workflow
 				}
-				
+
 				this.history_input += nextid + ";";
-				
 				this.history_output += nexthistoryid + ";";
-				
 			}
-			
-			sendStatus(nodes, flags); //last message
-			
-			log.info("workflow execution is triggered.");
 
+			sendStatus(nodes, flags); // Send final status
+			log.info("Workflow execution is triggered.");
 			this.history_indicator = ExecutionStatus.RUNNING;
-			
 			saveWorkflowHistory();
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-		} finally {
-			
-			// GeoweaverController.sessionManager.closeWebSocketByToken(token); //close ssh output transferring websocket at the end
-			
-			// stopMonitor(); //shut down workflow status monitor websocket
-			
-		}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			// Additional error handling as needed
+		} finally {
+			// Clean-up actions
+			// GeoweaverController.sessionManager.closeWebSocketByToken(token);
+			// stopMonitor();
+		}
 	}
+
 
 }
