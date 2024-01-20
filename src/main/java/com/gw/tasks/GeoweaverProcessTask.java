@@ -282,7 +282,7 @@ public class GeoweaverProcessTask  extends Task {
 		
 		try {
 
-			Thread.sleep(1); //sleep 1s to wait for the client to catch up
+			Thread.sleep(500); //sleep 1s to wait for the client to catch up
 			
 			//get the nodes and edges of the workflows
 			
@@ -297,6 +297,8 @@ public class GeoweaverProcessTask  extends Task {
 			et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
 			this.curstatus = ExecutionStatus.DONE;
+
+			this.updateEverything();
 			
 		}catch(Exception e) {
 			
@@ -387,6 +389,7 @@ public class GeoweaverProcessTask  extends Task {
 				wf.setIndicator(workflow_status);
 
 				hist.saveHistory(wf);
+
 				if(ExecutionStatus.DONE.equals(workflow_status) 
 					|| ExecutionStatus.FAILED.equals(workflow_status) 
 					|| ExecutionStatus.STOPPED.equals(workflow_status)
@@ -477,14 +480,12 @@ public class GeoweaverProcessTask  extends Task {
 
 		saveHistory();
 
-		if(!BaseTool.isNull(this.workflow_history_id)){
+		logger.debug("updateeverything is called and this.workflow_history_id = " + this.workflow_history_id);
+		
+		refreshWorkflowMonitor();
 
-			refreshWorkflowMonitor();
-
-			// this.sendSingleTaskStatus(workflow_pid, history_id, this.curstatus);
-			this.sendAllTaskStatus();
-
-		}
+		// this.sendSingleTaskStatus(workflow_pid, history_id, this.curstatus);
+		this.sendAllTaskStatus();
 
 	}
 
