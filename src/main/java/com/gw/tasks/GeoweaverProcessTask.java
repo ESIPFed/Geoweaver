@@ -250,20 +250,8 @@ public class GeoweaverProcessTask  extends Task {
 		
 		//no closing anymore, the websocket session between client and server should be always active
 		this.monitor = null;
+
 		this.workflow_monitor = null;
-		
-//		try {
-//			
-//			logger.info("close the websocket session from server side");
-//			
-////			if(!BaseTool.isNull(monitor))
-////				monitor.close();
-//			
-//		} catch (IOException e) {
-//			
-//			e.printStackTrace();
-//			
-//		}
 		
 	}
 
@@ -277,8 +265,6 @@ public class GeoweaverProcessTask  extends Task {
 	public void execute() {
 
 		logger.debug(" + + + start Geoweaver Process " + pid );
-
-		System.out.println("> Start to run process: "+ pid);
 		
 		try {
 
@@ -297,8 +283,6 @@ public class GeoweaverProcessTask  extends Task {
 			et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
 			this.curstatus = ExecutionStatus.DONE;
-
-			this.updateEverything();
 			
 		}catch(Exception e) {
 			
@@ -307,9 +291,10 @@ public class GeoweaverProcessTask  extends Task {
 			this.curstatus = ExecutionStatus.FAILED;
 			
 			this.history_output = e.getLocalizedMessage();
-
 			
 		}finally {
+
+			this.updateEverything();
 			
 			if(!isjoin) this.stopMonitor(); //if run solo, close. if workflow, don't.
 			
@@ -328,7 +313,7 @@ public class GeoweaverProcessTask  extends Task {
 	 * @param history_id
 	 * @param flag
 	 */
-	public void sendAllTaskStatus(){
+	public void sendWorkflowTaskStatus(){
 
 		try {
 
@@ -364,10 +349,10 @@ public class GeoweaverProcessTask  extends Task {
 						|| ExecutionStatus.READY.equals(c_his.getIndicator()) 
 						|| ExecutionStatus.RUNNING.equals(c_his.getIndicator())){
 
-							workflow_status = ExecutionStatus.RUNNING;
-						}else if(ExecutionStatus.FAILED.equals(c_his.getIndicator())){
-							errorcheck = 1;
-						}
+						workflow_status = ExecutionStatus.RUNNING;
+					}else if(ExecutionStatus.FAILED.equals(c_his.getIndicator())){
+						errorcheck = 1;
+					}
 					
 					array.add(obj);
 					
@@ -485,7 +470,7 @@ public class GeoweaverProcessTask  extends Task {
 		refreshWorkflowMonitor();
 
 		// this.sendSingleTaskStatus(workflow_pid, history_id, this.curstatus);
-		this.sendAllTaskStatus();
+		this.sendWorkflowTaskStatus();
 
 	}
 
