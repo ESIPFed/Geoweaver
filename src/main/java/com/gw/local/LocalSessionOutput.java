@@ -254,7 +254,7 @@ public class LocalSessionOutput implements Runnable {
 			// Read output lines until they are null (command execution is finished)
 			while ((line = in.readLine()) != null) {
 				try {
-					log.info("this is when line is read: " + line);
+					log.info(line);
 					refreshLogMonitor(); // Check and refresh the WebSocket session
 	
 					// readLine will block if nothing to send
