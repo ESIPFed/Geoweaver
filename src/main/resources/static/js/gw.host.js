@@ -1624,7 +1624,7 @@ GW.host = {
 		var delbtn = "";
 		
 //          if(hostip!="127.0.0.1")
-		if(msg.name!="localhost")
+		if(String(msg.name).replace(/ /g, "").toLowerCase() !== "localhost")
 			delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 		
 		content += "</div>"+
