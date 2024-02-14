@@ -6,6 +6,7 @@ if %errorlevel% neq 0 (
     echo Oops! Java is not installed on your system and running Geoweaver requires Java
     echo Please download and install JDK
     echo JDK from other sources can work as well
+    timeout /t 5 >nul
     start https://adoptopenjdk.net/
     exit /b %errorlevel%
 )
