@@ -3,8 +3,9 @@
 REM Check if Java is installed
 java -version > nul 2>&1
 if %errorlevel% neq 0 (
-    echo Oops! Java is not installed on your system. Running Geoweaver requires Java.
-    echo Please download and install JDK (e.g. from https://adoptopenjdk.net/). JDK from other sources can work as well.
+    echo Oops! Java is not installed on your system and running Geoweaver requires Java
+    echo Please download and install JDK
+    echo JDK from other sources can work as well
     start https://adoptopenjdk.net/
     exit /b %errorlevel%
 )
@@ -32,7 +33,7 @@ REM Check if port 8070 is open
 netstat -ano | find "8070" >nul
 if not errorlevel 1 (
     REM If port 8070 is open, wait for 5 seconds and then open the application in the web browser
-    timeout /t 10 >nul
+    timeout /t 5 >nul
     start http://localhost:8070/Geoweaver
     exit /b 0
 )
