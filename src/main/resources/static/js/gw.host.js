@@ -1483,7 +1483,7 @@ GW.host = {
 				
 				if(typeof val =='object')
 				{
-				  val = JSON.stringify(val);
+					val = JSON.stringify(val);
 				}
 				
 				if(i=="id"){
@@ -1521,21 +1521,21 @@ GW.host = {
 
 				}
 
-
+				content += `<div class="row m-0">`;
 
 				if(i=="id" || i=="ip" || i=="type" || i=="url"){
 				
 					if(i=="ip"){
 						
-						content += "<div style=\"margin-top: 10px;\" class=\"col col-md-3 control-label\">"+"IP Address"+"</div>";  
+						content += "<div class=\"col col-md-3 control-label\">"+"IP Address"+"</div>";  
 					
 					}else if (i=="id") {
 
-						content += "<div class=\"form-group\"><label class=\"col col-md-3 control-label\">"+i.toUpperCase()+"</label>";
+						content += "<div class=\"col col-md-3 control-label\">"+i.toUpperCase()+"</div>";
 					
 					}else if (i=="url") {
 
-						content += "<div style=\"margin-top: 10px;\" class=\"col col-md-3 control-label\">"+"URL"+"</div>"; 
+						content += "<div class=\"col col-md-3 control-label\">"+"URL"+"</div>"; 
 
 					}else {
 
@@ -1545,7 +1545,7 @@ GW.host = {
 				
 				}else {
 
-					content += "<div style=\"margin-top: 10px;\" class=\"col col-md-3 control-label\">"+i.charAt(0).toUpperCase()+ i.slice(1)+"</div>";
+					content += "<div class=\"col col-md-3 control-label\">"+i.charAt(0).toUpperCase()+ i.slice(1)+"</div>";
 				}
 				
 				
@@ -1588,15 +1588,17 @@ GW.host = {
 
 					}
 					
-					
 				}
 
-					
+				content += `</div>`;
+				
 			}
 
 		});
 
-		content += "<div style=\"margin-top: 5px; \" class=\"col col-md-3 control-label\">Confidential</div>"+
+		content += `<div class="row m-0">`;
+
+		content += "<div class=\"col col-md-3 control-label\">Confidential</div>"+
 						"<div class=\"col col-md-7\">";
 				
 		if(confidential=="FALSE"){
@@ -1618,13 +1620,15 @@ GW.host = {
 				'       <label id="private_radio" for="confidential">Private</label>';
 
 		}
+
+		content += `</div></div>`;
 		
 		content += "</form>"
 
 		var delbtn = "";
 		
 //          if(hostip!="127.0.0.1")
-		if(msg.name!="localhost")
+		if(msg.id!="100001")
 			delbtn = "<i class=\"fa fa-minus subalignicon\" style=\"color:red;\" data-toggle=\"tooltip\" title=\"Delete this host\" onclick=\"GW.menu.del('" +hostid+"','host')\"></i>";
 		
 		content += "</div>"+
