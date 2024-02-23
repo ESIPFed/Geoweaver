@@ -21,7 +21,7 @@
 
 	<properties>
 		
-		<org.springframework-version>5.3.27</org.springframework-version>
+		<org.springframework-version>5.3.32</org.springframework-version>
 
 		<picocli-version>4.6.3</picocli-version>
 		
