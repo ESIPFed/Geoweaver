@@ -164,7 +164,7 @@ GW.chart = {
 			
 		},
 		
-		renderUtil: function(type, msg){
+		renderUtil: function(type, msg, process_history_container_id){
 			
 			this.utils.srand(Date.now());
 			
@@ -342,6 +342,12 @@ GW.chart = {
 			$('#'+ type + '-history-chart').html("")
 			
 			var ctx = document.getElementById( type + '-history-chart').getContext('2d');
+
+			// if the type is process then getting the right history chart from the right parent container
+			if(type == "process" && process_history_container_id !== null){
+				let chart_parent_container = document.querySelector(process_history_container_id);
+				ctx = chart_parent_container.querySelector('#' + type + '-history-chart').getContext('2d');
+			}
 			var config = {
 				type: 'line',
 				data: {
@@ -412,11 +418,11 @@ GW.chart = {
 		},
 
 		
-		renderProcessHistoryChart: function(msg){
+		renderProcessHistoryChart: function(msg, process_history_container_id){
 			msg = msg.sort(function(x, y) {
 				return x['history_begin_time'] - y['history_begin_time'];
 			})
-			this.renderUtil("process", msg);
+			this.renderUtil("process", msg, process_history_container_id);
 			
 		},
 		
