@@ -206,23 +206,35 @@ GW.history = {
     getProcessHistoryTable: function(msg){
 
         let content = `
-        <div id="recentDaysFilterContainer">
-            <label for="recentDaysFilter">Recent Days:</label>
-            <select id="recentDaysFilter" style="color: black;">
-                <option value="all" selected>All Data</option>
-                <option value="1">Last 1 Day</option>
-                <option value="5">Last 3 Days</option>
-                <option value="7">Last 7 Days</option>
-            </select>
-        </div>
-        
-        <div id="durationFilterContainer">
-            <label for="durationFilterType">Duration:</label>
-            <select id="durationFilterType" style="color: black;">
-                <option value="greater">Greater Than</option>
-                <option value="less">Less Than</option>
-            </select>
-            <input type="number" id="durationFilterValue" placeholder="Minutes" style="color: black;" />
+        <div class="history-filters" style="display: flex; margin: 10px; justify-content: space-between;">
+            <div id="recentDaysFilterContainer">
+                <label for="recentDaysFilter">Recent Days:</label>
+                <select id="recentDaysFilter" style="color: black;">
+                    <option value="all" selected>All Data</option>
+                    <option value="1">Last 1 Day</option>
+                    <option value="5">Last 3 Days</option>
+                    <option value="7">Last 7 Days</option>
+                </select>
+            </div>
+            
+            <div id="durationFilterContainer">
+                <label for="durationCondition">Duration:</label>
+                <select id="durationCondition" style="color: black; max-width: 115px;">
+                    <option value="greater">Greater Than</option>
+                    <option value="less">Less Than</option>
+                </select>
+                <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
+            </div>
+            
+            <div id="statusFilterContainer">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" style="color: black;">
+                        <option value="">All</option> <!-- Changed to "All" -->
+                        <option value="Done">Done</option>
+                        <option value="Stopped">Stopped</option>
+                        <option value="Failed">Failed</option>
+                </select>
+            </div> 
         </div>
         
         <table class=\"table table-color\" id=\"process_history_table\"> 
@@ -422,37 +434,54 @@ GW.history = {
 
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
-                // Existing date filter logic...
+                // Duration filtering logic
+                var condition = $('#durationCondition').val();
+                var value = parseInt($('#durationValue').val(), 10);
+                var durationData = parseFloat(data[2]); // Assuming duration is in the third column (index 2), adjust if necessary
 
-                // Duration filter logic
-                var type = $('#durationFilterType').val();
-                var value = parseInt($('#durationFilterValue').val(), 10);
                 if (isNaN(value)) {
-                    return true; // If no value is entered, do not filter on duration.
+                    return true; // No filtering if no value is entered
                 }
 
-                // Assuming your Duration is in the third column (index 2) and already in minutes
-                var duration = parseFloat(data[2]); // Parse the duration of the row into minutes
-                if (type === 'greater' && duration <= value) {
-                    return false; // If the duration is not greater than the filter value, exclude this row
-                } else if (type === 'less' && duration >= value) {
-                    return false; // If the duration is not less than the filter value, exclude this row
+                if (condition === "greater") {
+                    return durationData > value;
+                } else if (condition === "less") {
+                    return durationData < value;
                 }
 
-                return true; // The row passes the filter
+                return true; // Default to showing all rows if condition is not met
             }
         );
+
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var selectedStatus = $('#statusFilter').val().toLowerCase(); // Get the selected status and convert to lowercase for comparison
+
+                // Assuming the status is in the correct column (for example, index 4)
+                var rowStatus = data[4].toLowerCase(); // Convert row status to lowercase for case-insensitive comparison
+
+                if (selectedStatus === "" || rowStatus === selectedStatus) {
+                    return true; // Show all rows if "All" is selected or if the row's status matches the selected status
+                }
+
+                return false; // Exclude this row from the results if it doesn't match the selected status
+            }
+        );
+
 
         $('#recentDaysFilter').on('change', function () {
             var selectedValue = $(this).val();
             table.draw(); // Redraw the table to apply the filter
         });
 
-        $('#durationFilterType, #durationFilterValue').on('change', function () {
-            table.draw(); // Redraw the table to apply the new filter
+        $('#durationCondition, #durationValue').on('change', function () {
+            table.draw();
         });
 
-
+        $('#statusFilter').on('change', function () {
+            table.draw(); // Redraw the table to apply the new filter
+        });
 
         table.MakeCellsEditable({
             "onUpdate": GW.history.processHistoryTableCellUpdateCallBack,
