@@ -173,12 +173,12 @@ GW.workflow = {
 		
 		workFlowID+`', '` + workFlowName+`')">History</button>
 		 </div>
-		<div id="main-workflow-info-code" class="tabcontent-workflow generalshadow" style="height:calc(100% - 205px); overflow-y: scroll; left:0; margin:0; padding: 5px; ">
+		<div id="main-workflow-info-code" class="tabcontent-workflow generalshadow" style="height:calc(100% - 185px); overflow-y: scroll; left:0; margin:0; padding: 5px; ">
 			<div class="row" style="height:100%;margin:0;">`+
 			info_body+
 		`	</div>
 		</div>
-		<div id="main-workflow-info-history" class="tabcontent-workflow generalshadow" style="height:calc(100% - 205px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;">
+		<div id="main-workflow-info-history" class="tabcontent-workflow generalshadow" style="height:calc(100% - 185px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;">
 		   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >
 		
 	       </div>
@@ -728,7 +728,7 @@ GW.workflow = {
 		$("#current_workflow_na").html(name);
 
 	},
-	
+
 	/**
 	 * Start to collect information to run the workflow
 	 */
@@ -1106,8 +1106,25 @@ GW.workflow = {
 		});
 		
 	},
-	
-	
+
+
+	restoreCheckpoint: function(workflowId, executionId) {
+		if (confirm("CAUTION: Restore will remove changes that are not stored in history. Proceed?")) {
+			$.ajax({
+				url: `/Geoweaver/checkpoint/restoreWorkflow`,
+				method: "POST",
+				data: JSON.stringify({"workflowId": workflowId, "executionId": executionId }),
+				headers: {'Content-Type': 'application/json'}
+			}).done((resp) => {
+				window.alert('Successfully restored to this checkpoint.');
+				GW.workflow.showWorkflow(workflowId);
+				// GW.workspace.init();
+			}).fail(err => {
+				window.alert(`Failed to restore. checkpoint not found`);
+			})
+		}
+	},
+
 
 	stop: function(workflow_history_id){
 

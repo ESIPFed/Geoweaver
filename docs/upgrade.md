@@ -3,6 +3,18 @@
 
 ### Simple Upgrade
 
+#### Python Way
+
+If you installed Geoweaver via the Python way, you can upgrade Geoweaver by simply running:
+
+```shell
+gw start --force
+```
+
+The option `--force` will ensure the newest Geoweaver jar is downloaded before starting.
+
+#### Java Way
+
 Upgrading Geoweaver to the latest version is a straightforward process. Follow these steps to perform a simple upgrade:
 
 - Download the new version of Geoweaver's JAR file:

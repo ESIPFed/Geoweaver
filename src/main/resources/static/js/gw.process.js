@@ -911,6 +911,8 @@ GW.process = {
 //					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
 				
 				$("#status_" + history_id).html("<span class=\"label label-default\">Stopped</span>");
+
+				GW.history.stopOneTimer(history_id)
 				
 			}else{
 
@@ -1418,7 +1420,7 @@ GW.process = {
 				<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
 				<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
 			</div>
-			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 180px);left:0; margin:0; padding: 0; ">
+			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 						<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
 							<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
 								<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
@@ -1436,7 +1438,7 @@ GW.process = {
 						</div>
 			</div>`;
 
-		content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 180px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
+		content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
 				<div class="row" id="process-history-container" style="padding:0; color:white; margin:0; background-color:rgb(28, 28, 28);" ></div>
 				<div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: -100px; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
                 	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
@@ -1498,7 +1500,9 @@ GW.process = {
 	
 	openCity: function(evt, name){
 
-		GW.process.switchTab(evt.currentTarget, name);
+		GW.process.switchTab(evt.currentTarget, name)
+
+		GW.history.stopAllTimers()
 
 	},
 	
@@ -2088,6 +2092,10 @@ GW.process = {
 			alert("Error: unable to log on. Check if your password or the configuration of host is correct.");
 			
 			if($("#inputpswd").length) $("#inputpswd").val("");
+			
+			if ($("#pswd-confirm-btn").prop("disabled")) {
+				$("#pswd-confirm-btn").prop("disabled", false);
+			}
 			
 			console.error("fail to execute the process " + req.processId);
 			

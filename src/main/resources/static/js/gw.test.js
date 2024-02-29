@@ -217,7 +217,7 @@ GW.test = {
                       </div>
                     
                     <div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:25px;">
-                          <div id="main-host-content" style="height:100%; overflow-y: scroll; padding: 10px; ">
+                          <div id="main-host-content" style="height:100%; width: 100%; overflow-y: scroll; padding: 0px; ">
                               <h2 style="color:black">Please select a host on the right panel! </h2>
                           </div>
                     </div>

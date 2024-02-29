@@ -1,11 +1,60 @@
-/**
- *
- * author: Z.S.
- * date: Mar 12 2021
- *
- */
 
 GW.history = {
+
+    history_table_interval_id: null,
+
+    active_process_history_list: [],
+
+    startActiveTimer: function(){
+
+        GW.history.history_table_interval_id = setInterval(function() {
+            
+            if(GW.history.active_process_history_list.length>0){
+
+                GW.history.active_process_history_list.forEach(history_row => {
+
+                    console.log()
+                    $("#timerBadge_"+history_row.history_id).html(
+                        GW.history.calculate_duration(history_row.history_begin_time, 
+                            history_row.history_end_time,
+                            history_row.indicator)
+                    )
+    
+                })
+
+            }else{
+
+                GW.history.stopAllTimers()
+
+            }
+            
+        }, 1000);
+
+    },
+
+    stopAllTimers: function(){
+
+        if(GW.history.history_table_interval_id != null){
+
+            // GW.history.interval_list.forEach(intervalId => clearInterval(intervalId));
+
+            // GW.history.interval_list = []
+
+            clearInterval(GW.history.history_table_interval_id)
+
+            GW.history.history_table_interval_id = null
+
+            GW.history.active_process_history_list = []
+            
+        }
+
+    },
+
+    stopOneTimer: function(history_id){
+
+        GW.history.active_process_history_list = GW.history.active_process_history_list.filter(item => item.history_id !== history_id);
+
+    },
 
     deleteAllJupyter: function(hostid, callback){
 
@@ -100,6 +149,54 @@ GW.history = {
 
     },
 
+    calculate_duration: function(start_time, end_time, process_indicator){
+
+        var startTime = new Date(start_time).getTime();
+        var endTime = new Date(end_time).getTime();
+        var currentTime = new Date().getTime();
+
+        if(process_indicator != "Running"){
+            currentTime = endTime;
+        }
+
+        var elapsedTime = Math.floor((currentTime - startTime) / 1000);
+
+        var days = Math.floor(elapsedTime / (24 * 3600));
+        var hours = Math.floor((elapsedTime % (24 * 3600)) / 3600);
+        var minutes = Math.floor((elapsedTime % 3600) / 60);
+        var seconds = elapsedTime % 60;
+
+        // Format the time based on non-zero values
+        var formattedTime = '';
+
+        if (days > 0) {
+            formattedTime += days + 'd';
+        }
+
+        if (hours > 0) {
+            formattedTime += hours + 'h';
+        }
+
+        if (minutes > 0) {
+            formattedTime += minutes + 'm';
+        }
+
+        if (seconds > 0) {
+            formattedTime += seconds + 's';
+        }else if(formattedTime == ""){
+            formattedTime += '0s';
+        }
+
+        return formattedTime
+
+    },
+
+    padZero: function (number) {
+        return number < 10 ? '0' + number : number;
+    },
+
+    
+
     /**
      * Generates an HTML table with process execution history data.
      *
@@ -108,18 +205,18 @@ GW.history = {
      */
     getProcessHistoryTable: function(msg){
 
-        var content = "<table class=\"table table-color\" id=\"process_history_table\"> "+
-        "  <thead> "+
-        "    <tr> "+
-        "      <th scope=\"col\">Execution Id</th> "+
-        "      <th scope=\"col\">Begin Time</th> "+
-        "      <th scope=\"col\">End Time</th> "+
-        "      <th scope=\"col\">Notes (Click to Edit)</th> "+
-        "      <th scope=\"col\">Status</th> "+
-        "      <th scope=\"col\">Action</th> "+
-        "    </tr> "+
-        "  </thead> "+
-        "  <tbody> ";
+        var content = `<table class=\"table table-color\" id=\"process_history_table\"> 
+          <thead>
+            <tr>
+              <th scope=\"col\">Execution Id</th>
+              <th scope=\"col\">Begin Time</th>
+              <th scope=\"col\">Duration</th>
+              <th scope=\"col\">Notes (Click to Edit)</th>
+              <th scope=\"col\">Status</th>
+              <th scope=\"col\">Action</th>
+            </tr>
+          </thead>
+          <tbody> `;
 
         for(var i=0;i<msg.length;i++){
 
@@ -127,20 +224,35 @@ GW.history = {
 
             content += "    <tr> "+
                 "      <td>"+msg[i].history_id+"</td> "+
-                "      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> "+
-                "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> "+
-                "	   <td>"+msg[i].history_notes+"</td>"+
+                "      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> ";
+
+            // create duration column and make it changing if the status is active
+            //content += "      <td>"+GW.general.toDateString(msg[i].history_end_time)+"</td> ";
+            content += `<td><span class="badge badge-primary" id="timerBadge_`+msg[i].history_id+`">`+
+                GW.history.calculate_duration(msg[i].history_begin_time, msg[i].history_end_time, msg[i].indicator)+
+                `</span></td>`
+            if(msg[i].indicator == "Running"){
+                GW.history.active_process_history_list.push(msg[i])
+            }
+
+            content += "	   <td>"+msg[i].history_notes+"</td>"+
                 status_col;
 
 
             if(!GW.process.sidepanel.isPresent()){
-                content +=  "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
+                content +=  "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+
+                    msg[i].history_id+"')\">Details</a> &nbsp;";
             }else{
-                content +=  "      <td><a href=\"javascript: GW.process.sidepanel.showHistoryDetails('"+msg[i].history_id+"')\">Details</a> &nbsp;";
+                content +=  "      <td><a href=\"javascript: GW.process.sidepanel.showHistoryDetails('"+
+                    msg[i].history_id+"')\">Details</a> &nbsp;";
             }
 
             // code to display the view changes option if in case 'i' > 0
-            if(i!=msg.length-1) content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+msg[i].history_id+"','"+ msg[i+1].history_id+"')\">View Changes</a> &nbsp;";
+            if(i!=msg.length-1) 
+                content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+
+                    msg[i].history_id+"','"+ 
+                    msg[i+1].history_id+
+                    "')\">View Changes</a> &nbsp;";
 
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";
@@ -259,7 +371,7 @@ GW.history = {
 
     applyBootstrapTable: function(table_id){
 
-        var table = $("#"+table_id).DataTable({
+        var table = $(table_id).DataTable({
             columnDefs : [
                 { type: 'time-date-sort',
                   targets: [1],

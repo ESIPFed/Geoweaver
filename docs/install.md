@@ -11,6 +11,28 @@ Java 1.8+ (OpenJDK 8 or higher)
 
 (Applicable in Linux, Mac, and Windows)
 
+### Python Way
+
+If you have Python installed already, please do:
+
+**Step 1**: Open a Terminal/Prompt and run 
+
+```shell
+pip install pygeoweaver --upgrade
+```
+
+**Step 2**: After pygeoweaver is installed, please run:
+
+```shell
+gw start
+```
+
+**Step 3**: Open browser and enter: http://localhost:8070/Geoweaver/ . That is it. 
+
+### Java Way
+
+If you don't have Python only have JDK installed, please follow:
+
 **Step 1**: Download the latest version of [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar) and save it in any folder
 
 **Step 2**: Navigate to the Jar file folder and Run the command:

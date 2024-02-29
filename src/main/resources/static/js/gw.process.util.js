@@ -368,12 +368,17 @@ GW.process.util = {
 			}
 			
 			msg = GW.general.parseResponse(msg);
+
+			GW.history.stopAllTimers();
 			
 			$(process_history_container_id).html(GW.history.getProcessHistoryTable(msg));
 
-			GW.history.applyBootstrapTable(process_history_table_id);
+			GW.history.startActiveTimer();
+
+			var table_selector = `${process_history_container_id} ${process_history_table_id}`;
+			GW.history.applyBootstrapTable(table_selector);
 			
-			GW.chart.renderProcessHistoryChart(msg);
+			GW.chart.renderProcessHistoryChart(msg, process_history_container_id);
 			
 			$(close_history).click(function(){
 				
