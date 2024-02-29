@@ -211,10 +211,20 @@ GW.history = {
             <select id="recentDaysFilter" style="color: black;">
                 <option value="all" selected>All Data</option>
                 <option value="1">Last 1 Day</option>
-                <option value="3">Last 3 Days</option>
+                <option value="5">Last 3 Days</option>
                 <option value="7">Last 7 Days</option>
             </select>
         </div>
+        
+        <div id="durationFilterContainer">
+            <label for="durationFilterType">Duration:</label>
+            <select id="durationFilterType" style="color: black;">
+                <option value="greater">Greater Than</option>
+                <option value="less">Less Than</option>
+            </select>
+            <input type="number" id="durationFilterValue" placeholder="Minutes" style="color: black;" />
+        </div>
+        
         <table class=\"table table-color\" id=\"process_history_table\"> 
           <thead>
             <tr>
@@ -391,10 +401,7 @@ GW.history = {
             "bDestroy": true,
 
         });
-        $('#recentDaysFilter').on('change', function () {
-            var selectedValue = $(this).val();
-            table.draw(); // Redraw the table to apply the filter
-        });
+
 
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
@@ -412,6 +419,38 @@ GW.history = {
                 return beginTime >= startDate && beginTime <= endDate;
             }
         );
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                // Existing date filter logic...
+
+                // Duration filter logic
+                var type = $('#durationFilterType').val();
+                var value = parseInt($('#durationFilterValue').val(), 10);
+                if (isNaN(value)) {
+                    return true; // If no value is entered, do not filter on duration.
+                }
+
+                // Assuming your Duration is in the third column (index 2) and already in minutes
+                var duration = parseFloat(data[2]); // Parse the duration of the row into minutes
+                if (type === 'greater' && duration <= value) {
+                    return false; // If the duration is not greater than the filter value, exclude this row
+                } else if (type === 'less' && duration >= value) {
+                    return false; // If the duration is not less than the filter value, exclude this row
+                }
+
+                return true; // The row passes the filter
+            }
+        );
+
+        $('#recentDaysFilter').on('change', function () {
+            var selectedValue = $(this).val();
+            table.draw(); // Redraw the table to apply the filter
+        });
+
+        $('#durationFilterType, #durationFilterValue').on('change', function () {
+            table.draw(); // Redraw the table to apply the new filter
+        });
 
 
 
