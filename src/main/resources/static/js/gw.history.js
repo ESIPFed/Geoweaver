@@ -205,7 +205,17 @@ GW.history = {
      */
     getProcessHistoryTable: function(msg){
 
-        var content = `<table class=\"table table-color\" id=\"process_history_table\"> 
+        let content = `
+        <div id="recentDaysFilterContainer">
+            <label for="recentDaysFilter">Recent Days:</label>
+            <select id="recentDaysFilter" style="color: black;">
+                <option value="all" selected>All Data</option>
+                <option value="1">Last 1 Day</option>
+                <option value="3">Last 3 Days</option>
+                <option value="7">Last 7 Days</option>
+            </select>
+        </div>
+        <table class=\"table table-color\" id=\"process_history_table\"> 
           <thead>
             <tr>
               <th scope=\"col\">Execution Id</th>
@@ -379,7 +389,31 @@ GW.history = {
             ],
             order: [[ 1, "desc" ]],
             "bDestroy": true,
+
         });
+        $('#recentDaysFilter').on('change', function () {
+            var selectedValue = $(this).val();
+            table.draw(); // Redraw the table to apply the filter
+        });
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var selectedValue = $('#recentDaysFilter').val();
+                if (selectedValue === 'all') {
+                    return true; // Show all rows when 'All Data' is selected
+                }
+                const days = parseInt(selectedValue, 10);
+                const endDate = new Date();
+                const startDate = new Date();
+                startDate.setDate(endDate.getDate() - days);
+
+                const beginTime = new Date(data[1]); // Assuming your Begin Time is in the second column (index 1)
+
+                return beginTime >= startDate && beginTime <= endDate;
+            }
+        );
+
+
 
         table.MakeCellsEditable({
             "onUpdate": GW.history.processHistoryTableCellUpdateCallBack,
