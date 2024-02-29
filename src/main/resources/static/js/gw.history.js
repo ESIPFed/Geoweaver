@@ -206,17 +206,7 @@ GW.history = {
     getProcessHistoryTable: function(msg){
 
         let content = `
-        <div class="history-filters" style="display: flex; margin: 10px; justify-content: space-between;">
-            <div id="recentDaysFilterContainer">
-                <label for="recentDaysFilter">Recent Days:</label>
-                <select id="recentDaysFilter" style="color: black;">
-                    <option value="all" selected>All Data</option>
-                    <option value="1">Last 1 Day</option>
-                    <option value="5">Last 3 Days</option>
-                    <option value="7">Last 7 Days</option>
-                </select>
-            </div>
-            
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <div id="durationFilterContainer">
                 <label for="durationCondition">Duration:</label>
                 <select id="durationCondition" style="color: black; max-width: 115px;">
@@ -415,22 +405,6 @@ GW.history = {
         });
 
 
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
-                var selectedValue = $('#recentDaysFilter').val();
-                if (selectedValue === 'all') {
-                    return true;
-                }
-                const days = parseInt(selectedValue, 10);
-                const endDate = new Date();
-                const startDate = new Date();
-                startDate.setDate(endDate.getDate() - days);
-
-                const beginTime = new Date(data[1]);
-
-                return beginTime >= startDate && beginTime <= endDate;
-            }
-        );
 
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
@@ -462,11 +436,6 @@ GW.history = {
             }
         );
 
-
-        $('#recentDaysFilter').on('change', function () {
-            const selectedValue = $(this).val();
-            table.draw();
-        });
 
         $('#durationCondition, #durationValue').on('change', function () {
             table.draw();
