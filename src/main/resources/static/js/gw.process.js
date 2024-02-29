@@ -2093,6 +2093,10 @@ GW.process = {
 			
 			if($("#inputpswd").length) $("#inputpswd").val("");
 			
+			if ($("#pswd-confirm-btn").prop("disabled")) {
+				$("#pswd-confirm-btn").prop("disabled", false);
+			}
+			
 			console.error("fail to execute the process " + req.processId);
 			
 		});
