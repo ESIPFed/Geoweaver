@@ -371,7 +371,7 @@ GW.history = {
 
     applyBootstrapTable: function(table_id){
 
-        var table = $("#"+table_id).DataTable({
+        var table = $(table_id).DataTable({
             columnDefs : [
                 { type: 'time-date-sort',
                   targets: [1],
