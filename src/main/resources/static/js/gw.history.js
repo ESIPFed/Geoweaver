@@ -419,14 +419,14 @@ GW.history = {
             function(settings, data, dataIndex) {
                 var selectedValue = $('#recentDaysFilter').val();
                 if (selectedValue === 'all') {
-                    return true; // Show all rows when 'All Data' is selected
+                    return true;
                 }
                 const days = parseInt(selectedValue, 10);
                 const endDate = new Date();
                 const startDate = new Date();
                 startDate.setDate(endDate.getDate() - days);
 
-                const beginTime = new Date(data[1]); // Assuming your Begin Time is in the second column (index 1)
+                const beginTime = new Date(data[1]);
 
                 return beginTime >= startDate && beginTime <= endDate;
             }
@@ -434,13 +434,12 @@ GW.history = {
 
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
-                // Duration filtering logic
-                var condition = $('#durationCondition').val();
-                var value = parseInt($('#durationValue').val(), 10);
-                var durationData = parseFloat(data[2]); // Assuming duration is in the third column (index 2), adjust if necessary
+                const condition = $('#durationCondition').val();
+                const value = parseInt($('#durationValue').val(), 10);
+                const durationData = parseFloat(data[2]);
 
                 if (isNaN(value)) {
-                    return true; // No filtering if no value is entered
+                    return true;
                 }
 
                 if (condition === "greater") {
@@ -449,30 +448,24 @@ GW.history = {
                     return durationData < value;
                 }
 
-                return true; // Default to showing all rows if condition is not met
+                return true;
             }
         );
 
 
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
-                var selectedStatus = $('#statusFilter').val().toLowerCase(); // Get the selected status and convert to lowercase for comparison
+                const selectedStatus = $('#statusFilter').val().toLowerCase();
+                const rowStatus = data[4].toLowerCase();
 
-                // Assuming the status is in the correct column (for example, index 4)
-                var rowStatus = data[4].toLowerCase(); // Convert row status to lowercase for case-insensitive comparison
-
-                if (selectedStatus === "" || rowStatus === selectedStatus) {
-                    return true; // Show all rows if "All" is selected or if the row's status matches the selected status
-                }
-
-                return false; // Exclude this row from the results if it doesn't match the selected status
+                return selectedStatus === "" || rowStatus === selectedStatus;
             }
         );
 
 
         $('#recentDaysFilter').on('change', function () {
-            var selectedValue = $(this).val();
-            table.draw(); // Redraw the table to apply the filter
+            const selectedValue = $(this).val();
+            table.draw();
         });
 
         $('#durationCondition, #durationValue').on('change', function () {
@@ -480,7 +473,7 @@ GW.history = {
         });
 
         $('#statusFilter').on('change', function () {
-            table.draw(); // Redraw the table to apply the new filter
+            table.draw();
         });
 
         table.MakeCellsEditable({
