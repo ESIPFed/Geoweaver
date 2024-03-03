@@ -271,24 +271,49 @@ GW.process.util = {
 		
 	},
 
+	noDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
+		
+		var codeContainer = document.getElementById(history_section_id);
+		var resizerDrag = document.getElementById(resize_line_id);
+		resizerDrag.style.setProperty("height", "0px");
+		resizerDrag.style.setProperty("width", "100%");
+		codeContainer.style.setProperty("display", "block");
+
+		var element = document.getElementById(console_content_id);
+		element.style.setProperty("width", "100%");
+		element.style.setProperty("height", "0%");
+		element.style.setProperty("display", "none");
+
+		var element = document.getElementById(code_window_id);
+		element.style.setProperty("width", "100%");
+		element.style.setProperty("height", "100%");
+		element.style.setProperty("display", "block");
+
+		// activating resizer functionality
+		GW.process.util.activateVerticalResizer(resize_line_id);
+	},
+
     bottomDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
 		
 		var codeContainer = document.getElementById(history_section_id);
 		var resizerDrag = document.getElementById(resize_line_id);
 		resizerDrag.style.setProperty("height", "2px");
 		resizerDrag.style.setProperty("width", "100%");
-		codeContainer.style.setProperty("display", "block");
+		codeContainer.style.setProperty("display", "flow");
 
 		var element = document.getElementById(code_window_id);
 		element.style.setProperty("width", "100%");
 		element.style.setProperty("height", "60%");
+		element.style.setProperty("display", "flex");
 
 		var element = document.getElementById(console_content_id);
 		element.style.setProperty("width", "100%");
 		element.style.setProperty("height", "40%");
+		element.style.setProperty("display", "flow");
 
 		// activating resizer functionality
 		GW.process.util.activateVerticalResizer(resize_line_id);
+		$("#"+resize_line_id).css("display", "flow")
 	},
 
 	leftDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
@@ -297,6 +322,7 @@ GW.process.util = {
 
 		var codeContainer = document.getElementById(history_section_id);
 		codeContainer.style.setProperty("display", "flex");
+
 		var resizerDrag = document.getElementById(resize_line_id);
 		resizerDrag.style.setProperty("height", "100%");
 		resizerDrag.style.setProperty("width", "2px");
@@ -308,6 +334,7 @@ GW.process.util = {
 		var element = document.getElementById(console_content_id);
 		element.style.setProperty("width", "60%");
 		element.style.setProperty("height", "100%");
+		element.style.setProperty("display", "flow");
 
 		// activating resizer functionality
 		GW.process.util.activateResizer(resize_line_id);

@@ -1648,18 +1648,29 @@ GW.process = {
 		
 	},
 
-	bottomDock: function(){
-
-		GW.process.util.bottomDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+	noDock: function(){
+		GW.process.util.noDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
 		GW.process.dockmode = "bottom";
+	},
 
+	bottomDock: function(){
+		if(GW.process.dockmode != "bottom"){
+			GW.process.util.bottomDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+			GW.process.dockmode = "bottom";
+		}else{
+			GW.process.util.noDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+			GW.process.dockmode = "no";
+		}
 	},
 
 	leftDock: function(){
-
-		GW.process.util.leftDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
-		GW.process.dockmode = "left";
-
+		if(GW.process.dockmode != "left"){
+			GW.process.util.leftDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+			GW.process.dockmode = "left";
+		}else{
+			GW.process.util.noDock("process-code-history-section", "process_code_window", "single-console-content", "dragMe")
+			GW.process.dockmode = "no";
+		}
 	},
 
 	refreshSearchList: function(){

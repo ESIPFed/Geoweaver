@@ -18,6 +18,7 @@ GW.editor = {
             $('#prompt-panel-main').height('calc(100% - 55px)')
             $('#prompt-panel-main-process-info-code').height('100%')
             $('#prompt-panel-main-process-info-history').height('100%')
+            GW.process.sidepanel.leftDock()
             this.isfullscreen = true;
         }else {
             sidepanel.removeClass('fullscreen');
@@ -31,9 +32,12 @@ GW.editor = {
             $('#prompt-panel-main').height('calc(100% - 105px)')
             $('#prompt-panel-main-process-info-code').height('100%')
             $('#prompt-panel-main-process-info-history').height('100%')
+            GW.process.sidepanel.bottomDock()
             // editor.refresh();
             this.isfullscreen = false;
         }
+
+        GW.process.util.refreshCodeEditor();
 
     },
 

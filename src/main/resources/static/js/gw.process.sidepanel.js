@@ -12,7 +12,7 @@ GW.process.sidepanel = {
     current_process_id: null,
     current_process_name: null,
     current_process_category: null,
-    dockmode: "left", 
+    dockmode: "no", 
 
     editor: null,
 
@@ -478,19 +478,35 @@ GW.process.sidepanel = {
 
     },
 
+    noDock: function(){
+
+        GW.process.util.noDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+            "prompt-panel-single-console-content", "prompt-panel-dragMe")
+        GW.process.sidepanel.dockmode = "no";
+
+    },
+
     leftDock: function(){
 
-        GW.process.util.leftDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+        if(GW.process.sidepanel.dockmode != "left"){
+            GW.process.util.leftDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
             "prompt-panel-single-console-content", "prompt-panel-dragMe")
-        GW.process.sidepanel.dockmode = "left";
+            GW.process.sidepanel.dockmode = "left";
+        }else{
+            GW.process.sidepanel.noDock()
+        }
 
     },
 
     bottomDock: function(){
-
-        GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+        
+        if(GW.process.sidepanel.dockmode != "bottom"){
+            GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
             "prompt-panel-single-console-content", "prompt-panel-dragMe")
-        GW.process.sidepanel.dockmode = "bottom";
+            GW.process.sidepanel.dockmode = "bottom";
+        }else{
+            GW.process.sidepanel.noDock()
+        }
 
     },
 
