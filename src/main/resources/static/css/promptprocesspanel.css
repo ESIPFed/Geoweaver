@@ -75,7 +75,7 @@
     width: 40%;
     height: 100%;
     top: 52px;
-    margin-top:50px;
+    margin-top: 0;
     padding:0;
     transition: transform 0.3s 0.3s;
     border: 1px dashed lightgray;

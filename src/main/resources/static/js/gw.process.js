@@ -1412,13 +1412,23 @@ GW.process = {
 				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
 				<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('`+
 				process_id+`', '` + process_name+`')">History</button>
-				<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
+				<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" >
+					<i class="glyphicon glyphicon-fullscreen"></i>
+				</button>
 				<button class="btn pull-right" onclick="GW.process.runProcess('`+
 				process_id+`', '`+process_name+`', '`+code_type+
-				`');" ><i class="glyphicon glyphicon-play"></i></button>
-				<button class="btn pull-right" onclick="GW.process.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
-				<button class="btn pull-right" onclick="GW.process.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-				<button class="btn pull-right" onclick="GW.process.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button> 
+				`');" >
+					<i class="glyphicon glyphicon-play"></i>
+				</button>
+				<button class="btn pull-right" onclick="GW.process.editSwitch()" >
+					<i class="glyphicon glyphicon-floppy-saved"></i>
+				</button>
+				<button class="btn pull-right" onclick="GW.process.bottomDock()" >
+					<i class="fas fa-window-maximize"></i>
+				</button>
+				<button class="btn pull-right" onclick="GW.process.leftDock()" >
+					<i class="fas fa-window-maximize fa-rotate-270"></i>
+				</button> 
 			</div>
 			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 						<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">

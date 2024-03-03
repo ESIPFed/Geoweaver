@@ -290,23 +290,34 @@ GW.process.sidepanel = {
             <div class="subtab tab titleshadow" style="margin-top: 0; max-width: 100%">
                 <button class="tablinks-process" id="prompt-panel-main-process-info-code-tab" onclick="GW.process.openCity(event, 'prompt-panel-main-process-info-code')">Code</button>
                 <button class="tablinks-process" id="prompt-panel-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-panel-main-process-info-history'); GW.process.sidepanel.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
-
                 <!-- TODO: play button, save button, full screen button-->
-                <!--
-                    <button class="btn pull-right" onclick="GW.process.sidepanel.switchFullScreen()" ><i class="glyphicon glyphicon-fullscreen"></i></button>
-                -->
-
-                
-                <button class="btn pull-right" title="dock log window on bottom" onclick="GW.process.sidepanel.bottomDock()" ><i class="fas fa-window-maximize"></i></button>
-                <button class="btn pull-right" title="dock log window on right" onclick="GW.process.sidepanel.leftDock()" ><i class="fas fa-window-maximize fa-rotate-270"></i></i></button>
-                <button class="btn pull-right" title="edit switch" onclick="GW.process.sidepanel.editSwitch()" ><i class="glyphicon glyphicon-floppy-saved"></i></button>
-                <button class="btn pull-right" title="skip it in workflow" onclick="javascript:void(0)">Skip: <input type="checkbox"
-												 onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'
-												 id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" /></button>
-
-                <button class="btn pull-right" title="switch on/off log" onclick="javascript:void(0)">Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" /></button>
-                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" ><i class="glyphicon glyphicon-play"></i></button>
-                
+                <button class="btn pull-right" onclick="GW.process.sidepanel.close()" >
+					<i class="glyphicon glyphicon-remove"></i>
+				</button>
+                <button class="btn pull-right" onclick="GW.editor.switchSidePanelFullScreen()" >
+					<i class="glyphicon glyphicon-fullscreen"></i>
+				</button>
+                <button class="btn pull-right" 
+                    title="dock log window on bottom" onclick="GW.process.sidepanel.bottomDock()" >
+                    <i class="fas fa-window-maximize"></i>
+                </button>
+                <button class="btn pull-right" title="dock log window on right" onclick="GW.process.sidepanel.leftDock()" >
+                    <i class="fas fa-window-maximize fa-rotate-270"></i>
+                </button>
+                <button class="btn pull-right" title="edit switch" onclick="GW.process.sidepanel.editSwitch()" >
+                    <i class="glyphicon glyphicon-floppy-saved"></i>
+                </button>
+                <button class="btn pull-right" title="skip it in workflow" onclick="javascript:void(0)">
+                    Skip: <input type="checkbox"
+                        onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'  
+                        id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" />
+                </button>
+                <button class="btn pull-right" title="switch on/off log" onclick="javascript:void(0)">
+                    Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" />
+                </button>
+                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" >
+                    <i class="glyphicon glyphicon-play"></i>
+                </button>
             </div>
 
             <div id="prompt-panel-main-process-info-code" class="tabcontent-process generalshadow" style="height:100%;left:0; margin:0; padding: 0; ">
@@ -461,7 +472,9 @@ GW.process.sidepanel = {
 
     switchFullScreen: function(){
 
-        GW.editor.switchFullScreenUtil('#prompt-panel-editor-history-tab-panel', '#prompt-panel-main-process-info-code', '#prompt-panel-main-process-info-history')
+        GW.editor.switchFullScreenUtil('#prompt-panel-editor-history-tab-panel', 
+            '#prompt-panel-main-process-info-code', 
+            '#prompt-panel-main-process-info-history')
 
     },
 

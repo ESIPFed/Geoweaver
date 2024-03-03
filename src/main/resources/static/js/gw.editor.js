@@ -6,9 +6,42 @@ GW.editor = {
 
     isfullscreen: false,
 
+    switchSidePanelFullScreen: function(){
+
+        var sidepanel = $('.cd-panel__container')  //.cd-panel__container
+        if (!sidepanel.hasClass('fullscreen')) {
+            // this.beforeFullscreen = { height: sidepanel.height(), width: sidepanel.width() }
+            sidepanel.addClass('fullscreen');
+            sidepanel.height('100vh');
+            sidepanel.width('100vw');
+            sidepanel.css('top', '0');
+            $('#prompt-panel-main').height('calc(100% - 55px)')
+            $('#prompt-panel-main-process-info-code').height('100%')
+            $('#prompt-panel-main-process-info-history').height('100%')
+            this.isfullscreen = true;
+        }else {
+            sidepanel.removeClass('fullscreen');
+            // sidepanel.height(this.beforeFullscreen.height);
+            // sidepanel.width(this.beforeFullscreen.width);
+            sidepanel.css('top', '52px');
+            // subtabCodeDiv.height('calc(100% - 150px)');
+            // subtabHistoryDiv.height('calc(100% - 150px)');
+            sidepanel.height('100%')
+            sidepanel.width('40%')
+            $('#prompt-panel-main').height('calc(100% - 105px)')
+            $('#prompt-panel-main-process-info-code').height('100%')
+            $('#prompt-panel-main-process-info-history').height('100%')
+            // editor.refresh();
+            this.isfullscreen = false;
+        }
+
+    },
+
     switchFullScreen: function(){
 
-        this.switchFullScreenUtil('#editor-history-tab-panel', '#main-process-info-code', '#main-process-info-history')
+        this.switchFullScreenUtil('#editor-history-tab-panel', 
+            '#main-process-info-code', 
+            '#main-process-info-history')
 
     },
 
@@ -22,7 +55,6 @@ GW.editor = {
             editorDiv.addClass('fullscreen');
             editorDiv.height('100vh');
             editorDiv.width('100vw');
-            // editor.refresh();
             subtabCodeDiv.height('calc(100% - 40px)');
             subtabHistoryDiv.height('calc(100% - 40px)');
             this.isfullscreen = true;
@@ -33,7 +65,6 @@ GW.editor = {
             editorDiv.width(this.beforeFullscreen.width);
             subtabCodeDiv.height('calc(100% - 150px)');
             subtabHistoryDiv.height('calc(100% - 150px)');
-            // editor.refresh();
             this.isfullscreen = false;
         }
 
