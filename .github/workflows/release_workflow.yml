@@ -167,7 +167,7 @@ jobs:
 
     steps:
       - name: Install XML parsing tools
-        run: sudo apt install libxml2-utils
+        run: sudo apt-get update && sudo apt install libxml2-utils
 
       - name: Install jq
         run: sudo apt-get install jq
