@@ -6,6 +6,14 @@ Geoweaver is an in-browser software allowing users to easily compose and execute
 
 It can be run from both local and remote (distributed) machines.
 
+Why choose Geoweaver?
+1) Safely Store all your progress along the way.
+2) Visualise your results using the tools that you already use.
+3) Stay organised through out your research
+4) Supports CRON executions
+5) Seamlessly connect to external servers with SSH
+6) In-Built Web UI with full support for Python
+
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
 # Software Goals
