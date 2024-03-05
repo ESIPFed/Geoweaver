@@ -908,7 +908,7 @@ public class GeoweaverController {
 		} catch (Exception e){
 			e.printStackTrace();
 			// Handle exceptions and create a JSON response with an error message.
-			resp = bt.getErrorReturn(e.getLocalizedMessage());
+			throw new RuntimeException(e.getLocalizedMessage());
 		}
 		return resp;
 	}
