@@ -10,9 +10,9 @@ Why choose Geoweaver?
 1) Safely Store all your progress along the way.
 2) Visualise your results using the tools that you already use.
 3) Stay organised through out your research
-4) Supports CRON executions
-5) Seamlessly connect to external servers with SSH
-6) In-Built Web UI with full support for Python
+4) Supports scheduling jobs / executions to run at specific times, dates and intervals using CRON for automation tasks.
+5) Seamlessly connect to external servers with SSH.
+6) In-Built Web UI with full support for Python.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
