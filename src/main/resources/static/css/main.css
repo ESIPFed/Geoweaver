@@ -170,6 +170,11 @@ form .progress {
 
 }
 
+#process-chart-container{
+    position: relative;
+    width: 100%;
+}
+
 .subtab {
   overflow: hidden;
   border: 1px solid #ccc;
