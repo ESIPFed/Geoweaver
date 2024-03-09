@@ -118,6 +118,18 @@ GW.process.sidepanel = {
 			GW.process.sidepanel.display(msg);
 			
 			GW.process.sidepanel.displayOutput(msg);
+
+            if(GW.editor.isfullscreen){
+
+                GW.process.sidepanel.dockmode = "left";
+                GW.process.sidepanel.renderDock();
+
+            }else{
+
+                GW.process.sidepanel.dockmode = "bottom";
+                GW.process.sidepanel.renderDock();
+
+            }
 			
 		}).fail(function(jxr, status){
 			
@@ -365,8 +377,6 @@ GW.process.sidepanel = {
 
         // activate buttons
 
-        GW.process.sidepanel.bottomDock()  // default bottomdock to save space
-
         $("#prompt_panel_log_switch").change(function(){
 			if(GW.process.sidepanel.dockmode == "left"){
 				if(!this.checked){
@@ -478,11 +488,25 @@ GW.process.sidepanel = {
 
     },
 
+    renderDock: function(){
+
+        if(GW.process.sidepanel.dockmode == "no"){
+            GW.process.util.noDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+            "prompt-panel-single-console-content", "prompt-panel-dragMe")
+        }else if(GW.process.sidepanel.dockmode == "left"){
+            GW.process.util.leftDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+            "prompt-panel-single-console-content", "prompt-panel-dragMe")
+        }else if(GW.process.sidepanel.dockmode == "bottom"){
+            GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
+            "prompt-panel-single-console-content", "prompt-panel-dragMe")
+        }
+
+    },
+
     noDock: function(){
 
-        GW.process.util.noDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
         GW.process.sidepanel.dockmode = "no";
+        GW.process.sidepanel.renderDock()
 
     },
 
@@ -499,7 +523,7 @@ GW.process.sidepanel = {
     },
 
     bottomDock: function(){
-        
+
         if(GW.process.sidepanel.dockmode != "bottom"){
             GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
             "prompt-panel-single-console-content", "prompt-panel-dragMe")
