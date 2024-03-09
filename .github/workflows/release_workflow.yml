@@ -190,7 +190,7 @@ jobs:
 
       - name: Get ID and upload URL of the latest release
         run: |
-          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.PAT }}" "https://api.github.com/repos/${{ github.repository }}/releases/latest")
           UPLOAD_URL=$(echo "$RESPONSE" | jq -r .upload_url)
           RELEASE_ID=$(echo "$RESPONSE" | jq -r .id)
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
