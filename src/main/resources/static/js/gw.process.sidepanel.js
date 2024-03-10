@@ -12,12 +12,42 @@ GW.process.sidepanel = {
     current_process_id: null,
     current_process_name: null,
     current_process_category: null,
-    dockmode: "no", 
+    dockmode: "no",
+    startWidth: "40%", // default width of the side panel
+    startX: null,
 
     editor: null,
+    startPercentage: null,
 
     init: function(){
         
+    },
+
+    startResizing(event) {
+        this.startX = event.clientX;
+        const container = document.querySelector('.cd-panel__container');
+        this.startWidth = parseFloat(window.getComputedStyle(container).width) / container.offsetWidth * 100;
+        document.documentElement.addEventListener('mousemove', this.doDrag.bind(this), false);
+        document.documentElement.addEventListener('mouseup', this.stopDragging.bind(this), false);
+    },
+
+    doDrag(event) {
+        const container = document.querySelector('.cd-panel__container');
+        if (!container) return;
+
+        const dx = event.clientX - this.startX;
+        const startWidthPixels = this.startWidth * container.offsetWidth / 100;
+        let newWidthPixels = startWidthPixels + dx;
+        let newWidthPercent = (newWidthPixels / container.offsetWidth) * 100;
+
+        newWidthPercent = Math.max(newWidthPercent, 10);
+        newWidthPercent = Math.min(newWidthPercent, 90);
+        container.style.width = newWidthPercent + '%';
+    },
+
+    stopDragging(event) {
+        document.documentElement.removeEventListener('mousemove', this.doDrag, false);
+        document.documentElement.removeEventListener('mouseup', this.stopDragging, false);
     },
 
     open_panel: function(workflow_history_id, workflow_process_id, process_name){

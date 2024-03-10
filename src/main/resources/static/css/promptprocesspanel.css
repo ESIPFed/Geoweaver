@@ -69,7 +69,9 @@
 }
 
 .cd-panel__container {
-    /*...*/
+    display: flex;
+    flex-flow: row nowrap;
+    cursor: ew-resize;
     position: absolute;
     background-color: white;
     width: 40%;
