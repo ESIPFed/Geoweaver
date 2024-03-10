@@ -42,8 +42,11 @@ GW.process.sidepanel = {
 
             GW.process.sidepanel.display(msg);
 
-            GW.process.sidepanel.showProcessLog(GW.process.sidepanel.current_workflow_history_id, 
-                GW.process.sidepanel.current_workflow_process_id, GW.process.sidepanel.current_process_name);
+            GW.process.sidepanel.showProcessLog(
+                GW.process.sidepanel.current_workflow_history_id, 
+                GW.process.sidepanel.current_workflow_process_id, 
+                GW.process.sidepanel.current_process_name
+            );
 
         })
 
