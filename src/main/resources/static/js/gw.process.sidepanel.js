@@ -45,7 +45,8 @@ GW.process.sidepanel = {
             GW.process.sidepanel.showProcessLog(GW.process.sidepanel.current_workflow_history_id, 
                 GW.process.sidepanel.current_workflow_process_id, GW.process.sidepanel.current_process_name);
 
-            GW.process.sidepanel.bottomDock();
+            GW.process.sidepanel.dockmode == "bottom";
+            GW.process.sidepanel.renderDock();
         })
 
 
