@@ -18,36 +18,46 @@ GW.process.sidepanel = {
 
     editor: null,
     startPercentage: null,
+    isDragging: false,
 
     init: function(){
         
     },
 
+    doDrag(event) {
+        if (!this.isDragging) return;
+        const container = document.querySelector('.cd-panel__container');
+        if (!container) return;
+        const dx = event.clientX - this.startX;
+        let newWidth = this.startWidth - dx;
+        let newWidthPercent = (newWidth / window.innerWidth) * 100;
+        newWidthPercent = Math.max(newWidthPercent, 10);
+        newWidthPercent = Math.min(newWidthPercent, 90);
+        container.style.width = `${newWidthPercent}%`;
+    },
+
+
     startResizing(event) {
+        this.isDragging = true;
         this.startX = event.clientX;
         const container = document.querySelector('.cd-panel__container');
-        this.startWidth = parseFloat(window.getComputedStyle(container).width) / container.offsetWidth * 100;
+        this.startWidth = container.offsetWidth;
+
         document.documentElement.addEventListener('mousemove', this.doDrag.bind(this), false);
         document.documentElement.addEventListener('mouseup', this.stopDragging.bind(this), false);
     },
 
-    doDrag(event) {
-        const container = document.querySelector('.cd-panel__container');
-        if (!container) return;
-
-        const dx = event.clientX - this.startX;
-        const startWidthPixels = this.startWidth * container.offsetWidth / 100;
-        let newWidthPixels = startWidthPixels + dx;
-        let newWidthPercent = (newWidthPixels / container.offsetWidth) * 100;
-
-        newWidthPercent = Math.max(newWidthPercent, 10);
-        newWidthPercent = Math.min(newWidthPercent, 90);
-        container.style.width = newWidthPercent + '%';
-    },
-
     stopDragging(event) {
-        document.documentElement.removeEventListener('mousemove', this.doDrag, false);
-        document.documentElement.removeEventListener('mouseup', this.stopDragging, false);
+        this.isDragging = false;
+
+        const doDragBound = this.doDrag.bind(this);
+        const stopDraggingBound = this.stopDragging.bind(this);
+
+        document.documentElement.removeEventListener('mousemove', doDragBound, false);
+        document.documentElement.removeEventListener('mouseup', stopDraggingBound, false);
+
+        this.doDrag = doDragBound;
+        this.stopDragging = stopDraggingBound;
     },
 
     open_panel: function(workflow_history_id, workflow_process_id, process_name){
