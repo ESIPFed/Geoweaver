@@ -48,6 +48,8 @@ GW.process.sidepanel = {
                 GW.process.sidepanel.current_process_name
             );
 
+            GW.process.sidepanel.dockmode == "bottom";
+            GW.process.sidepanel.renderDock();
         })
 
 
