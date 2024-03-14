@@ -205,7 +205,29 @@ GW.history = {
      */
     getProcessHistoryTable: function(msg){
 
-        var content = `<table class=\"table table-color\" id=\"process_history_table\"> 
+        let content = `
+        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div id="durationFilterContainer">
+                <label for="durationCondition">Duration:</label>
+                <select id="durationCondition" style="color: black; max-width: 115px;">
+                    <option value="greater">Greater Than</option>
+                    <option value="less">Less Than</option>
+                </select>
+                <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
+            </div>
+            
+            <div id="statusFilterContainer">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" style="color: black;">
+                        <option value="">All</option> <!-- Changed to "All" -->
+                        <option value="Done">Done</option>
+                        <option value="Stopped">Stopped</option>
+                        <option value="Failed">Failed</option>
+                </select>
+            </div> 
+        </div>
+        
+        <table class=\"table table-color\" id=\"process_history_table\"> 
           <thead>
             <tr>
               <th scope=\"col\">Execution Id</th>
@@ -269,8 +291,8 @@ GW.history = {
 
         content =
         // "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
-        "<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
-        "<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
+        "<div id=\"process-chart-container\">"+
+        "<canvas id=\"process-history-chart\"></canvas>"+
         "</div>" + content ;
 
         return content;
@@ -379,6 +401,48 @@ GW.history = {
             ],
             order: [[ 1, "desc" ]],
             "bDestroy": true,
+
+        });
+
+
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                const condition = $('#durationCondition').val();
+                const value = parseInt($('#durationValue').val(), 10);
+                const durationData = parseFloat(data[2]);
+
+                if (isNaN(value)) {
+                    return true;
+                }
+
+                if (condition === "greater") {
+                    return durationData > value;
+                } else if (condition === "less") {
+                    return durationData < value;
+                }
+
+                return true;
+            }
+        );
+
+
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                const selectedStatus = $('#statusFilter').val().toLowerCase();
+                const rowStatus = data[4].toLowerCase();
+
+                return selectedStatus === "" || rowStatus === selectedStatus;
+            }
+        );
+
+
+        $('#durationCondition, #durationValue').on('change', function () {
+            table.draw();
+        });
+
+        $('#statusFilter').on('change', function () {
+            table.draw();
         });
 
         table.MakeCellsEditable({

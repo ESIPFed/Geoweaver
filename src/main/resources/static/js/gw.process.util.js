@@ -287,10 +287,12 @@ GW.process.util = {
 		var element = document.getElementById(code_window_id);
 		element.style.setProperty("width", "100%");
 		element.style.setProperty("height", "100%");
-		element.style.setProperty("display", "block");
+		element.style.setProperty("display", "flex");
 
 		// activating resizer functionality
 		GW.process.util.activateVerticalResizer(resize_line_id);
+
+		GW.process.util.refreshCodeEditor()
 	},
 
     bottomDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){
@@ -314,6 +316,7 @@ GW.process.util = {
 		// activating resizer functionality
 		GW.process.util.activateVerticalResizer(resize_line_id);
 		$("#"+resize_line_id).css("display", "flow")
+
 	},
 
 	leftDock: function(history_section_id, code_window_id, console_content_id, resize_line_id){

@@ -879,7 +879,7 @@ GW.process = {
 	 */
 	history: function(pid, pname, ){
 		
-		GW.process.util.history(pid, "#process-history-container", 'process_history_table', 
+		GW.process.util.history(pid, "#process-history-container", '#process_history_table', 
 			"#closeHistory", "main-process-info-history-tab", "main-process-info-history")
 		
 	},
@@ -2371,26 +2371,22 @@ GW.process = {
 		var h = GW.process.findCache(pid);
 		
 		if(h==null){
-			
-			var content = '<div class="modal-body" style="font-size: 12px;">'+
-			   '<form>'+
-			   '   <div class="form-group row required">'+
-			   '     <label for="hostselector" class="col-sm-4 col-form-label control-label">Run Process '+pname+' on: </label>'+
-			   '     <div class="col-sm-8">'+
-			   '		<select class="form-control" id="hostselector" >'+
-			   '  		</select>'+
-			   '     <div class="col-sm-12 form-check">'+
-			   '		<input type="checkbox" class="form-check-input" id="remember"  />'+
-			   '		<label class="form-check-label" for="remember">Remember this process-host connection</label>'+
-			   '     </div>'+
-			   '     </div>'+
-			   '   </div>'+
-			   '</form></div>';
-			
-			content += '<div class="modal-footer">' +
-			"	<button type=\"button\" id=\"host-execute-btn\" class=\"btn btn-outline-primary\">Execute</button> "+
-			"	<button type=\"button\" id=\"host-cancel-btn\" class=\"btn btn-outline-secondary\">Cancel</button>"+
-			'</div>';
+
+			var content = '<div class="modal-body" style="font-size: 12px; display: flex; flex-direction: column;">' +
+              '<div style="margin-bottom: 10px;">Run Process ' + pname + ' on:</div>' +
+              '<div style="display: flex; flex-direction: column;">' +
+              '   <select class="form-control" id="hostselector"></select>' +
+              '   <div style="margin-top: 10px;">' +
+              '       <input type="checkbox" class="form-check-input" id="remember" />' +
+              '       <label for="remember">Remember this process-host connection</label>' +
+              '   </div>' +
+              '</div>' +
+              '</div>' +
+              '<div class="modal-footer">' +
+              '   <button type="button" id="host-execute-btn" class="btn btn-outline-primary">Execute</button>' +
+              '   <button type="button" id="host-cancel-btn" class="btn btn-outline-secondary">Cancel</button>' +
+              '</div>';
+
 			
 			if(GW.process.host_frame!=null){
 				

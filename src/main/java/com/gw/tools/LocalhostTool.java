@@ -89,8 +89,21 @@ public class LocalhostTool {
 
 	public String readPythonEnvironment(String hostid, String password){
 
-		LocalSession session = this.getLocalSession();
+		LocalSession session = null;
 
+		try {
+			authenticate(password);
+
+    		session = this.getLocalSession();
+
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+
+			throw new RuntimeException(e.getLocalizedMessage());
+			
+		}
+	
 		return session.readPythonEnvironment(hostid, password);
 
 	}
