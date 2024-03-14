@@ -1284,6 +1284,12 @@ GW.workspace = {
 										<td><b>Code</b></td>
 										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
 									</tr>
+									<tr>
+										<td><b>Output</b></td>
+										<td>`+msg.output+`</td>
+									</tr>
+						           
+									  
 								</table>
 							`).style("left", (pageX) + "px")
 							.style("top", (pageY) + "px");
