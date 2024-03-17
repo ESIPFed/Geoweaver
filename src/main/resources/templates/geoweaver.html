@@ -168,12 +168,12 @@
 	
 		<div id="jsframe-container"></div>
 	
-		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
+		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh); display: flex;">
 			
 			<!-- Top menu bar -->
 
 			<!-- set site margin here -->
-			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
+			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px; width:100%; flex-shrink: 0; flex-basis: auto;">
 				
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); margin: 0;padding: 0; overflow-y: hidden;">
 
@@ -437,7 +437,7 @@
 											<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
 		
 											<ul class="lead" >
-												<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#processes">Processes</a> |  <a href="#workflow">Workflow </a>
+												<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#geoweaver_processes">Processes</a> |  <a href="#workflow">Workflow </a>
 											</ul>
 		
 											<hr/>
@@ -451,7 +451,7 @@
 											
 											<h4>1. Create and run a Process</h4>
 											<ul>
-												<li>Click <button type="button" class="btn btn-success btn-xs" id="newprocess">New Process</button> after 'Process' on the left menu.</li>
+												<li>Click <button type="button" class="btn btn-success btn-xs">New Process</button> after 'Process' on the left menu.</li>
 												<li>Select "Python" from the Language dropdown. </li>
 												<li>Input "helloworld" for the name. </li>
 												<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
@@ -501,7 +501,7 @@
 											
 											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
 		
-											<a id="processes"></a>
+											<a id="geoweaver_processes"></a>
 											<h2>Processes</h2>
 											
 											<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
