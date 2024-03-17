@@ -330,7 +330,7 @@ public class WorkflowTool {
 	 * token is the session id with the client browser. In Geoweaver CLI mode, it will be ignored.
 	 * @return
 	 */
-	public String execute(String history_id, String wid, String mode, 
+	public String execute(String history_id, String wid, String mode,
 						  String[] hosts, String[] pswds, String[] envs, String token) {
 		
 		//use multiple threads to execute the processes
@@ -338,7 +338,7 @@ public class WorkflowTool {
 		String resp = null;
 		
 		try {
-			
+
 			task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
 			
 			task.execute();
