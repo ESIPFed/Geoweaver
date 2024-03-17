@@ -139,7 +139,11 @@ GW.history = {
 
             status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-default\">Stopped</span></td> ";
 
-        }else{
+        }
+        else if(status == "Skipped"){
+            status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-info\">Skipped</span></td> ";
+        }
+        else{
 
             status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
 
@@ -223,8 +227,10 @@ GW.history = {
                         <option value="Done">Done</option>
                         <option value="Stopped">Stopped</option>
                         <option value="Failed">Failed</option>
+                        <option value="Skipped">Skipped</option>
                 </select>
             </div> 
+            
         </div>
         
         <table class=\"table table-color\" id=\"process_history_table\"> 
@@ -298,6 +304,7 @@ GW.history = {
         return content;
 
     },
+  
 
     /**
      * Returns an HTML status column for a workflow history entry based on its indicator.
@@ -306,6 +313,8 @@ GW.history = {
      * @param {string} indicator - The indicator value indicating the status.
      * @returns {string} - HTML content for the status column.
      */
+
+
 	getWorkflowStatusCol: function(history_id, indicator){
 
 		var status_col = "      <td id=\"status_"+history_id+"\">";
@@ -326,7 +335,11 @@ GW.history = {
 
 			status_col += "       <span class=\"label label-default\">Stopped</span>  ";
 
-		}else{
+		}
+        else if(indicator == "Skipped"){
+            status_col += "       <span class=\"label label-info\">Skipped</span>  ";
+        }
+        else{
 
 			status_col += "       <span class=\"label label-primary\">Unknown</span>  ";
 
