@@ -9,10 +9,12 @@ It can be run from both local and remote (distributed) machines.
 Why choose Geoweaver?
 1) Safely Store all your progress along the way.
 2) Visualise your results using the tools that you already use.
-3) Stay organised through out your research
+3) Stay organised through out your research.
 4) Uses CRON for scheduling jobs, particularly in Unix-like operating systems (such as Linux), to automate tasks at specific times or intervals. CRON is a command-line utility that helps in performing routine tasks automatically without requiring your direct intervention.
 5) Seamlessly connect to external servers with SSH.
 6) In-Built Web UI with full support for Python.
+
+For further insights into Geoweaver, please explore the website at https://geoweaver.dev
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
@@ -41,6 +43,12 @@ Only two things basically:
 # Demo
 
 [A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
+
+# [PyGeoWeaver](https://github.com/ESIPFed/pygeoweaver)
+
+PyGeoWeaver is a Python package that provides a convenient and user-friendly interface to interact with GeoWeaver, a powerful geospatial data processing application written in Java. With PyGeoWeaver, Jupyter notebook and JupyterLab users can seamlessly integrate and utilize the capabilities of GeoWeaver within their Python workflows.
+
+Please do visit the PyGeoWeaver GitHub repository.
 
 # Citation
 
