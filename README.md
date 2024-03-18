@@ -8,8 +8,7 @@ It can be run from both local and remote (distributed) machines.
 
 Why choose Geoweaver?
 1) Safely Store all your progress along the way.
-2) Visualise your results using the tools that you already use.
-3) Stay organised through out your research
+2) Stay organised and productive through out your years-long research
 4) Seamlessly connect to external servers with SSH.
 5) In-Built Web UI with full support for Python.
 
