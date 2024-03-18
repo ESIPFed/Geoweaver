@@ -10,9 +10,8 @@ Why choose Geoweaver?
 1) Safely Store all your progress along the way.
 2) Visualise your results using the tools that you already use.
 3) Stay organised through out your research
-4) Uses CRON for scheduling jobs, particularly in Unix-like operating systems (such as Linux), to automate tasks at specific times or intervals. CRON is a command-line utility that helps in performing routine tasks automatically without requiring your direct intervention.
-5) Seamlessly connect to external servers with SSH.
-6) In-Built Web UI with full support for Python.
+4) Seamlessly connect to external servers with SSH.
+5) In-Built Web UI with full support for Python.
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
