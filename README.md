@@ -2,6 +2,8 @@
 
 # [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
+![logo](https://github.com/JYOSHREDDY/Geoweaver/blob/master/Geoweaver%20Banner.png)
+
 Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. 
 
 It can be run from both local and remote (distributed) machines.
