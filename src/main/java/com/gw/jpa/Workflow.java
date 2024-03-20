@@ -1,29 +1,33 @@
 package com.gw.jpa;
 
 import javax.persistence.Lob;
+
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
 public class Workflow {
-	
+
 	@Id
 	private String id;
-	
+
 	private String name, description, owner;
 
 	private String confidential;
-	
+
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
 	private String edges;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
 	private String nodes;
-	
-	
+
 	public String getConfidential() {
 		return this.confidential;
 	}
@@ -31,7 +35,6 @@ public class Workflow {
 	public void setConfidential(String confidential) {
 		this.confidential = confidential;
 	}
-
 
 	public String getDescription() {
 		return description;
@@ -80,7 +83,5 @@ public class Workflow {
 	public void setEdges(String edges) {
 		this.edges = edges;
 	}
-	
-	
-	
+
 }

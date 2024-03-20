@@ -7,26 +7,28 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class Environment {
 	@Id
 	String id;
-	
+
 	String name, type, bin, pyenv, basedir;
 
 	// String host;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hostid")
+	@JoinColumn(name = "hostid")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Host hostobj;
+	private Host hostobj;
 
-	@Column(columnDefinition = "LONGTEXT")
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
 	String settings;
 
-	
 	public Host getHostobj() {
 		return this.hostobj;
 	}
@@ -91,6 +93,4 @@ public class Environment {
 		this.settings = settings;
 	}
 
-	
-	
 }

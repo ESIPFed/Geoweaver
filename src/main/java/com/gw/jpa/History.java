@@ -1,6 +1,5 @@
 package com.gw.jpa;
 
-
 import java.util.Date;
 
 import javax.persistence.Lob;
@@ -10,46 +9,49 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 public class History {
-	
+
 	/**********************************************/
-    /** section of the geoweaver history records **/
-    /**********************************************/
-	
+	/** section of the geoweaver history records **/
+	/**********************************************/
+
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
-    private String			 history_id;
-	
+	// @GeneratedValue(strategy=GenerationType.AUTO)
+	private String history_id;
+
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
-    private String			 history_input;
-    
-    //maximum jupyter notebook 100mb
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
+	private String history_input;
+
+	// maximum jupyter notebook 100mb
 	@Lob
-    @Column(columnDefinition = "LONGTEXT")
-    private String			 history_output;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date			 history_begin_time;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date			 history_end_time;
-    
-    @Column(columnDefinition = "TEXT")
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
+	private String history_output;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date history_begin_time;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date history_end_time;
+
+	@Column
+	@Type(type = "org.hibernate.type.TextType")
 	private String history_notes;
 
-    
-    private String			 history_process;
-    
-    private String           host_id;
-    
-    private String           indicator;
-    
-    /**********************************************/
-    /** end of history section **/
-    /**********************************************/
-    
+	private String history_process;
+
+	private String host_id;
+
+	private String indicator;
+
+	/**********************************************/
+	/** end of history section **/
+	/**********************************************/
 
 	public String getHistory_notes() {
 		return this.history_notes;
@@ -58,7 +60,6 @@ public class History {
 	public void setHistory_notes(String history_notes) {
 		this.history_notes = history_notes;
 	}
-
 
 	public String getIndicator() {
 		return indicator;
@@ -91,7 +92,7 @@ public class History {
 	public void setHistory_output(String history_output) {
 		this.history_output = history_output;
 	}
-	
+
 	public Date getHistory_begin_time() {
 		return history_begin_time;
 	}

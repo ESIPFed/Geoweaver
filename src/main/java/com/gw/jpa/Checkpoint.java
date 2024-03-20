@@ -24,20 +24,22 @@ public class Checkpoint {
 
     @Id
     @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name="uuid2", strategy = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Type(type = "uuid-char")
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private UUID id;
 
-    @Column(name="executionId")
+    @Column(name = "executionId")
     private String executionId;
 
     @Lob
-    @Column(name = "edges", columnDefinition = "CLOB")
+    @Column(name = "edges")
+    @Type(type = "org.hibernate.type.TextType")
     private String edges;
 
     @Lob
-    @Column(name = "nodes", columnDefinition = "CLOB")
+    @Column(name = "nodes")
+    @Type(type = "org.hibernate.type.TextType")
     private String nodes;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -47,7 +49,6 @@ public class Checkpoint {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
-
 
     public String getExecutionId() {
         return executionId;
