@@ -286,7 +286,8 @@ GW.process.sidepanel = {
 
         GW.ssh.current_process_log_length = 0
 
-        GW.workspace.currentmode = 2;
+        // do not stop ability to add process when we open side panel
+        // GW.workspace.currentmode = 2;
 
         GW.ssh.process_output_id = "prompt-panel-process-log-window"
 
