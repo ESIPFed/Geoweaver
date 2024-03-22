@@ -321,7 +321,7 @@
 				</div>
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0;">
+			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0; margin-left: 25%; position: fixed;">
 
 					<button class="workspace_collapse_btn">&gt;&gt;&gt;</button>
 
@@ -441,7 +441,7 @@
 											</ul>
 		
 											<hr/>
-											<a id="quickstart"></a>
+											<a id="quickstart" style="scroll-margin-top: 6px;"></a>
 											<h2>Quick Start Guide</h2>
 											<h4>0. Get Geoweaver Password</h4>
 											<ul>
@@ -490,7 +490,7 @@
 		
 											</ul>
 											
-											<a id="supported_hosts"></a>
+											<a id="supported_hosts" style="scroll-margin-top: 6px;"></a>
 											<h2>Supported Hosts</h2>
 											
 											<h4>Linux/Win/Mac Machine</h4>
@@ -501,7 +501,8 @@
 											
 											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
 		
-											<a id="geoweaver_processes"></a>
+											<a id="geoweaver_processes"
+											style="scroll-margin-top: 6px;"></a>
 											<h2>Processes</h2>
 											
 											<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
@@ -525,7 +526,7 @@
 												Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
 											All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
 												
-											<a id="workflow"></a>
+											<a id="workflow" style="scroll-margin-top: 6px"></a>
 											<h2>Workflow</h2>
 														
 											<p>The workflow module allows users to compose a workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides an all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
