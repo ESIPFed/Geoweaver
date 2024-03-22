@@ -117,18 +117,67 @@ GW.fileupload = {
 	                		
 	                	}
 	                	
-	                	GW.fileupload.showUploadDialog();
-	                	
-	                	GW.fileupload.password_frame.closeFrame();
-			    		
-			    	});
-			    	
-			    	$("#pswd-cancel-btn").click(function(){
-			    		
-			    		GW.fileupload.password_frame.closeFrame();
-			    		
-			    	});
-					
+						$.ajax({
+			
+							url: "key",
+							
+							type: "POST",
+							
+							data: ""
+							
+						}).done(function(msg){ 
+							var req = {};
+
+							var encrypt = new JSEncrypt();
+
+							msg = $.parseJSON(msg);
+							
+							req.host = hid;
+
+							req.token = GW.general.CLIENT_TOKEN;
+						
+							encrypt.setPublicKey(msg.rsa_public);
+							
+							req.password= encrypt.encrypt(GW.fileupload.password);
+
+							$.ajax({
+
+								url: "authenticateUser",
+
+								method: "POST",
+
+								data: req
+
+							}).done(function(){
+
+								GW.fileupload.showUploadDialog();
+
+								if(GW.fileupload.password_frame) {
+
+									GW.fileupload.password_frame.closeFrame();	  
+
+								}  		
+
+							}).fail(function(){
+		
+								alert("Authentication Failed");
+
+								if($("#inputpswd").length) $("#inputpswd").val("");
+				
+								if ($("#pswd-confirm-btn").prop("disabled")) {
+
+									$("#pswd-confirm-btn").prop("disabled", false);
+
+								}
+							})
+						
+							
+						});
+						
+					})
+					$("#pswd-cancel-btn").click(function(){
+						GW.fileupload.password_frame.closeFrame();	    		
+					})
 					
 				}else{
 					

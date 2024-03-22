@@ -32,6 +32,7 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.WorkflowTool;
 import com.gw.tools.HostTool;
+import com.gw.tools.LocalhostTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 
@@ -115,6 +116,9 @@ public class GeoweaverController {
 
     @Autowired
 	UserTool ut;
+
+	@Autowired
+	LocalhostTool lt;
 
 	@Autowired
 	private CheckpointRepository checkpointRepository;
@@ -1555,5 +1559,32 @@ public class GeoweaverController {
 			throw new RuntimeException("No ID found");
 	}
 
+	/**
+	 * Handles HTTP POST requests to authenticate the user
+	 *
+	 * @param model   The model to add attributes to.
+	 * @param request The web request containing user's encrypted password
+	 * @param session The HttpSession for user session management.
+	 * @return A response entity indicating successful authentication with a JSON response containing the authentication status, or an error if authentication fails.
+	 */
+	@RequestMapping(value = "/authenticateUser", method = RequestMethod.POST)
+	public ResponseEntity<String> authenticateUser(ModelMap model, WebRequest request, HttpSession session){
 
+		ResponseEntity<String> resp = null;
+		String successResp = null;
+		String.format("{\"ret\": \"success\"}");
+		
+		try {
+			String password = request.getParameter("password");
+			password = RSAEncryptTool.getPassword(password, session.getId());
+			lt.authenticate(password);
+			successResp = String.format("{\"ret\": \"success\"}");
+			resp = ResponseEntity.ok().body(successResp);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Authentication Failed. Wrong Password.");
+		}
+
+		return resp;
+	}
 }
