@@ -1,4 +1,3 @@
-
 GW.history = {
 
     history_table_interval_id: null,
@@ -11,7 +10,7 @@ GW.history = {
             
             if(GW.history.active_process_history_list.length>0){
 
-                GW.history.active_process_history_list.forEach(history_row => {
+                GW.history.active_process_history_list.forEach(history_row   => {
 
                     console.log()
                     $("#timerBadge_"+history_row.history_id).html(
@@ -35,10 +34,6 @@ GW.history = {
     stopAllTimers: function(){
 
         if(GW.history.history_table_interval_id != null){
-
-            // GW.history.interval_list.forEach(intervalId => clearInterval(intervalId));
-
-            // GW.history.interval_list = []
 
             clearInterval(GW.history.history_table_interval_id)
 
@@ -247,7 +242,7 @@ GW.history = {
           <tbody> `;
 
         for(var i=0;i<msg.length;i++){
-
+            
             var status_col = this.getProcessStatusCol(msg[i].history_id, msg[i].indicator);
 
             content += "    <tr> "+
@@ -293,6 +288,13 @@ GW.history = {
 
         content += "</tbody>";
 
+        $('#statusFilter').on('change', function () {
+            alert("ok");
+            console.log("status filter changed");
+            var value = $(this).val();
+            console.log(value);
+        });
+
         // create an interactive chart to show all the data
 
         content =
@@ -304,7 +306,6 @@ GW.history = {
         return content;
 
     },
-  
 
     /**
      * Returns an HTML status column for a workflow history entry based on its indicator.
@@ -440,14 +441,28 @@ GW.history = {
         );
 
 
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
+        $(document).ready(function() {
+            // Function to apply search filter
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();
                 const rowStatus = data[4].toLowerCase();
-
+        
+                console.log("Selected Status:", selectedStatus);
+                console.log("Row Status:", rowStatus);
+        
+                if(selectedStatus === "" && rowStatus === "skipped") {
+                    return false;
+                }
+        
                 return selectedStatus === "" || rowStatus === selectedStatus;
-            }
-        );
+            });
+        
+            // call the function to apply the search filter
+            table.draw();
+        });
+        
+        // Your other JavaScript code here
+        
 
 
         $('#durationCondition, #durationValue').on('change', function () {
@@ -455,6 +470,8 @@ GW.history = {
         });
 
         $('#statusFilter').on('change', function () {
+            var value = $(this).val();
+            console.log(value);
             table.draw();
         });
 
