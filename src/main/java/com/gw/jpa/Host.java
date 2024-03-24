@@ -1,7 +1,6 @@
 package com.gw.jpa;
 
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,100 +10,92 @@ import javax.persistence.OneToMany;
 @Entity
 public class Host {
 
-	@Id
-	String id;
-	
-	String name, ip, port, username, owner, type, url;
+  @Id String id;
 
-	String confidential;
+  String name, ip, port, username, owner, type, url;
 
-	@OneToMany(cascade = CascadeType.ALL,
-		fetch = FetchType.LAZY,
-		mappedBy="hostobj")
-    private Set<Environment> envs;
+  String confidential;
 
-	public Set<Environment> getEnvs() {
-		return this.envs;
-	}
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hostobj")
+  private Set<Environment> envs;
 
-	public void setEnvs(Set<Environment> envs) {
-		this.envs = envs;
-	}
+  public Set<Environment> getEnvs() {
+    return this.envs;
+  }
 
-	public String getConfidential() {
-		return this.confidential;
-	}
+  public void setEnvs(Set<Environment> envs) {
+    this.envs = envs;
+  }
 
-	public void setConfidential(String confidential) {
-		this.confidential = confidential;
-	}
+  public String getConfidential() {
+    return this.confidential;
+  }
 
-	
-	
-	public String getId() {
-		return id;
-	}
+  public void setConfidential(String confidential) {
+    this.confidential = confidential;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getIp() {
-		return ip;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
+  public String getIp() {
+    return ip;
+  }
 
-	public String getPort() {
-		return port;
-	}
+  public void setIp(String ip) {
+    this.ip = ip;
+  }
 
-	public void setPort(String port) {
-		this.port = port;
-	}
+  public String getPort() {
+    return port;
+  }
 
-	public String getUsername() {
-		return username;
-	}
+  public void setPort(String port) {
+    this.port = port;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public String getOwner() {
-		return owner;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+  public String getOwner() {
+    return owner;
+  }
 
-	public String getType() {
-		return type;
-	}
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public String getUrl() {
-		return url;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	
-	
-	
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
 }

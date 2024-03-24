@@ -1,11 +1,5 @@
 package com.gw.web;
 
-import java.util.Date;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.gw.database.UserRepository;
 import com.gw.jpa.GWUser;
 import com.gw.ssh.RSAEncryptTool;
@@ -14,10 +8,12 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.EmailService;
 import com.gw.utils.HttpUtil;
 import com.gw.utils.RandomString;
-
+import java.util.Date;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -27,337 +23,330 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-@Controller 
-@RequestMapping(value="/user")  
+
+@Controller
+@RequestMapping(value = "/user")
 public class UserController {
 
-    Logger logger = Logger.getLogger(this.getClass());
+  Logger logger = Logger.getLogger(this.getClass());
 
-    @Autowired
-    BaseTool bt;
+  @Autowired BaseTool bt;
 
-    @Autowired
-    UserTool ut;
-    
-    @Autowired
-    UserRepository userRepository;
+  @Autowired UserTool ut;
 
-    @Autowired
-    EmailService et;
+  @Autowired UserRepository userRepository;
 
+  @Autowired EmailService et;
 
-    @PostMapping("/profile")
-    public @ResponseBody String profile(@Validated @RequestBody GWUser newUser) {
-        
-        String resp = "";
+  @PostMapping("/profile")
+  public @ResponseBody String profile(@Validated @RequestBody GWUser newUser) {
 
-        try{
-            Optional<GWUser> userop = userRepository.findById(newUser.getId());
+    String resp = "";
 
-            if(userop.isPresent()){
+    try {
+      Optional<GWUser> userop = userRepository.findById(newUser.getId());
 
-                GWUser user = userop.get();
-                
-                resp = "{\"status\":\"success\", \"username\":\""+user.getUsername()+"\", \"email\": \""+user.getEmail()+"\" }";
-            
-            }
+      if (userop.isPresent()) {
 
-            if(BaseTool.isNull(resp)){
+        GWUser user = userop.get();
 
-                resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
-            }
+        resp =
+            "{\"status\":\"success\", \"username\":\""
+                + user.getUsername()
+                + "\", \"email\": \""
+                + user.getEmail()
+                + "\" }";
+      }
 
-        }catch(Exception e){
+      if (BaseTool.isNull(resp)) {
 
-            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+        resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
+      }
 
-        }
-        
-        return resp;
+    } catch (Exception e) {
+
+      resp = "{\"status\":\"failed\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
     }
 
-    /**
-     * This is the password reset callback url
-     * @param token
-     * @param model
-     * @return
-     */
-    @GetMapping("/reset_password")
-    public String showResetPasswordForm(@RequestParam(name="token")String token, Model model) {
+    return resp;
+  }
 
-        if(!BaseTool.isNull(token)){
+  /**
+   * This is the password reset callback url
+   *
+   * @param token
+   * @param model
+   * @return
+   */
+  @GetMapping("/reset_password")
+  public String showResetPasswordForm(@RequestParam(name = "token") String token, Model model) {
 
-            System.err.print(token);
-            String userid = UserTool.token2userid.get(token);
-            Date created_date = UserTool.token2date.get(token);
-    
-            if(!BaseTool.isNull(userid)){
-    
-                long time_difference =  new Date().getTime() - created_date.getTime();
-    
-                //if the token is one hour old
-                if(time_difference<60*60*1000){
-    
-                    GWUser user = ut.getUserById(userid);
-    
-                    model.addAttribute("token", token);
-                    
-                    if (user == null) {
-                        return "Invalid Token";
-                    }
-    
-                }
-    
-            }else{
+    if (!BaseTool.isNull(token)) {
 
-                model.addAttribute("error", "Invalid token. Retry.");
-            }
+      System.err.print(token);
+      String userid = UserTool.token2userid.get(token);
+      Date created_date = UserTool.token2date.get(token);
 
-        }else{
+      if (!BaseTool.isNull(userid)) {
 
-            model.addAttribute("error", "No Token. Invalid Link. ");
-            
+        long time_difference = new Date().getTime() - created_date.getTime();
+
+        // if the token is one hour old
+        if (time_difference < 60 * 60 * 1000) {
+
+          GWUser user = ut.getUserById(userid);
+
+          model.addAttribute("token", token);
+
+          if (user == null) {
+            return "Invalid Token";
+          }
         }
 
-        return "reset_password";
-        
+      } else {
+
+        model.addAttribute("error", "Invalid token. Retry.");
+      }
+
+    } else {
+
+      model.addAttribute("error", "No Token. Invalid Link. ");
     }
-    
-    /**
-     * The post request comes from the password reset callback url
-     * @param request
-     * @param model
-     * @return
-     */
-    @PostMapping("/reset_password")
-    public @ResponseBody String processResetPassword(HttpServletRequest request, Model model) {
-        String token = request.getParameter("token");
-        String password = request.getParameter("password");
-         
-        String userid = UserTool.token2userid.get(token);
 
-        //invalidate the toke right away
-        UserTool.token2userid.remove(token);
+    return "reset_password";
+  }
 
-        String resp = "{\"status\": \"failed\"}";
+  /**
+   * The post request comes from the password reset callback url
+   *
+   * @param request
+   * @param model
+   * @return
+   */
+  @PostMapping("/reset_password")
+  public @ResponseBody String processResetPassword(HttpServletRequest request, Model model) {
+    String token = request.getParameter("token");
+    String password = request.getParameter("password");
 
-        if(!BaseTool.isNull(userid)){
+    String userid = UserTool.token2userid.get(token);
 
-            GWUser user = ut.getUserById(userid);
+    // invalidate the toke right away
+    UserTool.token2userid.remove(token);
 
-            Date created_date = UserTool.token2date.get(token);
-            
-            UserTool.token2date.remove(token);
+    String resp = "{\"status\": \"failed\"}";
 
-            long time_difference =  new Date().getTime() - created_date.getTime();
+    if (!BaseTool.isNull(userid)) {
 
-            //if the token is one hour old
-            if(time_difference<60*60*1000){
-                ut.updatePassword(user, password);
+      GWUser user = ut.getUserById(userid);
 
-                resp = "{\"status\": \"success\"}";
-            }
-                
+      Date created_date = UserTool.token2date.get(token);
 
+      UserTool.token2date.remove(token);
+
+      long time_difference = new Date().getTime() - created_date.getTime();
+
+      // if the token is one hour old
+      if (time_difference < 60 * 60 * 1000) {
+        ut.updatePassword(user, password);
+
+        resp = "{\"status\": \"success\"}";
+      }
+    }
+
+    return resp;
+  }
+
+  @PostMapping("/forgetpassword")
+  public @ResponseBody String resetpassword(
+      @Validated @RequestBody GWUser newUser, HttpServletRequest request) {
+
+    String resp = "";
+
+    try {
+
+      Iterable<GWUser> users = userRepository.findAll();
+      for (GWUser user : users) {
+        if (user.getEmail().equals(newUser.getEmail())) {
+          HttpUtil httpUtil = new HttpUtil();
+          String siteUrl = httpUtil.getSiteURL(request);
+          System.out.println("User  exists!");
+          // send out password reset email
+          et.send_resetpassword(user, siteUrl);
+          resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
         }
-        
-         
-        return resp;
+      }
+
+      if (BaseTool.isNull(resp)) {
+
+        resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
+      }
+
+    } catch (Exception e) {
+
+      resp = "{\"status\":\"failed\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
     }
 
-    @PostMapping("/forgetpassword")
-    public @ResponseBody String resetpassword(@Validated @RequestBody GWUser newUser, HttpServletRequest request) {
-        
-        String resp = "";
+    return resp;
+  }
 
-        try{
+  @PostMapping("/register")
+  public @ResponseBody String registerUser(
+      @Validated @RequestBody GWUser newUser, HttpSession session) {
 
-            Iterable<GWUser> users = userRepository.findAll();
-            for (GWUser user : users) {
-                if (user.getEmail().equals(newUser.getEmail())) {
-                    HttpUtil httpUtil = new HttpUtil();
-    	            String siteUrl = httpUtil.getSiteURL(request);
-                    System.out.println("User  exists!");
-                    //send out password reset email
-                    et.send_resetpassword(user, siteUrl);
-                    resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
-                }
-            }
+    String resp = "";
 
-            if(BaseTool.isNull(resp)){
+    try {
 
-                resp = "{\"status\":\"failed\", \"message\":\"No account is associated with that email\"}";
-            }
-
-        }catch(Exception e){
-
-            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
-
+      Iterable<GWUser> users = userRepository.findAll();
+      System.out.println("New user: " + newUser.toString());
+      for (GWUser user : users) {
+        System.out.println("Registered user: " + newUser.toString());
+        if (user.getEmail().equals(newUser.getEmail())) {
+          System.out.println("User Already exists!");
+          resp =
+              "{\"status\":\"failed\", \"message\":\"the email address has already been"
+                  + " registered\"}";
         }
-        
-        return resp;
-    }
+      }
 
-    @PostMapping("/register")
-    public @ResponseBody String registerUser(@Validated @RequestBody GWUser newUser, HttpSession session) {
-        
-        String resp = "";
+      if (BaseTool.isNull(resp)) {
 
-        try{
+        // validate the email
+        if (bt.validate(newUser.getEmail())) {
 
-            Iterable<GWUser> users = userRepository.findAll();
-            System.out.println("New user: " + newUser.toString());
-            for (GWUser user : users) {
-                System.out.println("Registered user: " + newUser.toString());
-                if (user.getEmail().equals(newUser.getEmail())) {
-                    System.out.println("User Already exists!");
-                    resp = "{\"status\":\"failed\", \"message\":\"the email address has already been registered\"}";
-                }
-            }
+          newUser.setId(new RandomString(10).nextString());
+          String o = RSAEncryptTool.getPassword(newUser.getPassword(), session.getId());
+          String new512str = bt.get_SHA_512_SecurePassword(o, newUser.getId());
+          newUser.setPassword(new512str);
+          userRepository.save(newUser);
 
-            if(BaseTool.isNull(resp)){
+          resp = "{\"status\":\"success\", \"message\":\"You are registered!\"}";
 
-                //validate the email
-                if(bt.validate(newUser.getEmail())){
+        } else {
 
-                    newUser.setId(new RandomString(10).nextString());
-                    String o = RSAEncryptTool.getPassword(newUser.getPassword(), session.getId());
-                    String new512str = bt.get_SHA_512_SecurePassword(o, newUser.getId());
-                    newUser.setPassword(new512str);
-                    userRepository.save(newUser);
-
-                    resp = "{\"status\":\"success\", \"message\":\"You are registered!\"}";
-                
-                }else{
-
-                    resp = "{\"status\":\"failed\", \"message\":\"Invalid Email\"}";
-
-                }
-
-                
-            }
-
-        }catch(Exception e){
-
-            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
-
+          resp = "{\"status\":\"failed\", \"message\":\"Invalid Email\"}";
         }
-        
-        return resp;
+      }
+
+    } catch (Exception e) {
+
+      resp = "{\"status\":\"failed\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
     }
 
+    return resp;
+  }
 
-    @PostMapping("/login")
-    public @ResponseBody String loginUser(@Validated @RequestBody GWUser user, HttpSession session, HttpServletRequest request) {
+  @PostMapping("/login")
+  public @ResponseBody String loginUser(
+      @Validated @RequestBody GWUser user, HttpSession session, HttpServletRequest request) {
 
-        String resp = "";
+    String resp = "";
 
-        try{
-            
-            resp = "{\"status\":\"failed\", \"message\":\"not found\"}";
+    try {
 
-            //decrypt the password into plain text
-            String password = RSAEncryptTool.getPassword(user.getPassword(), session.getId());
+      resp = "{\"status\":\"failed\", \"message\":\"not found\"}";
 
-            Iterable<GWUser> users = userRepository.findAll();
-            for (GWUser other : users) {
-                if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername())) {
-                    logger.info("Found username match");
+      // decrypt the password into plain text
+      String password = RSAEncryptTool.getPassword(user.getPassword(), session.getId());
 
-                    String new512str = bt.get_SHA_512_SecurePassword(password, other.getId());
-                    
-                    if(other.getPassword().equals(new512str)){
+      Iterable<GWUser> users = userRepository.findAll();
+      for (GWUser other : users) {
+        if (other.getUsername().equals(user.getUsername())
+            || other.getEmail().equals(user.getUsername())) {
+          logger.info("Found username match");
 
-                        other.setLoggedIn(true);
-                        userRepository.save(other);
+          String new512str = bt.get_SHA_512_SecurePassword(password, other.getId());
 
-                        String ipaddress = ut.getClientIp(request);
+          if (other.getPassword().equals(new512str)) {
 
-                        ut.bindSessionUser(session.getId(), other.getId(), ipaddress);
+            other.setLoggedIn(true);
+            userRepository.save(other);
 
-                        resp = "{\"status\":\"success\", \"username\":\""+other.getUsername()+"\", \"id\":\""+other.getId()+"\", \"message\":\"You are logged in!\"}";
-                        break;
-                    
-                    }
-                    
-                }
-            }
+            String ipaddress = ut.getClientIp(request);
 
-        }catch(Exception e){
-        
-            e.printStackTrace();
-        
-            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+            ut.bindSessionUser(session.getId(), other.getId(), ipaddress);
 
+            resp =
+                "{\"status\":\"success\", \"username\":\""
+                    + other.getUsername()
+                    + "\", \"id\":\""
+                    + other.getId()
+                    + "\", \"message\":\"You are logged in!\"}";
+            break;
+          }
         }
+      }
 
-        return resp;
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      resp = "{\"status\":\"failed\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
     }
 
-    
-    @PostMapping("/logbackin")
-    public @ResponseBody String logbackonafterrefresh(HttpSession session, HttpServletRequest request) {
+    return resp;
+  }
 
-        String resp = "";
+  @PostMapping("/logbackin")
+  public @ResponseBody String logbackonafterrefresh(
+      HttpSession session, HttpServletRequest request) {
 
-        try{
-            
-            resp = "{\"status\":\"FALSE\", \"message\":\"no active session\"}";
+    String resp = "";
 
-            if(ut.isAuth(session.getId(), ut.getClientIp(request))){
+    try {
 
-                String id = ut.getAuthUserId(session.getId(), ut.getClientIp(request));
+      resp = "{\"status\":\"FALSE\", \"message\":\"no active session\"}";
 
-                GWUser u = ut.getUserById(id);
+      if (ut.isAuth(session.getId(), ut.getClientIp(request))) {
 
-                resp = "{\"status\":\"TRUE\", \"id\":\""+id+"\", \"name\": \""+u.getUsername()+"\"}";
+        String id = ut.getAuthUserId(session.getId(), ut.getClientIp(request));
 
-            }
+        GWUser u = ut.getUserById(id);
 
-        }catch(Exception e){
-        
-            e.printStackTrace();
-        
-            resp = "{\"status\":\"FALSE\", \"message\":\""+e.getLocalizedMessage()+"\"}";
+        resp =
+            "{\"status\":\"TRUE\", \"id\":\"" + id + "\", \"name\": \"" + u.getUsername() + "\"}";
+      }
 
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      resp = "{\"status\":\"FALSE\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
+    }
+
+    return resp;
+  }
+
+  @PostMapping("/logout")
+  public @ResponseBody String logUserOut(@Validated @RequestBody GWUser user, HttpSession session) {
+
+    String resp = "";
+
+    try {
+
+      resp = "{\"status\":\"failed\", \"message\":\"not found\"}";
+
+      Iterable<GWUser> users = userRepository.findAll();
+      for (GWUser other : users) {
+        if (other.getUsername().equals(user.getUsername())
+            || other.getEmail().equals(user.getUsername())
+            || other.getId().equals(user.getId())) {
+
+          other.setLoggedIn(false);
+          userRepository.save(other);
+          ut.removeSessionById(session.getId());
+          resp = "{\"status\":\"success\", \"message\":\"You are logged out!\"}";
+          break;
         }
+      }
 
-        return resp;
+    } catch (Exception e) {
 
+      e.printStackTrace();
+
+      resp = "{\"status\":\"failed\", \"message\":\"" + e.getLocalizedMessage() + "\"}";
     }
 
-    @PostMapping("/logout")
-    public @ResponseBody String logUserOut(@Validated @RequestBody GWUser user, HttpSession session) {
-
-        String resp = "";
-
-        try{
-            
-            resp = "{\"status\":\"failed\", \"message\":\"not found\"}";
-
-            Iterable<GWUser> users = userRepository.findAll();
-            for (GWUser other : users) {
-                if (other.getUsername().equals(user.getUsername()) || other.getEmail().equals(user.getUsername()) 
-                || other.getId().equals(user.getId())) {
-                    
-                        other.setLoggedIn(false);
-                        userRepository.save(other);
-                        ut.removeSessionById(session.getId());
-                        resp = "{\"status\":\"success\", \"message\":\"You are logged out!\"}";
-                        break;
-                    
-                }
-            }
-
-        }catch(Exception e){
-        
-            e.printStackTrace();
-        
-            resp = "{\"status\":\"failed\", \"message\":\""+e.getLocalizedMessage()+"\"}";
-
-        }
-
-        return resp;
-
-    }
+    return resp;
+  }
 }

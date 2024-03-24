@@ -1,5 +1,6 @@
 package com.gw.jpa;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,90 +8,83 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Entity
 public class Environment {
-	@Id
-	String id;
-	
-	String name, type, bin, pyenv, basedir;
+  @Id String id;
 
-	// String host;
+  String name, type, bin, pyenv, basedir;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hostid")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Host hostobj;
+  // String host;
 
-	@Column(columnDefinition = "LONGTEXT")
-	String settings;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "hostid")
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private Host hostobj;
 
-	
-	public Host getHostobj() {
-		return this.hostobj;
-	}
+  @Column(columnDefinition = "LONGTEXT")
+  String settings;
 
-	public void setHostobj(Host hostobj) {
-		this.hostobj = hostobj;
-	}
+  public Host getHostobj() {
+    return this.hostobj;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setHostobj(Host hostobj) {
+    this.hostobj = hostobj;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getType() {
-		return type;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+  public String getType() {
+    return type;
+  }
 
-	public String getBin() {
-		return bin;
-	}
+  public void setType(String type) {
+    this.type = type;
+  }
 
-	public void setBin(String bin) {
-		this.bin = bin;
-	}
+  public String getBin() {
+    return bin;
+  }
 
-	public String getPyenv() {
-		return pyenv;
-	}
+  public void setBin(String bin) {
+    this.bin = bin;
+  }
 
-	public void setPyenv(String pyenv) {
-		this.pyenv = pyenv;
-	}
+  public String getPyenv() {
+    return pyenv;
+  }
 
-	public String getBasedir() {
-		return basedir;
-	}
+  public void setPyenv(String pyenv) {
+    this.pyenv = pyenv;
+  }
 
-	public void setBasedir(String basedir) {
-		this.basedir = basedir;
-	}
+  public String getBasedir() {
+    return basedir;
+  }
 
-	public String getSettings() {
-		return settings;
-	}
+  public void setBasedir(String basedir) {
+    this.basedir = basedir;
+  }
 
-	public void setSettings(String settings) {
-		this.settings = settings;
-	}
+  public String getSettings() {
+    return settings;
+  }
 
-	
-	
+  public void setSettings(String settings) {
+    this.settings = settings;
+  }
 }

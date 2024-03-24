@@ -9,125 +9,110 @@ import com.gw.tools.FileTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
-import com.gw.tools.WorkflowTool;
 import com.gw.tools.UserTool;
+import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import java.util.List;
-
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@Controller 
-@RequestMapping(value="/landing")
+@Controller
+@RequestMapping(value = "/landing")
 public class LandingController {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
-	
-	@Autowired
-	ProcessTool pt;
-	
-	@Autowired
-	WorkflowTool wt;
-	
-	@Autowired
-	HostTool ht;
-	
-	@Autowired
-	BaseTool bt;
-	
-	@Autowired
-	GWSearchTool st;
-	
-	@Autowired
-	FileTool ft;
+  Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    UserTool ut;
-	
-	@Autowired
-	HistoryTool hist;
+  @Autowired ProcessTool pt;
 
-	@Autowired
-	DashboardTool dbt;
+  @Autowired WorkflowTool wt;
 
-    @RequestMapping(value="/{wf_id}", method= RequestMethod.GET)
-    public String workflow_landingpage(@PathVariable(value="wf_id") final String workflow_id, final ModelMap model){
+  @Autowired HostTool ht;
 
-        //check if the workflow is public. Private workflows have no public landing page. 
-        //
-        Workflow wf = wt.getById(workflow_id);
+  @Autowired BaseTool bt;
 
-        if(!BaseTool.isNull(wf)){
+  @Autowired GWSearchTool st;
 
-            if("FALSE".equals(wf.getConfidential())){
+  @Autowired FileTool ft;
 
-                GWUser u = ut.getUserById(wf.getOwner());
+  @Autowired UserTool ut;
 
-                model.addAttribute("workflow", wf);
+  @Autowired HistoryTool hist;
 
-                model.addAttribute("user", u);
+  @Autowired DashboardTool dbt;
 
-                List<History> historylist = hist.getHistoryByWorkflowId(wf.getId());
+  @RequestMapping(value = "/{wf_id}", method = RequestMethod.GET)
+  public String workflow_landingpage(
+      @PathVariable(value = "wf_id") final String workflow_id, final ModelMap model) {
 
-                int success_num = 0, failed_num = 0, pending_num = 0, unknown_num = 0;
+    // check if the workflow is public. Private workflows have no public landing page.
+    //
+    Workflow wf = wt.getById(workflow_id);
 
-                for(History h: historylist){
+    if (!BaseTool.isNull(wf)) {
 
-                    if("Done".equals(h.getIndicator())){
+      if ("FALSE".equals(wf.getConfidential())) {
 
-                        success_num++;
+        GWUser u = ut.getUserById(wf.getOwner());
 
-                    }else if("Failed".equals(h.getIndicator())){
+        model.addAttribute("workflow", wf);
 
-                        failed_num++;
+        model.addAttribute("user", u);
 
-                    }else if("Pending".equals(h.getIndicator())){
+        List<History> historylist = hist.getHistoryByWorkflowId(wf.getId());
 
-                        pending_num++;
+        int success_num = 0, failed_num = 0, pending_num = 0, unknown_num = 0;
 
-                    }else{
+        for (History h : historylist) {
 
-                        unknown_num++;
+          if ("Done".equals(h.getIndicator())) {
 
-                    }
+            success_num++;
 
-                }
+          } else if ("Failed".equals(h.getIndicator())) {
 
-                model.addAttribute("all_history_num", historylist.size());
-                model.addAttribute("success_num", success_num);
-                model.addAttribute("failed_num", failed_num);
-                model.addAttribute("pending_num", pending_num);
-                model.addAttribute("unknown_num", unknown_num);
+            failed_num++;
 
-                JSONArray jsonArr = new JSONArray(wf.getNodes());
+          } else if ("Pending".equals(h.getIndicator())) {
 
-                model.addAttribute("nodes", jsonArr);
+            pending_num++;
 
-                model.addAttribute("historylist", historylist);
+          } else {
 
-                //get recent activities
-                model.addAttribute("workflowlist", wt.getWorkflowListByOwner(u.getId()));
-
-            }else{
-
-                throw new RuntimeException("This workflow isn't public");
-
-            }
-
-        }else{
-            throw new RuntimeException("This workflow doesn't exist");
+            unknown_num++;
+          }
         }
 
-        return "wf_landing_template";
+        model.addAttribute("all_history_num", historylist.size());
+        model.addAttribute("success_num", success_num);
+        model.addAttribute("failed_num", failed_num);
+        model.addAttribute("pending_num", pending_num);
+        model.addAttribute("unknown_num", unknown_num);
 
+        JSONArray jsonArr = new JSONArray(wf.getNodes());
+
+        model.addAttribute("nodes", jsonArr);
+
+        model.addAttribute("historylist", historylist);
+
+        // get recent activities
+        model.addAttribute("workflowlist", wt.getWorkflowListByOwner(u.getId()));
+
+      } else {
+
+        throw new RuntimeException("This workflow isn't public");
+      }
+
+    } else {
+      throw new RuntimeException("This workflow doesn't exist");
     }
-    
+
+    return "wf_landing_template";
+  }
 }

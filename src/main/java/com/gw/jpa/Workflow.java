@@ -1,86 +1,80 @@
 package com.gw.jpa;
 
-import javax.persistence.Lob;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 @Entity
 public class Workflow {
-	
-	@Id
-	private String id;
-	
-	private String name, description, owner;
 
-	private String confidential;
-	
-	@Lob
-	@Column(columnDefinition = "LONGTEXT")
-	private String edges;
+  @Id private String id;
 
-	@Lob
-	@Column(columnDefinition = "LONGTEXT")
-	private String nodes;
-	
-	
-	public String getConfidential() {
-		return this.confidential;
-	}
+  private String name, description, owner;
 
-	public void setConfidential(String confidential) {
-		this.confidential = confidential;
-	}
+  private String confidential;
 
+  @Lob
+  @Column(columnDefinition = "LONGTEXT")
+  private String edges;
 
-	public String getDescription() {
-		return description;
-	}
+  @Lob
+  @Column(columnDefinition = "LONGTEXT")
+  private String nodes;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getConfidential() {
+    return this.confidential;
+  }
 
-	public String getOwner() {
-		return owner;
-	}
+  public void setConfidential(String confidential) {
+    this.confidential = confidential;
+  }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getOwner() {
+    return owner;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getNodes() {
-		return nodes;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setNodes(String nodes) {
-		this.nodes = nodes;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getEdges() {
-		return edges;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setEdges(String edges) {
-		this.edges = edges;
-	}
-	
-	
-	
+  public String getNodes() {
+    return nodes;
+  }
+
+  public void setNodes(String nodes) {
+    this.nodes = nodes;
+  }
+
+  public String getEdges() {
+    return edges;
+  }
+
+  public void setEdges(String edges) {
+    this.edges = edges;
+  }
 }

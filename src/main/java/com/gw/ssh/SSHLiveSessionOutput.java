@@ -1,4 +1,5 @@
 package com.gw.ssh;
+
 /*
 
 The MIT License (MIT)
@@ -23,132 +24,121 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.io.BufferedReader;
-
-import javax.websocket.Session;
-
-import  com.gw.server.TerminalServlet;
+import com.gw.server.TerminalServlet;
 import com.gw.utils.BaseTool;
-import com.gw.web.GeoweaverController;
-
+import java.io.BufferedReader;
+import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
+
 /**
- * 
  * This class is used for monitoring the traffic from SSH session/Terminal console
- * 
- * @author JensenSun
  *
+ * @author JensenSun
  */
 @Service
 @Scope("prototype")
 public class SSHLiveSessionOutput implements Runnable {
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+  protected Logger log = LoggerFactory.getLogger(getClass());
 
-    protected BufferedReader in;
-    
-    protected WebSocketSession out; // log&shell websocket - not used any more
-    
-    protected Session wsout;
-    
-    protected String token; // session token
-    
-    protected boolean run = true;
-    
-    protected String history_id;
-    
-    @Autowired
-    BaseTool bt;
-    
-    public SSHLiveSessionOutput() {
-    	
-    	//for spring
-    	
-    }
-    
-    public void init(BufferedReader in, String token) {
-        log.info("created");
-        this.in = in;
-        this.token = token;
-        run = true;
-        wsout = TerminalServlet.findSessionById(token);
-    }
-    
-    public void stop() {
-    	
-    	run = false;
-    	
-    }
-    
-    @Override
-    public void run() {
-        
-    	log.info("SSH session output thread started");
-    	
-    	StringBuffer prelog = new StringBuffer(); //the part that is generated before the WebSocket session is started
-        
-    	StringBuffer logs = new StringBuffer();
-    	
-    	int linenumber = 0;
-    	
-    	int startrecorder = -1;
-    	
-    	int nullnumber = 0;
+  protected BufferedReader in;
 
-        String line = null;
+  protected WebSocketSession out; // log&shell websocket - not used any more
 
-    	try{
+  protected Session wsout;
 
-            while ((line = in.readLine())!=null) {
-        	
-                try {
-                    
-                    // readLine will block if nothing to send
-                    
-                    // String line = in.readLine();
-                    
-                    log.debug("shell thread output >> " + line);
-                    
-                    if(!BaseTool.isNull(wsout) && wsout.isOpen()) {
-                        
-                        log.debug("wsout message {}:{}", token, line);
+  protected String token; // session token
 
-                        wsout.getBasicRemote().sendText(line); // for the All information web socket session
-                        
-                    }else {
-                        
-                        wsout = TerminalServlet.findSessionById(token);
-                        
-                    }
-                    
-                } catch (Exception e) {
-                    
-                    e.printStackTrace();
-                    
-                    // GeoweaverController.sessionManager.closeByToken(token);
-                    
-                }
-                
-            }
-            
-            log.debug("SSH session output thread ended");
+  protected boolean run = true;
 
-        }catch(Exception e){
+  protected String history_id;
 
-            e.printStackTrace();
+  @Autowired BaseTool bt;
+
+  public SSHLiveSessionOutput() {
+
+    // for spring
+
+  }
+
+  public void init(BufferedReader in, String token) {
+    log.info("created");
+    this.in = in;
+    this.token = token;
+    run = true;
+    wsout = TerminalServlet.findSessionById(token);
+  }
+
+  public void stop() {
+
+    run = false;
+  }
+
+  @Override
+  public void run() {
+
+    log.info("SSH session output thread started");
+
+    StringBuffer prelog =
+        new StringBuffer(); // the part that is generated before the WebSocket session is started
+
+    StringBuffer logs = new StringBuffer();
+
+    int linenumber = 0;
+
+    int startrecorder = -1;
+
+    int nullnumber = 0;
+
+    String line = null;
+
+    try {
+
+      while ((line = in.readLine()) != null) {
+
+        try {
+
+          // readLine will block if nothing to send
+
+          // String line = in.readLine();
+
+          log.debug("shell thread output >> " + line);
+
+          if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
+
+            log.debug("wsout message {}:{}", token, line);
+
+            wsout.getBasicRemote().sendText(line); // for the All information web socket session
+
+          } else {
+
+            wsout = TerminalServlet.findSessionById(token);
+          }
+
+        } catch (Exception e) {
+
+          e.printStackTrace();
+
+          // GeoweaverController.sessionManager.closeByToken(token);
+
         }
-        
+      }
 
+      log.debug("SSH session output thread ended");
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
     }
-    
-    public void setWebSocketSession(WebSocketSession session) {
-        log.info("received websocket session");
-//        this.out = session;
-    }
-    
+  }
+
+  public void setWebSocketSession(WebSocketSession session) {
+    log.info("received websocket session");
+    //        this.out = session;
+  }
 }

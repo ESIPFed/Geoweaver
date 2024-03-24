@@ -1,4 +1,5 @@
 package com.gw.ssh;
+
 /*
 
 The MIT License (MIT)
@@ -27,11 +28,10 @@ import org.springframework.security.core.AuthenticationException;
 
 public class SSHAuthenticationException extends AuthenticationException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public SSHAuthenticationException(String msg, Throwable t) {
-        super(msg, t);
-        // TODO Auto-generated constructor stub
-    }
-
+  public SSHAuthenticationException(String msg, Throwable t) {
+    super(msg, t);
+    // TODO Auto-generated constructor stub
+  }
 }
