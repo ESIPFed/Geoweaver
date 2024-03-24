@@ -1,123 +1,101 @@
 package com.gw.jpa;
 
 import java.sql.Date;
-
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
 import org.springframework.lang.NonNull;
 
 @Entity
 public class GWUser {
 
-    @Id
-    String id;
+  @Id String id;
 
-    @Column
-    @NonNull
-    String username;
-    
-    @Column
-    @NonNull
-    String password;
-    
-    @Column
-    String role;
-    
-    @Column
-    @NonNull
-    String email;
+  @Column @NonNull String username;
 
-    @Column
-    Boolean isactive;
+  @Column @NonNull String password;
 
-    @Column
-    Date registration_date;
-    
-    @Column
-    Date last_login_date;
+  @Column String role;
 
-    @Column
-    Boolean loggedIn;
+  @Column @NonNull String email;
 
-	public String getId() {
-		return this.id;
-	}
+  @Column Boolean isactive;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  @Column Date registration_date;
 
-	public String getUsername() {
-		return this.username;
-	}
+  @Column Date last_login_date;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  @Column Boolean loggedIn;
 
+  public String getId() {
+    return this.id;
+  }
 
-	public String getPassword() {
-		return this.password;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public String getUsername() {
+    return this.username;
+  }
 
-	public String getRole() {
-		return this.role;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+  public String getPassword() {
+    return this.password;
+  }
 
-	public String getEmail() {
-		return this.email;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  public String getRole() {
+    return this.role;
+  }
 
-	public Boolean getIsactive() {
-		return this.isactive;
-	}
+  public void setRole(String role) {
+    this.role = role;
+  }
 
-	public void setIsactive(Boolean isactive) {
-		this.isactive = isactive;
-	}
+  public String getEmail() {
+    return this.email;
+  }
 
-	public Date getRegistration_date() {
-		return this.registration_date;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-	public void setRegistration_date(Date registration_date) {
-		this.registration_date = registration_date;
-	}
+  public Boolean getIsactive() {
+    return this.isactive;
+  }
 
-	public Date getLast_login_date() {
-		return this.last_login_date;
-	}
+  public void setIsactive(Boolean isactive) {
+    this.isactive = isactive;
+  }
 
-	public void setLast_login_date(Date last_login_date) {
-		this.last_login_date = last_login_date;
-	}
+  public Date getRegistration_date() {
+    return this.registration_date;
+  }
 
-	public Boolean getLoggedIn() {
-		return this.loggedIn;
-	}
+  public void setRegistration_date(Date registration_date) {
+    this.registration_date = registration_date;
+  }
 
-	public void setLoggedIn(Boolean loggedIn) {
-		this.loggedIn = loggedIn;
-	}
+  public Date getLast_login_date() {
+    return this.last_login_date;
+  }
 
+  public void setLast_login_date(Date last_login_date) {
+    this.last_login_date = last_login_date;
+  }
 
+  public Boolean getLoggedIn() {
+    return this.loggedIn;
+  }
 
-    
+  public void setLoggedIn(Boolean loggedIn) {
+    this.loggedIn = loggedIn;
+  }
 }
