@@ -1017,6 +1017,10 @@ public class WorkflowTool {
 
 			JSONParser parser = new JSONParser();
 
+			if (workflow_id == null) {
+				throw new RuntimeException("Please save the  workflow to make changes to skip state");
+			}
+
 			Workflow wf = this.getById(workflow_id);
 
 			JSONArray nodes_array = (JSONArray)parser.parse(wf.getNodes());

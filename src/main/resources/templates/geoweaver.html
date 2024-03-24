@@ -168,12 +168,12 @@
 	
 		<div id="jsframe-container"></div>
 	
-		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh);">
+		<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh); display: flex;">
 			
 			<!-- Top menu bar -->
 
 			<!-- set site margin here -->
-			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px;">
+			<div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px; width:100%; flex-shrink: 0; flex-basis: auto;">
 				
 				<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); margin: 0;padding: 0; overflow-y: hidden;">
 
@@ -321,7 +321,7 @@
 				</div>
 			    <!-- Workspace -->
 			    
-			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0;">
+			    <div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0; margin-left: 25%; position: fixed;">
 
 					<button class="workspace_collapse_btn">&gt;&gt;&gt;</button>
 
@@ -437,11 +437,11 @@
 											<h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
 		
 											<ul class="lead" >
-												<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#processes">Processes</a> |  <a href="#workflow">Workflow </a>
+												<a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#geoweaver_processes">Processes</a> |  <a href="#workflow">Workflow </a>
 											</ul>
 		
 											<hr/>
-											<a id="quickstart"></a>
+											<a id="quickstart" style="scroll-margin-top: 6px;"></a>
 											<h2>Quick Start Guide</h2>
 											<h4>0. Get Geoweaver Password</h4>
 											<ul>
@@ -451,7 +451,7 @@
 											
 											<h4>1. Create and run a Process</h4>
 											<ul>
-												<li>Click <button type="button" class="btn btn-success btn-xs" id="newprocess">New Process</button> after 'Process' on the left menu.</li>
+												<li>Click <button type="button" class="btn btn-success btn-xs">New Process</button> after 'Process' on the left menu.</li>
 												<li>Select "Python" from the Language dropdown. </li>
 												<li>Input "helloworld" for the name. </li>
 												<li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
@@ -490,7 +490,7 @@
 		
 											</ul>
 											
-											<a id="supported_hosts"></a>
+											<a id="supported_hosts" style="scroll-margin-top: 6px;"></a>
 											<h2>Supported Hosts</h2>
 											
 											<h4>Linux/Win/Mac Machine</h4>
@@ -501,7 +501,8 @@
 											
 											<p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
 		
-											<a id="processes"></a>
+											<a id="geoweaver_processes"
+											style="scroll-margin-top: 6px;"></a>
 											<h2>Processes</h2>
 											
 											<p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
@@ -525,7 +526,7 @@
 												Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database. 
 											All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
 												
-											<a id="workflow"></a>
+											<a id="workflow" style="scroll-margin-top: 6px"></a>
 											<h2>Workflow</h2>
 														
 											<p>The workflow module allows users to compose a workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides an all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
@@ -666,7 +667,7 @@
 				</header> -->
 			 
 				<div class="cd-panel__container">
-				   <div class="cd-panel__content" id="prompt-panel-main" style="height:calc(100% - 105px); width:100%;">
+				   <div class="cd-panel__content" id="prompt-panel-main" style="height:calc(100% - 95px); width:100%;">
 					  <!-- your side panel content here -->
 				   </div> <!-- cd-panel__content -->
 				</div> <!-- cd-panel__container -->
