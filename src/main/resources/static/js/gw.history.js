@@ -447,8 +447,7 @@ GW.history = {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();
                 const rowStatus = data[4].toLowerCase();
         
-                console.log("Selected Status:", selectedStatus);
-                console.log("Row Status:", rowStatus);
+               
         
                 if(selectedStatus === "" && rowStatus === "skipped") {
                     return false;
@@ -471,7 +470,7 @@ GW.history = {
 
         $('#statusFilter').on('change', function () {
             var value = $(this).val();
-            console.log(value);
+            
             table.draw();
         });
 
