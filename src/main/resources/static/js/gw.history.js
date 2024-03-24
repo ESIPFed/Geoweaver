@@ -289,8 +289,7 @@ GW.history = {
         content += "</tbody>";
 
         $('#statusFilter').on('change', function () {
-            alert("ok");
-            console.log("status filter changed");
+          
             var value = $(this).val();
             console.log(value);
         });
