@@ -3,188 +3,185 @@
  */
 
 GW.search = {
+  keywords: "",
 
-	keywords: "",
+  init: function () {
+    $("#instant_search_bar").on("input", function () {
+      GW.search.keywords = $(this).val();
 
-	init: function(){
+      console.log("search string changed to: " + GW.search.keywords);
 
-		$("#instant_search_bar").on("input", function(){
+      GW.menu.refreshSearchResults();
 
-			GW.search.keywords = $(this).val();
+      if (GW.search.keywords != "") {
+        $("#clean_search_field").css("visibility", "visible");
+      } else {
+        $("#clean_search_field").css("visibility", "hidden");
+      }
+    });
 
-			console.log("search string changed to: " + GW.search.keywords);
+    $("#clean_search_field").click(function () {
+      $("#instant_search_bar").val("");
 
-			GW.menu.refreshSearchResults();
+      GW.search.keywords = "";
 
-			if(GW.search.keywords != ""){
+      $("#clean_search_field").css("visibility", "hidden");
 
-				$("#clean_search_field").css("visibility", "visible")
+      GW.menu.refreshSearchResults();
+    });
+  },
 
-			}else{
+  filterMenuListUtil: function (
+    folder_div_name,
+    parent_div_name,
+    li_class_name,
+  ) {
+    $("#" + parent_div_name).collapse("show");
 
-				$("#clean_search_field").css("visibility", "hidden")
+    $("#" + folder_div_name).collapse("show");
 
-			}
+    $("#" + parent_div_name)
+      .find("li." + li_class_name)
+      .each(function (index) {
+        host_name_div = $(this).find("div.col-md-8").first();
 
-		});
+        if (host_name_div.length == 0) host_name_div = $(this); //workflow doesn't have second level div
 
-		$("#clean_search_field").click(function(){
+        host_name = host_name_div.text();
 
-			$("#instant_search_bar").val("")
+        if (GW.search.keywords != "") {
+          if (
+            host_name.toLowerCase().includes(GW.search.keywords.toLowerCase())
+          ) {
+            // $(this).css("background-color", "yellow")
+            var re = new RegExp(GW.search.keywords, "g");
+            new_host_name = host_name.replace(
+              re,
+              "<font style='background-color: yellow; color: black;'>" +
+                GW.search.keywords +
+                "</font>",
+            );
+            host_name_div.html(new_host_name);
 
-			GW.search.keywords = "";
+            $(this).show();
+          } else {
+            var re = new RegExp(
+              "<font style='background-color: yellow; color: black;'>" +
+                GW.search.keywords +
+                "</font>",
+              "g",
+            );
+            new_host_name = host_name.replace(re, GW.search.keywords);
 
-			$("#clean_search_field").css("visibility", "hidden")
+            host_name_div.html(new_host_name);
 
-			GW.menu.refreshSearchResults();
+            $(this).hide();
+          }
+        } else {
+          var re = new RegExp(
+            "<font style='background-color: yellow; color: black;'>" +
+              GW.search.keywords +
+              "</font>",
+            "g",
+          );
 
-		});
-	},
+          new_host_name = host_name.replace(re, GW.search.keywords);
 
-	filterMenuListUtil: function(folder_div_name, parent_div_name, li_class_name){
+          host_name_div.html(new_host_name);
 
-		$("#"+parent_div_name).collapse("show");
+          $(this).show();
 
-		$("#"+folder_div_name).collapse("show");
+          $("#" + folder_div_name).collapse("hide");
 
-		$("#"+parent_div_name).find("li."+li_class_name).each(function(index){
+          $("#" + parent_div_name).collapse("hide");
+        }
+      });
+  },
 
-			host_name_div = $( this ).find("div.col-md-8").first()
+  showResults: function (data) {
+    var content =
+      '<div class="modal-body" style="font-size: 12px;"><table class="table">' +
+      "	  <thead>" +
+      "	    <tr>" +
+      '	      <th scope="col">Name</th>' +
+      '	      <th scope="col">Description</th>' +
+      '	      <th scope="col">Type</th>' +
+      "	    </tr>" +
+      "	  </thead>" +
+      "	  <tbody>";
 
-			if(host_name_div.length == 0)
-				host_name_div = $( this ) //workflow doesn't have second level div
+    for (var i = 0; i < data.length; i += 1) {
+      content +=
+        "<tr>" +
+        '      <td><a href="javascript:void(0)" onclick="GW.menu.details(\'' +
+        data[i].id +
+        "', '" +
+        data[i].type +
+        "')\" >" +
+        data[i].name +
+        "</td>" +
+        "      <td>" +
+        data[i].desc +
+        "</td>" +
+        "      <td>" +
+        data[i].type +
+        "</td>" +
+        "    </tr>";
+    }
 
-			host_name = host_name_div.text()
+    content += "</tbody></table></div>";
 
-			if(GW.search.keywords!=""){
-			
-				if(host_name.toLowerCase().includes(GW.search.keywords.toLowerCase())){
+    var frame = GW.process.createJSFrameDialog(
+      800,
+      500,
+      content,
+      "Search Results",
+    );
+  },
 
-					// $(this).css("background-color", "yellow")
-					var re = new RegExp(GW.search.keywords,"g");
-					new_host_name = host_name.replace(re,"<font style='background-color: yellow; color: black;'>"+
-						GW.search.keywords+"</font>")
-					host_name_div.html(new_host_name)
+  send: function (keywords, type) {
+    $.ajax({
+      url: "search",
 
-					$(this).show()
+      type: "POST",
 
-				}else{
+      data: { keywords: keywords, type: type },
+    })
+      .success(function (data) {
+        data = $.parseJSON(data);
 
-					var re = new RegExp("<font style='background-color: yellow; color: black;'>"+
-					GW.search.keywords+"</font>","g");
-					new_host_name = host_name.replace(re, GW.search.keywords)
+        GW.search.showResults(data);
+      })
+      .fail(function () {
+        alert("Fail to send search request.");
+      });
+  },
 
-					host_name_div.html(new_host_name)
+  selectType: function () {
+    $("#resource-type-select").text($(this).text());
+  },
 
-					$(this).hide()
+  showDialog: function () {
+    var content =
+      '<div class="modal-body"><div class="row"><div class="md-form active-cyan-2 mb-3 col-md-8">' +
+      '	  <input class="form-control" type="text" placeholder="Search" id="keywords" aria-label="Search">' +
+      '	</div><div class="col-md-4"><select class="form-control" id="resource-type-select"> ' +
+      '	  <option selected value="all">All</option> ' +
+      '	  <option value="host">Host</option> ' +
+      '	  <option value="process">Process</option> ' +
+      '	  <option value="workflow">Workflow</option> ' +
+      "	</select>" +
+      "	</div></div></div></div>";
 
-				}
-			
-			}else{
+    content +=
+      '<div class="modal-footer">' +
+      '<button type="button" id="search" class="btn btn-outline-primary">Search</button> ' +
+      "</div>";
 
-				var re = new RegExp("<font style='background-color: yellow; color: black;'>"+
-					GW.search.keywords+"</font>","g");
-				
-				new_host_name = host_name.replace(re, GW.search.keywords)
+    var frame = GW.process.createJSFrameDialog(500, 200, content, "Search");
 
-				host_name_div.html(new_host_name)
-				
-				$(this).show()
-
-				$("#"+folder_div_name).collapse("hide");
-
-				$("#"+parent_div_name).collapse("hide");
-				
-			}
-		
-		})
-
-	},
-		
-	showResults: function(data){
-		
-		var content = "<div class=\"modal-body\" style=\"font-size: 12px;\"><table class=\"table\">"+
-			"	  <thead>"+
-			"	    <tr>"+
-			"	      <th scope=\"col\">Name</th>"+
-			"	      <th scope=\"col\">Description</th>"+
-			"	      <th scope=\"col\">Type</th>"+
-			"	    </tr>"+
-			"	  </thead>"+
-			"	  <tbody>";
-		
-		for(var i=0;i<data.length;i+=1){
-			
-			content += "<tr>"+
-				"      <td><a href=\"javascript:void(0)\" onclick=\"GW.menu.details('"+
-				data[i].id + "', '" + data[i].type + 
-				"')\" >"+data[i].name+"</td>"+
-				"      <td>"+data[i].desc+"</td>"+
-				"      <td>"+data[i].type+"</td>"+
-				"    </tr>";
-			
-		}
-		
-		content += "</tbody></table></div>";
-		
-		var frame = GW.process.createJSFrameDialog(800, 500, content, "Search Results")
-		
-	},
-	
-	send: function(keywords, type){
-		
-		$.ajax({
-			
-			url: "search",
-			
-			type: "POST",
-			
-			data: { keywords: keywords, type: type}
-			
-		}).success(function(data){
-			
-			data = $.parseJSON(data);
-			
-			GW.search.showResults(data);
-			
-		}).fail(function(){
-			
-			alert("Fail to send search request.");
-			
-		});
-		
-	},
-	
-	selectType: function(){
-		
-		$("#resource-type-select").text($(this).text());
-		
-	},
-	
-	showDialog: function(){
-
-		var content = "<div class=\"modal-body\"><div class=\"row\"><div class=\"md-form active-cyan-2 mb-3 col-md-8\">"+
-		"	  <input class=\"form-control\" type=\"text\" placeholder=\"Search\" id=\"keywords\" aria-label=\"Search\">"+
-		"	</div><div class=\"col-md-4\"><select class=\"form-control\" id=\"resource-type-select\"> "+
-		"	  <option selected value=\"all\">All</option> "+
-		"	  <option value=\"host\">Host</option> "+
-		"	  <option value=\"process\">Process</option> "+
-		"	  <option value=\"workflow\">Workflow</option> "+
-		"	</select>"+
-		"	</div></div></div></div>";
-		
-		content += '<div class="modal-footer">' +
-			"<button type=\"button\" id=\"search\" class=\"btn btn-outline-primary\">Search</button> "+
-			'</div>';
-		
-		var frame = GW.process.createJSFrameDialog(500, 200, content, "Search")
-		
-		$("#search").click(function(){
-			
-			GW.search.send($("#keywords").val(), $("#resource-type-select").val());
-			
-		});
-		
-	}
-		
-}
+    $("#search").click(function () {
+      GW.search.send($("#keywords").val(), $("#resource-type-select").val());
+    });
+  },
+};
