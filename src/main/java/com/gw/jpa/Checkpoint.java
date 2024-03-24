@@ -39,21 +39,21 @@ public class Checkpoint {
     @Column(name = "executionId")
     private String executionId;
 
-    @Lob
-    @Column(name = "edges", columnDefinition = "CLOB")
-    private String edges;
+  @Lob
+  @Column(name = "edges", columnDefinition = "CLOB")
+  private String edges;
 
-    @Lob
-    @Column(name = "nodes", columnDefinition = "CLOB")
-    private String nodes;
+  @Lob
+  @Column(name = "nodes", columnDefinition = "CLOB")
+  private String nodes;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "workflow_id")
-    private Workflow workflow;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "workflow_id")
+  private Workflow workflow;
 
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+  @Column(name = "created_at")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createdAt;
 
     @PrePersist
     protected void onCreate() {
