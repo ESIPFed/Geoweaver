@@ -25,7 +25,7 @@ GW.editor = {
       // subtabHistoryDiv.height('calc(100% - 150px)');
       sidepanel.height("100%");
       sidepanel.width("40%");
-      $("#prompt-panel-main").height("calc(100% - 105px)");
+      $("#prompt-panel-main").height("calc(100% - 95px)");
       $("#prompt-panel-main-process-info-code").height("100%");
       $("#prompt-panel-main-process-info-history").height("100%");
       GW.process.sidepanel.bottomDock();
