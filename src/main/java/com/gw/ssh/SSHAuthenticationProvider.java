@@ -1,4 +1,5 @@
 package com.gw.ssh;
+
 /*
 
 The MIT License (MIT)
@@ -23,9 +24,9 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import com.gw.tools.SessionManager;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,40 +39,37 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.gw.tools.SessionManager;
-
 @Service
 @Scope("prototype")
 public class SSHAuthenticationProvider implements AuthenticationProvider {
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+  protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-    
-    @Autowired
-    SSHSession sshSession;
+  private final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
-    public SessionManager sessionManager = new SessionManager();
+  @Autowired SSHSession sshSession;
 
-    public SSHAuthenticationProvider() {
-        authorities.add(new SimpleGrantedAuthority("USER"));
-    }
+  public SessionManager sessionManager = new SessionManager();
 
-    @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getPrincipal().toString();
-        String password = authentication.getCredentials().toString();
-        log.info("SSH Authentication Provider is called: {}:{}", username, password);
-        boolean success = sshSession.login("", "", username, password, "", false);
-        log.info("SSH login: {}={}", username, success);
-        Authentication result = new UsernamePasswordAuthenticationToken(username, password, authorities);
-        log.info("adding SSH session for {}", username);
-        return result;
-    }
+  public SSHAuthenticationProvider() {
+    authorities.add(new SimpleGrantedAuthority("USER"));
+  }
 
-    @Override
-    public boolean supports(Class<? extends Object> authentication) {
-        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
-    }
+  @Override
+  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    String username = authentication.getPrincipal().toString();
+    String password = authentication.getCredentials().toString();
+    log.info("SSH Authentication Provider is called: {}:{}", username, password);
+    boolean success = sshSession.login("", "", username, password, "", false);
+    log.info("SSH login: {}={}", username, success);
+    Authentication result =
+        new UsernamePasswordAuthenticationToken(username, password, authorities);
+    log.info("adding SSH session for {}", username);
+    return result;
+  }
 
+  @Override
+  public boolean supports(Class<? extends Object> authentication) {
+    return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+  }
 }

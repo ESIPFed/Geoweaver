@@ -1,35 +1,32 @@
 /**
- * 
+ *
  * About Geoweaver Page
- * 
+ *
  */
 
 GW.about = {
-		
-		dependency: "d3.js, bootstrap, jquery, codemirror, directed-graph-creator, dmuploader",
-		
-		content: "thanks to Colorado Reed (https://github.com/cjrd) for making the fantastic D3.js graph creator.",
-		
-		showDialog: function(){
-			
-			var content = '<div style=\"padding:10px\">'+
-					'<p class=\"text-left\">Geoweaver is a web system to allow users to easily compose and execute full-stack deep learning workflows in web browsers by ad hoc integrating the distributed spatial data facilities, high-performance computation platforms, and open-source deep learning libraries.</p>'+
-					
-					'<p class=\"text-left\" >Geoweaver (version '+ GW.version+') is currently supported by ESIPLab, <a href=\"https://www.nsf.gov/awardsearch/showAward?AWD_ID=1947893&HistoricalAwards=false\">NSF geoinformatics program #1947893 and #1947875</a> and '+
-					'<a href=\"https://earthdata.nasa.gov/esds/competitive-programs/access/geoweaver\">NASA ACCESS-19</a>. The source code is on <a href=\"http://github.com/ESIPFed/Geoweaver\">Github</a>.  </p>'+
-	            	
-	            	'<p class=\"text-left\">Geoweaver logo is designed by Dr. Annie Burgess <a href=\"mailto:annieburgess@esipfed.org\">contact</a>.</p>'+
-	            	
-	            	'<p class=\"text-left\">Geoweaver is a community effort and welcome all contributors. If you have any questions, please create a new issue in GitHub or directly <a href=\"mailto:zsun@Geoweaver provider.edu\">contact us</a></p></div>';
-			
-					
-			GW.process.createJSFrameDialog(720, 640, content, "About");
-			
-		},
+  dependency:
+    "d3.js, bootstrap, jquery, codemirror, directed-graph-creator, dmuploader",
 
-		showTerms: function(){
+  content:
+    "thanks to Colorado Reed (https://github.com/cjrd) for making the fantastic D3.js graph creator.",
 
-			var content = `
+  showDialog: function () {
+    var content =
+      '<div style="padding:10px">' +
+      '<p class="text-left">Geoweaver is a web system to allow users to easily compose and execute full-stack deep learning workflows in web browsers by ad hoc integrating the distributed spatial data facilities, high-performance computation platforms, and open-source deep learning libraries.</p>' +
+      '<p class="text-left" >Geoweaver (version ' +
+      GW.version +
+      ') is currently supported by ESIPLab, <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1947893&HistoricalAwards=false">NSF geoinformatics program #1947893 and #1947875</a> and ' +
+      '<a href="https://earthdata.nasa.gov/esds/competitive-programs/access/geoweaver">NASA ACCESS-19</a>. The source code is on <a href="http://github.com/ESIPFed/Geoweaver">Github</a>.  </p>' +
+      '<p class="text-left">Geoweaver logo is designed by Dr. Annie Burgess <a href="mailto:annieburgess@esipfed.org">contact</a>.</p>' +
+      '<p class="text-left">Geoweaver is a community effort and welcome all contributors. If you have any questions, please create a new issue in GitHub or directly <a href="mailto:zsun@Geoweaver provider.edu">contact us</a></p></div>';
+
+    GW.process.createJSFrameDialog(720, 640, content, "About");
+  },
+
+  showTerms: function () {
+    var content = `
 			
 			<div style="margin: 10px; font-size: 14px;">
 			<p>1. Scope</p>
@@ -103,10 +100,8 @@ GW.about = {
 			<p>12.1. Any supplementary agreement requires the written form.</p>
 			<p>12.2. The individual pages of the Geoweaver software are normally self operated and administered by Geoweaver users. The pages comply with the law applicable in the country where the responsible company has its business residence. Geoweaver provider makes no representation that information, software and/or documentation on the Geoweaver software are appropriate or available for viewing or downloading at locations outside such country. If Users access Geoweaver software from outside such country, they are exclusively responsible for compliance with all applicable local laws. Access to Geoweaver software's information, software and/or documentation from countries where such content is unlawful is prohibited. In this case and where User seeks to do business with Geoweaver provider, the User should contact the Geoweaver provider representative for the particular country for country specific business.</p>
 			<p>12.3. These Terms of Use shall be governed by - and all disputes relating to or in connection with these Terms of Use or their subject matter shall be resolved in accordance with - the laws of U.S.A, to the exclusion of its conflict of laws rules. The application of the United Nations Convention on Contracts for the International Sales of Goods (CISG) of 11 April 1980 is excluded.</p>
-			</div>]`
+			</div>]`;
 
-			GW.process.createJSFrameDialog(720, 640, content, "User Terms");
-
-		}
-		
-}
+    GW.process.createJSFrameDialog(720, 640, content, "User Terms");
+  },
+};
