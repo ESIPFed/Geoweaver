@@ -50,6 +50,12 @@ PyGeoWeaver is a Python package that provides a convenient and user-friendly int
 
 Please do visit the PyGeoWeaver GitHub repository.
 
+## Contributors
+
+Thanks to our many contributors!
+
+[![Contributors](https://contrib.rocks/image?repo=ESIPFed/Geoweaver)](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
+
 # Citation
 
 If you found Geoweaver helpful in your research, please cite: 
