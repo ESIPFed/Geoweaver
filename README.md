@@ -2,6 +2,8 @@
 
 # [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
+![logo](https://github.com/JYOSHREDDY/Geoweaver/blob/master/Geoweaver%20Banner.png)
+
 Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. 
 
 It can be run from both local and remote (distributed) machines.
@@ -11,6 +13,8 @@ Why choose Geoweaver?
 2) Stay organised and productive through out your years-long research
 4) Seamlessly connect to external servers with SSH.
 5) In-Built Web UI with full support for Python.
+
+For further insights into Geoweaver, please explore the website at https://geoweaver.dev
 
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
@@ -39,6 +43,18 @@ Only two things basically:
 # Demo
 
 [A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
+
+# [PyGeoWeaver](https://github.com/ESIPFed/pygeoweaver)
+
+PyGeoWeaver is a Python package that provides a convenient and user-friendly interface to interact with GeoWeaver, a powerful geospatial data processing application written in Java. With PyGeoWeaver, Jupyter notebook and JupyterLab users can seamlessly integrate and utilize the capabilities of GeoWeaver within their Python workflows.
+
+Please do visit the PyGeoWeaver GitHub repository.
+
+## Contributors
+
+Thanks to our many contributors!
+
+[![Contributors](https://contrib.rocks/image?repo=ESIPFed/Geoweaver)](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 
 # Citation
 
