@@ -1,3 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/*@import "tailwindcss/components.css";*/
+/*@import "tailwindcss/utilities.css";*/
+
 @font-face {
 	font-family: 'Raleway';
 	font-style: normal;
@@ -89,10 +95,9 @@ section {
 
 .font-default {
 	/*font-family: "Open Sans", Helvetica, Arial;*/
-	font-family: "Times New Roman", Times, serif
+	font-family: "Times New Roman", Times, serif;
 	font-weight: 200;
-	font-size: 1.6rem,
-	color: 
+	font-size: 1.6rem;
 }
 
 .font-default h1 {
