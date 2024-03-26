@@ -36,6 +36,26 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.gw.database.CheckpointRepository;
+import com.gw.database.WorkflowRepository;
+import com.gw.jpa.Checkpoint;
+import com.gw.search.GWSearchTool;
+import com.gw.ssh.RSAEncryptTool;
+import com.gw.ssh.SSHSession;
+import com.gw.tools.ProcessTool;
+import com.gw.tools.SessionManager;
+import com.gw.tools.WorkflowTool;
+import com.gw.tools.HostTool;
+import com.gw.tools.LocalhostTool;
+import com.gw.utils.BaseTool;
+import com.gw.utils.RandomString;
+
+import com.gw.jpa.GWUser;
+import com.gw.jpa.Host;
+import com.gw.jpa.Workflow;
+import com.gw.jpa.GWProcess;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +116,9 @@ public class GeoweaverController {
   @Autowired CheckpointTool checkpointTool;
 
   @Autowired UserTool ut;
+
+	@Autowired LocalhostTool lt;
+
 
   @Autowired private CheckpointRepository checkpointRepository;
 
@@ -1554,13 +1577,43 @@ public class GeoweaverController {
     return "error";
   }
 
-  /**
-   * Checks if an ID is null or empty and throws a runtime exception if it is.
-   *
-   * @param id The ID to check.
-   * @throws RuntimeException if the ID is null or empty.
-   */
-  void checkID(String id) {
-    if (BaseTool.isNull(id)) throw new RuntimeException("No ID found");
-  }
+	/**
+	 * Checks if an ID is null or empty and throws a runtime exception if it is.
+	 *
+	 * @param id The ID to check.
+	 * @throws RuntimeException if the ID is null or empty.
+	 */
+	void checkID(String id) {
+		if (BaseTool.isNull(id))
+			throw new RuntimeException("No ID found");
+	}
+
+	/**
+	 * Handles HTTP POST requests to authenticate the user
+	 *
+	 * @param model   The model to add attributes to.
+	 * @param request The web request containing user's encrypted password
+	 * @param session The HttpSession for user session management.
+	 * @return A response entity indicating successful authentication with a JSON response containing the authentication status, or an error if authentication fails.
+	 */
+	@RequestMapping(value = "/authenticateUser", method = RequestMethod.POST)
+	public ResponseEntity<String> authenticateUser(ModelMap model, WebRequest request, HttpSession session){
+
+		ResponseEntity<String> resp = null;
+		String successResp = null;
+		String.format("{\"ret\": \"success\"}");
+		
+		try {
+			String password = request.getParameter("password");
+			password = RSAEncryptTool.getPassword(password, session.getId());
+			lt.authenticate(password);
+			successResp = String.format("{\"ret\": \"success\"}");
+			resp = ResponseEntity.ok().body(successResp);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Authentication Failed. Wrong Password.");
+		}
+
+		return resp;
+	}
 }

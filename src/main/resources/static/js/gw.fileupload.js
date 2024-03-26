@@ -109,14 +109,68 @@ GW.fileupload = {
             GW.host.setCache(hid, GW.fileupload.password);
           }
 
-          GW.fileupload.showUploadDialog();
+             	
+						$.ajax({
+			
+							url: "key",
+							
+							type: "POST",
+							
+							data: ""
+							
+						}).done(function(msg){ 
+							var req = {};
 
-          GW.fileupload.password_frame.closeFrame();
-        });
+							var encrypt = new JSEncrypt();
 
-        $("#pswd-cancel-btn").click(function () {
-          GW.fileupload.password_frame.closeFrame();
-        });
+							msg = $.parseJSON(msg);
+							
+							req.host = hid;
+
+							req.token = GW.general.CLIENT_TOKEN;
+						
+							encrypt.setPublicKey(msg.rsa_public);
+							
+							req.password= encrypt.encrypt(GW.fileupload.password);
+
+							$.ajax({
+
+								url: "authenticateUser",
+
+								method: "POST",
+
+								data: req
+
+							}).done(function(){
+
+								GW.fileupload.showUploadDialog();
+
+								if(GW.fileupload.password_frame) {
+
+									GW.fileupload.password_frame.closeFrame();	  
+
+								}  		
+
+							}).fail(function(){
+		
+								alert("Authentication Failed");
+
+								if($("#inputpswd").length) $("#inputpswd").val("");
+				
+								if ($("#pswd-confirm-btn").prop("disabled")) {
+
+									$("#pswd-confirm-btn").prop("disabled", false);
+
+								}
+							})
+						
+							
+						});
+						
+					})
+					$("#pswd-cancel-btn").click(function(){
+						GW.fileupload.password_frame.closeFrame();	    		
+					})
       } else {
         GW.fileupload.password = GW.host.findCache(hid);
 
