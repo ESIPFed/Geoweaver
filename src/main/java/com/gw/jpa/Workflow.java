@@ -20,10 +20,8 @@ public class Workflow {
 	private String confidential;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String edges;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String nodes;
 }

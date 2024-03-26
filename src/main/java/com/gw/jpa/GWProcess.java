@@ -11,6 +11,7 @@ import javax.persistence.Id;
 
 /**
  * Process POJO
+ * 
  * @author jensensun
  *
  */
@@ -26,18 +27,17 @@ public class GWProcess {
 	private String name;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
+
 	private String description;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
+
 	private String code;
 
 	private String lang;
 
 	private String owner;
 
-	//true: private; false: public
+	// true: private; false: public
 	private String confidential;
 }
-

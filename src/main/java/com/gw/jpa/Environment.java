@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,6 +28,6 @@ public class Environment {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Host hostobj;
 
-	@Column(columnDefinition = "LONGTEXT")
+	@Lob
 	private String settings;
 }
