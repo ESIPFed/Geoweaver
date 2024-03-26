@@ -1,6 +1,5 @@
 package com.gw.jpa;
 
-
 import lombok.Data;
 
 import java.util.Date;
@@ -20,11 +19,9 @@ public class History {
 	private String history_id;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String history_input;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String history_output;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -33,7 +30,7 @@ public class History {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date history_end_time;
 
-	@Column(columnDefinition = "TEXT")
+	@Lob
 	private String history_notes;
 
 	private String history_process;
@@ -42,4 +39,3 @@ public class History {
 
 	private String indicator;
 }
-
