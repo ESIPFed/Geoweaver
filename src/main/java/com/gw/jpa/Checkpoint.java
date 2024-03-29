@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -50,11 +50,11 @@ public class Checkpoint {
   private Workflow workflow;
 
   @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-  private LocalDateTime createdAt;
+  private Date createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = new Date();
     }
 
 }

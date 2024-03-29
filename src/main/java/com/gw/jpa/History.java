@@ -3,11 +3,11 @@ package com.gw.jpa;
 
 import lombok.Data;
 
-import java.time.LocalDate;
 
 import javax.persistence.Lob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 @Data
@@ -22,9 +22,9 @@ public class History {
 	@Lob
 	private String history_output;
 
-	private LocalDate history_begin_time;
+	private Date history_begin_time;
 
-	private LocalDate history_end_time;
+	private Date history_end_time;
 
 	private String history_notes;
 

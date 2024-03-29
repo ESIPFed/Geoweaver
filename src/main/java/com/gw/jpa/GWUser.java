@@ -1,13 +1,12 @@
 package com.gw.jpa;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 
@@ -32,9 +31,9 @@ public class GWUser {
 
     private Boolean isactive;
 
-    private LocalDate registration_date;
+    private Date registration_date;
 
-    private LocalDate last_login_date;
+    private Date last_login_date;
 
     private Boolean loggedIn;
 

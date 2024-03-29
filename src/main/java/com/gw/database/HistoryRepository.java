@@ -6,10 +6,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
+
 /**
  * The HistoryRepository interface provides methods for querying historical execution data (history)
  * from a database. It extends the JpaRepository interface to handle database operations.
  */
+@Transactional
 public interface HistoryRepository extends JpaRepository<History, String> {
 
   /**
@@ -19,19 +22,15 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param limit The maximum number of history records to retrieve.
    * @return A collection of recent history records for the host.
    */
-  @Query(
-      value = "select * from history where host_id = ?1 ORDER BY history_begin_time DESC limit ?2",
-      nativeQuery = true)
-  Collection<History> findRecentHistory(String hostid, int limit);
+  @Query(value = "SELECT * FROM history WHERE host_id = ?1 ORDER BY history_begin_time DESC LIMIT ?2", nativeQuery = true)
+  List<History> findRecentHistory(String hostid, int limit);
 
   /**
    * Find all running history records.
    *
    * @return A list of all running history records.
    */
-  @Query(
-      value = "select * from history where indicator='Running'  ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history WHERE indicator = 'Running' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<History> findAllRunningResource();
 
   /**
@@ -39,11 +38,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    *
    * @return A list of all running workflow records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, workflow where history.history_process = workflow.id and"
-              + " history.indicator = 'Running' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, workflow WHERE history.history_process = workflow.id AND history.indicator = 'Running' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findRunningWorkflow();
 
   /**
@@ -51,11 +46,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    *
    * @return A list of all failed workflow records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, workflow where history.history_process = workflow.id and"
-              + " history.indicator = 'Failed' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, workflow WHERE history.history_process = workflow.id AND history.indicator = 'Failed' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findFailedWorkflow();
 
   /**
@@ -63,11 +54,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    *
    * @return A list of all successful workflow records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, workflow where history.history_process = workflow.id and"
-              + " history.indicator = 'Done' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, workflow WHERE history.history_process = workflow.id AND history.indicator = 'Done' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findSuccessWorkflow();
 
   /**
@@ -75,35 +62,25 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    *
    * @return A list of all running process records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, gwprocess where history.history_process = gwprocess.id and"
-              + " history.indicator = 'Running' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_process = gwprocess.id AND history.indicator = 'Running' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findRunningProcess();
+
 
   /**
    * Find all failed processes.
    *
    * @return A list of all failed process records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, gwprocess where history.history_process = gwprocess.id and"
-              + " history.indicator = 'Failed' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_process = gwprocess.id AND history.indicator = 'Failed' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findFailedProcess();
+
 
   /**
    * Find all successfully completed processes.
    *
    * @return A list of all successful process records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, gwprocess where history.history_process = gwprocess.id and"
-              + " history.indicator = 'Done' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_process = gwprocess.id AND history.indicator = 'Done' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findSuccessProcess();
 
   /**
@@ -112,12 +89,9 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param pid The ID of the process.
    * @return A list of history records associated with the specified process ID.
    */
-  @Query(
-      value =
-          "select * from history where history.history_process = ?1 ORDER BY history_begin_time"
-              + " DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history WHERE history_process = ?1 ORDER BY history_begin_time DESC", nativeQuery = true)
   List<History> findByProcessId(String pid);
+
 
   /**
    * Find history records by process ID, excluding 'Skipped' indicator.
@@ -126,12 +100,9 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @return A list of history records associated with the specified process ID, excluding 'Skipped'
    *     records.
    */
-  @Query(
-      value =
-          "select * from history where history.history_process = ?1 and history.history_input !="
-              + " 'No code saved' ORDER BY history_begin_time DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history WHERE history_process = ?1 AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<History> findByProcessIdIgnoreUnknown(String pid);
+
 
   /**
    * Find history records by workflow ID.
@@ -139,11 +110,7 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param wid The ID of the workflow.
    * @return A list of history records associated with the specified workflow ID.
    */
-  @Query(
-      value =
-          "select * from history where history.history_process = ?1 ORDER BY history_begin_time"
-              + " DESC;",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history WHERE history_process = ?1 ORDER BY history_begin_time DESC", nativeQuery = true)
   List<History> findByWorkflowId(String wid);
 
   /**
@@ -152,12 +119,9 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param limit The maximum number of recent workflow records to retrieve.
    * @return A list of recent workflow records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, workflow where workflow.id = history.history_process ORDER BY"
-              + " history_begin_time DESC limit ?1",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, workflow WHERE workflow.id = history.history_process ORDER BY history_begin_time DESC LIMIT ?1", nativeQuery = true)
   List<Object[]> findRecentWorkflow(int limit);
+
 
   /**
    * Find recent process records, limited by the specified count.
@@ -165,12 +129,9 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param limit The maximum number of recent process records to retrieve.
    * @return A list of recent process records with additional information.
    */
-  @Query(
-      value =
-          "select * from history, gwprocess where gwprocess.id = history.history_process ORDER BY"
-              + " history_begin_time DESC limit ?1",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history, gwprocess WHERE gwprocess.id = history.history_process ORDER BY history_begin_time DESC LIMIT ?1", nativeQuery = true)
   List<Object[]> findRecentProcess(int limit);
+
 
   /**
    * Find a history record associated with a specific history ID.
@@ -179,15 +140,11 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @return A list containing a history record and additional information about the associated
    *     process.
    */
-  @Query(
-      value = "select * from history where history.history_id = ?1 and history.history_process=?2",
-      nativeQuery = true)
+  @Query(value = "SELECT * FROM history WHERE history_id = ?1 AND history_process = ?2", nativeQuery = true)
   List<History> findHistoryWithExecutionId(String history_id, String workflowId);
 
-  @Query(
-      value =
-          "select * from history, gwprocess where history.history_id = ?1 and"
-              + " history.history_process=gwprocess.id",
-      nativeQuery = true)
+
+  @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_id = ?1 AND history.history_process = gwprocess.id", nativeQuery = true)
   List<Object[]> findOneHistoryofProcess(String history_id);
+
 }

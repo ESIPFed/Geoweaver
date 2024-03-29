@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
+
 /**
  * The HostRepository interface provides methods for querying host-related information from the
  * database. It extends the CrudRepository interface to handle basic CRUD operations.
  */
+@Transactional
 public interface HostRepository extends CrudRepository<Host, String> {
 
   /**
