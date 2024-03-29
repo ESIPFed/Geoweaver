@@ -10,8 +10,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,14 +17,14 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "WorkflowCheckpoint")
 @Getter
 @Setter
-@NoArgsConstructor // Lombok annotations
+@NoArgsConstructor
 public class Checkpoint {
 
     @Id
@@ -51,13 +49,12 @@ public class Checkpoint {
   @JoinColumn(name = "workflow_id")
   private Workflow workflow;
 
-  @Column(name = "created_at")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date createdAt;
+  @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+  private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
+        createdAt = LocalDateTime.now();
     }
 
 }
