@@ -81,57 +81,97 @@ GW.process.util = {
       for (var j = 0; j < code.params.length; j += 1) {
         $("#param_" + code.params[j].name).val(code.params[j].value);
       }
-    } else {
+    } else if(code_type=="shell"){
+
+			
+
       var lang = GW.general.getCodeStyleByLang(code_type);
-
+      
       val = GW.process.unescape(code);
-
+      
       code = val;
 
-      $(process_window_container_id).css("background-color", "rgb(28,28,28)");
+      $(process_window_container_id).css( "background-color", "rgb(28,28,28)" );
 
-      $(code_editor_container_id).css({ "overflow-y": "" });
-
-      let neweditor = CodeMirror(
-        document.getElementById(code_editor_container_id.substring(1)),
-        {
-          lineNumbers: true,
-          lineWrapping: true,
-          theme: "yonce",
-          mode: "python",
-          readOnly: false,
-          value: code,
-          foldGutter: true,
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-          extraKeys: {
-            "Ctrl-L": function () {
-              console.log("ctrl l clicked");
-            },
-
-            "Ctrl-Space": "autocomplete",
-            "Ctrl-B": "blockComment",
-            "Ctrl-/": "toggleComment",
-            "Ctrl-F-D": "foldCode",
-            "Ctrl-Q": function (cm) {
-              cm.foldCode(cm.getCursor());
-            },
-          },
-        },
-      );
+      $(code_editor_container_id).css({ 'overflow-y' : ''});
+      
+      let neweditor = CodeMirror(document.getElementById(code_editor_container_id.substring(1)), {
+              lineNumbers: true,
+              lineWrapping: true,
+              theme: "yonce",
+              mode: "python",
+              readOnly: false,
+              value: code,
+              foldGutter: true,
+              gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+              extraKeys: {
+                      
+                      "Ctrl-L": function(){
+                          console.log("ctrl l clicked")
+                      },
+                          
+                      "Ctrl-Space": "autocomplete",
+                      "Ctrl-B": "blockComment",
+                      "Ctrl-/": "toggleComment",
+                      "Ctrl-F-D": "foldCode",
+                      "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
+              }
+      });
 
       neweditor.foldCode(CodeMirror.Pos(0, 0));
+      
+      neweditor.on("change", function(instance, event){
 
-      neweditor.on("change", function (instance, event) {
-        GW.process.showNonSaved();
-      });
-      //				$(".CodeMirror").css('font-size',"10pt");
-      $(".CodeMirror").css("height", "100%");
-      $(".CodeMirror").css("max-height", "100%");
+          GW.process.showNonSaved();
 
+        });
+//				$(".CodeMirror").css('font-size',"10pt");
+      $(".CodeMirror").css('height',"100%");
+      $(".CodeMirror").css('max-height',"100%");
+      
       GW.process.util.refreshCodeEditor();
 
-      return neweditor;
-    }
+      return neweditor
+  }
+  else{
+
+      require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
+
+  require(['vs/editor/editor.main'], function() {
+      var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
+      var container = document.getElementById(editorContainerId);
+
+      if (!container) {
+          console.error('Editor container not found.');
+          return;
+      }
+
+      container.style.height = '820px'; // Set a non-zero height
+      container.style.width = '100%'; // Set the width to fill the container
+
+      var editor = monaco.editor.create(container, {
+          value: code || '# Write your first Python code in Geoweaver',
+          language: 'python',
+          theme: 'vs-dark',
+          lineNumbers: true,
+          roundedSelection: false,
+          scrollBeyondLastLine: false,
+          readOnly: false,
+          fontSize: 14,
+          automaticLayout: true
+      });
+
+      GW.process.editor = editor;
+
+      editor.onDidChangeModelContent(function(event) {
+          console.log('Content changed');
+      });
+
+      // Add any additional editor options or event listeners here
+  });
+
+  }
+  
   },
 
   activateResizer: function (resizer_line_id) {

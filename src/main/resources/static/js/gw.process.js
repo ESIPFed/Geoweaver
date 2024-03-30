@@ -240,68 +240,43 @@ GW.process = {
     );
   },
 
-  showPython: function (code, cmid) {
-    //			var cmid = Math.floor(Math.random() * 100);
+  showPython: function(code, cmid) {
+    // Define the path to the Monaco Editor's package
+        require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-    $("#codearea-" + cmid).append(
-      '<textarea id="codeeditor-' +
-        cmid +
-        '" style="height:200px;" placeholder="Code goes here..."></textarea>',
-    );
+        // Load the main module of Monaco Editor to start its setup
+        require(['vs/editor/editor.main'], function() {
+            // Ensure the target container for the editor exists and is empty
+            var editorContainerId = 'codeeditor-' + cmid;
+            var container = $("#codearea-" + cmid);
+            container.empty(); // Clear previous instances if any
+            container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
 
-    //initiate the code editor
-
-    GW.process.editor = CodeMirror.fromTextArea(
-      document.getElementById("codeeditor-" + cmid),
-      {
-        lineNumbers: true,
-        // lineNumbers: false, //for test purpose
-
-        lineWrapping: true,
-
-        theme: "yonce",
-
-        mode: "python",
-
-        gutters: ["CodeMirror-lint-markers"],
-
-        lint: true, //this doesn't work for Python scripts in codemirror. Need external pylint service.
-
-        extraKeys: {
-          // "Ctrl-S": function(instance) {
-
-          // 	GW.process.update(GW.process.current_pid, cmid);
-
-          //  },
-
-          "Ctrl-Space": "autocomplete",
-          "Ctrl-/": "toggleComment",
-          // "Ctrl-f-l": "foldCode"
-          // "Ctrl-k-c": "blockComment"
-        },
-      },
-    );
-
-    // GW.process.editor.on("change", function(instance, event){
-
-    // 	GW.process.showNonSaved();
-
-    // });
-
-    $(".CodeMirror").css("font-size", "10pt");
-
-    // $(".CodeMirror").css('height',"auto");
-
-    // GW.process.editor.setSize(null, 360);
-
-    if (code != null) {
-      GW.process.editor.setValue(GW.process.unescape(code));
-    } else {
-      GW.process.editor.setValue("# Write first python in Geoweaver");
-    }
-
-    GW.process.util.refreshCodeEditor();
-  },
+            // $('#' + editorContainerId).css({
+            // 	height: '200px', // Ensure this matches the height set above or any other desired value
+            // 	width: '100%', // Full width
+            
+            // 	// Add other styles as needed
+            // });
+            
+            
+            // Initialize the Monaco Editor with Python configuration
+            var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+                value: code || '# Write your first Python code in Geoweaver',
+                language: 'python',
+                theme: 'vs-dark', // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
+                lineNumbers: 'on',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: false,
+                fontSize: 10,
+                automaticLayout: true,
+            });
+   
+            GW.process.editor = editor;
+            
+            });
+},
 
   uploadAndReplaceJupyterCode: function () {
     GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
