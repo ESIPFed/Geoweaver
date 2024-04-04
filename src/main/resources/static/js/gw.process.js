@@ -102,71 +102,43 @@ GW.process = {
   },
 
   showShell: function (code, cmid) {
-    $("#codearea-" + GW.process.cmid).append(
-      '<textarea id="codeeditor-' +
-        cmid +
-        '" class="CodeMirror" placeholder="Code goes here..." ></textarea>',
-    );
 
-    //initiate the code editor
+    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-    GW.process.editor = CodeMirror.fromTextArea(
-      document.getElementById("codeeditor-" + cmid),
-      {
-        lineNumbers: true,
+    // Load the main module of Monaco Editor to start its setup
+    require(['vs/editor/editor.main'], function() {
+        // Ensure the target container for the editor exists and is empty
+        var editorContainerId = 'codeeditor-' + cmid;
+        var container = $("#codearea-" + cmid);
+        container.empty(); // Clear previous instances if any
+        container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
 
-        lineWrapping: true,
+        // $('#' + editorContainerId).css({
+        // 	height: '200px', // Ensure this matches the height set above or any other desired value
+        // 	width: '100%', // Full width
+        
+        // 	// Add other styles as needed
+        // });
+        
+        
+        // Initialize the Monaco Editor with Python configuration
+        var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+            value: code || '#!/bin/bash',
+            language: 'shell',
+            theme: 'vs-dark', // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            fontSize: 10,
+            automaticLayout: true,
+        });
 
-        toggleComment: true,
+        GW.process.editor = editor;
+        
+        });
 
-        mode: "shell",
 
-        lint: true, //this doesn't work for shell script.
-
-        gutters: ["CodeMirror-lint-markers"],
-
-        extraKeys: {
-          // "Ctrl-S": function(instance) {
-
-          // 		GW.process.update(GW.process.current_pid, cmid); //ctrl-s save already defined for the whole page
-
-          // }
-          //"Ctrl-/": "toggleComment",
-          "Ctrl-Space": "autocomplete",
-          "Ctrl-/": function () {
-            console.log("togglecomment clicked");
-
-            GW.process.editor.execCommand("toggleComment");
-          },
-        },
-      },
-    );
-
-    GW.process.editor.on("focus", function (instance, event) {
-      if (GW.process.editor.isReadOnly()) {
-        GW.general.showToasts(
-          'In Readonly Mode! Click the "edit" button to update.',
-        );
-      }
-
-      console.log(instance, event);
-    });
-
-    $(".CodeMirror").css("font-size", "10pt");
-
-    $(".CodeMirror").css("height", "100%");
-
-    //$(".CodeMirror").css('height',"auto");
-
-    // GW.process.editor.setSize("100%", "100%");
-
-    if (code != null) {
-      GW.process.editor.setValue(GW.process.unescape(code));
-    } else {
-      GW.process.editor.setValue("#!/bin/bash\n#write your bash script\n");
-    }
-
-    GW.process.util.refreshCodeEditor();
   },
 
   load_jupyter: function () {
@@ -558,6 +530,134 @@ GW.process = {
    * @param current_code
    * @param previous_code
    */
+
+  // diffDialog: function (current_history, previous_history) {
+  //   current_code = current_history.code;
+  //   previous_code = previous_history.code;
+
+  //   console.log("previous_code : " + previous_code);
+  //   console.log("current_code : " + current_code);
+  //   // get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
+  //   var content =
+  //     `<div class="modal-body">
+	// 		<div class="row">
+	// 			<div class="col col-md-3"><b>ID</b></div>
+	// 			<div class="col col-md-3">` +
+  //     current_history.hid +
+  //     `</div>
+	// 			<div class="col col-md-3"><b>ID</b></div>
+	// 			<div class="col col-md-3">` +
+  //     previous_history.hid +
+  //     `</div>
+	// 		</div>
+	// 		<div class="row">
+	// 			<div class="col col-md-3"><b>BeginTime</b></div>
+	// 			<div class="col col-md-3">` +
+  //     current_history.begin_time +
+  //     `</div>
+	// 			<div class="col col-md-3"><b>BeginTime</b></div>
+	// 			<div class="col col-md-3">` +
+  //     previous_history.begin_time +
+  //     `</div>
+	// 		</div>
+	// 		<div class="row">
+	// 			<div class="col col-md-3"><b>EndTime</b></div>
+	// 			<div class="col col-md-3">` +
+  //     current_history.end_time +
+  //     `</div>
+	// 			<div class="col col-md-3"><b>EndTime</b></div>
+	// 			<div class="col col-md-3">` +
+  //     previous_history.end_time +
+  //     `</div>
+	// 		</div>
+	// 		<div class="row">
+	// 			<div class="col col-md-3"><b>Notes</b></div>
+	// 			<div class="col col-md-3">` +
+  //     current_history.notes +
+  //     `</div>
+	// 			<div class="col col-md-3"><b>Notes</b></div>
+	// 			<div class="col col-md-3">` +
+  //     previous_history.notes +
+  //     `</div>
+	// 		</div>
+	// 		<div class="row">
+	// 			<div class="col col-md-3"><b>Status</b></div>
+	// 			<div class="col col-md-3">` +
+  //     current_history.status +
+  //     `</div>
+	// 			<div class="col col-md-3"><b>Status</b></div>
+	// 			<div class="col col-md-3">` +
+  //     previous_history.status +
+  //     `</div>
+	// 		</div>
+	// 		<br/>
+	// 		<label>Code Comparision</label>
+	// 		<br/>
+	// 		<div id=\"process-difference-comparison-code-view"\></div>
+	// 		<br/>
+	// 		<br/>
+	// 		<label>Result Comparision</label>
+	// 		<div id=\"process-difference-comparison-result-view"\></div>
+	// 		</div>`;
+
+  //   GW.process.createJSFrameDialog(720, 640, content, "History Details");
+  //   var history_value,
+  //     results_value,
+  //     orig1,
+  //     orig2,
+  //     dv,
+  //     panes = 2,
+  //     highlight = true,
+  //     connect = "align",
+  //     collapse = false;
+  //   // value = document.documentElement.innerHTML;
+
+  //   history_value = current_code;
+  //   orig1 = current_code;
+  //   orig2 = previous_code;
+
+  //   // value = "test";
+  //   // orig1 = "test1";
+  //   // orig2 = "test2";
+  //   if (history_value == null) return;
+  //   // console.log(orig1);
+  //   var code_target = document.getElementById(
+  //     "process-difference-comparison-code-view",
+  //   );
+  //   code_target.innerHTML = "";
+  //   CodeMirror.MergeView(code_target, {
+  //     value: history_value,
+  //     origLeft: panes == 3 ? orig1 : null,
+  //     orig: orig2,
+  //     lineNumbers: true,
+  //     mode: "python",
+  //     highlightDifferences: highlight,
+  //     connect: connect,
+  //     collapseIdentical: collapse,
+  //     allowEditingOriginals: false,
+  //     revertButtons: false, // to disable the option of reverting the changes or merging the changes
+  //   });
+
+  //   var result_target = document.getElementById(
+  //     "process-difference-comparison-result-view",
+  //   );
+  //   results_value = current_history.output;
+  //   result_target.innerHTML = "";
+  //   CodeMirror.MergeView(result_target, {
+  //     value: results_value,
+  //     origLeft: panes == 3 ? current_history.output : null,
+  //     orig: previous_history.output,
+  //     lineNumbers: true,
+  //     mode: "python",
+  //     highlightDifferences: highlight,
+  //     connect: connect,
+  //     collapseIdentical: collapse,
+  //     allowEditingOriginals: false,
+  //     revertButtons: false, // to disable the option of reverting the changes or merging the changes
+  //   });
+  // },
+
+
   diffDialog: function (current_history, previous_history) {
     current_code = current_history.code;
     previous_code = previous_history.code;
@@ -627,62 +727,292 @@ GW.process = {
 			<div id=\"process-difference-comparison-result-view"\></div>
 			</div>`;
 
-    GW.process.createJSFrameDialog(720, 640, content, "History Details");
-    var history_value,
-      results_value,
-      orig1,
-      orig2,
-      dv,
-      panes = 2,
-      highlight = true,
-      connect = "align",
-      collapse = false;
-    // value = document.documentElement.innerHTML;
+      var editorContainerStyle = 'style="height:100px;width:100%;border:1px solid #ddd;"';
+    content = content.replace('<div id=\"process-difference-comparison-code-view"\></div>',
+                              '<div id="process-difference-comparison-code-view" ' + editorContainerStyle + '></div>');
+    content = content.replace('<div id=\"process-difference-comparison-result-view"\></div>',
+                              '<div id="process-difference-comparison-result-view" ' + editorContainerStyle + '></div>');
 
-    history_value = current_code;
-    orig1 = current_code;
-    orig2 = previous_code;
 
-    // value = "test";
-    // orig1 = "test1";
-    // orig2 = "test2";
-    if (history_value == null) return;
-    // console.log(orig1);
-    var code_target = document.getElementById(
-      "process-difference-comparison-code-view",
-    );
-    code_target.innerHTML = "";
-    CodeMirror.MergeView(code_target, {
-      value: history_value,
-      origLeft: panes == 3 ? orig1 : null,
-      orig: orig2,
-      lineNumbers: true,
-      mode: "python",
-      highlightDifferences: highlight,
-      connect: connect,
-      collapseIdentical: collapse,
-      allowEditingOriginals: false,
-      revertButtons: false, // to disable the option of reverting the changes or merging the changes
-    });
+      GW.process.createJSFrameDialog(720, 640, content, "History Details");
 
-    var result_target = document.getElementById(
-      "process-difference-comparison-result-view",
-    );
-    results_value = current_history.output;
-    result_target.innerHTML = "";
-    CodeMirror.MergeView(result_target, {
-      value: results_value,
-      origLeft: panes == 3 ? current_history.output : null,
-      orig: previous_history.output,
-      lineNumbers: true,
-      mode: "python",
-      highlightDifferences: highlight,
-      connect: connect,
-      collapseIdentical: collapse,
-      allowEditingOriginals: false,
-      revertButtons: false, // to disable the option of reverting the changes or merging the changes
-    });
-  },
+     
+
+    // Delay the initialization to ensure the modal and the DOM elements are fully loaded
+    setTimeout(() => {
+        if (window.monaco) {
+            this.initDiffEditors(current_history, previous_history);
+        } else {
+            console.error('Monaco editor is not loaded or initialized!');
+        }
+    }, 0);  
+      },
+      
+  // },
+
+  initDiffEditors: function (current_history, previous_history) {
+    function isContainerReady(containerId) {
+      const container = document.getElementById(containerId);
+      return container && container.offsetWidth > 0 && container.offsetHeight > 0;
+  }
+
+  // Helper function to initialize the diff editors once the containers are ready
+  // function initializeEditors() {
+      const codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
+      const resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
+
+    //   if (codeDiffEditor || resultDiffEditor) {
+    //     console.error('DiffEditors are already initialized.');
+    //     return;
+    // }
+      if (GW.process.codeDiffEditor || GW.process.resultDiffEditor) {
+        console.error('DiffEditors are already initialized.');
+        return;
+    }
+
+      // container.style.height = '300px';
+      // container.style.width = '100%';
+
+      // Initialize the code diff editor
+      const codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
+          theme: 'vs-dark',
+          readOnly: true,
+          automaticLayout: true
+      });
+
+      // Create models for the original and modified code
+      const originalCodeModel = monaco.editor.createModel(previous_history.code || '', 'python');
+      const modifiedCodeModel = monaco.editor.createModel(current_history.code || '', 'python');
+
+      // Set the models into the code diff editor
+      codeDiffEditor.setModel({
+          original: originalCodeModel,
+          modified: modifiedCodeModel
+      });
+
+      // Initialize the result diff editor in a similar manner
+      const resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
+          theme: 'vs-dark',
+          readOnly: true,
+          automaticLayout: true
+      });
+
+      // Create models for the original and modified results
+      const originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
+      const modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
+
+      // Set the models into the result diff editor
+      resultDiffEditor.setModel({
+          original: originalResultModel,
+          modified: modifiedResultModel
+      });
+
+      // Store references to the editors for later use or disposal
+      GW.process.codeDiffEditor = codeDiffEditor;
+      GW.process.resultDiffEditor = resultDiffEditor;
+  // }
+
+  // Attempt to initialize editors if containers are ready
+  if (isContainerReady('process-difference-comparison-code-view') && isContainerReady('process-difference-comparison-result-view')) {
+      initializeEditors();
+  } else {
+      // If containers are not ready, check again after a short delay
+      setTimeout(GW.process.initDiffEditors, 100, current_history, previous_history);
+  }
+
+  var dialog = GW.process.getJSFrameDialog();
+    if (dialog) {
+        dialog.on('closeButton', 'click', function(frame) {
+            if (GW.process.codeDiffEditor) {
+                GW.process.codeDiffEditor.dispose();
+                GW.process.codeDiffEditor = null;
+            }
+            if (GW.process.resultDiffEditor) {
+                GW.process.resultDiffEditor.dispose();
+                GW.process.resultDiffEditor = null;
+            }
+            frame.hide();
+        });
+    }
+
+},
+
+
+//   initDiffEditors: function (current_history, previous_history) {
+//     // Retrieve the code or provide a fallback if none is found
+//     var current_code = current_history.code || '';
+//     var previous_code = previous_history.code || '';
+    
+//     // Find the containers for the Monaco diff editors
+//     var codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
+//     var resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
+    
+//     // Check if the editor containers are found and have non-zero dimensions
+//     if (!codeEditorContainer || codeEditorContainer.offsetWidth === 0 || codeEditorContainer.offsetHeight === 0) {
+//         console.error('Code editor container not found or has zero dimensions.');
+//         return;
+//     }
+    
+//     if (!resultEditorContainer || resultEditorContainer.offsetWidth === 0 || resultEditorContainer.offsetHeight === 0) {
+//         console.error('Result editor container not found or has zero dimensions.');
+//         return;
+//     }
+
+//     // Initialize the code diff editor
+//     var codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
+//         theme: 'vs-dark',
+//         readOnly: true,
+//         automaticLayout: true  // Adjusts to the container's size
+//     });
+
+//     // Create models for the original and modified code
+//     var originalCodeModel = monaco.editor.createModel(previous_code, 'python');
+//     var modifiedCodeModel = monaco.editor.createModel(current_code, 'python');
+
+//     // Set the models into the code diff editor
+//     codeDiffEditor.setModel({
+//         original: originalCodeModel,
+//         modified: modifiedCodeModel
+//     });
+
+//     // Initialize the result diff editor in a similar manner
+//     var resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
+//         theme: 'vs-dark',
+//         readOnly: true,
+//         automaticLayout: true
+//     });
+
+//     // Create models for the original and modified results
+//     var originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
+//     var modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
+
+//     // Set the models into the result diff editor
+//     resultDiffEditor.setModel({
+//         original: originalResultModel,
+//         modified: modifiedResultModel
+//     });
+    
+//     // Store references to the editors for later use or disposal
+//     GW.process.codeDiffEditor = codeDiffEditor;
+//     GW.process.resultDiffEditor = resultDiffEditor;
+// },
+
+// diffDialog: function (current_history, previous_history) {
+//     current_code = current_history.code;
+//     previous_code = previous_history.code;
+
+//     console.log("previous_code : " + previous_code);
+//     console.log("current_code : " + current_code);
+//     // get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
+//     var content =
+//       `<div class="modal-body">
+// 			<div class="row">
+// 				<div class="col col-md-3"><b>ID</b></div>
+// 				<div class="col col-md-3">` +
+//       current_history.hid +
+//       `</div>
+// 				<div class="col col-md-3"><b>ID</b></div>
+// 				<div class="col col-md-3">` +
+//       previous_history.hid +
+//       `</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col col-md-3"><b>BeginTime</b></div>
+// 				<div class="col col-md-3">` +
+//       current_history.begin_time +
+//       `</div>
+// 				<div class="col col-md-3"><b>BeginTime</b></div>
+// 				<div class="col col-md-3">` +
+//       previous_history.begin_time +
+//       `</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col col-md-3"><b>EndTime</b></div>
+// 				<div class="col col-md-3">` +
+//       current_history.end_time +
+//       `</div>
+// 				<div class="col col-md-3"><b>EndTime</b></div>
+// 				<div class="col col-md-3">` +
+//       previous_history.end_time +
+//       `</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col col-md-3"><b>Notes</b></div>
+// 				<div class="col col-md-3">` +
+//       current_history.notes +
+//       `</div>
+// 				<div class="col col-md-3"><b>Notes</b></div>
+// 				<div class="col col-md-3">` +
+//       previous_history.notes +
+//       `</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col col-md-3"><b>Status</b></div>
+// 				<div class="col col-md-3">` +
+//       current_history.status +
+//       `</div>
+// 				<div class="col col-md-3"><b>Status</b></div>
+// 				<div class="col col-md-3">` +
+//       previous_history.status +
+//       `</div>
+// 			</div>
+// 			<br/>
+// 			<label>Code Comparision</label>
+// 			<br/>
+// 			<div id=\"process-difference-comparison-code-view"\></div>
+// 			<br/>
+// 			<br/>
+// 			<label>Result Comparision</label>
+// 			<div id=\"process-difference-comparison-result-view"\></div>
+// 			</div>`;
+
+//     GW.process.createJSFrameDialog(720, 640, content, "History Details");
+
+//     // After the dialog is created and the content is added to the DOM, initiate the Monaco editors
+//     require(['../js/Monaco-Editor/dev/vs/editor/editor.main'], function() {
+//       // Create diff editor for code comparison
+//       var codeDiffEditor = monaco.editor.createDiffEditor(document.getElementById('code-diff-editor'), {
+//           // Monaco Editor options...
+//           theme: 'vs-dark',
+//           readOnly: true,
+//           automaticLayout: true // ensures that the editor's layout is automatically adjusted when the container size changes
+//       });
+//       var originalCodeModel = monaco.editor.createModel(previous_code || '', 'python');
+//       var modifiedCodeModel = monaco.editor.createModel(current_code || '', 'python');
+//       codeDiffEditor.setModel({
+//           original: originalCodeModel,
+//           modified: modifiedCodeModel
+//       });
+
+//       // Create diff editor for result comparison
+//       var resultDiffEditor = monaco.editor.createDiffEditor(document.getElementById('result-diff-editor'), {
+//           // Monaco Editor options...
+//           theme: 'vs-dark',
+//           readOnly: true,
+//           automaticLayout: true
+//       });
+//       var originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
+//       var modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
+//       resultDiffEditor.setModel({
+//           original: originalResultModel,
+//           modified: modifiedResultModel
+//       });
+//   });
+
+//   // Ensure to dispose of the editors when the dialog is closed to prevent memory leaks
+//   var dialog = GW.process.getJSFrameDialog();
+//   dialog.on('closeButton', 'click', function(frame) {
+//       if (codeDiffEditor) {
+//           codeDiffEditor.dispose();
+//       }
+//       if (resultDiffEditor) {
+//           resultDiffEditor.dispose();
+//       }
+//       frame.hide();
+//   });
+// },
+
+
 
   newDialog: function (category) {
     var content =
@@ -1458,7 +1788,7 @@ GW.process = {
     document.getElementById(name).style.display = "block";
     ele.className += " active";
 
-    GW.process.util.refreshCodeEditor();
+    // GW.process.util.refreshCodeEditor();
   },
 
   displayToolbar: function (process_id, process_name, code_type) {
