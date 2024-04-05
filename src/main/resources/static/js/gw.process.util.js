@@ -83,58 +83,6 @@ GW.process.util = {
       }
     } else if(code_type=="shell"){
 
-			
-
-//       var lang = GW.general.getCodeStyleByLang(code_type);
-      
-//       val = GW.process.unescape(code);
-      
-//       code = val;
-
-//       $(process_window_container_id).css( "background-color", "rgb(28,28,28)" );
-
-//       $(code_editor_container_id).css({ 'overflow-y' : ''});
-      
-//       let neweditor = CodeMirror(document.getElementById(code_editor_container_id.substring(1)), {
-//               lineNumbers: true,
-//               lineWrapping: true,
-//               theme: "yonce",
-//               mode: "python",
-//               readOnly: false,
-//               value: code,
-//               foldGutter: true,
-//               gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-//               extraKeys: {
-                      
-//                       "Ctrl-L": function(){
-//                           console.log("ctrl l clicked")
-//                       },
-                          
-//                       "Ctrl-Space": "autocomplete",
-//                       "Ctrl-B": "blockComment",
-//                       "Ctrl-/": "toggleComment",
-//                       "Ctrl-F-D": "foldCode",
-//                       "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
-//               }
-//       });
-
-//       neweditor.foldCode(CodeMirror.Pos(0, 0));
-      
-//       neweditor.on("change", function(instance, event){
-
-//           GW.process.showNonSaved();
-
-//         });
-// //				$(".CodeMirror").css('font-size',"10pt");
-//       $(".CodeMirror").css('height',"100%");
-//       $(".CodeMirror").css('max-height',"100%");
-      
-//       GW.process.util.refreshCodeEditor();
-
-//       return neweditor
-
-
-
 require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
 require(['vs/editor/editor.main'], function() {
@@ -158,7 +106,12 @@ require(['vs/editor/editor.main'], function() {
         scrollBeyondLastLine: false,
         readOnly: false,
         fontSize: 14,
-        automaticLayout: true
+        automaticLayout: true,
+        formatOnSave: true,
+        formatOnPaste: true,
+        folding: true,
+        formatOnType: true,
+        showFoldingControls: 'always',
     });
 
     GW.process.editor = editor;
@@ -196,7 +149,12 @@ require(['vs/editor/editor.main'], function() {
           scrollBeyondLastLine: false,
           readOnly: false,
           fontSize: 14,
-          automaticLayout: true
+          automaticLayout: true,
+          formatOnSave: true,
+          formatOnPaste: true,
+          folding: true,
+          formatOnType: true,
+          showFoldingControls: 'always',
       });
 
       GW.process.editor = editor;

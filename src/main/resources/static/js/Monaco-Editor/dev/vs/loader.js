@@ -66,9 +66,9 @@ var AMDLoader;
 			this._detected = true;
 			this._isWindows = Environment._isWindows();
 			this._isNode = (typeof module !== 'undefined' && !!module.exports);
-			this._isElectronRenderer = (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'renderer');
-			this._isWebWorker = (typeof AMDLoader.global.importScripts === 'function');
-			this._isElectronNodeIntegrationWebWorker = this._isWebWorker && (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'worker');
+			// this._isElectronRenderer = (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'renderer');
+			// this._isWebWorker = (typeof AMDLoader.global.importScripts === 'function');
+			// this._isElectronNodeIntegrationWebWorker = this._isWebWorker && (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'worker');
 		}
 		static _isWindows() {
 			if (typeof navigator !== 'undefined') {
@@ -1359,9 +1359,9 @@ var AMDLoader;
 		defineModule(strModuleId, dependencies, callback, errorback, stack, moduleIdResolver = new ModuleIdResolver(strModuleId)) {
 			let moduleId = this._moduleIdProvider.getModuleId(strModuleId);
 			if (this._modules2[moduleId]) {
-				if (!this._config.isDuplicateMessageIgnoredFor(strModuleId)) {
-					console.warn('Duplicate definition of module \'' + strModuleId + '\'');
-				}
+				// if (!this._config.isDuplicateMessageIgnoredFor(strModuleId)) {
+				// 	console.warn('Duplicate definition of module \'' + strModuleId + '\'');
+				// }
 				// Super important! Completely ignore duplicate module definition
 				return;
 			}

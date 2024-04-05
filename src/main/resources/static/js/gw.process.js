@@ -132,6 +132,11 @@ GW.process = {
             readOnly: false,
             fontSize: 10,
             automaticLayout: true,
+            formatOnSave: true,
+            formatOnPaste: true,
+            folding: true,
+            formatOnType: true,
+            showFoldingControls: 'always',
         });
 
         GW.process.editor = editor;
@@ -243,6 +248,11 @@ GW.process = {
                 readOnly: false,
                 fontSize: 10,
                 automaticLayout: true,
+                formatOnSave: true,
+                formatOnPaste: true,
+                folding: true,
+                formatOnType: true,
+                showFoldingControls: 'always',
             });
    
             GW.process.editor = editor;
@@ -531,133 +541,6 @@ GW.process = {
    * @param previous_code
    */
 
-  // diffDialog: function (current_history, previous_history) {
-  //   current_code = current_history.code;
-  //   previous_code = previous_history.code;
-
-  //   console.log("previous_code : " + previous_code);
-  //   console.log("current_code : " + current_code);
-  //   // get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
-  //   var content =
-  //     `<div class="modal-body">
-	// 		<div class="row">
-	// 			<div class="col col-md-3"><b>ID</b></div>
-	// 			<div class="col col-md-3">` +
-  //     current_history.hid +
-  //     `</div>
-	// 			<div class="col col-md-3"><b>ID</b></div>
-	// 			<div class="col col-md-3">` +
-  //     previous_history.hid +
-  //     `</div>
-	// 		</div>
-	// 		<div class="row">
-	// 			<div class="col col-md-3"><b>BeginTime</b></div>
-	// 			<div class="col col-md-3">` +
-  //     current_history.begin_time +
-  //     `</div>
-	// 			<div class="col col-md-3"><b>BeginTime</b></div>
-	// 			<div class="col col-md-3">` +
-  //     previous_history.begin_time +
-  //     `</div>
-	// 		</div>
-	// 		<div class="row">
-	// 			<div class="col col-md-3"><b>EndTime</b></div>
-	// 			<div class="col col-md-3">` +
-  //     current_history.end_time +
-  //     `</div>
-	// 			<div class="col col-md-3"><b>EndTime</b></div>
-	// 			<div class="col col-md-3">` +
-  //     previous_history.end_time +
-  //     `</div>
-	// 		</div>
-	// 		<div class="row">
-	// 			<div class="col col-md-3"><b>Notes</b></div>
-	// 			<div class="col col-md-3">` +
-  //     current_history.notes +
-  //     `</div>
-	// 			<div class="col col-md-3"><b>Notes</b></div>
-	// 			<div class="col col-md-3">` +
-  //     previous_history.notes +
-  //     `</div>
-	// 		</div>
-	// 		<div class="row">
-	// 			<div class="col col-md-3"><b>Status</b></div>
-	// 			<div class="col col-md-3">` +
-  //     current_history.status +
-  //     `</div>
-	// 			<div class="col col-md-3"><b>Status</b></div>
-	// 			<div class="col col-md-3">` +
-  //     previous_history.status +
-  //     `</div>
-	// 		</div>
-	// 		<br/>
-	// 		<label>Code Comparision</label>
-	// 		<br/>
-	// 		<div id=\"process-difference-comparison-code-view"\></div>
-	// 		<br/>
-	// 		<br/>
-	// 		<label>Result Comparision</label>
-	// 		<div id=\"process-difference-comparison-result-view"\></div>
-	// 		</div>`;
-
-  //   GW.process.createJSFrameDialog(720, 640, content, "History Details");
-  //   var history_value,
-  //     results_value,
-  //     orig1,
-  //     orig2,
-  //     dv,
-  //     panes = 2,
-  //     highlight = true,
-  //     connect = "align",
-  //     collapse = false;
-  //   // value = document.documentElement.innerHTML;
-
-  //   history_value = current_code;
-  //   orig1 = current_code;
-  //   orig2 = previous_code;
-
-  //   // value = "test";
-  //   // orig1 = "test1";
-  //   // orig2 = "test2";
-  //   if (history_value == null) return;
-  //   // console.log(orig1);
-  //   var code_target = document.getElementById(
-  //     "process-difference-comparison-code-view",
-  //   );
-  //   code_target.innerHTML = "";
-  //   CodeMirror.MergeView(code_target, {
-  //     value: history_value,
-  //     origLeft: panes == 3 ? orig1 : null,
-  //     orig: orig2,
-  //     lineNumbers: true,
-  //     mode: "python",
-  //     highlightDifferences: highlight,
-  //     connect: connect,
-  //     collapseIdentical: collapse,
-  //     allowEditingOriginals: false,
-  //     revertButtons: false, // to disable the option of reverting the changes or merging the changes
-  //   });
-
-  //   var result_target = document.getElementById(
-  //     "process-difference-comparison-result-view",
-  //   );
-  //   results_value = current_history.output;
-  //   result_target.innerHTML = "";
-  //   CodeMirror.MergeView(result_target, {
-  //     value: results_value,
-  //     origLeft: panes == 3 ? current_history.output : null,
-  //     orig: previous_history.output,
-  //     lineNumbers: true,
-  //     mode: "python",
-  //     highlightDifferences: highlight,
-  //     connect: connect,
-  //     collapseIdentical: collapse,
-  //     allowEditingOriginals: false,
-  //     revertButtons: false, // to disable the option of reverting the changes or merging the changes
-  //   });
-  // },
-
-
   diffDialog: function (current_history, previous_history) {
     current_code = current_history.code;
     previous_code = previous_history.code;
@@ -765,10 +648,10 @@ GW.process = {
     //     console.error('DiffEditors are already initialized.');
     //     return;
     // }
-      if (GW.process.codeDiffEditor || GW.process.resultDiffEditor) {
-        console.error('DiffEditors are already initialized.');
-        return;
-    }
+    //   if (GW.process.codeDiffEditor || GW.process.resultDiffEditor) {
+    //     console.error('DiffEditors are already initialized.');
+    //     return;
+    // }
 
       // container.style.height = '300px';
       // container.style.width = '100%';
@@ -814,13 +697,14 @@ GW.process = {
 
   // Attempt to initialize editors if containers are ready
   if (isContainerReady('process-difference-comparison-code-view') && isContainerReady('process-difference-comparison-result-view')) {
-      initializeEditors();
+      // initializeEditors();
   } else {
       // If containers are not ready, check again after a short delay
       setTimeout(GW.process.initDiffEditors, 100, current_history, previous_history);
   }
 
-  var dialog = GW.process.getJSFrameDialog();
+  var dialog = getJSFrameDialog();
+  // var dialog = GW.process.getJSFrameDialog();
     if (dialog) {
         dialog.on('closeButton', 'click', function(frame) {
             if (GW.process.codeDiffEditor) {
@@ -836,183 +720,6 @@ GW.process = {
     }
 
 },
-
-
-//   initDiffEditors: function (current_history, previous_history) {
-//     // Retrieve the code or provide a fallback if none is found
-//     var current_code = current_history.code || '';
-//     var previous_code = previous_history.code || '';
-    
-//     // Find the containers for the Monaco diff editors
-//     var codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
-//     var resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
-    
-//     // Check if the editor containers are found and have non-zero dimensions
-//     if (!codeEditorContainer || codeEditorContainer.offsetWidth === 0 || codeEditorContainer.offsetHeight === 0) {
-//         console.error('Code editor container not found or has zero dimensions.');
-//         return;
-//     }
-    
-//     if (!resultEditorContainer || resultEditorContainer.offsetWidth === 0 || resultEditorContainer.offsetHeight === 0) {
-//         console.error('Result editor container not found or has zero dimensions.');
-//         return;
-//     }
-
-//     // Initialize the code diff editor
-//     var codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
-//         theme: 'vs-dark',
-//         readOnly: true,
-//         automaticLayout: true  // Adjusts to the container's size
-//     });
-
-//     // Create models for the original and modified code
-//     var originalCodeModel = monaco.editor.createModel(previous_code, 'python');
-//     var modifiedCodeModel = monaco.editor.createModel(current_code, 'python');
-
-//     // Set the models into the code diff editor
-//     codeDiffEditor.setModel({
-//         original: originalCodeModel,
-//         modified: modifiedCodeModel
-//     });
-
-//     // Initialize the result diff editor in a similar manner
-//     var resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
-//         theme: 'vs-dark',
-//         readOnly: true,
-//         automaticLayout: true
-//     });
-
-//     // Create models for the original and modified results
-//     var originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
-//     var modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
-
-//     // Set the models into the result diff editor
-//     resultDiffEditor.setModel({
-//         original: originalResultModel,
-//         modified: modifiedResultModel
-//     });
-    
-//     // Store references to the editors for later use or disposal
-//     GW.process.codeDiffEditor = codeDiffEditor;
-//     GW.process.resultDiffEditor = resultDiffEditor;
-// },
-
-// diffDialog: function (current_history, previous_history) {
-//     current_code = current_history.code;
-//     previous_code = previous_history.code;
-
-//     console.log("previous_code : " + previous_code);
-//     console.log("current_code : " + current_code);
-//     // get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
-//     var content =
-//       `<div class="modal-body">
-// 			<div class="row">
-// 				<div class="col col-md-3"><b>ID</b></div>
-// 				<div class="col col-md-3">` +
-//       current_history.hid +
-//       `</div>
-// 				<div class="col col-md-3"><b>ID</b></div>
-// 				<div class="col col-md-3">` +
-//       previous_history.hid +
-//       `</div>
-// 			</div>
-// 			<div class="row">
-// 				<div class="col col-md-3"><b>BeginTime</b></div>
-// 				<div class="col col-md-3">` +
-//       current_history.begin_time +
-//       `</div>
-// 				<div class="col col-md-3"><b>BeginTime</b></div>
-// 				<div class="col col-md-3">` +
-//       previous_history.begin_time +
-//       `</div>
-// 			</div>
-// 			<div class="row">
-// 				<div class="col col-md-3"><b>EndTime</b></div>
-// 				<div class="col col-md-3">` +
-//       current_history.end_time +
-//       `</div>
-// 				<div class="col col-md-3"><b>EndTime</b></div>
-// 				<div class="col col-md-3">` +
-//       previous_history.end_time +
-//       `</div>
-// 			</div>
-// 			<div class="row">
-// 				<div class="col col-md-3"><b>Notes</b></div>
-// 				<div class="col col-md-3">` +
-//       current_history.notes +
-//       `</div>
-// 				<div class="col col-md-3"><b>Notes</b></div>
-// 				<div class="col col-md-3">` +
-//       previous_history.notes +
-//       `</div>
-// 			</div>
-// 			<div class="row">
-// 				<div class="col col-md-3"><b>Status</b></div>
-// 				<div class="col col-md-3">` +
-//       current_history.status +
-//       `</div>
-// 				<div class="col col-md-3"><b>Status</b></div>
-// 				<div class="col col-md-3">` +
-//       previous_history.status +
-//       `</div>
-// 			</div>
-// 			<br/>
-// 			<label>Code Comparision</label>
-// 			<br/>
-// 			<div id=\"process-difference-comparison-code-view"\></div>
-// 			<br/>
-// 			<br/>
-// 			<label>Result Comparision</label>
-// 			<div id=\"process-difference-comparison-result-view"\></div>
-// 			</div>`;
-
-//     GW.process.createJSFrameDialog(720, 640, content, "History Details");
-
-//     // After the dialog is created and the content is added to the DOM, initiate the Monaco editors
-//     require(['../js/Monaco-Editor/dev/vs/editor/editor.main'], function() {
-//       // Create diff editor for code comparison
-//       var codeDiffEditor = monaco.editor.createDiffEditor(document.getElementById('code-diff-editor'), {
-//           // Monaco Editor options...
-//           theme: 'vs-dark',
-//           readOnly: true,
-//           automaticLayout: true // ensures that the editor's layout is automatically adjusted when the container size changes
-//       });
-//       var originalCodeModel = monaco.editor.createModel(previous_code || '', 'python');
-//       var modifiedCodeModel = monaco.editor.createModel(current_code || '', 'python');
-//       codeDiffEditor.setModel({
-//           original: originalCodeModel,
-//           modified: modifiedCodeModel
-//       });
-
-//       // Create diff editor for result comparison
-//       var resultDiffEditor = monaco.editor.createDiffEditor(document.getElementById('result-diff-editor'), {
-//           // Monaco Editor options...
-//           theme: 'vs-dark',
-//           readOnly: true,
-//           automaticLayout: true
-//       });
-//       var originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
-//       var modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
-//       resultDiffEditor.setModel({
-//           original: originalResultModel,
-//           modified: modifiedResultModel
-//       });
-//   });
-
-//   // Ensure to dispose of the editors when the dialog is closed to prevent memory leaks
-//   var dialog = GW.process.getJSFrameDialog();
-//   dialog.on('closeButton', 'click', function(frame) {
-//       if (codeDiffEditor) {
-//           codeDiffEditor.dispose();
-//       }
-//       if (resultDiffEditor) {
-//           resultDiffEditor.dispose();
-//       }
-//       frame.hide();
-//   });
-// },
-
-
 
   newDialog: function (category) {
     var content =
@@ -1881,9 +1588,9 @@ GW.process = {
 
         $("#processid").prop("disabled", true); //always cannot edit id
 
-        if (GW.process.editor) {
-          GW.process.editor.setOption("readOnly", GW.process.editOn);
-        }
+        // if (GW.process.editor) {
+        //   GW.process.editor.setOption("readOnly", GW.process.editOn);
+        // }
 
         if ($(".builtin-process")) {
           $(".builtin-process").prop("disabled", GW.process.editOn);
