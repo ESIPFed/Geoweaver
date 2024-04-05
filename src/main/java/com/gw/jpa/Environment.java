@@ -17,7 +17,7 @@ public class Environment {
 
 	private String name, type, bin, pyenv, basedir;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "hostid")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Host hostobj;

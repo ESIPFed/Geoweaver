@@ -30,6 +30,6 @@ public class Host {
 	private String url;
 	private String confidential;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "hostobj")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "hostobj")
 	private Set<Environment> envs;
 }
