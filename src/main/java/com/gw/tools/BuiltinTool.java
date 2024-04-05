@@ -1,16 +1,12 @@
 package com.gw.tools;
 
+import com.gw.jpa.ExecutionStatus;
+import com.gw.jpa.History;
+import com.gw.server.CommandServlet;
+import com.gw.utils.BaseTool;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.util.List;
-import java.util.Arrays;
-
 import javax.websocket.Session;
-
-import com.gw.utils.BaseTool;
-
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,10 +14,6 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import com.gw.jpa.ExecutionStatus;
-import com.gw.jpa.History;
-import com.gw.server.CommandServlet;
 
 // import com.amazonaws.AmazonServiceException;
 // import com.amazonaws.regions.Regions;
@@ -40,281 +32,269 @@ import com.gw.server.CommandServlet;
 // import com.amazonaws.services.s3.model.S3ObjectInputStream;
 // import com.amazonaws.services.s3.model.Bucket;
 
-
 @Service
 @Scope("prototype")
 public class BuiltinTool {
-    
-    @Autowired
-    ProcessTool pt;
 
-	@Autowired
-	BaseTool bt;
-	
-	@Autowired
-	FileTool ft;
+  @Autowired ProcessTool pt;
 
-    @Autowired
-	HostTool ht;
+  @Autowired BaseTool bt;
 
-    @Autowired
-    HistoryTool histool;
+  @Autowired FileTool ft;
 
-    Logger logger = Logger.getLogger(this.getClass());
+  @Autowired HostTool ht;
 
-    
-	public void saveHistory(String processid, String script, String history_id, String indicator){
+  @Autowired HistoryTool histool;
 
-		History history = histool.getHistoryById(history_id);
+  Logger logger = Logger.getLogger(this.getClass());
 
-		if(BaseTool.isNull(history)){
+  public void saveHistory(String processid, String script, String history_id, String indicator) {
 
-			history = new History();
+    History history = histool.getHistoryById(history_id);
 
-		}
+    if (BaseTool.isNull(history)) {
 
-		history.setHistory_process(processid.split("-")[0]); //only retain process id, remove object id
-		
-		history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
-		
-		history.setHistory_input(script);
-
-        history.setHistory_id(history_id);
-
-        history.setIndicator(indicator);
-
-		histool.saveHistory(history);
-
-        logger.debug("Saving history into database - " + history_id);
-
-	}
-
-    public void sendMessageWebSocket(String history_id, String httpsessionid, String message){
-        
-        try {
-            
-            Session wsout = CommandServlet.findSessionById(httpsessionid);
-
-            if(!BaseTool.isNull(wsout) && wsout.isOpen()){
-                wsout.getBasicRemote().sendText(message);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+      history = new History();
     }
 
-    public String executeCommonTasks(String history_id, String pid, String host, String pswd, String httpsessionid, boolean isjoin){
+    history.setHistory_process(processid.split("-")[0]); // only retain process id, remove object id
 
-        String resp = null;
+    history.setHistory_begin_time(BaseTool.getCurrentSQLDate());
 
-        History his = null;
+    history.setHistory_input(script);
 
-        try{
+    history.setHistory_id(history_id);
 
-            String code = pt.getCodeById(pid);
+    history.setIndicator(indicator);
 
-            this.saveHistory(pid, code, history_id, ExecutionStatus.RUNNING);
+    histool.saveHistory(history);
 
-            his = histool.getHistoryById(history_id);
+    logger.debug("Saving history into database - " + history_id);
+  }
 
-            JSONObject obj = (JSONObject)new JSONParser().parse(code);
-                
-            String operation = (String)obj.get("operation");
-            JSONArray params = (JSONArray)obj.get("params");
+  public void sendMessageWebSocket(String history_id, String httpsessionid, String message) {
 
-            if (operation.equals("AWS S3")) {
+    try {
 
-                // String providedParams = (String)((JSONObject)params.get(0)).get("value");
-                // String[] parsedParams = providedParams.split(" ");
-                // System.out.println("{{Parsed Params}}: "+Arrays.toString(parsedParams));
-                // // System.out.println(parsedParams[5]);
+      Session wsout = CommandServlet.findSessionById(httpsessionid);
 
-                // String accessKey = "";
-                // String SecretKey = "";
-                // String bucket = "";
-                // String region = "";
+      if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
+        wsout.getBasicRemote().sendText(message);
+      }
 
-                // for (int i = 0; i < parsedParams.length; i++) {
-                //     // System.out.println("{{Looping Through}}: "+parsedParams[i]);
-                //     if (parsedParams[i].toLowerCase().equals("-accesskey")){
-                //         accessKey = parsedParams[i+1];
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
-                //     } else if (parsedParams[i].toLowerCase().equals("-secretkey")) {
-                //         SecretKey = parsedParams[i+1];
+  public String executeCommonTasks(
+      String history_id,
+      String pid,
+      String host,
+      String pswd,
+      String httpsessionid,
+      boolean isjoin) {
 
-                //     } else if (parsedParams[i].toLowerCase().equals("-bucket")) {
-                //         bucket = parsedParams[i+1];
+    String resp = null;
 
-                //     } else if (parsedParams[i].toLowerCase().equals("-region")) {
-                //         region = parsedParams[i+1];
-                //     }
-                // }
+    History his = null;
 
-                // System.out.println("{{Builtin Paramas AcessKey}}: "+accessKey);
-                // System.out.println("{{Builtin Paramas SecretKey}}: "+SecretKey);
-                // System.out.println("{{Builtin Paramas Bucket}}: "+bucket);
-                // System.out.println("{{Builtin Paramas Region}}: "+region);
-                
-                // // Authenticate with AWS using `AccessKey` & `SecretKey`
-                // AWSCredentials awsCreds = new BasicAWSCredentials(
-                //     accessKey, 
-                //     SecretKey
-                // );
+    try {
 
-                // System.out.println("{{AWS Creds}}: "+awsCreds.toString());
+      String code = pt.getCodeById(pid);
 
-                // // // Configure AWS Client using AWS Creds
-                // AmazonS3 s3client = AmazonS3ClientBuilder
-                //     .standard()
-                //     .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                //     .withRegion(region)
-                //     .build();
+      this.saveHistory(pid, code, history_id, ExecutionStatus.RUNNING);
 
-                // System.out.println("{{AWS Client}}: "+s3client.toString());
+      his = histool.getHistoryById(history_id);
 
-                // List<Bucket> buckets = s3client.listBuckets();
-                // sendMessageWebSocket(history_id, httpsessionid, "############### Buckets ###########");
-                // sendMessageWebSocket(history_id, httpsessionid, "Available Buckets in S3 Enviroment:");
-                // for(Bucket Listbucket : buckets) {
-                //     // System.out.println(Listbucket.getName());
-                //     sendMessageWebSocket(history_id, httpsessionid, "- "+Listbucket.getName());
-                // }
-                // sendMessageWebSocket(history_id, httpsessionid, "########## End of Buckets ###########");
+      JSONObject obj = (JSONObject) new JSONParser().parse(code);
 
+      String operation = (String) obj.get("operation");
+      JSONArray params = (JSONArray) obj.get("params");
 
-                // ListObjectsV2Result result = s3client.listObjectsV2(bucket);
-                // System.out.println("{{AWS Bucket Objects}}: " + result.getObjectSummaries().toString());
-                // // resp = result.getObjectSummaries().toString();
-                
-                // sendMessageWebSocket(history_id, httpsessionid, "\n############### Files ###########");
-                // sendMessageWebSocket(history_id, httpsessionid, "Available Files in selected bucket:");
-                // List<S3ObjectSummary> objects = result.getObjectSummaries();
-                // for (S3ObjectSummary os : objects) {
-                //     // System.out.println("{{AWS Bucket Objects}}: " + os.getKey());
-                //     sendMessageWebSocket(history_id, httpsessionid, "- "+os.getKey());
-                // }
-                // sendMessageWebSocket(history_id, httpsessionid, "######### End of Files ###########");
-                
+      if (operation.equals("AWS S3")) {
 
+        // String providedParams = (String)((JSONObject)params.get(0)).get("value");
+        // String[] parsedParams = providedParams.split(" ");
+        // System.out.println("{{Parsed Params}}: "+Arrays.toString(parsedParams));
+        // // System.out.println(parsedParams[5]);
 
-                // S3Object s3object = s3client.getObject("geoweaver", "TestData.csv");
-                // S3ObjectInputStream inputStream = s3object.getObjectContent();
-                // resp = inputStream.toString();
+        // String accessKey = "";
+        // String SecretKey = "";
+        // String bucket = "";
+        // String region = "";
 
-                // sendMessageWebSocket(history_id, httpsessionid, resp);
+        // for (int i = 0; i < parsedParams.length; i++) {
+        //     // System.out.println("{{Looping Through}}: "+parsedParams[i]);
+        //     if (parsedParams[i].toLowerCase().equals("-accesskey")){
+        //         accessKey = parsedParams[i+1];
 
-                throw new UnsupportedOperationException("AWS S3 is not supported yet");
+        //     } else if (parsedParams[i].toLowerCase().equals("-secretkey")) {
+        //         SecretKey = parsedParams[i+1];
 
-            }else {
+        //     } else if (parsedParams[i].toLowerCase().equals("-bucket")) {
+        //         bucket = parsedParams[i+1];
 
-                String filename = null;
-                
-                String filepath = (String)((JSONObject)params.get(0)).get("value");
-                
-                logger.debug("get result file path : " + filepath);
-                
-                filename = new File(filepath).getName();
-                
-                int extIndex = filename.lastIndexOf(".");
+        //     } else if (parsedParams[i].toLowerCase().equals("-region")) {
+        //         region = parsedParams[i+1];
+        //     }
+        // }
 
-                String fileExtension = filename.substring(extIndex);
+        // System.out.println("{{Builtin Paramas AcessKey}}: "+accessKey);
+        // System.out.println("{{Builtin Paramas SecretKey}}: "+SecretKey);
+        // System.out.println("{{Builtin Paramas Bucket}}: "+bucket);
+        // System.out.println("{{Builtin Paramas Region}}: "+region);
 
-                File folder = new File(bt.getFileTransferFolder());
-                
-                if(!folder.exists()) {
-                    folder.mkdir();
-                }
-                
-                String fileloc = bt.getFileTransferFolder() + filename;
-                
-                if(bt.islocal(host)) {
+        // // Authenticate with AWS using `AccessKey` & `SecretKey`
+        // AWSCredentials awsCreds = new BasicAWSCredentials(
+        //     accessKey,
+        //     SecretKey
+        // );
 
-                    resp = ft.download_local(filepath, fileloc);
-                    
-                    sendMessageWebSocket(history_id, httpsessionid, resp);
+        // System.out.println("{{AWS Creds}}: "+awsCreds.toString());
 
-                }else {
+        // // // Configure AWS Client using AWS Creds
+        // AmazonS3 s3client = AmazonS3ClientBuilder
+        //     .standard()
+        //     .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+        //     .withRegion(region)
+        //     .build();
 
-                    ft.scp_download(host, pswd, filepath, fileloc);
+        // System.out.println("{{AWS Client}}: "+s3client.toString());
 
-                    sendMessageWebSocket(history_id, httpsessionid, "File " + fileloc + " is downloaded from remote host.");
-                        
-                }
-                
-                logger.debug("result info: " + fileloc);
+        // List<Bucket> buckets = s3client.listBuckets();
+        // sendMessageWebSocket(history_id, httpsessionid, "############### Buckets ###########");
+        // sendMessageWebSocket(history_id, httpsessionid, "Available Buckets in S3 Enviroment:");
+        // for(Bucket Listbucket : buckets) {
+        //     // System.out.println(Listbucket.getName());
+        //     sendMessageWebSocket(history_id, httpsessionid, "- "+Listbucket.getName());
+        // }
+        // sendMessageWebSocket(history_id, httpsessionid, "########## End of Buckets ###########");
 
-                resp = BaseTool.isNull(resp)? "{\"history_id\": \""+history_id+
-                        
-                        "\", \"token\": \""+httpsessionid+
+        // ListObjectsV2Result result = s3client.listObjectsV2(bucket);
+        // System.out.println("{{AWS Bucket Objects}}: " + result.getObjectSummaries().toString());
+        // // resp = result.getObjectSummaries().toString();
 
-                        "\", \"operation\":\""+operation+ 
-                        
-                        "\", \"filename\": \"" + filename + 
-                        
-                        "\", \"ret\": \"success\"}": resp; 
+        // sendMessageWebSocket(history_id, httpsessionid, "\n############### Files ###########");
+        // sendMessageWebSocket(history_id, httpsessionid, "Available Files in selected bucket:");
+        // List<S3ObjectSummary> objects = result.getObjectSummaries();
+        // for (S3ObjectSummary os : objects) {
+        //     // System.out.println("{{AWS Bucket Objects}}: " + os.getKey());
+        //     sendMessageWebSocket(history_id, httpsessionid, "- "+os.getKey());
+        // }
+        // sendMessageWebSocket(history_id, httpsessionid, "######### End of Files ###########");
 
-            }
+        // S3Object s3object = s3client.getObject("geoweaver", "TestData.csv");
+        // S3ObjectInputStream inputStream = s3object.getObjectContent();
+        // resp = inputStream.toString();
 
-            resp = BaseTool.isNull(resp)? "{\"history_id\": \""+history_id+
-                        
-            "\", \"token\": \""+httpsessionid+
+        // sendMessageWebSocket(history_id, httpsessionid, resp);
 
-            "\", \"operation\":\""+operation+ 
-            
-            "\", \"ret\": \"success\"}": resp; 
+        throw new UnsupportedOperationException("AWS S3 is not supported yet");
 
-            his = histool.getHistoryById(history_id);
+      } else {
 
-            if(!BaseTool.isNull(his)){
+        String filename = null;
 
-                if(resp.indexOf("failure")==-1) 
-                
-                    his.setIndicator(ExecutionStatus.DONE);
-                
-                else
-                    
-                    his.setIndicator(ExecutionStatus.FAILED);
+        String filepath = (String) ((JSONObject) params.get(0)).get("value");
 
-            }
+        logger.debug("get result file path : " + filepath);
 
-            his.setIndicator(ExecutionStatus.DONE);
-            his.setHistory_end_time(BaseTool.getCurrentSQLDate());
-            his.setHistory_output(resp);
-            histool.saveHistory(his);
-            
+        filename = new File(filepath).getName();
 
-        }catch(Exception e){
-            
-            e.printStackTrace();
+        int extIndex = filename.lastIndexOf(".");
 
-            resp = "{\"history_id\": \""+history_id+
-                    
-                    "\", \"token\": \""+httpsessionid+
-                    
-                    "\", \"ret\": \"failed\"}";
+        String fileExtension = filename.substring(extIndex);
 
-            his.setIndicator(ExecutionStatus.FAILED);
-                    
-            sendMessageWebSocket(history_id, httpsessionid, e.getLocalizedMessage());
+        File folder = new File(bt.getFileTransferFolder());
 
+        if (!folder.exists()) {
+          folder.mkdir();
         }
 
-        if(!BaseTool.isNull(his)){
-        
-            his.setHistory_output(resp);
+        String fileloc = bt.getFileTransferFolder() + filename;
 
-            his.setHistory_end_time(BaseTool.getCurrentSQLDate());
+        if (bt.islocal(host)) {
 
-            histool.saveHistory(his);
-        
+          resp = ft.download_local(filepath, fileloc);
+
+          sendMessageWebSocket(history_id, httpsessionid, resp);
+
+        } else {
+
+          ft.scp_download(host, pswd, filepath, fileloc);
+
+          sendMessageWebSocket(
+              history_id, httpsessionid, "File " + fileloc + " is downloaded from remote host.");
         }
 
-        sendMessageWebSocket(history_id, httpsessionid, "====== Process " + history_id + " ended");
+        logger.debug("result info: " + fileloc);
 
-        return resp;
+        resp =
+            BaseTool.isNull(resp)
+                ? "{\"history_id\": \""
+                    + history_id
+                    + "\", \"token\": \""
+                    + httpsessionid
+                    + "\", \"operation\":\""
+                    + operation
+                    + "\", \"filename\": \""
+                    + filename
+                    + "\", \"ret\": \"success\"}"
+                : resp;
+      }
 
+      resp =
+          BaseTool.isNull(resp)
+              ? "{\"history_id\": \""
+                  + history_id
+                  + "\", \"token\": \""
+                  + httpsessionid
+                  + "\", \"operation\":\""
+                  + operation
+                  + "\", \"ret\": \"success\"}"
+              : resp;
+
+      his = histool.getHistoryById(history_id);
+
+      if (!BaseTool.isNull(his)) {
+
+        if (resp.indexOf("failure") == -1) his.setIndicator(ExecutionStatus.DONE);
+        else his.setIndicator(ExecutionStatus.FAILED);
+      }
+
+      his.setIndicator(ExecutionStatus.DONE);
+      his.setHistory_end_time(BaseTool.getCurrentSQLDate());
+      his.setHistory_output(resp);
+      histool.saveHistory(his);
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      resp =
+          "{\"history_id\": \""
+              + history_id
+              + "\", \"token\": \""
+              + httpsessionid
+              + "\", \"ret\": \"failed\"}";
+
+      his.setIndicator(ExecutionStatus.FAILED);
+
+      sendMessageWebSocket(history_id, httpsessionid, e.getLocalizedMessage());
     }
 
+    if (!BaseTool.isNull(his)) {
+
+      his.setHistory_output(resp);
+
+      his.setHistory_end_time(BaseTool.getCurrentSQLDate());
+
+      histool.saveHistory(his);
+    }
+
+    sendMessageWebSocket(history_id, httpsessionid, "====== Process " + history_id + " ended");
+
+    return resp;
+  }
 }

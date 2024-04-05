@@ -1,312 +1,274 @@
 /**
- * This file is dedicated to manage the prompt process dialog. 
+ * This file is dedicated to manage the prompt process dialog.
  * This is a separate file to avoid messing with the gw.process.js and existing function.
- * All the DIV containers are brand new for the prompt panel. 
+ * All the DIV containers are brand new for the prompt panel.
  * !!! Don't ever share the same Div id with the normal process window !!!
  */
 
 GW.process.sidepanel = {
+  current_workflow_history_id: null,
+  current_workflow_process_id: null,
+  current_process_id: null,
+  current_process_name: null,
+  current_process_category: null,
+  dockmode: "no",
 
-    current_workflow_history_id: null,
-    current_workflow_process_id: null,
-    current_process_id: null,
-    current_process_name: null,
-    current_process_category: null,
-    dockmode: "no", 
+  editor: null,
 
-    editor: null,
+  init: function () {},
 
-    init: function(){
-        
-    },
+  open_panel: function (
+    workflow_history_id,
+    workflow_process_id,
+    process_name,
+  ) {
+    console.log(
+      workflow_history_id + " " + workflow_process_id + " " + process_name,
+    );
+    this.current_workflow_history_id = workflow_history_id;
+    this.current_workflow_process_id = workflow_process_id;
+    this.current_process_id = workflow_process_id.split("-")[0];
+    this.current_process_name = process_name;
 
-    open_panel: function(workflow_history_id, workflow_process_id, process_name){
+    $.ajax({
+      url: "detail",
 
-        console.log(workflow_history_id + " " + workflow_process_id + " " + process_name)
-        this.current_workflow_history_id = workflow_history_id;
-        this.current_workflow_process_id = workflow_process_id;
-        this.current_process_id = workflow_process_id.split("-")[0];
-        this.current_process_name = process_name;
+      method: "POST",
 
-        $.ajax({
-				
-            url: "detail",
-            
-            method: "POST",
-            
-            data: "type=process&id=" + this.current_process_id
-            
-        }).done(function(msg){
+      data: "type=process&id=" + this.current_process_id,
+    }).done(function (msg) {
+      msg = $.parseJSON(msg);
 
-            msg = $.parseJSON(msg);
+      GW.process.sidepanel.display(msg);
 
-            GW.process.sidepanel.display(msg);
+      GW.process.sidepanel.showProcessLog(
+        GW.process.sidepanel.current_workflow_history_id,
+        GW.process.sidepanel.current_workflow_process_id,
+        GW.process.sidepanel.current_process_name,
+      );
 
-            GW.process.sidepanel.showProcessLog(
-                GW.process.sidepanel.current_workflow_history_id, 
-                GW.process.sidepanel.current_workflow_process_id, 
-                GW.process.sidepanel.current_process_name
-            );
+      GW.process.sidepanel.dockmode == "bottom";
+      GW.process.sidepanel.renderDock();
+    });
+  },
 
-            GW.process.sidepanel.dockmode == "bottom";
-            GW.process.sidepanel.renderDock();
+  editSwitch: function () {
+    if (this.isPresent) {
+      this.update();
+    }
+  },
+
+  update: function () {
+    if (this.isPresent()) {
+      var pcode = GW.process.sidepanel.getCode();
+
+      var confidential = "FALSE"; // this is very rarely used right now. May improve in future.
+
+      if (this.current_process_id != null) {
+        if (this.current_process_lang == "builtin") {
+          GW.process.updateBuiltin();
+        } else {
+          GW.process.updateRaw(
+            this.current_process_id,
+            this.current_process_name,
+            this.current_process_lang,
+            this.current_process_description,
+            pcode,
+            confidential,
+          );
+        }
+      }
+    }
+  },
+
+  showHistoryDetails: function (history_id) {
+    GW.process.history_id = history_id;
+
+    $.ajax({
+      url: "log",
+
+      method: "POST",
+
+      data: "type=process&id=" + history_id,
+    })
+      .done(function (msg) {
+        if (msg == "") {
+          alert("Cannot find the process history in the database.");
+
+          return;
+        }
+
+        msg = GW.general.parseResponse(msg);
+
+        msg.code = msg.input;
+
+        GW.process.history_id = msg.hid;
+
+        GW.process.sidepanel.display(msg);
+
+        GW.process.sidepanel.displayOutput(msg);
+
+        if (GW.editor.isfullscreen) {
+          GW.process.sidepanel.dockmode = "left";
+          GW.process.sidepanel.renderDock();
+        } else {
+          GW.process.sidepanel.dockmode = "bottom";
+          GW.process.sidepanel.renderDock();
+        }
+      })
+      .fail(function (jxr, status) {
+        console.error("Fail to get log.");
+      });
+  },
+
+  displayOutput: function (msg) {
+    var output = GW.general.escapeCodeforHTML(msg.output);
+
+    if (msg.output == "logfile") {
+      output =
+        '<div class="spinner-border" role="status"> ' +
+        '	  <span class="sr-only">Loading...</span> ' +
+        "	</div>";
+    }
+
+    console.log("Update the code with the old version");
+
+    if (GW.process.sidepanel.editor) {
+      GW.process.sidepanel.editor.setValue(GW.process.unescape(msg.input));
+
+      GW.process.util.refreshCodeEditor();
+    }
+
+    output =
+      "<p> Execution started at " +
+      msg.begin_time +
+      "</p>" +
+      "<p> Execution ended at " +
+      msg.end_time +
+      "</p>" +
+      "<p> The old code used has been refreshed in the code editor.</p>" +
+      "<div>" +
+      output +
+      "</div>";
+
+    $("#prompt-panel-process-log-window").html(output);
+
+    $("#retrieve-result").click(function () {
+      GW.result.showDialog(history_id);
+    });
+
+    if (msg.output == "logfile") {
+      $.get("../temp/" + msg.id + ".log")
+        .success(function (data) {
+          if (data != null) $("#log-output").text(data);
+          else $("#log-output").text("missing log");
         })
+        .error(function () {
+          $("#log-output").text("missing log");
+        });
+    }
+  },
 
+  showProcessLog: function (workflow_history_id, process_id, process_title) {
+    if (workflow_history_id == null) {
+      $("#prompt_panel_log_switch").prop("checked", false).trigger("change");
+    } else {
+      $.ajax({
+        url: "workflow_process_log",
 
-    },
+        method: "POST",
 
-    editSwitch: function(){
+        data:
+          "workflowid=" +
+          GW.workflow.loaded_workflow +
+          "&workflowhistoryid=" +
+          workflow_history_id +
+          "&processid=" +
+          process_id,
+      })
+        .done(function (msg) {
+          msg = GW.general.parseResponse(msg);
 
-        if(this.isPresent){
+          if ("history_output" in msg && msg.history_output != null) {
+            GW.process.history_id = msg.history_id;
 
-            this.update();
+            msgout = msg.history_output.replaceAll("\n", "<br/>");
 
-        }
+            $("#prompt-panel-process-log-window").append(msgout);
+          } else {
+            $("#prompt_panel_log_switch")
+              .prop("checked", false)
+              .trigger("change");
+          }
+        })
+        .fail(function (msg) {
+          $("#prompt_panel_log_switch")
+            .prop("checked", false)
+            .trigger("change");
+        });
+    }
 
-    },
+    $.ajax({
+      url: "check_workflow_process_skipped",
 
-    update: function(){
+      method: "POST",
 
-        if(this.isPresent()){
+      data:
+        "workflowid=" +
+        GW.workflow.loaded_workflow +
+        "&processid=" +
+        process_id,
+    }).done(function (msg) {
+      msg = GW.general.parseResponse(msg);
 
-            var pcode =  GW.process.sidepanel.getCode();
+      if (msg.if_skipped) {
+        $("#prompt_panel_skip_process_" + process_id).prop("checked", true);
+      } else {
+        $("#prompt_panel_skip_process_" + process_id).prop("checked", false);
+      }
+    });
+  },
 
-            var confidential = "FALSE"  // this is very rarely used right now. May improve in future.
+  /**
+   * Keep consistent with gw.process
+   * @param {} msg
+   */
+  display: function (msg) {
+    let code_type = msg.lang == null ? msg.description : msg.lang;
 
-            if(this.current_process_id!=null){
+    GW.process.sidepanel.current_process_description = msg.description;
 
-                if(this.current_process_lang=="builtin"){
+    GW.process.sidepanel.current_process_lang = msg.lang;
 
-                    GW.process.updateBuiltin();
-                
-                }else{
-                    
-                    GW.process.updateRaw(this.current_process_id, this.current_process_name, this.current_process_lang, 
-                        this.current_process_description, pcode, confidential);
-                
-                }
-                
-            }
-            
-        }
-		
-	},
+    GW.process.sidepanel.current_process_category = code_type;
 
-    showHistoryDetails: function(history_id){
-		
-        GW.process.history_id = history_id;
+    GW.ssh.current_process_log_length = 0;
 
-		$.ajax({
-			
-			url: "log",
-			
-			method: "POST",
-			
-			data: "type=process&id=" + history_id
-			
-		}).done(function(msg){
-            
-			if(msg==""){
-				
-				alert("Cannot find the process history in the database.");
-				
-				return;
-				
-			}
-			
-			msg = GW.general.parseResponse(msg);
+    // do not stop ability to add process when we open side panel
+    // GW.workspace.currentmode = 2;
 
-			msg.code = msg.input;
+    GW.ssh.process_output_id = "prompt-panel-process-log-window";
 
-            GW.process.history_id = msg.hid
-			
-			GW.process.sidepanel.display(msg);
-			
-			GW.process.sidepanel.displayOutput(msg);
+    let code = msg.code;
 
-            if(GW.editor.isfullscreen){
+    if (code != null && code.includes('\\"')) {
+      code = GW.process.unescape(code);
+    }
 
-                GW.process.sidepanel.dockmode = "left";
-                GW.process.sidepanel.renderDock();
+    $("#prompt-panel").addClass("cd-panel--is-visible");
 
-            }else{
+    $("#prompt-panel-main").html("");
 
-                GW.process.sidepanel.dockmode = "bottom";
-                GW.process.sidepanel.renderDock();
-
-            }
-			
-		}).fail(function(jxr, status){
-			
-			console.error("Fail to get log.");
-		});
-		
-		
-	},
-
-    displayOutput: function(msg){
-		
-		var output = GW.general.escapeCodeforHTML(msg.output);
-		
-		if(msg.output=="logfile"){
-			
-			output = "<div class=\"spinner-border\" role=\"status\"> "+
-			"	  <span class=\"sr-only\">Loading...</span> "+
-			"	</div>";
-			
-		}
-		
-		console.log("Update the code with the old version")
-		
-		if(GW.process.sidepanel.editor){
-
-			GW.process.sidepanel.editor.setValue(GW.process.unescape(msg.input));
-
-			GW.process.util.refreshCodeEditor();
-
-		}
-		
-		output = "<p> Execution started at " + msg.begin_time + "</p>"+ 
-		
-		"<p> Execution ended at " + msg.end_time + "</p>"+
-		
-		"<p> The old code used has been refreshed in the code editor.</p>"+
-		
-		"<div>" + 
-		
-		output + "</div>";
-		
-		$("#prompt-panel-process-log-window").html(output);
-		
-		$("#retrieve-result").click(function(){
-			
-			GW.result.showDialog(history_id);
-			
-		});
-		
-		if(msg.output=="logfile"){
-			
-			$.get("../temp/" + msg.id + ".log" ).success(function(data){
-				
-				if(data!=null)
-					$("#log-output").text(data);
-				else
-					$("#log-output").text("missing log");
-				
-			}).error(function(){
-				
-				$("#log-output").text("missing log");
-				
-			});
-			
-		}
-
-	},
-
-
-	showProcessLog: function(workflow_history_id, process_id, process_title){
-
-        if(workflow_history_id == null){
-            
-            $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
-
-        }else{
-
-            $.ajax({
-
-                url: "workflow_process_log",
-            
-                method: "POST",
-            
-                data: "workflowid="+ GW.workflow.loaded_workflow +"&workflowhistoryid=" + workflow_history_id + "&processid=" + process_id
-            
-            }).done(function(msg){
-    
-                msg = GW.general.parseResponse(msg);
-
-                if("history_output" in msg && msg.history_output!=null){
-
-                    GW.process.history_id = msg.history_id
-        
-                    msgout = msg.history_output.replaceAll("\n", "<br/>");
-    
-                    $("#prompt-panel-process-log-window").append(msgout);
-    
-                }else{
-                    
-                    $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
-    
-                }
-                
-    
-            }).fail(function(msg){
-    
-                $("#prompt_panel_log_switch").prop('checked', false).trigger("change")
-    
-            })
-
-        }
-        
-
-		$.ajax({
-
-			url: "check_workflow_process_skipped",
-		
-			method: "POST",
-		
-			data: "workflowid="+ GW.workflow.loaded_workflow +"&processid=" + process_id
-		
-		}).done(function(msg){
-
-			msg = GW.general.parseResponse(msg);
-
-			if(msg.if_skipped){
-                $("#prompt_panel_skip_process_"+process_id).prop('checked', true)
-			}else{
-                $("#prompt_panel_skip_process_"+process_id).prop('checked', false)
-			}
-		})
-		
-	},
-
-    /**
-     * Keep consistent with gw.process
-     * @param {} msg 
-     */
-    display: function(msg){
-
-
-        let code_type = msg.lang==null?msg.description: msg.lang;
-
-        GW.process.sidepanel.current_process_description = msg.description;
-
-        GW.process.sidepanel.current_process_lang = msg.lang;
-
-        GW.process.sidepanel.current_process_category = code_type
-
-        GW.ssh.current_process_log_length = 0
-
-        GW.workspace.currentmode = 2;
-
-        GW.ssh.process_output_id = "prompt-panel-process-log-window"
-
-        let code = msg.code;
-
-		if(code!=null && code.includes("\\\"")){
-
-			code = GW.process.unescape(code);
-
-		}
-
-        $('#prompt-panel').addClass('cd-panel--is-visible');
-
-        $("#prompt-panel-main").html("");
-
-        // add process code and history combo
-        let process_code_history_content = `<div id="prompt-panel-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
+    // add process code and history combo
+    let process_code_history_content =
+      `<div id="prompt-panel-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
             <div class="subtab tab titleshadow" style="margin-top: 0; max-width: 100%">
                 <button class="tablinks-process" id="prompt-panel-main-process-info-code-tab" onclick="GW.process.openCity(event, 'prompt-panel-main-process-info-code')">Code</button>
-                <button class="tablinks-process" id="prompt-panel-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-panel-main-process-info-history'); GW.process.sidepanel.history('`+this.current_process_id+`', '` + this.current_process_name+`')">History</button>
+                <button class="tablinks-process" id="prompt-panel-main-process-info-history-tab" onclick="GW.process.openCity(event, 'prompt-panel-main-process-info-history'); GW.process.sidepanel.history('` +
+      this.current_process_id +
+      `', '` +
+      this.current_process_name +
+      `')">History</button>
                 <!-- TODO: play button, save button, full screen button-->
                 <button class="btn pull-right" onclick="GW.process.sidepanel.close()" >
 					<i class="glyphicon glyphicon-remove"></i>
@@ -326,13 +288,25 @@ GW.process.sidepanel = {
                 </button>
                 <button class="btn pull-right" title="skip it in workflow" onclick="javascript:void(0)">
                     Skip: <input type="checkbox"
-                        onClick='GW.workflow.skipprocess("` + this.current_workflow_history_id + `", "` + this.current_workflow_process_id + `");'  
-                        id="prompt_panel_skip_process_` + this.current_workflow_process_id + `" />
+                        onClick='GW.workflow.skipprocess("` +
+      this.current_workflow_history_id +
+      `", "` +
+      this.current_workflow_process_id +
+      `");'  
+                        id="prompt_panel_skip_process_` +
+      this.current_workflow_process_id +
+      `" />
                 </button>
                 <button class="btn pull-right" title="switch on/off log" onclick="javascript:void(0)">
                     Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" />
                 </button>
-                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('`+ this.current_process_id+`', '`+this.current_process_name+`', '`+code_type+`');" >
+                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('` +
+      this.current_process_id +
+      `', '` +
+      this.current_process_name +
+      `', '` +
+      code_type +
+      `');" >
                     <i class="glyphicon glyphicon-play"></i>
                 </button>
             </div>
@@ -364,199 +338,197 @@ GW.process.sidepanel = {
             </div>
 
             <div id="prompt-panel-execution_context"></div>
-        </div>`
-        $("#prompt-panel-main").append(process_code_history_content)
+        </div>`;
+    $("#prompt-panel-main").append(process_code_history_content);
 
-        // fill in values
-        $("#prompt-panel-processcategory").val(code_type);
-		
-		$("#prompt-panel-processname").val(this.current_process_name);
-		
-		$("#prompt-panel-processid").val(this.current_process_id);
+    // fill in values
+    $("#prompt-panel-processcategory").val(code_type);
 
-        $("#prompt-panel-main-process-info-code").hide().fadeIn('fast'); // refresh to make height full
-		
-		GW.process.sidepanel.editor = GW.process.util.displayCodeArea(code_type,  code, "#prompt-panel-code-embed", "#prompt-panel-process_code_window");
-		
-		// GW.process.util.displayToolbar(process_id, process_name, code_type, );
+    $("#prompt-panel-processname").val(this.current_process_name);
 
-        // activate buttons
+    $("#prompt-panel-processid").val(this.current_process_id);
 
-        $("#prompt_panel_log_switch").change(function(){
-			if(GW.process.sidepanel.dockmode == "left"){
-				if(!this.checked){
-					$(".container__right").hide()
-					$(".container__left").css('width', '100%');
-				}else{
-					$(".container__right").show()
-					$(".container__left").css('width', '60%');
-				}
-			}else if(GW.process.sidepanel.dockmode == "bottom"){
-				if(!this.checked){
-					$(".container__right").hide()
-					$(".container__left").css('height', '100%');
-				}else{
-					$(".container__right").show()
-					$(".container__left").css('height', '60%');
-				}
-			}
-			
-		})
+    $("#prompt-panel-main-process-info-code").hide().fadeIn("fast"); // refresh to make height full
 
-    },
+    GW.process.sidepanel.editor = GW.process.util.displayCodeArea(
+      code_type,
+      code,
+      "#prompt-panel-code-embed",
+      "#prompt-panel-process_code_window",
+    );
 
-    /**
-	 * Show a Run process dialog
-	 * @param {*} pid 
-	 * @param {*} pname 
-	 * @param {*} lang 
-	 */
-	runProcess: function(pid, pname, lang){
+    // GW.process.util.displayToolbar(process_id, process_name, code_type, );
 
-        GW.process.process_id = pid;
+    // activate buttons
 
-		GW.process.runProcess(pid, pname, lang, GW.process.sidepanel.executeCallback)
-		
-	},
-
-    executeCallback: function(encrypt, req, dialogItself, button){
-		
-		req.pswd = encrypt;
-
-        $("#prompt_panel_log_switch").prop('checked', true).trigger("change")
-
-        $("#prompt-panel-process-log-window").html("") //clean up the log out area
-
-        GW.ssh.process_output_id = "prompt-panel-process-log-window"
-
-        GW.ssh.current_process_log_length = 0
-		
-		GW.process.sendExecuteRequest(req, dialogItself, button);
-		
-	},
-
-    getCode: function(){
-
-		var code = null;
-		
-		if(GW.process.sidepanel.current_process_category=="shell"){
-			
-			code = GW.process.sidepanel.editor.getValue();
-			
-		}else if(GW.process.sidepanel.current_process_category=="builtin"){
-			
-			var params = [];
-			
-			$(".parameter").each(function(){
-				
-				var newparam = {
-						
-						name: $(this).attr('id').split("param_")[1].split(cmid)[0],
-						
-						value: $(this).val()
-						
-				}
-				
-				params.push(newparam);
-				
-			});
-			
-			code = {
-					
-					"operation" : $("#builtin_processes").val(),
-					
-					"params": params
-					
-			}
-
-			code = JSON.stringify(code);
-			
-		}else if(GW.process.sidepanel.current_process_category=="jupyter"){
-			
-			code = JSON.stringify(GW.process.jupytercode);
-			
-		}else if(GW.process.sidepanel.current_process_category=="python"){
-			
-			code = GW.process.sidepanel.editor.getValue();
-
-		}
-		
-		return code;
-		
-	},
-
-    switchFullScreen: function(){
-
-        GW.editor.switchFullScreenUtil('#prompt-panel-editor-history-tab-panel', 
-            '#prompt-panel-main-process-info-code', 
-            '#prompt-panel-main-process-info-history')
-
-    },
-
-    renderDock: function(){
-
-        if(GW.process.sidepanel.dockmode == "no"){
-            GW.process.util.noDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
-        }else if(GW.process.sidepanel.dockmode == "left"){
-            GW.process.util.leftDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
-        }else if(GW.process.sidepanel.dockmode == "bottom"){
-            GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
+    $("#prompt_panel_log_switch").change(function () {
+      if (GW.process.sidepanel.dockmode == "left") {
+        if (!this.checked) {
+          $(".container__right").hide();
+          $(".container__left").css("width", "100%");
+        } else {
+          $(".container__right").show();
+          $(".container__left").css("width", "60%");
         }
-
-    },
-
-    noDock: function(){
-
-        GW.process.sidepanel.dockmode = "no";
-        GW.process.sidepanel.renderDock()
-
-    },
-
-    leftDock: function(){
-
-        if(GW.process.sidepanel.dockmode != "left"){
-            GW.process.util.leftDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
-            GW.process.sidepanel.dockmode = "left";
-        }else{
-            GW.process.sidepanel.noDock()
+      } else if (GW.process.sidepanel.dockmode == "bottom") {
+        if (!this.checked) {
+          $(".container__right").hide();
+          $(".container__left").css("height", "100%");
+        } else {
+          $(".container__right").show();
+          $(".container__left").css("height", "60%");
         }
+      }
+    });
+  },
 
-    },
+  /**
+   * Show a Run process dialog
+   * @param {*} pid
+   * @param {*} pname
+   * @param {*} lang
+   */
+  runProcess: function (pid, pname, lang) {
+    GW.process.process_id = pid;
 
-    bottomDock: function(){
+    GW.process.runProcess(
+      pid,
+      pname,
+      lang,
+      GW.process.sidepanel.executeCallback,
+    );
+  },
 
-        if(GW.process.sidepanel.dockmode != "bottom"){
-            GW.process.util.bottomDock("prompt-panel-code-history-section", "prompt-panel-process_code_window", 
-            "prompt-panel-single-console-content", "prompt-panel-dragMe")
-            GW.process.sidepanel.dockmode = "bottom";
-        }else{
-            GW.process.sidepanel.noDock()
-        }
+  executeCallback: function (encrypt, req, dialogItself, button) {
+    req.pswd = encrypt;
 
-    },
+    $("#prompt_panel_log_switch").prop("checked", true).trigger("change");
 
-    history: function(process_id, process_name){
+    $("#prompt-panel-process-log-window").html(""); //clean up the log out area
 
-        GW.process.util.history(process_id, "#prompt-panel-process-history-container", '#process_history_table', 
-			"#closeHistory", "prompt-panel-main-process-info-history-tab", "prompt-panel-main-process-info-history")
+    GW.ssh.process_output_id = "prompt-panel-process-log-window";
 
-    },
+    GW.ssh.current_process_log_length = 0;
 
-    close: function(){
+    GW.process.sendExecuteRequest(req, dialogItself, button);
+  },
 
-        $('#prompt-panel').removeClass('cd-panel--is-visible');
+  getCode: function () {
+    var code = null;
 
-    },
+    if (GW.process.sidepanel.current_process_category == "shell") {
+      code = GW.process.sidepanel.editor.getValue();
+    } else if (GW.process.sidepanel.current_process_category == "builtin") {
+      var params = [];
 
-    isPresent: function(){
+      $(".parameter").each(function () {
+        var newparam = {
+          name: $(this).attr("id").split("param_")[1].split(cmid)[0],
 
-        return $('#prompt-panel').hasClass('cd-panel--is-visible')
+          value: $(this).val(),
+        };
 
-    },
+        params.push(newparam);
+      });
 
+      code = {
+        operation: $("#builtin_processes").val(),
 
-}
+        params: params,
+      };
+
+      code = JSON.stringify(code);
+    } else if (GW.process.sidepanel.current_process_category == "jupyter") {
+      code = JSON.stringify(GW.process.jupytercode);
+    } else if (GW.process.sidepanel.current_process_category == "python") {
+      code = GW.process.sidepanel.editor.getValue();
+    }
+
+    return code;
+  },
+
+  switchFullScreen: function () {
+    GW.editor.switchFullScreenUtil(
+      "#prompt-panel-editor-history-tab-panel",
+      "#prompt-panel-main-process-info-code",
+      "#prompt-panel-main-process-info-history",
+    );
+  },
+
+  renderDock: function () {
+    if (GW.process.sidepanel.dockmode == "no") {
+      GW.process.util.noDock(
+        "prompt-panel-code-history-section",
+        "prompt-panel-process_code_window",
+        "prompt-panel-single-console-content",
+        "prompt-panel-dragMe",
+      );
+    } else if (GW.process.sidepanel.dockmode == "left") {
+      GW.process.util.leftDock(
+        "prompt-panel-code-history-section",
+        "prompt-panel-process_code_window",
+        "prompt-panel-single-console-content",
+        "prompt-panel-dragMe",
+      );
+    } else if (GW.process.sidepanel.dockmode == "bottom") {
+      GW.process.util.bottomDock(
+        "prompt-panel-code-history-section",
+        "prompt-panel-process_code_window",
+        "prompt-panel-single-console-content",
+        "prompt-panel-dragMe",
+      );
+    }
+  },
+
+  noDock: function () {
+    GW.process.sidepanel.dockmode = "no";
+    GW.process.sidepanel.renderDock();
+  },
+
+  leftDock: function () {
+    if (GW.process.sidepanel.dockmode != "left") {
+      GW.process.util.leftDock(
+        "prompt-panel-code-history-section",
+        "prompt-panel-process_code_window",
+        "prompt-panel-single-console-content",
+        "prompt-panel-dragMe",
+      );
+      GW.process.sidepanel.dockmode = "left";
+    } else {
+      GW.process.sidepanel.noDock();
+    }
+  },
+
+  bottomDock: function () {
+    if (GW.process.sidepanel.dockmode != "bottom") {
+      GW.process.util.bottomDock(
+        "prompt-panel-code-history-section",
+        "prompt-panel-process_code_window",
+        "prompt-panel-single-console-content",
+        "prompt-panel-dragMe",
+      );
+      GW.process.sidepanel.dockmode = "bottom";
+    } else {
+      GW.process.sidepanel.noDock();
+    }
+  },
+
+  history: function (process_id, process_name) {
+    GW.process.util.history(
+      process_id,
+      "#prompt-panel-process-history-container",
+      "#process_history_table",
+      "#closeHistory",
+      "prompt-panel-main-process-info-history-tab",
+      "prompt-panel-main-process-info-history",
+    );
+  },
+
+  close: function () {
+    $("#prompt-panel").removeClass("cd-panel--is-visible");
+  },
+
+  isPresent: function () {
+    return $("#prompt-panel").hasClass("cd-panel--is-visible");
+  },
+};

@@ -737,7 +737,7 @@ public class ProcessTool {
 	
 	public String all_history(String pid) {
 
-		return all_history(pid, true);
+		return all_history(pid, false);
 
 	}
 	
