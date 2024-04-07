@@ -1,6 +1,21 @@
-![example workflow](https://github.com/ESIPFed/Geoweaver/actions/workflows/release_workflow.yml/badge.svg)
-[![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/coverage-100%25-success.svg)](https://codecov.io/) 
-[![PyPi](https://img.shields.io/pypi/v/geoweaver-cwl.svg)](https://pypi.org/project/geoweaver-cwl/)
+![example workflow](
+https://img.shields.io/github/actions/workflow/status/ESIPFed/Geoweaver/release_workflow.yml?style=for-the-badge
+)
+[![License](
+https://img.shields.io/github/license/ESIPFed/Geoweaver?style=for-the-badge
+)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE)
+[![Stars](
+https://img.shields.io/github/stars/ESIPFed%2FGeoweaver?style=for-the-badge
+)](https://github.com/ESIPFed/Geoweaver/stargazers) 
+[![Forks](
+https://img.shields.io/github/forks/ESIPFed/Geoweaver?style=for-the-badge&color=%23f2b40a
+)](https://github.com/ESIPFed/Geoweaver/network/members)
+[![Issues](
+https://img.shields.io/github/issues/ESIPFed/Geoweaver?style=for-the-badge&color=%2363c1ff
+)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](
+https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
+)](https://codecov.io/)
+![PyPi](https://img.shields.io/pypi/v/pygeoweaver?style=for-the-badge)
 
 # [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
@@ -25,6 +40,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
 Only two things basically:
 
 1. Make it time affordable for less-coder scientists (who know nothing about WfMS) to manage their data processing workflows
+2. 
 
 2. Preserve all the model run history and share them along with the code files
 
