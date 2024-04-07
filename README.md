@@ -93,6 +93,14 @@ If you found Geoweaver helpful in your research, please cite:
 
 Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
+# Existing Projects
+
+[//]: # (https://scholar.google.com/scholar?hl=en&as_sdt=0%2C27&q=geoweaver&btnG=)
+Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
+
+Sun, Ziheng, and Nicoleta Cristea. "Geoweaver for Automating ML-based High Resolution Snow Mapping Workflow." In AGU Fall Meeting Abstracts, vol. 2021, pp. IN11C-07. 2021.
+
+
 # License
 
 The MIT License (MIT)
