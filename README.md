@@ -1,9 +1,10 @@
-[![CircleCI](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master.svg?style=svg)](https://circleci.com/gh/ZihengSun/Geoweaver/tree/master) [![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/coverage-100%25-success.svg)](https://codecov.io/) 
+![example workflow](https://github.com/ESIPFed/Geoweaver/actions/workflows/release_workflow.yml/badge.svg)
+[![License](https://img.shields.io/github/license/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE) [![Stars](https://img.shields.io/github/stars/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/stargazers) [![Forks](https://img.shields.io/github/forks/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/network/members) [![Issues](https://img.shields.io/github/issues/ESIPFed/Geoweaver.svg)](https://github.com/ESIPFed/Geoweaver/issues) [![Coverage](https://img.shields.io/badge/coverage-100%25-success.svg)](https://codecov.io/) 
 [![PyPi](https://img.shields.io/pypi/v/geoweaver-cwl.svg)](https://pypi.org/project/geoweaver-cwl/)
 
 # [Geoweaver](https://esipfed.github.io/Geoweaver/)
 
-![logo](https://github.com/JYOSHREDDY/Geoweaver/blob/master/Geoweaver%20Banner.png)
+![logo](src/main/resources/static/img/geoweaver-readme-banner.png)
 
 Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. 
 
