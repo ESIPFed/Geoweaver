@@ -16,10 +16,19 @@ https://img.shields.io/github/issues/ESIPFed/Geoweaver?style=for-the-badge&color
 https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
 )](https://codecov.io/)
 ![PyPi](https://img.shields.io/pypi/v/pygeoweaver?style=for-the-badge)
-
-# [Geoweaver](https://esipfed.github.io/Geoweaver/)
+![Minimum Java Version](https://img.shields.io/badge/Java-11%2B-%23ed8b02?style=for-the-badge&logo=openjdk
+)
+![Geoweaver Docs](https://img.shields.io/badge/Docs-Geoweaver-%23c4ff7d?style=for-the-badge&logo=readthedocs&link=https%3A%2F%2Fgeoweaver.dev%2F
+)
 
 ![logo](src/main/resources/static/img/geoweaver-readme-banner.png)
+
+
+### GitHub Repo: https://github.com/ESIPFed/Geoweaver 
+### Pygeoweaver (Python Bindings): https://github.com/ESIPFed/pygeoweaver
+### Live Demo: https://geobrain.csiss.gmu.edu/Geoweaver
+
+
 
 Geoweaver is an in-browser software allowing users to easily compose and execute full-stack data processing workflows via taking advantage of online spatial data facilities, high-performance computation platforms, and open-source deep learning libraries. It provides all-in-one capacity covering server management, code repository, workflow orchestration software, and history recorder. 
 
@@ -31,36 +40,36 @@ Why choose Geoweaver?
 4) Seamlessly connect to external servers with SSH.
 5) In-Built Web UI with full support for Python.
 
-For further insights into Geoweaver, please explore the website at https://geoweaver.dev
-
+For further insights into Geoweaver, please explore the website at https://geoweaver.dev.
 GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
 
-# Software Goals
+# Why Geoweaver?
 
-Only two things basically:
 
-1. Make it time affordable for less-coder scientists (who know nothing about WfMS) to manage their data processing workflows
-2. 
+# Features
 
-2. Preserve all the model run history and share them along with the code files
 
-# [Installation](docs/install.md)
 
-# [Upgrade](docs/upgrade.md)
+# Installation & Guide
 
-# [Tutorial](https://zihengsun.github.io/Geoweaver/)
+[//]: # (make this in depth)
 
-* [Create and Manipulate Hosts](docs/host.md)
-
-* [Create and Run Processes](docs/process.md)
-
-* [Create, Run, and Export Workflows](docs/workflow.md)
-
-* [Jupyter Recording](https://andrewmagill.github.io/#/)
 
 # Demo
 
-[A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
+[//]: # (Add a lot of GIFs)
+
+# Usage
+
+[//]: # (colab, binder, GIFs)
+[//]: # (Show all features here)
+
+
+
+# Documentation
+
+Learn more about Geoweaver in its official documentation at https://esipfed.github.io/Geoweaver/docs/install.html
+
 
 # [PyGeoWeaver](https://github.com/ESIPFed/pygeoweaver)
 
@@ -74,30 +83,24 @@ Thanks to our many contributors!
 
 [![Contributors](https://contrib.rocks/image?repo=ESIPFed/Geoweaver)](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 
+# History
+
+
+
 # Citation
 
 If you found Geoweaver helpful in your research, please cite: 
 
 Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
-# Dependencies
-
-This project is impossible without the support of several fantastic open source libraries.
-
-[d3.js](https://github.com/d3/d3) - BSD 3-Clause
-
-[graph-creator](https://github.com/cjrd/directed-graph-creator) - MIT License
-
-[bootstrap](https://github.com/twbs/bootstrap) - MIT License
-
-[CodeMirror](https://github.com/codemirror/CodeMirror) - MIT License
-
-[JQuery Terminal](https://github.com/jcubic/jquery.terminal) - MIT License
-
-# [Community](docs/authors.md)
-
 # License
 
-MIT
+The MIT License (MIT)
 
+Copyright (c) 2015 Chris Kibble
 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
