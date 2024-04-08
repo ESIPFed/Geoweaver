@@ -8,12 +8,14 @@ GW.editor = {
     if (!sidepanel.hasClass("fullscreen")) {
       // this.beforeFullscreen = { height: sidepanel.height(), width: sidepanel.width() }
       sidepanel.addClass("fullscreen");
-      sidepanel.height("100vh");
-      sidepanel.width("100vw");
+    //   sidepanel.height("100vh");
+    //   sidepanel.width("100vw");
+      sidepanel.css('height', '100vh');
+      sidepanel.css('width', '100vw');
       sidepanel.css("top", "0");
-      $("#prompt-panel-main").height("calc(100% - 55px)");
-      $("#prompt-panel-main-process-info-code").height("100%");
-      $("#prompt-panel-main-process-info-history").height("100%");
+      $("#prompt-panel-main").css('height', "calc(100% - 45px)");
+      $("#prompt-panel-main-process-info-code").css('height', '100%');
+      $("#prompt-panel-main-process-info-history").css('height', '100%');
       GW.process.sidepanel.leftDock();
       this.isfullscreen = true;
     } else {
@@ -23,11 +25,11 @@ GW.editor = {
       sidepanel.css("top", "52px");
       // subtabCodeDiv.height('calc(100% - 150px)');
       // subtabHistoryDiv.height('calc(100% - 150px)');
-      sidepanel.height("100%");
-      sidepanel.width("40%");
-      $("#prompt-panel-main").height("calc(100% - 95px)");
-      $("#prompt-panel-main-process-info-code").height("100%");
-      $("#prompt-panel-main-process-info-history").height("100%");
+      sidepanel.css('height', '100%');
+      sidepanel.css('width', '40%');
+      $("#prompt-panel-main").css('height', "calc(100% - 95px)");
+      $("#prompt-panel-main-process-info-code").css('height', '100%');
+      $("#prompt-panel-main-process-info-history").css('height', '100%');
       GW.process.sidepanel.bottomDock();
       // editor.refresh();
       this.isfullscreen = false;

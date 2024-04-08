@@ -159,7 +159,7 @@ GW.workflow = {
 		
 		<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('` +
       workFlowID +
-      `,'workflow')" >
+      `','workflow')" >
 		
 		<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this workflow"></i> Delete </button>
 		
