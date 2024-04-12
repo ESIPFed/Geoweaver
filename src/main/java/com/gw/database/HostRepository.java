@@ -9,8 +9,10 @@ import org.springframework.data.repository.query.Param;
 import javax.transaction.Transactional;
 
 /**
- * The HostRepository interface provides methods for querying host-related information from the
- * database. It extends the CrudRepository interface to handle basic CRUD operations.
+ * The HostRepository interface provides methods for querying host-related
+ * information from the
+ * database. It extends the CrudRepository interface to handle basic CRUD
+ * operations.
  */
 @Transactional
 public interface HostRepository extends CrudRepository<Host, String> {
@@ -32,7 +34,7 @@ public interface HostRepository extends CrudRepository<Host, String> {
    * @param keyword The keyword to search for in host names.
    * @return A collection of hosts with names containing the keyword.
    */
-  @Query(value = "select * from HOST where name like CONCAT('%',:keyword,'%')", nativeQuery = true)
+  @Query(value = "select * from host where name like CONCAT('%',:keyword,'%')", nativeQuery = true)
   Collection<Host> findHostsByNameAlike(@Param("keyword") String keyword);
 
   // Collection<Host> findByNameContaining(String keyword);
@@ -42,16 +44,17 @@ public interface HostRepository extends CrudRepository<Host, String> {
    *
    * @return A collection of SSH hosts.
    */
-  @Query(value = "select * from HOST where type = 'ssh'", nativeQuery = true)
+  @Query(value = "select * from host where type = 'ssh'", nativeQuery = true)
   Collection<Host> findSSHHosts();
 
   /**
    * Find all public and private hosts of an owner.
    *
    * @param owner The owner's name.
-   * @return A collection of all public and private hosts owned by the specified owner.
+   * @return A collection of all public and private hosts owned by the specified
+   *         owner.
    */
-  @Query(value = "select * from HOST where owner  = ?1 ", nativeQuery = true)
+  @Query(value = "select * from host where owner  = ?1 ", nativeQuery = true)
   Collection<Host> findAllPublicAndPrivateByOwner(String owner);
 
   /**
@@ -60,19 +63,18 @@ public interface HostRepository extends CrudRepository<Host, String> {
    * @param owner The owner's name.
    * @return A collection of private hosts owned by the specified owner.
    */
-  @Query(
-      value = "select * from HOST where owner  = ?1 and confidential = 'TRUE'",
-      nativeQuery = true)
+  @Query(value = "select * from host where owner  = ?1 and confidential = 'TRUE'", nativeQuery = true)
   Collection<Host> findPrivateByOwner(String owner);
 
-  // Collection<Host> findByOwnerAndConfidential(String owner, boolean confidential);
+  // Collection<Host> findByOwnerAndConfidential(String owner, boolean
+  // confidential);
 
   /**
    * Find all public hosts.
    *
    * @return A collection of all public hosts.
    */
-  @Query(value = "select * from HOST where confidential = 'FALSE'", nativeQuery = true)
+  @Query(value = "select * from host where confidential = 'FALSE'", nativeQuery = true)
   Collection<Host> findAllPublicHosts();
 
   /**
@@ -80,7 +82,7 @@ public interface HostRepository extends CrudRepository<Host, String> {
    *
    * @return A collection of hosts of type 'jupyter'.
    */
-  @Query(value = "select * from HOST where type = 'jupyter'", nativeQuery = true)
+  @Query(value = "select * from host where type = 'jupyter'", nativeQuery = true)
   Collection<Host> findJupyterNotebookHosts();
 
   /**
@@ -88,7 +90,7 @@ public interface HostRepository extends CrudRepository<Host, String> {
    *
    * @return A collection of hosts of type 'jupyterhub'.
    */
-  @Query(value = "select * from HOST where type = 'jupyterhub'", nativeQuery = true)
+  @Query(value = "select * from host where type = 'jupyterhub'", nativeQuery = true)
   Collection<Host> findJupyterHubHosts();
 
   /**
@@ -96,7 +98,7 @@ public interface HostRepository extends CrudRepository<Host, String> {
    *
    * @return A collection of hosts of type 'jupyterlab'.
    */
-  @Query(value = "select * from HOST where type = 'jupyterlab'", nativeQuery = true)
+  @Query(value = "select * from host where type = 'jupyterlab'", nativeQuery = true)
   Collection<Host> findJupyterLabHosts();
 
   /**
@@ -104,6 +106,6 @@ public interface HostRepository extends CrudRepository<Host, String> {
    *
    * @return A collection of hosts of type 'gee'.
    */
-  @Query(value = "select * from HOST where type = 'gee'", nativeQuery = true)
+  @Query(value = "select * from host where type = 'gee'", nativeQuery = true)
   Collection<Host> findGEEHosts();
 }
