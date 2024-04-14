@@ -57,27 +57,6 @@ public interface LocalSession {
       String history_id, String script, String processid, boolean isjoin, String token);
 
   /**
-   * Run jupyter locally
-   *
-   * @param script
-   * @param processid
-   * @param isjoin
-   * @param bin
-   * @param env
-   * @param basedir
-   * @param token http session id
-   */
-  public void runJupyter(
-      String history_id,
-      String script,
-      String processid,
-      boolean isjoin,
-      String bin,
-      String env,
-      String basedir,
-      String token);
-
-  /**
    * Run Python locally
    *
    * @param script

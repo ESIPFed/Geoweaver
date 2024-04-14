@@ -194,11 +194,7 @@ public class ProcessTool {
 
 			suffix = "py";
 
-		}else if("jupyter".equals(lang)){
-
-			suffix = "ipynb";
-
-		}else if("builtin".equals(lang)){
+		} else if("builtin".equals(lang)){
 
 			suffix = "builtin";
 
@@ -261,49 +257,6 @@ public class ProcessTool {
 		return p;
 	}
 
-	/**
-	 * for jupyter, save the jupyter nbconvert to replace the code
-	 * @param h
-	 * @param token
-	 */
-	public void updateJupyter(History h, String token) {
-		
-		if(h.getIndicator().equals(ExecutionStatus.DONE)) {
-			
-			GWProcess p = getProcessById(h.getHistory_process());
-			
-			if(!BaseTool.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
-				
-				String newfilename = p.getName();
-				
-				if(!newfilename.endsWith(".ipynb")) {
-					
-					newfilename += ".nbconvert.ipynb";
-					
-				}else {
-					
-					newfilename = newfilename.replace(".ipynb", ".nbconvert.ipynb");
-					
-				}
-				
-				String resfile = workspace + "/" + token + "/" + newfilename;
-				
-				if(new File(resfile).exists()) {
-					
-					String newresult = bt.readStringFromFile(resfile);
-					
-					p.setCode(newresult);
-					
-					this.update(p);
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
 	/**
 	 * Update the Process
 	 * @param id
