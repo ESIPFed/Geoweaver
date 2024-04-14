@@ -1116,8 +1116,6 @@ GW.process = {
           GW.process.showShell(old_code, GW.process.cmid);
         } else if (old_lang == "builtin") {
           GW.process.showBuiltinProcess(old_code, GW.process.cmid);
-        } else if (old_lang == "jupyter") {
-          GW.process.showJupyter(old_code, GW.process.cmid);
         } else if (old_lang == "python") {
           GW.process.showPython(old_code, GW.process.cmid);
         }

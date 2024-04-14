@@ -106,12 +106,6 @@ public class ExecutionTool {
 
         resp = lt.executeBuiltInProcess(history_id, id, hid, pswd, httpsessionid, isjoin);
 
-      } else if ("jupyter".equals(category)) {
-
-        resp =
-            lt.executeJupyterProcess(
-                history_id, id, hid, pswd, httpsessionid, isjoin, bin, pyenv, basedir);
-
       } else if ("python".equals(category)) {
 
         resp =
