@@ -202,48 +202,6 @@ public class LocalhostTool {
 
       resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 
-      // get host ip, port, user name and password
-
-      //			String[] hostdetails = HostTool.getHostDetailsById(hid);
-
-      //			SSHSession session = new SSHSessionImpl();
-      //
-      //			session.login(hid, pswd, token, false);
-      //
-      //			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
-      //
-      //			session.runBash(code, id, isjoin);
-
-      //			String historyid = session.getHistory_id();
-
-      // GeoweaverProcessTask t = new GeoweaverProcessTask();
-
-      // t.initialize(id, hid, pswd, token, isjoin, token);
-
-      // // find active websocket for this builtin process when it is running as a member process in
-      // a workflow
-      // // If this builtin process is running solo, the TaskSocket will take care of the problem.
-
-      // javax.websocket.Session ws = CommandServlet.findSessionById(token);
-
-      // if(!BaseTool.isNull(ws)) t.startMonitor(ws);
-
-      // if(isjoin) {
-
-      // 	tm.runDirectly(t);
-
-      // }else {
-
-      // 	tm.addANewTask(t);
-
-      // }
-
-      // this.history_input = code;
-
-      //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
-
-      // register the input/output into the database
-
     } catch (Exception e) {
 
       e.printStackTrace();
@@ -343,29 +301,6 @@ public class LocalhostTool {
     }
 
     logger.debug("The temp python files for " + hid + " have been deleted.");
-  }
-
-  /**
-   * Save Jupyter into the Local Workspace Folder if it is run on Localhost
-   *
-   * @param code
-   * @param token
-   */
-  public void localizeJupyter(String code, String name, String history_id) {
-
-    File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id);
-
-    if (!workfolder.exists()) {
-
-      workfolder.mkdirs();
-    }
-
-    if (!name.endsWith(".ipynb")) {
-
-      name += ".ipynb";
-    }
-
-    bt.writeString2File(code, workfolder + "/" + name);
   }
 
   /** Package all python files into one zip file */

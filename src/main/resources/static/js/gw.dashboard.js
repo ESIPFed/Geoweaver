@@ -251,7 +251,6 @@ GW.board = {
       '           <div class="panel-body" style="height:200px;"><ul>' +
       '               <li><p class="panel-text"><span id="host_num"></span> hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_ssh_num"></span> SSH hosts</p></li>' +
-      '               <li><p class="panel-text"><span id="host_jupyter_num"></span> Jupyter Notebook hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_jupyterhub_num"></span> JupyterHub hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_jupyterlab_num"></span> JupyterLab hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_gee_num"></span> Earth Engine hosts</p></li>' +
@@ -266,7 +265,6 @@ GW.board = {
       '           <div class="panel-body" style="height:200px;"><ul>' +
       '               <li><p class="panel-text"><span id="process_num"></span> processes</p></li>' +
       '               <li><p class="panel-text"><span id="process_shell_num"></span> Shell processes</p></li>' +
-      '               <li><p class="panel-text"><span id="process_notebook_num"></span> Jupyter notebooks</p></li>' +
       '               <li><p class="panel-text"><span id="process_builtin_num"></span> builtin processes</p></li>' +
       '               <li><p class="panel-text"><span id="process_python_num"></span> python processes</p></li>' +
       "           </ul></div>" +

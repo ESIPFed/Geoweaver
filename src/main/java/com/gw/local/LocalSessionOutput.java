@@ -62,7 +62,6 @@ public class LocalSessionOutput implements Runnable {
    * @param token The session token.
    * @param history_id The history ID associated with the session.
    * @param lang The programming language used in the session.
-   * @param jupyterfilepath The Jupyter file path, if applicable.
    */
   public void init(
       BufferedReader in, String token, String history_id, String lang, String jupyterfilepath) {

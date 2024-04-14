@@ -180,8 +180,6 @@ public class RemotehostTool {
 
       GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
 
-      session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token);
-
       resp =
           "{\"history_id\": \""
               + history_id

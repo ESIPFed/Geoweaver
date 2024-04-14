@@ -169,77 +169,6 @@ GW.process = {
     GW.process.util.refreshCodeEditor();
   },
 
-  load_jupyter: function () {
-    var root = {};
-
-    var $file_input = document.querySelector("input#load_jupyter");
-    var $url_input = document.querySelector("button#load_jupyter_url");
-    var $holder = document.querySelector("#jupyter_area");
-
-    var render_notebook = function (ipynb) {
-      GW.process.jupytercode = ipynb;
-      var notebook = (root.notebook = nb.parse(ipynb));
-      while ($holder.hasChildNodes()) {
-        $holder.removeChild($holder.lastChild);
-      }
-      $holder.appendChild(notebook.render());
-      nb.postlisten();
-      Prism.highlightAll();
-    };
-
-    var load_file = function (file) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        GW.process.jupytercode = this.result;
-        var parsed = JSON.parse(this.result);
-        render_notebook(parsed);
-      };
-      reader.readAsText(file);
-    };
-
-    $file_input.onchange = function (e) {
-      load_file(this.files[0]);
-    };
-
-    $url_input.onclick = function () {
-      var url = $("#jupyter_url").val();
-      $.ajax({
-        dataType: "json",
-        url: url,
-      }).success(function (data) {
-        render_notebook(data);
-      });
-    };
-
-    document.getElementById("controls").addEventListener(
-      "dragover",
-      function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy"; // Explicitly show this is a
-      },
-      false,
-    );
-
-    document.getElementById("controls").addEventListener(
-      "dragleave",
-      function (e) {
-        //		        root.document.body.style.opacity = 1;
-      },
-      false,
-    );
-
-    document.getElementById("controls").addEventListener(
-      "drop",
-      function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        load_file(e.dataTransfer.files[0]);
-      },
-      false,
-    );
-  },
-
   showPython: function (code, cmid) {
     //			var cmid = Math.floor(Math.random() * 100);
 
@@ -387,8 +316,6 @@ GW.process = {
       };
 
       code = JSON.stringify(code);
-    } else if ($("#processcategory" + cmid).val() == "jupyter") {
-      code = JSON.stringify(GW.process.jupytercode);
     } else if ($("#processcategory" + cmid).val() == "python") {
       code = GW.process.editor.getValue();
       //				code = $("#codeeditor-" + cmid).val();
@@ -650,8 +577,6 @@ GW.process = {
         GW.process.showShell(null, GW.process.cmid);
       } else if (this.value == "builtin") {
         GW.process.showBuiltinProcess(null, GW.process.cmid);
-      } else if (this.value == "jupyter") {
-        GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
       } else if (this.value == "python") {
         GW.process.showPython(null, GW.process.cmid);
       }
@@ -993,7 +918,6 @@ GW.process = {
       '">' +
       '    			<option value="shell">Shell</option>' +
       '    			<option value="builtin">Built-In Process</option>' +
-      '    			<option value="jupyter">Jupyter Notebook</option>' +
       '    			<option value="python">Python</option>' +
       /*'    		<option value="python">Python</option>'+
 		   '    			<option value="r">R</option>'+
