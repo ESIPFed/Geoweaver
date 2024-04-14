@@ -251,8 +251,6 @@ GW.board = {
       '           <div class="panel-body" style="height:200px;"><ul>' +
       '               <li><p class="panel-text"><span id="host_num"></span> hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_ssh_num"></span> SSH hosts</p></li>' +
-      '               <li><p class="panel-text"><span id="host_jupyterhub_num"></span> JupyterHub hosts</p></li>' +
-      '               <li><p class="panel-text"><span id="host_jupyterlab_num"></span> JupyterLab hosts</p></li>' +
       '               <li><p class="panel-text"><span id="host_gee_num"></span> Earth Engine hosts</p></li>' +
       "           </ul></div>" +
       "       </div>" +

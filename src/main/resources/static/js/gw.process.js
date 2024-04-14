@@ -1057,8 +1057,6 @@ GW.process = {
             GW.process.showShell(old_code_new, GW.process.cmid);
           } else if (this.value == "builtin") {
             GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
-          } else if (this.value == "jupyter") {
-            GW.process.showJupyter(old_code_new, GW.process.cmid);
           } else if (this.value == "python") {
             GW.process.showPython(old_code_new, GW.process.cmid);
           }

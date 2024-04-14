@@ -1402,8 +1402,6 @@ public class GeoweaverController {
             i++;
           }
           code += "] }";
-        } else if (lang.equals("jupyter")) {
-          code = request.getParameter("code");
         } else {
           code = request.getParameter("code");
         }
