@@ -1,95 +1,90 @@
 package com.gw.jpa;
 
 import javax.persistence.Column;
-import javax.persistence.Lob;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 /**
  * Process POJO
- * @author jensensun
  *
+ * @author jensensun
  */
 @Entity
 public class GWProcess {
 
-	@Id
-	String id;
-	
-	String name;
-	
-	@Lob
-	@Column(columnDefinition = "LONGTEXT")
-	String description;
+  @Id String id;
 
-	@Lob
-	@Column(columnDefinition = "LONGTEXT")
-	String code;
+  String name;
 
-	String lang;
-	
-	String owner;
+  @Lob
+  @Column(columnDefinition = "LONGTEXT")
+  String description;
 
-	//true: private; false: public
-	String confidential;
+  @Lob
+  @Column(columnDefinition = "LONGTEXT")
+  String code;
 
+  String lang;
 
-	public String getOwner() {
-		return this.owner;
-	}
+  String owner;
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-	public String getConfidential() {
-		return this.confidential;
-	}
+  // true: private; false: public
+  String confidential;
 
-	public void setConfidential(String confidential) {
-		this.confidential = confidential;
-	}
-	
-	public String getLang() {
-		return this.lang;
-	}
+  public String getOwner() {
+    return this.owner;
+  }
 
-	public void setLang(String lang) {
-		this.lang = lang;
-	}
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
 
+  public String getConfidential() {
+    return this.confidential;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public void setConfidential(String confidential) {
+    this.confidential = confidential;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public String getLang() {
+    return this.lang;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public void setLang(String lang) {
+    this.lang = lang;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getCode() {
-		return code;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-	
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
 }
