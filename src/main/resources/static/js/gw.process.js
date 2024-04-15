@@ -137,6 +137,7 @@ GW.process = {
             folding: true,
             formatOnType: true,
             showFoldingControls: 'always',
+            wordWrap: 'on',
         });
 
         GW.process.editor = editor;
@@ -253,6 +254,8 @@ GW.process = {
                 folding: true,
                 formatOnType: true,
                 showFoldingControls: 'always',
+                wordWrap: 'on',
+                scrollBeyondLastLine: true,
             });
    
             GW.process.editor = editor;

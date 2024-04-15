@@ -94,8 +94,8 @@ require(['vs/editor/editor.main'], function() {
         return;
     }
 
-    container.style.height = '820px'; // Set a non-zero height
-    container.style.width = '100%'; // Set the width to fill the container
+    // container.style.height = '820px'; // Set a non-zero height
+    // container.style.width = '100%'; // Set the width to fill the container
 
     var editor = monaco.editor.create(container, {
         value: code || '#!/bin/bash',
@@ -112,6 +112,8 @@ require(['vs/editor/editor.main'], function() {
         folding: true,
         formatOnType: true,
         showFoldingControls: 'always',
+        wordWrap: 'on',
+        scrollBeyondLastLine: true,
     });
 
     GW.process.editor = editor;
@@ -137,8 +139,8 @@ require(['vs/editor/editor.main'], function() {
           return;
       }
 
-      container.style.height = '820px'; // Set a non-zero height
-      container.style.width = '100%'; // Set the width to fill the container
+      // container.style.height = '820px'; // Set a non-zero height
+      // container.style.width = '100%'; // Set the width to fill the container
 
       var editor = monaco.editor.create(container, {
           value: code || '# Write your first Python code in Geoweaver',
@@ -155,6 +157,8 @@ require(['vs/editor/editor.main'], function() {
           folding: true,
           formatOnType: true,
           showFoldingControls: 'always',
+          wordWrap: 'on',
+          scrollBeyondLastLine: true,
       });
 
       GW.process.editor = editor;
