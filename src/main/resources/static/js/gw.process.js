@@ -138,6 +138,7 @@ GW.process = {
             formatOnType: true,
             showFoldingControls: 'always',
             wordWrap: 'on',
+            scrollBeyondLastLine: true,
         });
 
         GW.process.editor = editor;
