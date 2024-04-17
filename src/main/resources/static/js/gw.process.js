@@ -707,8 +707,18 @@ GW.process = {
       setTimeout(GW.process.initDiffEditors, 100, current_history, previous_history);
   }
 
-  var dialog = getJSFrameDialog();
+  // var dialog = getJSFrameDialog();
   // var dialog = GW.process.getJSFrameDialog();
+
+  var dialog = typeof getJSFrameDialog === "function" ? getJSFrameDialog() : null;
+  if (dialog) {
+      dialog.on('closeButton', 'click', function(frame) {
+          // Dispose of editors and handle the frame as needed
+      });
+  } else {
+      console.warn("Dialog function not available.");
+  }
+
     if (dialog) {
         dialog.on('closeButton', 'click', function(frame) {
             if (GW.process.codeDiffEditor) {
