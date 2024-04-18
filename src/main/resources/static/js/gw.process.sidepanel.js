@@ -300,7 +300,10 @@ GW.process.sidepanel = {
                 <button class="btn pull-right" title="switch on/off log" onclick="javascript:void(0)">
                     Log: <input type="checkbox" id="prompt_panel_log_switch" checked="checked" />
                 </button>
-                <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('` +
+                <button class="btn pull-right" title="download code" onclick="GW.process.sidepanel.getCodeAndLog()">
+                <i class="glyphicon glyphicon-download"></i>
+            </button>  
+              <button class="btn pull-right" title="execute process" onclick="GW.process.sidepanel.runProcess('` +
       this.current_process_id +
       `', '` +
       this.current_process_name +
@@ -530,5 +533,21 @@ GW.process.sidepanel = {
 
   isPresent: function () {
     return $("#prompt-panel").hasClass("cd-panel--is-visible");
+  },
+  getCodeAndLog: function(){
+    var code = this.getCode();
+    var log = $("#prompt-panel-process-log-window").html();
+    var code_log = code + "\n\n" + log;
+    var blob = new Blob([code_log], {type: "text/plain;charset=utf-8"});
+
+    let ext = "";
+    if (this.current_process_category == "python") {
+      ext = ".py";
+    }
+    if (this.current_process_category == "shell") {
+      ext = ".sh";
+    }
+
+    saveAs(blob, this.current_process_name + ext); // need ext to download the file with extension correctly. If ext is not identified we can leave it as txt
   },
 };
