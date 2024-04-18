@@ -67,11 +67,4 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String> {
   @Query(value = "select * from gwprocess where lang = 'builtin'", nativeQuery = true)
   Collection<GWProcess> findBuiltinProcess();
 
-  /**
-   * Find processes implemented as Jupyter notebooks.
-   *
-   * @return A collection of processes represented as Jupyter notebooks.
-   */
-  @Query(value = "select * from gwprocess where lang = 'jupyter'", nativeQuery = true)
-  Collection<GWProcess> findNotebookProcess();
 }

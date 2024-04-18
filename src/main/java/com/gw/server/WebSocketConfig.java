@@ -19,12 +19,6 @@ public class WebSocketConfig {
     return new CommandServlet();
   }
 
-  //    @Bean
-  //    public TestSocketServlet callTestWebSocketController()
-  //    {
-  //        return new TestSocketServlet();
-  //    }
-
   @Bean
   public TerminalServlet callTerminalWebSocketController() {
     return new TerminalServlet();
@@ -35,21 +29,4 @@ public class WebSocketConfig {
     return new WorkflowServlet();
   }
 
-  @Bean
-  public JupyterRedirectServlet callJupyterWebSocketController() {
-
-    return new JupyterRedirectServlet();
-  }
-
-  @Bean
-  public JupyterHubRedirectServlet callJupyterHubWebSocketController() {
-
-    return new JupyterHubRedirectServlet();
-  }
-
-  @Bean
-  public JupyterLabRedirectServlet callJupyterLabWebSocketController() {
-
-    return new JupyterLabRedirectServlet();
-  }
 }

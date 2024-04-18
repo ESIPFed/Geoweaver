@@ -169,77 +169,6 @@ GW.process = {
     GW.process.util.refreshCodeEditor();
   },
 
-  load_jupyter: function () {
-    var root = {};
-
-    var $file_input = document.querySelector("input#load_jupyter");
-    var $url_input = document.querySelector("button#load_jupyter_url");
-    var $holder = document.querySelector("#jupyter_area");
-
-    var render_notebook = function (ipynb) {
-      GW.process.jupytercode = ipynb;
-      var notebook = (root.notebook = nb.parse(ipynb));
-      while ($holder.hasChildNodes()) {
-        $holder.removeChild($holder.lastChild);
-      }
-      $holder.appendChild(notebook.render());
-      nb.postlisten();
-      Prism.highlightAll();
-    };
-
-    var load_file = function (file) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        GW.process.jupytercode = this.result;
-        var parsed = JSON.parse(this.result);
-        render_notebook(parsed);
-      };
-      reader.readAsText(file);
-    };
-
-    $file_input.onchange = function (e) {
-      load_file(this.files[0]);
-    };
-
-    $url_input.onclick = function () {
-      var url = $("#jupyter_url").val();
-      $.ajax({
-        dataType: "json",
-        url: url,
-      }).success(function (data) {
-        render_notebook(data);
-      });
-    };
-
-    document.getElementById("controls").addEventListener(
-      "dragover",
-      function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy"; // Explicitly show this is a
-      },
-      false,
-    );
-
-    document.getElementById("controls").addEventListener(
-      "dragleave",
-      function (e) {
-        //		        root.document.body.style.opacity = 1;
-      },
-      false,
-    );
-
-    document.getElementById("controls").addEventListener(
-      "drop",
-      function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        load_file(e.dataTransfer.files[0]);
-      },
-      false,
-    );
-  },
-
   showPython: function (code, cmid) {
     //			var cmid = Math.floor(Math.random() * 100);
 
@@ -303,102 +232,6 @@ GW.process = {
     GW.process.util.refreshCodeEditor();
   },
 
-  uploadAndReplaceJupyterCode: function () {
-    GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
-
-    // var content = ''+
-    // 	GW.process.getProcessDialogTemplate()+
-    // 	'';
-    // content += '';
-
-    var content = `<div class="modal-body">
-				<div class="row"  style="font-size:12px;">
-					<div class="col col-md-12">
-						<span class="required-mark">*</span> 
-						This panel is for importing to replace the existing jupyter notebook.
-					</div>
-				</div>
-				<div class="row">
-					<div class="col col-md-6">
-						<div id="controls" style="font-size:12px;"> 
-							<div id="header">IPython/Jupyter Notebook Loader</div>     
-							<input type="file" id="load_jupyter" />
-						</div>
-					</div>
-					<div class="col col-md-6">Or import from URL: <br/>
-						<div class="input-group col-md-12 mb-3">
-							<input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
-							<div class="input-group-append"> 
-								<button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div id="jupyter_area"></div>
-			</div>
-			
-			<div class="modal-footer">
-				<button type="button" id="upload_replace_jupyter_confirm_btn" class="btn btn-outline-primary">Confirm</button> 
-				<button type="button" id="upload_replace_jupyter_cancel_btn" class="btn btn-outline-secondary">Cancel</button>
-			</div>`;
-
-    GW.process.replace_jupyter_jsframe = GW.process.createJSFrameDialog(
-      720,
-      300,
-      content,
-      "Replace Notebook",
-    );
-
-    this.load_jupyter();
-
-    $("#upload_replace_jupyter_confirm_btn").click(function () {
-      $("#code-embed").html("");
-
-      $("#code-embed").append(
-        `<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`,
-      );
-
-      let code = GW.process.jupytercode;
-
-      if (code != null && typeof code != "undefined") {
-        code = GW.general.parseResponse(code);
-        var notebook = nb.parse(code);
-        var rendered = notebook.render();
-        $("#code-embed").append(rendered);
-        nb.postlisten();
-      }
-
-      GW.process.replace_jupyter_jsframe.closeFrame();
-    });
-
-    $("#upload_replace_jupyter_cancel_btn").click(function () {
-      GW.process.replace_jupyter_jsframe.closeFrame();
-    });
-  },
-
-  showJupyter: function (code, cmid) {
-    var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing jupyter notebooks as new processes. The execution is by nbconvert.</div></div>
-			<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> 
-			<div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />
-			</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3">
-			  <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
-			  <div class="input-group-append"> 
-				<button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
-			  </div>
-			</div></div></div> <div id="jupyter_area"></div>`;
-
-    $("#codearea-" + cmid).append(cont);
-
-    this.load_jupyter();
-
-    if (code != null && typeof code != "undefined") {
-      code = GW.general.parseResponse(code);
-      var notebook = nb.parse(code);
-      var rendered = notebook.render();
-      $("#jupyter_area-" + cmid).append(rendered);
-      nb.postlisten();
-    }
-  },
 
   showBuiltinProcess: function (code, cmid) {
     var cont =
@@ -483,8 +316,6 @@ GW.process = {
       };
 
       code = JSON.stringify(code);
-    } else if ($("#processcategory" + cmid).val() == "jupyter") {
-      code = JSON.stringify(GW.process.jupytercode);
     } else if ($("#processcategory" + cmid).val() == "python") {
       code = GW.process.editor.getValue();
       //				code = $("#codeeditor-" + cmid).val();
@@ -746,8 +577,6 @@ GW.process = {
         GW.process.showShell(null, GW.process.cmid);
       } else if (this.value == "builtin") {
         GW.process.showBuiltinProcess(null, GW.process.cmid);
-      } else if (this.value == "jupyter") {
-        GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
       } else if (this.value == "python") {
         GW.process.showPython(null, GW.process.cmid);
       }
@@ -1089,7 +918,6 @@ GW.process = {
       '">' +
       '    			<option value="shell">Shell</option>' +
       '    			<option value="builtin">Built-In Process</option>' +
-      '    			<option value="jupyter">Jupyter Notebook</option>' +
       '    			<option value="python">Python</option>' +
       /*'    		<option value="python">Python</option>'+
 		   '    			<option value="r">R</option>'+
@@ -1212,8 +1040,6 @@ GW.process = {
           GW.process.showShell(old_code, GW.process.cmid);
         } else if (old_lang == "builtin") {
           GW.process.showBuiltinProcess(old_code, GW.process.cmid);
-        } else if (old_lang == "jupyter") {
-          GW.process.showJupyter(old_code, GW.process.cmid);
         } else if (old_lang == "python") {
           GW.process.showPython(old_code, GW.process.cmid);
         }
@@ -1231,8 +1057,6 @@ GW.process = {
             GW.process.showShell(old_code_new, GW.process.cmid);
           } else if (this.value == "builtin") {
             GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
-          } else if (this.value == "jupyter") {
-            GW.process.showJupyter(old_code_new, GW.process.cmid);
           } else if (this.value == "python") {
             GW.process.showPython(old_code_new, GW.process.cmid);
           }

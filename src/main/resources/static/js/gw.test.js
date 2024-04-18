@@ -401,21 +401,6 @@ GW.test = {
                                     </li>
                                     <ul class="sub-menu collapse" id="host_folder_ssh_target"></ul>
                                     
-                                    <li class=" jupyterserver folder" id="host_folder_jupyter" data-toggle="collapse" data-target="#host_folder_jupyter_target">
-                                        <a href="javascript:void(0)">Jupyter Notebook Server</a>
-                                    </li>
-                                    <ul class="sub-menu collapse" id="host_folder_jupyter_target"></ul>
-                                    
-                                    <li class="jupyterhubserver folder " id="host_folder_jupyterhub" data-toggle="collapse" data-target="#host_folder_jupyterhub_target">
-                                        <a href="javascript:void(0)">Jupyter Hub</a>
-                                    </li>
-                                    <ul class="sub-menu collapse" id="host_folder_jupyterhub_target"></ul>
-
-                                    <li class="jupyterlabserver folder " id="host_folder_jupyterlab" data-toggle="collapse" data-target="#host_folder_jupyterlab_target">
-                                        <a href="javascript:void(0)">Jupyter Lab</a>
-                                    </li>
-                                    <ul class="sub-menu collapse" id="host_folder_jupyterlab_target"></ul>
-                                    
                                     <li class="geeserver" id="host_folder_gee" data-toggle="collapse" data-target="#host_folder_gee_target">
                                         <a href="javascript:void(0)">Google Earth Engine</a>
                                     </li>
@@ -431,11 +416,6 @@ GW.test = {
                                         <a href="javascript:void(0)">Shell</a>
                                     </li>
                                     <ul class="sub-menu collapse" id="process_folder_shell_target"></ul>
-                                    
-                                    <li class="notebookfolder" id="process_folder_jupyter" data-toggle="collapse" data-target="#process_folder_jupyter_target">
-                                        <a href="javascript:void(0)">Notebook</a>
-                                    </li>
-                                    <ul class="sub-menu collapse" id="process_folder_jupyter_target"></ul>
                                     
                                     <li class="builtinfolder" id="process_folder_builtin" data-toggle="collapse" data-target="#process_folder_builtin_target">
                                         <a href="javascript:void(0)">Builtin Process</a>

@@ -62,7 +62,6 @@ public class LocalSessionOutput implements Runnable {
    * @param token The session token.
    * @param history_id The history ID associated with the session.
    * @param lang The programming language used in the session.
-   * @param jupyterfilepath The Jupyter file path, if applicable.
    */
   public void init(
       BufferedReader in, String token, String history_id, String lang, String jupyterfilepath) {
@@ -72,7 +71,7 @@ public class LocalSessionOutput implements Runnable {
     this.run = true;
     this.history_id = history_id;
     this.lang = lang;
-    this.jupyterfilepath = jupyterfilepath;
+    this.jupyterfilepath = jupyterfilepath; // this is passed null and being used in Windows Impl
     refreshLogMonitor();
   }
 
@@ -153,33 +152,6 @@ public class LocalSessionOutput implements Runnable {
         this.history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
   }
 
-  /**
-   * Updates the status and logs for a Jupyter execution.
-   *
-   * @param logs The logs generated during execution.
-   * @param status The execution status (e.g., "Done" or "Failed").
-   */
-  public void updateJupyterStatus(String logs, String status) {
-    History h = ht.getHistoryById(this.history_id);
-
-    if (BaseTool.isNull(h)) {
-      h = new History();
-      h.setHistory_id(history_id);
-      log.debug("This is very unlikely");
-    }
-
-    String resultjupyterjson = bt.readStringFromFile(this.jupyterfilepath);
-
-    h.setHistory_input(resultjupyterjson);
-    h.setHistory_output(logs);
-    h.setIndicator(status);
-
-    if ("Done".equals(status) || "Failed".equals(status)) {
-      h.setHistory_end_time(BaseTool.getCurrentSQLDate());
-    }
-
-    ht.saveHistory(h);
-  }
 
   /**
    * Updates the status and logs for an execution.
@@ -272,13 +244,7 @@ public class LocalSessionOutput implements Runnable {
             if (nullnumber == 10) {
               if ((startrecorder + nullnumber) == linenumber) {
                 log.debug("Null output lines exceed 10. Disconnected.");
-
-                // Depending on the language (e.g., "jupyter"), update the status
-                if ("jupyter".equals(this.lang)) {
-                  this.updateJupyterStatus(logs.toString(), "Done");
-                } else {
-                  this.updateStatus(logs.toString(), "Done");
-                }
+                this.updateStatus(logs.toString(), "Done");
                 break;
               } else {
                 startrecorder = -1;
@@ -305,23 +271,14 @@ public class LocalSessionOutput implements Runnable {
         } catch (Exception e) {
           e.printStackTrace();
           // Depending on the language, update the status to "Failed"
-          if ("jupyter".equals(this.lang)) {
-            this.updateJupyterStatus(logs.toString(), "Failed");
-          } else {
-            this.updateStatus(logs.toString(), "Failed");
-          }
+          this.updateStatus(logs.toString(), "Failed");
           break;
         } finally {
           // session.saveHistory(logs.toString()); //write the failed record
         }
       }
 
-      // Depending on the language (e.g., "jupyter"), update the status to "Done"
-      if ("jupyter".equals(this.lang)) {
-        this.updateJupyterStatus(logs.toString(), "Done");
-      } else {
         this.updateStatus(logs.toString(), "Done");
-      }
 
       // If the process is available, attempt to stop and get its exit code
       if (!BaseTool.isNull(theprocess)) {

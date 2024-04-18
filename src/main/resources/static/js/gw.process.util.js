@@ -15,27 +15,7 @@ GW.process.util = {
 
     $(process_window_container_id).css("background-color", "white");
 
-    if (code_type == "jupyter") {
-      $(code_editor_container_id).append(
-        `<p style="margin:5px;" class="pull-right"><span class="badge badge-secondary">double click</span> to edit <span class="badge badge-secondary">Ctrl+Enter</span> to save <i class="fa fa-upload subalignicon"   data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p><br/>`,
-      );
-
-      if (code != null && code != "null") {
-        code = GW.general.parseResponse(code);
-
-        GW.process.jupytercode = code;
-
-        var notebook = nb.parse(code);
-
-        var rendered = notebook.render();
-
-        $(code_editor_container_id).append(rendered);
-
-        nb.postlisten();
-
-        var newjupyter = nb.getjupyterjson();
-      }
-    } else if (code_type == "builtin") {
+    if (code_type == "builtin") {
       code = code.replace(/\\/g, "\\\\");
 
       code = GW.general.parseResponse(code);
