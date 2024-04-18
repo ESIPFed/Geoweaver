@@ -539,6 +539,15 @@ GW.process.sidepanel = {
     var log = $("#prompt-panel-process-log-window").html();
     var code_log = code + "\n\n" + log;
     var blob = new Blob([code_log], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, "code_log.txt");
-},
+
+    let ext = "";
+    if (this.current_process_category == "python") {
+      ext = ".py";
+    }
+    if (this.current_process_category == "shell") {
+      ext = ".sh";
+    }
+
+    saveAs(blob, this.current_process_name + ext); // need ext to download the file with extension correctly. If ext is not identified we can leave it as txt
+  },
 };
