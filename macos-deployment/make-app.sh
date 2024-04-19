@@ -2,7 +2,6 @@
 
 APP_NAME="Geoweaver"
 REPO_NAME="Geoweaver"
-GITHUB_WORKSPACE="../"
 APP_DIR="${GITHUB_WORKSPACE}/${APP_NAME}.app"
 JAR_PATH="${GITHUB_WORKSPACE}/target/geoweaver.jar"
 ICON_PATH="${GITHUB_WORKSPACE}/linux-deployment/usr/local/bin/geoweaver.png"
@@ -11,7 +10,6 @@ mkdir -p "${APP_DIR}/Contents/MacOS"
 mkdir -p "${APP_DIR}/Contents/Resources"
 mkdir -p "${APP_DIR}/Contents/Java"
 
-ls -l "${GITHUB_WORKSPACE}"
 
 cp "${JAR_PATH}" "${APP_DIR}/Contents/Java/"
 
