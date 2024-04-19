@@ -10,12 +10,25 @@ mkdir -p "${APP_DIR}/Contents/MacOS"
 mkdir -p "${APP_DIR}/Contents/Resources"
 mkdir -p "${APP_DIR}/Contents/Java"
 
+
 cp "${JAR_PATH}" "${APP_DIR}/Contents/Java/"
 
 EXECUTABLE_SCRIPT="${APP_DIR}/Contents/MacOS/${APP_NAME}"
 cat > "${EXECUTABLE_SCRIPT}" <<EOF
 #!/bin/bash
 DIR=\$(dirname "\$0")
+
+if [ ! -f "\$DIR/.password_set" ]; then
+  PASSWORD=\$(osascript -e 'Tell application "System Events" to display dialog "Password Setup Required\n\nPlease set a password for Geoweaver. This password is required for accessing and using Geoweaver securely.\n\nEnter your new password:" default answer "" with title "Geoweaver Setup" with hidden answer' -e 'text returned of result' 2>/dev/null)
+  if [ -n "\$PASSWORD" ]; then
+    nohup java -jar "\$DIR/../Java/app.jar" resetpassword -p "\$PASSWORD" > /dev/null 2>&1 &
+    touch "\$DIR/.password_set"
+  else
+    echo "No password entered. Exiting."
+    exit 1
+  fi
+fi
+
 nohup java -jar "\$DIR/../Java/geoweaver.jar" > /dev/null 2>&1 &
 sleep 7
 open http://localhost:8070/Geoweaver
