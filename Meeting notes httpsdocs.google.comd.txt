@@ -1,0 +1,140 @@
+Meeting notes: https://docs.google.com/document/d/1NrnKP3KUBwKYDyVTXrTVBYg_yH3FmYbzsEiSQ6De5Ro/edit
+
+
+https://pnnl.cventevents.com/event/hydroml2024/summary
+
+The below constraints should be added to the below code can you modify the complete code and give me full code from start by including these constraints .  
+Include box plots by comparing for these 1.Strata Name and Lower 95% CL 
+                               2. Strata Name and Upper 95% CL
+
+Include box plot for Year and Percentage
+
+
+Scree plot for Adult Depression by comparing Y axis Strata and X axis Frequency 
+
+PCA for Strata Name and Weighted Frequency give me loaded graph and zoomed graph
+
+Complete Linkage Cluster plots with k=5 groups and Average Linkage Cluster plot with k=20 groups. Where K is full data.
+
+
+Significant predictors of the model.
+
+
+VIF of predictor variables in the model.
+
+
+Coefficients of lasso regression model.
+
+
+
+ Plot between R square values and lambda values of lasso regression mode.
+
+Bayesian Information criterion of lasso model and regression model.
+
+
+Logistic regression model summary.
+
+
+
+10-fold cross validation plot showing errors.
+
+
+# Load necessary libraries
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(caret)
+library(glmnet)
+library(car)
+library(gridExtra)
+
+# Setting the working directory
+setwd("D:/Lenovo Manasa Data/Data Analytics 1st Sem/Manasa STAT 515/Assignments/STAT Project")
+
+# Load the dataset
+depression_data <- read.csv('adult-depression-lghc-indicator-24.csv', header = TRUE)
+
+# Data preprocessing: remove NA values and convert necessary columns
+depression_data <- na.omit(depression_data)
+depression_data$Year <- as.numeric(as.character(depression_data$Year))
+depression_data$Strata <- as.numeric(as.factor(depression_data$Strata))
+depression_data$`Strata.Name` <- as.factor(depression_data$`Strata.Name`)
+
+# Descriptive Analysis
+# Scatterplot of Percent by Year colored by Strata Name
+ggplot(depression_data, aes(x = Year, y = Percent, color = `Strata.Name`)) +
+  geom_point() +
+  labs(title = "Scatterplot of Depression Percent over Years", x = "Year", y = "Percent") +
+  theme_minimal()
+
+# Boxplot showing the distribution of Percent by Strata
+ggplot(depression_data, aes(x = Strata.Name, y = Percent, fill = Strata.Name)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 8) +
+  ggtitle("Boxplot of Depression Percent by Strata") +
+  labs(x = "Strata Name", y = "Percent") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
+
+# Cluster Analysis
+# PCA and Scree Plot
+depression_pca <- prcomp(depression_data[, c("Percent", "Year", "Strata")], scale. = TRUE)
+fviz_eig(depression_pca, addlabels = TRUE, ylim = c(0, 100))
+
+# Loading plots for PCA
+fviz_pca_var(depression_pca, col.var = "contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE)
+
+# Complete Linkage Cluster Plots
+dist_mat <- dist(depression_data[, c("Percent", "Year", "Strata")])
+hc_complete <- hclust(dist_mat, method = "complete")
+plot(hc_complete, main = "Complete Linkage Dendrogram")
+
+# Lasso Regression Analysis
+# Standardize data
+depression_scaled <- as.data.frame(scale(depression_data[, c("Year", "Strata")]))
+depression_scaled$Percent <- depression_data$Percent
+
+# Fit lasso model using cross-validation
+set.seed(123)
+x_matrix <- model.matrix(Percent ~ ., data = depression_scaled)
+cv_lasso <- cv.glmnet(x_matrix, depression_scaled$Percent, alpha = 1)
+plot(cv_lasso)
+
+# Calculate the predicted values and residual sum of squares (RSS)
+lasso_pred <- predict(cv_lasso, newx = x_matrix, s = "lambda.min")
+rss <- sum((depression_scaled$Percent - lasso_pred)^2)
+n <- nrow(depression_scaled)
+
+# Calculate the number of non-zero coefficients (effective degrees of freedom)
+effective_df <- sum(coef(cv_lasso, s = "lambda.min") != 0)
+
+# Calculate BIC for the lasso model
+bic_lasso <- n * log(rss / n) + effective_df * log(n)
+print(paste("BIC for Lasso Model: ", bic_lasso))
+
+# Simple Linear Model for comparison
+model_linear <- lm(Percent ~ ., data = depression_scaled)
+bic_linear <- BIC(model_linear)
+print(paste("BIC for Linear Model: ", bic_linear))
+
+# Logistic Regression Analysis
+# Assuming a binary outcome is needed for Percent greater than median
+depression_data$HighRisk <- as.factor(ifelse(depression_data$Percent > median(depression_data$Percent), 1, 0))
+logistic_model <- glm(HighRisk ~ Year + Strata, family = binomial(), data = depression_data)
+summary(logistic_model)
+
+# Save outputs and plots
+ggsave("depression_trends.png")
+write.csv(depression_data, "depression_analysis_complete.csv", row.names = FALSE)
+
+
+
+Give me value code for Coefficient estimates of lasso model
+Give me value code for vif(model)
+Give me value for Regression model
+Give me Loading plots showing how each characteristic influences principal components.
+Give me Scree plots showing how much variation each principal component captures from the data.
+Give me scatter plot of depression mean percent over year 
+Give me scatter plot of depression meadian percent over year 
+
+
+
