@@ -1258,6 +1258,7 @@ GW.workspace = {
 					if (state.shiftNodeDrag){
 						d3.select(this).classed(consts.connectClass, true);
 					}
+					
 					var process_id = d.id.split("-")[0];
 					var pageX = d3.event.pageX;
 					var pageY = d3.event.pageY;
@@ -1265,7 +1266,8 @@ GW.workspace = {
 					GW.menu.details(process_id, "process", function(msg){
 						//sometimes the mouse moves too quickly, the mouse is already out but the response doesn't arrive yet. The div will persist forever. So ismouseinside is used. 
 						if(ismouseinside){
-
+							
+                            GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
 							GW.workspace.tooltipdiv.transition()
 								.duration(200)
 								.style("opacity", .9);
@@ -1283,18 +1285,13 @@ GW.workspace = {
 									<tr>
 										<td><b>Code</b></td>
 										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)+`</td>
-									</tr>
-									<tr>
-										<td><b>Output</b></td>
-										<td>`+msg.output+`</td>
-									</tr>
-						           
-									  
+									</tr>									  
 								</table>
 							`).style("left", (pageX) + "px")
 							.style("top", (pageY) + "px");
 
 						}
+
 						
 					});
 					
@@ -1340,7 +1337,8 @@ GW.workspace = {
 
 		
 		};
-
+		
+		
 		GW.workspace.GraphCreator.prototype.zoomed = function(){
 		this.state.justScaleTransGraph = true;
 		console.log("d3.event.translate: " + d3.event.translate + 
