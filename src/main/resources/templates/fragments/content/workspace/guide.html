@@ -1,0 +1,106 @@
+<div id="main-documentation" class="tabcontent" style="height:100%; left:0; margin:0; padding: 30px;padding-bottom:0px; overflow: auto;">
+    <div id="main-documentation-content">
+        <div class="row">
+            <div  class="col col-md-12">
+
+                <h2 style="color:black;font-weight: bold;font-size: 50px; font-family: 'Lato', sans-serif;padding-top:1px;padding-left:5px" >Geoweaver User Guide<a target="_blank" href="http://github.com/ESIPFed/Geoweaver" style="font-size: 30px;"></a></h2>
+
+                <ul class="lead" >
+                    <a href="#quickstart">Quickstart</a> |  <a href="#supported_hosts">Supported Hosts</a> | <a href="#geoweaver_processes">Processes</a> |  <a href="#workflow">Workflow </a>
+                </ul>
+
+                <hr/>
+                <a id="quickstart" style="scroll-margin-top: 6px;"></a>
+                <h2>Quick Start Guide</h2>
+                <h4>0. Get Geoweaver Password</h4>
+                <ul>
+                    <li>Geoweaver will automatically create a password for your local machine. You need to know that password before you start. It can be found in Terminal logs when Geoweaver is first started (only shown at the first time).</li>
+                    <li>If you missed the first start logs and don't know the password, please use command <span class="badge badge-secondary">java -jar geoweaver.jar resetpassword</span> to reset it. </li>
+                </ul>
+
+                <h4>1. Create and run a Process</h4>
+                <ul>
+                    <li>Click <button type="button" class="btn btn-success btn-xs">New Process</button> after 'Process' on the left menu.</li>
+                    <li>Select "Python" from the Language dropdown. </li>
+                    <li>Input "helloworld" for the name. </li>
+                    <li>Add the code <i style="font-family:'Courier New'">print 'hello world'</i> to the code area. </li>
+                    <li>Click "Add" on the bottom. A new process "helloworld" will be added to the Process/Python basket.</li>
+                    <li>Click on the newly added helloworld process. An informational panel will show in the main area.</li>
+                    <li>Click <i class="fa fa-play subalignicon"></i> to run the process. In the popup window, select "Localhost" and click "Execute". In the popup Python environment dialog, click "Confirm" to the default. Add your password. </li>
+                    <li>If you see <i style="font-family:'Courier New'">hello world </i>printed in the logging window, it means you have successfully created and run your first process in Geoweaver! Congrats!</li>
+                </ul>
+
+
+                <h4>2. Create and Run a Workflow</h4>
+
+                <ul>
+                    <li>Click twice on <button type="button" class="btn btn-warning btn-xs" >Add to Weaver</button> after the "helloworld" process created in Step 1. The main work area will switch to the "Weaver" tab and two circles containing "Hello World" should appear in the workspace. </li>
+                    <li>Link the two circles by dragging from one circle and dropping on another circle while pressing "SHIFT" on the keyboard. </li>
+                    <li>Click <i class="fa fa-plus-square"></i> on the topleft" toolbar in Weaver. In the popup window, input "HelloWorldWorkflow" as the workflow name, and type "Testing hello world" as Description. Click "Confirm".</li>
+                    <li>To run the workflow, click <i class="fa fa-play" ></i>. In the popup window, select "one-host" option. Choose localhost and set the environment to the default. Click "Run".</li>
+                    <li>In the password dialog, enter the password for localhost. </li>
+                    <li>While the workflow is in execution mode, blue means the process is waiting, yellow means the corresponding process is running, green means the process execution is finished, and red means the process execution is failed for some reason.</li>
+                    <li>Double click on the circles to check the real time output. If users need more details, click "Details" button in the popup information window. </li>
+                </ul>
+
+                <h4>3. Export a Workflow</h4>
+                <ul>
+                    <li>Click <i class="fa fa-download"></i> when the workflow is present in the Weaver workspace. </li>
+                    <li>In the popup window, there are two options: workflow with process code / workflow with process code and history. The former will only download source code and workflow json. The latter will download not only source code and workflow, but also all the history details of previous execution of the workflow. </li>
+                    <li>Click "Confirm". A ZIP file will be automatically downloaded to your machine.</li>
+                </ul>
+
+                <h4>4. Import a workflow</h4>
+                <ul>
+                    <li>Click <i class="fa fa-upload"></i>. In the upload window, select the ZIP file, click "Start". </li>
+                    <li>Once the uploading finished, if the workflow file is valid, it will ask "The upload workflow is valid. Do you want to proceed to save it into the database?" Click "OK".</li>
+                    <li>The workflow will be automatically loaded into the Weaver workspace and ready for execution and reuse. </li>
+                    <li>Congratulations you have learnt how to use Geoweaver!</li>
+
+                </ul>
+
+                <a id="supported_hosts" style="scroll-margin-top: 6px;"></a>
+                <h2>Supported Hosts</h2>
+
+                <h4>Linux/Win/Mac Machine</h4>
+
+                <p>Geoweaver provides a Host category called `Linux/Win/Mac Computers` to manage all the `local`/`remote` machines.</p>
+
+                <p>For `local computers` (where Geoweaver is running at), Geoweaver can directly access, manage, and run commands/programs. For security reasons, it will automatically generate a password at its first boot. Scientists have to input the correct passwords to execute their programs or do any action on the local computers via Geoweaver. The computer's authenticated users can change their Geoweaver password anytime (please refer to [reset password](install.md)).</p>
+
+                <p>For `remote computers` (where Geoweaver is not installed on but can access via networks), Geoweaver can access, manage, run commands/programs on them if the operating systems have SSH service enabled and Geoweaver users have valid accounts on those computers. Geoweaver provides a file browser and uploader for users to transfer the files from/to the remote servers. SSH, or Secure Shell, is a remote administration protocol that allows users to control remote servers over the Internet. It provides a mechanism for authenticating a remote user, transferring inputs from the client to the host, and relaying the output back to the client. </p>
+
+                <a id="geoweaver_processes"
+                   style="scroll-margin-top: 6px;"></a>
+                <h2>Processes</h2>
+
+                <p>Geoweaver supports four types of processes to be executed on the SSH hosts enlisted in the Host section: Shell script, Notebooks, Python code, and Builtin processes.</p>
+
+                <h4>Shell</h4>
+
+                <p>Shell scripts can be directly created, saved, executed, and monitored in Geoweaver. Users can execute the shell scripts on remote servers or the localhost server which Geoweaver is hosted. </p>
+
+                <h4>NoteBook</h4>
+                <p> Geoweaver supports to run Jupyter notebooks using the nbconvert command. The notebook and its logout are recorded in the database. </p>
+
+                <h4>Build In Process</h4>
+                <p>To help people with limited programming skills, we are developing a set of built-in processes which have fixed program code and expose only input parameters to users.
+                    These processes make Geoweaver a powerful AI graphical user interface for the diverse user groups to learn and experiment their AI workflows without coding.
+                    Most buil-in processes in Geoweaver are developed based on the existing AI python ecosystem like Keras and Scikit-learn.
+                    This section is under intensive development right now. New features supporting users to create a full-stack AI workflow without writing a single line of code are on our development schedule.
+                </p>
+
+                <h4>Python</h4>
+                <p>Python is one of the most popular AI programming langauge and most AI-related packages reside in Python.
+                    Geoweaver supports Python coding and scripting on top of multiple servers while reserving and maintaining the code in one database.
+                    All the historical runs are recorded and served in Geoweaver to prevent future duplicated attempts and significantly improve the reproducibility and reusability of AI programs. </p>
+
+                <a id="workflow" style="scroll-margin-top: 6px"></a>
+                <h2>Workflow</h2>
+
+                <p>The workflow module allows users to compose a workflow using the existing processes. The workflow graph composer only supports Directed Acyclic Graph (DAG) (no cyclic loops and bidirectional connections) to chain multiple processes into workflows. Geoweaver provides an all-in-one function to execute, monitor, trace, and display the workflows, and check the history of workflow execution. During the execution, the color of the processes indicate the real-time status: Yellow - Running; Red - Failure; Green - Success. </p>
+
+            </div>
+        </div>
+    </div>
+</div>

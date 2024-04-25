@@ -1,8 +1,3 @@
 package com.gw.server;
 
-
-public class JupyterWebSocketClientConfig {
-	
-	
-
-}
+public class JupyterWebSocketClientConfig {}

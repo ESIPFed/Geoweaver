@@ -1,0 +1,60 @@
+<div class="col col-md-9" id="main_panel_div" style="transition: 0.3s; height:100%; margin: 0; padding:0;">
+
+    <button class="workspace_collapse_btn">&gt;&gt;&gt;</button>
+
+    <!--Top Menu Bar-->
+    <div th:replace="fragments/content/workspace/top-menu-bar"></div>
+
+    <div id="right-page-div" class="row" style="height:calc( 100% - 50px ); left:0; margin:0; padding: 0;padding-bottom:0px;">
+
+        <div class="col col-md-12" id="main-workspace-container" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+
+
+
+            <!--Landing Page-->
+            <div th:replace="fragments/content/workspace/landing-page"></div>
+
+            <!--Guide Page -->
+            <div th:replace="fragments/content/workspace/guide"></div>
+
+            <!--Dashboard Page -->
+            <div th:replace="fragments/content/workspace/dashboard"></div>
+
+            <div id="main-host-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+                <div id="main-host-content" style="height:100%; width: 100%; overflow-y: scroll; padding: 0px; ">
+                    <h2 style="color:black">Please select a host on the left panel or <button id="host-entry-create-btn" type="button" class="btn btn-success" onclick="GW.host.newDialog()">create</button> a new host! </h2>
+                </div>
+            </div>
+
+            <div id="main-process-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+                <div id="main-process-content" style="height:100%; width:100%;">
+                    <h2 style="color:black">Please select a process on the left panel or <button id="process-entry-create-btn" type="button" class="btn btn-success" onclick="GW.process.newDialog()">create</button> a new process!</h2>
+                </div>
+            </div>
+
+            <div id="main-workflow-info" class="tabcontent" style="height:100%; left:0; margin:0; padding: 0;padding-bottom:0px;">
+                <div id="main-workflow-content" style="width: 100%; height:100%; padding: 0;">
+                    <h2 style="color:black">Please select a workflow on the left panel or <button id="workflow-entry-create-btn" type="button" class="btn btn-success" onclick="GW.general.switchTab('workspace')">create</button> a new workflow!</h2>
+                </div>
+            </div>
+
+            <div id="main-console" class="tabcontent" style="height:100%; padding:0; left:0; margin:0; padding-bottom:0px;">
+                <div id="main-console-content" style="width:100%; height:100%; overflow-y: scroll; margin:0; padding: 10px;">
+                    <h2 style="color:black">Logging <button class="btn btn-primary pull-right" onclick="GW.ssh.clearMain();">Clear</button></h2>
+                    <div id="log-window" class="log_window" >
+
+                    </div>
+                    <div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
+                </div>
+            </div>
+            <div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
+                <!-- status indicator right bottom -->
+                <div th:replace="fragments/content/workspace/status-indicator"></div>
+                <!-- progress right bottom, above the status indicator -->
+                <div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;"></div>
+                <div th:replace="fragments/content/workspace/toolbox"></div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/content/workspace/loading-state"></div>
+</div>

@@ -1,4 +1,3 @@
-
 GW.history = {
 
     history_table_interval_id: null,
@@ -11,7 +10,7 @@ GW.history = {
             
             if(GW.history.active_process_history_list.length>0){
 
-                GW.history.active_process_history_list.forEach(history_row => {
+                GW.history.active_process_history_list.forEach(history_row   => {
 
                     console.log()
                     $("#timerBadge_"+history_row.history_id).html(
@@ -35,10 +34,6 @@ GW.history = {
     stopAllTimers: function(){
 
         if(GW.history.history_table_interval_id != null){
-
-            // GW.history.interval_list.forEach(intervalId => clearInterval(intervalId));
-
-            // GW.history.interval_list = []
 
             clearInterval(GW.history.history_table_interval_id)
 
@@ -139,7 +134,11 @@ GW.history = {
 
             status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-default\">Stopped</span></td> ";
 
-        }else{
+        }
+        else if(status == "Skipped"){
+            status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-info\">Skipped</span></td> ";
+        }
+        else{
 
             status_col = "      <td id=\"status_"+hid+"\"><span class=\"label label-primary\">Unknown</span></td> ";
 
@@ -223,8 +222,10 @@ GW.history = {
                         <option value="Done">Done</option>
                         <option value="Stopped">Stopped</option>
                         <option value="Failed">Failed</option>
+                        <option value="Skipped">Skipped</option>
                 </select>
             </div> 
+            
         </div>
         
         <table class=\"table table-color\" id=\"process_history_table\"> 
@@ -241,7 +242,7 @@ GW.history = {
           <tbody> `;
 
         for(var i=0;i<msg.length;i++){
-
+            
             var status_col = this.getProcessStatusCol(msg[i].history_id, msg[i].indicator);
 
             content += "    <tr> "+
@@ -287,12 +288,18 @@ GW.history = {
 
         content += "</tbody>";
 
+        $('#statusFilter').on('change', function () {
+          
+            var value = $(this).val();
+            console.log(value);
+        });
+
         // create an interactive chart to show all the data
 
         content =
         // "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
-        "<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
-        "<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
+        "<div id=\"process-chart-container\">"+
+        "<canvas id=\"process-history-chart\"></canvas>"+
         "</div>" + content ;
 
         return content;
@@ -306,6 +313,8 @@ GW.history = {
      * @param {string} indicator - The indicator value indicating the status.
      * @returns {string} - HTML content for the status column.
      */
+
+
 	getWorkflowStatusCol: function(history_id, indicator){
 
 		var status_col = "      <td id=\"status_"+history_id+"\">";
@@ -326,7 +335,11 @@ GW.history = {
 
 			status_col += "       <span class=\"label label-default\">Stopped</span>  ";
 
-		}else{
+		}
+        else if(indicator == "Skipped"){
+            status_col += "       <span class=\"label label-info\">Skipped</span>  ";
+        }
+        else{
 
 			status_col += "       <span class=\"label label-primary\">Unknown</span>  ";
 
@@ -427,14 +440,27 @@ GW.history = {
         );
 
 
-        $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
+        $(document).ready(function() {
+            // Function to apply search filter
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();
                 const rowStatus = data[4].toLowerCase();
-
+        
+               
+        
+                if(selectedStatus === "" && rowStatus === "skipped") {
+                    return false;
+                }
+        
                 return selectedStatus === "" || rowStatus === selectedStatus;
-            }
-        );
+            });
+        
+            // call the function to apply the search filter
+            table.draw();
+        });
+        
+        // Your other JavaScript code here
+        
 
 
         $('#durationCondition, #durationValue').on('change', function () {
@@ -442,6 +468,8 @@ GW.history = {
         });
 
         $('#statusFilter').on('change', function () {
+            var value = $(this).val();
+            
             table.draw();
         });
 
