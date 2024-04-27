@@ -138,3 +138,6 @@ Give me scatter plot of depression meadian percent over year
 
 
 
+Average Analysis refers to the process of calculating the mean performance metric (such as accuracy) across all folds of cross-validation. 
+
+
