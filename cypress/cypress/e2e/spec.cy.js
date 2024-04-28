@@ -9,6 +9,16 @@ describe('Application Build Check', () => {
         expect(response.status).to.eq(200);
       });
   });
+  it('Navigating through intro', () => {
+    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+    cy.get('.introjs-nextbutton').click();
+    cy.get('.introjs-nextbutton').click();
+    cy.get('.introjs-nextbutton').click();
+    cy.get('.introjs-nextbutton').click();
+    cy.get('.introjs-nextbutton').click();
+    cy.get('#main-general-content').click();
+    cy.get('.lead > b').should('be.visible');
+  })
 });
 
 
@@ -82,9 +92,6 @@ describe('User Signup Test', () => {
     cy.get('[onclick="GW.user.register()"]').click()
     cy.contains("The reentered password doesn't match!")
   });
-
-
-
 });
 
 describe('User Login Test', () => {
@@ -127,5 +134,101 @@ describe('User Login Test', () => {
 
     cy.contains("Either usename or password is missing.")
   });
+});
+
+describe('Forgot Password Test', () => {
+  it('forgot password test', () => {
+    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+    cy.get('.introjs-skipbutton').click();
+    cy.get('#toolbar-loginout-a > .fa').click();
+    cy.get(':nth-child(4) > .col-md-12 > .btn').click();
+    cy.get('#email').type('newuser@example.com');
+    cy.get('#reset-password-form > :nth-child(1) > .col-md-12').click();
+    cy.get('[onclick="GW.user.resetPassword()"]').click();
+    cy.get('#reset-password-form > h3').click();
+    cy.get('#reset-password-form').click();
+    cy.get('[style="border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; visibility: visible; position: absolute; left: 0px; box-sizing: content-box; top: 0px; width: 100%; height: 100%; background-color: rgb(255, 255, 255); overflow: auto;"]').click();
+    cy.get('#reset-password-form > h3').click();
+    cy.get('#reset-password-form > h3').should('be.visible');
+    cy.get('#reset-password-form > :nth-child(3) > a').should('be.visible');
+  }) 
+})
+
+describe('Navigation', () => {
+  it('should navigate to different pages', () => {
+    cy.visit('http://localhost:8070/Geoweaver'); 
+    cy.get('.introjs-skipbutton').click();
+    
+    cy.contains('Log' , { timeout: 10000 }).click();
+    cy.contains('Logging').should('be.visible');
+
+    cy.contains('Status' , { timeout: 10000 }).click();
+    cy.contains('Real Time Status').should('be.visible');
+    
+    cy.contains('Guide' , { timeout: 10000 }).click();
+    cy.contains('Geoweaver User Guide').should('be.visible');
+
+    cy.contains('Tools' , { timeout: 10000 }).click();
+    cy.get('[data-intro="All the other tools"]').click();
+    cy.get('[onclick="GW.feedback.showDialog()"]').click();
+
+    cy.get(':nth-child(5) > .btn').should('be.visible');
+
+    cy.contains('History' , { timeout: 10000 }).click();
+    cy.contains('Recent History').should('be.visible');
+
+    cy.contains('Contact' , { timeout: 10000 }).click();
+    cy.contains('Have feedback?').should('be.visible');
+
+    cy.contains('About' , { timeout: 10000 }).click();
+    cy.contains('Geoweaver is a web system').should('be.visible');
+  });   
+});
+
+
+describe('Host Testing', () => {
+  it('should submit a create new host form successfully', () => {
+        cy.visit('http://localhost:8070/Geoweaver'); 
+        cy.get('.introjs-skipbutton').click();
+        cy.get('#newhost').click();
+    
+        cy.get('#hostip').type('1.1.1.1');
+        cy.get('#hostport').type('8000');
+        cy.get('#username').type('newuser');
+    
+        cy.get('#host-add-btn').click();
+        cy.get('.nav-side-menu').contains('New Host')
+      });
+  it('Search result should be successful after creating the host', () => {
+    /* ==== Generated with Cypress Studio ==== */
+    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+    cy.get('.introjs-skipbutton').click();
+    cy.get('[data-intro="All the other tools"]').click();
+    cy.get('#toolbar-search').click();
+    cy.get('#keywords').clear('New Host');
+    cy.get('#keywords').type('New Host');
+    cy.get('#search').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > a').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > a').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1) > a').should('be.visible');
+
+    cy.get(
+      '[style="position: absolute; top: -18px; left: 8px; width: 8px; height: 8px; cursor: pointer; margin: 0px; padding: 0px; box-sizing: content-box; font-family: sans-serif; text-align: center; font-size: 8px; line-height: 8px; border-width: 1px; border-radius: 5px; border-color: rgb(252, 97, 92); border-style: solid; background-color: rgb(252, 97, 92); color: white; z-index: 50; user-select: none;"]'
+    ).click();
+
+    cy.get(
+      '[style="position: absolute; top: -18px; left: 8px; width: 8px; height: 8px; cursor: pointer; margin: 0px; padding: 0px; box-sizing: content-box; font-family: sans-serif; text-align: center; font-size: 8px; line-height: 8px; border-width: 1px; border-radius: 5px; border-color: rgb(252, 97, 92); border-style: solid; background-color: rgb(252, 97, 92); color: white; z-index: 50; user-select: none;"]'
+    ).click();
+  })
+
+
+  it('Global Search for Host', () => {
+  cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+  cy.get('.introjs-skipbutton').click();
+  cy.get('#instant_search_bar').clear('N');
+  cy.get('#instant_search_bar').type('New ');
+  cy.get('#host-b4ijvz').should('be.visible');
+    
+  })
 });
 
