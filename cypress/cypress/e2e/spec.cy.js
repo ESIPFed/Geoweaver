@@ -266,6 +266,16 @@ describe('Process Testing', () => {
 });
 
 
+describe('Add Process to Weaver', () => {
+  it('Add to weaver', () => {
+    cy.visit('http://localhost:8070/Geoweaver');
+    cy.get('.introjs-skipbutton').click();
+    cy.get('#process_folder_shell').click();
+    cy.get('ul#process_folder_shell_target').contains('button', 'Add to Weaver').click();
+    cy.get('circle').should('be.visible');
+  })
+});
+
 describe('Delete Process', () => {
     it('Delete Shell Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
