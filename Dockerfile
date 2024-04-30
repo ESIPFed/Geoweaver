@@ -1,5 +1,4 @@
-# FROM openjdk:11
-FROM eclipse-temurin:17
+FROM openjdk:11
 
 COPY ./target/geoweaver.jar /opt/
 
