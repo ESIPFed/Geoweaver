@@ -102,7 +102,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/geoweaver:${{ env.VERSION }}, ${{ secrets.DOCKER_USERNAME }}/geoweaver:latest
+          tags: geoweaver/geoweaver:${{ env.VERSION }}, geoweaver/geoweaver:latest
 
       - name: Logout from Docker
         if: always()
