@@ -1,5 +1,3 @@
-
-
 body {
 	padding-bottom: 2rem;
 }
@@ -219,6 +217,9 @@ form .progress {
   height: 50px;
   float: left;
 
+}
+.toptoolbarbtn:last-child {
+  order: 1;
 }
 
 .loginbtn {
