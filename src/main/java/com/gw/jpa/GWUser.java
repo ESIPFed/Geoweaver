@@ -1,17 +1,13 @@
 package com.gw.jpa;
 
-import java.sql.Date;
+import java.util.Date;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 
@@ -19,7 +15,6 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class GWUser {
 
     @Id
@@ -37,7 +32,6 @@ public class GWUser {
     private String role;
 
     @Column
-    @NonNull
     private String email;
 
     @Column

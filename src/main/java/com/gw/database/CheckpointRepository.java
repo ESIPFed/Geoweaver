@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public interface CheckpointRepository extends JpaRepository<Checkpoint, UUID> {
   List<Checkpoint> findByWorkflowId(String workflowId);
 

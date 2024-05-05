@@ -3,7 +3,6 @@ package com.gw.jpa;
 import lombok.Data;
 
 import javax.persistence.Lob;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -20,10 +19,8 @@ public class Workflow {
 	private String confidential;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String edges;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String nodes;
 }
