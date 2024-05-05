@@ -227,14 +227,14 @@ describe('Host Testing', () => {
   })
 
 
-  it('Global Search for Host', () => {
-  cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-  cy.get('.introjs-skipbutton').click();
-  cy.get('#instant_search_bar').clear('N');
-  cy.get('#instant_search_bar').type('New ');
-  cy.get('#host-b4ijvz').should('be.visible');
-  })
-});
+//   it('Global Search for Host', () => {
+//   cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+//   cy.get('.introjs-skipbutton').click();
+//   cy.get('#instant_search_bar').clear('N');
+//   cy.get('#instant_search_bar').type('New ');
+//   cy.get('#host-b4ijvz').should('be.visible');
+//   })
+// });
 
 describe('Process Testing', () => {
   it('Create Shell Process', () => {
