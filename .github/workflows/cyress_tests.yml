@@ -16,7 +16,7 @@ jobs:
         run: mvn clean install
         
       - name: Start application
-        run: mvn spring-boot:run -Dskip=true
+        run: mvn spring-boot:run -Dskip=true &
         background: true 
       - name: Wait for localhost page to be accessible
         run: |
