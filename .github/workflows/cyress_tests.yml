@@ -34,5 +34,3 @@ jobs:
           browser: chrome
           spec: cypress/e2e/spec.cy.js
           working-directory: ./cypress
-          start: |
-            npx cypress run
