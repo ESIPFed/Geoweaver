@@ -23,7 +23,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          spec: cypress/cypress/e2e/spec.cy.js
+          spec: /cypress/e2e/spec.cy.js
           working-directory: ./cypress
           start: |
             npx cypress run
