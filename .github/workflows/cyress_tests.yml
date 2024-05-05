@@ -22,6 +22,5 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: |
-            cd cypress
-            npx cypress run
+          browser: chrome
+          spec: cypress/cypress/e2e/spec.cy.js
