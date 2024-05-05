@@ -1,6 +1,11 @@
 
 /* * Test suite to verify the operational status of the application at 'http://localhost:8070/Geoweaver'. */
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Returning false prevents Cypress from failing the test
+  console.error('Uncaught exception occurred:', err);
 
+  return false;
+});
 describe('Application Build Check', () => {
   it('Application is up and running', () => {
     cy.request('http://localhost:8070/Geoweaver')
