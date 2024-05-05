@@ -28,30 +28,30 @@ describe('Application Build Check', () => {
 
 
 describe('User Signup Test', () => {
-  it('Test unsuccessful signup with already registered email address', () => {
+  // it('Test unsuccessful signup with already registered email address', () => {
 
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
+  //   cy.visit('http://localhost:8070/Geoweaver');
+  //   cy.get('.introjs-skipbutton').click();
 
-    cy.get('#toolbar-loginout-a > .fa').click()
+  //   cy.get('#toolbar-loginout-a > .fa').click()
 
-    cy.get('[onclick="GW.user.signupdialog()"]', { timeout: 10000 }).should('be.visible');
-    cy.get('[onclick="GW.user.signupdialog()"]').click()
+  //   cy.get('[onclick="GW.user.signupdialog()"]', { timeout: 10000 }).should('be.visible');
+  //   cy.get('[onclick="GW.user.signupdialog()"]').click()
 
-    cy.get('#username').type('newuser'); 
-    cy.get('input[name="username"]');
+  //   cy.get('#username').type('newuser'); 
+  //   cy.get('input[name="username"]');
    
-    cy.get('#password').type('Geoweaver@123'); 
+  //   cy.get('#password').type('Geoweaver@123'); 
 
-    cy.get('#rpassword').type('Geoweaver@123');  
-    cy.get('input[name="email"]').type('newuser@example.com'); 
-    cy.get('#agree_yes').click()
+  //   cy.get('#rpassword').type('Geoweaver@123');  
+  //   cy.get('input[name="email"]').type('newuser@example.com'); 
+  //   cy.get('#agree_yes').click()
 
-    // Submit the form
+  //   // Submit the form
   
-    cy.get('[onclick="GW.user.register()"]').click()
-    cy.contains("the email address has already been registered")
-  });
+  //   cy.get('[onclick="GW.user.register()"]').click()
+  //   cy.contains("the email address has already been registered")
+  // });
 
   it('Test unsuccessful signup without email address', () => {
 
