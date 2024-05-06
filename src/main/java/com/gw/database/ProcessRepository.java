@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
+
 /**
  * The ProcessRepository interface provides methods for querying process information from a
  * database. It extends the CrudRepository interface to handle database operations for the GWProcess
  * entity.
  */
+@Transactional
 public interface ProcessRepository extends CrudRepository<GWProcess, String> {
 
   /**
