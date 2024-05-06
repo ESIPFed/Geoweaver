@@ -146,7 +146,7 @@ jobs:
 
   build-macos:
     needs: build-jar
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       - name: Checkout code
