@@ -1,6 +1,7 @@
 package com.gw.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.database.CheckpointRepository;
 import com.gw.database.HistoryRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -43,6 +44,8 @@ public class WorkflowTool {
   @Autowired WorkflowRepository workflowrepository;
 
   @Autowired HistoryRepository historyrepository;
+
+  @Autowired CheckpointRepository checkpointrepository;
 
   @Autowired TaskManager tm;
 
@@ -372,6 +375,8 @@ public class WorkflowTool {
   }
 
   public String del(String workflowid) {
+
+    checkpointrepository.deleteByWorkflowId(workflowid);
 
     workflowrepository.deleteById(workflowid);
 
