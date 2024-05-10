@@ -124,6 +124,7 @@ require(['vs/editor/editor.main'], function() {
 
     // Add any additional editor options or event listeners here
 });
+GW.process.util.refreshCodeEditor();
 
   }
   else{
@@ -171,6 +172,7 @@ require(['vs/editor/editor.main'], function() {
   });
 
   }
+  GW.process.util.refreshCodeEditor();
   
   },
 

@@ -144,6 +144,7 @@ GW.process = {
         GW.process.editor = editor;
         
         });
+        GW.process.util.refreshCodeEditor();
 
 
   },
@@ -262,6 +263,7 @@ GW.process = {
             GW.process.editor = editor;
             
             });
+            GW.process.util.refreshCodeEditor();
 },
 
   uploadAndReplaceJupyterCode: function () {

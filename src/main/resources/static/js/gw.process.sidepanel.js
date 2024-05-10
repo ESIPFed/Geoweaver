@@ -418,7 +418,8 @@ GW.process.sidepanel = {
 
     if (GW.process.sidepanel.current_process_category == "shell") {
       code = GW.process.sidepanel.editor.getValue();
-    } else if (GW.process.sidepanel.current_process_category == "builtin") {
+    } 
+    else if (GW.process.sidepanel.current_process_category == "builtin") {
       var params = [];
 
       $(".parameter").each(function () {
@@ -446,6 +447,7 @@ GW.process.sidepanel = {
 
     return code;
   },
+
 
   switchFullScreen: function () {
     GW.editor.switchFullScreenUtil(
