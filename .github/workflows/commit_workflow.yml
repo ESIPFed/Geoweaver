@@ -191,7 +191,6 @@ jobs:
           path: |
             target/*.jar
             pom.xml
-            linux-deployment/*.deb
             
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -247,7 +246,6 @@ jobs:
           cp -r "${GITHUB_WORKSPACE}/geoweaver.app" "${DMG_TEMP_DIR}"
           ln -s /Applications "${DMG_TEMP_DIR}/Applications"
           df -h
-          lsblk
           hdiutil create -volname "$APP_NAME" -srcfolder "${DMG_TEMP_DIR}" -ov -format UDZO "${GITHUB_WORKSPACE}/${APP_NAME}.dmg"
       - name: Upload .dmg file as an artifact
         uses: actions/upload-artifact@v2
