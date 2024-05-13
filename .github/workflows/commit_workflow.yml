@@ -142,7 +142,6 @@ jobs:
         path: target/site/jacoco
 
   build-macos:
-    needs: build-jar
     runs-on: macos-13
 
     steps:
