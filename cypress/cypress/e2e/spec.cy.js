@@ -349,7 +349,7 @@ describe('Write Password into .secret', () => {
     console.log(filePath)
     cy.writeFile(filePath, dataToWrite, 'binary')
       .then(() => {
-        cy.readFile('~/gw-workspace/.secret').should('contain', dataToWrite);
+        cy.readFile('${homeDirectory}/gw-workspace/.secret').should('contain', dataToWrite);
       })
   });
 });
