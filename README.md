@@ -64,7 +64,7 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
   - Link processes to create workflows for parallel or sequential execution across different resources.
   - All aspects of workflow management are centralized within GeoWeaver.
 
-# Geoweaver Installation Guide
+# [Geoweaver Installation Guide](docs/install.md)
 
 Geoweaver is a powerful tool for geospatial data processing, offering a range of features and capabilities. This guide will walk you through the steps to install Geoweaver on your system.
 
@@ -75,127 +75,9 @@ Before you begin, ensure that you have the following dependencies installed:
 - Java 1.8 or higher (OpenJDK 8 or higher)
 - Docker (required only for the Docker installation method)
 
-## Installation Methods
-
-Geoweaver can be installed using one of the following methods:
-
-1. **Quick Install**
-2. **Build from Source**
-3. **Install using Docker**
-
-Choose the method that best suits your environment and requirements.
-
-### 1. Quick Install
-
-The Quick Install method is the fastest and most straightforward way to install Geoweaver.
-
-1. Head over to the official Geoweaver website and download the latest version of `geoweaver.jar`.
-2. Navigate to the directory where `geoweaver.jar` is saved and execute the following command in your terminal:
-
-```shell
-java -jar geoweaver.jar
-```
-
-3. Open your web browser and go to `http://localhost:8070/Geoweaver/` to access the Geoweaver interface.
-
-### 2. Build from Source
-
-If you prefer to build Geoweaver from the source code, follow these steps:
-
-1. Clone the Geoweaver repository from GitHub:
-
-```shell
-git clone https://github.com/geoweaver/geoweaver.git
-```
-
-2. Navigate to the cloned repository directory and build Geoweaver using Maven:
-
-```shell
-mvn install
-```
-
-3. After a successful build, the Geoweaver jar package will be located under the directory: `Geoweaver/target/Geoweaver-<version>.jar`.
-
-### 3. Install using Docker
-
-Docker provides an easy and efficient way to deploy Geoweaver using containers.
-
-1. Install Docker Desktop on your system if you haven't already.
-2. Pull the Geoweaver Docker image from Docker Hub:
-
-```shell
-docker pull jensensun/geoweaver
-```
-
-3. Launch Geoweaver in a Docker container with the following command:
-
-```shell
-docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver
-```
-
-**Note:** Replace `<YOUR_HOME_DIRECTORY>` with the path to your home directory.
-
-This command mounts your current home directory into the Docker container, maps the port so you can access Geoweaver from your browser, and uses the published Docker image URL in DockerHub.
-
-4. Optionally, you can create an alias to simplify the command:
-
-```shell
-alias geoweaver="docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver"
-```
-
-5. Open a web browser and input `http://localhost:8070/Geoweaver`. Geoweaver should load shortly.
-
-## Setting up an HTTP Proxy for Remote Access
-
-When deploying Geoweaver to a public server, the default port `8070` is normally blocked. To access Geoweaver remotely, you need to set up a proxy in the HTTP server. This guide uses Apache 2.4.39, but it should work for any newer version. For older versions, there might be changes.
-
-1. Open your default site HTTP configuration file `/etc/apache2/sites-available/000-default.conf`.
-2. Add the following lines into the code block of `<VirtualHost *:80>`:
-
-```shell
-ProxyPass /Geoweaver/jupyter-socket ws://localhost:8070/Geoweaver/jupyter-socket
-ProxyPassReverse /Geoweaver/jupyter-socket ws://localhost:8070/Geoweaver/jupyter-socket
-
-ProxyPass /Geoweaver/workflow-socket ws://localhost:8070/Geoweaver/workflow-socket
-ProxyPassReverse /Geoweaver/workflow-socket ws://localhost:8070/Geoweaver/workflow-socket
-
-ProxyPass /Geoweaver/command-socket ws://localhost:8070/Geoweaver/command-socket
-ProxyPassReverse /Geoweaver/command-socket ws://localhost:8070/Geoweaver/command-socket
-
-ProxyPass /Geoweaver/terminal-socket ws://localhost:8070/Geoweaver/terminal-socket
-ProxyPassReverse /Geoweaver/terminal-socket ws://localhost:8070/Geoweaver/terminal-socket
-
-ProxyPass "/Geoweaver" "http://localhost:8070/Geoweaver"
-ProxyPassReverse "/Geoweaver" "http://localhost:8070/Geoweaver"
-```
-
-3. Restart Apache after making these changes:
-
-```shell
-service apache2 restart
-```
-
-## Resetting the Password for Localhost
-
-If you forget or need to reset the password for Geoweaver on localhost, follow these steps:
-
-1. For the Quick Install method, run the following command in your terminal:
-
-```shell
-java -jar geoweaver.jar resetpassword
-```
-
-2. For the Docker installation method, use the following command:
-
-```shell
-docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensun/geoweaver resetpassword
-```
-
-**Note:** Replace `<YOUR_HOME_DIRECTORY>` with the path to your home directory.
-
-Congratulations! You've successfully installed Geoweaver on your system. Enjoy using this powerful tool for your geospatial data processing needs.
-
 # Demo
+
+[A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
 
 [//]: # (Add a lot of GIFs)
 
