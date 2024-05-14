@@ -20,4 +20,5 @@ sync.ffs_db
 .vscode/launch.json
 
 cypress/node_modules/
+node_modules/
 
