@@ -376,7 +376,9 @@ public class WorkflowTool {
 
   public String del(String workflowid) {
 
-    checkpointrepository.deleteByWorkflowId(workflowid);
+    if (checkpointrepository.findByWorkflowId(workflowid).size() > 0) {
+      checkpointrepository.deleteByWorkflowId(workflowid);
+    }
 
     workflowrepository.deleteById(workflowid);
 
