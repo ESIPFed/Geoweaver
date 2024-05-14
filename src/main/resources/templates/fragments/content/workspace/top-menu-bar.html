@@ -1,38 +1,36 @@
-<div class="row" id="top_menu_bar_div"  style="height: 50px; margin: 0; padding: 0; ">
+<div class="row" id="top_menu_bar_div" style="height: 50px; margin: 0; padding: 0;">
 
-    <div class="tab col-md-12"  style="overflow: hidden; padding:0; margin:0;" >
+    <div class="tab col-md-12" style="overflow: hidden; padding: 0; margin: 0; display: flex; justify-content: space-between;">
 
-        <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')" >
+        <button class="tablinks toptoolbarbtn" id="main-workspace-tab" onclick="openCity(event, 'workspace')">
             Weaver
         </button>
-        <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')" >
+        <button class="tablinks toptoolbarbtn" id="main-console-tab" onclick="openCity(event, 'main-console')">
             Log
         </button>
-        <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')" >
+        <button class="tablinks toptoolbarbtn" id="main-dashboard-tab" onclick="openCity(event, 'main-dashboard')">
             Status
         </button>
-        <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')" >
+        <button class="tablinks toptoolbarbtn" id="main-general-tab" onclick="openCity(event, 'main-documentation')">
             Guide
         </button>
-        <button class="tablinks toptoolbarbtn invisible" id="main-general-tab" onclick="openCity(event, 'main-general')" >
-            X
+        <button class="tablinks toptoolbarbtn invisible" id="main-general-tab" onclick="openCity(event, 'main-general')">X
         </button>
-        <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')" >X
+        <button class="tablinks toptoolbarbtn invisible" id="main-host-tab" onclick="openCity(event, 'main-host-info')">X
         </button>
-        <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')" >X
+        <button class="tablinks toptoolbarbtn invisible" id="main-process-tab" onclick="openCity(event, 'main-process-info')">X
         </button>
-        <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')" >X
-        </button>
-
-        <button class="loginbtn toptoolbarbtn pull-right" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
-            <i title="login" class="fa fa-user fa-2x"></i>
+        <button class="tablinks toptoolbarbtn invisible" id="main-workflow-tab" onclick="openCity(event, 'main-workflow-info')">X
         </button>
 
-        <button class="toptoolbarbtn pull-right" style="width: 120px;visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
+        <button class="toptoolbarbtn" style="width: 120px; visibility: hidden;" onclick="GW.user.profiledialog()" id="toolbar-profile-a">
             <i title="login" class="fa fa-user fa-2x" alt="info" id="toolbar-profile">Hi, </i>
         </button>
 
+        <button class="loginbtn toptoolbarbtn" onclick="GW.user.logindialog()" id="toolbar-loginout-a">
+            <i title="login" class="fa fa-user fa-2x"></i>
+        </button>
 
+       
     </div>
-
 </div>

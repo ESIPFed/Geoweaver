@@ -10,8 +10,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,38 +24,37 @@ import java.util.UUID;
 @Table(name = "WorkflowCheckpoint")
 @Getter
 @Setter
-@NoArgsConstructor // Lombok annotations
+@NoArgsConstructor
 public class Checkpoint {
 
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Type(type = "uuid-char")
-    @Column(name = "id", columnDefinition = "VARCHAR(36)")
-    private UUID id;
+  @Id
+  @GeneratedValue(generator = "uuid2")
+  @GenericGenerator(name = "uuid2", strategy = "uuid2")
+  @Type(type = "uuid-char")
+  @Column(name = "id", columnDefinition = "VARCHAR(36)")
+  private UUID id;
 
-    @Column(name = "executionId")
-    private String executionId;
+  @Column(name = "executionId")
+  private String executionId;
 
   @Lob
-  @Column(name = "edges", columnDefinition = "CLOB")
+  @Column(name = "edges")
   private String edges;
 
   @Lob
-  @Column(name = "nodes", columnDefinition = "CLOB")
+  @Column(name = "nodes")
   private String nodes;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "workflow_id")
   private Workflow workflow;
 
-  @Column(name = "created_at")
-  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "created_at", columnDefinition = "TIMESTAMP")
   private Date createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = new Date();
-    }
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
+  }
 
 }

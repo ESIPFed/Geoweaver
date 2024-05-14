@@ -68,7 +68,7 @@ public class SSHCmdSessionOutput implements Runnable {
    * @param token
    * @param exitvalue
    */
-  public void endWithCode(String token, String history_id, int exitvalue) {
+public void endWithCode(String token, String history_id, int exitvalue) {
 
     History h = ht.getHistoryById(history_id);
 
@@ -91,7 +91,7 @@ public class SSHCmdSessionOutput implements Runnable {
         token, history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
   }
 
-  public void updateStatus(String logs, String status) {
+public void updateStatus(String logs, String status) {
 
     History h = ht.getHistoryById(this.history_id);
 
@@ -119,6 +119,31 @@ public class SSHCmdSessionOutput implements Runnable {
     ht.saveHistory(h);
   }
 
+  int get_exit_code_from_log_line(String last_line){
+    int exit_code = 0;
+    try {
+      // Split the line based on the equals sign
+      String[] parts = last_line.split("=");
+  
+      if (parts.length == 2) {
+          String key = parts[0];  // gw_exit_code
+          String value = parts[1]; // 1
+          
+          // Check if the key is "gw_exit_code"
+          if (key.equals("gw_exit_code")) {
+              exit_code = Integer.parseInt(value);
+              System.out.println("The key is 'gw_exit_code' and code is " + value);
+          }
+      } else {
+          System.err.println("Invalid line format: " + last_line);
+      }
+    } catch (Exception e) {
+        System.err.println("Error processing line: " + last_line);
+        e.printStackTrace();
+    }
+    return exit_code;
+  }
+
   @Override
   public void run() {
 
@@ -143,6 +168,9 @@ public class SSHCmdSessionOutput implements Runnable {
     String line = null;
 
     try {
+
+      int exit_code = 0;
+      String last_non_null_line = "";
 
       while ((line = in.readLine()) != null) {
 
@@ -173,6 +201,8 @@ public class SSHCmdSessionOutput implements Runnable {
               nullnumber = 0;
             }
           }
+        }else{
+          last_non_null_line = line;
         }
 
         log.debug("command thread output >> " + line);
@@ -200,7 +230,18 @@ public class SSHCmdSessionOutput implements Runnable {
         }
       }
 
-      this.updateStatus(logs.toString(), "Done");
+      exit_code = get_exit_code_from_log_line(last_non_null_line);
+
+      if(exit_code == 0){
+
+        this.updateStatus(logs.toString(), "Done");
+
+      }else{
+
+        this.updateStatus(logs.toString(), "Failed");
+
+      }
+      
 
       CommandServlet.sendMessageToSocket(
           token,
