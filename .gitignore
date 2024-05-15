@@ -7,6 +7,8 @@
 /install/
 *.class
 
+
+/gitcypress/node_modules/
 **/.DS_Store
 
 **/build/classes/**/*.class
@@ -18,4 +20,5 @@ sync.ffs_db
 .vscode/launch.json
 
 cypress/node_modules/
+node_modules/
 
