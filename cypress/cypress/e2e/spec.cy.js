@@ -3,9 +3,9 @@
 Cypress.on('uncaught:exception', (err, runnable) => {
   // Returning false prevents Cypress from failing the test
   console.error('Uncaught exception occurred:', err);
-
   return false;
 });
+
 describe('Application Build Check', () => {
   it('Application is up and running', () => {
     cy.request('http://localhost:8070/Geoweaver')
@@ -26,33 +26,7 @@ describe('Application Build Check', () => {
   })
 });
 
-
 describe('User Signup Test', () => {
-  // it('Test unsuccessful signup with already registered email address', () => {
-
-  //   cy.visit('http://localhost:8070/Geoweaver');
-  //   cy.get('.introjs-skipbutton').click();
-
-  //   cy.get('#toolbar-loginout-a > .fa').click()
-
-  //   cy.get('[onclick="GW.user.signupdialog()"]', { timeout: 10000 }).should('be.visible');
-  //   cy.get('[onclick="GW.user.signupdialog()"]').click()
-
-  //   cy.get('#username').type('newuser'); 
-  //   cy.get('input[name="username"]');
-   
-  //   cy.get('#password').type('Geoweaver@123'); 
-
-  //   cy.get('#rpassword').type('Geoweaver@123');  
-  //   cy.get('input[name="email"]').type('newuser@example.com'); 
-  //   cy.get('#agree_yes').click()
-
-  //   // Submit the form
-  
-  //   cy.get('[onclick="GW.user.register()"]').click()
-  //   cy.contains("the email address has already been registered")
-  // });
-
   it('Test unsuccessful signup without email address', () => {
 
     cy.visit('http://localhost:8070/Geoweaver');
@@ -339,30 +313,6 @@ describe('Delete Process', () => {
     })
 });
 
-describe('Write Password into .secret', () => {
-  it('Should write secret to a file', () => {
-    // Hash value to be written to the file
-    const dataToWrite = '4205c81c1aaafae4406dc56bd6c8b26edeb816c6d18294cf0aeee4a948146e0fa3e7cf0ea3e3a6de0b7fe990d7de28ec3060f953b88e4cef5ade04c12ff917ee';
-    const homeDirectory = Cypress.env('home');
-   
-    cy.log('Home Directory:', homeDirectory); // Debug statement
-    const filePath = `${homeDirectory}/gw-workspace/.secret`;
-    console.log(filePath)
-    cy.debug('Detailed debugging information home dire is ',homeDirectory);
-    cy.task('log', 'Logging home dire' + homeDirectory)
-    cy.task('log', 'Logging filepath' + filePath)
-    cy.log('File Path:', filePath); // Debug statement
-    cy.writeFile(filePath, dataToWrite, 'binary')
-      .then(() => {
-        cy.readFile(filePath).should('contain', dataToWrite);
-        cy.readFile(filePath).then((fileContents) => {
-          cy.task('log', 'File Contents: ' + fileContents);
-          cy.log('File Contents:', fileContents);
-        });
-      })
-  });
-});
-
 describe('Create Python process and run it', () => {
   it('creates python process and runs', () => {
     cy.visit('http://localhost:8070/Geoweaver');
@@ -379,12 +329,12 @@ describe('Create Python process and run it', () => {
     cy.get('ul#process_folder_python_target').contains('hello_world.py').click();
 
     cy.get('#processid').then(($input) => {
-      const processId = $input.val(); // Get the value of the input field
+      const processId = $input.val(); 
       console.log('process id ',processId)
       const selector = `[onclick="GW.process.runProcess('${processId}', 'hello_world.py', 'python')"]`;
-      cy.get(selector).click(); // Perform actions using the dynamically constructed selector
+      cy.get(selector).click(); 
     });
-    cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess'); // Intercept the POST request
+    cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess');
     cy.get('#host-execute-btn').click();
 
     cy.get('#process-confirm-btn').click();
