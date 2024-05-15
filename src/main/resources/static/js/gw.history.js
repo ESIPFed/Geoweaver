@@ -298,8 +298,8 @@ GW.history = {
 
         content =
         // "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
-        "<div id=\"process-chart-container\" width=\"200\" height=\"100\">"+
-        "<canvas id=\"process-history-chart\" style=\"width:200px !important; height:50px !important;\" ></canvas>"+
+        "<div id=\"process-chart-container\">"+
+        "<canvas id=\"process-history-chart\"></canvas>"+
         "</div>" + content ;
 
         return content;

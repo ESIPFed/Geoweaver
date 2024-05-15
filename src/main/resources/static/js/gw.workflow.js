@@ -408,6 +408,11 @@ GW.workflow = {
             if (createandrun) {
               GW.workflow.run(msg.id);
             }
+
+            GW.workflow.display({id:msg.id, ...workflow});
+            GW.workspace.showSaved();
+            switchTab(document.getElementById("main-workspace-tab"), "workspace");
+
           })
           .fail(function (jqXHR, textStatus) {
             console.error("fail to add workflow");

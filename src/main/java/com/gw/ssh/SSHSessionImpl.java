@@ -467,13 +467,15 @@ public class SSHSessionImpl implements SSHSession {
 
       // Build the Python execution command.
       if (BaseTool.isNull(bin) || "default".equals(bin)) {
-        cmdline += "python -u " + filename + "; ";
+        cmdline += "python -u " + filename + ";";
       } else {
-        cmdline += bin + " -u " + filename + "; ";
+        cmdline += bin + " -u " + filename + ";";
       }
 
       // Set the exit code to the result of the executed Python script.
-      cmdline += "exitcode=$;";
+      cmdline += "exitcode=$?;";
+
+      cmdline += "echo 'gw_exit_code='$exitcode;";
 
       // Remove the executed code directory to clean up.
       cmdline += "rm -rf " + workspace_folder_path + "/" + history_id + ";";
@@ -502,11 +504,11 @@ public class SSHSessionImpl implements SSHSession {
       log.info("Starting sending thread");
       thread.start();
 
-      // Return to the client after starting the execution.
-
       // If the 'isjoin' flag is set, wait for the process to complete.
       if (isjoin) {
         cmd.join(7, TimeUnit.DAYS); // Allow the process to run for up to a week.
+        // Return to the client after starting the execution.
+        log.info("Command ends with code " + cmd.getExitStatus());
         cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
       }
     } catch (Exception e) {

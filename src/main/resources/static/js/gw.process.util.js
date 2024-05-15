@@ -411,11 +411,11 @@ GW.process.util = {
     resizerDrag.style.setProperty("width", "2px");
 
     var element = document.getElementById(code_window_id);
-    element.style.setProperty("width", "40%");
+    element.style.setProperty("width", "60%");
     element.style.setProperty("height", "100%");
 
     var element = document.getElementById(console_content_id);
-    element.style.setProperty("width", "60%");
+    element.style.setProperty("width", "40%");
     element.style.setProperty("height", "100%");
     element.style.setProperty("display", "flow");
 

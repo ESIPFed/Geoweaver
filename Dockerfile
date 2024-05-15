@@ -1,6 +1,4 @@
-From openjdk:11
-
-COPY --from=python:3.8 / /
+FROM openjdk:11
 
 COPY ./target/geoweaver.jar /opt/
 
@@ -12,4 +10,13 @@ USER marsvegan
 
 WORKDIR /home/marsvegan
 
-ENTRYPOINT ["java","-jar","/opt/geoweaver.jar"]
+ENTRYPOINT ["sh", "-c", "if [ ! -z \"$PASSWORD\" ]; then \
+        echo \"Password provided: $PASSWORD\"; \
+        java -jar /opt/geoweaver.jar resetpassword -p \"$PASSWORD\"; \
+        echo \"Password reset completed.\"; \
+        java -jar /opt/geoweaver.jar; \
+    else \
+        echo \"No password provided. Skipping password reset.\"; \
+        java -jar /opt/geoweaver.jar; \
+    fi"]
+

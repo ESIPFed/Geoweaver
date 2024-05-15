@@ -1,0 +1,48 @@
+name: Cypress Tests
+on: push
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        env:
+          ACTIONS_STEP_DEBUG: true  # Set ACTIONS_STEP_DEBUG variable
+        run: echo "Environment setup complete"
+        
+      - name: Set up JDK 11 for x64
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          architecture: x64
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Download Geoweaver JAR
+        run: wget https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
+
+      - name: Reset Geoweaver password
+        run: java -jar geoweaver.jar resetpassword --password=1234
+
+      - name: Start application
+        run: mvn spring-boot:run -Dskip=true &
+
+      - name: Wait for localhost page to be accessible
+        run: |
+          while true; do
+            if curl -s http://localhost:8070/Geoweaver -o /dev/null; then
+              break
+            else
+              sleep 5
+            fi
+          done
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          spec: cypress/e2e/spec.cy.js
+          working-directory: ./cypress

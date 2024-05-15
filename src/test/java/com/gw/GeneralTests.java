@@ -244,7 +244,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 
 		// Search for recently created host
 		logger.debug("\n\n##############\nTesting search of specific host\n##############\n");
-		HttpEntity searchRequest = new HttpEntity<>("type=host", headers);
+		HttpEntity searchRequest = new HttpEntity<>("type=host&keywords=", headers);
 		String searchResult = this.testrestTemplate.postForObject(
 				"http://localhost:" + this.port + "/Geoweaver/web/search",
 				searchRequest,
