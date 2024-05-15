@@ -21,7 +21,7 @@ https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
 ![Geoweaver Docs](https://img.shields.io/badge/Docs-Geoweaver-%23c4ff7d?style=for-the-badge&logo=readthedocs&link=https%3A%2F%2Fgeoweaver.dev%2F
 )
 
-![logo](src/main/resources/static/img/geoweaver-readme-banner.png)
+![logo](src/main/resources/static/img/geoweaver-new-banner.png)
 
 
 ### GitHub Repo: https://github.com/ESIPFed/Geoweaver 
