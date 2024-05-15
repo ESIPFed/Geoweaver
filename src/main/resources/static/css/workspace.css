@@ -125,3 +125,6 @@ div.processtooltip table tr td {
     border-bottom-style: dotted;
 
 }
+div.processtooltip table tr td:first-child {
+    width: 100px; 
+}
