@@ -35,7 +35,7 @@ GW.editor = {
       this.isfullscreen = false;
     }
 
-    GW.process.util.refreshCodeEditor();
+    // GW.process.util.refreshCodeEditor();
   },
 
   switchFullScreen: function () {

@@ -136,7 +136,7 @@ GW.process.sidepanel = {
     if (GW.process.sidepanel.editor) {
       GW.process.sidepanel.editor.setValue(GW.process.unescape(msg.input));
 
-      GW.process.util.refreshCodeEditor();
+      // GW.process.util.refreshCodeEditor();
     }
 
     output =
@@ -350,7 +350,7 @@ GW.process.sidepanel = {
 
     $("#prompt-panel-main-process-info-code").hide().fadeIn("fast"); // refresh to make height full
 
-    GW.process.sidepanel.editor = GW.process.util.displayCodeArea(
+   GW.process.util.displayCodeArea(
       code_type,
       code,
       "#prompt-panel-code-embed",

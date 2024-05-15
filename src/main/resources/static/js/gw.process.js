@@ -144,7 +144,7 @@ GW.process = {
         GW.process.editor = editor;
         
         });
-        GW.process.util.refreshCodeEditor();
+        // GW.process.util.refreshCodeEditor();
 
 
   },
@@ -263,7 +263,7 @@ GW.process = {
             GW.process.editor = editor;
             
             });
-            GW.process.util.refreshCodeEditor();
+            // GW.process.util.refreshCodeEditor();
 },
 
   uploadAndReplaceJupyterCode: function () {
@@ -546,195 +546,148 @@ GW.process = {
    * @param current_code
    * @param previous_code
    */
+  
 
-  diffDialog: function (current_history, previous_history) {
-    current_code = current_history.code;
-    previous_code = previous_history.code;
+diffDialog: function (current_history, previous_history) {
+  const current_code = current_history.code;
+  const previous_code = current_history.code;
 
-    console.log("previous_code : " + previous_code);
-    console.log("current_code : " + current_code);
-    // get the process history logs, sort based on the begin time and based on the current record fetch the previous and current code.
-    var content =
-      `<div class="modal-body">
-			<div class="row">
-				<div class="col col-md-3"><b>ID</b></div>
-				<div class="col col-md-3">` +
-      current_history.hid +
-      `</div>
-				<div class="col col-md-3"><b>ID</b></div>
-				<div class="col col-md-3">` +
-      previous_history.hid +
-      `</div>
-			</div>
-			<div class="row">
-				<div class="col col-md-3"><b>BeginTime</b></div>
-				<div class="col col-md-3">` +
-      current_history.begin_time +
-      `</div>
-				<div class="col col-md-3"><b>BeginTime</b></div>
-				<div class="col col-md-3">` +
-      previous_history.begin_time +
-      `</div>
-			</div>
-			<div class="row">
-				<div class="col col-md-3"><b>EndTime</b></div>
-				<div class="col col-md-3">` +
-      current_history.end_time +
-      `</div>
-				<div class="col col-md-3"><b>EndTime</b></div>
-				<div class="col col-md-3">` +
-      previous_history.end_time +
-      `</div>
-			</div>
-			<div class="row">
-				<div class="col col-md-3"><b>Notes</b></div>
-				<div class="col col-md-3">` +
-      current_history.notes +
-      `</div>
-				<div class="col col-md-3"><b>Notes</b></div>
-				<div class="col col-md-3">` +
-      previous_history.notes +
-      `</div>
-			</div>
-			<div class="row">
-				<div class="col col-md-3"><b>Status</b></div>
-				<div class="col col-md-3">` +
-      current_history.status +
-      `</div>
-				<div class="col col-md-3"><b>Status</b></div>
-				<div class="col col-md-3">` +
-      previous_history.status +
-      `</div>
-			</div>
-			<br/>
-			<label>Code Comparision</label>
-			<br/>
-			<div id=\"process-difference-comparison-code-view"\></div>
-			<br/>
-			<br/>
-			<label>Result Comparision</label>
-			<div id=\"process-difference-comparison-result-view"\></div>
-			</div>`;
+  console.log("previous_code: ", previous_code);
+  console.log("current_code: ", current_code);
 
-      var editorContainerStyle = 'style="height:100px;width:100%;border:1px solid #ddd;"';
-    content = content.replace('<div id=\"process-difference-comparison-code-view"\></div>',
-                              '<div id="process-difference-comparison-code-view" ' + editorContainerStyle + '></div>');
-    content = content.replace('<div id=\"process-difference-comparison-result-view"\></div>',
-                              '<div id="process-difference-comparison-result-view" ' + editorContainerStyle + '></div>');
+  const content = `
+    <div class="modal-body">
+      <div class="row">
+        <div class="col col-md-3"><b>ID</b></div>
+        <div class="col col-md-3">${current_history.hid}</div>
+        <div class="col col-md-3"><b>ID</b></div>
+        <div class="col col-md-3">${previous_history.hid}</div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3"><b>BeginTime</b></div>
+        <div class="col col-md-3">${current_history.begin_time}</div>
+        <div class="col col-md-3"><b>BeginTime</b></div>
+        <div class="col col-md-3">${previous_history.begin_time}</div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3"><b>EndTime</b></div>
+        <div class="col col-md-3">${current_history.end_time}</div>
+        <div class="col col-md-3"><b>EndTime</b></div>
+        <div class="col col-md-3">${previous_history.end_time}</div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3"><b>Notes</b></div>
+        <div class="col col-md-3">${current_history.notes}</div>
+        <div class="col col-md-3"><b>Notes</b></div>
+        <div class="col col-md-3">${previous_history.notes}</div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3"><b>Status</b></div>
+        <div class="col col-md-3">${current_history.status}</div>
+        <div class="col col-md-3"><b>Status</b></div>
+        <div class="col col-md-3">${previous_history.status}</div>
+      </div>
+      <br/>
+      <label>Code Comparison</label>
+      <br/>
+      <div id="process-difference-comparison-code-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
+      <br/>
+      <br/>
+      <label>Result Comparison</label>
+      <div id="process-difference-comparison-result-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
+    </div>`;
 
+  const dialog = GW.process.createJSFrameDialog(720, 640, content, "History Details");
 
-      GW.process.createJSFrameDialog(720, 640, content, "History Details");
-
-     
-
-    // Delay the initialization to ensure the modal and the DOM elements are fully loaded
-    setTimeout(() => {
-        if (window.monaco) {
-            this.initDiffEditors(current_history, previous_history);
-        } else {
-            console.error('Monaco editor is not loaded or initialized!');
-        }
-    }, 0);  
-      },
-      
-  // },
-
-  initDiffEditors: function (current_history, previous_history) {
-    function isContainerReady(containerId) {
-      const container = document.getElementById(containerId);
-      return container && container.offsetWidth > 0 && container.offsetHeight > 0;
-  }
-
-  // Helper function to initialize the diff editors once the containers are ready
-  // function initializeEditors() {
-      const codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
-      const resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
-
-    //   if (codeDiffEditor || resultDiffEditor) {
-    //     console.error('DiffEditors are already initialized.');
-    //     return;
-    // }
-    //   if (GW.process.codeDiffEditor || GW.process.resultDiffEditor) {
-    //     console.error('DiffEditors are already initialized.');
-    //     return;
-    // }
-
-      // container.style.height = '300px';
-      // container.style.width = '100%';
-
-      // Initialize the code diff editor
-      const codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
-          theme: 'vs-dark',
-          readOnly: true,
-          automaticLayout: true
-      });
-
-      // Create models for the original and modified code
-      const originalCodeModel = monaco.editor.createModel(previous_history.code || '', 'python');
-      const modifiedCodeModel = monaco.editor.createModel(current_history.code || '', 'python');
-
-      // Set the models into the code diff editor
-      codeDiffEditor.setModel({
-          original: originalCodeModel,
-          modified: modifiedCodeModel
-      });
-
-      // Initialize the result diff editor in a similar manner
-      const resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
-          theme: 'vs-dark',
-          readOnly: true,
-          automaticLayout: true
-      });
-
-      // Create models for the original and modified results
-      const originalResultModel = monaco.editor.createModel(previous_history.output || '', 'python');
-      const modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'python');
-
-      // Set the models into the result diff editor
-      resultDiffEditor.setModel({
-          original: originalResultModel,
-          modified: modifiedResultModel
-      });
-
-      // Store references to the editors for later use or disposal
-      GW.process.codeDiffEditor = codeDiffEditor;
-      GW.process.resultDiffEditor = resultDiffEditor;
-  // }
-
-  // Attempt to initialize editors if containers are ready
-  if (isContainerReady('process-difference-comparison-code-view') && isContainerReady('process-difference-comparison-result-view')) {
-      // initializeEditors();
-  } else {
-      // If containers are not ready, check again after a short delay
-      setTimeout(GW.process.initDiffEditors, 100, current_history, previous_history);
-  }
-
-  // var dialog = getJSFrameDialog();
-  // var dialog = GW.process.getJSFrameDialog();
-
-  var dialog = typeof getJSFrameDialog === "function" ? getJSFrameDialog() : null;
-  if (dialog) {
-      dialog.on('closeButton', 'click', function(frame) {
-          // Dispose of editors and handle the frame as needed
-      });
-  } else {
-      console.warn("Dialog function not available.");
-  }
-
-    if (dialog) {
-        dialog.on('closeButton', 'click', function(frame) {
-            if (GW.process.codeDiffEditor) {
-                GW.process.codeDiffEditor.dispose();
-                GW.process.codeDiffEditor = null;
-            }
-            if (GW.process.resultDiffEditor) {
-                GW.process.resultDiffEditor.dispose();
-                GW.process.resultDiffEditor = null;
-            }
-            frame.hide();
-        });
+  // Function to dispose of models and editors
+  function disposeModels() {
+    console.log("Disposing existing models if any...");
+    if (GW.process.originalCodeModel) {
+      GW.process.originalCodeModel.dispose();
+      GW.process.originalCodeModel = null;
     }
+    if (GW.process.modifiedCodeModel) {
+      GW.process.modifiedCodeModel.dispose();
+      GW.process.modifiedCodeModel = null;
+    }
+    if (GW.process.originalResultModel) {
+      GW.process.originalResultModel.dispose();
+      GW.process.originalResultModel = null;
+    }
+    if (GW.process.modifiedResultModel) {
+      GW.process.modifiedResultModel.dispose();
+      GW.process.modifiedResultModel = null;
+    }
+    if (GW.process.codeDiffEditor) {
+      GW.process.codeDiffEditor.dispose();
+      GW.process.codeDiffEditor = null;
+    }
+    if (GW.process.resultDiffEditor) {
+      GW.process.resultDiffEditor.dispose();
+      GW.process.resultDiffEditor = null;
+    }
+  
+  }
 
+  // Initialize the diff editors
+  function initDiffEditors(current_history, previous_history) {
+    const codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
+    const resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
+
+    const currentLanguage = current_history.language || 'plaintext';
+    const previousLanguage = previous_history.language || 'plaintext';
+
+    console.log(`Initializing diff editor for languages: current=${currentLanguage}, previous=${previousLanguage}`);
+
+    // disposeModels(); // Ensure previous models are disposed of
+
+    const codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
+      theme: 'vs-dark',
+      readOnly: true,
+      automaticLayout: true
+    });
+
+    GW.process.originalCodeModel = monaco.editor.createModel(previous_history.code || '', previousLanguage);
+    GW.process.modifiedCodeModel = monaco.editor.createModel(current_history.code || '', currentLanguage);
+
+    codeDiffEditor.setModel({
+      original: GW.process.originalCodeModel,
+      modified: GW.process.modifiedCodeModel
+    });
+
+    const resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
+      theme: 'vs-dark',
+      readOnly: true,
+      automaticLayout: true
+    });
+
+    GW.process.originalResultModel = monaco.editor.createModel(previous_history.output || '', 'plaintext');
+    GW.process.modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'plaintext');
+
+    resultDiffEditor.setModel({
+      original: GW.process.originalResultModel,
+      modified: GW.process.modifiedResultModel
+    });
+
+    GW.process.codeDiffEditor = codeDiffEditor;
+    GW.process.resultDiffEditor = resultDiffEditor;
+  }
+
+  // Delay the initialization to ensure the modal and the DOM elements are fully loaded
+  setTimeout(() => {
+    if (window.monaco) {
+      initDiffEditors(current_history, previous_history);
+    } else {
+      console.error('Monaco editor is not loaded or initialized!');
+    }
+  }, 100);  // Slightly increased the delay to ensure DOM is ready
+
+  // Add disposal logic to the dialog's close button
+  dialog.on('closeButton', 'click', function (frame) {
+    console.log("Disposing editors on dialog close...");
+    disposeModels();
+    frame.closeFrame();
+  });
 },
 
   newDialog: function (category) {
@@ -992,7 +945,7 @@ GW.process = {
     if (GW.process.editor) {
       GW.process.editor.setValue(GW.process.unescape(msg.input));
 
-      GW.process.util.refreshCodeEditor();
+      // GW.process.util.refreshCodeEditor();
     }
 
     output =
@@ -1448,7 +1401,7 @@ GW.process = {
     );
 
     GW.general.switchTab("process");
-
+    
     $("#processcategory").val(code_type);
 
     $("#processname").val(process_name);
@@ -1560,7 +1513,7 @@ GW.process = {
   },
 
   displayCodeArea: function (process_id, process_name, code_type, code) {
-    GW.process.editor = GW.process.util.displayCodeArea(
+    GW.process.util.displayCodeArea(
       code_type,
       code,
       "#code-embed",

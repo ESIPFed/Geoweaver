@@ -8,7 +8,8 @@ GW.process.util = {
     code,
     code_editor_container_id,
     process_window_container_id,
-  ) {
+  )
+   {
     $(code_editor_container_id).html("");
 
     $(code_editor_container_id).css({ "overflow-y": "scroll" });
@@ -83,48 +84,53 @@ GW.process.util = {
       }
     } else if(code_type=="shell"){
 
-require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
+    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-require(['vs/editor/editor.main'], function() {
-    var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
-    var container = document.getElementById(editorContainerId);
+    require(['vs/editor/editor.main'], function() {
+        var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
+        var container = document.getElementById(editorContainerId);
+        console.log("Editor container: " + editorContainerId);
 
-    if (!container) {
-        console.error('Editor container not found.');
-        return;
-    }
+        if (!container) {
+            console.error('Editor container not found.');
+            return;
+        }
 
-    // container.style.height = '820px'; // Set a non-zero height
-    // container.style.width = '100%'; // Set the width to fill the container
+        // container.style.height = '820px'; // Set a non-zero height
+        // container.style.width = '100%'; // Set the width to fill the container
 
     var editor = monaco.editor.create(container, {
-        value: code || '#!/bin/bash',
-        language: 'shell',
-        theme: 'vs-dark',
-        lineNumbers: true,
-        roundedSelection: false,
-        scrollBeyondLastLine: false,
-        readOnly: false,
-        fontSize: 14,
-        automaticLayout: true,
-        formatOnSave: true,
-        formatOnPaste: true,
-        folding: true,
-        formatOnType: true,
-        showFoldingControls: 'always',
-        wordWrap: 'on',
-        scrollBeyondLastLine: true,
+            value: code || '#!/bin/bash',
+            language: 'shell',
+            theme: 'vs-dark',
+            lineNumbers: true,
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            fontSize: 14,
+            automaticLayout: true,
+            formatOnSave: true,
+            formatOnPaste: true,
+            folding: true,
+            formatOnType: true,
+            showFoldingControls: 'always',
+            wordWrap: 'on',
+            scrollBeyondLastLine: true,
+        });
+        
+        // GW.process.editor = editor;
+        GW.process.sidepanel.editor = editor;
+
+
+        
+        editor.onDidChangeModelContent(function(event) {
+            console.log('Content changed');
+        });
+
+        // Add any additional editor options or event listeners here
     });
+// GW.process.util.refreshCodeEditor();
 
-    GW.process.editor = editor;
-
-    editor.onDidChangeModelContent(function(event) {
-        console.log('Content changed');
-    });
-
-    // Add any additional editor options or event listeners here
-});
-GW.process.util.refreshCodeEditor();
 
   }
   else{
@@ -163,6 +169,10 @@ GW.process.util.refreshCodeEditor();
       });
 
       GW.process.editor = editor;
+      GW.process.sidepanel.editor = editor;
+
+      
+      
 
       editor.onDidChangeModelContent(function(event) {
           console.log('Content changed');
@@ -170,11 +180,15 @@ GW.process.util.refreshCodeEditor();
 
       // Add any additional editor options or event listeners here
   });
+  
+}
+  // GW.process.util.refreshCodeEditor();
 
-  }
-  GW.process.util.refreshCodeEditor();
   
   },
+
+  
+
 
   activateResizer: function (resizer_line_id) {
     // Query the element
@@ -351,7 +365,7 @@ GW.process.util.refreshCodeEditor();
     // activating resizer functionality
     GW.process.util.activateVerticalResizer(resize_line_id);
 
-    GW.process.util.refreshCodeEditor();
+    // GW.process.util.refreshCodeEditor();
   },
 
   bottomDock: function (
@@ -500,11 +514,11 @@ GW.process.util.refreshCodeEditor();
       });
   },
 
-  refreshCodeEditor: function () {
-    // console.log("Process Code Editor is refreshed..");
+  // refreshCodeEditor: function () {
+  //   // console.log("Process Code Editor is refreshed..");
 
-    if (GW.process.editor != null) GW.process.editor.refresh();
-    if (GW.process.sidepanel.editor != null)
-      GW.process.sidepanel.editor.refresh();
-  },
+  //   if (GW.process.editor != null) GW.process.editor.refresh();
+  //   if (GW.process.sidepanel.editor != null)
+  //     GW.process.sidepanel.editor.refresh();
+  // },
 };
