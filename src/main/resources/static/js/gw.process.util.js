@@ -118,7 +118,7 @@ GW.process.util = {
             scrollBeyondLastLine: true,
         });
         
-        // GW.process.editor = editor;
+        GW.process.editor = editor;
         GW.process.sidepanel.editor = editor;
 
 
