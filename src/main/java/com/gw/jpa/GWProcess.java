@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,11 +25,9 @@ public class GWProcess {
 	private String name;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String description;
 
 	@Lob
-	@Column(columnDefinition = "LONGTEXT")
 	private String code;
 
 	private String lang;

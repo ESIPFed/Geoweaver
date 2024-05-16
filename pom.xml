@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
-	<version>1.4.6</version>
+	<version>1.5.1</version>
 	<name>geoweaver</name>
 	<description>A lightweight workflow management software for organizing data analysis workflows, 
 	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
@@ -80,8 +80,22 @@
 
 
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<version>8.3.0</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
 

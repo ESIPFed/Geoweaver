@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
+
 /**
  * The WorkflowRepository interface provides methods for querying workflow information from a
  * database. It extends the CrudRepository interface to handle database operations for the Workflow
  * entity.
  */
+@Transactional
 public interface WorkflowRepository extends CrudRepository<Workflow, String> {
 
   /**
