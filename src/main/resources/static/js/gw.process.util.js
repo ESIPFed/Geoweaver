@@ -115,7 +115,7 @@ GW.process.util = {
             formatOnType: true,
             showFoldingControls: 'always',
             wordWrap: 'on',
-            scrollBeyondLastLine: true,
+            // scrollBeyondLastLine: true,
         });
         
         GW.process.editor = editor;
@@ -165,7 +165,7 @@ GW.process.util = {
           formatOnType: true,
           showFoldingControls: 'always',
           wordWrap: 'on',
-          scrollBeyondLastLine: true,
+          // scrollBeyondLastLine: true,
       });
 
       GW.process.editor = editor;

@@ -11308,7 +11308,7 @@ define(__m[8/*vs/editor/common/diff/defaultLinesDiffComputer/algorithms/diffAlgo
             if (!valid && this.valid) {
                 this.valid = false; // timeout reached
                 // eslint-disable-next-line no-debugger
-                debugger; // WARNING: Most likely debugging caused the timeout. Call `this.disable()` to continue without timing out.
+                // debugger; // WARNING: Most likely debugging caused the timeout. Call `this.disable()` to continue without timing out.
             }
             return this.valid;
         }
