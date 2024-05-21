@@ -1,5 +1,6 @@
 package com.gw.jpa;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,7 +46,7 @@ public class Checkpoint {
   @Column(name = "nodes")
   private String nodes;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "workflow_id")
   private Workflow workflow;
 
