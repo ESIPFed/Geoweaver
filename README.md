@@ -64,6 +64,14 @@ GeoWeaver is a community effort. Any contribution is welcome and greatly appreci
   - Link processes to create workflows for parallel or sequential execution across different resources.
   - All aspects of workflow management are centralized within GeoWeaver.
 
+6) **Boosts Data Pipeline's Tangibility**:
+  - Geoweaver provides an intuitive, interactive interface for visualizing data workflows, making it easier for users to understand and manage complex data pipelines.
+  - This clear visualization helps users to see the connections and dependencies between different components of their workflows.
+
+7) **Enhances Research Productivity and Reduces Work Anxiety**:
+  - Geoweaver has automated scheduling and execution of tasks, researchers can set up their workflows to run at specified times or conditions without manual intervention. 
+  - This automation reduces the burden of monitoring and manual execution, allowing researchers to focus on analysis and innovation. 
+
 # [Geoweaver Installation Guide](docs/install.md)
 
 Geoweaver is a powerful tool for geospatial data processing, offering a range of features and capabilities. This guide will walk you through the steps to install Geoweaver on your system.
