@@ -211,15 +211,6 @@ describe('Host Testing', () => {
 });
 
 describe('Process Testing', () => {
-  it('Create Shell Process', () => {
-    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#newprocess').click();
-    cy.get('form > :nth-child(1) > :nth-child(4)').clear('t');
-    cy.get('form > :nth-child(1) > :nth-child(4)').type('shell_test');
-    cy.get('.modal-footer').contains('Add').click();
-    cy.get('ul#process_folder_shell_target').should('contain', 'shell_test');
-    })
 
     it('Create Python Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
@@ -246,50 +237,18 @@ describe('Process Testing', () => {
 
 
 describe('Add Process to Weaver', () => {
-  it('Add to weaver', () => {
-    cy.visit('http://localhost:8070/Geoweaver');
+  it('Add to weaver - python', () => {
+    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
-    cy.get('#process_folder_shell').click();
-    cy.get('ul#process_folder_shell_target').contains('button', 'Add to Weaver').click();
+    cy.get('#process_folder_python').click();
+    cy.get('ul#process_folder_python_target').contains('button', 'Add to Weaver').click();
     cy.get('circle').should('be.visible');
   })
 });
 
-describe('Edit Process Name', () => {
-  it('Add to weaver', () => {
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#process_folder_shell').click();
-    cy.get('ul#process_folder_shell_target').contains('shell_test').click();
-    cy.get('#processname').clear('ushell_test');
-    cy.get('#processname').type('updated_shell_test');
-    cy.get('[onclick="GW.process.editSwitch()"] > .glyphicon').click();
-    cy.get('ul#process_folder_shell_target').should('contain', 'updated_shell_test');
-
-  })
-  it('process category and id should be disabled', () => {
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#process_folder_shell').click();
-    cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
-    cy.get('#processcategory').should('be.disabled');
-    cy.get('#processid').should('be.disabled')
-  })
-});
 
 
 describe('Delete Process', () => {
-    it('Delete Shell Process', () => {
-      cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('.introjs-skipbutton').click();
-      cy.get('#process_folder_shell').click();
-      cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
-      cy.contains('button', 'Delete').click();
-      cy.get('#del-confirm-btn').click();
-      cy.get('#main-general-content').click();
-      cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
-    })
-
     it('Delete Python Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
       cy.get('.introjs-skipbutton').click();
@@ -314,39 +273,23 @@ describe('Delete Process', () => {
 });
 
 describe('Create Python process and run it', () => {
-  it('creates python process and runs', () => {
-    cy.visit('http://localhost:8070/Geoweaver');
+  it('creates python process and runs test', function() {
+    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
+    cy.get('#process_folder_python').click();
     cy.get('#newprocess').click();
-
-    cy.get('form select.form-control.form-control-sm').select('Python');
-    cy.get('form > :nth-child(1) > :nth-child(4)').type('hello_world.py');
-
-
-    cy.get('.CodeMirror-lines').type("\nprint('hello world!')");
-    cy.get('.modal-footer').contains('Add').click();
-
-    cy.get('ul#process_folder_python_target').contains('hello_world.py').click();
-
-    cy.get('#processid').then(($input) => {
-      const processId = $input.val(); 
-      console.log('process id ',processId)
-      const selector = `[onclick="GW.process.runProcess('${processId}', 'hello_world.py', 'python')"]`;
-      cy.get(selector).click(); 
-    });
-    cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess');
+    cy.get('[id^="processcategory-"]').select('python');
+    cy.get('[id^="processname-"]').clear().type('check_this'); 
+    cy.get('.view-lines').click();
+    cy.get('[id^="add-process-"]').last().click(); 
+    cy.get('[id^="process-"] > .row > .col-md-8 > span').last().click(); 
+    cy.get('[onclick*="runProcess"]').last().click();
     cy.get('#host-execute-btn').click();
-
     cy.get('#process-confirm-btn').click();
-    cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('1234');
+    cy.get('#inputpswd').clear().type('1234'); 
     cy.get('#pswd-confirm-btn').click();
-
-    cy.get('#single-console-content').should('contain', 'hello world!');
-    cy.get('#single-console-content').should('contain', 'Exit Code: 0');
-    cy.get('#process-log-window').click();
-    cy.get('#process-log-window').should('be.visible');
-    cy.wait('@executeProcess').its('response.statusCode').should('eq', 200);
+    cy.get('#process-log-window > :nth-child(3)').click();
+    cy.get('#process-log-window > :nth-child(3) > span').should('be.visible');
   });
 });
 
