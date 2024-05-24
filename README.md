@@ -1,5 +1,5 @@
 ![example workflow](
-https://img.shields.io/github/actions/workflow/status/ESIPFed/Geoweaver/release_workflow.yml?style=for-the-badge&branch=v1.5.2
+https://img.shields.io/github/actions/workflow/status/ESIPFed/Geoweaver/release_workflow.yml?branch=v1.5.2-pre&style=for-the-badge
 )
 [![License](
 https://img.shields.io/github/license/ESIPFed/Geoweaver?style=for-the-badge
