@@ -241,23 +241,21 @@ GW.ssh = {
     $("#log-window").append(newline);
 
     //don't output log to process log if the current executed is workflow
-    if (GW.process.last_executed_process_id == GW.process.process_id) {
-      if ($("#" + GW.ssh.process_output_id).length) {
-        if (this.current_process_log_length > 5000) {
-          $("#" + GW.ssh.process_output_id)
-            .find("p:first")
-            .remove();
+    if ($("#" + GW.ssh.process_output_id).length) {
+      if (this.current_process_log_length > 5000) {
+        $("#" + GW.ssh.process_output_id)
+          .find("p:first")
+          .remove();
 
-          this.current_process_log_length -= 1;
-        }
-
-        if (GW.process.history_id == log_history_id) {
-          // only display the log if the current history id is the correct one
-          $("#" + GW.ssh.process_output_id).append(newline);
-        }
-
-        this.current_process_log_length += 1;
+        this.current_process_log_length -= 1;
       }
+
+      if (GW.process.history_id == log_history_id) {
+        // only display the log if the current history id is the correct one
+        $("#" + GW.ssh.process_output_id).append(newline);
+      }
+
+      this.current_process_log_length += 1;
     }
   },
 
