@@ -47,8 +47,15 @@ jobs:
           spec: cypress/e2e/spec.cy.js
           working-directory: ./cypress
       - name: Archive screenshots on failure
-          if: failure()
-          uses: actions/upload-artifact@v3
-          with:
-            name: cypress-screenshots
-            path: cypress/screenshots
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      - name: Archive videos on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: cypress/videos
