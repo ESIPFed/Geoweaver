@@ -1,5 +1,6 @@
 package com.gw.tasks;
 
+import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
@@ -12,6 +13,8 @@ import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 import javax.websocket.Session;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -41,6 +44,8 @@ public class GeoweaverProcessTask extends Task {
   @Autowired FileTool ft;
 
   @Autowired HistoryTool hist;
+
+  @Autowired HistoryRepository hr;
 
   @Autowired TaskManager tm;
 
@@ -79,6 +84,9 @@ public class GeoweaverProcessTask extends Task {
   List precondition_processes; // only for workflow's member process
 
   boolean isReady;
+
+  // should stop this task as all its precondition processes are complete or failed
+  boolean shouldPass;
 
   String workflow_history_id;
 
@@ -127,6 +135,92 @@ public class GeoweaverProcessTask extends Task {
   public void setPreconditionProcesses(List precondition_processes) {
 
     this.precondition_processes = precondition_processes;
+  }
+
+  /**
+   * Check if a task is ready to execute
+   *
+   * @param thet
+   * @return
+   */
+  public boolean checkIfReady() {
+
+    this.isReady = false;
+
+    List prehistoryid = this.getPreconditionProcesses();
+
+    if (!BaseTool.isNull(prehistoryid) && prehistoryid.size() > 0) {
+
+      int check = 0;
+
+      for (int i = 0; i < prehistoryid.size(); i++) {
+
+        Optional<History> ho = hr.findById((String) prehistoryid.get(i));
+
+        if (ho.isPresent()) {
+
+          String current_status = ho.get().getIndicator();
+
+          if (BaseTool.isNull(current_status)
+              || current_status.equals(ExecutionStatus.RUNNING)
+              || current_status.equals(ExecutionStatus.READY)) {
+            check = 1;
+            break;
+          }
+
+        } else {
+
+          check = 1;
+          break;
+
+        }
+      }
+
+      if (check == 0) this.isReady = true;
+
+    } else {
+      
+      this.isReady = true;
+
+    }
+
+    return this.isReady;
+  }
+
+  public boolean checkShouldPassOrNot() {
+
+    this.shouldPass = false;
+
+    List prehistoryid = this.getPreconditionProcesses();
+
+    if (!BaseTool.isNull(prehistoryid) && prehistoryid.size() > 0) {
+
+      int check = 0;
+
+      for (int i = 0; i < prehistoryid.size(); i++) {
+
+        Optional<History> ho = hr.findById((String) prehistoryid.get(i));
+
+        if (ho.isPresent()) {
+
+          String current_status = ho.get().getIndicator();
+
+          if (BaseTool.isNull(current_status)
+              || current_status.equals(ExecutionStatus.FAILED)
+              || current_status.equals(ExecutionStatus.STOPPED)) {
+            check = 1;
+            break;
+          }
+
+        }
+
+      }
+
+      if (check == 1) this.shouldPass = true;
+
+    }
+
+    return this.shouldPass;
   }
 
   /** This is a temporary solution, history id should be one of the initialized parameter */
@@ -238,7 +332,7 @@ public class GeoweaverProcessTask extends Task {
 
   @Override
   public void execute() {
-
+    
     logger.debug(" + + + start Geoweaver Process " + pid);
 
     try {

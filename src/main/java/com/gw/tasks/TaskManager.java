@@ -77,13 +77,11 @@ public class TaskManager {
   private boolean executeATask(Task t) {
     boolean is = false;
     if (wm.getCurrentWorkerNumber() < worknumber) {
-      //			t.addObserver(rto);
       wm.createANewWorker(t);
       runninglist.add(t);
       is = true;
     } else {
       logger.debug("!!!This function is not called by the method notifyWaitinglist.");
-      //			t.addObserver(wto);
       waitinglist.add(t);
     }
     return is;
@@ -141,62 +139,12 @@ public class TaskManager {
    */
   public void orderWaitingList() {
 
-    List<Integer> labels = new ArrayList();
-
     for (int i = 0; i < waitinglist.size(); i++) {
-
       GeoweaverProcessTask thet = (GeoweaverProcessTask) waitinglist.get(i);
-
-      thet.setIsReady(checkIfReady(thet));
+      thet.setIsReady(thet.checkIfReady());
     }
 
     logger.debug("The waiting list is refreshed..");
-  }
-
-  /**
-   * Check if a task is ready to execute
-   *
-   * @param thet
-   * @return
-   */
-  public boolean checkIfReady(GeoweaverProcessTask thet) {
-
-    boolean isready = false;
-
-    List prehistoryid = thet.getPreconditionProcesses();
-
-    if (!BaseTool.isNull(prehistoryid) && prehistoryid.size() > 0) {
-
-      int check = 0;
-
-      for (int i = 0; i < prehistoryid.size(); i++) {
-
-        Optional<History> ho = hr.findById((String) prehistoryid.get(i));
-
-        if (ho.isPresent()) {
-
-          String current_status = ho.get().getIndicator();
-
-          if (BaseTool.isNull(current_status)
-              || current_status.equals(ExecutionStatus.RUNNING)
-              || current_status.equals(ExecutionStatus.READY)) {
-
-            check = 1;
-            break;
-          }
-        } else {
-          check = 1;
-          break;
-        }
-      }
-
-      if (check == 0) isready = true;
-
-    } else {
-      isready = true;
-    }
-
-    return isready;
   }
 
   /** Notify the waiting list that there is at least an available worker */
@@ -207,9 +155,13 @@ public class TaskManager {
       for (int i = 0; i < waitinglist.size(); i++) {
         GeoweaverProcessTask newtask = (GeoweaverProcessTask) waitinglist.get(i);
         if (newtask.getIsReady()) {
-          //			newtask.deleteObserver(wto);
           waitinglist.remove(newtask);
-          executeATask(newtask);
+          if (newtask.checkShouldPassOrNot()){
+            newtask.endPrematurely();
+            notifyWaitinglist();
+          }else{
+            executeATask(newtask);
+          }
         }
       }
     }

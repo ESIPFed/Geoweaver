@@ -1552,6 +1552,8 @@ GW.workspace = {
       color = "red";
     } else if (flag == "Skipped") {
       color = "darkseagreen";
+    } else if (flag == "Stopped") {
+      color = "#A9A9A9";
     } else if (flag == null) {
       color = "blue";
     }
