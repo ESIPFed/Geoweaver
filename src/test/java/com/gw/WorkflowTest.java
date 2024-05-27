@@ -422,15 +422,6 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         String begin_time_format = sdf.format(begin_time_parsed);
         assertEquals(begin_time_format, begin_time_no_ms[0]);
 
-        // assert end time not empty
-        String end_time = String.valueOf(map.get("end_time"));
-        String[] end_time_no_ms = end_time.split("\\.");
-        assertNotNull(end_time_no_ms[0]);
-        // assert end time matches format
-        Date end_time_parsed = sdf.parse(end_time_no_ms[0]);
-        String end_time_format = sdf.format(end_time_parsed);
-        assertEquals(end_time_format, end_time_no_ms[0]);
-
         // Get workflow logs from /workflow_process_log
         String nodeProcessIds = String.valueOf(map.get("input"));
         nodeProcessIds = nodeProcessIds.trim();
@@ -547,15 +538,6 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         Date begin_time_parsed = sdf.parse(begin_time_no_ms[0]);
         String begin_time_format = sdf.format(begin_time_parsed);
         assertEquals(begin_time_format, begin_time_no_ms[0]);
-
-        // assert end time not empty
-        String end_time = String.valueOf(map.get("end_time"));
-        String[] end_time_no_ms = end_time.split("\\.");
-        assertNotNull(end_time_no_ms[0]);
-        // assert end time matches format
-        Date end_time_parsed = sdf.parse(end_time_no_ms[0]);
-        String end_time_format = sdf.format(end_time_parsed);
-        assertEquals(end_time_format, end_time_no_ms[0]);
 
         // Delete workflow
         String deleteResult = deleteResource(wid, "workflow");

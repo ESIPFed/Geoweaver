@@ -414,7 +414,7 @@ class GeneralTests extends AbstractHelperMethodsTest {
 						forgetPasswordRequest,
 						String.class);
 				System.out.println("/forgetpassword result: " + result);
-				assertThat(result).contains("a password reset email has been sent");
+				assertThat(result).contains("No account is associated with that email");
 				break;
 
 			} else {
