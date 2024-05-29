@@ -100,6 +100,10 @@ Before you begin, ensure that you have the following dependencies installed:
 
 Learn more about Geoweaver in its official documentation at https://esipfed.github.io/Geoweaver/docs/install.html
 
+## Creating a New Release
+
+For detailed steps on how to create a new release in Geoweaver, please refer to the [release instructions](docs/release_upgrade.md).
+
 
 # [PyGeoWeaver](https://github.com/ESIPFed/pygeoweaver)
 
