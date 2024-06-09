@@ -355,17 +355,17 @@ GW.process.sidepanel = {
 
     $("#prompt-panel-main-process-info-code").hide().fadeIn("fast"); // refresh to make height full
 
-   GW.process.util.displayCodeArea(
+    GW.process.util.displayCodeArea(
       code_type,
       code,
       "#prompt-panel-code-embed",
       "#prompt-panel-process_code_window",
     );
 
-    // GW.process.util.displayToolbar(process_id, process_name, code_type, );
+    // make the side panel default full screen
+    GW.editor.forceSidePanelFullScreen(GW.editor.isfullscreen)
 
     // activate buttons
-
     $("#prompt_panel_log_switch").change(function () {
       if (GW.process.sidepanel.dockmode == "left") {
         if (!this.checked) {

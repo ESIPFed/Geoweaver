@@ -1209,23 +1209,6 @@ GW.workflow = {
         '<a href="javascript:void(0)"> ' +
         one.name +
         "</a> " +
-        //				"<i class=\"fa fa-history subalignicon\" onclick=\"GW.workflow.history('"+
-        //
-        //				one.id+"', '" + one.name+"')\" data-toggle=\"tooltip\" title=\"List history logs\"></i> "+
-        //
-        //				"<i class=\"fa fa-plus subalignicon\" data-toggle=\"tooltip\" title=\"Load this workflow into Weaver\" onclick=\"GW.workflow.add('"+
-        //
-        //				one.id+"')\"></i> "+
-        //
-        //				"<i class=\"fa fa-minus subalignicon\" data-toggle=\"tooltip\" title=\"Delete this workflow\" onclick=\"GW.menu.del('"+
-        //
-        //				one.id+"','workflow')\"></i>"+
-
-        //removed on 1/31/2019 - it is not allowed to run from the tree.
-        //				" <i class=\"fa fa-play subalignicon\" onclick=\"GW.workflow.run('"+
-        //
-        //				one.id+"','"+one.name+"')\" data-toggle=\"tooltip\" title=\"Run Workflow\"></i> "+
-
         "</li>",
     );
   },
