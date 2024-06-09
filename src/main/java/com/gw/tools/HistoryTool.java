@@ -231,39 +231,6 @@ public class HistoryTool {
 
       resp.append(json);
 
-      // resp.append("[");
-
-      // int num = 0;
-
-      // for(;num<active_processes.size();num++) {
-
-      // 	if(num!=0) {
-
-      // 		resp.append(", ");
-
-      // 	}
-
-      // 	History h = active_processes.get(num);
-
-      // 	resp.append("{ \"id\": \"").append(h.getHistory_id()).append("\", ");
-
-      // 	resp.append("\"begin_time\": \"").append(h.getHistory_begin_time());
-
-      // 	resp.append("\", \"end_time\": \"").append(h.getHistory_end_time());
-
-      // 	resp.append("\", \"output\":
-      // \"").append(bt.escape(String.valueOf(h.getHistory_output())));
-
-      // 	resp.append("\", \"status\": \"").append(bt.escape(String.valueOf(h.getIndicator())));
-
-      // 	resp.append("\", \"host\": \"").append(bt.escape(String.valueOf(h.getHost_id())));
-
-      // 	resp.append("\"}");
-
-      // }
-
-      // resp.append("]");
-
     } catch (Exception e) {
 
       e.printStackTrace();
