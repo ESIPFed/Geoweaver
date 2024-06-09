@@ -1,6 +1,8 @@
 package com.gw.database;
 
 import com.gw.jpa.History;
+import com.gw.jpa.HistoryDTO;
+
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -91,8 +93,10 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param pid The ID of the process.
    * @return A list of history records associated with the specified process ID.
    */
-  @Query(value = "SELECT * FROM history WHERE history_process = ?1 ORDER BY history_begin_time DESC", nativeQuery = true)
-  List<History> findByProcessId(String pid);
+  @Query(value = "SELECT history_id, history_begin_time, history_end_time, history_notes,"+
+  " history_process, host_id, indicator FROM history WHERE history_process = ?1 "+
+  " ORDER BY history_begin_time DESC", nativeQuery = true)
+  List<Object[]> findByProcessId(String pid);
 
 
   /**
@@ -102,8 +106,10 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @return A list of history records associated with the specified process ID, excluding 'Skipped'
    *     records.
    */
-  @Query(value = "SELECT * FROM history WHERE history_process = ?1 AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
-  List<History> findByProcessIdIgnoreUnknown(String pid);
+  @Query(value = "SELECT history_id, history_begin_time, history_end_time, history_notes,"+
+  " history_process, host_id, indicator FROM history WHERE history_process = ?1 "+
+  " AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
+  List<Object[]> findByProcessIdIgnoreUnknown(String pid);
 
 
   /**

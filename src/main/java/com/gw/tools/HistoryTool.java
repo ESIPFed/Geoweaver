@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
+import com.gw.jpa.HistoryDTO;
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -182,8 +186,7 @@ public class HistoryTool {
   }
 
   public List<History> getHistoryByWorkflowId(String wid) {
-
-    return historyrepository.findByProcessId(wid);
+    return historyrepository.findByWorkflowId(wid);
   }
 
   /**
@@ -196,7 +199,7 @@ public class HistoryTool {
 
     StringBuffer resp = new StringBuffer();
 
-    List<History> active_processes = historyrepository.findByProcessId(workflow_id);
+    List<History> active_processes = historyrepository.findByWorkflowId(workflow_id);
 
     try {
 
@@ -218,16 +221,34 @@ public class HistoryTool {
 
     StringBuffer resp = new StringBuffer();
 
-    List<History> active_processes = null;
+    List<Object[]> active_processes = null;
 
-    if (ignoreskipped) active_processes = historyrepository.findByProcessIdIgnoreUnknown(pid);
-    else active_processes = historyrepository.findByProcessId(pid);
+    if (ignoreskipped) 
+      active_processes = historyrepository.findByProcessIdIgnoreUnknown(pid);
+    else 
+      active_processes = historyrepository.findByProcessId(pid);
 
     try {
 
+      List<HistoryDTO> activehistoryDTOs = new ArrayList<>();
+
+      for (Object[] result : active_processes) {
+          HistoryDTO dto = new HistoryDTO(
+              (String) result[0],
+              (Date) result[1],
+              (Date) result[2],
+              (String) result[3],
+              (String) result[4],
+              (String) result[5],
+              (String) result[6]
+          );
+          activehistoryDTOs.add(dto);
+      }
+      logger.info(activehistoryDTOs);
+
       String json = "[]";
       ObjectMapper mapper = new ObjectMapper();
-      json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(active_processes);
+      json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(activehistoryDTOs);
 
       resp.append(json);
 

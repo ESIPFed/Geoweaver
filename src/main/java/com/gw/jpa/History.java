@@ -34,4 +34,3 @@ public class History {
 
 	private String indicator;
 }
-
