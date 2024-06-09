@@ -753,7 +753,7 @@ public class WorkflowTool {
 
         for (String history_process_id : process_id_set) {
 
-          histlist = historyrepository.findByProcessId(history_process_id);
+          histlist = historyrepository.findByProcessIdFull(history_process_id);
 
           StringBuffer allprocesshistorybuffer = new StringBuffer("[");
 

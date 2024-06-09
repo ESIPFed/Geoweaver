@@ -90,7 +90,7 @@ public class CheckpointTool {
     // fetch code from history and set it to process in GWProcess
     for (int i = 0; i < historyProcessIdsList.size(); i++) {
       List<History> processHistory =
-          historyRepository.findByProcessId(historyProcessIdsList.get(i));
+          historyRepository.findByProcessIdFull(historyProcessIdsList.get(i));
       String code = processHistory.get(i).getHistory_input();
 
       Optional<GWProcess> p = processRepository.findById(historyProcessIdsList.get(i));

@@ -460,85 +460,88 @@ GW.process = {
    * Function to display the current and previous code history
    * @param history_id
    */
-  showHistoryDifference: function (history_id, previous_history_id) {
+  showHistoryDifference: function (process_id, history_id, previous_history_id) {
     // ajax call for the current history id details:
     $.ajax({
-      url: "log",
+      url: "logs",
 
       method: "POST",
 
-      data: "type=process&id=" + history_id,
+      data: "type=process&id=" + process_id,
     })
-      .done(function (msg) {
-        console.log("Current History Log Message: " + msg);
+      .done(function (history_list_msg) {
 
-        if (msg == "") {
+        if (history_list_msg == "") {
           alert("Cannot find the process history in the database.");
 
           return;
         }
 
-        // code for sorting the history based on the history begin time
-        // for(var i=0;i<msg.length;i+=1){
+        history_list_msg = GW.general.parseResponse(history_list_msg);
 
-        // 	var current_time = new Date(msg[i].history_begin_time);
-
-        // 	for(var j=i+1;j<msg.length;j+=1){
-
-        // 		var next_time = new Date(msg[j].history_begin_time);
-
-        // 		if(current_time.getTime() > next_time.getTime()){
-
-        // 			var swap = msg[i];
-        // 			msg[i] = msg[j];
-        // 			msg[j] = swap;
-        // 			current_time = new Date(msg[i].begin_time);
-
-        // 		}
-
-        // 	}
-
-        // }
-
-        msg = GW.general.parseResponse(msg);
-
-        msg.code = msg.input;
-
-        // current code for dialogue box
-        console.log("current code: " + msg.code);
-        //GW.process.diffDialog(msg.code, "");
-
-        // ajax call for the previous history id details
         $.ajax({
           url: "log",
 
           method: "POST",
 
-          data: "type=process&id=" + previous_history_id,
-        })
-          .done(function (msg_prv) {
-            // code to display the popup and history differences
-            console.log("Previous History Log Message: " + msg_prv);
+          data: "type=process&id=" + history_id,
+        }).done(function(current_msg){
 
-            if (msg_prv == "") {
-              alert("Cannot find the process history in the database.");
+          if (current_msg == "") {
+            alert("Cannot find the process history in the database.");
 
-              return;
-            }
+            return;
+          }
 
-            msg_prv = GW.general.parseResponse(msg_prv);
+          current_msg = GW.general.parseResponse(current_msg);
 
-            msg_prv.code = msg_prv.input;
+          current_msg.code = current_msg.input;
 
-            GW.process.diffDialog(msg, msg_prv);
+          // current code for dialogue box
+          console.log("current code: " + current_msg.code);
+
+          // ajax call for the previous history id details
+          $.ajax({
+            url: "log",
+
+            method: "POST",
+
+            data: "type=process&id=" + previous_history_id,
           })
-          .fail(function (jxr, status) {
-            console.error("Fail to get log.");
-          });
+            .done(function (msg_prv) {
+
+              if (msg_prv == "") {
+                alert("Cannot find the process history in the database.");
+
+                return;
+              }
+
+              msg_prv = GW.general.parseResponse(msg_prv);
+
+              msg_prv.code = msg_prv.input;
+
+              GW.process.diffDialog(current_msg, msg_prv, history_list_msg);
+
+            })
+            .fail(function (jxr, status) {
+              console.error("Fail to get log.");
+            });
       })
       .fail(function (jxr, status) {
         console.error("Fail to get log.");
       });
+    })
+    .fail(function (jxr, status) {
+      console.error("Fail to get log.");
+    });
+  },
+
+  populateDropdown: function(dropdownId, data) {
+    var dropdown = $(dropdownId);
+    dropdown.empty();
+    data.forEach(function(item) {
+        dropdown.append($('<option></option>').attr('value', item.history_id).text(item.history_id));
+    });
   },
 
   /**
@@ -546,61 +549,102 @@ GW.process = {
    * @param current_code
    * @param previous_code
    */
-  
+  diffDialog: function (current_history, previous_history, history_id_list) {
+    const current_code = current_history.code;
+    const previous_code = current_history.code;
+    const content = `
+      <div class="modal-body">
+        <div class="row">
+          <div class="col col-md-3"><b>Current ID</b></div>
+          <div class="col col-md-3">
+              <select class="form-control" id="current_history_id">
+                  <!-- Options will be added by jQuery -->
+              </select>
+          </div>
+          <div class="col col-md-3"><b>Previous ID</b></div>
+          <div class="col col-md-3">
+              <select class="form-control" id="previous_history_id">
+                  <!-- Options will be added by jQuery -->
+              </select>
+          </div>
+          
+        </div>
+        <div class="row">
+          <div class="col col-md-3"><b>BeginTime</b></div>
+          <div class="col col-md-3">${current_history.begin_time}</div>
+          <div class="col col-md-3"><b>BeginTime</b></div>
+          <div class="col col-md-3">${previous_history.begin_time}</div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3"><b>EndTime</b></div>
+          <div class="col col-md-3">${current_history.end_time}</div>
+          <div class="col col-md-3"><b>EndTime</b></div>
+          <div class="col col-md-3">${previous_history.end_time}</div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3"><b>Notes</b></div>
+          <div class="col col-md-3">${current_history.notes}</div>
+          <div class="col col-md-3"><b>Notes</b></div>
+          <div class="col col-md-3">${previous_history.notes}</div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3"><b>Status</b></div>
+          <div class="col col-md-3">${current_history.status}</div>
+          <div class="col col-md-3"><b>Status</b></div>
+          <div class="col col-md-3">${previous_history.status}</div>
+        </div>
+        <br/>
+        <label>Code Comparison</label>
+        <br/>
+        <div id="process-difference-comparison-code-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
+        <br/>
+        <br/>
+        <label>Result Comparison</label>
+        <div id="process-difference-comparison-result-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
+      </div>`;
 
-diffDialog: function (current_history, previous_history) {
-  const current_code = current_history.code;
-  const previous_code = current_history.code;
+    const dialog = GW.process.createJSFrameDialog(720, 640, content, "History Details");
 
-  console.log("previous_code: ", previous_code);
-  console.log("current_code: ", current_code);
+    // Delay the initialization to ensure the modal and the DOM elements are fully loaded
+    setTimeout(() => {
+      if (window.monaco) {
+        GW.process.initDiffEditors(current_history, previous_history);
+      } else {
+        console.error('Monaco editor is not loaded or initialized!');
+      }
+    }, 100);  // Slightly increased the delay to ensure DOM is ready
 
-  const content = `
-    <div class="modal-body">
-      <div class="row">
-        <div class="col col-md-3"><b>ID</b></div>
-        <div class="col col-md-3">${current_history.hid}</div>
-        <div class="col col-md-3"><b>ID</b></div>
-        <div class="col col-md-3">${previous_history.hid}</div>
-      </div>
-      <div class="row">
-        <div class="col col-md-3"><b>BeginTime</b></div>
-        <div class="col col-md-3">${current_history.begin_time}</div>
-        <div class="col col-md-3"><b>BeginTime</b></div>
-        <div class="col col-md-3">${previous_history.begin_time}</div>
-      </div>
-      <div class="row">
-        <div class="col col-md-3"><b>EndTime</b></div>
-        <div class="col col-md-3">${current_history.end_time}</div>
-        <div class="col col-md-3"><b>EndTime</b></div>
-        <div class="col col-md-3">${previous_history.end_time}</div>
-      </div>
-      <div class="row">
-        <div class="col col-md-3"><b>Notes</b></div>
-        <div class="col col-md-3">${current_history.notes}</div>
-        <div class="col col-md-3"><b>Notes</b></div>
-        <div class="col col-md-3">${previous_history.notes}</div>
-      </div>
-      <div class="row">
-        <div class="col col-md-3"><b>Status</b></div>
-        <div class="col col-md-3">${current_history.status}</div>
-        <div class="col col-md-3"><b>Status</b></div>
-        <div class="col col-md-3">${previous_history.status}</div>
-      </div>
-      <br/>
-      <label>Code Comparison</label>
-      <br/>
-      <div id="process-difference-comparison-code-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
-      <br/>
-      <br/>
-      <label>Result Comparison</label>
-      <div id="process-difference-comparison-result-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
-    </div>`;
+    // Add disposal logic to the dialog's close button
+    dialog.on('closeButton', 'click', function (frame) {
+      GW.process.disposeModels();
+      frame.closeFrame();
+    });
 
-  const dialog = GW.process.createJSFrameDialog(720, 640, content, "History Details");
+    dialog.control.doMaximize();
+
+    this.populateDropdown('#current_history_id', history_id_list);
+    this.populateDropdown('#previous_history_id', history_id_list);
+
+    // Select an option programmatically (example: select the first item)
+    $('#current_history_id').val(current_history.hid);
+    $('#previous_history_id').val(previous_history.hid);
+
+    $('#current_history_id').change(function () {
+      const current_history_id = $('#current_history_id').val();
+      dialog.closeFrame();
+      GW.process.showHistoryDifference(current_history.id, current_history_id, previous_history.hid)
+    });
+
+    $('#previous_history_id').change(function () {
+      const previous_history_id = $('#previous_history_id').val();
+      dialog.closeFrame();
+      GW.process.showHistoryDifference(current_history.id, current_history.hid, previous_history_id)
+    });
+
+  },
 
   // Function to dispose of models and editors
-  function disposeModels() {
+  disposeModels: function() {
     console.log("Disposing existing models if any...");
     if (GW.process.originalCodeModel) {
       GW.process.originalCodeModel.dispose();
@@ -627,10 +671,10 @@ diffDialog: function (current_history, previous_history) {
       GW.process.resultDiffEditor = null;
     }
   
-  }
+  },
 
   // Initialize the diff editors
-  function initDiffEditors(current_history, previous_history) {
+  initDiffEditors: function (current_history, previous_history) {
     const codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
     const resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
 
@@ -671,24 +715,8 @@ diffDialog: function (current_history, previous_history) {
 
     GW.process.codeDiffEditor = codeDiffEditor;
     GW.process.resultDiffEditor = resultDiffEditor;
-  }
 
-  // Delay the initialization to ensure the modal and the DOM elements are fully loaded
-  setTimeout(() => {
-    if (window.monaco) {
-      initDiffEditors(current_history, previous_history);
-    } else {
-      console.error('Monaco editor is not loaded or initialized!');
-    }
-  }, 100);  // Slightly increased the delay to ensure DOM is ready
-
-  // Add disposal logic to the dialog's close button
-  dialog.on('closeButton', 'click', function (frame) {
-    console.log("Disposing editors on dialog close...");
-    disposeModels();
-    frame.closeFrame();
-  });
-},
+  },
 
   newDialog: function (category) {
     var content =

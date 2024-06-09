@@ -273,6 +273,7 @@ GW.history = {
             // code to display the view changes option if in case 'i' > 0
             if(i!=msg.length-1) 
                 content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+
+                    msg[i].history_process+"','"+
                     msg[i].history_id+"','"+ 
                     msg[i+1].history_id+
                     "')\">View Changes</a> &nbsp;";

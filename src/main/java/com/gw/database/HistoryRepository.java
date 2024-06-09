@@ -99,6 +99,10 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   List<Object[]> findByProcessId(String pid);
 
 
+  @Query(value = "SELECT * FROM history WHERE history_process = ?1 "+
+  " ORDER BY history_begin_time DESC", nativeQuery = true)
+  List<History> findByProcessIdFull(String pid);
+
   /**
    * Find history records by process ID, excluding 'Skipped' indicator.
    *
@@ -110,6 +114,10 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   " history_process, host_id, indicator FROM history WHERE history_process = ?1 "+
   " AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
   List<Object[]> findByProcessIdIgnoreUnknown(String pid);
+
+  @Query(value = "SELECT * FROM history WHERE history_process = ?1 "+
+  " AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
+  List<History> findByProcessIdIgnoreUnknownFull(String pid);
 
 
   /**

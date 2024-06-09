@@ -10,6 +10,11 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import com.gw.web.GeoweaverController;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -217,38 +222,72 @@ public class HistoryTool {
     return resp.toString();
   }
 
-  public String process_all_history(String pid, boolean ignoreskipped) {
+  public static String clobToString(Clob clob) throws SQLException, IOException {
+        StringBuilder sb = new StringBuilder();
+        try (Reader reader = clob.getCharacterStream();
+             BufferedReader br = new BufferedReader(reader)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+        return sb.toString();
+    }
+
+  public String process_all_history(String pid, boolean ignoreskipped, String mode) {
 
     StringBuffer resp = new StringBuffer();
 
-    List<Object[]> active_processes = null;
-
-    if (ignoreskipped) 
-      active_processes = historyrepository.findByProcessIdIgnoreUnknown(pid);
-    else 
-      active_processes = historyrepository.findByProcessId(pid);
-
     try {
 
-      List<HistoryDTO> activehistoryDTOs = new ArrayList<>();
-
-      for (Object[] result : active_processes) {
-          HistoryDTO dto = new HistoryDTO(
-              (String) result[0],
-              (Date) result[1],
-              (Date) result[2],
-              (String) result[3],
-              (String) result[4],
-              (String) result[5],
-              (String) result[6]
-          );
-          activehistoryDTOs.add(dto);
-      }
-      logger.info(activehistoryDTOs);
-
       String json = "[]";
+
       ObjectMapper mapper = new ObjectMapper();
-      json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(activehistoryDTOs);
+
+      if("full".equals(mode)){
+
+        List<History> processes = null;
+
+        if (ignoreskipped) 
+          processes = historyrepository.findByProcessIdIgnoreUnknownFull(pid);
+        else 
+          processes = historyrepository.findByProcessIdFull(pid);
+
+        json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(processes);
+
+      }else{
+
+        List<Object[]> active_processes = null;
+
+        if (ignoreskipped) 
+          active_processes = historyrepository.findByProcessIdIgnoreUnknown(pid);
+        else 
+          active_processes = historyrepository.findByProcessId(pid);
+
+        List<HistoryDTO> activehistoryDTOs = new ArrayList<>();
+
+        for (Object[] result : active_processes) {
+            if (!(result[3] instanceof String)) {
+              if(BaseTool.isNull(result[3])){
+                result[3] = "";
+              }else
+                result[3] = this.clobToString((Clob)result[3]);
+            }
+            HistoryDTO dto = new HistoryDTO(
+                (String) result[0],
+                (Date) result[1],
+                (Date) result[2],
+                (String) result[3],
+                (String) result[4],
+                (String) result[5],
+                (String) result[6]
+            );
+            activehistoryDTOs.add(dto);
+        }
+
+        json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(activehistoryDTOs);
+
+      }
 
       resp.append(json);
 

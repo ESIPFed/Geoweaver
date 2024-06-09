@@ -583,6 +583,8 @@ public class GeoweaverController {
 
       String isactive = request.getParameter("isactive");
 
+      String mode = request.getParameter("mode");
+
       if (type.equals("process")) {
 
         if (BaseTool.isNull(id)) {
@@ -594,7 +596,7 @@ public class GeoweaverController {
 
         } else {
 
-          resp = pt.all_history(id);
+          resp = pt.all_history(id, mode);
         }
 
       } else if (type.equals("workflow")) {
