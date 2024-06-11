@@ -784,11 +784,83 @@ public class WorkflowTool {
       }
     }
 
+    String readmeContent = createReadme(wf);
+    bt.writeString2File(readmeContent, savefilepath + "README.md");
     bt.zipFolder(savefilepath, bt.getFileTransferFolder() + wf.getId() + ".zip");
 
     return fileurl;
   }
 
+  private String createReadme(Workflow wf) {
+    String readmeTemplate = 
+        "# Workflow Name: {workflow_name}\n\n" +
+        "## Description\n" +
+        "{description}\n\n" +
+        "## Processes\n" +
+        "{processes}\n\n" +
+        "### Process Descriptions\n" +
+        "{processDescriptions}\n\n" +
+        "## Steps to Setup the Workflow\n" +
+        "### Step 1: Unzip the Folder\n" +
+        "After exporting the workflow {workflow_name}` from Geoweaver. Unzip the downloaded workflow folder to extract all the files. You can use any standard unzipping tool to do this.\n\n" +
+        "### Step 2: Create a Git Repository\n" +
+        "Create a new git repository in the root of the extracted folder to keep track of changes and versions of your workflow files.\n\n" +
+        "### Step 3: Initialize Git Repository\n" +
+        "Run the command `git init` in the root folder to initialize a new git repository.\n\n" +
+        "### Step 4: Set Remote URL\n" +
+        "Set the remote URL for your git repository using the command `git remote add origin <repo_url>`, where `<repo_url>` is the URL of your remote repository.\n\n" +
+        "### Step 5: Add, Commit, and Push Files\n" +
+        "Add the files to the staging area using `git add .`, commit the files using `git commit -m 'Initial commit'`, and push the changes to the remote repository using `git push -u origin master`.\n\n";
+        
+    String processes = getProcessTitles(wf);
+    String processDescriptions = getProcessDescriptions(wf);
+
+    String readmeContent = readmeTemplate.replace("{workflow_name}", wf.getName())
+    .replace("{description}", wf.getDescription())
+    .replace("{processes}", processes)
+    .replace("{processDescriptions}", processDescriptions);
+
+    return readmeContent;
+  }
+
+  private String getProcessTitles(Workflow wf) {
+    StringBuilder processTitles = new StringBuilder();
+    JSONParser jsonParser = new JSONParser();
+    try {
+        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        for (Object node : nodes) {
+            JSONObject jsonObj = (JSONObject) node;
+            String title = (String) jsonObj.get("title");
+            if (title != null) {
+                if (processTitles.length() > 0) {
+                    processTitles.append(", ");
+                }
+                processTitles.append(title);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return processTitles.toString();
+  } 
+
+  private String getProcessDescriptions(Workflow wf) {
+    StringBuilder processDescriptions = new StringBuilder();
+    JSONParser jsonParser = new JSONParser();
+    try {
+        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        for (Object node : nodes) {
+            JSONObject jsonObj = (JSONObject) node;
+            String process_workflow_id = (String) jsonObj.get("id");
+            String process_id = process_workflow_id.split("-")[0];
+            GWProcess p = pt.getProcessById(process_id);
+            processDescriptions.append(p.getName()).append(": ").append(p.getDescription()).append("\n");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return processDescriptions.toString();
+  }
   public String precheck(String filename) {
 
     // { "url": "download/temp/aavthwdfvxinra0a0rsw.zip", "filename": "aavthwdfvxinra0a0rsw.zip" }
