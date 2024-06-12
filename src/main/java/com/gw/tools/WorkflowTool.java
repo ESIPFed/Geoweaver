@@ -793,6 +793,7 @@ public class WorkflowTool {
 
   private String createReadme(Workflow wf) {
     String readmeTemplate = 
+        "![Workflow Badge](https://img.shields.io/badge/Workflow-{workflow_name}-blue.svg)\n\n" +
         "# Workflow Name: {workflow_name}\n\n" +
         "## Description\n" +
         "{description}\n\n" +
