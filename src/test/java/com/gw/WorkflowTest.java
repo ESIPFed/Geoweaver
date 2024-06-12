@@ -15,10 +15,12 @@ import java.nio.file.StandardCopyOption;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.jpa.Workflow;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
@@ -228,9 +230,9 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         check = new File(folderPath + "/workflow.json").exists();
         assertTrue(check);
 
-         // Check if "README.md" file exists in downloaded unzipped folder
-         check = new File(folderPath + "/README.md").exists();
-         assertTrue(check);
+        // Check if "README.md" file exists in downloaded unzipped folder
+        check = new File(folderPath + "/README.md").exists();
+        assertTrue(check);
 
         // check if created workflow id matches id value in workflow.json file
         String workflowjson = bt.readStringFromFile(folderPath + "/workflow.json");
@@ -239,6 +241,43 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         // Delete workflow from DB
         String deleteResult = deleteResource(wid, "workflow");
         assertThat(deleteResult).contains("done");
+
+    }
+
+    @Test
+    @DisplayName("Test createReadme function")
+    void testCreateReadme() {
+        // Mocked Workflow object
+        Workflow wf = new Workflow();
+        wf.setName("SampleWorkflow");
+        wf.setDescription("This is a sample workflow description.");
+       
+        // Call the function
+        String result = wtmock.createReadme(wf);
+        
+        // Expected README content
+        String expectedReadme = 
+            "![Workflow Badge](https://img.shields.io/badge/Workflow-SampleWorkflow-blue.svg)\n\n" +
+            "# Workflow Name: SampleWorkflow\n\n" +
+            "## Description\n" +
+            "This is a sample workflow description.\n\n" +
+            "## Processes\n\n\n" +
+            "### Process Descriptions\n\n\n" +
+            "## Steps to Setup the Workflow\n" +
+            "### Step 1: Unzip the Folder\n" +
+            "After exporting the workflow SampleWorkflow` from Geoweaver. Unzip the downloaded workflow folder to extract all the files. You can use any standard unzipping tool to do this.\n\n" +
+            "### Step 2: Create a Git Repository\n" +
+            "Create a new git repository in the root of the extracted folder to keep track of changes and versions of your workflow files.\n\n" +
+            "### Step 3: Initialize Git Repository\n" +
+            "Run the command `git init` in the root folder to initialize a new git repository.\n\n" +
+            "### Step 4: Set Remote URL\n" +
+            "Set the remote URL for your git repository using the command `git remote add origin <repo_url>`, where `<repo_url>` is the URL of your remote repository.\n\n" +
+            "### Step 5: Add, Commit, and Push Files\n" +
+            "Add the files to the staging area using `git add .`, commit the files using `git commit -m 'Initial commit'`, and push the changes to the remote repository using `git push -u origin master`.\n\n";
+        
+        // Assert the result
+        assertEquals(expectedReadme, result);
+        assertThat(expectedReadme).contains(result);
 
     }
 
