@@ -801,18 +801,26 @@ public class WorkflowTool {
         "{processes}\n\n" +
         "### Process Descriptions\n" +
         "{processDescriptions}\n\n" +
-        "## Steps to Setup the Workflow\n" +
-        "### Step 1: Unzip the Folder\n" +
-        "After exporting the workflow {workflow_name}` from Geoweaver. Unzip the downloaded workflow folder to extract all the files. You can use any standard unzipping tool to do this.\n\n" +
-        "### Step 2: Create a Git Repository\n" +
-        "Create a new git repository in the root of the extracted folder to keep track of changes and versions of your workflow files.\n\n" +
-        "### Step 3: Initialize Git Repository\n" +
-        "Run the command `git init` in the root folder to initialize a new git repository.\n\n" +
-        "### Step 4: Set Remote URL\n" +
-        "Set the remote URL for your git repository using the command `git remote add origin <repo_url>`, where `<repo_url>` is the URL of your remote repository.\n\n" +
-        "### Step 5: Add, Commit, and Push Files\n" +
-        "Add the files to the staging area using `git add .`, commit the files using `git commit -m 'Initial commit'`, and push the changes to the remote repository using `git push -u origin master`.\n\n";
-        
+        "## Using the Workflow\n\n" +
+        "This section provides detailed instructions on how to use the workflow. Follow these steps to set up and execute the workflow using Geoweaver.\n\n" +
+        "### Step-by-Step Instructions\n\n" +
+        "### Step 1: Import the Workflow into Geoweaver\n" +
+        "Open Geoweaver running on your local machine.\n" +
+        "1. Click on \"Weaver\" in the top navigation bar.\n" +
+        "2. A workspace to add a workflow opens up. Select the \"Import\" icon in the top navigation bar.\n" +
+        "3. Choose the downloaded zip file" +
+        "4. Click on \"Start\" to upload the file. If the file is valid, a prompt will ask for your permission to upload. Click \"OK\".\n" +
+        "5. Once the file is uploaded, Geoweaver will create a new workflow.\n\n" +
+        "### Step 3: Execute the Workflow\n" +
+        "1. Click on the execute icon in the top navigation bar to start the workflow execution process.\n" +
+        "2. A wizard will open where you need to select the host and environment.\n" +
+        "3. Click on \"Execute\" to initiate the workflow. Enter the required password when prompted and click \"Confirm\" to start executing the workflow.\n\n" +
+        "### Step 4: Monitor Execution and View Results\n" +
+        "1. The workflow execution will begin.\n" +
+        "2. Note: Green indicates the process is successful, Yellow indicates the process is running, and Red indicates the process has failed.\n" +
+        "3. Once the execution is complete, the results will be available immediately.\n\n" +
+        "By following these steps, you will be able to set up and execute the snow cover mapping workflow using Geoweaver.\n";
+
     String processes = getProcessTitles(wf);
     String processDescriptions = getProcessDescriptions(wf);
 
