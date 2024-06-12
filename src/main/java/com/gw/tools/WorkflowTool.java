@@ -784,11 +784,93 @@ public class WorkflowTool {
       }
     }
 
+    String readmeContent = createReadme(wf);
+    bt.writeString2File(readmeContent, savefilepath + "README.md");
     bt.zipFolder(savefilepath, bt.getFileTransferFolder() + wf.getId() + ".zip");
 
     return fileurl;
   }
 
+  public String createReadme(Workflow wf) {
+    String readmeTemplate = 
+        "![Workflow Badge](https://img.shields.io/badge/Workflow-{workflow_name}-blue.svg)\n\n" +
+        "# Workflow Name: {workflow_name}\n\n" +
+        "## Description\n" +
+        "{description}\n\n" +
+        "## Processes\n" +
+        "{processes}\n\n" +
+        "### Process Descriptions\n" +
+        "{processDescriptions}\n\n" +
+        "## Steps to use the workflow\n\n" +
+        "This section provides detailed instructions on how to use the workflow. Follow these steps to set up and execute the workflow using Geoweaver.\n\n" +
+        "### Step-by-Step Instructions\n\n" +
+        "### Step 1: Download the zip file\n" +
+        "### Step 2: Import the Workflow into Geoweaver\n" +
+        "Open Geoweaver running on your local machine. [video guidance](https://youtu.be/jUd1dzi18EQ)\n" +
+        "1. Click on \"Weaver\" in the top navigation bar.\n" +
+        "2. A workspace to add a workflow opens up. Select the \"Import\" icon in the top navigation bar.\n" +
+        "3. Choose the downloaded zip file" +
+        "4. Click on \"Start\" to upload the file. If the file is valid, a prompt will ask for your permission to upload. Click \"OK\".\n" +
+        "5. Once the file is uploaded, Geoweaver will create a new workflow.\n\n" +
+        "### Step 3: Execute the Workflow\n" +
+        "1. Click on the execute icon in the top navigation bar to start the workflow execution process.[video guidance](https://youtu.be/PJcMNR00QoE)\n" +
+        "2. A wizard will open where you need to select the [video guidance](https://youtu.be/KYiEHI0rn_o) and environment [video guidance](https://www.youtube.com/watch?v=H66AVoBBaHs).\n" +
+        "3. Click on \"Execute\" to initiate the workflow. Enter the required password when prompted and click \"Confirm\" to start executing the workflow.\n\n" +
+        "### Step 4: Monitor Execution and View Results\n" +
+        "1. The workflow execution will begin.\n" +
+        "2. Note: Green indicates the process is successful, Yellow indicates the process is running, and Red indicates the process has failed.\n" +
+        "3. Once the execution is complete, the results will be available immediately.\n\n" +
+        "By following these steps, you will be able to set up and execute the snow cover mapping workflow using Geoweaver.\n";
+
+    String processes = getProcessTitles(wf);
+    String processDescriptions = getProcessDescriptions(wf);
+
+    String readmeContent = readmeTemplate.replace("{workflow_name}", wf.getName())
+    .replace("{description}", wf.getDescription())
+    .replace("{processes}", processes)
+    .replace("{processDescriptions}", processDescriptions);
+
+    return readmeContent;
+  }
+
+  private String getProcessTitles(Workflow wf) {
+    StringBuilder processTitles = new StringBuilder();
+    JSONParser jsonParser = new JSONParser();
+    try {
+        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        for (Object node : nodes) {
+            JSONObject jsonObj = (JSONObject) node;
+            String title = (String) jsonObj.get("title");
+            if (title != null) {
+                if (processTitles.length() > 0) {
+                    processTitles.append(", ");
+                }
+                processTitles.append(title);
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return processTitles.toString();
+  } 
+
+  private String getProcessDescriptions(Workflow wf) {
+    StringBuilder processDescriptions = new StringBuilder();
+    JSONParser jsonParser = new JSONParser();
+    try {
+        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        for (Object node : nodes) {
+            JSONObject jsonObj = (JSONObject) node;
+            String process_workflow_id = (String) jsonObj.get("id");
+            String process_id = process_workflow_id.split("-")[0];
+            GWProcess p = pt.getProcessById(process_id);
+            processDescriptions.append(p.getName()).append(": ").append(p.getDescription()).append("\n");
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return processDescriptions.toString();
+  }
   public String precheck(String filename) {
 
     // { "url": "download/temp/aavthwdfvxinra0a0rsw.zip", "filename": "aavthwdfvxinra0a0rsw.zip" }
