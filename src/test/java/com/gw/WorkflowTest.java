@@ -263,19 +263,20 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "This is a sample workflow description.\n\n" +
             "## Processes\n\n\n" +
             "### Process Descriptions\n\n\n" +
-            "## Using the Workflow\n\n" +
+            "## Steps to use the workflow\n\n" +
             "This section provides detailed instructions on how to use the workflow. Follow these steps to set up and execute the workflow using Geoweaver.\n\n" +
             "### Step-by-Step Instructions\n\n" +
-            "### Step 1: Import the Workflow into Geoweaver\n" +
-            "Open Geoweaver running on your local machine.\n" +
+            "### Step 1: Download the zip file\n" +
+            "### Step 2: Import the Workflow into Geoweaver\n" +
+            "Open Geoweaver running on your local machine. [video guidance](https://youtu.be/jUd1dzi18EQ)\n" +
             "1. Click on \"Weaver\" in the top navigation bar.\n" +
             "2. A workspace to add a workflow opens up. Select the \"Import\" icon in the top navigation bar.\n" +
             "3. Choose the downloaded zip file" +
             "4. Click on \"Start\" to upload the file. If the file is valid, a prompt will ask for your permission to upload. Click \"OK\".\n" +
             "5. Once the file is uploaded, Geoweaver will create a new workflow.\n\n" +
             "### Step 3: Execute the Workflow\n" +
-            "1. Click on the execute icon in the top navigation bar to start the workflow execution process.\n" +
-            "2. A wizard will open where you need to select the host and environment.\n" +
+            "1. Click on the execute icon in the top navigation bar to start the workflow execution process.[video guidance](https://youtu.be/PJcMNR00QoE)\n" +
+            "2. A wizard will open where you need to select the [video guidance](https://youtu.be/KYiEHI0rn_o) and environment [video guidance](https://www.youtube.com/watch?v=H66AVoBBaHs).\n" +
             "3. Click on \"Execute\" to initiate the workflow. Enter the required password when prompted and click \"Confirm\" to start executing the workflow.\n\n" +
             "### Step 4: Monitor Execution and View Results\n" +
             "1. The workflow execution will begin.\n" +
