@@ -228,6 +228,10 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         check = new File(folderPath + "/workflow.json").exists();
         assertTrue(check);
 
+         // Check if "README.md" file exists in downloaded unzipped folder
+         check = new File(folderPath + "/README.md").exists();
+         assertTrue(check);
+
         // check if created workflow id matches id value in workflow.json file
         String workflowjson = bt.readStringFromFile(folderPath + "/workflow.json");
         assertThat(workflowjson).contains(wid);
