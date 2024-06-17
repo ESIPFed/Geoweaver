@@ -89,3 +89,17 @@ docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensu
 ## Set up HTTP Proxy
 
 [Click here](http-proxy.md) to set up
+
+## Changing the listening port
+
+Geoweaver allows one to change the listening port to run multiple instances simultaneously on the same machine.
+Default port used by Geoweaver is 8070, to change the port please run the following command:
+
+```
+export GEOWEAVER_PORT='Port Number'
+```
+***Example: export GEOWEAVER_PORT=8081***
+
+Run the above command in a new terminal and then rebuild the application to start a new instance of Geoweaver running on your machine. 
+After changing the port using the above command manually change the port number in url.
+
