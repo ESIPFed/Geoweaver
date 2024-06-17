@@ -100,6 +100,6 @@ export GEOWEAVER_PORT='Port Number'
 ```
 ***Example: export GEOWEAVER_PORT=8081***
 
-Run the above command in a new terminal and then rebuild the application to start a new instance of Geoweaver running on your machine. 
+Run the above command in a new terminal and then run the application using the start command for a new instance of Geoweaver running on your machine. 
 After changing the port using the above command manually change the port number in url.
 
