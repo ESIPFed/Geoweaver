@@ -130,7 +130,7 @@ The first stable release of Geoweaver was launched in July 2020 after nearly a y
 
 Despite being an early version, Geoweaver quickly gained traction among GIS enthusiasts and developers due to its modern architecture and extensibility.
 
-## Version 2.0 (March 2022)
+## Version 1.5 (March 2023)
 
 After incorporating feedback from the user community, the Geoweaver team released version 2.0 in March 2022. This major update focused on performance improvements and added several highly requested features:
 
