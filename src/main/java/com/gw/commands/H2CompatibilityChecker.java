@@ -1,9 +1,7 @@
 package com.gw.commands;
 
-import com.gw.utils.BeanTool;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,8 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * This class represents a command-line command for checking the compatibility of an H2 database
- * file with the current Geoweaver system. It uses the picocli library to define the command and its
+ * This class represents a command-line command for checking the compatibility
+ * of an H2 database
+ * file with the current Geoweaver system. It uses the picocli library to define
+ * the command and its
  * parameters. When executed, it checks the database schema for compatibility.
  */
 
@@ -20,11 +20,9 @@ import java.sql.Statement;
 @Component
 public class H2CompatibilityChecker implements Runnable {
 
-//    @Parameters(index = "0", description = "Path to the H2 database file")
-//    String dbFilePath;
-
     /**
-     * The run method is called when this command is executed. It checks the compatibility of the H2
+     * The run method is called when this command is executed. It checks the
+     * compatibility of the H2
      * database file specified by dbFilePath and prints the result.
      */
     @Override
@@ -40,7 +38,7 @@ public class H2CompatibilityChecker implements Runnable {
 
         // Connect to the database
         try (Connection conn = DriverManager.getConnection("jdbc:h2:file:~/h2/gw", "geoweaver", "DFKHH9V6ME");
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
 
             // Check for a specific table and columns (replace with actual checks)
             ResultSet rs = stmt.executeQuery("SHOW TABLES");
