@@ -95,11 +95,31 @@ docker run -t -i -v <YOUR_HOME_DIRECTORY>:/home/marsvegan/ -p 8070:8070 jensensu
 Geoweaver allows one to change the listening port to run multiple instances simultaneously on the same machine.
 Default port used by Geoweaver is 8070, to change the port please run the following command:
 
+#### Using Environment Variable
+
+**For Linux/macOS**:
 ```
-export GEOWEAVER_PORT='Port Number'
+export GEOWEAVER_PORT=8081
 ```
 ***Example: export GEOWEAVER_PORT=8081***
 
+**For Windows-Command Prompt**:
+```
+set GEOWEAVER_PORT=8081
+```
+***Example: set GEOWEAVER_PORT=8081***
+
+**For Windows-Powershell**:
+```
+$env GEOWEAVER_PORT=8081
+```
+***Example: $env GEOWEAVER_PORT=8081***
+
 Run the command above in a new terminal, then start the application(using start command) to launch a new instance of Geoweaver on your machine. 
+
+```
+java -jar Geoweaver.jar
+```
+
 After changing the port using the above command manually change the port number in url.
 
