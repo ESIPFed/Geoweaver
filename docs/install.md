@@ -99,19 +99,19 @@ Default port used by Geoweaver is 8070, to change the port please run the follow
 
 **For Linux/macOS**:
 ```
-export GEOWEAVER_PORT=8081
+export GEOWEAVER_PORT='Port number'
 ```
 ***Example: export GEOWEAVER_PORT=8081***
 
 **For Windows-Command Prompt**:
 ```
-set GEOWEAVER_PORT=8081
+set GEOWEAVER_PORT='Port number'
 ```
 ***Example: set GEOWEAVER_PORT=8081***
 
 **For Windows-Powershell**:
 ```
-$env GEOWEAVER_PORT=8081
+$env GEOWEAVER_PORT='Port number'
 ```
 ***Example: $env GEOWEAVER_PORT=8081***
 
