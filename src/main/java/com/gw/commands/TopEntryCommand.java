@@ -18,7 +18,7 @@ import picocli.CommandLine.HelpCommand; // Default help subcommand, displays hel
       HelpCommand.class,
       ImportCommand.class,
       ExportCommand.class,
-            H2CompatibilityChecker.class
+      H2CompatibilityChecker.class
     })
 public class TopEntryCommand implements Runnable {
 
