@@ -1274,6 +1274,7 @@ GW.workspace = {
           GW.menu.details(process_id, "process", function (msg) {
             //sometimes the mouse moves too quickly, the mouse is already out but the response doesn't arrive yet. The div will persist forever. So ismouseinside is used.
             if (ismouseinside) {
+              GW.process.sidepanel.showProcessLog(GW.workflow.history_id, d.id, d.title);
               GW.workspace.tooltipdiv
                 .transition()
                 .duration(200)

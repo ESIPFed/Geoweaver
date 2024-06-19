@@ -193,8 +193,29 @@ GW.process.sidepanel = {
             GW.process.history_id = msg.history_id;
 
             msgout = msg.history_output.replaceAll("\n", "<br/>");
+            var executionTime = (msg.history_end_time - msg.history_begin_time) / 1000;
 
             $("#prompt-panel-process-log-window").append(msgout);
+            var existingHtml = GW.workspace.tooltipdiv.html();
+            var updatedHtml = existingHtml +
+            `<table>
+									<tr>
+										<td><b>output</b></td>
+										<td>`+GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msgout), 200)+`</td>
+									</tr>
+									<tr>
+										<td><b>Running Status</b></td>
+										<td>`+msg.indicator+`</td>
+									</tr>
+                                    <tr>
+										<td><b>Execution Time</b></td>
+										<td>${Math.abs(executionTime)} seconds</td>
+									</tr>        	  
+								</table>
+							`;
+
+                    GW.workspace.tooltipdiv.html(updatedHtml).style("opacity", 0.9); 
+
           } else {
             $("#prompt_panel_log_switch")
               .prop("checked", false)
