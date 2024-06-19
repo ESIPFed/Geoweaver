@@ -18,7 +18,15 @@ module.exports = defineConfig({
           console.log(message +'\n\n');
           return null;
         },
+      });
+      on('after:screenshot', (details) => {
+        console.log('Screenshot taken:', details);
+        return null;
       });}
-    }
-  
+      
+    },
+  screenshotsFolder: 'cypress/screenshots',
+  videosFolder: 'cypress/videos',
+
+
 })
