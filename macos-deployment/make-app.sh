@@ -16,7 +16,8 @@ cp "${JAR_PATH}" "${APP_DIR}/Contents/Java/"
 EXECUTABLE_SCRIPT="${APP_DIR}/Contents/MacOS/${APP_NAME}"
 cat > "${EXECUTABLE_SCRIPT}" <<EOF
 #!/bin/bash
-mkdir ~/Library/Logs/geoweaver/
+mkdir -p ~/Library/Logs/geoweaver/
+mkdir -p ~/geoweaver
 LOGFILE="\${HOME}/Library/Logs/geoweaver/geoweaver.log"
 exec > >(tee -a "\$LOGFILE") 2>&1
 DIR=\$(dirname "\$0")

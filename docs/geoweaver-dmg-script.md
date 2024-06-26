@@ -1,4 +1,6 @@
 ## Geoweaver Startup Script Documentation
+This documentation is for developers
+
 ### Overview
 
 This shell script automates the setup and initialization of the Geoweaver application, ensuring all necessary components are properly configured and handling common setup issues. Below is a high-level explanation of the script's functionality.
