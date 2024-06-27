@@ -16,7 +16,8 @@ cp "${JAR_PATH}" "${APP_DIR}/Contents/Java/"
 EXECUTABLE_SCRIPT="${APP_DIR}/Contents/MacOS/${APP_NAME}"
 cat > "${EXECUTABLE_SCRIPT}" <<EOF
 #!/bin/bash
-mkdir ~/Library/Logs/geoweaver/
+mkdir -p ~/Library/Logs/geoweaver/
+mkdir -p ~/geoweaver
 LOGFILE="\${HOME}/Library/Logs/geoweaver/geoweaver.log"
 exec > >(tee -a "\$LOGFILE") 2>&1
 DIR=\$(dirname "\$0")
@@ -26,9 +27,11 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
+CONFIG_FILE="\$HOME/geoweaver/.geoweaver_config"
+
 # Function to display loading screen
 show_loading_screen() {
-  osascript <<EOF2 > /dev/null 2>&1 &
+  osascript <<EOF2 >> "\$LOGFILE" 2>&1 &
   tell application "System Events"
     -- Display a dialog indicating Geoweaver is starting
     display dialog "Geoweaver is starting up... Please wait." with title "Geoweaver Loading" buttons {"OK"} giving up after 8640
@@ -39,7 +42,7 @@ EOF2
 
 # Function to close loading screen
 close_loading_screen() {
-  osascript <<EOF2 > /dev/null 2>&1
+  osascript <<EOF2 >> "\$LOGFILE" 2>&1
   tell application "System Events"
     tell process "System Events"
       -- Check if the loading dialog exists and close it by clicking the OK button
@@ -93,32 +96,15 @@ move_existing_data() {
   fi
 }
 
-# Function to check if JDK is installed and its version
-check_jdk() {
-  if type -p java; then
-    JAVA_VERSION=\$(java -version 2>&1 | awk -F '"' '/version/ {print \$2}')
-    JAVA_MAJOR_VERSION=\$(echo "\$JAVA_VERSION" | awk -F. '{print \$1}')
-    if [[ "\$JAVA_MAJOR_VERSION" -ge 11 && "\$JAVA_MAJOR_VERSION" -le 18 ]]; then
-      echo "Java version \$JAVA_VERSION found and is between 11 and 18."
-    else
-      echo "Java version \$JAVA_VERSION is not between 11 and 18. Installing JDK 11..."
-      install_jdk_based_on_architecture
-    fi
-  else
-    echo "Java not found in PATH. Installing JDK 11..."
-    install_jdk_based_on_architecture
-  fi
-}
-
 # Function to install JDK based on system architecture
 install_jdk_based_on_architecture() {
-  ARCHITECTURE=arm64
+  ARCHITECTURE=\$(uname -m)
   if [ "\$ARCHITECTURE" == "x86_64" ]; then
     install_jdk "11.0.18-10" "jdk_x64_mac_hotspot"
   elif [ "\$ARCHITECTURE" == "arm64" ]; then
     install_jdk "11.0.18-10" "jdk_aarch64_mac_hotspot"
   else
-    echo "Unsupported architecture: "
+    echo "Unsupported architecture: \$ARCHITECTURE"
     exit 1
   fi
 }
@@ -156,37 +142,93 @@ install_jdk() {
     exit 1
   fi
 
-  echo "export JAVA_HOME=\$jdk_install_dir/Contents/Home" >> ~/.zshrc
-  echo "export PATH=\\\$JAVA_HOME/bin:\\\$PATH" >> ~/.zshrc
-  source ~/.zshrc
-  echo "JDK 11 installed and JAVA_HOME set permanently in ~/.zshrc."
+  JAVA_GEOWEAVER_HOME="\$jdk_install_dir/Contents/Home"
+  export JAVA_GEOWEAVER_HOME
+  export PATH="\$JAVA_GEOWEAVER_HOME/bin:\$PATH"
+  echo "JDK 11 installed and JAVA_HOME set temporarily for this session."
   rm "\$jdk_tar"
   java -version
+  echo "JAVA_GEOWEAVER_HOME=\"\$JAVA_GEOWEAVER_HOME\"" >> "\$CONFIG_FILE"
+}
+
+# Function to check if JDK is installed and its version
+check_jdk() {
+  if [ -n "\$JAVA_GEOWEAVER_HOME" ]; then
+    if [ -d "\$JAVA_GEOWEAVER_HOME" ]; then
+      echo "Using JAVA_GEOWEAVER_HOME from config: \$JAVA_GEOWEAVER_HOME"
+      export PATH="\$JAVA_GEOWEAVER_HOME/bin:\$PATH"
+    else
+      echo "Configured JAVA_GEOWEAVER_HOME not found: \$JAVA_GEOWEAVER_HOME"
+      JAVA_GEOWEAVER_HOME=""
+    fi
+  fi
+
+  if [ -z "\$JAVA_GEOWEAVER_HOME" ]; then
+    if type -p java; then
+      JAVA_VERSION=\$(java -version 2>&1 | awk -F '"' '/version/ {print \$2}')
+      JAVA_MAJOR_VERSION=\$(echo "\$JAVA_VERSION" | awk -F. '{print \$1}')
+      if [[ "\$JAVA_MAJOR_VERSION" -ge 11 && "\$JAVA_MAJOR_VERSION" -le 18 ]]; then
+        echo "Java version \$JAVA_VERSION found and is between 11 and 18."
+        JAVA_GEOWEAVER_HOME=\$(dirname \$(dirname \$(readlink \$(which java) || which java)))
+        export JAVA_GEOWEAVER_HOME
+        echo "JAVA_GEOWEAVER_HOME=\"\$JAVA_GEOWEAVER_HOME\"" >> "\$CONFIG_FILE"
+      else
+        echo "Java version \$JAVA_VERSION is not between 11 and 18. Installing JDK 11..."
+        install_jdk_based_on_architecture
+      fi
+    else
+      echo "Java not found in PATH. Installing JDK 11..."
+      install_jdk_based_on_architecture
+    fi
+  fi
 }
 
 # Display loading screen
 show_loading_screen &
+
+# Load configuration
+if [ -f "\$CONFIG_FILE" ]; then
+  source "\$CONFIG_FILE"
+else
+  FIRST_RUN=true
+  touch "\$CONFIG_FILE"
+  echo "FIRST_RUN=true" >> "\$CONFIG_FILE"
+  echo "PASSWORD_SET=false" >> "\$CONFIG_FILE"
+fi
 
 check_jdk
 
 # Stop any existing Geoweaver instances
 stop_geoweaver
 
-# Move existing Geoweaver data
-move_existing_data
-
-if [ ! -f "\$DIR/.password_set" ]; then
-  PASSWORD=\$(osascript -e 'Tell application "System Events" to display dialog "Password Setup Required\n\nPlease set a password for Geoweaver. This password is required for accessing and using Geoweaver securely.\n\nEnter your new password:" default answer "" with title "Geoweaver Setup" with hidden answer' -e 'text returned of result' 2>/dev/null)
-  if [ -n "\$PASSWORD" ]; then
-    nohup java -jar "\$DIR/../Java/geoweaver.jar" resetpassword -p "\$PASSWORD" > /dev/null 2>&1 &
-    touch "\$DIR/.password_set"
+# Check if this is the first run
+if [ -z "\$FIRST_RUN" ] || [ "\$FIRST_RUN" = true ]; then
+  move_existing_data
+  if grep -q "^FIRST_RUN=" "\$CONFIG_FILE"; then
+    sed -i '' 's/^FIRST_RUN=.*/FIRST_RUN=false/' "\$CONFIG_FILE"
   else
-    echo "No password entered. Exiting."
-    exit 1
+    echo "FIRST_RUN=false" >> "\$CONFIG_FILE"
   fi
 fi
 
-nohup java -jar "\$DIR/../Java/geoweaver.jar" >> "\$LOGFILE" 2>&1 &
+if [ -z "\$PASSWORD_SET" ] || [ "\$PASSWORD_SET" = false ]; then
+  while true; do
+      PASSWORD=\$(osascript -e 'Tell application "System Events" to display dialog "Password Setup Required\n\nPlease set a password for Geoweaver. This password is required for accessing and using Geoweaver securely.\n\nEnter your new password:" default answer "" with title "Geoweaver Setup" with hidden answer' -e 'text returned of result' 2>/dev/null)
+      if [ -n "\$PASSWORD" ]; then
+        nohup "\$JAVA_GEOWEAVER_HOME/bin/java" -jar "\$DIR/../Java/geoweaver.jar" resetpassword -p "\$PASSWORD" >> "\$LOGFILE" 2>&1 &
+        if grep -q "^PASSWORD_SET=" "\$CONFIG_FILE"; then
+          sed -i '' 's/^PASSWORD_SET=.*/PASSWORD_SET=true/' "\$CONFIG_FILE"
+        else
+          echo "PASSWORD_SET=true" >> "\$CONFIG_FILE"
+        fi
+        break
+      else
+        osascript -e 'Tell application "System Events" to display alert "Invalid Password" message "Password cannot be empty. Please enter a valid password." as warning'
+      fi
+  done
+fi
+
+nohup "\$JAVA_GEOWEAVER_HOME/bin/java" -jar "\$DIR/../Java/geoweaver.jar" >> "\$LOGFILE" 2>&1 &
 
 # Initialize status code
 STATUS_CODE=0
