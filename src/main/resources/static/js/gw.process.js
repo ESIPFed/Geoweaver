@@ -1938,7 +1938,6 @@ GW.process = {
           GW.process.expand(req.lang);
 
           if (run)
-            GW.process.editSwitch();
             GW.process.runProcess(
               msg.id,
               msg.name,
