@@ -1253,7 +1253,6 @@ GW.process = {
 
         $("#edit-run-process-" + GW.process.cmid).click(function () {
           //not finished yet
-
           GW.process.runProcess(msg.id, msg.name, msg.lang);
         });
       })
@@ -2255,6 +2254,7 @@ GW.process = {
    * @param {*} lang
    */
   runProcess: function (pid, pname, lang, callback_func) {
+    GW.process.editSwitch();
     if (!GW.process.isSaved) {
       if (
         confirm(

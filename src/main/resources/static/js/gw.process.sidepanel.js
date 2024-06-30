@@ -395,7 +395,7 @@ GW.process.sidepanel = {
    */
   runProcess: function (pid, pname, lang) {
     GW.process.process_id = pid;
-
+    GW.process.sidepanel.editSwitch();
     GW.process.runProcess(
       pid,
       pname,
