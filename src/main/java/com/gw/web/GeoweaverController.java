@@ -440,7 +440,7 @@ public class GeoweaverController {
 
         resp = wt.one_history(hid);
 
-      } else if (type.equals("host")) {
+      } else {
 
         resp = ht.one_history(hid);
       }
