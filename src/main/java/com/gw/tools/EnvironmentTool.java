@@ -357,8 +357,10 @@ public class EnvironmentTool {
       } else {
 
         logger.debug(
-            "one of the bin, env, basedir, settings is null and the environment will not be saved"
-                + " into database.");
+            """
+            one of the bin, env, basedir, settings is null and the environment will not be saved\
+             into database.\
+            """);
       }
 
     } catch (Exception e) {

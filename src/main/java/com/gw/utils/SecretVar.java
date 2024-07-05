@@ -44,10 +44,12 @@ public class SecretVar {
       } else {
         // the file doesn't exist, create a new one
         bt.writeString2File(
-            "gmail.credentials=geoweaver\n"
-                + "gmail.clientid=geoweaver\n"
-                + "gmail.clientsecret=geoweaver\n"
-                + "gmail.refreshtoken=geoweaver",
+            """
+            gmail.credentials=geoweaver
+            gmail.clientid=geoweaver
+            gmail.clientsecret=geoweaver
+            gmail.refreshtoken=geoweaver\
+            """,
             configFile);
       }
 

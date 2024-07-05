@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 import org.apache.tomcat.websocket.WsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,8 +235,8 @@ public class CommandServlet {
    * @param token The token used to identify the WebSocket session.
    * @return The WebSocket session, or null if not found.
    */
-  public static javax.websocket.Session findSessionById(String token) {
-    javax.websocket.Session se = null;
+  public static jakarta.websocket.Session findSessionById(String token) {
+    jakarta.websocket.Session se = null;
     if (peers.containsKey(token)) {
       se = peers.get(token);
     }
@@ -259,7 +259,7 @@ public class CommandServlet {
           CommandServlet.removeSessionById(token);
         }
       } else {
-        logger.warn(String.format("cannot find websocket for token %s", token));
+        logger.warn("cannot find websocket for token %s".formatted(token));
       }
       return wsout;
     } catch (IOException e1) {

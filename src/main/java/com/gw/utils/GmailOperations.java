@@ -8,17 +8,17 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Properties;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Session;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -53,7 +53,7 @@ public class GmailOperations {
     MimeMessage email = new MimeMessage(session);
 
     email.setFrom(new InternetAddress(from)); // me
-    email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to)); //
+    email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to)); //
     email.setSubject(subject);
 
     //        email.setText(bodyText);
@@ -71,7 +71,7 @@ public class GmailOperations {
     MimeMessage email = new MimeMessage(session);
 
     email.setFrom(new InternetAddress(from)); // me
-    email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to)); //
+    email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to)); //
     email.setSubject(subject);
 
     MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -141,7 +141,7 @@ public class GmailOperations {
 
     String[] split = to.split(",");
     for (int i = 0; i < split.length; i++) {
-      email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(split[i]));
+      email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(split[i]));
     }
 
     email.setSubject(subject);

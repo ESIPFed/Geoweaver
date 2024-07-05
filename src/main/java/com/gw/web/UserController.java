@@ -10,8 +10,8 @@ import com.gw.utils.HttpUtil;
 import com.gw.utils.RandomString;
 import java.util.Date;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -204,8 +204,10 @@ public class UserController {
         if (user.getEmail().equals(newUser.getEmail())) {
           System.out.println("User Already exists!");
           resp =
-              "{\"status\":\"failed\", \"message\":\"the email address has already been"
-                  + " registered\"}";
+              """
+              {"status":"failed", "message":"the email address has already been\
+               registered"}\
+              """;
         }
       }
 

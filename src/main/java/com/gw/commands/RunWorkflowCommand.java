@@ -72,8 +72,10 @@ public class RunWorkflowCommand implements Runnable {
 
       // if both zip location and folder location are passed - error out.
       System.err.printf(
-          "Error: Either pass workflow folder path `-d` or workflow zip path `-f`. Cannot use"
-              + " both.");
+          """
+          Error: Either pass workflow folder path `-d` or workflow zip path `-f`. Cannot use\
+           both.\
+          """);
 
       System.exit(1);
     }

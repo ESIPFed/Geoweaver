@@ -1,5 +1,7 @@
 package com.gw.ssh;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
    * TODO - use 'registerAuthentication' in 3.2.0.RC1 and 'configure' in 3.2.0.RELEASE
    * but note that 'configure' does not appear to work in tomcat7
    */
-  @Override
+  /*~~(Migrate manually based on https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter)~~>*/@Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     log.info("registering SSH authentication provider");
     auth.authenticationProvider(sshAuthentication());
@@ -49,21 +51,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
 
-    http.authorizeRequests()
-        .antMatchers("/Geoweaver/**")
-        .permitAll()
-        .and()
-        .formLogin()
-        .loginProcessingUrl("/Geoweaver/users/login")
-        .and()
-        .logout()
-        .and();
+    http.authorizeRequests(requests -> requests
+        .formLogin(login -> login
+            .loginProcessingUrl("/Geoweaver/users/login"))
+        .logout(withDefaults()));
 
-    http.cors().and().csrf().disable();
+    http.cors(cors -> cors.csrf(csrf -> csrf.disable()));
 
-    http.headers().frameOptions().disable();
+    http.headers(withDefaults());
 
-    http.headers().disable(); // this must be turned off to make the JupyterHub work
+    http.headers(withDefaults()); // this must be turned off to make the JupyterHub work
   }
 
   @Bean

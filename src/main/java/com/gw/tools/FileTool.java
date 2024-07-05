@@ -379,8 +379,10 @@ public class FileTool {
       } else {
 
         resp =
-            "{\"ret\": \"failure\", \"reason\": \"you don't have write permission. Use chmod +x in"
-                + " command line to grant write/execute permission.\"}";
+            """
+            {"ret": "failure", "reason": "you don't have write permission. Use chmod +x in\
+             command line to grant write/execute permission."}\
+            """;
       }
 
     } catch (Exception e) {

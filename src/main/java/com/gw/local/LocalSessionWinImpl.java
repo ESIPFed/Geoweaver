@@ -438,8 +438,10 @@ public class LocalSessionWinImpl implements LocalSession {
   public boolean stop() {
 
     log.debug(
-        "for localhost session, there is nothing to manually stop. Just wait for the process to"
-            + " finish. That is all.");
+        """
+        for localhost session, there is nothing to manually stop. Just wait for the process to\
+         finish. That is all.\
+        """);
 
     try {
 

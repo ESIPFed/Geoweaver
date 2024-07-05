@@ -3,7 +3,7 @@ package com.gw.tools;
 import com.gw.server.Java2JupyterClientEndpoint;
 import java.util.ArrayList;
 import java.util.List;
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

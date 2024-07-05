@@ -8,7 +8,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import java.io.BufferedReader;
 import java.io.IOException;
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +96,7 @@ public class LocalSessionOutput implements Runnable {
           CommandServlet.removeSessionById(token);
         }
       } else {
-        log.warn(String.format("cannot find websocket for token %s", token));
+        log.warn("cannot find websocket for token %s".formatted(token));
       }
     } catch (IOException e1) {
       e1.printStackTrace();

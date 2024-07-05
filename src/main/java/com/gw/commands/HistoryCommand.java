@@ -63,7 +63,7 @@ public class HistoryCommand implements Runnable {
       table.print();
     } else {
       // If no history record was found, display an error message.
-      System.out.println(String.format("No history found with ID: %s", history_id));
+      System.out.println("No history found with ID: %s".formatted(history_id));
     }
   }
 }

@@ -73,7 +73,7 @@ public class TaskSocket implements WebSocketHandler {
   @Override
   public void handleTransportError(WebSocketSession arg0, Throwable exception) throws Exception {
 
-    log.warn(String.format("TRANSPORT ERROR: %s", exception.getMessage()));
+    log.warn("TRANSPORT ERROR: %s".formatted(exception.getMessage()));
   }
 
   @Override

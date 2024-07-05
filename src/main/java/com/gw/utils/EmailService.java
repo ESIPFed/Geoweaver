@@ -4,7 +4,7 @@ import com.google.api.services.gmail.Gmail;
 import com.gw.jpa.GWUser;
 import com.gw.tools.UserTool;
 import java.util.Date;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

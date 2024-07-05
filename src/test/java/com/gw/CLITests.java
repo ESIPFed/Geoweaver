@@ -5,22 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.gw.commands.TopEntryCommand;
 import com.gw.utils.BeanTool;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.system.OutputCaptureRule;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import picocli.CommandLine;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest(classes = {GeoweaverCLI.class})
 // @ExtendWith(OutputCaptureExtension.class)
 public class CLITests {
-
-    @Rule
-    public OutputCaptureRule output = new OutputCaptureRule();
 
     @Test
     public void testTopLevelHelp () {

@@ -50,7 +50,7 @@ public class RunProcessCommand implements Runnable {
 
     ExecutionTool et = BeanTool.getBean(ExecutionTool.class);
 
-    System.out.println(String.format("Staring process %s", processid));
+    System.out.println("Staring process %s".formatted(processid));
 
     String response =
         et.executeProcess(historyid, processid, hostid, pass, "runfromcmd", true, envid);

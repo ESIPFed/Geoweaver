@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
@@ -118,13 +118,13 @@ public class BaseTool {
       String delimiter = "-";
 
       keystr =
-          String.format("%08x", vendor.hashCode())
+          "%08x".formatted(vendor.hashCode())
               + delimiter
-              + String.format("%08x", processorSerialNumber.hashCode())
+              + "%08x".formatted(processorSerialNumber.hashCode())
               + delimiter
-              + String.format("%08x", uuid.hashCode())
+              + "%08x".formatted(uuid.hashCode())
               + delimiter
-              + String.format("%08x", processorIdentifier.hashCode())
+              + "%08x".formatted(processorIdentifier.hashCode())
               + delimiter
               + processors;
 

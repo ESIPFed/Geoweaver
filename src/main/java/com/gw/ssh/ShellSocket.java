@@ -111,7 +111,7 @@ public class ShellSocket implements WebSocketHandler {
 
   @Override
   public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-    log.warn(String.format("TRANSPORT ERROR: %s", exception.getMessage()));
+    log.warn("TRANSPORT ERROR: %s".formatted(exception.getMessage()));
   }
 
   @Override

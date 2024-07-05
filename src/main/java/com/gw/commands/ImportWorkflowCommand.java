@@ -40,7 +40,7 @@ public class ImportWorkflowCommand implements Runnable {
       ObjectMapper mapper = new ObjectMapper();
       Map<String, String> map = mapper.readValue(resp, Map.class);
       String wid = String.valueOf(map.get("id"));
-      System.out.println(String.format("Workflow ID: %s", wid));
+      System.out.println("Workflow ID: %s".formatted(wid));
 
       // third, import the workflow and save to database
       resp = wt.saveWorkflowFromFolder(wid, filename);
@@ -49,8 +49,8 @@ public class ImportWorkflowCommand implements Runnable {
     } catch (Exception e) {
 
       System.err.println(
-          String.format(
-              "Failed to import: %s. Reason: %s", workflow_zip_file_path, e.getLocalizedMessage()));
+          
+              "Failed to import: %s. Reason: %s".formatted(workflow_zip_file_path, e.getLocalizedMessage()));
     }
   }
 }

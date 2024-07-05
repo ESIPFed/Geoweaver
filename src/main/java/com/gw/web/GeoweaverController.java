@@ -32,10 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.PreDestroy;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.gw.database.CheckpointRepository;
 import com.gw.database.WorkflowRepository;
@@ -56,6 +55,7 @@ import com.gw.jpa.Host;
 import com.gw.jpa.Workflow;
 import com.gw.jpa.GWProcess;
 
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -474,7 +474,7 @@ public class GeoweaverController {
 
       wt.skip_process(workflow_id, workflow_process_id, if_skipped);
 
-      resp = String.format("{\"id\": \"%s\", \"message\": \"%s\"}", workflow_id, "success");
+      resp = "{\"id\": \"%s\", \"message\": \"%s\"}".formatted(workflow_id, "success");
 
     } catch (Exception e) {
 
@@ -502,8 +502,8 @@ public class GeoweaverController {
       checkID(workflow_process_id);
 
       resp =
-          String.format(
-              "{ \"if_skipped\": %s}", wt.check_process_skipped(workflow_id, workflow_process_id));
+          
+              "{ \"if_skipped\": %s}".formatted(wt.check_process_skipped(workflow_id, workflow_process_id));
 
     } catch (Exception e) {
 
@@ -1603,13 +1603,13 @@ public class GeoweaverController {
 
 		ResponseEntity<String> resp = null;
 		String successResp = null;
-		String.format("{\"ret\": \"success\"}");
+    "{\"ret\": \"success\"}".formatted();
 		
 		try {
 			String password = request.getParameter("password");
 			password = RSAEncryptTool.getPassword(password, session.getId());
 			lt.authenticate(password);
-			successResp = String.format("{\"ret\": \"success\"}");
+			successResp = "{\"ret\": \"success\"}".formatted();
 			resp = ResponseEntity.ok().body(successResp);
 		} catch (Exception e) {
 			e.printStackTrace();

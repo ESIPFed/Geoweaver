@@ -15,7 +15,9 @@ public class ImportProcessCommand implements Runnable {
   public void run() {
 
     System.err.println(
-        "Not implemented yet. Please go to Geoweaver github issues to check out latest"
-            + " discussion.");
+        """
+        Not implemented yet. Please go to Geoweaver github issues to check out latest\
+         discussion.\
+        """);
   }
 }

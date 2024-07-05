@@ -18,11 +18,13 @@ public class ExportWorkflowCommand implements Runnable {
   @Option(
       names = {"--mode"},
       description =
-          "exportation model options: \n"
-              + "   1 - workflow only \n"
-              + "    2 - workflow with process code \n"
-              + "   3 - workflow with process code and only good history \n"
-              + " 4 - workflow with process code and all the history.default option is 4.")
+          """
+          exportation model options:\s
+             1 - workflow only\s
+              2 - workflow with process code\s
+             3 - workflow with process code and only good history\s
+           4 - workflow with process code and all the history.default option is 4.\
+          """)
   int export_mode;
 
   @Parameters(index = "0", description = "Geoweaver workflow ID")
@@ -50,14 +52,14 @@ public class ExportWorkflowCommand implements Runnable {
           StandardCopyOption.REPLACE_EXISTING);
 
       System.out.println(
-          String.format(
-              "Workflow %s has been exported to file: %s", workflow_id, target_file_path));
+          
+              "Workflow %s has been exported to file: %s".formatted(workflow_id, target_file_path));
 
     } catch (Exception e) {
 
       System.err.println(
-          String.format(
-              "Fail to export workflow %s. Reason: %s", workflow_id, e.getLocalizedMessage()));
+          
+              "Fail to export workflow %s. Reason: %s".formatted(workflow_id, e.getLocalizedMessage()));
     }
   }
 }

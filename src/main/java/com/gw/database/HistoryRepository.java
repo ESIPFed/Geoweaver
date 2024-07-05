@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 /**
  * The HistoryRepository interface provides methods for querying historical execution data (history)
@@ -24,9 +24,11 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param limit The maximum number of history records to retrieve.
    * @return A collection of recent history records for the host.
    */
-  @Query(value = "SELECT history_id, history_begin_time, history_end_time, history_notes,"+
-  " history_process, host_id, indicator FROM history WHERE host_id = ?1 "+
-  " ORDER BY history_begin_time DESC LIMIT ?2", nativeQuery = true)
+  @Query(value = """
+  SELECT history_id, history_begin_time, history_end_time, history_notes,\
+   history_process, host_id, indicator FROM history WHERE host_id = ?1 \
+   ORDER BY history_begin_time DESC LIMIT ?2\
+  """, nativeQuery = true)
   List<History> findRecentHistory(String hostid, int limit);
 
   /**
@@ -93,14 +95,18 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @param pid The ID of the process.
    * @return A list of history records associated with the specified process ID.
    */
-  @Query(value = "SELECT history_id, history_begin_time, history_end_time, history_notes,"+
-  " history_process, host_id, indicator FROM history WHERE history_process = ?1 "+
-  " ORDER BY history_begin_time DESC", nativeQuery = true)
+  @Query(value = """
+  SELECT history_id, history_begin_time, history_end_time, history_notes,\
+   history_process, host_id, indicator FROM history WHERE history_process = ?1 \
+   ORDER BY history_begin_time DESC\
+  """, nativeQuery = true)
   List<Object[]> findByProcessId(String pid);
 
 
-  @Query(value = "SELECT * FROM history WHERE history_process = ?1 "+
-  " ORDER BY history_begin_time DESC", nativeQuery = true)
+  @Query(value = """
+  SELECT * FROM history WHERE history_process = ?1 \
+   ORDER BY history_begin_time DESC\
+  """, nativeQuery = true)
   List<History> findByProcessIdFull(String pid);
 
   /**
@@ -110,13 +116,17 @@ public interface HistoryRepository extends JpaRepository<History, String> {
    * @return A list of history records associated with the specified process ID, excluding 'Skipped'
    *     records.
    */
-  @Query(value = "SELECT history_id, history_begin_time, history_end_time, history_notes,"+
-  " history_process, host_id, indicator FROM history WHERE history_process = ?1 "+
-  " AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
+  @Query(value = """
+  SELECT history_id, history_begin_time, history_end_time, history_notes,\
+   history_process, host_id, indicator FROM history WHERE history_process = ?1 \
+   AND history_input != 'No code saved' ORDER BY history_begin_time DESC\
+  """, nativeQuery = true)
   List<Object[]> findByProcessIdIgnoreUnknown(String pid);
 
-  @Query(value = "SELECT * FROM history WHERE history_process = ?1 "+
-  " AND history_input != 'No code saved' ORDER BY history_begin_time DESC", nativeQuery = true)
+  @Query(value = """
+  SELECT * FROM history WHERE history_process = ?1 \
+   AND history_input != 'No code saved' ORDER BY history_begin_time DESC\
+  """, nativeQuery = true)
   List<History> findByProcessIdIgnoreUnknownFull(String pid);
 
 

@@ -55,17 +55,21 @@ public class Java2JupyterClientDialog extends JFrame {
     headers.put("Cache-Control", vals);
     vals.clear();
     vals.add(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/77.0.3865.120 Safari/537.36");
+        """
+        Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)\
+         Chrome/77.0.3865.120 Safari/537.36\
+        """);
     headers.put("User-Agent", vals);
     vals.clear();
     vals.add("13");
     headers.put("Sec-WebSocket-Version", vals);
     vals.clear();
     vals.add(
-        "JSESSIONID=B6740B35283A0081A0A75BEFD3CE9265;"
-            + " _xsrf=2|56aa5ecc|8c1e5470fb6844ba80e26ca0f3fb00ac|1592420813;"
-            + " username-localhost-8888=\"2|1:0|10:1592420823|23:username-localhost-8888|44:YmJlOWU4NTljMjEwNGQ2YTllNDJhNDZlYzBmNDBkZTU=|6b6e1012a25db4c8d9191921dd9dfd92290eafdecd171e6b4fad2678ab6cfaf3\"");
+        """
+        JSESSIONID=B6740B35283A0081A0A75BEFD3CE9265;\
+         _xsrf=2|56aa5ecc|8c1e5470fb6844ba80e26ca0f3fb00ac|1592420813;\
+         username-localhost-8888="2|1:0|10:1592420823|23:username-localhost-8888|44:YmJlOWU4NTljMjEwNGQ2YTllNDJhNDZlYzBmNDBkZTU=|6b6e1012a25db4c8d9191921dd9dfd92290eafdecd171e6b4fad2678ab6cfaf3"\
+        """);
     headers.put("Cookie", vals);
     vals.clear();
     vals.add("FI1AraAMT7iChOkIzp2tfA==");

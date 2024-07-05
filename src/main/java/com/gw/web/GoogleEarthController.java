@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -291,24 +291,26 @@ public class GoogleEarthController {
       // NID=220=u-LNrAEPFdeVsyrsuNGH0vrMJ3evUk4slFvTlkocypTzT91hRtopv46iZRpMlHcZCQZKYHOvBsE14Zr4MFMvQHOZYTCwM4Di4V75jbOW4wpblD7T2x6foy0mk4iPtZ8N8YAP8yxNdccj1fuHjGZUY7bs14qiDEajPtdNj_5bHYYvKKpUdhOnP-gKN_3ltFNWYM7xiz7syIwSkr9POusMykTmAIHX; ANID=AHWqTUmyDLiPVRBJu2uzjfg53HwdKlMzJyUKA78SFMsPVc5xhGvmznup-DkrB7ly; SID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pM5lbwRABPhYyf97rjEu_PQ.; __Secure-1PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14pNoN0Y-J4WbYq4-0NfLkhDw.; __Secure-3PSID=AQhGIWBfoujDsbSy4_9oOunWFqQ7EuWKKf0k0wOxi4Ywc14p2TsQpztYwrUoyDtmWBOygw.; HSID=AVCbW41BibNQwwfpw; SSID=AeVfYx3QAMXuH7u8m; APISID=kM8fFOubCVp2wktp/A_1AQLK1Lw9OfqLag; SAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-1PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; __Secure-3PAPISID=rwlezJ0aGcpTLyBw/A4q4W1uy-a62RaEki; SIDCC=AJi4QfFZ52seUH9wZwqciRVHmOF7HTjCIzBINyb9SdHkGMCt2kDzCanVu21iW-1XQAHaJhQg9w; __Secure-3PSIDCC=AJi4QfHU0Uq-zpB51tNkPzL_d0aSIcF9JVt50sc_PFwjpDIQ2iR1PUZXnESASB0VmehJ6VOMhg; SACSID=~AJKiYcH5eS4ox9v2GZNDXKqNpP5N32RNiI6_DozJSJ1cS8-rUcS0QFLh8PJBEwXtyxBl5YVZbtytOL06aKPJ9jL5zSCALiYLqJPr-7Y4Ywg_Q539EBJs9j_kqdlsJi3HLovBkBVLkjz5q0Q1sKGmD7CmRQ98q9owAtfUTWyRB4cGPkIm0gfTOi-hhJQ7JJhyCqtoH-vuCCa8StcS9q7M-CpezzG4qBZwrDfKCibpbVja12q-UwTQs8v-VN4-Gf3U9qVNL4NibaTva0dqwc7J8nVBnS8YTpRmmjM2j96OBQsXbLFMhJm9tG4m8FqtaNoSbwVwclXQh1BB");
       newheaders.set(
           "Cookie",
-          "ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW;"
-              + " SEARCH_SAMESITE=CgQInZIB;"
-              + " S=billing-ui-v3=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj:billing-ui-v3-efe=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj;"
-              + " _ga=GA1.3.1816945197.1622058868; HSID=AYMx7e7laiBhGMDVE; SSID=Ak-l61fPxGhwTz84Q;"
-              + " APISID=_WKcVAlBAjN9gkZY/AkGgMcGepddzGasJK;"
-              + " SAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;"
-              + " __Secure-3PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;"
-              + " OGPC=19025037-1:19022552-1:;"
-              + " SID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1q7mc-TTH9klo_A7BtVU7LA.;"
-              + " __Secure-3PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1r8Hz4RUgKwlDxjnC_iQN0A.;"
-              + " __Secure-1PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1_qZB4LRJn6B4uwAyGd5drQ.;"
-              + " __Secure-1PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;"
-              + " __Secure-1PSIDCC=AJi4QfHmuLLfZC-IG98BMi1pXYjA4NNFAa7VaRfX4oEHLfU0bqhjWP7Qfr11pS8VJ1I90LSOMHQ;"
-              + " _gid=GA1.3.2141970838.1629377526; 1P_JAR=2021-08-19-13;"
-              + " NID=221=gs77G5RrU9YasubvYfDG192a42VeO4Zm5xchyiPnAzJV2AcT-IqF8zVSQbj2xIbZ4N_E3pTPSEm65wY2z98jFUSSiCQ0ecSjK63ZvyKi1lxrSoDqRhMxX1EIaRC7NLjz646kXQkW_KSvLdf1fjZzHSZ9l0n2tI2nccdE6_RUlpvZLhhlWAHZRpYu6g4Ous1f1x6adKxDnmezKlztDzrR3Qc12dGSHVtLEmPH;"
-              + " SACSID=~AJKiYcE8FZQh7yEzCOKj3rF_RCEWXSU20dlh9H-LrseTx6Xs8h9JJsKdhrDjeJ5Oeejme_jKMOU0QuGpHWBOK3dtX-2idgvkvhwAhC6-lEHpKGVHCMR9kqbeHbjOxIYB929o9hiFruQ8BdHcmrDc5EtsQTDSCRq284njW3oU-eG4SGo8zNB9M3L2OEYMdgcCddiOj9_-CDVZMO9XIvkCl1hek6LihnPqujzID2zzS5wPooF-tHLOHOIwZI93cMLSmrh_S3V9Z4DpZTxaIaq1WOhX6vs-S_3c9C_MlXAvsnVB7ZenrGx_UQYmn8a3gfzIqqRtrLHlBA-cPK73PoaSTS7CnoHycYPnbA;"
-              + " SIDCC=AJi4QfF4UL-1-fjfJV7SweHVGt8vVjjqB1Se_U_C6uSI25LVf655PG5AChAwn9knuR3aeYeCwQ;"
-              + " __Secure-3PSIDCC=AJi4QfFYPuRmkL-0sKDA8NHNhpt5QGqcjsdnX0CWXdkiS7H0sxcxR7JF8VLDEVi98Ocz_D1vIZk");
+          """
+          ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW;\
+           SEARCH_SAMESITE=CgQInZIB;\
+           S=billing-ui-v3=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj:billing-ui-v3-efe=xGr2i80BIs3wKNyRgkbI8f1RdJo6YXtj;\
+           _ga=GA1.3.1816945197.1622058868; HSID=AYMx7e7laiBhGMDVE; SSID=Ak-l61fPxGhwTz84Q;\
+           APISID=_WKcVAlBAjN9gkZY/AkGgMcGepddzGasJK;\
+           SAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;\
+           __Secure-3PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;\
+           OGPC=19025037-1:19022552-1:;\
+           SID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1q7mc-TTH9klo_A7BtVU7LA.;\
+           __Secure-3PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1r8Hz4RUgKwlDxjnC_iQN0A.;\
+           __Secure-1PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1_qZB4LRJn6B4uwAyGd5drQ.;\
+           __Secure-1PAPISID=MCzdgeyPzxiWaRtN/AbvkjDNVxTkWIXKB2;\
+           __Secure-1PSIDCC=AJi4QfHmuLLfZC-IG98BMi1pXYjA4NNFAa7VaRfX4oEHLfU0bqhjWP7Qfr11pS8VJ1I90LSOMHQ;\
+           _gid=GA1.3.2141970838.1629377526; 1P_JAR=2021-08-19-13;\
+           NID=221=gs77G5RrU9YasubvYfDG192a42VeO4Zm5xchyiPnAzJV2AcT-IqF8zVSQbj2xIbZ4N_E3pTPSEm65wY2z98jFUSSiCQ0ecSjK63ZvyKi1lxrSoDqRhMxX1EIaRC7NLjz646kXQkW_KSvLdf1fjZzHSZ9l0n2tI2nccdE6_RUlpvZLhhlWAHZRpYu6g4Ous1f1x6adKxDnmezKlztDzrR3Qc12dGSHVtLEmPH;\
+           SACSID=~AJKiYcE8FZQh7yEzCOKj3rF_RCEWXSU20dlh9H-LrseTx6Xs8h9JJsKdhrDjeJ5Oeejme_jKMOU0QuGpHWBOK3dtX-2idgvkvhwAhC6-lEHpKGVHCMR9kqbeHbjOxIYB929o9hiFruQ8BdHcmrDc5EtsQTDSCRq284njW3oU-eG4SGo8zNB9M3L2OEYMdgcCddiOj9_-CDVZMO9XIvkCl1hek6LihnPqujzID2zzS5wPooF-tHLOHOIwZI93cMLSmrh_S3V9Z4DpZTxaIaq1WOhX6vs-S_3c9C_MlXAvsnVB7ZenrGx_UQYmn8a3gfzIqqRtrLHlBA-cPK73PoaSTS7CnoHycYPnbA;\
+           SIDCC=AJi4QfF4UL-1-fjfJV7SweHVGt8vVjjqB1Se_U_C6uSI25LVf655PG5AChAwn9knuR3aeYeCwQ;\
+           __Secure-3PSIDCC=AJi4QfFYPuRmkL-0sKDA8NHNhpt5QGqcjsdnX0CWXdkiS7H0sxcxR7JF8VLDEVi98Ocz_D1vIZk\
+          """);
       // newheaders.set("Cookie", oldheaders.get("Set-Cookie").tostring());
       // 1P_JAR=2021-08-12-01;
       // NID=221=gs77G5RrU9YasubvYfDG192a42VeO4Zm5xchyiPnAzJV2AcT-IqF8zVSQbj2xIbZ4N_E3pTPSEm65wY2z98jFUSSiCQ0ecSjK63ZvyKi1lxrSoDqRhMxX1EIaRC7NLjz646kXQkW_KSvLdf1fjZzHSZ9l0n2tI2nccdE6_RUlpvZLhhlWAHZRpYu6g4Ous1f1x6adKxDnmezKlztDzrR3Qc12dGSHVtLEmPH; ANID=AHWqTUm85ZxHX2mrE-c6EKGzx7hKbsJzMFQlQLZhthM4k5F6hpt3NI1AlOFViSGW; SID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1q7mc-TTH9klo_A7BtVU7LA.; __Secure-1PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1_qZB4LRJn6B4uwAyGd5drQ.; __Secure-3PSID=AAhxcHhNH_TKdXEYs9qCXRc1JfiEw9pwFtKeq5eaEBXjZ8F1r8Hz4RUgKwlDxjnC_iQN0A.; HSID=AYMx7e7laiBhGMDVE; SSID=Ak-l61fPxGhwTz84Q; APISID=
