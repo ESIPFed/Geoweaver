@@ -41,12 +41,6 @@ public class GeoweaverApplication {
 
   public static void main(String[] args) {
 
-    if (BaseTool.isPortInUse("localhost", BaseTool.get_current_port())) {
-      System.out.println("Port " + BaseTool.get_current_port() + " is already used. Cannot start Geoweaver.");
-      System.out.println("Could set the environment variable GEOWEAVER_PORT to another port and try again.");
-      System.exit(1);
-    }
-
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
 
@@ -62,6 +56,12 @@ public class GeoweaverApplication {
                   .run(args)));
 
     } else {
+
+      if (BaseTool.isPortInUse("localhost", BaseTool.get_current_port())) {
+        System.out.println("Port " + BaseTool.get_current_port() + " is already used. Cannot start Geoweaver.");
+        System.out.println("Could set the environment variable GEOWEAVER_PORT to another port and try again.");
+        System.exit(1);
+      }
 
       ApplicationContext applicationContext =
           new SpringApplicationBuilder(GeoweaverApplication.class)
