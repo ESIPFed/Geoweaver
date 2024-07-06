@@ -63,6 +63,8 @@ public class GeoweaverApplication {
         System.exit(1);
       }
 
+      show_ascii_art();
+
       ApplicationContext applicationContext =
           new SpringApplicationBuilder(GeoweaverApplication.class)
               .bannerMode(Banner.Mode.OFF)
@@ -84,6 +86,27 @@ public class GeoweaverApplication {
         .apis(RequestHandlerSelectors.any())
         .paths(PathSelectors.any())
         .build();
+  }
+
+  public static void show_ascii_art(){
+    // ANSI escape codes for colors
+    String reset = "\u001B[0m";
+    String yellow = "\u001B[33m";
+    String green = "\u001B[32m";
+    String blue = "\u001B[34m";
+    String geoweaverArt = green+ "\n"+
+            "  ____    ___   ___    __    __    ___   ____  __ __    ___  ____\n"+
+            " /    T  /  _] /   \\ |  T__T  T  /  _] /    T|  T  |  /  _]|    \\ \n" +
+            "Y   __j /  [_ Y     Y|  |  |  | /  [_ Y  o  ||  |  | /  [_ |  D  )\n" +
+            "|  T  |Y    _]|  O  ||  |  |  |Y    _]|     ||  |  |Y    _]|    / \n" +
+            "|  l_ ||   [_ |     |l  `  '  !|   [_ |  _  |l  :  !|   [_ |    \\ \n" +
+            "|     ||     Tl     ! \\      / |     T|  |  | \\   / |     T|  .  Y\n" +
+            "l___,_jl_____j \\___/   \\_/\\_/  l_____jl__j__j  \\_/  l_____jl__j\\_j\n\n"+reset;
+
+    // Print Geoweaver ASCII art name and additional art
+    System.out.println(blue + "Welcome to Geoweaver - A Workflow Tool for Research Productivity\n");
+    System.out.println(geoweaverArt);
+    System.out.println("Geoweaver is rolling out of bed and warming up its gears. Hang on.. ");
   }
 
   public static void addLocalhost() {
