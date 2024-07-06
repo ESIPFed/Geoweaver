@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -67,6 +69,8 @@ public class BaseTool {
   public static int BUFFER_SIZE = 20;
 
   public static String log_separator = "*_*";
+
+  public static int DEFAULT_PORT = 8070;
 
   private String _classpath = null;
 
@@ -136,6 +140,21 @@ public class BaseTool {
     }
 
     return keystr;
+  }
+
+  public static boolean isPortInUse(String host, int port) {
+      try (Socket socket = new Socket()) {
+          socket.connect(new InetSocketAddress(host, port), 200);
+          return true;
+      } catch (Exception e) {
+          return false;
+      }
+  }
+
+  public static int get_current_port(){
+      String portEnv = System.getenv("SERVER_PORT");
+      int port = (portEnv != null && !portEnv.isEmpty()) ? Integer.parseInt(portEnv) : DEFAULT_PORT;
+      return port;
   }
 
   public boolean checkLocalhostPassword(String received_password) throws Exception {

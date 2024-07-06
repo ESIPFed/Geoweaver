@@ -10,6 +10,8 @@ import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 import java.awt.Desktop;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.log4j.Logger;
@@ -38,6 +40,12 @@ public class GeoweaverApplication {
   private static String workspace;
 
   public static void main(String[] args) {
+
+    if (BaseTool.isPortInUse("localhost", BaseTool.get_current_port())) {
+      System.out.println("Port " + BaseTool.get_current_port() + " is already used. Cannot start Geoweaver.");
+      System.out.println("Could set the environment variable GEOWEAVER_PORT to another port and try again.");
+      System.exit(1);
+    }
 
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
