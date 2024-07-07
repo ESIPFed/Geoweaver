@@ -484,8 +484,12 @@ public class ProcessTool {
 	 */
 	public String getTypeById(String pid) {
 		
-		GWProcess p = processrepository.findById(pid).get();
-		
+		Optional<GWProcess> optionalProcess = processrepository.findById(pid);
+		if (!optionalProcess.isPresent()) {
+			throw new RuntimeException("Process with id " + pid + " not found.");
+		}
+
+		GWProcess p = optionalProcess.get();
 		return BaseTool.isNull(p.getLang())?p.getDescription():p.getLang();
 		
 		

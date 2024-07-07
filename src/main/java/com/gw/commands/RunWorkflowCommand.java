@@ -116,6 +116,7 @@ public class RunWorkflowCommand implements Runnable {
 
     String response =
         wt.execute(historyId, workflowId, "one", hostStrings, passes, envs, "xxxxxxxxxx");
+    System.out.println(response);
 
     System.out.printf("The workflow has been kicked off.\nHistory Id: %s%n", historyId);
 

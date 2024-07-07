@@ -95,7 +95,7 @@ public class GeoweaverApplication {
     String green = "\u001B[32m";
     String blue = "\u001B[34m";
     String geoweaverArt = green+ "\n"+
-            "  ____    ___   ___    __    __    ___   ____  __ __    ___  ____\n"+
+            "  ____    ___   ___   __    __    ___   ____  __ __    ___  ____\n"+
             " /    T  /  _] /   \\ |  T__T  T  /  _] /    T|  T  |  /  _]|    \\ \n" +
             "Y   __j /  [_ Y     Y|  |  |  | /  [_ Y  o  ||  |  | /  [_ |  D  )\n" +
             "|  T  |Y    _]|  O  ||  |  |  |Y    _]|     ||  |  |Y    _]|    / \n" +

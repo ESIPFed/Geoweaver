@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.websocket.Session;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -341,7 +343,12 @@ public class GeoweaverWorkflowTask {
 
       this.history_output = "";
 
-      Workflow w = workflowRepository.findById(wid).get();
+      Optional<Workflow> optionalWorkflow = workflowRepository.findById(wid);
+      if (!optionalWorkflow.isPresent()) {
+          throw new RuntimeException("Workflow with id " + wid + " not found.");
+      }
+      
+      Workflow w = optionalWorkflow.get();
 
       if (BaseTool.isNull(w)) throw new RuntimeException("no workflow is found");
 
@@ -485,7 +492,7 @@ public class GeoweaverWorkflowTask {
 
     } catch (Exception e) {
 
-      e.printStackTrace();
+      throw new RuntimeException(e.getLocalizedMessage());
 
     } finally {
 
