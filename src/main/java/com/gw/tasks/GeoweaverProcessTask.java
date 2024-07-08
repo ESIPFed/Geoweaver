@@ -407,29 +407,45 @@ public class GeoweaverProcessTask extends Task {
 
           String c_history_id = member_history_id_list[i];
 
-          History c_his = hist.getHistoryById(c_history_id);
-
           JSONObject obj = new JSONObject();
 
           obj.put("id", member_process_id_list[i]);
 
           obj.put("history_id", c_history_id);
 
-          obj.put("status", c_his.getIndicator());
+          String c_history_status = null;
 
-          if (BaseTool.isNull(c_his.getIndicator())
-              || ExecutionStatus.READY.equals(c_his.getIndicator())
-              || ExecutionStatus.RUNNING.equals(c_his.getIndicator())) {
+          if(c_history_id.equals(this.history_id)){
 
-            workflow_status = ExecutionStatus.RUNNING;
-          } else if (ExecutionStatus.FAILED.equals(c_his.getIndicator())) {
+            // the current history might not be flushed to the database yet. to be safe, directly use from memory
+            c_history_status = this.curstatus;
+
+          }else{
+
+            History c_his = hist.getHistoryById(c_history_id);
+
+            c_history_status = c_his.getIndicator();
+
+          }
+
+          obj.put("status", c_history_status);
+
+          if (BaseTool.isNull(c_history_status)
+                || ExecutionStatus.READY.equals(c_history_status)
+                || ExecutionStatus.RUNNING.equals(c_history_status)) {
+
+              workflow_status = ExecutionStatus.RUNNING;
+
+          } else if (ExecutionStatus.FAILED.equals(c_history_status)) {
+
             errorcheck = 1;
+
           }
 
           array.add(obj);
-        }
 
-        //				monitor.sendMessage(new TextMessage(array.toJSONString()));
+        }
+        
         sendMessage2WorkflowWebsocket(array.toJSONString());
 
         if (errorcheck == 1 && ExecutionStatus.DONE.equals(workflow_status)) {
