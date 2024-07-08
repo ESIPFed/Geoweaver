@@ -496,6 +496,8 @@ public class GeoweaverWorkflowTask {
 
     } finally {
 
+      tm.notifyWaitinglist();
+
       // GeoweaverController.sessionManager.closeWebSocketByToken(token); //close ssh output
       // transferring websocket at the end
 

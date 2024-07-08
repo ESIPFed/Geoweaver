@@ -119,8 +119,6 @@ public class WorkflowTool {
 
   public String list(String owner) {
 
-    // Iterator<Workflow> wit = workflowrepository.findAll().iterator();
-
     Iterator<Workflow> wit = workflowrepository.findAllPublic().iterator();
 
     StringBuffer json = new StringBuffer("[");
@@ -299,7 +297,7 @@ public class WorkflowTool {
    *     ignored.
    * @return
    */
-public String execute(
+  public String execute(
       String history_id,
       String wid,
       String mode,

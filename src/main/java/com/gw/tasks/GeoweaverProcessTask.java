@@ -365,6 +365,8 @@ public class GeoweaverProcessTask extends Task {
 
       this.updateEverything();
 
+      tm.done(this);
+
       if (!isjoin) this.stopMonitor(); // if run solo, close. if workflow, don't.
     }
 
