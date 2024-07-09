@@ -14,13 +14,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
+//import org.apache.commons.httpclient.HttpClient;
+//import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+//import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+//import org.apache.http.client.config.RequestConfig;
+//import org.apache.http.impl.client.CloseableHttpClient;
+//import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +52,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
 
 @Controller
 public class JupyterController {
@@ -78,19 +86,35 @@ public class JupyterController {
 
     RestTemplate restTemplate1 = new RestTemplate();
 
-    HttpComponentsClientHttpRequestFactory requestFactory =
-        new HttpComponentsClientHttpRequestFactory();
-    requestFactory.setConnectTimeout(TIMEOUT);
-    requestFactory.setReadTimeout(TIMEOUT);
+//    HttpComponentsClientHttpRequestFactory requestFactory =
+//        new HttpComponentsClientHttpRequestFactory();
 
-    CloseableHttpClient httpClient =
-        HttpClients.custom()
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setCookieSpec(CookieSpecs.STANDARD)
-                    .setRedirectsEnabled(false)
-                    .build())
+//    requestFactory.setConnectTimeout(TIMEOUT);
+//    requestFactory.setReadTimeout(TIMEOUT);
+
+//    CloseableHttpClient httpClient =
+//        HttpClients.custom()
+//            .setDefaultRequestConfig(
+//                RequestConfig.custom()
+//                    .setCookieSpec(CookieSpecs.STANDARD)
+//                    .setRedirectsEnabled(false)
+//                    .build())
+//            .build();
+
+//    restTemplate1.setRequestFactory(requestFactory);
+    RequestConfig requestConfig = org.apache.hc.client5.http.config.RequestConfig.custom()
+            .setCookieSpec(CookieSpecs.STANDARD)
+            .setRedirectsEnabled(true)
+            .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
+            .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
             .build();
+
+    org.apache.hc.client5.http.classic.HttpClient httpClient = org.apache.hc.client5.http.impl.classic.HttpClients.custom()
+            .setDefaultRequestConfig(requestConfig)
+            .build();
+
+    HttpComponentsClientHttpRequestFactory requestFactory =
+            new HttpComponentsClientHttpRequestFactory(httpClient);
 
     restTemplate1.setRequestFactory(requestFactory);
 
@@ -377,7 +401,7 @@ public class JupyterController {
   /**
    * Process Patch
    *
-   * @param entity
+//   * @param entity
    * @param method
    * @param request
    * @param hostid
@@ -482,7 +506,7 @@ public class JupyterController {
   /**
    * Process PUT request
    *
-   * @param entity
+//   * @param entity
    * @param method
    * @param request
    * @param hostid
@@ -634,7 +658,7 @@ public class JupyterController {
   /**
    * Process DELETE request
    *
-   * @param headers
+//   * @param headers
    * @param method
    * @param request
    * @param hostid
@@ -718,7 +742,7 @@ public class JupyterController {
   /**
    * Process POST Request
    *
-   * @param reqentity
+//   * @param reqentity
    * @param method
    * @param request
    * @param hostid
@@ -960,7 +984,7 @@ public class JupyterController {
    * Process GET Request
    *
    * @param <T>
-   * @param headers
+//   * @param headers
    * @param method
    * @param request
    * @param hostid
@@ -1722,29 +1746,49 @@ public class JupyterController {
       produces = MediaType.ALL_VALUE)
   public @ResponseBody String jupyter_http(ModelMap model, WebRequest request) {
 
+//    String resp = null;
+//
+//    try {
+//
+//      String targeturl = request.getParameter("url");
+//
+//      HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+//
+//      client.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
+//
+//      GetMethod get = new GetMethod(targeturl);
+//
+//      get.setFollowRedirects(true);
+//
+//      int iGetResultCode = client.executeMethod(get);
+//
+//      resp = get.getResponseBodyAsString();
+//
+//    } catch (Exception e) {
+//
+//      throw new RuntimeException("failed " + e.getLocalizedMessage());
+//    }
     String resp = null;
 
     try {
-
       String targeturl = request.getParameter("url");
 
-      HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+      HttpClient client = HttpClients.createDefault();
 
-      client.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
+      HttpGet httpGet = new HttpGet(targeturl);
+      httpGet.setConfig(RequestConfig.custom()
+              .setConnectTimeout(Timeout.ofMilliseconds(30000))
+              .build());
 
-      GetMethod get = new GetMethod(targeturl);
-
-      get.setFollowRedirects(true);
-
-      int iGetResultCode = client.executeMethod(get);
-
-      resp = get.getResponseBodyAsString();
+      try (CloseableHttpResponse response = (CloseableHttpResponse) client.execute(httpGet)) {
+        resp = EntityUtils.toString(response.getEntity());
+      }
 
     } catch (Exception e) {
-
       throw new RuntimeException("failed " + e.getLocalizedMessage());
     }
 
+//    return resp;
     return resp;
   }
 
@@ -1761,17 +1805,17 @@ public class JupyterController {
 
       String targeturl = request.getParameter("url");
 
-      HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
+//      HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-      client.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
+//      client.getHttpConnectionManager().getParams().setConnectionTimeout(30000);
+//
+//      GetMethod get = new GetMethod(targeturl);
+//
+//      get.setFollowRedirects(true);
+//
+//      int iGetResultCode = client.executeMethod(get);
 
-      GetMethod get = new GetMethod(targeturl);
-
-      get.setFollowRedirects(true);
-
-      int iGetResultCode = client.executeMethod(get);
-
-      resp = get.getResponseBodyAsString();
+//      resp = get.getResponseBodyAsString();
 
     } catch (Exception e) {
 

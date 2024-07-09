@@ -9,11 +9,13 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
+//import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+//import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.util.Timeout;
 
 /**
  * Controller for Google Earth related activities.
@@ -65,29 +71,28 @@ public class GoogleEarthController {
   @Bean(name = "GErestTemplate")
   @Scope("prototype")
   public RestTemplate getRestTemplate() {
-
     RestTemplate GErestTemplate = new RestTemplate();
 
-    HttpComponentsClientHttpRequestFactory requestFactory =
-        new HttpComponentsClientHttpRequestFactory();
-
-    requestFactory.setConnectTimeout(TIMEOUT);
-    requestFactory.setReadTimeout(TIMEOUT);
-
-    CloseableHttpClient httpClient =
-        HttpClients.custom()
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setCookieSpec(CookieSpecs.STANDARD)
-                    .setRedirectsEnabled(true)
-                    .build())
+    RequestConfig requestConfig = RequestConfig.custom()
+            .setCookieSpec(CookieSpecs.STANDARD)
+            .setRedirectsEnabled(true)
+            .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
+            .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
             .build();
+
+    HttpClient httpClient = HttpClients.custom()
+            .setDefaultRequestConfig(requestConfig)
+            .build();
+
+    HttpComponentsClientHttpRequestFactory requestFactory =
+            new HttpComponentsClientHttpRequestFactory(httpClient);
 
     GErestTemplate.setRequestFactory(requestFactory);
 
     logger.debug("A new Google Earth restTemplate is created");
 
     return GErestTemplate;
+
   }
 
   public String getRealTargetURL(String referurl) {
@@ -343,9 +348,9 @@ public class GoogleEarthController {
    * Update response header
    *
    * @param oldheaders
-   * @param h
-   * @param realurl
-   * @param querystr
+   * @param hostid
+   * @param body
+   *
    * @return
    */
   private HttpHeaders updateResponseHeader(HttpHeaders oldheaders, byte[] body, String hostid) {
@@ -498,8 +503,9 @@ public class GoogleEarthController {
   /**
    * Process GET Request
    *
-   * @param <T>
-   * @param headers
+//   * @param <T>
+//   * @param headers
+   * @param reqentity
    * @param method
    * @param request
    * @param hostid

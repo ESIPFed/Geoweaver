@@ -8,6 +8,7 @@ import com.gw.utils.BeanTool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.system.OutputCaptureRule;
 
@@ -19,7 +20,7 @@ import picocli.CommandLine;
 public class CLITests {
 
     @Test
-    public void testTopLevelHelp () {
+    public void testTopLevelHelp (CapturedOutput output) {
 
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute("help");
@@ -28,7 +29,7 @@ public class CLITests {
     }
 
     @Test
-    public void testListHelp(){
+    public void testListHelp(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"list", "--help"});
@@ -39,7 +40,7 @@ public class CLITests {
     }
 
     @Test
-    public void testListHost(){
+    public void testListHost(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"list", "--host"});
@@ -51,7 +52,7 @@ public class CLITests {
     }
 
     @Test
-    public void testListProcess(){
+    public void testListProcess(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"list", "--process"});
@@ -63,7 +64,7 @@ public class CLITests {
     }
 
     @Test
-    public void testListWorkflow(){
+    public void testListWorkflow(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"list", "--workflow"});
@@ -73,7 +74,7 @@ public class CLITests {
     }
 
     @Test
-    public void testListWithoutArgument(){
+    public void testListWithoutArgument(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"list"});
@@ -85,7 +86,7 @@ public class CLITests {
     // TODO: Performing only negative tests on detail command for now. Need to add success tests for detail command.
 
     @Test
-    public void testDetailHelp(){
+    public void testDetailHelp(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--help"});
@@ -96,7 +97,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailHostWithoutHostId(){
+    public void testDetailHostWithoutHostId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--host-id"});
@@ -105,7 +106,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailHostWithWrongHostId(){
+    public void testDetailHostWithWrongHostId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--host-id=wrongHostId"});
@@ -114,7 +115,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailProcessWithoutProcessId(){
+    public void testDetailProcessWithoutProcessId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--process-id"});
@@ -123,7 +124,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailProcessWithWrongProcessId(){
+    public void testDetailProcessWithWrongProcessId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--process-id=wrongProcessId"});
@@ -132,7 +133,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailWorkflowWithoutWorkflowId(){
+    public void testDetailWorkflowWithoutWorkflowId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--workflow-id"});
@@ -141,7 +142,7 @@ public class CLITests {
     }
 
     @Test
-    public void testDetailWorkflowWithWrongWorkflowId(){
+    public void testDetailWorkflowWithWrongWorkflowId(CapturedOutput output){
         
         TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
         new CommandLine(topEntryCommand).execute(new String[]{"detail", "--workflow-id=wrongWorkflowId"});

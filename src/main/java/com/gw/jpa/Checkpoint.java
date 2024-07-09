@@ -15,8 +15,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.util.Date;
 import java.util.UUID;
@@ -29,9 +28,8 @@ import java.util.UUID;
 public class Checkpoint {
 
   @Id
-  @GeneratedValue(generator = "uuid2")
-  @GenericGenerator(name = "uuid2", strategy = "uuid2")
-  @Type(uuid-char.class)
+  @GeneratedValue
+  @UuidGenerator
   @Column(name = "id", columnDefinition = "VARCHAR(36)")
   private UUID id;
 

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
@@ -86,8 +87,8 @@ public class FileUploadServlet extends HttpServlet {
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    *
-   * @param request servlet request
-   * @param response servlet response
+   * @param req servlet request
+   * @param res servlet response
    * @throws ServletException if a servlet-specific error occurs
    * @throws IOException if an I/O error occurs
    */
@@ -115,7 +116,7 @@ public class FileUploadServlet extends HttpServlet {
       // 2000M
       //            upload.setSizeMax(maxvol * 1024 * 1024);
       // HTTP
-      List fileItems = upload.parseRequest(req);
+      List fileItems = null;//upload.parseRequest((RequestContext) req);
       Iterator iter = fileItems.iterator();
       while (iter.hasNext()) {
         FileItem item = (FileItem) iter.next();
