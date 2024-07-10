@@ -11,6 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +36,8 @@ public class TaskManager {
 
   private CopyOnWriteArrayList<Task> waitinglist;
   private CopyOnWriteArrayList<Task> runninglist;
+  private ScheduledExecutorService scheduler; // Scheduler for periodic task checking
+
 
   Logger logger = Logger.getLogger(this.getClass());
 
@@ -47,6 +53,16 @@ public class TaskManager {
   {
     waitinglist = new CopyOnWriteArrayList();
     runninglist = new CopyOnWriteArrayList();
+  }
+
+  public TaskManager() {
+    this.init();
+  }
+
+  private void init() {
+    // Initialize the scheduler
+    scheduler = Executors.newScheduledThreadPool(1);
+    scheduler.scheduleAtFixedRate(this::notifyWaitinglist, 0, 1, TimeUnit.MINUTES);
   }
 
   /** Add a new task to the waiting list */
