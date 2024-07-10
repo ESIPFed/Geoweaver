@@ -50,13 +50,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
-				<artifactId>thymeleaf-spring5</artifactId>
-				<version>3.0.15.RELEASE</version>
+				<artifactId>thymeleaf-spring6</artifactId>
+				<version>3.1.2.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>
-				<artifactId>thymeleaf-extras-springsecurity5</artifactId>
-				<version>3.0.5.RELEASE</version>
+				<artifactId>thymeleaf-extras-springsecurity6</artifactId>
+				<version>3.1.2.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
