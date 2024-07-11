@@ -1,98 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.7</version>
-		<relativePath/> 
-		<!-- lookup parent from repository -->
+		<version>3.3.1</version>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.gw</groupId>
 	<artifactId>geoweaver</artifactId>
 	<version>1.6.1</version>
 	<name>geoweaver</name>
-	<description>A lightweight workflow management software for organizing data analysis workflows, 
-	preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
-	especially for the AI experiments which have no two identifical runs.</description>
-	
+	<description>A lightweight workflow management software for organizing data analysis workflows,
+		preserving history of every workflow run, and improving scientist producitvity and workflow FAIRness,
+		especially for the AI experiments which have no two identifical runs.</description>
+
 	<packaging>jar</packaging>
-
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
 	<properties>
-		
-		<org.springframework-version>6.1.10</org.springframework-version>
-
-		<picocli-version>4.6.3</picocli-version>
-		
-<!--		<org.springboot-version>2.4.13</org.springboot-version>-->
-		
-		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
-
-		<start-class>com.gw.GeoweaverApplication</start-class>
-
-		<log4j2.version>2.17.1</log4j2.version>
-
-		<junit-version>4.13.2</junit-version>
-		
+		<java.version>17</java.version>
 	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>jakarta.websocket</groupId>
-				<artifactId>jakarta.websocket-api</artifactId>
-				<version>2.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.5.14</version>
-			</dependency>
-			<dependency>
-				<groupId>org.thymeleaf</groupId>
-				<artifactId>thymeleaf-spring5</artifactId>
-				<version>3.0.15.RELEASE</version>
-			</dependency>
-			<dependency>
-				<groupId>org.thymeleaf.extras</groupId>
-				<artifactId>thymeleaf-extras-springsecurity5</artifactId>
-				<version>3.0.5.RELEASE</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-			<exclusions>
-			    <exclusion> 
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion> 
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion> 
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-				<exclusion> 
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-				<exclusion> 
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions> 
-		</dependency>
-		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -101,6 +56,73 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.hierynomus/sshj -->
+		<dependency>
+			<groupId>com.hierynomus</groupId>
+			<artifactId>sshj</artifactId>
+			<version>0.38.0</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+			<version>42.7.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-gmail</artifactId>
+			<version>v1-rev20210111-1.31.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+<!--			need to decide which version to use or whether to use it or not-->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli-spring-boot-starter</artifactId>
+			<version>4.7.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.dom4j</groupId>
@@ -108,205 +130,12 @@
 			<version>2.1.4</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.kamranzafar/jtar -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
+			<groupId>org.kamranzafar</groupId>
+			<artifactId>jtar</artifactId>
+			<version>2.3</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.httpcomponents.client5</groupId>
-			<artifactId>httpclient5</artifactId>
-<!--			<version>5.2.1</version>-->
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.7.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-devtools</artifactId>
-	        <optional>false</optional>
-	    </dependency>
-		
-		<!-- <dependency>
-			<groupId>com.amazonaws</groupId>
-    		<artifactId>aws-java-sdk</artifactId>
-    		<version>1.11.163</version>
-		</dependency> -->
-		
-		<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api since servlet api 5.0-->
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-		</dependency>
-
-		
-		<!-- below come from old settings -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>io.springfox</groupId>-->
-<!--			<artifactId>springfox-swagger2</artifactId>-->
-<!--			<version>3.0.0</version>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>io.springfox</groupId>-->
-<!--			<artifactId>springfox-boot-starter</artifactId>-->
-<!--			<version>3.0.0</version>-->
-<!--		</dependency>-->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-	    <dependency>
-		    <groupId>org.kamranzafar</groupId>
-		    <artifactId>jtar</artifactId>
-		    <version>2.3</version>
-		</dependency>
-<!--        <dependency>-->
-<!--			<groupId>javax.mail</groupId>-->
-<!--			<artifactId>mail</artifactId>-->
-<!--			<version>1.4.5</version>-->
-<!--		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>jakarta.mail</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.apis</groupId>
-			<artifactId>google-api-services-gmail</artifactId>
-			<version>v1-rev20210111-1.31.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.15.3</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.json</groupId>
-		    <artifactId>json</artifactId>
-		    <version>20231013</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.10.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>info.picocli</groupId>
-			<artifactId>picocli-spring-boot-starter</artifactId>
-			<version>${picocli-version}</version>
-		</dependency>
-
-		<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-websocket</artifactId>
-		</dependency>
-		
-		<dependency>
-		   <groupId>org.springframework.boot</groupId>
-		   <artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-messaging</artifactId>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.thymeleaf</groupId>
-		    <artifactId>thymeleaf</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.thymeleaf</groupId>
-		    <artifactId>thymeleaf-spring6</artifactId>
-		</dependency>
-        <dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		</dependency>
-
-<!--        <dependency>-->
-<!--		    <groupId>commons-httpclient</groupId>-->
-<!--		    <artifactId>commons-httpclient</artifactId>-->
-<!--		    <version>3.1</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -317,116 +146,66 @@
 					<artifactId>junit</artifactId>
 				</exclusion>
 			</exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-reload4j</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>[2.7,)</version>
-        </dependency>
-        <dependency>
-            <groupId>it.sauronsoftware.cron4j</groupId>
-            <artifactId>cron4j</artifactId>
-            <version>2.2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.5</version>
-        </dependency>
-
-        <!-- for geoweaver ssh -->
-        
-        <dependency>
-            <groupId>org.jvnet.jaxb2_commons</groupId>
-            <artifactId>jaxb2-basics-runtime</artifactId>
-            <version>1.11.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hierynomus</groupId>
-            <artifactId>sshj</artifactId>
-            <version>0.33.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.expectit</groupId>
-            <artifactId>expectit-core</artifactId>
-            <version>0.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.el</groupId>
-            <artifactId>jakarta.el-api</artifactId>
-            <version>6.0.0</version>
-        </dependency>
-        <dependency>
-		    <groupId>com.h2database</groupId>
-		    <artifactId>h2</artifactId>
-		    <!-- <scope>test</scope> -->
 		</dependency>
-		
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-			<!-- <version>4.5.13</version> -->
-		</dependency>
-		
-		<dependency>
-			<groupId>info.picocli</groupId>
-			<artifactId>picocli</artifactId>
-			<version>4.6.2</version>
-		</dependency>
-
-        <dependency>
-		    <groupId>jakarta.websocket</groupId>
-		    <artifactId>jakarta.websocket-api</artifactId>
-		</dependency>
-		
-<!--		<dependency>-->
-<!--		   <groupId>javax.websocket</groupId>-->
-<!--		   <artifactId>javax.websocket-client-api</artifactId>-->
-<!--		   <version>1.0</version>-->
-<!--		</dependency>-->
-        
-		<dependency>
-		    <groupId>org.glassfish.tyrus.bundles</groupId>
-		    <artifactId>tyrus-standalone-client</artifactId>
-		    <version>2.1.3</version>
-		</dependency>
-		
-<!--		<dependency>-->
-<!--		    <groupId>org.apache.tomcat</groupId>-->
-<!--		    <artifactId>juli</artifactId>-->
-<!--		    <version>6.0.26</version>-->
-<!--		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli -->
-<!--		<dependency>-->
-<!--			<groupId>org.apache.tomcat</groupId>-->
-<!--			<artifactId>juli</artifactId>-->
-<!--			<version>10.x.x</version>-->
-<!--		</dependency>-->
-
-
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>6.0.0</version>
+			<version>6.6.1</version>
 		</dependency>
-		
-        <!-- end of geoweaver -->
-		<!-- for jdk 9+ -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
-		    <groupId>jakarta.xml.soap</groupId>
-		    <artifactId>jakarta.xml.soap-api</artifactId>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.12.0</version>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
 		<dependency>
-		    <groupId>jakarta.xml.bind</groupId>
-		    <artifactId>jakarta.xml.bind-api</artifactId>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>2.0.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.17.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents.core5</groupId>
+			<artifactId>httpcore5</artifactId>
+			<version>5.1.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20210307</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+
+
 	</dependencies>
 
 	<build>
@@ -435,71 +214,10 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-                    <image>
-                        <name>${project.artifactId}</name>
-                    </image>
-                </configuration>
-				<executions>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>build-jar-with-no-version</id>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-						<configuration>
-							<finalName>geoweaver</finalName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.12</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.openrewrite.maven</groupId>
-				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>5.35.0</version>
-				<configuration>
-
-					<activeRecipes>
-						<recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2</recipe>
-					</activeRecipes>
+					<mainClass>com.gw.GeoweaverApplication</mainClass>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.openrewrite.recipe</groupId>
-						<artifactId>rewrite-spring</artifactId>
-						<version>5.14.0</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
-
 
 </project>
