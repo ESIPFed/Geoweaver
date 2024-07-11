@@ -36,10 +36,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.core5.util.Timeout;
+// import org.apache.hc.client5.http.classic.HttpClient;
+// import org.apache.hc.client5.http.impl.classic.HttpClients;
+// import org.apache.hc.client5.http.config.RequestConfig;
+// import org.apache.hc.core5.util.Timeout;
 
 /**
  * Controller for Google Earth related activities.
@@ -68,32 +68,32 @@ public class GoogleEarthController {
 
   public GoogleEarthController(RestTemplateBuilder builder) {}
 
-  @Bean(name = "GErestTemplate")
-  @Scope("prototype")
-  public RestTemplate getRestTemplate() {
-    RestTemplate GErestTemplate = new RestTemplate();
+  // @Bean(name = "GErestTemplate")
+  // @Scope("prototype")
+  // public RestTemplate getRestTemplate() {
+  //   RestTemplate GErestTemplate = new RestTemplate();
 
-    RequestConfig requestConfig = RequestConfig.custom()
-            .setCookieSpec(CookieSpecs.STANDARD)
-            .setRedirectsEnabled(true)
-            .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
-            .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
-            .build();
+  //   RequestConfig requestConfig = RequestConfig.custom()
+  //           .setCookieSpec(CookieSpecs.STANDARD)
+  //           .setRedirectsEnabled(true)
+  //           .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
+  //           .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
+  //           .build();
 
-    HttpClient httpClient = HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+  //   HttpClient httpClient = HttpClients.custom()
+  //           .setDefaultRequestConfig(requestConfig)
+  //           .build();
 
-    HttpComponentsClientHttpRequestFactory requestFactory =
-            new HttpComponentsClientHttpRequestFactory(httpClient);
+  //   HttpComponentsClientHttpRequestFactory requestFactory =
+  //           new HttpComponentsClientHttpRequestFactory(httpClient);
 
-    GErestTemplate.setRequestFactory(requestFactory);
+  //   GErestTemplate.setRequestFactory(requestFactory);
 
-    logger.debug("A new Google Earth restTemplate is created");
+  //   logger.debug("A new Google Earth restTemplate is created");
 
-    return GErestTemplate;
+  //   return GErestTemplate;
 
-  }
+  // }
 
   public String getRealTargetURL(String referurl) {
 

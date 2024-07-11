@@ -17,10 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 //import org.apache.commons.httpclient.HttpClient;
 //import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 //import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.util.Timeout;
+// import org.apache.hc.client5.http.classic.methods.HttpGet;
+// import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+// import org.apache.hc.core5.http.io.entity.EntityUtils;
+// import org.apache.hc.core5.util.Timeout;
 import org.apache.http.client.config.CookieSpecs;
 //import org.apache.http.client.config.RequestConfig;
 //import org.apache.http.impl.client.CloseableHttpClient;
@@ -52,10 +52,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.core5.util.Timeout;
+// import org.apache.hc.client5.http.classic.HttpClient;
+// import org.apache.hc.client5.http.impl.classic.HttpClients;
+// import org.apache.hc.client5.http.config.RequestConfig;
+// import org.apache.hc.core5.util.Timeout;
 
 @Controller
 public class JupyterController {
@@ -102,23 +102,23 @@ public class JupyterController {
 //            .build();
 
 //    restTemplate1.setRequestFactory(requestFactory);
-    RequestConfig requestConfig = org.apache.hc.client5.http.config.RequestConfig.custom()
-            .setCookieSpec(CookieSpecs.STANDARD)
-            .setRedirectsEnabled(true)
-            .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
-            .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
-            .build();
+    // RequestConfig requestConfig = org.apache.hc.client5.http.config.RequestConfig.custom()
+    //         .setCookieSpec(CookieSpecs.STANDARD)
+    //         .setRedirectsEnabled(true)
+    //         .setConnectTimeout(Timeout.ofMilliseconds(TIMEOUT))
+    //         .setResponseTimeout(Timeout.ofMilliseconds(TIMEOUT))
+    //         .build();
 
-    org.apache.hc.client5.http.classic.HttpClient httpClient = org.apache.hc.client5.http.impl.classic.HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .build();
+    // org.apache.hc.client5.http.classic.HttpClient httpClient = org.apache.hc.client5.http.impl.classic.HttpClients.custom()
+    //         .setDefaultRequestConfig(requestConfig)
+    //         .build();
 
-    HttpComponentsClientHttpRequestFactory requestFactory =
-            new HttpComponentsClientHttpRequestFactory(httpClient);
+    // HttpComponentsClientHttpRequestFactory requestFactory =
+    //         new HttpComponentsClientHttpRequestFactory(httpClient);
 
-    restTemplate1.setRequestFactory(requestFactory);
+    // restTemplate1.setRequestFactory(requestFactory);
 
-    logger.debug("A new restTemplate is created");
+    // logger.debug("A new restTemplate is created");
 
     return restTemplate1;
   }
@@ -1770,23 +1770,23 @@ public class JupyterController {
 //    }
     String resp = null;
 
-    try {
-      String targeturl = request.getParameter("url");
+    // try {
+    //   String targeturl = request.getParameter("url");
 
-      HttpClient client = HttpClients.createDefault();
+    //   HttpClient client = HttpClients.createDefault();
 
-      HttpGet httpGet = new HttpGet(targeturl);
-      httpGet.setConfig(RequestConfig.custom()
-              .setConnectTimeout(Timeout.ofMilliseconds(30000))
-              .build());
+    //   HttpGet httpGet = new HttpGet(targeturl);
+    //   httpGet.setConfig(RequestConfig.custom()
+    //           .setConnectTimeout(Timeout.ofMilliseconds(30000))
+    //           .build());
 
-      try (CloseableHttpResponse response = (CloseableHttpResponse) client.execute(httpGet)) {
-        resp = EntityUtils.toString(response.getEntity());
-      }
+    //   try (CloseableHttpResponse response = (CloseableHttpResponse) client.execute(httpGet)) {
+    //     resp = EntityUtils.toString(response.getEntity());
+    //   }
 
-    } catch (Exception e) {
-      throw new RuntimeException("failed " + e.getLocalizedMessage());
-    }
+    // } catch (Exception e) {
+    //   throw new RuntimeException("failed " + e.getLocalizedMessage());
+    // }
 
 //    return resp;
     return resp;

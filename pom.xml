@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.7</version>
+		<version>3.3.1</version>
 		<relativePath/> 
 		<!-- lookup parent from repository -->
 	</parent>
@@ -21,14 +21,10 @@
 
 	<properties>
 		
-		<org.springframework-version>6.1.10</org.springframework-version>
-
 		<picocli-version>4.6.3</picocli-version>
-		
-<!--		<org.springboot-version>2.4.13</org.springboot-version>-->
-		
-		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
 
+		<thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
+		
 		<start-class>com.gw.GeoweaverApplication</start-class>
 
 		<log4j2.version>2.17.1</log4j2.version>
@@ -43,21 +39,21 @@
 				<artifactId>jakarta.websocket-api</artifactId>
 				<version>2.2.0</version>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>4.5.14</version>
-			</dependency>
+			</dependency> -->
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf-spring6</artifactId>
 				<version>3.1.2.RELEASE</version>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.thymeleaf.extras</groupId>
 				<artifactId>thymeleaf-extras-springsecurity6</artifactId>
 				<version>3.1.2.RELEASE</version>
-			</dependency>
+			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 	
@@ -113,11 +109,10 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.httpcomponents.client5</groupId>
 			<artifactId>httpclient5</artifactId>
-<!--			<version>5.2.1</version>-->
-		</dependency>
+		</dependency> -->
 
 
 		<dependency>
@@ -138,33 +133,28 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity6</artifactId>
-		</dependency>
+			<version>3.1.2.RELEASE</version>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
 	        <optional>false</optional>
 	    </dependency>
-		
-		<!-- <dependency>
-			<groupId>com.amazonaws</groupId>
-    		<artifactId>aws-java-sdk</artifactId>
-    		<version>1.11.163</version>
-		</dependency> -->
-		
+
 		<!-- https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api since servlet api 5.0-->
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
@@ -179,17 +169,6 @@
 			<scope>test</scope>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>io.springfox</groupId>-->
-<!--			<artifactId>springfox-swagger2</artifactId>-->
-<!--			<version>3.0.0</version>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>io.springfox</groupId>-->
-<!--			<artifactId>springfox-boot-starter</artifactId>-->
-<!--			<version>3.0.0</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -207,11 +186,7 @@
 		    <artifactId>jtar</artifactId>
 		    <version>2.3</version>
 		</dependency>
-<!--        <dependency>-->
-<!--			<groupId>javax.mail</groupId>-->
-<!--			<artifactId>mail</artifactId>-->
-<!--			<version>1.4.5</version>-->
-<!--		</dependency>-->
+		
 		<!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -234,11 +209,11 @@
 		    <artifactId>json</artifactId>
 		    <version>20231013</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.10.0</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>info.picocli</groupId>
@@ -302,11 +277,6 @@
 		    <artifactId>commons-codec</artifactId>
 		</dependency>
 
-<!--        <dependency>-->
-<!--		    <groupId>commons-httpclient</groupId>-->
-<!--		    <artifactId>commons-httpclient</artifactId>-->
-<!--		    <version>3.1</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -367,11 +337,10 @@
 		    <!-- <scope>test</scope> -->
 		</dependency>
 		
-		<dependency>
+		<!-- <dependency>
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpclient</artifactId>
-			<!-- <version>4.5.13</version> -->
-		</dependency>
+		</dependency> -->
 		
 		<dependency>
 			<groupId>info.picocli</groupId>
@@ -384,31 +353,12 @@
 		    <artifactId>jakarta.websocket-api</artifactId>
 		</dependency>
 		
-<!--		<dependency>-->
-<!--		   <groupId>javax.websocket</groupId>-->
-<!--		   <artifactId>javax.websocket-client-api</artifactId>-->
-<!--		   <version>1.0</version>-->
-<!--		</dependency>-->
-        
 		<dependency>
 		    <groupId>org.glassfish.tyrus.bundles</groupId>
 		    <artifactId>tyrus-standalone-client</artifactId>
 		    <version>2.1.3</version>
 		</dependency>
 		
-<!--		<dependency>-->
-<!--		    <groupId>org.apache.tomcat</groupId>-->
-<!--		    <artifactId>juli</artifactId>-->
-<!--		    <version>6.0.26</version>-->
-<!--		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli -->
-<!--		<dependency>-->
-<!--			<groupId>org.apache.tomcat</groupId>-->
-<!--			<artifactId>juli</artifactId>-->
-<!--			<version>10.x.x</version>-->
-<!--		</dependency>-->
-
-
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
@@ -476,10 +426,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
