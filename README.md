@@ -149,6 +149,7 @@ This version focuses on updating features and bug fixing:
 * Responsive Design for lower resultion devices such as ipad / tablets.
 * Support for MySQL and PostgreSQL - Production grade DB.
 * Autosaves code on Run.
+* Added support for Docker. The Geoweaver Docker image can be found here(https://hub.docker.com/repository/docker/geoweaver/geoweaver/general).
 
 For more details, you can check the Geoweaver Releases Page.
 
