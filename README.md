@@ -87,15 +87,6 @@ Before you begin, ensure that you have the following dependencies installed:
 
 [A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.
 
-[//]: # (Add a lot of GIFs)
-
-# Usage
-
-[//]: # (colab, binder, GIFs)
-[//]: # (Show all features here)
-
-
-
 # Documentation
 
 Learn more about Geoweaver in its official documentation at https://esipfed.github.io/Geoweaver/docs/install.html
@@ -117,24 +108,50 @@ Thanks to our many contributors!
 
 [![Contributors](https://contrib.rocks/image?repo=ESIPFed/Geoweaver)](https://github.com/ESIPFed/Geoweaver/graphs/contributors)
 
+
 # Geoweaver History
 
-## Version 1.0 (July 2020)
+## v0.6.7 - v1.0.0 (2018 - 2023)
 
-The first stable release of Geoweaver was launched in July 2020 after nearly a year of active development. Key features included:
+Key features included:
 
-* Support for various vector and raster data formats
-* Interactive mapping with pan, zoom, and layer control
-* Basic geoprocessing tools (buffer, clip, dissolve, etc.)
-* Python scripting interface for automation
+* Made GitHub zip importable and added .wci.yml.
+* Introduced a process stop button, organized the SSH folder, and enabled shell commands to call Python processes.
+* Added buffer size control and exit code usage for process status.
+* Fixed numerous issues on remote hosts.
+* Included new features such as hovering tips and code comparison.
+* Added process history and status.
+* Added code search function.
+* Enabled run button in side panel.
+* Allows reset password from terminal.
 
-Despite being an early version, Geoweaver quickly gained traction among GIS enthusiasts and developers due to its modern architecture and extensibility.
+## v1.0.1 - v1.2.8 (2023 - 2024)
 
-## Version 2.0 (Upcoming)
+After incorporating feedback from the user community, the Geoweaver team released new versions. This major update focused on performance improvements and added several highly requested features:
 
-The Geoweaver development team is currently working on version 3.0, which is expected to be released in late 2024.
+* Log output is real time and web socket channels are untangled.
+* Made the local logging real time.
+* Created a macOS App for Geoweaver.
+* Ability to Restore workflow.
+* Run maven tests on github actions.
 
-With each new release, the Geoweaver project continues to push the boundaries of open-source GIS software, providing users with a flexible and powerful platform for spatial data management and analysis.
+These versions solidified Geoweaver's position as a powerful open-source GIS solution and attracted interest from various industries and research institutions.
+
+## v1.3.0 - v1.6.1 (2024)
+
+This version focuses on updating features and bug fixing:
+
+* Fixed the chart visibility issue and table actions in side panel.
+* Opens dock at bottom by default.
+* Updated README.md by including latest features and modern style.
+* Navigation fix for process tab and workflow tab in Guide page.
+* Added filtering skipped process functionality.
+* Responsive Design for lower resultion devices such as ipad / tablets.
+* Support for MySQL and PostgreSQL - Production grade DB.
+* Autosaves code on Run.
+* Added support for Docker. The Geoweaver Docker image can be found here(https://hub.docker.com/repository/docker/geoweaver/geoweaver/general).
+
+For more details, you can check the Geoweaver Releases Page.
 
 
 # Citation
@@ -145,8 +162,6 @@ Sun, Z. et al., "Geoweaver: Advanced cyberinfrastructure for managing hybrid geo
 
 
 # Existing Projects
-
-[//]: # (https://scholar.google.com/scholar?hl=en&as_sdt=0%2C27&q=geoweaver&btnG=)
 
 Sun, Ziheng, Nicoleta C. Cristea, Kehan Yang, Ahmed Alnuaim, Lakshmi Chetana Gomaram Bikshapathireddy, Aji John, Justin Pflug et al. "Making machine learning-based snow water equivalent forecasting research productive and reusable by Geoweaver." In AGU fall meeting abstracts, vol. 2022, pp. IN23A-04. 2022.
 
