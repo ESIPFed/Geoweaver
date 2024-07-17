@@ -245,7 +245,7 @@ GW.history = {
             
             var status_col = this.getProcessStatusCol(msg[i].history_id, msg[i].indicator);
 
-            content += "    <tr> "+
+            content += "    <tr id=\"history-row-" + msg[i].history_id + "\">" +
                 "      <td>"+msg[i].history_id+"</td> "+
                 "      <td>"+GW.general.toDateString(msg[i].history_begin_time)+"</td> ";
 
@@ -269,7 +269,7 @@ GW.history = {
                 content +=  "      <td><a href=\"javascript: GW.process.sidepanel.showHistoryDetails('"+
                     msg[i].history_id+"')\">Details</a> &nbsp;";
             }
-
+        
             // code to display the view changes option if in case 'i' > 0
             if(i!=msg.length-1) 
                 content += "  <a href=\"javascript: GW.process.showHistoryDifference('"+
@@ -277,6 +277,10 @@ GW.history = {
                     msg[i].history_id+"','"+ 
                     msg[i+1].history_id+
                     "')\">View Changes</a> &nbsp;";
+
+            
+            content +=  "      <a href=\"javascript: GW.process.deleteHistory('"+
+            msg[i].history_id+"')\">Delete</a> &nbsp;";
 
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";

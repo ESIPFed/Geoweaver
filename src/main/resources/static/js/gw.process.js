@@ -1015,6 +1015,34 @@ GW.process = {
     );
   },
 
+   /**
+   * This function is called after people click on "Delete" in the process history table
+   * @param {*} history_id
+   */
+   deleteHistory: function (history_id) {
+    GW.process.history_id = history_id;
+    if (!confirm("Are you sure you want to delete this history?")) {
+      return;
+    }
+    $.ajax({
+        url: "deleteHistoryById",
+        method: "POST",
+        data: "type=process&id=" + history_id,
+    })
+    .done(function(msg) {
+        if (msg == "") {
+            alert("Cannot find the process history in the database.");
+            return;
+        }
+        alert("History deleted successfully.");
+        $("#history-row-" + history_id).remove();
+      })
+      .fail(function(jxr, status) {
+          console.error("Fail to Delete History.");
+      });
+  },
+
+
   getHistoryDetails: function (history_id) {
     $.ajax({
       url: "log",
