@@ -1092,6 +1092,26 @@ public class GeoweaverController {
     }
     return resp;
   }
+ /**
+ * Handles HTTP POST requests to delete a history by its ID.
+ *
+ * @param model The model to add attributes to.
+ * @param request The web request containing the history ID to be deleted.
+ * @return A response indicating the result of the deletion.
+ */
+  @RequestMapping(value = "/deleteHistoryById", method = RequestMethod.POST)
+  public @ResponseBody String deleteHistory(ModelMap model, WebRequest request) {
+    String resp = null;
+    try {
+      String hisotryid = request.getParameter("id");
+      resp = hist.deleteById(hisotryid);
+    } catch (Exception e) {
+      e.printStackTrace();
+      // Handle exceptions and throw a runtime exception with an error message.
+      throw new RuntimeException("failed " + e.getLocalizedMessage());
+    }
+    return resp;
+  }
 
   /**
    * Handles HTTP POST requests to edit a workflow.
