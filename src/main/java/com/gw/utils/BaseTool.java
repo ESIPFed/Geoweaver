@@ -152,7 +152,7 @@ public class BaseTool {
   }
 
   public static int get_current_port(){
-      String portEnv = System.getenv("SERVER_PORT");
+      String portEnv = System.getenv("GEOWEAVER_PORT");
       int port = (portEnv != null && !portEnv.isEmpty()) ? Integer.parseInt(portEnv) : DEFAULT_PORT;
       return port;
   }
