@@ -1,8 +1,10 @@
 package com.gw.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.gw.database.CheckpointRepository;
 import com.gw.database.HistoryRepository;
+import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
@@ -14,13 +16,9 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import java.io.File;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -42,6 +40,9 @@ public class WorkflowTool {
   private Logger logger = Logger.getLogger(WorkflowTool.class);
 
   @Autowired WorkflowRepository workflowrepository;
+
+  @Autowired
+  ProcessRepository processRepository;
 
   @Autowired HistoryRepository historyrepository;
 
@@ -433,7 +434,7 @@ public class WorkflowTool {
   /**
    * show the history of every execution of the workflow
    *
-   * @param string
+   * @param workflow_id
    * @return
    */
   public String all_history(String workflow_id) {
@@ -587,198 +588,90 @@ public class WorkflowTool {
    * @return
    * @throws ParseException
    */
-  public String download(String wid, String option) throws ParseException {
 
+  public String download(String wid, String option) throws ParseException {
     Workflow wf = this.getById(wid);
 
     String fileurl = "download/temp/" + wf.getId() + ".zip";
-
-    String savefilepath =
-        bt.getFileTransferFolder() + wf.getId() + FileSystems.getDefault().getSeparator();
+    String savefilepath = bt.getFileTransferFolder() + wf.getId() + FileSystems.getDefault().getSeparator();
 
     File tf = new File(savefilepath);
+    if (tf.exists()) {
+      bt.deleteDirectory(tf);
+    }
+    tf.mkdirs();
 
-    bt.deleteDirectory(tf);
+    Gson gson = new Gson();
 
-    if (!tf.exists()) tf.mkdirs();
-
-    String workflowstring = bt.toJSON(wf);
-
-    bt.writeString2File(workflowstring, savefilepath + "workflow.json");
+    // Write workflow to JSON
+    String workflowJson = gson.toJson(wf);
+    bt.writeString2File(workflowJson, savefilepath + "workflow.json");
 
     if (option.contains("processcode")) {
-
       JSONParser jsonParser = new JSONParser();
-
       JSONArray arrayobj = (JSONArray) jsonParser.parse(wf.getNodes());
 
       String codesavefile = savefilepath + "code" + FileSystems.getDefault().getSeparator();
-
       File codef = new File(codesavefile);
-
-      if (!codef.exists()) codef.mkdirs();
-
-      StringBuffer processjson = new StringBuffer("[");
-
-      String prefix = "";
-
-      for (int i = 0; i < arrayobj.size(); i++) {
-
-        try {
-
-          JSONObject jsonObj = (JSONObject) arrayobj.get(i);
-
-          String process_workflow_id = (String) jsonObj.get("id");
-
-          String process_id = process_workflow_id.split("-")[0];
-
-          String targetsourcefile = codesavefile + pt.getProcessFileName(process_id);
-
-          if (new File(targetsourcefile).exists()) continue;
-
-          GWProcess p = pt.getProcessById(process_id);
-
-          bt.writeString2File(p.getCode(), targetsourcefile);
-
-          processjson.append(prefix);
-
-          prefix = ",";
-
-          processjson.append(pt.toJSON(p));
-
-        } catch (Exception e) {
-
-          e.printStackTrace();
-        }
+      if (!codef.exists()) {
+        codef.mkdirs();
       }
 
-      processjson.append("]");
+      List<String> processIds = new ArrayList<>();
+      for (Object obj : arrayobj) {
+        JSONObject jsonObj = (JSONObject) obj;
+        String process_workflow_id = (String) jsonObj.get("id");
+        String process_id = process_workflow_id.split("-")[0];
+        processIds.add(process_id);
+      }
 
-      bt.writeString2File(processjson.toString(), codesavefile + "process.json");
+      // Fetch all processes at once
+      List<GWProcess> processes = pt.getProcessesByIds(processIds);
+      String processJson = gson.toJson(processes);
+
+      bt.writeString2File(processJson, codesavefile + "process.json");
+
+      // Write individual process code files
+      processes.parallelStream().forEach(process -> {
+        String targetSourceFile = codesavefile + pt.getProcessFileName(process.getId());
+        bt.writeString2File(process.getCode(), targetSourceFile);
+      });
     }
 
     if (option.contains("history")) {
+      String wfhistorysavefile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + wid + ".json";
 
-      String wfhistorysavefile =
-          savefilepath + "history" + FileSystems.getDefault().getSeparator() + wid + ".json";
-
-      // first save all history of the workflow
-
+      // Fetch workflow history
       List<History> histlist = historyrepository.findByWorkflowId(wid);
+      String workflowHistoryJson = gson.toJson(histlist);
+      bt.writeString2File(workflowHistoryJson, wfhistorysavefile);
 
-      StringBuffer workflowhistory = new StringBuffer("[");
-
-      String prefix = "";
-
+      // Collect process IDs and fetch process histories
+      HashSet<String> processIdSet = new HashSet<>();
       for (History h : histlist) {
-
-        if ("workflowwithprocesscodegoodhistory".equals(option)
-            && !ExecutionStatus.DONE.equals(h.getIndicator())) {
-
+        if ("workflowwithprocesscodegoodhistory".equals(option) && !ExecutionStatus.DONE.equals(h.getIndicator())) {
           continue;
         }
 
-        String historystr = bt.toJSON(h);
-
-        workflowhistory.append(prefix);
-
-        prefix = ",";
-
-        workflowhistory.append(historystr);
-      }
-      ;
-
-      workflowhistory.append("]");
-
-      bt.writeString2File(workflowhistory.toString(), wfhistorysavefile);
-
-      // second, save process history of one workflow execution into a file
-      HashSet<String> process_id_set = new HashSet<>();
-
-      for (History h : histlist) {
-
-        if ("workflowwithprocesscodegoodhistory".equals(option)
-            && !ExecutionStatus.DONE.equals(h.getIndicator())) {
-
-          continue;
-        }
-
-        String[] processhistorylist = h.getHistory_output().split(";");
-
-        prefix = "";
-
-        String processhistorysavefile =
-            savefilepath
-                + "history"
-                + FileSystems.getDefault().getSeparator()
-                + h.getHistory_id()
-                + ".json"; // all the process history of one workflow run
-
-        StringBuffer processhistorybuffer = new StringBuffer("[");
-
-        for (String processhitoryid : processhistorylist) {
-
-          Optional<History> hisop = historyrepository.findById(processhitoryid);
-
-          if (hisop.isPresent()) {
-
-            History hist = hisop.get();
-
-            if ("workflowwithprocesscodegoodhistory".equals(option)
-                && !ExecutionStatus.DONE.equals(hist.getIndicator())) {
-
-              continue;
-            }
-
-            processhistorybuffer.append(prefix);
-
-            prefix = ",";
-
-            processhistorybuffer.append(bt.toJSON(hist));
-
-            if (!process_id_set.contains(hist.getHistory_process()))
-              process_id_set.add(hist.getHistory_process());
-          }
-        }
-
-        processhistorybuffer.append("]");
-
-        bt.writeString2File(processhistorybuffer.toString(), processhistorysavefile);
+        String[] processHistoryList = h.getHistory_output().split(";");
+        Collections.addAll(processIdSet, processHistoryList);
       }
 
-      // if need all the history of the involved processes, go into this if
-      if (option.contains("allhistory") || "workflowwithprocesscodegoodhistory".equals(option)) {
+      if (!processIdSet.isEmpty()) {
+        // Fetch all process histories at once
+        List<String> processIdList = new ArrayList<>(processIdSet);
+        List<History> allProcessHistories = historyrepository.findByProcessIds(processIdList);
+        Map<String, List<History>> processHistoriesMap = allProcessHistories.stream()
+                .collect(Collectors.groupingBy(History::getHistory_process));
 
-        for (String history_process_id : process_id_set) {
+        // Write each process history to its respective file
+        processIdSet.parallelStream().forEach(processId -> {
+          List<History> processHistories = processHistoriesMap.get(processId);
+          String processHistoryJson = gson.toJson(processHistories);
 
-          histlist = historyrepository.findByProcessIdFull(history_process_id);
-
-          StringBuffer allprocesshistorybuffer = new StringBuffer("[");
-
-          // every process has a history file
-          String allprocesshistorysavefile =
-              savefilepath
-                  + "history"
-                  + FileSystems.getDefault().getSeparator()
-                  + "process_"
-                  + history_process_id
-                  + ".json";
-
-          for (History hist : histlist) {
-
-            if ("workflowwithprocesscodegoodhistory".equals(option)
-                && !ExecutionStatus.DONE.equals(hist.getIndicator())) {
-
-              continue;
-            }
-
-            allprocesshistorybuffer.append(bt.toJSON(hist)).append(",");
-          }
-
-          allprocesshistorybuffer.append("]");
-
-          bt.writeString2File(allprocesshistorybuffer.toString(), allprocesshistorysavefile);
-        }
+          String processHistorySaveFile = savefilepath + "history" + FileSystems.getDefault().getSeparator() + "process_" + processId + ".json";
+          bt.writeString2File(processHistoryJson, processHistorySaveFile);
+        });
       }
     }
 

@@ -1,12 +1,13 @@
 package com.gw.database;
 
 import com.gw.jpa.History;
-import com.gw.jpa.HistoryDTO;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 
@@ -162,5 +163,12 @@ public interface HistoryRepository extends JpaRepository<History, String> {
 
   @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_id = ?1 AND history.history_process = gwprocess.id", nativeQuery = true)
   List<Object[]> findOneHistoryofProcess(String history_id);
+
+
+  @Query(
+          value = "SELECT * FROM history WHERE history_process IN (:processIds)",
+          nativeQuery = true)
+  List<History> findByProcessIds(@Param("processIds") List<String> processIds);
+
 
 }
