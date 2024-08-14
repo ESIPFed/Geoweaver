@@ -2,6 +2,9 @@ package com.gw.database;
 
 import com.gw.jpa.GWProcess;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -77,4 +80,10 @@ public interface ProcessRepository extends CrudRepository<GWProcess, String> {
    */
   @Query(value = "select * from gwprocess where lang = 'jupyter'", nativeQuery = true)
   Collection<GWProcess> findNotebookProcess();
+
+
+  @Query(
+          value = "SELECT * FROM gwprocess WHERE id IN :ids",
+          nativeQuery = true)
+  List<GWProcess> findProcessesByIds(@Param("ids") List<String> ids);
 }

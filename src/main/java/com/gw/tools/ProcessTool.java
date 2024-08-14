@@ -2,10 +2,7 @@ package com.gw.tools;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -744,6 +741,9 @@ public class ProcessTool {
 		return all_history(pid, false, mode);
 
 	}
-	
-	
+
+
+	public List<GWProcess> getProcessesByIds(List<String> processIds) {
+		return processrepository.findProcessesByIds(processIds);
+	}
 }
