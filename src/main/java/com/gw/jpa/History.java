@@ -4,6 +4,7 @@ package com.gw.jpa;
 import lombok.Data;
 
 
+import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -26,6 +27,7 @@ public class History {
 
 	private Date history_end_time;
 
+	@Column(length = 512)
 	private String history_notes;
 
 	private String history_process;
