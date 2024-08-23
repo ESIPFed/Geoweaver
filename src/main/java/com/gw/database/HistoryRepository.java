@@ -6,6 +6,7 @@ import com.gw.jpa.HistoryDTO;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
@@ -163,4 +164,8 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   @Query(value = "SELECT * FROM history, gwprocess WHERE history.history_id = ?1 AND history.history_process = gwprocess.id", nativeQuery = true)
   List<Object[]> findOneHistoryofProcess(String history_id);
 
+
+  @Modifying
+  @Query(value = "DELETE FROM history WHERE history_process = ?1 AND indicator = ?2", nativeQuery = true)
+  void deleteByProcessAndIndicator(String historyProcess, String indicator);
 }

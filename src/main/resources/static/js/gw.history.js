@@ -195,7 +195,16 @@ GW.history = {
     },
 
     
-
+    removeFailedHistory: function(processId) {
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"processId": processId})
+        }
+        fetch("delete-failed", options)
+    },
     /**
      * Generates an HTML table with process execution history data.
      *
@@ -216,6 +225,8 @@ GW.history = {
             </div>
             
             <div id="statusFilterContainer">
+
+            <button class="history-remove-failed">Remove Failed History</button>
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
