@@ -223,11 +223,12 @@ GW.history = {
                 </select>
                 <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
             </div>
-            
-            <div id="statusFilterContainer">
+            <div id="statusFilterContainer">`;
 
-                <button id="failed-history-rm" class="history-remove-failed" data-history-process="`+ msg[0]['history_process']+ `">Remove Failed History</button>
-                <label for="statusFilter">Status:</label>
+            if (msg.length) {
+             content += `<button id="failed-history-rm" class="history-remove-failed" data-history-process="`+ msg[0]['history_process']+ `">Remove Failed History</button>`;
+            }
+                content += `<label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
                         <option value="Done">Done</option>
