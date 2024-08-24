@@ -455,6 +455,7 @@ GW.process.util = {
 
   history: function (
     pid,
+    pname,
     process_history_container_id,
     process_history_table_id,
     close_history,
@@ -466,7 +467,7 @@ GW.process.util = {
 
       method: "POST",
 
-      data: "type=process&id=" + pid,
+      data: "type=process&id=" + pid + "&pname=" + pname,
     })
       .done(function (msg) {
         // for process dialog
@@ -496,7 +497,7 @@ GW.process.util = {
         var table_selector = `${process_history_container_id} ${process_history_table_id}`;
         GW.history.applyBootstrapTable(table_selector);
 
-        GW.chart.renderProcessHistoryChart(msg, process_history_container_id);
+        GW.chart.renderProcessHistoryChart(msg, pname, process_history_container_id);
 
         $(close_history).click(function () {
           $(process_history_container_id).html("");
