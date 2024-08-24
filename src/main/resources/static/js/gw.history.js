@@ -196,14 +196,14 @@ GW.history = {
 
     
     removeFailedHistory: function(processId) {
+        const formData = new FormData();
+        formData.append('processId', processId);
         const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"processId": processId})
+            method: 'DELETE',
+            body: formData,
         }
         fetch("delete-failed", options)
+        GW.process.sidepanel.history(processId, 'testing_data_integration');
     },
     /**
      * Generates an HTML table with process execution history data.
@@ -313,15 +313,14 @@ GW.history = {
         "</div>" + content ;
 
 
-        $('#failed-history-rm').on('click', function () {
-            console.log("history removed failed clicked");
-            const historyProcess = $(this).data("history-remove-failed");
-            const userConfirmed = confirm("Are you sure you want to remove the failed history?");
+    $(document).on('click', '#failed-history-rm', function () {
+      const historyProcess = $(this).data("history-process");
+      const userConfirmed = confirm("Are you sure you want to remove the failed history?");
 
-            if (userConfirmed) {
-                GW.history.removeFailedHistory(historyProcess);
-            }
-        })
+      if (userConfirmed) {
+        GW.history.removeFailedHistory(historyProcess);
+      }
+    });
 
         return content;
 
