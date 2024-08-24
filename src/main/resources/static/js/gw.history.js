@@ -226,7 +226,7 @@ GW.history = {
             
             <div id="statusFilterContainer">
 
-            <button class="history-remove-failed">Remove Failed History</button>
+                <button id="failed-history-rm" class="history-remove-failed" data-history-process="`+ msg[0]['history_process']+ `">Remove Failed History</button>
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
@@ -304,12 +304,6 @@ GW.history = {
 
         content += "</tbody>";
 
-        $('#statusFilter').on('change', function () {
-          
-            var value = $(this).val();
-            console.log(value);
-        });
-
         // create an interactive chart to show all the data
 
         content =
@@ -317,6 +311,17 @@ GW.history = {
         "<div id=\"process-chart-container\">"+
         "<canvas id=\"process-history-chart\"></canvas>"+
         "</div>" + content ;
+
+
+        $('#failed-history-rm').on('click', function () {
+            console.log("history removed failed clicked");
+            const historyProcess = $(this).data("history-remove-failed");
+            const userConfirmed = confirm("Are you sure you want to remove the failed history?");
+
+            if (userConfirmed) {
+                GW.history.removeFailedHistory(historyProcess);
+            }
+        })
 
         return content;
 
