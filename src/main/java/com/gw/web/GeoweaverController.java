@@ -26,12 +26,7 @@ import com.gw.utils.RandomString;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +59,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -1638,4 +1634,16 @@ public class GeoweaverController {
 
 		return resp;
 	}
+
+    @DeleteMapping("/delete-failed")
+    public ResponseEntity<Map<String, Boolean>> deleteFailedProcesses(@RequestParam(required = false) String processId) {
+      Map<String, Boolean> response = new HashMap<>();
+      if (processId == null || processId.trim().isEmpty()) {
+        response.put("failed", false);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+      }
+      hist.deleteFailedHistory(processId);
+      response.put("success", true);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
