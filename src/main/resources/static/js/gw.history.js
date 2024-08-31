@@ -258,9 +258,11 @@ GW.history = {
                 GW.history.active_process_history_list.push(msg[i])
             }
 
-            content += "	   <td>"+msg[i].history_notes+"</td>"+
-                status_col;
-
+            if (msg[i].history_notes.length) {
+                content += "	   <td>"+ msg[i].history_notes  +"</td>"+ status_col;
+            } else {
+                content += "<td> <input style='color: black;' id='ejbeatycelledit'  type='text' onkeyup=\"if(event.keyCode==13) { $(this).updateEditableCell(this); }\">  </td>" + status_col;
+            }
 
             if(!GW.process.sidepanel.isPresent()){
                 content +=  "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+
