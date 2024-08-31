@@ -1034,7 +1034,7 @@ GW.process = {
             alert("Cannot find the process history in the database.");
             return;
         }
-        alert("History deleted successfully.");
+        console.log("History "+history_id+" is deleted successfully.");
         $("#history-row-" + history_id).remove();
       })
       .fail(function(jxr, status) {
