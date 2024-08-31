@@ -487,11 +487,10 @@ GW.process.util = {
 
         GW.history.stopAllTimers();
 
-        $(process_history_container_id).html(
-          GW.history.getProcessHistoryTable(msg),
-        );
-
-        GW.history.startActiveTimer();
+          $(process_history_container_id).html(
+              GW.history.getProcessHistoryTable(msg),
+          );
+          GW.history.startActiveTimer();
 
         var table_selector = `${process_history_container_id} ${process_history_table_id}`;
         GW.history.applyBootstrapTable(table_selector);

@@ -203,7 +203,7 @@ GW.history = {
             body: formData,
         }
         fetch("delete-failed", options)
-        GW.process.sidepanel.history(processId, 'testing_data_integration');
+        // GW.process.sidepanel.history(processId, 'testing_data_integration');
     },
     /**
      * Generates an HTML table with process execution history data.
@@ -212,6 +212,12 @@ GW.history = {
      * @returns {string} - HTML content of the process execution history table.
      */
     getProcessHistoryTable: function(msg){
+        let hasFailedProcess;
+        if (msg.length > 0) {
+            hasFailedProcess = msg.some((item) => item.indicator === "Failed");
+        } else {
+            hasFailedProcess = false;
+        }
 
         let content = `
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -225,8 +231,15 @@ GW.history = {
             </div>
             <div id="statusFilterContainer">`;
 
-            if (msg.length) {
-             content += `<button id="failed-history-rm" class="history-remove-failed" data-history-process="`+ msg[0]['history_process']+ `">Remove Failed History</button>`;
+            if (msg.length && hasFailedProcess) {
+
+                content += `<button id="failed-history-rm" 
+                                onclick="(function(){ GW.history.removeFailedHistory('${msg[0]['history_process']}'); 
+                                window.alert('Actions will reflect on next page load. Processing.') })()" 
+                                    class="history-remove-failed" 
+                                    data-history-process="` + msg[0]['history_process'] + `"
+                                    >
+                                Remove Failed History</button>`;
             }
                 content += `<label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
@@ -314,17 +327,8 @@ GW.history = {
         "</div>" + content ;
 
 
-    $(document).on('click', '#failed-history-rm', function () {
-      const historyProcess = $(this).data("history-process");
-      const userConfirmed = confirm("Are you sure you want to remove the failed history?");
-
-      if (userConfirmed) {
-        GW.history.removeFailedHistory(historyProcess);
-      }
-    });
 
         return content;
-
     },
 
     /**
@@ -462,6 +466,16 @@ GW.history = {
 
 
         $(document).ready(function() {
+
+            $(document).on('click', '#failed-history-rm', function () {
+                const historyProcess = $(this).data("history-remove-failed");
+                if (historyProcess) {
+                    GW.history.removeFailedHistory(historyProcess);
+                } else {
+                    console.error('Error: history-remove-failed attribute is missing or undefined.');
+                }
+            });
+
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();
