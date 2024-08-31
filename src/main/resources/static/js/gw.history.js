@@ -304,8 +304,8 @@ GW.history = {
                     "')\">View Changes</a> &nbsp;";
 
             
-            content +=  "      <a href=\"javascript: GW.process.deleteHistory('"+
-            msg[i].history_id+"')\">Delete</a> &nbsp;";
+            content +=  `      <a href="javascript: GW.process.deleteHistory('`+
+            msg[i].history_id+`')">Delete</a> &nbsp;`;
 
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";
@@ -475,7 +475,7 @@ GW.history = {
                     console.error('Error: history-remove-failed attribute is missing or undefined.');
                 }
             });
-
+            
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();

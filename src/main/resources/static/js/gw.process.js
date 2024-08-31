@@ -1035,7 +1035,9 @@ GW.process = {
             return;
         }
         console.log("History "+history_id+" is deleted successfully.");
-        $("#history-row-" + history_id).remove();
+        var row = $('tr[id="history-row-' + history_id + '"]');
+        var table = $('#process_history_table').DataTable();
+        table.row(row).remove().draw();  // remove the row from the table completely without refresh
       })
       .fail(function(jxr, status) {
           console.error("Fail to Delete History.");
