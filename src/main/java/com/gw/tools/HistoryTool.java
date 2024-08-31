@@ -466,6 +466,11 @@ public class HistoryTool {
     }
   }
 
+
+  public void deleteFailedHistory(String processId) {
+    historyrepository.deleteByProcessAndIndicator(processId, ExecutionStatus.FAILED);
+  }
+
   public void saveSkippedHisotry(String historyid, String workflow_process_id, String hostid) {
 
     try {

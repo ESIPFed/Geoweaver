@@ -195,7 +195,16 @@ GW.history = {
     },
 
     
-
+    removeFailedHistory: function(processId) {
+        const formData = new FormData();
+        formData.append('processId', processId);
+        const options = {
+            method: 'DELETE',
+            body: formData,
+        }
+        fetch("delete-failed", options)
+        // GW.process.sidepanel.history(processId, 'testing_data_integration');
+    },
     /**
      * Generates an HTML table with process execution history data.
      *
@@ -203,6 +212,12 @@ GW.history = {
      * @returns {string} - HTML content of the process execution history table.
      */
     getProcessHistoryTable: function(msg){
+        let hasFailedProcess;
+        if (msg.length > 0) {
+            hasFailedProcess = msg.some((item) => item.indicator === "Failed");
+        } else {
+            hasFailedProcess = false;
+        }
 
         let content = `
         <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -214,9 +229,19 @@ GW.history = {
                 </select>
                 <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
             </div>
-            
-            <div id="statusFilterContainer">
-                <label for="statusFilter">Status:</label>
+            <div id="statusFilterContainer">`;
+
+            if (msg.length && hasFailedProcess) {
+
+                content += `<button id="failed-history-rm" 
+                                onclick="(function(){ GW.history.removeFailedHistory('${msg[0]['history_process']}'); 
+                                window.alert('Actions will reflect on next page load. Processing.') })()" 
+                                    class="history-remove-failed" 
+                                    data-history-process="` + msg[0]['history_process'] + `"
+                                    >
+                                Remove Failed History</button>`;
+            }
+                content += `<label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
                         <option value="Done">Done</option>
@@ -279,8 +304,8 @@ GW.history = {
                     "')\">View Changes</a> &nbsp;";
 
             
-            content +=  "      <a href=\"javascript: GW.process.deleteHistory('"+
-            msg[i].history_id+"')\">Delete</a> &nbsp;";
+            content +=  `      <a href="javascript: GW.process.deleteHistory('`+
+            msg[i].history_id+`')">Delete</a> &nbsp;`;
 
             if(msg[i].indicator == "Running"){
                 content += "		<a href=\"javascript: void(0)\" id=\"stopbtn_"+msg[i].history_id+"\" onclick=\"GW.process.stop('"+msg[i].history_id+"')\">Stop</a>";
@@ -293,12 +318,6 @@ GW.history = {
 
         content += "</tbody>";
 
-        $('#statusFilter').on('change', function () {
-          
-            var value = $(this).val();
-            console.log(value);
-        });
-
         // create an interactive chart to show all the data
 
         content =
@@ -307,8 +326,9 @@ GW.history = {
         "<canvas id=\"process-history-chart\"></canvas>"+
         "</div>" + content ;
 
-        return content;
 
+
+        return content;
     },
 
     /**
@@ -446,6 +466,16 @@ GW.history = {
 
 
         $(document).ready(function() {
+
+            $(document).on('click', '#failed-history-rm', function () {
+                const historyProcess = $(this).data("history-remove-failed");
+                if (historyProcess) {
+                    GW.history.removeFailedHistory(historyProcess);
+                } else {
+                    console.error('Error: history-remove-failed attribute is missing or undefined.');
+                }
+            });
+            
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
                 const selectedStatus = $('#statusFilter').val().toLowerCase();

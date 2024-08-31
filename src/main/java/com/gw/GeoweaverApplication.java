@@ -40,7 +40,6 @@ public class GeoweaverApplication {
   private static String workspace;
 
   public static void main(String[] args) {
-
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
 
@@ -73,6 +72,7 @@ public class GeoweaverApplication {
       addDefaultPublicUser();
 
       addLocalhost();
+
 
       System.out.println("GeoWeaver is started and ready for use..");
       System.out.println("URL: http://localhost:"+BaseTool.get_current_port()+"/Geoweaver");
