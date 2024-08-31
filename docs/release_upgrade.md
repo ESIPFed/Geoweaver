@@ -8,7 +8,10 @@ To upgrade Geoweaver to a new version, follow these steps to update the necessar
 2. **Remove Latest Tag**
     - Navigate to the relevant directory to check out the latest master branch.
         ```bash
+        mkdir -p ../rmlatest
         cd ../rmlatest
+        git clone https://github.com/ESIPFed/Geoweaver.git
+        cd Geoweaver
         ```
     - Remove the `latest` tag from the remote repository.
         ```bash
@@ -27,14 +30,13 @@ To upgrade Geoweaver to a new version, follow these steps to update the necessar
     - Note: This action might trigger a workflow, which you can cancel if it’s not needed at this point.
 
 5. **Draft a New Release**
-    - On GitHub, draft a new release.
+    - On GitHub release page, draft a new release.
     - Choose a new tag version (e.g., `v1.5.2-pre`) and select the previous tag version as the target (e.g., `v1.5.1`).
-    - Generate the release notes and publish the release.
-    - Wait for the `release_workflow` to complete.
+    - Click button to automatically generate the release notes, and then publish the release.
+    - Wait for the `release_workflow` in the GitHub Action to complete.
 
 6. **Update Release Tag to Latest**
-    - Once the release workflow is finished, update the release tag (e.g., `v1.5.2-pre`) back to `latest`.
-    - This ensures that PyGeoweaver and other installers will download the latest jar.
+    - Once the release workflow is finished, you should see the installers and JAR files are attached on the new release page as artifacts. Update the release tag (e.g., `v1.5.2-pre`) back to `latest`. This ensures that PyGeoweaver and other installers will download the latest jar.
     - Click "Update release" to save the changes.
 
-By following these steps, you ensure that the Geoweaver release process is smooth and all necessary updates are properly managed.
+Once all these steps are completed, the new version of Geoweaver should be published, and available to be pulled by either the URL or the [`pygeoweaver`](https://github.com/ESIPFed/pygeoweaver) library.
