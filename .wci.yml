@@ -1,6 +1,6 @@
 name: Geoweaver
 
-icon: https://raw.githubusercontent.com/ESIPFed/Geoweaver/master/docs/img/header.png
+icon: https://raw.githubusercontent.com/ESIPFed/Geoweaver/main/docs/img/header.png
 
 headline: a lightweight workflow software to easily orchestrate pipelines from Python and shell scripts and preserve history of every execution
 
