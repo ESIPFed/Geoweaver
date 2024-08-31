@@ -118,7 +118,8 @@ jQuery.fn.dataTable.Api.register('MakeCellsEditable()', function (settings) {
                 if (!$(cell).find('input').length && !$(cell).find('select').length && !$(cell).find('textarea').length) {
                     // Input CSS
                     var input = getInputHtml(currentColumnIndex, settings, oldValue);
-                    var modifiedInputHtml = $(input.html).attr('onkeyup', 'if(event.keyCode==13) { $(this).updateEditableCell(this); }').prop('outerHTML');
+                    var modifiedInputHtml = input.html.replace(/<input/g, '<input style="color: black;" onkeyup="if(event.keyCode==13) { $(this).updateEditableCell(this); }"');
+
                     $(cell).html(modifiedInputHtml);
                     if (input.focus) {
                         $('#ejbeatycelledit').focus();
