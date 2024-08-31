@@ -283,9 +283,7 @@ GW.history = {
                 GW.history.active_process_history_list.push(msg[i])
             }
 
-            content += "	   <td>"+msg[i].history_notes+"</td>"+
-                status_col;
-
+            content += "	   <td>"+ msg[i].history_notes  +"</td>"+ status_col;
 
             if(!GW.process.sidepanel.isPresent()){
                 content +=  "      <td><a href=\"javascript: GW.process.showHistoryDetails('"+

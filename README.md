@@ -3,7 +3,7 @@ https://img.shields.io/github/actions/workflow/status/ESIPFed/Geoweaver/release_
 )
 [![License](
 https://img.shields.io/github/license/ESIPFed/Geoweaver?style=for-the-badge
-)](https://github.com/ESIPFed/Geoweaver/blob/master/LICENSE)
+)](https://github.com/ESIPFed/Geoweaver/blob/main/LICENSE)
 [![Stars](
 https://img.shields.io/github/stars/ESIPFed%2FGeoweaver?style=for-the-badge
 )](https://github.com/ESIPFed/Geoweaver/stargazers) 
