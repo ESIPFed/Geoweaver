@@ -764,6 +764,7 @@ GW.process = {
 
     $("#add-process-" + GW.process.cmid).click(function () {
       if (GW.process.add(false, GW.process.cmid)) frame.closeFrame();
+      cmid = Math.floor(Math.random() * 1000);
     });
 
     $("#run-process-" + GW.process.cmid).click(function () {
@@ -1326,6 +1327,9 @@ GW.process = {
 
     owner = msg.owner;
 
+
+    GW.process.cmid = Math.floor(Math.random() * 1000);
+
     var confidential_field =
       '     <div class="col-sm-1 col-form-label control-label">Confidential </div>' +
       '     <div class="col-sm-2" style="padding-left:30px;">';
@@ -1465,12 +1469,12 @@ GW.process = {
 
     $("#processid").val(process_id);
 
-    GW.process.displayCodeArea(process_id, process_name, code_type, code);
+    GW.process.displayCodeArea(process_id, process_name, code_type, code, GW.process.cmid);
 
     GW.process.displayToolbar(process_id, process_name, code_type);
 
     $("#showCurrent").click(function () {
-      GW.menu.details(process_id, "process");
+      GW.menu.details(process_id);
 
       GW.process.showSaved();
     });
@@ -1569,12 +1573,13 @@ GW.process = {
     $("#" + codeareaid).append(cont);
   },
 
-  displayCodeArea: function (process_id, process_name, code_type, code) {
+  displayCodeArea: function (process_id, process_name, code_type, code, cmid) {
     GW.process.util.displayCodeArea(
       code_type,
       code,
       "#code-embed",
       "#process_code_window",
+      cmid,
     );
   },
 
@@ -1607,6 +1612,7 @@ GW.process = {
         GW.process.current_pid = $("#processid").val();
 
         GW.process.update(GW.process.current_pid);
+        // GW.process.update(GW.process.current_pid, GW.process.cmid);
 
         $("#processcategory").prop("disabled", true); //don't allow change of process category
 
@@ -1903,6 +1909,7 @@ GW.process = {
 
     var pdesc = $("#processcategory").val();
 
+    // var pcode = GW.process.getCode(cmid);
     var pcode = GW.process.getCode();
 
     var confidential = $('input[name="confidential_process"]:checked').val();
@@ -1967,6 +1974,19 @@ GW.process = {
 
           GW.process.expand(req.lang);
 
+          // GW.menu.details(msg.id, 'process').click();
+
+          // GW.process.display(msg);
+          console.log("add process id: " + msg.id);
+
+          setTimeout(function() {
+            // if (GW.process.editor) {
+            //     GW.process.editor.setValue(req.code); // Set the editor's content to the added process code
+            // }
+            GW.menu.details(msg.id, 'process')?.click();
+          }, 100); 
+
+
           if (run)
             GW.process.runProcess(
               msg.id,
@@ -1984,6 +2004,8 @@ GW.process = {
 
       return false;
     }
+    // cmid = Math.floor(Math.random() * 1000);
+    // console.log("after add: " + cmid);
   },
 
   /**
