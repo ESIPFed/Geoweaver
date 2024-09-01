@@ -219,6 +219,7 @@ GW.history = {
                 <label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
+                        <option value="Running ">Running</option>
                         <option value="Done">Done</option>
                         <option value="Stopped">Stopped</option>
                         <option value="Failed">Failed</option>
@@ -292,7 +293,6 @@ GW.history = {
         content += "</tbody>";
 
         $('#statusFilter').on('change', function () {
-          
             var value = $(this).val();
             console.log(value);
         });
