@@ -171,4 +171,3 @@ Sun, Ziheng, Liping Di, Jason Tullis, Annie Bryant Burgess, and Andrew Magill. "
 
 Sun, Ziheng, Liping Di, Annie Burgess, Jason A. Tullis, and Andrew B. Magill. "Geoweaver: Advanced cyberinfrastructure for managing hybrid geoscientific AI workflows." ISPRS International Journal of Geo-Information 9, no. 2 (2020): 119.
 
-Sun, Ziheng, Liping Di, Jason Tullis, Annie Bryant Burgess, and Andrew Magill. "Geoweaver: Connecting Dots for Artificial Intelligence in Geoscience." In AGU Fall Meeting Abstracts, vol. 2020, pp. IN011-02. 2020.
