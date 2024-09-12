@@ -1,5 +1,14 @@
 {
   "devDependencies": {
-    "cypress": "^13.9.0"
+    "cypress": "^13.9.0",
+    "jsdom": "^25.0.0",
+    "vitest": "^2.0.5"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "jsdom-global": "^3.0.2"
   }
 }
