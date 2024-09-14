@@ -431,3 +431,45 @@ form .progress {
   cursor: pointer;
 
 }
+
+.result-full-height {
+  height: calc(100%-20px);
+}
+#result-left-panel {
+  height: 100%; /* Full height within the parent */
+  overflow-y: auto; /* Scrollable when content overflows */
+}
+#result-file-list {
+  max-height: 100vh; /* Limit the height to viewport height */
+  overflow-y: auto; /* Scrollable */
+  padding: 0;
+}
+.result-list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.result-list-group-item:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+.result-card {
+  border-radius: 0.5rem;
+}
+.result-card-body {
+  padding: 1.25rem;
+}
+.result-dark-theme {
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+.result-dark-theme .card {
+  background-color: #495057;
+  border: 1px solid #6c757d;
+}
+.result-dark-theme .list-group-item {
+  background-color: #495057;
+  border-color: #6c757d;
+}
+.result-dark-theme .list-group-item:hover {
+  background-color: #6c757d;
+}
