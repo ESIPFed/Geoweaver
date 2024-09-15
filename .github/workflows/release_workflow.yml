@@ -78,7 +78,7 @@ jobs:
           dpkg-deb --build . geoweaver.deb
 
       - name: Upload Geoweaver Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: geoweaver-artifacts
           path: |
@@ -139,7 +139,7 @@ jobs:
           run: '& "C:\Program Files (x86)\NSIS\makensis.exe" windows-deployment/installer.nsi'
 
         - name: Upload Windows Installer to Release
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v3
           with:
             name: geoweaver-windows-installer
             path: D:\a\Geoweaver\Geoweaver\windows-deployment\GeoweaverInstaller.exe
@@ -178,7 +178,7 @@ jobs:
           df -h
           hdiutil create -volname "$APP_NAME" -srcfolder "${DMG_TEMP_DIR}" -ov -format UDZO -fs HFS+ "${GITHUB_WORKSPACE}/${APP_NAME}.dmg"
       - name: Upload .dmg file as an artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: geoweaver-dmg
           path: /Users/runner/work/Geoweaver/Geoweaver/Geoweaver.dmg
