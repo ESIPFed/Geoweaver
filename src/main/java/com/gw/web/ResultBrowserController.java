@@ -51,6 +51,12 @@ public class ResultBrowserController {
                         Path relativePath = rootLocation.relativize(path);
                         String pathWithSubfolder = subfolder + "/" + relativePath.toString();
                         pathWithSubfolder = pathWithSubfolder.replaceAll("^/+","");
+
+                        // Check if pathWithSubfolder contains any attempts to go up the directory
+                        Path normalizedSubfolderPath = Paths.get(pathWithSubfolder).normalize();
+                        if (normalizedSubfolderPath.startsWith("..")) {
+                            throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
+                        }
                         
                         fileDetails.put("name", rootLocation.relativize(path).toString()); // Relative path
                         fileDetails.put("path", pathWithSubfolder); // Relative path
@@ -71,8 +77,11 @@ public class ResultBrowserController {
                         
                         // Add formatted last modified time to file details
                         fileDetails.put("modified", formattedDateTime);
-                    } catch (IOException e) {
+                    } catch (IOException e){
                         e.printStackTrace();
+                    }catch (SecurityException e) {
+                        System.out.println("Error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error occurred"));
+                        throw e;
                     }
                     return fileDetails;
                 })
@@ -87,6 +96,10 @@ public class ResultBrowserController {
             Path filePath = Paths.get(resultfolder).resolve(path).normalize();
             System.out.println("File path: " + filePath.toAbsolutePath());
 
+            if (!filePath.startsWith(resultfolder)) {
+                throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
+            }
+
             // Create a FileSystemResource instead of UrlResource
             Resource resource = new FileSystemResource(filePath.toFile());
             if (resource.exists() || resource.isReadable()) {
@@ -99,6 +112,9 @@ public class ResultBrowserController {
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+        }catch (SecurityException e) {
+            System.out.println("Error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error occurred"));
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -111,6 +127,10 @@ public class ResultBrowserController {
         String resultfolder = bt.getResultsFolder();
         Path filePath = Paths.get(resultfolder).resolve(filename).normalize();
         System.out.println("File path: " + filePath.toAbsolutePath());
+
+        if (!filePath.startsWith(resultfolder)) {
+            throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
+        }
 
         // Create a FileSystemResource instead of UrlResource
         Resource resource = new FileSystemResource(filePath.toFile());
