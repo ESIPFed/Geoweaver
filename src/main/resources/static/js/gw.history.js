@@ -477,15 +477,15 @@ GW.history = {
             
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                const selectedStatus = $('#statusFilter').val().toLowerCase();
-                const rowStatus = data[4].toLowerCase();
-        
-               
-        
-                if(selectedStatus === "" && rowStatus === "skipped") {
+                const selectedStatus = ($('#statusFilter').val() || "").toLowerCase();  // Ensure it's a string
+                const rowStatus = (data[4] || "").toLowerCase();  // Ensure it's a string
+                
+                // If selected status is empty and the row status is "skipped", exclude this row
+                if (selectedStatus === "" && rowStatus === "skipped") {
                     return false;
                 }
-        
+
+                // If no filter is applied or the row matches the selected filter, include the row
                 return selectedStatus === "" || rowStatus === selectedStatus;
             });
         

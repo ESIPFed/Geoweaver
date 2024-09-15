@@ -7,7 +7,7 @@ GW.result.browser = {
         GW.result.browser.render_file_list()
 
         $('#result-refresh-button').on('click', function() {
-            GW.result.browser.loadFolderContents("", GW.result.browser.fileTable);; // Reload the data from the server
+            GW.result.browser.loadFolderContents("");; // Reload the data from the server
         });
 
     },
@@ -77,7 +77,7 @@ GW.result.browser = {
             ]
         });
 
-        GW.result.browser.loadFolderContents("", GW.result.browser.fileTable);
+        GW.result.browser.loadFolderContents("");
 
         // Add click event to folder rows
         $('#file-list-table tbody').on('click', 'tr td:first-child', function () {
@@ -85,7 +85,7 @@ GW.result.browser = {
             if (rowData.isDirectory) {
                 // If the row is a folder, navigate into it
                 var path = rowData.path;
-                GW.result.browser.loadFolderContents(path, GW.result.browser.fileTable);
+                GW.result.browser.loadFolderContents(path);
             }
         });
 
@@ -119,7 +119,7 @@ GW.result.browser = {
     },
 
     // Function to load folder contents
-    loadFolderContents: function(folderPath = '', fileTable) {
+    loadFolderContents: function(folderPath = '') {
         $('#file-list-table').before(`
             <div id="loading-message" style="text-align: center; margin-bottom: 10px;">
                 <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-right: 10px;"></i>
@@ -128,7 +128,7 @@ GW.result.browser = {
         `);
 
         // Clear existing table data
-        fileTable.clear().draw();
+        GW.result.browser.fileTable.clear().draw();
 
         $.ajax({
             url: '/Geoweaver/results', // API endpoint to get file list
@@ -149,8 +149,8 @@ GW.result.browser = {
                 }
                 
                 // Add new data to the table
-                fileTable.rows.add(data);
-                fileTable.draw();
+                GW.result.browser.fileTable.rows.add(data);
+                GW.result.browser.fileTable.draw();
             },
             error: function (err) {
                 // Remove loading message
