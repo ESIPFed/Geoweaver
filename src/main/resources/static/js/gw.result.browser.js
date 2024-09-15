@@ -110,8 +110,6 @@ GW.result.browser = {
 
     },
 
-    
-
     formatFileSize: function(bytes){
         if (bytes === 0) return '0 B';
         const k = 1024;
@@ -125,7 +123,7 @@ GW.result.browser = {
         $('#file-list-table').before(`
             <div id="loading-message" style="text-align: center; margin-bottom: 10px;">
                 <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-right: 10px;"></i>
-                Loading...
+                Loading Folder `+folderPath+` ...
             </div>
         `);
 
@@ -141,7 +139,7 @@ GW.result.browser = {
                 $('#loading-message').remove();
                 if(folderPath!=""){
                     var newItem = {
-                        "path": "..",
+                        "path": GW.result.browser.resolvePath(folderPath+"/.."),
                         "size": 0,
                         "name": "..",
                         "modified": "",
@@ -162,6 +160,24 @@ GW.result.browser = {
                 alert('Failed to load data: ' + error);
             }
         });
+    },
+
+    resolvePath: function(folderPath) {
+        const parts = folderPath.split('/'); // Split path into parts
+        const resolvedParts = [];
+    
+        for (let part of parts) {
+            if (part === '' || part === '.') {
+                continue; // Ignore empty or current directory parts
+            }
+            if (part === '..') {
+                resolvedParts.pop(); // Go up one directory
+            } else {
+                resolvedParts.push(part); // Add valid part to the result
+            }
+        }
+    
+        return resolvedParts.join('/');
     },
 
     loadFileList: function() {
