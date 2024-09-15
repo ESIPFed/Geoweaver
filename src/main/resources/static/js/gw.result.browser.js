@@ -6,10 +6,14 @@ GW.result.browser = {
         // GW.result.browser.loadFileList();
         GW.result.browser.render_file_list()
 
+        $('#result-refresh-button').on('click', function() {
+            GW.result.browser.loadFolderContents("", GW.result.browser.fileTable);; // Reload the data from the server
+        });
+
     },
 
     render_file_list: function(){
-        var fileTable = $('#file-list-table').DataTable({
+        GW.result.browser.fileTable = $('#file-list-table').DataTable({
             columns: [
                 { data: 'name', render: function (data, type, row) {
                     let icon = '<i class="fas fa-file"></i>'; // Default icon
@@ -73,15 +77,15 @@ GW.result.browser = {
             ]
         });
 
-        GW.result.browser.loadFolderContents("", fileTable);
+        GW.result.browser.loadFolderContents("", GW.result.browser.fileTable);
 
         // Add click event to folder rows
         $('#file-list-table tbody').on('click', 'tr td:first-child', function () {
-            var rowData = fileTable.row($(this).closest('tr')).data();
+            var rowData = GW.result.browser.fileTable.row($(this).closest('tr')).data();
             if (rowData.isDirectory) {
                 // If the row is a folder, navigate into it
                 var path = rowData.path;
-                GW.result.browser.loadFolderContents(path, fileTable);
+                GW.result.browser.loadFolderContents(path, GW.result.browser.fileTable);
             }
         });
 
@@ -105,6 +109,8 @@ GW.result.browser = {
         });
 
     },
+
+    
 
     formatFileSize: function(bytes){
         if (bytes === 0) return '0 B';
