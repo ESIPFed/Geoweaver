@@ -84,6 +84,9 @@ public class BaseTool {
   @Value("${geoweaver.upload_file_path}")
   String upload_file_path;
 
+  @Value("${geoweaver.result_file_path}")
+  String result_file_path;
+
   @Value("${geoweaver.prefixurl}")
   String prefixurl;
 
@@ -373,6 +376,21 @@ public class BaseTool {
     if (!tf.exists()) tf.mkdirs();
 
     return tempfolder;
+  }
+
+  public String getResultsFolder() {
+
+    String resultfolder =
+        this.normalizedPath(workspace)
+            + FileSystems.getDefault().getSeparator()
+            + this.result_file_path
+            + FileSystems.getDefault().getSeparator();
+
+    File tf = new File(resultfolder);
+
+    if (!tf.exists()) tf.mkdirs();
+
+    return resultfolder;
   }
 
   /**
