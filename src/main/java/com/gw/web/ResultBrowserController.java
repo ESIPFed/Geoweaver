@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,9 @@ import java.util.Map;
 public class ResultBrowserController {
 
     @Autowired BaseTool bt;
+
+    @Value("${geoweaver.follow_symlinks:false}")
+    boolean follow_symlinks;
 
     // Inject the directory path from application.properties
 
@@ -43,20 +47,32 @@ public class ResultBrowserController {
         
         // Navigate into the subfolder if it's provided
         Path rootLocation = Paths.get(resultfolder, subfolder);
+        System.out.println("Received " + subfolder);
         
-        return Files.walk(rootLocation, 1) // 1: look at files in the current folder and subfolders
-                .map(path -> {
+        Stream<Path> walker = null;
+
+        if(follow_symlinks){
+            // 1: look at files in the current folder and subfolders
+            walker = Files.walk(rootLocation, 1, FileVisitOption.FOLLOW_LINKS);
+        }else{
+            walker = Files.walk(rootLocation, 1);
+        }
+        
+        return walker.map(path -> {
                     Map<String, Object> fileDetails = new HashMap<>();
                     try {
+                        System.out.println(path);
                         Path relativePath = rootLocation.relativize(path);
                         String pathWithSubfolder = subfolder + "/" + relativePath.toString();
                         pathWithSubfolder = pathWithSubfolder.replaceAll("^/+","");
 
                         // Check if pathWithSubfolder contains any attempts to go up the directory
                         Path normalizedSubfolderPath = Paths.get(pathWithSubfolder).normalize();
+                        System.out.println("normalizedSubfolderPath = " + normalizedSubfolderPath);
                         if (normalizedSubfolderPath.startsWith("..")) {
                             throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
                         }
+                        System.out.println("pathWithSubfolder = " + pathWithSubfolder);
                         
                         fileDetails.put("name", rootLocation.relativize(path).toString()); // Relative path
                         fileDetails.put("path", pathWithSubfolder); // Relative path
@@ -79,7 +95,7 @@ public class ResultBrowserController {
                         fileDetails.put("modified", formattedDateTime);
                     } catch (IOException e){
                         e.printStackTrace();
-                    }catch (SecurityException e) {
+                    } catch (SecurityException e) {
                         System.out.println("Error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error occurred"));
                         throw e;
                     }
