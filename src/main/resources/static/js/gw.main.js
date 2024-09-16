@@ -92,6 +92,8 @@ GW.main = {
 
     GW.menu.init();
 
+    GW.result.browser.init();
+
     //session id is a server side thing and it is not reasonable to get it on the client
     // var current_jssessionid = GW.main.getJSessionId();
 

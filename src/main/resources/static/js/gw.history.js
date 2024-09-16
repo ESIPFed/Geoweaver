@@ -244,6 +244,7 @@ GW.history = {
                 content += `<label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
                         <option value="">All</option> <!-- Changed to "All" -->
+                        <option value="Running ">Running</option>
                         <option value="Done">Done</option>
                         <option value="Stopped">Stopped</option>
                         <option value="Failed">Failed</option>
@@ -476,15 +477,15 @@ GW.history = {
             
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                const selectedStatus = $('#statusFilter').val().toLowerCase();
-                const rowStatus = data[4].toLowerCase();
-        
-               
-        
-                if(selectedStatus === "" && rowStatus === "skipped") {
+                const selectedStatus = ($('#statusFilter').val() || "").toLowerCase();  // Ensure it's a string
+                const rowStatus = (data[4] || "").toLowerCase();  // Ensure it's a string
+                
+                // If selected status is empty and the row status is "skipped", exclude this row
+                if (selectedStatus === "" && rowStatus === "skipped") {
                     return false;
                 }
-        
+
+                // If no filter is applied or the row matches the selected filter, include the row
                 return selectedStatus === "" || rowStatus === selectedStatus;
             });
         
