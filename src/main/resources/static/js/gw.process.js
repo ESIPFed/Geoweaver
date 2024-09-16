@@ -764,7 +764,7 @@ GW.process = {
 
     $("#add-process-" + GW.process.cmid).click(function () {
       if (GW.process.add(false, GW.process.cmid)) frame.closeFrame();
-      cmid = Math.floor(Math.random() * 1000);
+      // cmid = Math.floor(Math.random() * 1000);
     });
 
     $("#run-process-" + GW.process.cmid).click(function () {
@@ -1328,7 +1328,7 @@ GW.process = {
     owner = msg.owner;
 
 
-    GW.process.cmid = Math.floor(Math.random() * 1000);
+    // GW.process.cmid = Math.floor(Math.random() * 1000);
 
     var confidential_field =
       '     <div class="col-sm-1 col-form-label control-label">Confidential </div>' +
@@ -1469,7 +1469,8 @@ GW.process = {
 
     $("#processid").val(process_id);
 
-    GW.process.displayCodeArea(process_id, process_name, code_type, code, GW.process.cmid);
+    GW.process.displayCodeArea(process_id, process_name, code_type, code);
+    // GW.process.displayCodeArea(process_id, process_name, code_type, code, GW.process.cmid);
 
     GW.process.displayToolbar(process_id, process_name, code_type);
 
@@ -1573,13 +1574,12 @@ GW.process = {
     $("#" + codeareaid).append(cont);
   },
 
-  displayCodeArea: function (process_id, process_name, code_type, code, cmid) {
+  displayCodeArea: function (process_id, process_name, code_type, code) {
     GW.process.util.displayCodeArea(
       code_type,
       code,
       "#code-embed",
       "#process_code_window",
-      cmid,
     );
   },
 
@@ -2044,8 +2044,10 @@ GW.process = {
     }
   },
 
-  sendExecuteRequest: function (req, dialog, button) {
+  sendExecuteRequest: function (req, dialog, button, log_pid) {
+    console.log("sendExecRequest-1");
     GW.process.clearProcessLogging();
+    console.log("sendExecRequest-2");
 
     var newhistid = GW.general.makeid(12);
 
