@@ -8,7 +8,7 @@ GW.process.util = {
     code,
     code_editor_container_id,
     process_window_container_id,
-    cmid,
+    // cmid,
   )
    {
     $(code_editor_container_id).html("");
@@ -181,9 +181,9 @@ GW.process.util = {
 
       // Add any additional editor options or event listeners here
   });
-  if(cmid!=null){
-    console.log("Editor cmid: " + cmid);
-  }
+  // if(cmid!=null){
+  //   console.log("Editor cmid: " + cmid);
+  // }
  
   
 }
