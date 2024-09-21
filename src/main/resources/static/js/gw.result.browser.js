@@ -1,15 +1,77 @@
 
 GW.result.browser = {
 
+    current_path: "",
+
     init: function () {
 
         // GW.result.browser.loadFileList();
-        GW.result.browser.render_file_list()
+        GW.result.browser.render_file_list();
+        GW.result.browser.updateFolderPath("");
 
         $('#result-refresh-button').on('click', function() {
-            GW.result.browser.loadFolderContents("");; // Reload the data from the server
+            console.log("current path " + GW.result.browser.current_path);
+            GW.result.browser.changePath(GW.result.browser.current_path);
         });
 
+    },
+
+    updateFolderPath: function(path) {
+        GW.result.browser.current_path = path;
+        const pathElement = $('#folder-path');
+        pathElement.empty(); // Clear the current folder path
+
+        // Create the "Root" link that navigates to the root folder
+        const rootLink = $('<span>')
+            .text('Root')
+            .css('cursor', 'pointer')
+            .on("click", function() {
+                // Load the root folder when clicked
+                GW.result.browser.changePath('');
+            });
+
+        pathElement.append(rootLink);
+        pathElement.append(' / '); // Add separator after "Root"
+
+        // Split and process each folder part
+        const pathParts = path.split('/');
+        console.log(pathParts)
+        let cumulativePath = '';
+
+        $.each(pathParts, function(index, folder) {
+            // Skip empty parts (before root '/')
+            if (folder === '') return;
+
+            // Update the cumulative path for each part
+            cumulativePath += (index === 0) ? '/' + folder : '/' + folder;
+
+            // Store the unique cumulative path for each folder part
+            const folderPartPath = cumulativePath;
+
+            // Create clickable folder link for each part
+            const folderLink = $('<span>')
+                .text(folder)
+                .css('cursor', 'pointer')
+                .on('click', function() {
+                    // Load folder contents for that specific part using the unique path
+                    GW.result.browser.changePath(folderPartPath);
+                });
+
+            pathElement.append(folderLink);
+
+            // Add separator for the path parts, except the last one
+            if (index < pathParts.length - 1) {
+                pathElement.append(' / ');
+            }
+        });
+    },
+
+    // Function to handle path change
+    changePath: function(newPath) {
+        currentPath = newPath;
+        console.log('Navigating to: ' + currentPath);
+        GW.result.browser.updateFolderPath(currentPath);
+        GW.result.browser.loadFolderContents(currentPath); // Load new folder contents
     },
 
     render_file_list: function(){
@@ -85,7 +147,7 @@ GW.result.browser = {
             if (rowData.isDirectory) {
                 // If the row is a folder, navigate into it
                 var path = rowData.path;
-                GW.result.browser.loadFolderContents(path);
+                GW.result.browser.changePath(path);
             }
         });
 
