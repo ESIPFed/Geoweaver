@@ -523,6 +523,7 @@ GW.process.sidepanel = {
   history: function (process_id, process_name) {
     GW.process.util.history(
       process_id,
+      process_name,
       "#prompt-panel-process-history-container",
       "#process_history_table",
       "#closeHistory",

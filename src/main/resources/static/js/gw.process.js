@@ -874,6 +874,7 @@ GW.process = {
   history: function (pid, pname) {
     GW.process.util.history(
       pid,
+      pname,
       "#process-history-container",
       "#process_history_table",
       "#closeHistory",
