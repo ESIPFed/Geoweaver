@@ -434,6 +434,10 @@ GW.history = {
             columnDefs : [
                 { type: 'time-date-sort',
                   targets: [1],
+                },
+                {
+                    targets: [3],
+                    className: 'wrap-text'
                 }
             ],
             order: [[ 1, "desc" ]],
