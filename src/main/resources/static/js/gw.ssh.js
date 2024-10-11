@@ -161,6 +161,9 @@ GW.ssh = {
   },
 
   ws_onmessage: function (e) {
+
+    console.log("WebSocket message received:", e.data);
+
     try {
       if (e.data.indexOf("Session_Status:Active") != -1) {
         GW.ssh.checker_swich = false;
@@ -171,6 +174,7 @@ GW.ssh = {
       ) {
         this.echo(e.data);
       } else {
+        console.log("No display to output");
         //the websocket is already closed. try the history query
         // this.echo("It ends too quickly. Go to history to check the logs out.");
       }
@@ -182,10 +186,146 @@ GW.ssh = {
       //}
     } catch (err) {
       console.log(err);
+      console.error("Error fetching file content", err);
 
       this.error("** Invalid server response : " + e.data);
     }
   },
+
+
+
+//   ws_onmessage: function (e) {
+//     console.log("WebSocket message received:", e.data);
+
+//     try {
+//         // Split the incoming WebSocket message on the delimiter '*_*' to extract history_id and content
+//         let contentArray = e.data.split("*_*");
+//         let log_history_id = null;
+//         let logContent = e.data;
+
+//         // If the message contains the delimiter, extract history_id and log content
+//         if (contentArray.length > 1) {
+//             log_history_id = contentArray[0]; // First part is the history_id
+//             logContent = contentArray.slice(1).join(" "); // Remaining part is the actual log message
+//         }
+
+//         // Handle different cases based on message content
+//         if (logContent.indexOf("Session_Status:Active") != -1) {
+//             GW.ssh.checker_swich = false;
+//         } else if (
+//             logContent.indexOf(this.special.prompt) == -1 &&
+//             logContent.indexOf(this.special.ready) == -1 &&
+//             logContent.indexOf("No SSH connection is active") == -1
+//         ) {
+//             // Check if the history_id in the message matches the current running process
+//             if (GW.process.history_id && log_history_id === GW.process.history_id) {
+//                 // Append log content to the correct process log container
+//                 this.echo(logContent); // Use the echo function to append the log content
+//             } else {
+//                 console.warn(`Mismatch or undefined history_id. Log not appended. Expected: ${GW.process.history_id}, Received: ${log_history_id}`);
+//             }
+//         } else {
+//             console.log("No display to output");
+//         }
+//     } catch (err) {
+//         console.error("Error processing WebSocket message:", err);
+//         this.error("** Invalid server response: " + e.data);
+//     }
+// },
+
+
+
+
+
+
+  // addlog: function (content) {
+  //   var dt = new Date();
+  //   var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+
+  //   cont_splits = content.split("*_*");
+
+  //   log_history_id = null;
+
+  //   if (cont_splits.length > 1) {
+  //     log_history_id = cont_splits[0];
+  //     let newArray = cont_splits.slice(1);
+  //     content = newArray.join(" ");
+  //   }
+
+  //   var style1 = "";
+  //   if (content.includes("Start to execute")) {
+  //     style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+
+  //     $(".dot-flashing").removeClass("invisible");
+  //     $(".dot-flashing").addClass("visible");
+  //   } else if (content.includes("===== Process")) {
+  //     style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+
+  //     $(".dot-flashing").removeClass("visible");
+  //     $(".dot-flashing").addClass("invisible");
+  //   } else if (content == "disconnected") {
+  //     $(".dot-flashing").removeClass("visible");
+  //     $(".dot-flashing").addClass("invisible");
+  //   } else if (log_history_id == GW.process.history_id) {
+  //     $(".dot-flashing").removeClass("invisible");
+  //     $(".dot-flashing").addClass("visible");
+  //   } else {
+  //     $(".dot-flashing").removeClass("visible");
+  //     $(".dot-flashing").addClass("invisible");
+  //   }
+
+  //   var newline =
+  //     `<p style="line-height:1.1; text-align:left; margin-top: 10px; ` +
+  //     `margin-bottom: 10px;"><span style="` +
+  //     style1 +
+  //     `">` +
+  //     content +
+  //     `</span></p>`;
+
+  //   this.current_log_length += 1; //line number plus 1
+
+  //   if (this.current_log_length > 5000) {
+  //     $("#log-window").find("p:first").remove();
+  //     this.current_log_length -= 1;
+  //   }
+
+  //   $("#log-window").append(newline);
+
+  //   //don't output log to process log if the current executed is workflow
+  //   if ($("#" + GW.ssh.process_output_id).length) {
+  //     if (this.current_process_log_length > 5000) {
+  //       $("#" + GW.ssh.process_output_id)
+  //         .find("p:first")
+  //         .remove();
+
+  //       this.current_process_log_length -= 1;
+  //     }
+
+
+
+  //     // if (GW.process.history_id == log_history_id) {
+  //     //   // only display the log if the current history id is the correct one
+  //     //   $("#" + GW.ssh.process_output_id).append(newline);
+  //     // }
+
+  //     if (GW.process.history_id == log_history_id) {
+  //       let logContainerId = GW.ssh.process_output_id; // specific to each process
+  //       let logElement = document.getElementById(logContainerId);
+  //       if (logElement) {
+  //           // Use insertAdjacentHTML for appending the HTML string as `appendChild` works with nodes
+  //           logElement.insertAdjacentHTML('beforeend', newline);
+  //       } else {
+  //           console.error('Log container with ID ' + logContainerId + ' not found.');
+  //       }
+  //     }
+
+
+  //     this.current_process_log_length += 1;
+  //   }
+  // },
+
+
+//////////////////// PARTIALLY WORKING ////////////////
 
   addlog: function (content) {
     var dt = new Date();
@@ -196,68 +336,57 @@ GW.ssh = {
     log_history_id = null;
 
     if (cont_splits.length > 1) {
-      log_history_id = cont_splits[0];
-      let newArray = cont_splits.slice(1);
-      content = newArray.join(" ");
+        log_history_id = cont_splits[0];  // Get the history ID from the content
+        let newArray = cont_splits.slice(1);
+        content = newArray.join(" ");
     }
 
     var style1 = "";
     if (content.includes("Start to execute")) {
-      style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-      $(".dot-flashing").removeClass("invisible");
-      $(".dot-flashing").addClass("visible");
-    } else if (content.includes("===== Process")) {
-      style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
-    } else if (content == "disconnected") {
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
-    } else if (log_history_id == GW.process.history_id) {
-      $(".dot-flashing").removeClass("invisible");
-      $(".dot-flashing").addClass("visible");
-    } else {
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
+        style1 = "color: blue; font-weight: bold; text-decoration: underline;";
     }
 
-    var newline =
-      `<p style="line-height:1.1; text-align:left; margin-top: 10px; ` +
-      `margin-bottom: 10px;"><span style="` +
-      style1 +
-      `">` +
-      content +
-      `</span></p>`;
+    var newline = `<p style="line-height:1.1; text-align:left; margin-top: 10px; margin-bottom: 10px;">
+                     <span style="${style1}">${content}</span>
+                   </p>`;
 
-    this.current_log_length += 1; //line number plus 1
+    this.current_log_length += 1;  // Increase log line count
 
+    // Remove old logs if necessary
     if (this.current_log_length > 5000) {
-      $("#log-window").find("p:first").remove();
-      this.current_log_length -= 1;
+        $("#log-window").find("p:first").remove();
+        this.current_log_length -= 1;
     }
 
-    $("#log-window").append(newline);
-
-    //don't output log to process log if the current executed is workflow
-    if ($("#" + GW.ssh.process_output_id).length) {
-      if (this.current_process_log_length > 5000) {
-        $("#" + GW.ssh.process_output_id)
-          .find("p:first")
-          .remove();
-
-        this.current_process_log_length -= 1;
-      }
-
-      if (GW.process.history_id == log_history_id) {
-        // only display the log if the current history id is the correct one
-        $("#" + GW.ssh.process_output_id).append(newline);
-      }
-
-      this.current_process_log_length += 1;
+    // Check if the history ID matches the current process
+    if (GW.process.history_id && log_history_id === GW.process.history_id) {
+        // Add log to the specific container for this process
+        let logContainerId = `process-log-window-${log_history_id}`;
+        let logElement = document.getElementById(logContainerId);
+        if (logElement) {
+            logElement.appendChild($(newline)[0]);
+        } else {
+            // Create a new log container if not found
+            logElement = document.createElement('div');
+            logElement.id = logContainerId;
+            logElement.className = 'process-log-window';
+            document.getElementById('single-console-content').appendChild(logElement);
+            logElement.appendChild($(newline)[0]);
+        }
+    } else {
+        console.warn(`Mismatch or undefined history_id. Log not appended.`);
     }
-  },
+
+    this.current_process_log_length += 1;
+},
+
+
+
+//////////////////// PARTIALLY WORKING END ////////////////
+
+
+
+
 
   clearProcessLog: function () {
     $("#" + GW.ssh.process_output_id).html("");
@@ -340,3 +469,6 @@ GW.ssh = {
 
   openTerminal: function (token, terminal_div_id) {},
 };
+
+
+
