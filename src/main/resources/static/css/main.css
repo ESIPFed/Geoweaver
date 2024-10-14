@@ -580,3 +580,7 @@ a {
   text-decoration: none!important;
 }
 
+.wrap-text{
+  white-space: normal;
+  word-break: break-word;
+}

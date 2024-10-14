@@ -155,7 +155,7 @@ GW.chart = {
     return isin;
   },
 
-  renderUtil: function (type, msg, process_history_container_id) {
+  renderUtil: function (type, msg, pname, process_history_container_id) {
     this.utils.srand(Date.now());
 
     var labels = [],
@@ -349,7 +349,7 @@ GW.chart = {
         responsive: true,
         title: {
           display: true,
-          text: type + " Execution History Chart",
+          text: pname + " " + type + " Execution History Chart",
         },
         tooltips: {
           mode: "index",
@@ -385,11 +385,11 @@ GW.chart = {
     this.history_chart[type] = new Chart(ctx, config);
   },
 
-  renderProcessHistoryChart: function (msg, process_history_container_id) {
+  renderProcessHistoryChart: function (msg, pname, process_history_container_id) {
     msg = msg.sort(function (x, y) {
       return x["history_begin_time"] - y["history_begin_time"];
     });
-    this.renderUtil("process", msg, process_history_container_id);
+    this.renderUtil("process", msg, pname, process_history_container_id);
   },
 
   renderWorkflowHistoryChart: function (msg) {
