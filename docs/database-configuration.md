@@ -166,7 +166,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 - Save and close the file.
 
-**Linux and Mac:** 
+**Linux and Mac:**
 
 - Open a terminal, Navigate to your home directory and Create the `geoweaver` directory:
 
