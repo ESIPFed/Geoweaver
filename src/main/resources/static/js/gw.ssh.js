@@ -160,37 +160,72 @@ GW.ssh = {
     this.error("Reason: " + e);
   },
 
-  ws_onmessage: function (e) {
+  // ws_onmessage: function (e) {
 
-    console.log("WebSocket message received:", e.data);
+  //   console.log("WebSocket message received:", e.data);
+
+  //   try {
+  //     if (e.data.indexOf("Session_Status:Active") != -1) {
+  //       GW.ssh.checker_swich = false;
+  //     } else if (
+  //       e.data.indexOf(this.special.prompt) == -1 &&
+  //       e.data.indexOf(this.special.ready) == -1 &&
+  //       e.data.indexOf("No SSH connection is active") == -1
+  //     ) {
+  //       this.echo(e.data);
+  //     } else {
+  //       console.log("No display to output");
+  //       //the websocket is already closed. try the history query
+  //       // this.echo("It ends too quickly. Go to history to check the logs out.");
+  //     }
+
+  //     //if (e.data.indexOf(special.ready) != -1) {
+
+  //     //	shell.resume();
+
+  //     //}
+  //   } catch (err) {
+  //     console.log(err);
+  //     console.error("Error fetching file content", err);
+
+  //     this.error("** Invalid server response : " + e.data);
+  //   }
+  // },
+
+
+  ws_onmessage: function (e) {
+    // console.log("WebSocket message received:", e.data);
 
     try {
-      if (e.data.indexOf("Session_Status:Active") != -1) {
-        GW.ssh.checker_swich = false;
-      } else if (
-        e.data.indexOf(this.special.prompt) == -1 &&
-        e.data.indexOf(this.special.ready) == -1 &&
-        e.data.indexOf("No SSH connection is active") == -1
-      ) {
-        this.echo(e.data);
-      } else {
-        console.log("No display to output");
-        //the websocket is already closed. try the history query
-        // this.echo("It ends too quickly. Go to history to check the logs out.");
-      }
+        if (e.data.indexOf("Session_Status:Active") != -1) {
+            GW.ssh.checker_swich = false;
+        } else if (e.data.indexOf(this.special.prompt) == -1 &&
+            e.data.indexOf(this.special.ready) == -1 &&
+            e.data.indexOf("No SSH connection is active") == -1) {
 
-      //if (e.data.indexOf(special.ready) != -1) {
-
-      //	shell.resume();
-
-      //}
+            if (GW.process.sidepanel.current_workflow_history_id) {
+                // Handle workflow log output
+                let logContainerId = `prompt-panel-process-log-window-${GW.process.sidepanel.current_workflow_history_id}`;
+                let workflowLogElement = document.getElementById(logContainerId);
+                if (workflowLogElement) {
+                    workflowLogElement.innerHTML += e.data.replace(/\n/g, "<br/>");
+                } else {
+                    // console.warn("Workflow log container not found.");
+                }
+            } else {
+                // Handle regular process log output
+                this.echo(e.data);
+            }
+        } else {
+            // console.log("No display to output");
+        }
     } catch (err) {
-      console.log(err);
-      console.error("Error fetching file content", err);
+        // console.log(err);
+        // console.error("Error fetching file content", err);
 
-      this.error("** Invalid server response : " + e.data);
+        this.error("** Invalid server response : " + e.data);
     }
-  },
+},
 
 
 
@@ -234,95 +269,6 @@ GW.ssh = {
 // },
 
 
-
-
-
-
-  // addlog: function (content) {
-  //   var dt = new Date();
-  //   var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-
-  //   cont_splits = content.split("*_*");
-
-  //   log_history_id = null;
-
-  //   if (cont_splits.length > 1) {
-  //     log_history_id = cont_splits[0];
-  //     let newArray = cont_splits.slice(1);
-  //     content = newArray.join(" ");
-  //   }
-
-  //   var style1 = "";
-  //   if (content.includes("Start to execute")) {
-  //     style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-  //     $(".dot-flashing").removeClass("invisible");
-  //     $(".dot-flashing").addClass("visible");
-  //   } else if (content.includes("===== Process")) {
-  //     style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-  //     $(".dot-flashing").removeClass("visible");
-  //     $(".dot-flashing").addClass("invisible");
-  //   } else if (content == "disconnected") {
-  //     $(".dot-flashing").removeClass("visible");
-  //     $(".dot-flashing").addClass("invisible");
-  //   } else if (log_history_id == GW.process.history_id) {
-  //     $(".dot-flashing").removeClass("invisible");
-  //     $(".dot-flashing").addClass("visible");
-  //   } else {
-  //     $(".dot-flashing").removeClass("visible");
-  //     $(".dot-flashing").addClass("invisible");
-  //   }
-
-  //   var newline =
-  //     `<p style="line-height:1.1; text-align:left; margin-top: 10px; ` +
-  //     `margin-bottom: 10px;"><span style="` +
-  //     style1 +
-  //     `">` +
-  //     content +
-  //     `</span></p>`;
-
-  //   this.current_log_length += 1; //line number plus 1
-
-  //   if (this.current_log_length > 5000) {
-  //     $("#log-window").find("p:first").remove();
-  //     this.current_log_length -= 1;
-  //   }
-
-  //   $("#log-window").append(newline);
-
-  //   //don't output log to process log if the current executed is workflow
-  //   if ($("#" + GW.ssh.process_output_id).length) {
-  //     if (this.current_process_log_length > 5000) {
-  //       $("#" + GW.ssh.process_output_id)
-  //         .find("p:first")
-  //         .remove();
-
-  //       this.current_process_log_length -= 1;
-  //     }
-
-
-
-  //     // if (GW.process.history_id == log_history_id) {
-  //     //   // only display the log if the current history id is the correct one
-  //     //   $("#" + GW.ssh.process_output_id).append(newline);
-  //     // }
-
-  //     if (GW.process.history_id == log_history_id) {
-  //       let logContainerId = GW.ssh.process_output_id; // specific to each process
-  //       let logElement = document.getElementById(logContainerId);
-  //       if (logElement) {
-  //           // Use insertAdjacentHTML for appending the HTML string as `appendChild` works with nodes
-  //           logElement.insertAdjacentHTML('beforeend', newline);
-  //       } else {
-  //           console.error('Log container with ID ' + logContainerId + ' not found.');
-  //       }
-  //     }
-
-
-  //     this.current_process_log_length += 1;
-  //   }
-  // },
 
 
 //////////////////// PARTIALLY WORKING ////////////////
@@ -374,7 +320,7 @@ GW.ssh = {
             logElement.appendChild($(newline)[0]);
         }
     } else {
-        console.warn(`Mismatch or undefined history_id. Log not appended.`);
+        // console.warn(`Mismatch or undefined history_id. Log not appended.`);
     }
 
     this.current_process_log_length += 1;
@@ -383,7 +329,6 @@ GW.ssh = {
 
 
 //////////////////// PARTIALLY WORKING END ////////////////
-
 
 
 
