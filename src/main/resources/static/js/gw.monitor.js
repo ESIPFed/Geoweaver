@@ -4,6 +4,19 @@
  *
  */
 
+//get the process and workflow table
+getTable = function (data, pw_indicator) {
+  var content = '<table class="table table-bordered">'
+  content+= '<tr><th>'+pw_indicator+'_ID</th><th>Execution_ID</th><th>Name</th><th>Begin time</th><th>Duration</th></tr>';
+  data.forEach(function (item) {
+    var running_time = GW.history.calculate_duration(item.begin_time, new Date(), 'Running');
+    content += '<tr><td>' + item.id + '</td><td>' + item.hid + '</td><td>' + item.name + '</td><td>' + item.begin_time + '</td><td>' + running_time + '</td></tr>';
+  });
+  content += '</table>';
+  return content;
+};
+
+
 GW.monitor = {
   ws: null,
 
@@ -291,17 +304,31 @@ GW.monitor = {
       method: "POST",
 
       data: "type=process&isactive=true",
-    }).done(function (msg) {
+    }).then(function (msg) {
+      var process_msg=[];
       if (!msg.length) {
         $("#running_process_table").html("no running process found");
 
         return;
       } else {
         msg = $.parseJSON(msg);
-
-        var content = GW.process.getTable(msg);
+        for (var i = 0; i < msg.length; i++) {
+          var pw_id = msg[i].id;
+          //get active processes id and name from execution_id
+          $.ajax({
+            url: "log",
+            method: "POST",
+            data: "type=process&id=" + pw_id,
+          }).done(function (detailMsg) {
+            var detailMsg = GW.general.parseResponse(detailMsg);
+            process_msg.push(detailMsg);
+        if (msg.length==process_msg.length){
+          var content = getTable(process_msg, 'Process');
 
         $("#running_process_table").html(content);
+        }
+      });
+    }
       }
     });
 
@@ -313,7 +340,7 @@ GW.monitor = {
       method: "POST",
 
       data: "type=workflow&isactive=true",
-    }).done(function (msg) {
+    }).then(function (msg) {
       if (!msg.length) {
         $("#running_workflow_table").html("no running workflow found");
 
@@ -321,11 +348,39 @@ GW.monitor = {
       }
 
       msg = $.parseJSON(msg);
-
-      var content = GW.workflow.getTable(msg);
+      var workflow_msg=[]
+      for (var i = 0; i < msg.length; i++) {
+        var pw_id = msg[i].id;
+        $.ajax({
+          url: "log",
+          method: "POST",
+          data: "type=workflow&id=" + pw_id,
+        //get active workflows from execution_id
+        }).then(function (detailMsg) {
+          var detailMsg = $.parseJSON(detailMsg);
+          var workflow_id = detailMsg.process;
+          var begin_time = detailMsg.begin_time;
+          var hid = detailMsg.hid;
+          //get name of workflows from list
+          $.ajax({
+            url: "list",
+            method: "POST",
+            data: "type=workflow",
+          }).then(function (workflowList) {
+            workflowList = $.parseJSON(workflowList);
+            var workflowObj = workflowList.find(w => w.id === workflow_id);
+            workflow_msg.push({
+              id: workflow_id,
+              name: workflowObj.name,
+              hid: hid,
+              begin_time: begin_time
+            });  
+          var content = getTable(workflow_msg, 'Workflow');
 
       $("#running_workflow_table").html(content);
+        })
     });
+      }});
   },
 
   showDialog: function () {
