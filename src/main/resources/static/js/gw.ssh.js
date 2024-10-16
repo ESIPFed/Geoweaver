@@ -159,40 +159,6 @@ GW.ssh = {
 
     this.error("Reason: " + e);
   },
-
-  // ws_onmessage: function (e) {
-
-  //   console.log("WebSocket message received:", e.data);
-
-  //   try {
-  //     if (e.data.indexOf("Session_Status:Active") != -1) {
-  //       GW.ssh.checker_swich = false;
-  //     } else if (
-  //       e.data.indexOf(this.special.prompt) == -1 &&
-  //       e.data.indexOf(this.special.ready) == -1 &&
-  //       e.data.indexOf("No SSH connection is active") == -1
-  //     ) {
-  //       this.echo(e.data);
-  //     } else {
-  //       console.log("No display to output");
-  //       //the websocket is already closed. try the history query
-  //       // this.echo("It ends too quickly. Go to history to check the logs out.");
-  //     }
-
-  //     //if (e.data.indexOf(special.ready) != -1) {
-
-  //     //	shell.resume();
-
-  //     //}
-  //   } catch (err) {
-  //     console.log(err);
-  //     console.error("Error fetching file content", err);
-
-  //     this.error("** Invalid server response : " + e.data);
-  //   }
-  // },
-
-
   ws_onmessage: function (e) {
     // console.log("WebSocket message received:", e.data);
 
@@ -228,50 +194,39 @@ GW.ssh = {
 },
 
 
+ws_onmessage: function (e) {
+  // console.log("WebSocket message received:", e.data);
 
-//   ws_onmessage: function (e) {
-//     console.log("WebSocket message received:", e.data);
+  try {
+      if (e.data.indexOf("Session_Status:Active") != -1) {
+          GW.ssh.checker_swich = false;
+      } else if (e.data.indexOf(this.special.prompt) == -1 &&
+          e.data.indexOf(this.special.ready) == -1 &&
+          e.data.indexOf("No SSH connection is active") == -1) {
 
-//     try {
-//         // Split the incoming WebSocket message on the delimiter '*_*' to extract history_id and content
-//         let contentArray = e.data.split("*_*");
-//         let log_history_id = null;
-//         let logContent = e.data;
+          if (GW.process.sidepanel.current_workflow_history_id) {
+              // Handle workflow log output
+              let logContainerId = 'prompt-panel-process-log-window' || 'single-console-content';
+              let workflowLogElement = document.getElementById(logContainerId);
+              if (workflowLogElement) {
+                  workflowLogElement.innerHTML += e.data.replace(/\n/g, "<br/>");
+              } else {
+                  // console.warn("Workflow log container not found.");
+              }
+          } else {
+              // Handle regular process log output
+              this.echo(e.data);
+          }
+      } else {
+          // console.log("No display to output");
+      }
+  } catch (err) {
+      // console.log(err);
+      // console.error("Error fetching file content", err);
 
-//         // If the message contains the delimiter, extract history_id and log content
-//         if (contentArray.length > 1) {
-//             log_history_id = contentArray[0]; // First part is the history_id
-//             logContent = contentArray.slice(1).join(" "); // Remaining part is the actual log message
-//         }
-
-//         // Handle different cases based on message content
-//         if (logContent.indexOf("Session_Status:Active") != -1) {
-//             GW.ssh.checker_swich = false;
-//         } else if (
-//             logContent.indexOf(this.special.prompt) == -1 &&
-//             logContent.indexOf(this.special.ready) == -1 &&
-//             logContent.indexOf("No SSH connection is active") == -1
-//         ) {
-//             // Check if the history_id in the message matches the current running process
-//             if (GW.process.history_id && log_history_id === GW.process.history_id) {
-//                 // Append log content to the correct process log container
-//                 this.echo(logContent); // Use the echo function to append the log content
-//             } else {
-//                 console.warn(`Mismatch or undefined history_id. Log not appended. Expected: ${GW.process.history_id}, Received: ${log_history_id}`);
-//             }
-//         } else {
-//             console.log("No display to output");
-//         }
-//     } catch (err) {
-//         console.error("Error processing WebSocket message:", err);
-//         this.error("** Invalid server response: " + e.data);
-//     }
-// },
-
-
-
-
-//////////////////// PARTIALLY WORKING ////////////////
+      this.error("** Invalid server response : " + e.data);
+  }
+},
 
   addlog: function (content) {
     var dt = new Date();
@@ -325,12 +280,6 @@ GW.ssh = {
 
     this.current_process_log_length += 1;
 },
-
-
-
-//////////////////// PARTIALLY WORKING END ////////////////
-
-
 
 
   clearProcessLog: function () {
