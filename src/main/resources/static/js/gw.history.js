@@ -436,7 +436,7 @@ GW.history = {
                   targets: [1],
                 },
                 {
-                    targets: [3],
+                    targets: '_all',
                     className: 'wrap-text'
                 }
             ],
