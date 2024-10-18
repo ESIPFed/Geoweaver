@@ -2158,15 +2158,6 @@ GW.process = {
       });
   },
 
-  // executeCallback: function (encrypt, req, dialogItself, button) {
-  //   req.pswd = encrypt;
-
-  //   GW.ssh.process_output_id = "process-log-window" + history_id;
-
-  //   GW.process.sendExecuteRequest(req, dialogItself, button);
-  // },
-
-
 
   executeCallback: function (encrypt, req, dialogItself, button) {
     req.pswd = encrypt;
@@ -2176,14 +2167,11 @@ GW.process = {
     // Check if history_id is part of the req or response object
     var history_id = req.history_id || msg.history_id; // Ensure history_id is defined here
 
-    GW.ssh.process_output_id = `process-log-window-${history_id}`; // Use the history_id
+    // GW.ssh.process_output_id = `process-log-window-${history_id}`; // Use the history_id
+    GW.ssh.process_output_id = `process-log-window`; // Use the history_id
 
     GW.process.sendExecuteRequest(req, dialogItself, button, history_id); // Pass history_id to sendExecuteRequest
 },
-
-
-
-
 
   /**
    * This function is to directly execute one process
@@ -2392,17 +2380,6 @@ GW.process = {
     // Proceed with process execution
     // You can adjust the code below to fit the current flow of your process execution.
     console.log("Running process with ID:", pid);
-
-    ////////
-
-    // let logContainerId = `process-log-window-${GW.process.history_id}`; // unique log container for each process
-    // if (!document.getElementById(logContainerId)) {
-    //     // Dynamically create a log container if it doesn't exist
-    //     let logContainer = document.createElement('div');
-    //     logContainer.id = logContainerId;
-    //     logContainer.className = 'process-log-window';
-    //     document.getElementById('single-console-content').appendChild(logContainer);
-    // }
 
     GW.ssh.process_output_id = logContainerId; // Assign the new log container for this process
 

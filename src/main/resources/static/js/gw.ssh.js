@@ -159,6 +159,7 @@ GW.ssh = {
 
     this.error("Reason: " + e);
   },
+
   ws_onmessage: function (e) {
     // console.log("WebSocket message received:", e.data);
 
@@ -191,41 +192,6 @@ GW.ssh = {
 
         this.error("** Invalid server response : " + e.data);
     }
-},
-
-
-ws_onmessage: function (e) {
-  // console.log("WebSocket message received:", e.data);
-
-  try {
-      if (e.data.indexOf("Session_Status:Active") != -1) {
-          GW.ssh.checker_swich = false;
-      } else if (e.data.indexOf(this.special.prompt) == -1 &&
-          e.data.indexOf(this.special.ready) == -1 &&
-          e.data.indexOf("No SSH connection is active") == -1) {
-
-          if (GW.process.sidepanel.current_workflow_history_id) {
-              // Handle workflow log output
-              let logContainerId = 'prompt-panel-process-log-window' || 'single-console-content';
-              let workflowLogElement = document.getElementById(logContainerId);
-              if (workflowLogElement) {
-                  workflowLogElement.innerHTML += e.data.replace(/\n/g, "<br/>");
-              } else {
-                  // console.warn("Workflow log container not found.");
-              }
-          } else {
-              // Handle regular process log output
-              this.echo(e.data);
-          }
-      } else {
-          // console.log("No display to output");
-      }
-  } catch (err) {
-      // console.log(err);
-      // console.error("Error fetching file content", err);
-
-      this.error("** Invalid server response : " + e.data);
-  }
 },
 
   addlog: function (content) {
