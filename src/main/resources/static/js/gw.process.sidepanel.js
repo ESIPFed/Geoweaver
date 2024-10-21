@@ -395,6 +395,7 @@ GW.process.sidepanel = {
    */
   runProcess: function (pid, pname, lang) {
     GW.process.process_id = pid;
+    GW.ssh.process_output_id = 'single-console-content';
     GW.process.sidepanel.editSwitch();
     GW.process.runProcess(
       pid,
