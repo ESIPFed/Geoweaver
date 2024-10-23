@@ -7,6 +7,6 @@ headline: a lightweight workflow software to easily orchestrate pipelines from P
 description: Geoweaver is a web system to allow users to automatically record history and manage complicated scientific workflows in web browsers involving the online spatial data facilities, high-performance computation platforms, and open-source libraries.
 
 documentation: 
-  general: https://esipfed.github.io/Geoweaver/
+  general: https://geoweaver.dev
   installation: https://esipfed.github.io/Geoweaver/docs/install.html
-  tutorial: https://zihengsun.github.io/Geoweaver/
+  tutorial: https://geoweaver.dev/guide/
