@@ -961,6 +961,10 @@ GW.process = {
   },
 
   displayOutput: function (msg) {
+    
+    // make sure the current history id is updated
+    GW.process.history_id = msg.hid
+
     var output = GW.general.escapeCodeforHTML(msg.output);
 
     if (msg.output == "logfile") {
@@ -1309,6 +1313,8 @@ GW.process = {
     GW.workspace.currentmode = 1;
 
     GW.ssh.process_output_id = "process-log-window";
+
+    GW.process.history_id = null;
 
     msg = GW.general.parseResponse(msg);
 
