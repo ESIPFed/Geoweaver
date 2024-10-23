@@ -49,59 +49,69 @@ public class ResultBrowserController {
         Path rootLocation = Paths.get(resultfolder, subfolder);
         System.out.println("Received " + subfolder);
         
-        Stream<Path> walker = null;
-
-        if(follow_symlinks){
-            // 1: look at files in the current folder and subfolders
+        Stream<Path> walker;
+    
+        if (follow_symlinks) {
             walker = Files.walk(rootLocation, 1, FileVisitOption.FOLLOW_LINKS);
-        }else{
+        } else {
             walker = Files.walk(rootLocation, 1);
         }
-        
+    
         return walker.map(path -> {
-                    Map<String, Object> fileDetails = new HashMap<>();
-                    try {
-                        System.out.println(path);
-                        Path relativePath = rootLocation.relativize(path);
-                        String pathWithSubfolder = subfolder + "/" + relativePath.toString();
-                        pathWithSubfolder = pathWithSubfolder.replaceAll("^/+","");
-
-                        // Check if pathWithSubfolder contains any attempts to go up the directory
-                        Path normalizedSubfolderPath = Paths.get(pathWithSubfolder).normalize();
-                        System.out.println("normalizedSubfolderPath = " + normalizedSubfolderPath);
-                        if (normalizedSubfolderPath.startsWith("..")) {
-                            throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
-                        }
-                        System.out.println("pathWithSubfolder = " + pathWithSubfolder);
-                        
-                        fileDetails.put("name", rootLocation.relativize(path).toString()); // Relative path
-                        fileDetails.put("path", pathWithSubfolder); // Relative path
-                        fileDetails.put("isDirectory", Files.isDirectory(path)); // Check if it's a directory
-                        if (!Files.isDirectory(path)) {
-                            fileDetails.put("size", Files.size(path)); // File size for files
-                        }
-
-                        // Get last modified time
-                        FileTime fileTime = Files.getLastModifiedTime(path);
-                        
-                        // Convert FileTime to LocalDateTime
-                        LocalDateTime dateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
-                        
-                        // Format date-time to remove nanoseconds
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-                        String formattedDateTime = dateTime.format(formatter);
-                        
-                        // Add formatted last modified time to file details
-                        fileDetails.put("modified", formattedDateTime);
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    } catch (SecurityException e) {
-                        System.out.println("Error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error occurred"));
-                        throw e;
+            Map<String, Object> fileDetails = new HashMap<>();
+            try {
+                System.out.println(path);
+                Path relativePath = rootLocation.relativize(path);
+                String pathWithSubfolder = subfolder + "/" + relativePath.toString();
+                pathWithSubfolder = pathWithSubfolder.replaceAll("^/+", "");
+    
+                // Check if pathWithSubfolder contains any attempts to go up the directory
+                Path normalizedSubfolderPath = Paths.get(pathWithSubfolder).normalize();
+                System.out.println("normalizedSubfolderPath = " + normalizedSubfolderPath);
+                if (normalizedSubfolderPath.startsWith("..")) {
+                    throw new SecurityException("Attempt to access outside of the result folder is not allowed.");
+                }
+                System.out.println("pathWithSubfolder = " + pathWithSubfolder);
+    
+                fileDetails.put("name", relativePath.toString()); // Relative path
+                fileDetails.put("path", pathWithSubfolder); // Relative path
+                fileDetails.put("isDirectory", Files.isDirectory(path)); // Check if it's a directory
+                
+                // Handle symlinks gracefully
+                if (Files.isSymbolicLink(path)) {
+                    Path target = Files.readSymbolicLink(path);
+                    if (!Files.exists(target)) {
+                        // Skip or handle broken symlink
+                        System.out.println("Skipping broken symlink: " + path);
+                        fileDetails.put("status", "Broken Symlink");
+                        fileDetails.put("modified", "N/A");
+                        fileDetails.put("size", "N/A");
+                        return fileDetails; // Early return for broken symlinks
                     }
-                    return fileDetails;
-                })
-                .collect(Collectors.toList());
+                }
+
+                // Get and format last modified time
+                FileTime fileTime = Files.getLastModifiedTime(path);
+                LocalDateTime dateTime = LocalDateTime.ofInstant(fileTime.toInstant(), ZoneId.systemDefault());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                String formattedDateTime = dateTime.format(formatter);
+    
+                // Add formatted last modified time to file details
+                fileDetails.put("modified", formattedDateTime);
+                
+                // Add file size for regular files
+                if (!Files.isDirectory(path)) {
+                    fileDetails.put("size", Files.size(path));
+                }
+    
+    
+            } catch (IOException e) {
+                System.out.println("I/O Error: " + e.getMessage());
+            } catch (SecurityException e) {
+                System.out.println("Security Error: " + e.getMessage());
+            }
+            return fileDetails;
+        }).collect(Collectors.toList());
     }
 
 
