@@ -124,6 +124,8 @@ GW.process.sidepanel = {
   displayOutput: function (msg) {
     var output = GW.general.escapeCodeforHTML(msg.output);
 
+    GW.process.history_id = msg.hid;
+
     if (msg.output == "logfile") {
       output =
         '<div class="spinner-border" role="status"> ' +
@@ -248,6 +250,8 @@ GW.process.sidepanel = {
 
     // do not stop ability to add process when we open side panel
     // GW.workspace.currentmode = 2;
+
+    GW.process.history_id = null;
 
     GW.ssh.process_output_id = "prompt-panel-process-log-window";
 
