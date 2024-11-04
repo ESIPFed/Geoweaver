@@ -1149,12 +1149,14 @@ GW.workflow = {
     })
       .done(function (msg) {
         msg = $.parseJSON(msg);
+        nodes = GW.workspace.theGraph.nodes;
 
         var content =
           '<div class="modal-body" style="font-size: 12px;"><table class="table"> ' +
           "  <thead> " +
           "    <tr> " +
           '      <th scope="col">Process Id</th> ' +
+          '      <th scope="col">Process Name</th> ' +
           '      <th scope="col">History Id</th> ' +
           '      <th scope="col">Action</th> ' +
           "    </tr> " +
@@ -1166,6 +1168,9 @@ GW.workflow = {
             "    <tr> " +
             "      <td>" +
             msg.input[i] +
+            "</td> " +
+            "      <td>" +
+            nodes[i]['title'] +
             "</td> " +
             "      <td>" +
             msg.output[i] +
