@@ -49,6 +49,8 @@ GW.workflow = {
 
     let info_body = "";
 
+    let edges_body="";
+
     let id_combo, name_combo, desc_combo, confidential_combo;
 
     jQuery.each(msg, function (i, val) {
@@ -88,14 +90,119 @@ GW.workflow = {
         confidential = val;
       } else if (i === "owner") {
         owner = val;
-      } else {
-        info_body +=
-          `<div class="col col-md-1">` +
-          i +
-          `</div>
-				<div class="col col-md-11">` +
-          val +
-          `</div>`;
+      } else if (i === "nodes"){
+        val = JSON.parse(val);
+        info_body += `<div class="h4">${i}</div>
+        <div>`;
+        
+        info_body += `<table class="table">
+          <thead>
+            <tr>`;
+
+        // priority order for columns
+        const priorityOrder = ['title', 'id', 'x', 'y'];
+        // get the keys from the first node to form columns
+        const node = val[0]; 
+        
+        // render priority columns first
+        priorityOrder.forEach((key) => {
+          if (node.hasOwnProperty(key)) {
+            info_body += `<th scope="col">${key.charAt(0).toUpperCase() + key.slice(1)}</th>`;
+          }
+        });
+
+        // render other columns and add them to priority order
+        for (const key of Object.keys(node)) {
+          if (!priorityOrder.includes(key)) {
+            priorityOrder.push(key);
+            info_body += `<th scope="col">${key.charAt(0).toUpperCase() + key.slice(1)}</th>`;
+          }
+        }
+
+        info_body += `</tr>
+            </thead>
+            <tbody>`;
+
+        val.forEach((node) => {
+          info_body += `<tr>`;
+          // add data based on header order
+          priorityOrder.forEach((key) => {
+            let node_value = node[key] !== undefined ? node[key] : '&nbsp';
+            info_body += `<td>${node_value}</td>`;
+          });
+          info_body += `</tr>`;
+        });
+        
+        info_body += `</tbody></table>
+        </div>`;
+        info_body += edges_body;
+      } else{
+        // when i === edges
+        edges_body="";
+        val = JSON.parse(val);
+        edges_body += `<div class="h4">${i}</div><div>`;
+        edges_body += `
+          <table class="table">
+            <thead>
+              <tr>`;
+      
+        const edge = val[0];
+        const headers = [];
+      
+        for (const key of Object.keys(edge.source)) {
+          if (key === 'x' || key === 'y') {
+            continue;
+          }
+          headers.push(`Source ${key.charAt(0).toUpperCase() + key.slice(1)}`);
+        }
+      
+        for (const key of Object.keys(edge.target)) {
+          if (key === 'x' || key === 'y') {
+            continue;
+          }
+          headers.push(`Target ${key.charAt(0).toUpperCase() + key.slice(1)}`);
+        }
+      
+        headers.forEach((header) => {
+          edges_body += `<th scope="col">${header}</th>`;
+        });
+      
+        edges_body += `</tr></thead><tbody>`;
+      
+        val.forEach((edge) => {
+          edges_body += `<tr>`;
+          const rowData = [];
+          // render data based on header order
+          for (const header of headers) {
+            let value = '';
+            
+            if (header.startsWith('Source')) {
+              const key = header.slice(7).toLowerCase();
+              value = edge.source[key];
+            }
+            
+            if (header.startsWith('Target')) {
+              const key = header.slice(7).toLowerCase();
+              value = edge.target[key];
+            }
+      
+            if (value === false) {
+              value = 'false';
+            } else if (!value) {
+              value = '&nbsp;';
+            }
+      
+            rowData.push(value);
+          }
+      
+          rowData.forEach((data) => {
+            edges_body += `<td>${data}</td>`;
+          });
+      
+          edges_body += `</tr>`;
+        });
+      
+        edges_body += `</tbody></table></div>`;
       }
     });
 
@@ -176,7 +283,7 @@ GW.workflow = {
       `')">History</button>
 		 </div>
 		<div id="main-workflow-info-code" class="tabcontent-workflow generalshadow" style="height:calc(100% - 185px); overflow-y: scroll; left:0; margin:0; padding: 5px; ">
-			<div class="row" style="height:100%;margin:0;">` +
+			<div class="row" style="height:100%;margin:0;padding:1rem">` +
       info_body +
       `	</div>
 		</div>
