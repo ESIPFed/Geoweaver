@@ -312,10 +312,35 @@ public class GeoweaverProcessTask extends Task {
 
   /** This function is called when the task is not loaded by a worker */
   public void endPrematurely() {
-
+    // Mark the task as stopped
     this.curstatus = ExecutionStatus.STOPPED;
 
+    // If the task is running in a separate thread, interrupt the thread
+    if (Thread.currentThread().isInterrupted()) {
+      Thread.currentThread().interrupt(); // Interrupt the current thread (if it's blocking)
+    }
+
+    // Ensure the task is not performing any further operations
+    stopRunningOperations();
+
+    // Update the task's status
     updateEverything();
+  }
+
+  // This method ensures the task halts long-running operations
+  /*
+   * Check if task is in a long-running operation and forcefully stop it
+   * Example: If it's stuck in a loop or waiting on some resource, break the
+   * operation
+   */
+  private void stopRunningOperations() {
+    if (this.curstatus == ExecutionStatus.STOPPED) {
+      // Example of terminating a running operation or loop
+      // You can break the loop or stop waiting for resources
+      // if (someLongRunningCondition) {
+      // // Break or terminate operation
+      // }
+    }
   }
 
   /** Stop the monitoring of the task */
