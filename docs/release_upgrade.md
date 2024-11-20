@@ -38,5 +38,6 @@ To upgrade Geoweaver to a new version, follow these steps to update the necessar
 6. **Update Release Tag to Latest**
     - Once the release workflow is finished, you should see the installers and JAR files are attached on the new release page as artifacts. Update the release tag (e.g., `v1.5.2-pre`) back to `latest`. This ensures that PyGeoweaver and other installers will download the latest jar.
     - Click "Update release" to save the changes.
+    - Note: Click `+ create new tag:latest on publish` in the new version (e.g., v1.5.2) if tag latest was not identified during selection. The badge `latest` besides version name is not a tag name.
 
 Once all these steps are completed, the new version of Geoweaver should be published, and available to be pulled by either the URL or the [`pygeoweaver`](https://github.com/ESIPFed/pygeoweaver) library.
