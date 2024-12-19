@@ -140,6 +140,9 @@ GW.workflow = {
         // when i === edges
         edges_body="";
         val = JSON.parse(val);
+        if(val.length === 0){
+          return;
+        }
         edges_body += `<div class="h4">${i}</div><div>`;
         edges_body += `
           <table class="table">
@@ -147,6 +150,9 @@ GW.workflow = {
               <tr>`;
       
         const edge = val[0];
+        if (!edge || !edge.source || !edge.target) {
+          return;
+         }
         const headers = [];
       
         for (const key of Object.keys(edge.source)) {
