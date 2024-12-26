@@ -90,6 +90,8 @@ GW.main = {
 
     GW.general.init();
 
+    GW.settings.init();
+
     GW.menu.init();
 
     GW.result.browser.init();

@@ -141,13 +141,14 @@ GW.process = {
           });
 
           GW.process.editor = editor;
-          GW.settings.syncMonacoStyles(GW.process.editor)
 
           // Add event listener to update the theme dynamically
           $('#' + themeSelectorId).on('change', function() {
               var selectedTheme = $(this).val();
               monaco.editor.setTheme(selectedTheme);
           });
+
+          GW.settings.syncMonacoStyles(GW.process.editor)
       });
   },
 
@@ -225,50 +226,44 @@ GW.process = {
 
   showPython: function(code, cmid) {
     // Define the path to the Monaco Editor's package
-        require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
+    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-        // Load the main module of Monaco Editor to start its setup
-        require(['vs/editor/editor.main'], 
-          function() {
-            // Ensure the target container for the editor exists and is empty
-            var editorContainerId = 'codeeditor-' + cmid;
-            var container = $("#codearea-" + cmid);
-            container.empty(); // Clear previous instances if any
-            container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
+    // Load the main module of Monaco Editor to start its setup
+    require(['vs/editor/editor.main'], 
+      function() {
+        // Ensure the target container for the editor exists and is empty
+        var editorContainerId = 'codeeditor-' + cmid;
+        var container = $("#codearea-" + cmid);
+        container.empty(); // Clear previous instances if any
+        container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
 
-            // $('#' + editorContainerId).css({
-            // 	height: '200px', // Ensure this matches the height set above or any other desired value
-            // 	width: '100%', // Full width
-            
-            // 	// Add other styles as needed
-            // });
-            
-            
-            // Initialize the Monaco Editor with Python configuration
-            var editor = monaco.editor.create(document.getElementById(editorContainerId), {
-                value: code || '# Write your first Python code in Geoweaver',
-                language: 'python',
-                theme: GW.settings.selected_monaco_theme, // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
-                lineNumbers: 'on',
-                roundedSelection: false,
-                scrollBeyondLastLine: false,
-                readOnly: false,
-                fontSize: 10,
-                automaticLayout: true,
-                formatOnSave: true,
-                formatOnPaste: true,
-                folding: true,
-                formatOnType: true,
-                showFoldingControls: 'always',
-                wordWrap: 'on',
-                scrollBeyondLastLine: true,
-            });
-   
-            GW.process.editor = editor;
-            GW.settings.syncMonacoStyles(GW.process.editor)
-            
-          }
-        );
+        console.log("What is the current theme?" + GW.settings.selected_monaco_theme)
+        
+        // Initialize the Monaco Editor with Python configuration
+        var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+            value: code || '# Write your first Python code in Geoweaver',
+            language: 'python',
+            theme: GW.settings.selected_monaco_theme,
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            fontSize: 10,
+            automaticLayout: true,
+            formatOnSave: true,
+            formatOnPaste: true,
+            folding: true,
+            formatOnType: true,
+            showFoldingControls: 'always',
+            wordWrap: 'on',
+            scrollBeyondLastLine: true,
+        });
+
+        GW.process.editor = editor;
+        GW.settings.syncMonacoStyles(GW.process.editor)
+        
+      }
+    );
   },
 
   uploadAndReplaceJupyterCode: function () {

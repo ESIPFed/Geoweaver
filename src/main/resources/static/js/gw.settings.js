@@ -7,6 +7,12 @@ GW.settings = {
 
   selected_monaco_theme: null,
 
+  init: function(){
+
+    this.selected_monaco_theme = localStorage.getItem('editorTheme') || GW.settings.default_monaco_theme
+    
+  },
+
   clearCache: function () {
     if (
       confirm(
@@ -118,17 +124,19 @@ GW.settings = {
 
     var frame = GW.process.createJSFrameDialog(360, 320, content, "Settings");
 
-    GW.settings.selected_monaco_theme = localStorage.getItem('editorTheme') || GW.settings.default_monaco_theme
+    console.log("GW.settings.selected_monaco_theme = " + GW.settings.selected_monaco_theme)
 
     // Set the current theme as selected in the dropdown
     $('#editor-theme-selector').val(GW.settings.selected_monaco_theme);
 
     // Add event listener to save the selected theme
     $('#editor-theme-selector').on('change', function () {
-        var selectedTheme = $(this).val();
-        GW.settings.selected_monaco_theme = selectedTheme
-        localStorage.setItem('editorTheme', GW.settings.selected_monaco_theme); // Save to local storage
-        monaco.editor.setTheme(selectedTheme); // Apply the theme to Monaco Editor
+      var selectedTheme = $(this).val();
+      console.log("Current theme is changed to: " + selectedTheme)
+      GW.settings.selected_monaco_theme = selectedTheme
+      localStorage.setItem('editorTheme', selectedTheme); // Save to local storage
+      monaco.editor.setTheme(selectedTheme); // Apply the theme to Monaco Editor
+      GW.settings.syncMonacoStyles(GW.process.editor)
     });
 
   },
@@ -140,7 +148,7 @@ GW.settings = {
       }
 
       themeColors.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
+        // console.log(`${key}: ${value}`);
         colormap[key] = value
       });
 
