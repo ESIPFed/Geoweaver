@@ -1,4 +1,12 @@
 GW.settings = {
+
+  // These settings will only be saved in the browser storage. Cleaning cache will reset everything.
+  // The server side won't store any of these settings. 
+
+  default_monaco_theme: 'vs-dark',
+
+  selected_monaco_theme: null,
+
   clearCache: function () {
     if (
       confirm(
@@ -96,67 +104,60 @@ GW.settings = {
       "            </span> " +
       "        </span> " +
       "    </a> " +
+      '    <div class="list-group-item clearfix"> ' +
+      "        Select Editor Theme " +
+      '        <span class="pull-right"> ' +
+      '            <select id="editor-theme-selector" class="form-control" style="width: auto;">' +
+      '                <option value="vs-dark">Dark</option>' +
+      '                <option value="vs-light">Light</option>' +
+      '                <option value="hc-black">High Contrast</option>' +
+      "            </select> " +
+      "        </span> " +
+      "    </div> " +
       "</div>";
 
     var frame = GW.process.createJSFrameDialog(360, 320, content, "Settings");
 
-    //			BootstrapDialog.show({
-    //
-    //				title: "Settings",
-    //
-    //				message: function(){
-    //
-    //					var content = "<div class=\"list-group\"> "+
-    //					"    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
-    //		            "        Clear Connection between Process and Host "+
-    //		            "        <span class=\"pull-right\"> "+
-    //		            "            <span class=\"btn btn-xs btn-default\" onclick=\"GW.settings.clearProcessConnections();\"> "+
-    //		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
-    //		            "            </span> "+
-    //		            "        </span> "+
-    //		            "    </a> "+
-    //		            "    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
-    //		            "        Clear Connection between Workflow and Host "+
-    //		            "        <span class=\"pull-right\"> "+
-    //		            "            <span class=\"btn btn-xs btn-default\" onclick=\"GW.settings.clearWorkflowConnections();\"> "+
-    //		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
-    //		            "            </span> "+
-    //		            "        </span> "+
-    //		            "    </a> "+
-    //					"    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
-    //		            "        Clear Passwords Only"+
-    //		            "        <span class=\"pull-right\"> "+
-    //		            "            <span class=\"btn btn-xs btn-default\" onclick=\"GW.settings.clearPasswords();\"> "+
-    //		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
-    //		            "            </span> "+
-    //		            "        </span> "+
-    //		            "    </a> "+
-    //		            "    <a class=\"list-group-item clearfix\" href=\"javascript:void(0)\"> "+
-    //		            "        Clear All Cached Information "+
-    //		            "        <span class=\"pull-right\"> "+
-    //		            "            <span class=\"btn btn-xs btn-default\" onclick=\"GW.settings.clearCache();\"> "+
-    //		            "                <span class=\"glyphicon glyphicon-play\" aria-hidden=\"true\"></span> "+
-    //		            "            </span> "+
-    //		            "        </span> "+
-    //		            "    </a> "+
-    //		            "</div>";
-    //
-    //					return content;
-    //
-    //				},
-    //
-    //				buttons: [{
-    //
-    //					label: "Close",
-    //
-    //					action: function(dialogItself){
-    //
-    //						dialogItself.close();
-    //
-    //					}
-    //
-    //				}]
-    //
-    //			});
+    GW.settings.selected_monaco_theme = localStorage.getItem('editorTheme') || GW.settings.default_monaco_theme
+
+    // Set the current theme as selected in the dropdown
+    $('#editor-theme-selector').val(GW.settings.selected_monaco_theme);
+
+    // Add event listener to save the selected theme
+    $('#editor-theme-selector').on('change', function () {
+        var selectedTheme = $(this).val();
+        GW.settings.selected_monaco_theme = selectedTheme
+        localStorage.setItem('editorTheme', GW.settings.selected_monaco_theme); // Save to local storage
+        monaco.editor.setTheme(selectedTheme); // Apply the theme to Monaco Editor
+    });
+
   },
+
+  syncMonacoStyles: function(monacoEditor) {
+      const themeColors = monacoEditor._themeService._theme.colors;
+      let colormap = {
+        "editor.background": themeColors['editor.foreground']?._toString
+      }
+
+      themeColors.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+        colormap[key] = value
+      });
+
+      // Example: Set CSS variables based on Monaco theme
+      document.documentElement.style.setProperty(
+          '--monaco-background-color',
+          colormap['editor.background'] || '#1e1e1e'
+      );
+      document.documentElement.style.setProperty(
+          '--monaco-foreground-color',
+          colormap['editor.foreground'] || '#d4d4d4'
+      );
+      document.documentElement.style.setProperty(
+          '--monaco-scrollbar-color',
+          colormap['scrollbarSlider.background'] || '#797979'
+      );
+      console.log("Setting style to monaco")
+  }
+
 };

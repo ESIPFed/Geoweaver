@@ -105,49 +105,52 @@ GW.process = {
 
     require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-    // Load the main module of Monaco Editor to start its setup
-    require(['vs/editor/editor.main'], function() {
-        // Ensure the target container for the editor exists and is empty
-        var editorContainerId = 'codeeditor-' + cmid;
-        var container = $("#codearea-" + cmid);
-        container.empty(); // Clear previous instances if any
-        container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
+    require(['vs/editor/editor.main'], 
+      function() {
+          var editorContainerId = 'codeeditor-' + cmid;
+          var container = $("#codearea-" + cmid);
+          container.empty(); // Clear previous instances if any
+          container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
 
-        // $('#' + editorContainerId).css({
-        // 	height: '200px', // Ensure this matches the height set above or any other desired value
-        // 	width: '100%', // Full width
-        
-        // 	// Add other styles as needed
-        // });
-        
-        
-        // Initialize the Monaco Editor with Python configuration
-        var editor = monaco.editor.create(document.getElementById(editorContainerId), {
-            value: code || '#!/bin/bash',
-            language: 'shell',
-            theme: 'vs-dark', // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
-            lineNumbers: 'on',
-            roundedSelection: false,
-            scrollBeyondLastLine: false,
-            readOnly: false,
-            fontSize: 10,
-            automaticLayout: true,
-            formatOnSave: true,
-            formatOnPaste: true,
-            folding: true,
-            formatOnType: true,
-            showFoldingControls: 'always',
-            wordWrap: 'on',
-            scrollBeyondLastLine: true,
-        });
+          // Create a dropdown for theme selection
+          var themeSelectorId = 'theme-selector-' + cmid;
+          container.prepend('<select id="' + themeSelectorId + '" style="margin-bottom: 10px;">' +
+                            '<option value="vs-dark">Dark</option>' +
+                            '<option value="vs-light">Light</option>' +
+                            '<option value="hc-black">High Contrast</option>' +
+                            '</select>');
 
-        GW.process.editor = editor;
-        
-        });
-        // GW.process.util.refreshCodeEditor();
+          // Initialize the Monaco Editor
+          var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+              value: code || '#!/bin/bash',
+              language: 'shell',
+              theme: GW.settings.selected_monaco_theme, // Default theme
+              lineNumbers: 'on',
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              fontSize: 10,
+              automaticLayout: true,
+              formatOnSave: true,
+              formatOnPaste: true,
+              folding: true,
+              formatOnType: true,
+              showFoldingControls: 'always',
+              wordWrap: 'on',
+              scrollBeyondLastLine: true,
+          });
 
+          GW.process.editor = editor;
+          GW.settings.syncMonacoStyles(GW.process.editor)
 
+          // Add event listener to update the theme dynamically
+          $('#' + themeSelectorId).on('change', function() {
+              var selectedTheme = $(this).val();
+              monaco.editor.setTheme(selectedTheme);
+          });
+      });
   },
+
 
   load_jupyter: function () {
     var root = {};
@@ -225,7 +228,8 @@ GW.process = {
         require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
         // Load the main module of Monaco Editor to start its setup
-        require(['vs/editor/editor.main'], function() {
+        require(['vs/editor/editor.main'], 
+          function() {
             // Ensure the target container for the editor exists and is empty
             var editorContainerId = 'codeeditor-' + cmid;
             var container = $("#codearea-" + cmid);
@@ -244,7 +248,7 @@ GW.process = {
             var editor = monaco.editor.create(document.getElementById(editorContainerId), {
                 value: code || '# Write your first Python code in Geoweaver',
                 language: 'python',
-                theme: 'vs-dark', // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
+                theme: GW.settings.selected_monaco_theme, // Monaco does not have "yonce" theme, using 'vs-dark' for a dark theme
                 lineNumbers: 'on',
                 roundedSelection: false,
                 scrollBeyondLastLine: false,
@@ -261,10 +265,11 @@ GW.process = {
             });
    
             GW.process.editor = editor;
+            GW.settings.syncMonacoStyles(GW.process.editor)
             
-            });
-            // GW.process.util.refreshCodeEditor();
-},
+          }
+        );
+  },
 
   uploadAndReplaceJupyterCode: function () {
     GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
@@ -686,7 +691,7 @@ GW.process = {
     // disposeModels(); // Ensure previous models are disposed of
 
     const codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
-      theme: 'vs-dark',
+      theme: GW.settings.selected_monaco_theme,
       readOnly: true,
       automaticLayout: true
     });
@@ -700,7 +705,7 @@ GW.process = {
     });
 
     const resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
-      theme: 'vs-dark',
+      theme: GW.settings.selected_monaco_theme,
       readOnly: true,
       automaticLayout: true
     });
@@ -1334,7 +1339,6 @@ GW.process = {
 
     owner = msg.owner;
 
-
     // GW.process.cmid = Math.floor(Math.random() * 1000);
 
     var confidential_field =
@@ -1402,8 +1406,8 @@ GW.process = {
       "		</div>" +
       "   </div>";
 
-    content +=
-      `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
+      content +=
+      `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: var(--monaco-background-color);">
 			
 			<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
 				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
@@ -1436,24 +1440,24 @@ GW.process = {
 			</div>
 			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 						<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-							<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: rgb(28, 28, 28);" >
+							<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: var(--monaco-scrollbar-color);" >
 								<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
 							</div> 
 							<div class="resizer" id="dragMe"></div>
-							<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+							<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);">
 								<h4>Logging</h4>
-								<div id="process-log-window" style="overflow-wrap: break-word;"> </div>
+								<div id="process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: unset; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);"> </div>
 								<div class="row" style="padding:0px; margin:0px;" >
 									<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
 										<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 									</div>
 								</div>
 							</div>
-						</div>
+					</div>
 			</div>`;
 
-    content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none;">
-				<div class="row" id="process-history-container" style="padding:0; color:white; margin:0; background-color:rgb(28, 28, 28);" ></div>
+    content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none; background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);">
+				<div class="row" id="process-history-container" style="padding:0; margin:0; background-color:var(--monaco-editor-background-color); color:var(--monaco-editor-foreground-color);" ></div>
 				<div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: -100px; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
                 	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
 					<h5 style="width: 100vw; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>

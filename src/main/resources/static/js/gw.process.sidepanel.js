@@ -326,9 +326,11 @@ GW.process.sidepanel = {
                         <div class="col col-md-6" id="prompt-panel-code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
                     </div>
                     <div class="resizer" id="prompt-panel-dragMe"></div>
-                    <div id="prompt-panel-single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: rgb(28, 28, 28); background-color: rgb(28, 28, 28); color: white;">
+                    <div id="prompt-panel-single-console-content" class="container__right" 
+                    style="height:100%; overflow-y: scroll; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);"
+                    >
                         <h4>Logging</h4>
-                        <div id="prompt-panel-process-log-window" style="overflow-wrap: break-word;"> </div>
+                        <div id="prompt-panel-process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: unset; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);"> </div>
                         <div class="row" style="padding:0px; margin:0px;" >
                             <div class="col col-md-12" id="prompt-panel-console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
                                 <div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>

@@ -3,14 +3,14 @@
  */
 
 GW.process.util = {
+
   displayCodeArea: function (
     code_type,
     code,
     code_editor_container_id,
     process_window_container_id,
     // cmid,
-  )
-   {
+  ){
     $(code_editor_container_id).html("");
 
     $(code_editor_container_id).css({ "overflow-y": "scroll" });
@@ -85,9 +85,10 @@ GW.process.util = {
       }
     } else if(code_type=="shell"){
 
-    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
+      require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-    require(['vs/editor/editor.main'], function() {
+      require(['vs/editor/editor.main'], function() {
+
         var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
         var container = document.getElementById(editorContainerId);
         console.log("Editor container: " + editorContainerId);
@@ -97,13 +98,11 @@ GW.process.util = {
             return;
         }
 
-        // container.style.height = '820px'; // Set a non-zero height
-        // container.style.width = '100%'; // Set the width to fill the container
-
-    var editor = monaco.editor.create(container, {
+        var editor = monaco.editor.create(container, 
+          {
             value: code || '#!/bin/bash',
             language: 'shell',
-            theme: 'vs-dark',
+            theme: GW.settings.selected_monaco_theme,
             lineNumbers: true,
             roundedSelection: false,
             scrollBeyondLastLine: false,
@@ -117,78 +116,64 @@ GW.process.util = {
             showFoldingControls: 'always',
             wordWrap: 'on',
             // scrollBeyondLastLine: true,
-        });
-        
+          }
+        );
+          
         GW.process.editor = editor;
         GW.process.sidepanel.editor = editor;
 
-
-        
         editor.onDidChangeModelContent(function(event) {
             console.log('Content changed');
         });
+      });
 
-        // Add any additional editor options or event listeners here
-    });
-// GW.process.util.refreshCodeEditor();
-
-
-  }
-  else{
+    }else{
 
       require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-  require(['vs/editor/editor.main'], function() {
-      var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
-      var container = document.getElementById(editorContainerId);
+      require(['vs/editor/editor.main'], function() {
+          var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
+          var container = document.getElementById(editorContainerId);
 
-      if (!container) {
-          console.error('Editor container not found.');
-          return;
-      }
+          if (!container) {
+              console.error('Editor container not found.');
+              return;
+          }
 
-      // container.style.height = '820px'; // Set a non-zero height
-      // container.style.width = '100%'; // Set the width to fill the container
+          // container.style.height = '820px'; // Set a non-zero height
+          // container.style.width = '100%'; // Set the width to fill the container
 
-      var editor = monaco.editor.create(container, {
-          value: code || '# Write your first Python code in Geoweaver',
-          language: 'python',
-          theme: 'vs-dark',
-          lineNumbers: true,
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          readOnly: false,
-          fontSize: 14,
-          automaticLayout: true,
-          formatOnSave: true,
-          formatOnPaste: true,
-          folding: true,
-          formatOnType: true,
-          showFoldingControls: 'always',
-          wordWrap: 'on',
-          // scrollBeyondLastLine: true,
+          var editor = monaco.editor.create(container, {
+              value: code || '# Write your first Python code in Geoweaver',
+              language: 'python',
+              theme: GW.settings.selected_monaco_theme,
+              lineNumbers: true,
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              fontSize: 14,
+              automaticLayout: true,
+              formatOnSave: true,
+              formatOnPaste: true,
+              folding: true,
+              formatOnType: true,
+              showFoldingControls: 'always',
+              wordWrap: 'on',
+              // scrollBeyondLastLine: true,
+          });
+
+          GW.process.editor = editor;
+          GW.process.sidepanel.editor = editor;
+
+          GW.settings.syncMonacoStyles(GW.process.editor)
+
+          editor.onDidChangeModelContent(function(event) {
+              console.log('Content changed');
+          });
       });
-
-      GW.process.editor = editor;
-      GW.process.sidepanel.editor = editor;
-
+    
       
-      
-
-      editor.onDidChangeModelContent(function(event) {
-          console.log('Content changed');
-      });
-
-      // Add any additional editor options or event listeners here
-  });
-  // if(cmid!=null){
-  //   console.log("Editor cmid: " + cmid);
-  // }
- 
-  
-}
-  // GW.process.util.refreshCodeEditor();
-
+    }
   
   },
 
