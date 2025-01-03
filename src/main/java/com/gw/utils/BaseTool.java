@@ -30,9 +30,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -52,11 +54,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.ComputerSystem;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.software.os.OperatingSystem;
+
 
 /**
  * Class BaseTool.java
@@ -106,44 +104,53 @@ public class BaseTool {
 
   public String getLocalhostIdentifier() throws Exception {
 
-    String keystr = null;
+      String keystr = null;
+      Path keyFilePath = Paths.get(System.getProperty("user.home"), "geoweaver", ".key");
 
-    try {
+      try {
 
-      SystemInfo systemInfo = new SystemInfo();
-      OperatingSystem operatingSystem = systemInfo.getOperatingSystem();
-      HardwareAbstractionLayer hardwareAbstractionLayer = systemInfo.getHardware();
-      CentralProcessor centralProcessor = hardwareAbstractionLayer.getProcessor();
-      ComputerSystem computerSystem = hardwareAbstractionLayer.getComputerSystem();
+          // Check if the key file exists, if not, generate and save a new key
+          if (!Files.exists(keyFilePath)) {
+              String randomKey = generateRandomKey();
+              Files.createDirectories(keyFilePath.getParent()); // Ensure the directory exists
+              Files.write(keyFilePath, randomKey.getBytes());
+          }
 
-      String vendor = operatingSystem.getManufacturer();
-      String processorSerialNumber = computerSystem.getSerialNumber();
-      String uuid = computerSystem.getHardwareUUID();
-      String processorIdentifier = centralProcessor.getProcessorIdentifier().getIdentifier();
-      int processors = centralProcessor.getLogicalProcessorCount();
+          // Read the key from the file
+          String savedKey = Files.readString(keyFilePath).trim();
 
-      String delimiter = "-";
+          // Use the saved key as the basis for the password
+          keystr = hashString(savedKey);
 
-      keystr =
-          String.format("%08x", vendor.hashCode())
-              + delimiter
-              + String.format("%08x", processorSerialNumber.hashCode())
-              + delimiter
-              + String.format("%08x", uuid.hashCode())
-              + delimiter
-              + String.format("%08x", processorIdentifier.hashCode())
-              + delimiter
-              + processors;
+      } catch (Exception e) {
 
-    } catch (Exception e) {
+          e.printStackTrace();
 
-      e.printStackTrace();
+          keystr = "GeoweaverWorkflowManagementSoftwareForAll";
+      }
 
-      keystr = "GeoweaverWorkflowManagementSoftwareForAll";
-    }
-
-    return keystr;
+      return keystr;
   }
+
+  private String generateRandomKey() {
+      SecureRandom secureRandom = new SecureRandom();
+      byte[] randomBytes = new byte[32]; // 256-bit key
+      secureRandom.nextBytes(randomBytes);
+      return Base64.getEncoder().encodeToString(randomBytes);
+  }
+
+  private String hashString(String input) throws NoSuchAlgorithmException {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(input.getBytes());
+      StringBuilder hexString = new StringBuilder();
+      for (byte b : hash) {
+          String hex = Integer.toHexString(0xff & b);
+          if (hex.length() == 1) hexString.append('0');
+          hexString.append(hex);
+      }
+      return hexString.toString();
+  }
+
 
   public static boolean isPortInUse(String host, int port) {
       try (Socket socket = new Socket()) {
