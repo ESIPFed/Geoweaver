@@ -27,7 +27,7 @@ public class History {
 
 	private Date history_end_time;
 
-	@Column(length = 512)
+	@Lob
 	private String history_notes;
 
 	private String history_process;
