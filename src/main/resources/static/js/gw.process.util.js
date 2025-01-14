@@ -118,6 +118,7 @@ GW.process.util = {
             showFoldingControls: 'always',
             wordWrap: 'on',
             // scrollBeyondLastLine: true,
+            contextmenu: true, // Enable the context menu for additional clipboard actions
           }
         );
           
@@ -162,6 +163,7 @@ GW.process.util = {
               showFoldingControls: 'always',
               wordWrap: 'on',
               // scrollBeyondLastLine: true,
+              contextmenu: true, // Enable the context menu for additional clipboard actions
           });
 
           GW.process.editor = editor;
