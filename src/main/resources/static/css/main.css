@@ -584,3 +584,23 @@ a {
   white-space: normal;
   word-break: break-word;
 }
+
+@keyframes gw-circle-flashing {
+  0% {
+    stroke: orange;
+    stroke-width: 2px;
+  }
+  50% {
+    stroke: red;
+    stroke-width: 4px;
+  }
+  100% {
+    stroke: orange;
+    stroke-width: 2px;
+  }
+}
+
+.circle-running circle {
+  animation: gw-circle-flashing 1s infinite;
+  animation-timing-function: ease-in-out;
+}

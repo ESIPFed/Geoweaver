@@ -59,11 +59,6 @@ marker{
     fill: #333;
 }
 
-g.conceptG circle{
-    fill: white;
-    stroke: #000000;
-}
-
 g.conceptG:hover circle{
     stroke: #000000;
     stroke-width: 5px;

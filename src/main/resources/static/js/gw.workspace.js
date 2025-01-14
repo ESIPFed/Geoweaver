@@ -679,6 +679,7 @@ GW.workspace = {
         //remove the old color status - load a brand new workflow
         newNodes.forEach(function (e, i) {
           newNodes[i].color = "white";
+          newNodes[i].status = "none"; // intialize the workflow status
         });
 
         this.nodes = newNodes;
@@ -1186,10 +1187,10 @@ GW.workspace = {
         return d.id;
       });
       thisGraph.circles
-        .style("stroke", function (d) {
+        .attr("stroke", function (d) {
           return "black";
         })
-        .style("fill", function (d) {
+        .attr("fill", function (d) {
           console.log("circles together fill color: " + d.color);
           if (d.skip == "true" || d.skip == true) {
             return "url(#diagonalHatch)";
@@ -1259,6 +1260,9 @@ GW.workspace = {
 
       newGs
         .classed(consts.circleGClass, true)
+        .classed("circle-running", function (d) {
+          return d.hasOwnProperty("status") && d.status === "Running"; // Add 'running' class if the node is in the running state
+        })
         .attr("transform", function (d) {
           return "translate(" + d.x + "," + d.y + ")";
         })
@@ -1328,15 +1332,14 @@ GW.workspace = {
         })
         .call(thisGraph.drag);
 
-      //	    	    console.log("update circile once");
       newGs
         .append("circle")
         .attr("r", String(consts.nodeRadius))
         .attr("stroke-width", 2)
-        .style("stroke", function (d) {
+        .attr("stroke", function (d) {
           return "black";
         })
-        .style("fill", function (d) {
+        .attr("fill", function (d) {
           console.log("circle append called " + d.color);
           if (d.skip == "true" || d.skip == true) {
             return "url(#diagonalHatch)";
@@ -1427,9 +1430,11 @@ GW.workspace = {
     };
 
     GW.workspace.GraphCreator.prototype.renderStatus = function (statusList) {
+
       console.log("monitor workflow status called");
 
       if (statusList.message_type == "single_process") {
+
         var id = statusList.id;
 
         var history_id = statusList.history_id;
@@ -1438,16 +1443,14 @@ GW.workspace = {
 
         var num = this.getNodeNumById(id);
 
-        GW.workspace.theGraph.nodes[num].color =
-          GW.workspace.getColorByFlag(flag);
+        GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
 
-        // newnodes.push(node);
+        GW.workspace.theGraph.nodes[num].status = flag;
 
         GW.monitor.updateProgress(id, flag);
 
-        // GW.workspace.theGraph.nodes = newnodes;
-
         GW.workspace.theGraph.updateGraph();
+
       } else if (typeof statusList === "object") {
         var newnodes = [];
 
@@ -1461,6 +1464,8 @@ GW.workspace = {
           var node = this.getNodeById(id);
 
           node.color = GW.workspace.getColorByFlag(flag);
+
+          node.status = flag
 
           newnodes.push(node);
 

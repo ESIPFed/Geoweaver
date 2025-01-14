@@ -130,7 +130,6 @@ GW.monitor = {
       barcolor = "progress-bar-success progress-bar-striped";
     } else if (flag == "Failed") {
       percent = 100;
-
       barcolor = "progress-bar-danger progress-bar-striped";
     }
 
