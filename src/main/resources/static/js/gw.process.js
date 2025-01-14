@@ -140,6 +140,7 @@ GW.process = {
               scrollBeyondLastLine: true,
               contextmenu: true, // Enable the context menu for additional clipboard actions
           });
+          GW.process.util.add_editor_actions(editor)
 
           GW.process.editor = editor;
 
@@ -260,6 +261,7 @@ GW.process = {
             scrollBeyondLastLine: true,
             contextmenu: true, // Enable the context menu for additional clipboard actions
         });
+        GW.process.util.add_editor_actions(editor)
 
         GW.process.editor = editor;
         GW.settings.syncMonacoStyles(GW.process.editor)

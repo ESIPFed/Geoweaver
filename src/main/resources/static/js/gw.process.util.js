@@ -4,6 +4,62 @@
 
 GW.process.util = {
 
+  // Utility function to add key commands for both Ctrl and Cmd on both macOS and Linux
+  addClipboardCommand: function(editor, keyCode, commandCallback) {
+    // For both macOS and Linux, bind the command for both Ctrl and Cmd keys
+    editor.addCommand(monaco.KeyMod.CtrlCmd | keyCode, commandCallback);  // Handles both Cmd on macOS and Ctrl on Linux/Windows
+    editor.addCommand(monaco.KeyMod.WinCtrl | keyCode, commandCallback);      // Handles Ctrl on both macOS and Linux/Windows
+  },
+
+  add_editor_actions: function(editor){
+    // Copy Command (Ctrl+C and Cmd+C on both macOS and Linux)
+    this.addClipboardCommand(editor, monaco.KeyCode.KeyC, function () {
+      const selectedText = editor.getModel().getValueInRange(editor.getSelection());
+      navigator.clipboard.writeText(selectedText).then(() => {}).catch(err => {
+        console.error("Failed to copy text: ", err);
+      });
+    });
+
+    // Paste Command (Ctrl+V and Cmd+V on both macOS and Linux)
+    this.addClipboardCommand(editor, monaco.KeyCode.KeyV, function () {
+      navigator.clipboard.readText().then((clipboardText) => {
+          const selection = editor.getSelection();
+          editor.executeEdits('', [
+              {
+                  range: selection,
+                  text: clipboardText,
+                  forceMoveMarkers: true,
+              },
+          ]);
+      }).catch(err => {
+          console.error("Failed to paste text: ", err);
+      });
+    });
+
+    // Cut Command (Ctrl+X and Cmd+X on both macOS and Linux)
+    this.addClipboardCommand(editor, monaco.KeyCode.KeyX, function () {
+      const selectedText = editor.getModel().getValueInRange(editor.getSelection());
+      navigator.clipboard.writeText(selectedText).then(() => {
+          const selection = editor.getSelection();
+          editor.executeEdits('', [
+              {
+                  range: selection,
+                  text: '', // Replace selected text with nothing (cut)
+                  forceMoveMarkers: true,
+              },
+          ]);
+      }).catch(err => {
+          console.error("Failed to cut text: ", err);
+      });
+    });
+
+    // Undo Command (Ctrl+Z and Cmd+Z on both macOS and Linux)
+    this.addClipboardCommand(editor, monaco.KeyCode.KeyZ, function () {
+      editor.trigger('keyboard', 'undo');  // This triggers the undo action
+    });
+
+  },
+
   displayCodeArea: function (
     code_type,
     code,
@@ -121,13 +177,16 @@ GW.process.util = {
             contextmenu: true, // Enable the context menu for additional clipboard actions
           }
         );
+
+        GW.process.util.add_editor_actions(editor)
           
         GW.process.editor = editor;
         GW.process.sidepanel.editor = editor;
 
-        editor.onDidChangeModelContent(function(event) {
-            console.log('Content changed');
-        });
+        // editor.onDidChangeModelContent(function(event) {
+        //     console.log('Content changed');
+        // });
+        
       });
 
     }else{
@@ -165,6 +224,7 @@ GW.process.util = {
               // scrollBeyondLastLine: true,
               contextmenu: true, // Enable the context menu for additional clipboard actions
           });
+          GW.process.util.add_editor_actions(editor)
 
           GW.process.editor = editor;
           GW.process.sidepanel.editor = editor;
