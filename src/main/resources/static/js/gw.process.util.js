@@ -35,51 +35,56 @@ GW.process.util = {
   },
 
   add_editor_actions: function(editor){
-    // Copy Command (Ctrl+C and Cmd+C on both macOS and Linux)
-    this.addClipboardCommand(editor, monaco.KeyCode.KeyC, function () {
-      const selectedText = editor.getModel().getValueInRange(editor.getSelection());
-      navigator.clipboard.writeText(selectedText).then(() => {}).catch(err => {
-        console.error("Failed to copy text: ", err);
-      });
-    });
 
-    // Paste Command (Ctrl+V and Cmd+V on both macOS and Linux)
-    this.addClipboardCommand(editor, monaco.KeyCode.KeyV, function () {
-      navigator.clipboard.readText().then((clipboardText) => {
-          const selection = editor.getSelection();
-          editor.executeEdits('', [
-              {
-                  range: selection,
-                  text: clipboardText,
-                  forceMoveMarkers: true,
-              },
-          ]);
-      }).catch(err => {
-          console.error("Failed to paste text: ", err);
-      });
-    });
+    // comment out for now because these will break the search bar. 
+    // People won't be able to paste things into the search input field
+    // we cannot enable this function until that bug is fixed. 
 
-    // Cut Command (Ctrl+X and Cmd+X on both macOS and Linux)
-    this.addClipboardCommand(editor, monaco.KeyCode.KeyX, function () {
-      const selectedText = editor.getModel().getValueInRange(editor.getSelection());
-      navigator.clipboard.writeText(selectedText).then(() => {
-          const selection = editor.getSelection();
-          editor.executeEdits('', [
-              {
-                  range: selection,
-                  text: '', // Replace selected text with nothing (cut)
-                  forceMoveMarkers: true,
-              },
-          ]);
-      }).catch(err => {
-          console.error("Failed to cut text: ", err);
-      });
-    });
+    // // Copy Command (Ctrl+C and Cmd+C on both macOS and Linux)
+    // this.addClipboardCommand(editor, monaco.KeyCode.KeyC, function () {
+    //   const selectedText = editor.getModel().getValueInRange(editor.getSelection());
+    //   navigator.clipboard.writeText(selectedText).then(() => {}).catch(err => {
+    //     console.error("Failed to copy text: ", err);
+    //   });
+    // });
 
-    // Undo Command (Ctrl+Z and Cmd+Z on both macOS and Linux)
-    this.addClipboardCommand(editor, monaco.KeyCode.KeyZ, function () {
-      editor.trigger('keyboard', 'undo');  // This triggers the undo action
-    });
+    // // Paste Command (Ctrl+V and Cmd+V on both macOS and Linux)
+    // this.addClipboardCommand(editor, monaco.KeyCode.KeyV, function () {
+    //   navigator.clipboard.readText().then((clipboardText) => {
+    //       const selection = editor.getSelection();
+    //       editor.executeEdits('', [
+    //           {
+    //               range: selection,
+    //               text: clipboardText,
+    //               forceMoveMarkers: true,
+    //           },
+    //       ]);
+    //   }).catch(err => {
+    //       console.error("Failed to paste text: ", err);
+    //   });
+    // });
+
+    // // Cut Command (Ctrl+X and Cmd+X on both macOS and Linux)
+    // this.addClipboardCommand(editor, monaco.KeyCode.KeyX, function () {
+    //   const selectedText = editor.getModel().getValueInRange(editor.getSelection());
+    //   navigator.clipboard.writeText(selectedText).then(() => {
+    //       const selection = editor.getSelection();
+    //       editor.executeEdits('', [
+    //           {
+    //               range: selection,
+    //               text: '', // Replace selected text with nothing (cut)
+    //               forceMoveMarkers: true,
+    //           },
+    //       ]);
+    //   }).catch(err => {
+    //       console.error("Failed to cut text: ", err);
+    //   });
+    // });
+
+    // // Undo Command (Ctrl+Z and Cmd+Z on both macOS and Linux)
+    // this.addClipboardCommand(editor, monaco.KeyCode.KeyZ, function () {
+    //   editor.trigger('keyboard', 'undo');  // This triggers the undo action
+    // });
 
   },
 
