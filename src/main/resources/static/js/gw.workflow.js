@@ -113,7 +113,7 @@ GW.workflow = {
 
         // render other columns and add them to priority order
         for (const key of Object.keys(node)) {
-          if (!priorityOrder.includes(key)) {
+          if (!priorityOrder.includes(key) && key.toLowerCase() !== 'color') {
             priorityOrder.push(key);
             info_body += `<th scope="col">${key.charAt(0).toUpperCase() + key.slice(1)}</th>`;
           }
@@ -156,14 +156,14 @@ GW.workflow = {
         const headers = [];
       
         for (const key of Object.keys(edge.source)) {
-          if (key === 'x' || key === 'y') {
+          if (key === 'x' || key === 'y' || key === 'color') {
             continue;
           }
           headers.push(`Source ${key.charAt(0).toUpperCase() + key.slice(1)}`);
         }
       
         for (const key of Object.keys(edge.target)) {
-          if (key === 'x' || key === 'y') {
+          if (key === 'x' || key === 'y' || key === 'color') {
             continue;
           }
           headers.push(`Target ${key.charAt(0).toUpperCase() + key.slice(1)}`);
