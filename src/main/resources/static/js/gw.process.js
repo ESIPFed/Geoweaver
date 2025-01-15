@@ -1405,11 +1405,13 @@ GW.process = {
       "		</div>" +
       "   </div>";
 
+
+
       content +=
       `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: var(--monaco-background-color);">
 			
 			<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
-				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">Code</button>
+				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">`+ GW.process.util.get_icon_by_process_type(code_type) +` `+ process_name+`</button>
 				<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('` +
       process_id +
       `', '` +

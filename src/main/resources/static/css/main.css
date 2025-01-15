@@ -604,3 +604,31 @@ a {
   animation: gw-circle-flashing 1s infinite;
   animation-timing-function: ease-in-out;
 }
+
+
+
+/*** Code Panel Toolbar ***/
+
+/* Toolbar styles for small screens */
+@media screen and (max-width: 768px) {
+  .gw-toolbar {
+      display: flex;
+      flex-direction: column;
+  }
+  
+  .gw-toolbar button {
+      width: 100%; /* Make buttons full-width */
+      text-align: left; /* Align text to the left for better readability */
+  }
+  
+  .gw-toolbar-collapsed {
+      display: none; /* Hide by default */
+  }
+
+  .gw-toolbar-expanded {
+      display: flex;
+      flex-direction: column;
+  }
+}
+
+
