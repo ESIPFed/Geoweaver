@@ -102,10 +102,30 @@ public class BaseTool {
 
   public BaseTool() {}
 
+  public String getGeoweaverConfigFolder() {
+    // Construct the path to the Geoweaver directory under the user's home
+    Path geoweaverPath = Paths.get(System.getProperty("user.home"), "geoweaver");
+
+    try {
+        // Check if the directory exists
+        if (!Files.exists(geoweaverPath)) {
+            // Create the directory
+            Files.createDirectories(geoweaverPath);
+            System.out.println("Geoweaver configuration folder created: " + geoweaverPath.toString());
+        }
+    } catch (Exception e) {
+        System.err.println("Error while accessing or creating Geoweaver configuration folder: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    // Return the path as a string
+    return geoweaverPath.toString();
+  }
+
   public String getLocalhostIdentifier() throws Exception {
 
       String keystr = null;
-      Path keyFilePath = Paths.get(System.getProperty("user.home"), "geoweaver", ".key");
+      Path keyFilePath = Paths.get(getGeoweaverConfigFolder(), ".key");
 
       try {
 
@@ -179,20 +199,11 @@ public class BaseTool {
 
   public String getLocalhostPassword() {
 
-    logger.info("get existing workspace dir: " + workspace);
-
-    workspace = this.isNull(workspace) ? "~/gw-workspace" : workspace;
-
-    logger.info("new workspace dir: " + workspace);
-
     String secretfile =
-        this.normalizedPath(workspace) + FileSystems.getDefault().getSeparator() + secretfilename;
+        this.getGeoweaverConfigFolder() + FileSystems.getDefault().getSeparator() + secretfilename;
 
     if (new File(secretfile).exists()) {
-      return this.readStringFromFile(
-          this.normalizedPath(workspace)
-              + FileSystems.getDefault().getSeparator()
-              + secretfilename);
+      return this.readStringFromFile(secretfile);
     }
 
     return null;
@@ -209,16 +220,11 @@ public class BaseTool {
         originalpassword =
             this.isNull(originalpassword) ? new RandomString(30).nextString() : originalpassword;
 
-        encodedpassword =
-            this.get_SHA_512_SecurePassword(originalpassword, getLocalhostIdentifier());
-
-        workspace = this.isNull(workspace) ? "~/gw-workspace" : workspace;
+        encodedpassword = this.get_SHA_512_SecurePassword(originalpassword, getLocalhostIdentifier());
 
         this.writeString2File(
             encodedpassword,
-            this.normalizedPath(workspace)
-                + FileSystems.getDefault().getSeparator()
-                + secretfilename);
+            this.getGeoweaverConfigFolder() + FileSystems.getDefault().getSeparator() + secretfilename);
       }
 
     } catch (Exception e) {
