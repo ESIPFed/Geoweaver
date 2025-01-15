@@ -13,20 +13,6 @@ GW.process.util = {
     return icons[process_type] || "❓"
   },
 
-  // Toggle the toolbar
-  toggleToolbar: function() {
-    const toolbar = document.getElementById("gw-toolbar");
-    const isCollapsed = toolbar.classList.contains("gw-toolbar-collapsed");
-
-    if (isCollapsed) {
-        toolbar.classList.remove("gw-toolbar-collapsed");
-        toolbar.classList.add("gw-toolbar-expanded");
-    } else {
-        toolbar.classList.add("gw-toolbar-collapsed");
-        toolbar.classList.remove("gw-toolbar-expanded");
-    }
-  },
-
   // Utility function to add key commands for both Ctrl and Cmd on both macOS and Linux
   addClipboardCommand: function(editor, keyCode, commandCallback) {
     // For both macOS and Linux, bind the command for both Ctrl and Cmd keys
