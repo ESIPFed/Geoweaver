@@ -100,13 +100,9 @@ public class DashboardToolTest {
         when(workflowRepository.count()).thenReturn(4L);
         when(environmentRepository.count()).thenReturn(2L);
         when(processRepository.findShellProcess()).thenReturn(Arrays.asList(new GWProcess(), new GWProcess()));
-        when(processRepository.findNotebookProcess()).thenReturn(Arrays.asList(new GWProcess()));
         when(processRepository.findPythonProcess()).thenReturn(Arrays.asList(new GWProcess(), new GWProcess()));
         when(processRepository.findBuiltinProcess()).thenReturn(Arrays.asList(new GWProcess()));
         when(hostRepository.findSSHHosts()).thenReturn(Arrays.asList(new Host()));
-        when(hostRepository.findJupyterNotebookHosts()).thenReturn(Arrays.asList(new Host(), new Host()));
-        when(hostRepository.findJupyterLabHosts()).thenReturn(Arrays.asList(new Host()));
-        when(hostRepository.findJupyterHubHosts()).thenReturn(Arrays.asList(new Host()));
         when(hostRepository.findGEEHosts()).thenReturn(Arrays.asList(new Host()));
         when(historyRepository.findRunningProcess()).thenReturn(Arrays.asList(new Object[] { }, new Object[] { }));
         when(historyRepository.findFailedProcess()).thenReturn(Arrays.asList(new Object[] { }, new Object[] { }));
