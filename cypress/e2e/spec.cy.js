@@ -247,19 +247,27 @@ describe('Process Testing', () => {
     cy.get('ul#process_folder_shell_target').should('contain', 'shell_test');
     })
 
-    it("Create Python Process", () => {
-      cy.visit("http://localhost:8070/Geoweaver/web/geoweaver");
-      cy.get(".introjs-skipbutton").click();
-      cy.get("#newprocess").click();
-      cy.get("form select.form-control.form-control-sm").select("Python");
-      cy.get("form > :nth-child(1) > :nth-child(4)").clear("t");
-      cy.get("form > :nth-child(1) > :nth-child(4)").type("python_test");
-      cy.get(".modal-footer").contains("Add").click();
-      cy.get("ul#process_folder_python_target").should(
-        "contain",
-        "python_test"
-      );
-    });
+    it('Create Python Process', () => {
+      cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+      cy.get('.introjs-skipbutton').click();
+      cy.get('#newprocess').click();
+      cy.get('form select.form-control.form-control-sm').select('Python');
+      cy.get('form > :nth-child(1) > :nth-child(4)').clear('t');
+      cy.get('form > :nth-child(1) > :nth-child(4)').type('python_test');
+      cy.get('.modal-footer').contains('Add').click();
+      cy.get('ul#process_folder_python_target').should('contain', 'python_test');
+    })
+
+    it('Create Notebook Process', () => {
+      cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+      cy.get('.introjs-skipbutton').click();
+      cy.get('#newprocess').click();
+      cy.get('form select.form-control.form-control-sm').select('Jupyter Notebook');
+      cy.get('form > :nth-child(1) > :nth-child(4)').clear('t');
+      cy.get('form > :nth-child(1) > :nth-child(4)').type('notebook_test');
+      cy.get('.modal-footer').contains('Add').click();
+      cy.get('ul#process_folder_jupyter_target').should('contain', 'notebook_test');
+    }) 
 });
 
 
@@ -308,18 +316,27 @@ describe('Delete Process', () => {
       cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
     })
 
-    it("Delete Python Process", () => {
-      cy.visit("http://localhost:8070/Geoweaver/web/geoweaver");
-      cy.get(".introjs-skipbutton").click();
-      cy.get("#process_folder_python").click();
-      cy.get("ul#process_folder_python_target").contains("python_test").click();
-      cy.contains("button", "Delete").click();
-      cy.get("#del-confirm-btn").click();
-      cy.get("#main-general-content").click();
-      cy.get(
-        "[style=\"color:rgb(38, 90, 139);text-align:center;font-family:'lato', sans-serif;font-size:80px\"]"
-      ).should("be.visible");
-    });
+    it('Delete Python Process', () => {
+      cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+      cy.get('.introjs-skipbutton').click();
+      cy.get('#process_folder_python').click();
+      cy.get('ul#process_folder_python_target').contains('python_test').click();
+      cy.contains('button', 'Delete').click();
+      cy.get('#del-confirm-btn').click();
+      cy.get('#main-general-content').click();
+      cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
+    })
+
+    it('Delete Jupyter Notebook Process', () => {
+      cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+      cy.get('.introjs-skipbutton').click();
+      cy.get('#process_folder_jupyter').click();
+      cy.get('ul#process_folder_jupyter_target').contains('notebook_test').click();
+      cy.contains('button', 'Delete').click();
+      cy.get('#del-confirm-btn').click();
+      cy.get('#main-general-content').click();
+      cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
+    })
 });
 
 describe('Write Password into .secret', () => {
