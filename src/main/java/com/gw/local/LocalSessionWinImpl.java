@@ -161,8 +161,6 @@ public class LocalSessionWinImpl implements LocalSession {
     this.history.setIndicator(status);
 
     history_tool.saveHistory(history);
-
-    pt.updateJupyter(history, this.token);
   }
 
   @Override
