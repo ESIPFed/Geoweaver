@@ -197,13 +197,6 @@ public class BaseToolTest {
     }
 
     @Test
-    void testParseJupyterURL(){
-
-        bt.parseJupyterURL("http://localhost:8888/api/contents/Documents/Untitled.ipynb?type=notebook&_=1642379059397");
-
-    }
-
-    @Test
     void testParseGoogleEarthURL(){
 
         bt.parseGoogleEarthURL("https://code.earthengine.google.com/javascript/polyfills/web-animations-next-lite.min.js");

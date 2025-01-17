@@ -784,24 +784,6 @@ public class GoogleEarthController {
 
       logger.debug("Request URI: " + request.getRequestURI());
 
-      //			logger.info("Query String: " + request.getQueryString());
-
-      //			String realurl =  this.getRealRequestURL(request.getRequestURI());
-      //
-      //			Host h = HostTool.getHostById(hostid);
-      //
-      //			String[] ss = h.parseJupyterURL();
-      //
-      //			URI uri = new URI(ss[0], null, ss[1], Integer.parseInt(ss[2]), realurl,
-      // request.getQueryString(), null);
-      //
-      //			logger.info("URL: " + uri.toString());
-      //
-      //			logger.info("HTTP Method: " + method.toString());
-      //
-      //			HttpHeaders newheaders = this.updateHeaderReferer(reqentity.getHeaders(), h, realurl,
-      // request.getQueryString());
-
       HttpHeaders newheaders = getHeaders(reqentity.getHeaders(), method, request, hostid);
       logger.debug("!!!POST! [NewHeaders]: " + newheaders);
 
@@ -812,10 +794,6 @@ public class GoogleEarthController {
       ResponseEntity<String> responseEntity =
           restTemplate.exchange(target_url, method, newentity, String.class);
 
-      //		    if(realurl.indexOf("auth")!=-1)
-      //
-      //		    	logger.info("Response Body: " + responseEntity.getBody());
-
       String newbody = addURLProxy(responseEntity.getBody(), hostid);
 
       HttpHeaders newrespheaders = updateHeader(responseEntity.getHeaders(), newbody, hostid);
@@ -825,17 +803,6 @@ public class GoogleEarthController {
       resp = new ResponseEntity(newbody, newrespheaders, responseEntity.getStatusCode());
 
     } catch (HttpStatusCodeException ex) {
-
-      // http status code e.g. `404 NOT_FOUND`
-      //		    logger.error(ex.getStatusCode().toString());
-
-      // get response body
-      //		    System.out.println(ex.getResponseBodyAsString());
-
-      // get http headers
-      //		    HttpHeaders headers = ex.getResponseHeaders();
-      //		    System.out.println(headers.get("Content-Type"));
-      //		    System.out.println(headers.get("Server"));
 
       String newbody = addURLProxy(ex.getResponseBodyAsString(), hostid);
 
