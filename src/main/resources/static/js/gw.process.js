@@ -102,111 +102,269 @@ GW.process = {
   },
 
   showShell: function (code, cmid) {
-    require.config({ paths: { vs: "../js/Monaco-Editor/dev/vs" } });
 
-    require(["vs/editor/editor.main"], function () {
-      var editorContainerId = "codeeditor-" + cmid;
-      var container = $("#codearea-" + cmid);
-      container.empty(); // Clear previous instances if any
-      container.append(
-        '<div id="' + editorContainerId + '" style="height:200px;"></div>'
-      );
+    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
 
-      // Create a dropdown for theme selection
-      var themeSelectorId = "theme-selector-" + cmid;
-      container.prepend(
-        '<select id="' +
-          themeSelectorId +
-          '" style="margin-bottom: 10px;">' +
-          '<option value="vs-dark">Dark</option>' +
-          '<option value="vs-light">Light</option>' +
-          '<option value="hc-black">High Contrast</option>' +
-          "</select>"
-      );
+    require(['vs/editor/editor.main'], 
+      function() {
+          var editorContainerId = 'codeeditor-' + cmid;
+          var container = $("#codearea-" + cmid);
+          container.empty(); // Clear previous instances if any
+          container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
 
-      // Initialize the Monaco Editor
-      var editor = monaco.editor.create(
-        document.getElementById(editorContainerId),
-        {
-          value: code || "#!/bin/bash",
-          language: "shell",
-          theme: GW.settings.selected_monaco_theme, // Default theme
-          lineNumbers: "on",
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          readOnly: false,
-          fontSize: 10,
-          automaticLayout: true,
-          formatOnSave: true,
-          formatOnPaste: true,
-          folding: true,
-          formatOnType: true,
-          showFoldingControls: "always",
-          wordWrap: "on",
-          scrollBeyondLastLine: true,
-          contextmenu: true, // Enable the context menu for additional clipboard actions
-        }
-      );
-      GW.process.util.add_editor_actions(editor);
+          // Create a dropdown for theme selection
+          var themeSelectorId = 'theme-selector-' + cmid;
+          container.prepend('<select id="' + themeSelectorId + '" style="margin-bottom: 10px;">' +
+                            '<option value="vs-dark">Dark</option>' +
+                            '<option value="vs-light">Light</option>' +
+                            '<option value="hc-black">High Contrast</option>' +
+                            '</select>');
 
-      GW.process.editor = editor;
+          // Initialize the Monaco Editor
+          var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+              value: code || '#!/bin/bash',
+              language: 'shell',
+              theme: GW.settings.selected_monaco_theme, // Default theme
+              lineNumbers: 'on',
+              roundedSelection: false,
+              scrollBeyondLastLine: false,
+              readOnly: false,
+              fontSize: 10,
+              automaticLayout: true,
+              formatOnSave: true,
+              formatOnPaste: true,
+              folding: true,
+              formatOnType: true,
+              showFoldingControls: 'always',
+              wordWrap: 'on',
+              scrollBeyondLastLine: true,
+              contextmenu: true, // Enable the context menu for additional clipboard actions
+          });
+          GW.process.util.add_editor_actions(editor)
 
-      // Add event listener to update the theme dynamically
-      $("#" + themeSelectorId).on("change", function () {
-        var selectedTheme = $(this).val();
-        monaco.editor.setTheme(selectedTheme);
+          GW.process.editor = editor;
+
+          // Add event listener to update the theme dynamically
+          $('#' + themeSelectorId).on('change', function() {
+              var selectedTheme = $(this).val();
+              monaco.editor.setTheme(selectedTheme);
+          });
+
+          GW.settings.syncMonacoStyles(GW.process.editor)
       });
+  },
 
-      GW.settings.syncMonacoStyles(GW.process.editor);
+
+  load_jupyter: function () {
+    var root = {};
+
+    var $file_input = document.querySelector("input#load_jupyter");
+    var $url_input = document.querySelector("button#load_jupyter_url");
+    var $holder = document.querySelector("#jupyter_area");
+
+    var render_notebook = function (ipynb) {
+      GW.process.jupytercode = ipynb;
+      var notebook = (root.notebook = nb.parse(ipynb));
+      while ($holder.hasChildNodes()) {
+        $holder.removeChild($holder.lastChild);
+      }
+      $holder.appendChild(notebook.render());
+      nb.postlisten();
+      Prism.highlightAll();
+    };
+
+    var load_file = function (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        GW.process.jupytercode = this.result;
+        var parsed = JSON.parse(this.result);
+        render_notebook(parsed);
+      };
+      reader.readAsText(file);
+    };
+
+    $file_input.onchange = function (e) {
+      load_file(this.files[0]);
+    };
+
+    $url_input.onclick = function () {
+      var url = $("#jupyter_url").val();
+      $.ajax({
+        dataType: "json",
+        url: url,
+      }).success(function (data) {
+        render_notebook(data);
+      });
+    };
+
+    document.getElementById("controls").addEventListener(
+      "dragover",
+      function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy"; // Explicitly show this is a
+      },
+      false,
+    );
+
+    document.getElementById("controls").addEventListener(
+      "dragleave",
+      function (e) {
+        //		        root.document.body.style.opacity = 1;
+      },
+      false,
+    );
+
+    document.getElementById("controls").addEventListener(
+      "drop",
+      function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        load_file(e.dataTransfer.files[0]);
+      },
+      false,
+    );
+  },
+
+  showPython: function(code, cmid) {
+    // Define the path to the Monaco Editor's package
+    require.config({ paths: { 'vs': '../js/Monaco-Editor/dev/vs' }});
+
+    // Load the main module of Monaco Editor to start its setup
+    require(['vs/editor/editor.main'], 
+      function() {
+        // Ensure the target container for the editor exists and is empty
+        var editorContainerId = 'codeeditor-' + cmid;
+        var container = $("#codearea-" + cmid);
+        container.empty(); // Clear previous instances if any
+        container.append('<div id="' + editorContainerId + '" style="height:200px;"></div>');
+
+        console.log("What is the current theme?" + GW.settings.selected_monaco_theme)
+        
+        // Initialize the Monaco Editor with Python configuration
+        var editor = monaco.editor.create(document.getElementById(editorContainerId), {
+            value: code || '# Write your first Python code in Geoweaver',
+            language: 'python',
+            theme: GW.settings.selected_monaco_theme,
+            lineNumbers: 'on',
+            roundedSelection: false,
+            scrollBeyondLastLine: false,
+            readOnly: false,
+            fontSize: 10,
+            automaticLayout: true,
+            formatOnSave: true,
+            formatOnPaste: true,
+            folding: true,
+            formatOnType: true,
+            showFoldingControls: 'always',
+            wordWrap: 'on',
+            scrollBeyondLastLine: true,
+            contextmenu: true, // Enable the context menu for additional clipboard actions
+        });
+        GW.process.util.add_editor_actions(editor)
+
+        GW.process.editor = editor;
+        GW.settings.syncMonacoStyles(GW.process.editor)
+        
+      }
+    );
+  },
+
+  uploadAndReplaceJupyterCode: function () {
+    GW.general.closeOtherFrames(GW.process.replace_jupyter_jsframe);
+
+    // var content = ''+
+    // 	GW.process.getProcessDialogTemplate()+
+    // 	'';
+    // content += '';
+
+    var content = `<div class="modal-body">
+				<div class="row"  style="font-size:12px;">
+					<div class="col col-md-12">
+						<span class="required-mark">*</span> 
+						This panel is for importing to replace the existing jupyter notebook.
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-md-6">
+						<div id="controls" style="font-size:12px;"> 
+							<div id="header">IPython/Jupyter Notebook Loader</div>     
+							<input type="file" id="load_jupyter" />
+						</div>
+					</div>
+					<div class="col col-md-6">Or import from URL: <br/>
+						<div class="input-group col-md-12 mb-3">
+							<input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
+							<div class="input-group-append"> 
+								<button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="jupyter_area"></div>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" id="upload_replace_jupyter_confirm_btn" class="btn btn-outline-primary">Confirm</button> 
+				<button type="button" id="upload_replace_jupyter_cancel_btn" class="btn btn-outline-secondary">Cancel</button>
+			</div>`;
+
+    GW.process.replace_jupyter_jsframe = GW.process.createJSFrameDialog(
+      720,
+      300,
+      content,
+      "Replace Notebook",
+    );
+
+    this.load_jupyter();
+
+    $("#upload_replace_jupyter_confirm_btn").click(function () {
+      $("#code-embed").html("");
+
+      $("#code-embed").append(
+        `<p><i class="fa fa-upload subalignicon pull-right" style="margin:5px;"  data-toggle="tooltip" title="upload a new notebook to replace the current one" onclick="GW.process.uploadAndReplaceJupyterCode();"></i></p>`,
+      );
+
+      let code = GW.process.jupytercode;
+
+      if (code != null && typeof code != "undefined") {
+        code = GW.general.parseResponse(code);
+        var notebook = nb.parse(code);
+        var rendered = notebook.render();
+        $("#code-embed").append(rendered);
+        nb.postlisten();
+      }
+
+      GW.process.replace_jupyter_jsframe.closeFrame();
+    });
+
+    $("#upload_replace_jupyter_cancel_btn").click(function () {
+      GW.process.replace_jupyter_jsframe.closeFrame();
     });
   },
 
-  showPython: function (code, cmid) {
-    // Define the path to the Monaco Editor's package
-    require.config({ paths: { vs: "../js/Monaco-Editor/dev/vs" } });
+  showJupyter: function (code, cmid) {
+    var cont = `<div class="row"  style="font-size:12px;"><div class="col col-md-12"> <span class="required-mark">*</span> This panel is for importing jupyter notebooks as new processes. The execution is by nbconvert.</div></div>
+			<div class="row"><div class="col col-md-6"><div id="controls" style="font-size:12px;"> 
+			<div id="header">IPython/Jupyter Notebook Loader</div>     <input type="file" id="load_jupyter" />
+			</div></div><div class="col col-md-6">Or import from URL: <br/><div class="input-group col-md-12 mb-3">
+			  <input type="text" class="form-control" id="jupyter_url" placeholder="Jupyter Notebook URL" aria-label="Notebook URL" aria-describedby="basic-addon2"> 
+			  <div class="input-group-append"> 
+				<button class="btn btn-outline-secondary" id="load_jupyter_url" type="button">Import</button>
+			  </div>
+			</div></div></div> <div id="jupyter_area"></div>`;
 
-    // Load the main module of Monaco Editor to start its setup
-    require(["vs/editor/editor.main"], function () {
-      // Ensure the target container for the editor exists and is empty
-      var editorContainerId = "codeeditor-" + cmid;
-      var container = $("#codearea-" + cmid);
-      container.empty(); // Clear previous instances if any
-      container.append(
-        '<div id="' + editorContainerId + '" style="height:200px;"></div>'
-      );
+    $("#codearea-" + cmid).append(cont);
 
-      console.log(
-        "What is the current theme?" + GW.settings.selected_monaco_theme
-      );
+    this.load_jupyter();
 
-      // Initialize the Monaco Editor with Python configuration
-      var editor = monaco.editor.create(
-        document.getElementById(editorContainerId),
-        {
-          value: code || "# Write your first Python code in Geoweaver",
-          language: "python",
-          theme: GW.settings.selected_monaco_theme,
-          lineNumbers: "on",
-          roundedSelection: false,
-          scrollBeyondLastLine: false,
-          readOnly: false,
-          fontSize: 10,
-          automaticLayout: true,
-          formatOnSave: true,
-          formatOnPaste: true,
-          folding: true,
-          formatOnType: true,
-          showFoldingControls: "always",
-          wordWrap: "on",
-          scrollBeyondLastLine: true,
-          contextmenu: true, // Enable the context menu for additional clipboard actions
-        }
-      );
-      GW.process.util.add_editor_actions(editor);
-
-      GW.process.editor = editor;
-      GW.settings.syncMonacoStyles(GW.process.editor);
-    });
+    if (code != null && typeof code != "undefined") {
+      code = GW.general.parseResponse(code);
+      var notebook = nb.parse(code);
+      var rendered = notebook.render();
+      $("#jupyter_area-" + cmid).append(rendered);
+      nb.postlisten();
+    }
   },
 
   showBuiltinProcess: function (code, cmid) {
@@ -246,7 +404,7 @@ GW.process = {
     $("#builtin_processes-" + cmid).on("change", function () {
       GW.process.refreshBuiltinParameterList(
         "builtin_processes-" + cmid,
-        "codearea-" + cmid
+        "codearea-" + cmid,
       );
     });
 
@@ -257,7 +415,7 @@ GW.process = {
 
       for (var i = 0; i < code.params.length; i++) {
         $("#param_" + code.params[i].name + "-" + cmid).val(
-          code.params[i].value
+          code.params[i].value,
         );
       }
     }
@@ -292,6 +450,8 @@ GW.process = {
       };
 
       code = JSON.stringify(code);
+    } else if ($("#processcategory" + cmid).val() == "jupyter") {
+      code = JSON.stringify(GW.process.jupytercode);
     } else if ($("#processcategory" + cmid).val() == "python") {
       code = GW.process.editor.getValue();
       //				code = $("#codeeditor-" + cmid).val();
@@ -304,11 +464,7 @@ GW.process = {
    * Function to display the current and previous code history
    * @param history_id
    */
-  showHistoryDifference: function (
-    process_id,
-    history_id,
-    previous_history_id
-  ) {
+  showHistoryDifference: function (process_id, history_id, previous_history_id) {
     // ajax call for the current history id details:
     $.ajax({
       url: "logs",
@@ -318,6 +474,7 @@ GW.process = {
       data: "type=process&id=" + process_id,
     })
       .done(function (history_list_msg) {
+
         if (history_list_msg == "") {
           alert("Cannot find the process history in the database.");
 
@@ -332,64 +489,62 @@ GW.process = {
           method: "POST",
 
           data: "type=process&id=" + history_id,
-        })
-          .done(function (current_msg) {
-            if (current_msg == "") {
-              alert("Cannot find the process history in the database.");
+        }).done(function(current_msg){
 
-              return;
-            }
+          if (current_msg == "") {
+            alert("Cannot find the process history in the database.");
 
-            current_msg = GW.general.parseResponse(current_msg);
+            return;
+          }
 
-            current_msg.code = current_msg.input;
+          current_msg = GW.general.parseResponse(current_msg);
 
-            // current code for dialogue box
-            console.log("current code: " + current_msg.code);
+          current_msg.code = current_msg.input;
 
-            // ajax call for the previous history id details
-            $.ajax({
-              url: "log",
+          // current code for dialogue box
+          console.log("current code: " + current_msg.code);
 
-              method: "POST",
+          // ajax call for the previous history id details
+          $.ajax({
+            url: "log",
 
-              data: "type=process&id=" + previous_history_id,
-            })
-              .done(function (msg_prv) {
-                if (msg_prv == "") {
-                  alert("Cannot find the process history in the database.");
+            method: "POST",
 
-                  return;
-                }
-
-                msg_prv = GW.general.parseResponse(msg_prv);
-
-                msg_prv.code = msg_prv.input;
-
-                GW.process.diffDialog(current_msg, msg_prv, history_list_msg);
-              })
-              .fail(function (jxr, status) {
-                console.error("Fail to get log.");
-              });
+            data: "type=process&id=" + previous_history_id,
           })
-          .fail(function (jxr, status) {
-            console.error("Fail to get log.");
-          });
+            .done(function (msg_prv) {
+
+              if (msg_prv == "") {
+                alert("Cannot find the process history in the database.");
+
+                return;
+              }
+
+              msg_prv = GW.general.parseResponse(msg_prv);
+
+              msg_prv.code = msg_prv.input;
+
+              GW.process.diffDialog(current_msg, msg_prv, history_list_msg);
+
+            })
+            .fail(function (jxr, status) {
+              console.error("Fail to get log.");
+            });
       })
       .fail(function (jxr, status) {
         console.error("Fail to get log.");
       });
+    })
+    .fail(function (jxr, status) {
+      console.error("Fail to get log.");
+    });
   },
 
-  populateDropdown: function (dropdownId, data) {
+  populateDropdown: function(dropdownId, data) {
     var dropdown = $(dropdownId);
     dropdown.empty();
-    data.forEach(function (item) {
-      dropdown.append(
-        $("<option></option>")
-          .attr("value", item.history_id)
-          .text(item.history_id)
-      );
+    data.forEach(function(item) {
+        dropdown.append($('<option></option>').attr('value', item.history_id).text(item.history_id));
     });
   },
 
@@ -452,60 +607,48 @@ GW.process = {
         <div id="process-difference-comparison-result-view" style="height:300px;width:100%;border:1px solid #ddd;"></div>
       </div>`;
 
-    const dialog = GW.process.createJSFrameDialog(
-      720,
-      640,
-      content,
-      "History Details"
-    );
+    const dialog = GW.process.createJSFrameDialog(720, 640, content, "History Details");
 
     // Delay the initialization to ensure the modal and the DOM elements are fully loaded
     setTimeout(() => {
       if (window.monaco) {
         GW.process.initDiffEditors(current_history, previous_history);
       } else {
-        console.error("Monaco editor is not loaded or initialized!");
+        console.error('Monaco editor is not loaded or initialized!');
       }
-    }, 100); // Slightly increased the delay to ensure DOM is ready
+    }, 100);  // Slightly increased the delay to ensure DOM is ready
 
     // Add disposal logic to the dialog's close button
-    dialog.on("closeButton", "click", function (frame) {
+    dialog.on('closeButton', 'click', function (frame) {
       GW.process.disposeModels();
       frame.closeFrame();
     });
 
     dialog.control.doMaximize();
 
-    this.populateDropdown("#current_history_id", history_id_list);
-    this.populateDropdown("#previous_history_id", history_id_list);
+    this.populateDropdown('#current_history_id', history_id_list);
+    this.populateDropdown('#previous_history_id', history_id_list);
 
     // Select an option programmatically (example: select the first item)
-    $("#current_history_id").val(current_history.hid);
-    $("#previous_history_id").val(previous_history.hid);
+    $('#current_history_id').val(current_history.hid);
+    $('#previous_history_id').val(previous_history.hid);
 
-    $("#current_history_id").change(function () {
-      const current_history_id = $("#current_history_id").val();
+    $('#current_history_id').change(function () {
+      const current_history_id = $('#current_history_id').val();
       dialog.closeFrame();
-      GW.process.showHistoryDifference(
-        current_history.id,
-        current_history_id,
-        previous_history.hid
-      );
+      GW.process.showHistoryDifference(current_history.id, current_history_id, previous_history.hid)
     });
 
-    $("#previous_history_id").change(function () {
-      const previous_history_id = $("#previous_history_id").val();
+    $('#previous_history_id').change(function () {
+      const previous_history_id = $('#previous_history_id').val();
       dialog.closeFrame();
-      GW.process.showHistoryDifference(
-        current_history.id,
-        current_history.hid,
-        previous_history_id
-      );
+      GW.process.showHistoryDifference(current_history.id, current_history.hid, previous_history_id)
     });
+
   },
 
   // Function to dispose of models and editors
-  disposeModels: function () {
+  disposeModels: function() {
     console.log("Disposing existing models if any...");
     if (GW.process.originalCodeModel) {
       GW.process.originalCodeModel.dispose();
@@ -531,71 +674,52 @@ GW.process = {
       GW.process.resultDiffEditor.dispose();
       GW.process.resultDiffEditor = null;
     }
+  
   },
 
   // Initialize the diff editors
   initDiffEditors: function (current_history, previous_history) {
-    const codeEditorContainer = document.getElementById(
-      "process-difference-comparison-code-view"
-    );
-    const resultEditorContainer = document.getElementById(
-      "process-difference-comparison-result-view"
-    );
+    const codeEditorContainer = document.getElementById('process-difference-comparison-code-view');
+    const resultEditorContainer = document.getElementById('process-difference-comparison-result-view');
 
-    const currentLanguage = current_history.language || "plaintext";
-    const previousLanguage = previous_history.language || "plaintext";
+    const currentLanguage = current_history.language || 'plaintext';
+    const previousLanguage = previous_history.language || 'plaintext';
 
-    console.log(
-      `Initializing diff editor for languages: current=${currentLanguage}, previous=${previousLanguage}`
-    );
+    console.log(`Initializing diff editor for languages: current=${currentLanguage}, previous=${previousLanguage}`);
 
     // disposeModels(); // Ensure previous models are disposed of
 
     const codeDiffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
       theme: GW.settings.selected_monaco_theme,
       readOnly: true,
-      automaticLayout: true,
+      automaticLayout: true
     });
 
-    GW.process.originalCodeModel = monaco.editor.createModel(
-      previous_history.code || "",
-      previousLanguage
-    );
-    GW.process.modifiedCodeModel = monaco.editor.createModel(
-      current_history.code || "",
-      currentLanguage
-    );
+    GW.process.originalCodeModel = monaco.editor.createModel(previous_history.code || '', previousLanguage);
+    GW.process.modifiedCodeModel = monaco.editor.createModel(current_history.code || '', currentLanguage);
 
     codeDiffEditor.setModel({
       original: GW.process.originalCodeModel,
-      modified: GW.process.modifiedCodeModel,
+      modified: GW.process.modifiedCodeModel
     });
 
-    const resultDiffEditor = monaco.editor.createDiffEditor(
-      resultEditorContainer,
-      {
-        theme: GW.settings.selected_monaco_theme,
-        readOnly: true,
-        automaticLayout: true,
-      }
-    );
+    const resultDiffEditor = monaco.editor.createDiffEditor(resultEditorContainer, {
+      theme: GW.settings.selected_monaco_theme,
+      readOnly: true,
+      automaticLayout: true
+    });
 
-    GW.process.originalResultModel = monaco.editor.createModel(
-      previous_history.output || "",
-      "plaintext"
-    );
-    GW.process.modifiedResultModel = monaco.editor.createModel(
-      current_history.output || "",
-      "plaintext"
-    );
+    GW.process.originalResultModel = monaco.editor.createModel(previous_history.output || '', 'plaintext');
+    GW.process.modifiedResultModel = monaco.editor.createModel(current_history.output || '', 'plaintext');
 
     resultDiffEditor.setModel({
       original: GW.process.originalResultModel,
-      modified: GW.process.modifiedResultModel,
+      modified: GW.process.modifiedResultModel
     });
 
     GW.process.codeDiffEditor = codeDiffEditor;
     GW.process.resultDiffEditor = resultDiffEditor;
+
   },
 
   newDialog: function (category) {
@@ -621,7 +745,7 @@ GW.process = {
       720,
       640,
       content,
-      "Add new process"
+      "Add new process",
     );
 
     GW.process.showShell(null, GW.process.cmid);
@@ -635,6 +759,8 @@ GW.process = {
         GW.process.showShell(null, GW.process.cmid);
       } else if (this.value == "builtin") {
         GW.process.showBuiltinProcess(null, GW.process.cmid);
+      } else if (this.value == "jupyter") {
+        GW.process.showJupyter(GW.process.jupytercode, GW.process.cmid);
       } else if (this.value == "python") {
         GW.process.showPython(null, GW.process.cmid);
       }
@@ -693,7 +819,7 @@ GW.process = {
         for (var i = 0; i < msg.length; i++) {
           var status_col = GW.history.getProcessStatusCol(
             msg[i].id,
-            msg[i].status
+            msg[i].status,
           );
 
           var detailbtn = null;
@@ -738,7 +864,7 @@ GW.process = {
           720,
           480,
           content,
-          "History of " + msg.name
+          "History of " + msg.name,
         );
       })
       .fail(function (jxr, status) {
@@ -757,7 +883,7 @@ GW.process = {
       "#process_history_table",
       "#closeHistory",
       "main-process-info-history-tab",
-      "main-process-info-history"
+      "main-process-info-history",
     );
   },
 
@@ -777,7 +903,7 @@ GW.process = {
 
       if (msg.ret == "stopped") {
         $("#stopbtn_" + history_id).html(
-          '<span class="text-success">Stopped</span>'
+          '<span class="text-success">Stopped</span>',
         );
 
         $("#stopbtn_" + history_id)
@@ -787,7 +913,7 @@ GW.process = {
         //					<span id=\"status_"+msg[i].id+"\" class=\"label label-warning\">Pending</span>
 
         $("#status_" + history_id).html(
-          '<span class="label label-default">Stopped</span>'
+          '<span class="label label-default">Stopped</span>',
         );
 
         GW.history.stopOneTimer(history_id);
@@ -828,7 +954,7 @@ GW.process = {
 
         GW.process.switchTab(
           document.getElementById("main-process-info-code-tab"),
-          "main-process-info-code"
+          "main-process-info-code",
         );
 
         if (GW.editor.isfullscreen) GW.editor.switchFullScreen();
@@ -839,8 +965,9 @@ GW.process = {
   },
 
   displayOutput: function (msg) {
+    
     // make sure the current history id is updated
-    GW.process.history_id = msg.hid;
+    GW.process.history_id = msg.hid
 
     var output = GW.general.escapeCodeforHTML(msg.output);
 
@@ -894,38 +1021,39 @@ GW.process = {
 
     GW.process.switchTab(
       document.getElementById("main-process-info-code-tab"),
-      "main-process-info-code"
+      "main-process-info-code",
     );
   },
 
-  /**
+   /**
    * This function is called after people click on "Delete" in the process history table
    * @param {*} history_id
    */
-  deleteHistory: function (history_id) {
+   deleteHistory: function (history_id) {
     GW.process.history_id = history_id;
     if (!confirm("Are you sure you want to delete this history?")) {
       return;
     }
     $.ajax({
-      url: "deleteHistoryById",
-      method: "POST",
-      data: "type=process&id=" + history_id,
+        url: "deleteHistoryById",
+        method: "POST",
+        data: "type=process&id=" + history_id,
     })
-      .done(function (msg) {
+    .done(function(msg) {
         if (msg == "") {
-          alert("Cannot find the process history in the database.");
-          return;
+            alert("Cannot find the process history in the database.");
+            return;
         }
-        console.log("History " + history_id + " is deleted successfully.");
+        console.log("History "+history_id+" is deleted successfully.");
         var row = $('tr[id="history-row-' + history_id + '"]');
-        var table = $("#process_history_table").DataTable();
-        table.row(row).remove().draw(); // remove the row from the table completely without refresh
+        var table = $('#process_history_table').DataTable();
+        table.row(row).remove().draw();  // remove the row from the table completely without refresh
       })
-      .fail(function (jxr, status) {
-        console.error("Fail to Delete History.");
+      .fail(function(jxr, status) {
+          console.error("Fail to Delete History.");
       });
   },
+
 
   getHistoryDetails: function (history_id) {
     $.ajax({
@@ -1010,6 +1138,7 @@ GW.process = {
       '">' +
       '    			<option value="shell">Shell</option>' +
       '    			<option value="builtin">Built-In Process</option>' +
+      '    			<option value="jupyter">Jupyter Notebook</option>' +
       '    			<option value="python">Python</option>' +
       /*'    		<option value="python">Python</option>'+
 		   '    			<option value="r">R</option>'+
@@ -1074,7 +1203,7 @@ GW.process = {
     frame.setPosition(
       (window.innerWidth - width) / 2,
       (window.innerHeight - height) / 2,
-      "LEFT_TOP"
+      "LEFT_TOP",
     );
 
     GW.workspace.if_any_frame_on = true;
@@ -1113,7 +1242,7 @@ GW.process = {
           720,
           640,
           content,
-          "Edit Process"
+          "Edit Process",
         );
 
         var old_name = msg.name;
@@ -1132,6 +1261,8 @@ GW.process = {
           GW.process.showShell(old_code, GW.process.cmid);
         } else if (old_lang == "builtin") {
           GW.process.showBuiltinProcess(old_code, GW.process.cmid);
+        } else if (old_lang == "jupyter") {
+          GW.process.showJupyter(old_code, GW.process.cmid);
         } else if (old_lang == "python") {
           GW.process.showPython(old_code, GW.process.cmid);
         }
@@ -1149,6 +1280,8 @@ GW.process = {
             GW.process.showShell(old_code_new, GW.process.cmid);
           } else if (this.value == "builtin") {
             GW.process.showBuiltinProcess(old_code_new, GW.process.cmid);
+          } else if (this.value == "jupyter") {
+            GW.process.showJupyter(old_code_new, GW.process.cmid);
           } else if (this.value == "python") {
             GW.process.showPython(old_code_new, GW.process.cmid);
           }
@@ -1243,6 +1376,7 @@ GW.process = {
       '			<select class="form-control form-control-sm" id="processcategory" disabled  >' +
       '    			<option value="shell">Shell</option>' +
       '    			<option value="builtin">Built-In Process</option>' +
+      '    			<option value="jupyter">Jupyter Notebook</option>' +
       '    			<option value="python">Python</option>' +
       /*'    			<option value="r">R</option>'+
 		   '    			<option value="matlab">Matlab</option>'+*/
@@ -1271,15 +1405,13 @@ GW.process = {
       "		</div>" +
       "   </div>";
 
-    content +=
+
+
+      content +=
       `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: var(--monaco-background-color);">
 			
 			<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
-				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">` +
-      GW.process.util.get_icon_by_process_type(code_type) +
-      ` ` +
-      process_name +
-      `</button>
+				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">`+ GW.process.util.get_icon_by_process_type(code_type) +` `+ process_name+`</button>
 				<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('` +
       process_id +
       `', '` +
@@ -1338,11 +1470,11 @@ GW.process = {
 
     switchTab(
       document.getElementById("main-process-info-code-tab"),
-      "main-process-info-code"
+      "main-process-info-code",
     );
 
     GW.general.switchTab("process");
-
+    
     $("#processcategory").val(code_type);
 
     $("#processname").val(process_name);
@@ -1414,7 +1546,7 @@ GW.process = {
       process_id,
       process_name,
       code_type,
-      "#process-btn-group"
+      "#process-btn-group",
     );
   },
 
@@ -1459,7 +1591,7 @@ GW.process = {
       code_type,
       code,
       "#code-embed",
-      "#process_code_window"
+      "#process_code_window",
     );
   },
 
@@ -1520,7 +1652,7 @@ GW.process = {
       "process-code-history-section",
       "process_code_window",
       "single-console-content",
-      "dragMe"
+      "dragMe",
     );
     GW.process.dockmode = "bottom";
   },
@@ -1531,7 +1663,7 @@ GW.process = {
         "process-code-history-section",
         "process_code_window",
         "single-console-content",
-        "dragMe"
+        "dragMe",
       );
       GW.process.dockmode = "bottom";
     } else {
@@ -1539,7 +1671,7 @@ GW.process = {
         "process-code-history-section",
         "process_code_window",
         "single-console-content",
-        "dragMe"
+        "dragMe",
       );
       GW.process.dockmode = "no";
     }
@@ -1551,7 +1683,7 @@ GW.process = {
         "process-code-history-section",
         "process_code_window",
         "single-console-content",
-        "dragMe"
+        "dragMe",
       );
       GW.process.dockmode = "left";
     } else {
@@ -1559,7 +1691,7 @@ GW.process = {
         "process-code-history-section",
         "process_code_window",
         "single-console-content",
-        "dragMe"
+        "dragMe",
       );
       GW.process.dockmode = "no";
     }
@@ -1569,19 +1701,25 @@ GW.process = {
     GW.search.filterMenuListUtil(
       "process_folder_shell_target",
       "processes",
-      "process"
+      "process",
+    );
+
+    GW.search.filterMenuListUtil(
+      "process_folder_jupyter_target",
+      "processes",
+      "process",
     );
 
     GW.search.filterMenuListUtil(
       "process_folder_builtin_target",
       "processes",
-      "process"
+      "process",
     );
 
     GW.search.filterMenuListUtil(
       "process_folder_python_target",
       "processes",
-      "process"
+      "process",
     );
   },
 
@@ -1600,6 +1738,7 @@ GW.process = {
 
         // $("#"+GW.menu.getPanelIdByType("host")).html("");
         $("#process_folder_shell_target").html("");
+        $("#process_folder_jupyter_target").html("");
         $("#process_folder_builtin_target").html("");
         $("#process_folder_python_target").html("");
 
@@ -1653,7 +1792,7 @@ GW.process = {
             " </li>" +
             ' <ul class="sub-menu collapse" id="process_folder_' +
             folder +
-            '_target"></ul>'
+            '_target"></ul>',
         );
 
         folder_ul = $("#process_folder_" + folder + "_target");
@@ -1684,7 +1823,7 @@ GW.process = {
     for (var i = 0; i < msg.length; i++) {
       this.addMenuItem(
         msg[i],
-        msg[i].lang == null ? msg[i].description : msg[i].lang
+        msg[i].lang == null ? msg[i].description : msg[i].lang,
       );
     }
 
@@ -1759,7 +1898,7 @@ GW.process = {
         GW.general.showToasts("Code updated.");
 
         console.log(
-          "If the process name is changed, the item in the menu should be changed at the same time. "
+          "If the process name is changed, the item in the menu should be changed at the same time. ",
         );
 
         GW.process.refreshProcessList();
@@ -1807,7 +1946,7 @@ GW.process = {
         "undefined"
       ) {
         confidential = $(
-          'input[name="confidential-' + cmid + '"]:checked'
+          'input[name="confidential-' + cmid + '"]:checked',
         ).val();
       }
 
@@ -1852,18 +1991,19 @@ GW.process = {
           // GW.process.display(msg);
           console.log("add process id: " + msg.id);
 
-          setTimeout(function () {
+          setTimeout(function() {
             // if (GW.process.editor) {
             //     GW.process.editor.setValue(req.code); // Set the editor's content to the added process code
             // }
-            GW.menu.details(msg.id, "process")?.click();
-          }, 100);
+            GW.menu.details(msg.id, 'process')?.click();
+          }, 100); 
+
 
           if (run)
             GW.process.runProcess(
               msg.id,
               msg.name,
-              $("#processcategory-" + cmid).val()
+              $("#processcategory-" + cmid).val(),
             );
         })
         .fail(function (jqXHR, textStatus) {
@@ -1970,7 +2110,7 @@ GW.process = {
       })
       .fail(function (jxr, status) {
         alert(
-          "Error: unable to log on. Check if your password or the configuration of host is correct."
+          "Error: unable to log on. Check if your password or the configuration of host is correct.",
         );
 
         if ($("#inputpswd").length) $("#inputpswd").val("");
@@ -2009,7 +2149,7 @@ GW.process = {
       lang: lang,
     };
 
-    if (req.lang == "python") {
+    if (req.lang == "python" || req.lang == "jupyter") {
       //check if there is cached environment for this host
 
       var cached_env = GW.host.findEnvCache(hid);
@@ -2099,7 +2239,7 @@ GW.process = {
               520,
               340,
               content,
-              "Set " + req.lang + " environment"
+              "Set " + req.lang + " environment",
             );
 
             $("#env-select").change(function (e) {
@@ -2184,7 +2324,7 @@ GW.process = {
     if (!GW.process.isSaved) {
       if (
         confirm(
-          "You have non-saved changes in this process. Do you want to continue?"
+          "You have non-saved changes in this process. Do you want to continue?",
         )
       ) {
         //continue
@@ -2230,7 +2370,7 @@ GW.process = {
         550,
         280,
         content,
-        "Select a host"
+        "Select a host",
       );
 
       $.ajax({
@@ -2255,7 +2395,7 @@ GW.process = {
                     msg[i].ip +
                     '" selected="selected">' +
                     msg[i].name +
-                    "</option>"
+                    "</option>",
                 ); // default select localhost
               } else {
                 $("#hostselector").append(
@@ -2265,7 +2405,7 @@ GW.process = {
                     msg[i].ip +
                     '" >' +
                     msg[i].name +
-                    "</option>"
+                    "</option>",
                 );
               }
             }

@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -144,9 +145,9 @@ public class ProcessTool {
 		
 	}
 	
-	public String escapeUnsafeCharacters(String code) {
+	public String escapeJupyter(String code){
 
-		if (!BaseTool.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport")
+		if(!BaseTool.isNull(code) && (code.contains("bash\\\n") || code.contains("\\\nimport") 
 			|| code.contains("\\\"operation\\\"") || code.contains("\\\"cells\\\""))){
 
 				code = this.unescape(code);
@@ -192,6 +193,10 @@ public class ProcessTool {
 		}else if("python".equals(lang)){
 
 			suffix = "py";
+
+		}else if("jupyter".equals(lang)){
+
+			suffix = "ipynb";
 
 		}else if("builtin".equals(lang)){
 
@@ -256,6 +261,49 @@ public class ProcessTool {
 		return p;
 	}
 
+	/**
+	 * for jupyter, save the jupyter nbconvert to replace the code
+	 * @param h
+	 * @param token
+	 */
+	public void updateJupyter(History h, String token) {
+		
+		if(h.getIndicator().equals(ExecutionStatus.DONE)) {
+			
+			GWProcess p = getProcessById(h.getHistory_process());
+			
+			if(!BaseTool.isNull(p.getDescription())&&p.getDescription().equals("jupyter")) {
+				
+				String newfilename = p.getName();
+				
+				if(!newfilename.endsWith(".ipynb")) {
+					
+					newfilename += ".nbconvert.ipynb";
+					
+				}else {
+					
+					newfilename = newfilename.replace(".ipynb", ".nbconvert.ipynb");
+					
+				}
+				
+				String resfile = workspace + "/" + token + "/" + newfilename;
+				
+				if(new File(resfile).exists()) {
+					
+					String newresult = bt.readStringFromFile(resfile);
+					
+					p.setCode(newresult);
+					
+					this.update(p);
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
 	/**
 	 * Update the Process
 	 * @param id
@@ -592,7 +640,7 @@ public class ProcessTool {
 					
 					resp.append("\"end_time\":\"").append(hist.getHistory_end_time()).append("\", ");
 					
-					String input_code = bt.escape(this.escapeUnsafeCharacters(hist.getHistory_input()));
+					String input_code = bt.escape(this.escapeJupyter(hist.getHistory_input()));
 
 					resp.append("\"input\":\"").append(input_code).append("\", ");
 					

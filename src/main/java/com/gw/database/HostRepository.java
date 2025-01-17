@@ -76,6 +76,31 @@ public interface HostRepository extends CrudRepository<Host, String> {
    */
   @Query(value = "select * from host where confidential = 'FALSE'", nativeQuery = true)
   Collection<Host> findAllPublicHosts();
+
+  /**
+   * Find hosts of type 'jupyter'.
+   *
+   * @return A collection of hosts of type 'jupyter'.
+   */
+  @Query(value = "select * from host where type = 'jupyter'", nativeQuery = true)
+  Collection<Host> findJupyterNotebookHosts();
+
+  /**
+   * Find hosts of type 'jupyterhub'.
+   *
+   * @return A collection of hosts of type 'jupyterhub'.
+   */
+  @Query(value = "select * from host where type = 'jupyterhub'", nativeQuery = true)
+  Collection<Host> findJupyterHubHosts();
+
+  /**
+   * Find hosts of type 'jupyterlab'.
+   *
+   * @return A collection of hosts of type 'jupyterlab'.
+   */
+  @Query(value = "select * from host where type = 'jupyterlab'", nativeQuery = true)
+  Collection<Host> findJupyterLabHosts();
+
   /**
    * Find hosts of type 'gee'.
    *

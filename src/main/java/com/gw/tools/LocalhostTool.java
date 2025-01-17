@@ -202,6 +202,122 @@ public class LocalhostTool {
 
       resp = bint.executeCommonTasks(history_id, id, hid, pswd, token, isjoin);
 
+      // get host ip, port, user name and password
+
+      //			String[] hostdetails = HostTool.getHostDetailsById(hid);
+
+      //			SSHSession session = new SSHSessionImpl();
+      //
+      //			session.login(hid, pswd, token, false);
+      //
+      //			GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+      //
+      //			session.runBash(code, id, isjoin);
+
+      //			String historyid = session.getHistory_id();
+
+      // GeoweaverProcessTask t = new GeoweaverProcessTask();
+
+      // t.initialize(id, hid, pswd, token, isjoin, token);
+
+      // // find active websocket for this builtin process when it is running as a member process in
+      // a workflow
+      // // If this builtin process is running solo, the TaskSocket will take care of the problem.
+
+      // javax.websocket.Session ws = CommandServlet.findSessionById(token);
+
+      // if(!BaseTool.isNull(ws)) t.startMonitor(ws);
+
+      // if(isjoin) {
+
+      // 	tm.runDirectly(t);
+
+      // }else {
+
+      // 	tm.addANewTask(t);
+
+      // }
+
+      // this.history_input = code;
+
+      //			SSHCmdSessionOutput task = new SSHCmdSessionOutput(code);
+
+      // register the input/output into the database
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      throw new RuntimeException(e.getLocalizedMessage());
+    }
+
+    return resp;
+  }
+
+  /**
+   * Execute Jupyter Process on Localhost
+   *
+   * @param id
+   * @param hid
+   * @param pswd
+   * @param token
+   * @param isjoin
+   * @param bin
+   * @param pyenv
+   * @param basedir
+   * @return
+   */
+  public String executeJupyterProcess(
+      String history_id,
+      String id,
+      String hid,
+      String pswd,
+      String token,
+      boolean isjoin,
+      String bin,
+      String pyenv,
+      String basedir) {
+
+    String resp = null;
+
+    try {
+
+      authenticate(pswd);
+
+      // write all the python files into local workspace folder
+      localizeAllPython(history_id);
+
+      // get code of the process
+
+      //			String code = ProcessTool.getCodeById(id);
+
+      GWProcess process = pt.getProcessById(id);
+
+      this.saveHistory(id, process.getCode(), history_id);
+
+      String code = pt.getCodeById(id);
+
+      localizeJupyter(code, process.getName(), history_id);
+
+      LocalSession session = getLocalSession();
+
+      GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+
+      GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
+
+      // save environment
+
+      et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+
+      session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token);
+
+      resp =
+          "{\"history_id\": \""
+              + history_id
+              + "\", \"token\": \""
+              + token
+              + "\", \"ret\": \"success\"}";
+
     } catch (Exception e) {
 
       e.printStackTrace();
@@ -301,6 +417,30 @@ public class LocalhostTool {
 
     logger.debug("The temp python files for " + hid + " have been deleted.");
   }
+
+  /**
+   * Save Jupyter into the Local Workspace Folder if it is run on Localhost
+   *
+   * @param code
+   * @param token
+   */
+  public void localizeJupyter(String code, String name, String history_id) {
+
+    File workfolder = new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id);
+
+    if (!workfolder.exists()) {
+
+      workfolder.mkdirs();
+    }
+
+    if (!name.endsWith(".ipynb")) {
+
+      name += ".ipynb";
+    }
+
+    bt.writeString2File(code, workfolder + "/" + name);
+  }
+
   /** Package all python files into one zip file */
   public void localizeAllPython(String hid) {
 

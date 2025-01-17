@@ -137,6 +137,79 @@ public class RemotehostTool {
   }
 
   /**
+   * Execute jupyter process
+   *
+   * @param id
+   * @param hid
+   * @param pswd
+   * @param token
+   * @param isjoin
+   * @return
+   */
+  public String executeJupyterProcess(
+      String history_id,
+      String id,
+      String hid,
+      String pswd,
+      String token,
+      boolean isjoin,
+      String bin,
+      String pyenv,
+      String basedir) {
+
+    String resp = null;
+
+    try {
+
+      // get code of the process
+
+      String code = pt.getCodeById(id);
+
+      logger.debug(code);
+
+      this.saveHistory(id, code, history_id);
+
+      // establish SSH session and generate a token for it
+
+      if (token == null) {
+
+        token = new RandomString(12).nextString();
+      }
+
+      session.login(hid, pswd, token, false);
+
+      GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+
+      session.runJupyter(history_id, code, id, isjoin, bin, pyenv, basedir, token);
+
+      resp =
+          "{\"history_id\": \""
+              + history_id
+              + "\", \"token\": \""
+              + token
+              + "\", \"ret\": \"success\"}";
+
+      // save environment
+
+      et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      throw new RuntimeException(e.getLocalizedMessage());
+
+    } finally {
+
+      // GeoweaverController.sessionManager.closeWebSocketByToken(token); //close this websocket at
+      // the end
+
+    }
+
+    return resp;
+  }
+
+  /**
    * Execute builtin process - not implemented yet
    *
    * @param id

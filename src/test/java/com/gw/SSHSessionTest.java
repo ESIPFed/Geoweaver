@@ -99,6 +99,14 @@ public class SSHSessionTest extends AbstractHelperMethodsTest{
 
     @Test
     @DisplayName("Test running jupyter on ssh")
+    void testJupyterOnSSH() {
+
+        session.runJupyter("", "", "", false, "", null, null, null);
+
+    }
+
+    @Test
+    @DisplayName("Test running jupyter on ssh")
     void testFinalize() {
 
         session.logout();

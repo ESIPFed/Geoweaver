@@ -67,6 +67,15 @@ public interface LocalSession {
    * @param basedir
    * @param token http session id
    */
+  public void runJupyter(
+      String history_id,
+      String script,
+      String processid,
+      boolean isjoin,
+      String bin,
+      String env,
+      String basedir,
+      String token);
 
   /**
    * Run Python locally

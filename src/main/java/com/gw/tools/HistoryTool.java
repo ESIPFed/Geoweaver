@@ -393,6 +393,35 @@ public class HistoryTool {
     else return false;
   }
 
+  /** Save Jupyter Notebook Checkpoints into the GW database */
+  public void saveJupyterCheckpoints(String hostid, String jupyterbody, HttpHeaders headers) {
+
+    try {
+
+      History h = new History();
+
+      h.setHistory_id(new RandomString(12).nextString());
+
+      h.setHistory_begin_time(BaseTool.getCurrentSQLDate());
+
+      h.setHistory_input(headers.get("referer").get(0));
+
+      h.setHistory_output(jupyterbody);
+
+      h.setHost_id(hostid);
+
+      h.setIndicator(ExecutionStatus.DONE);
+
+      h.setHistory_process(headers.get("referer").get(0));
+
+      historyrepository.save(h);
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+    }
+  }
+
   public String deleteById(String history_id) {
 
     historyrepository.deleteById(history_id);
