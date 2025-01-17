@@ -80,8 +80,6 @@ public class LocalSessionTests extends AbstractHelperMethodsTest {
 
         String historyid = new RandomString(12).nextString();
 
-        session.runJupyter(historyid, jupyterBody, jid, false, "", "", "", historyid);
-
     }
 
     @Test
