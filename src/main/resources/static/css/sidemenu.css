@@ -200,6 +200,38 @@ ul .sub-menu {
   vertical-align: middle;
 }*/
 
+.jupyterserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+  font-weight: 900;
+	color: black;
+}
+
+.sshserver:before {
+	
+  font-family: "Font Awesome 5 Brands" !important; 
+  font-weight: 400 !important;
+  content: "\f17c" !important;
+	color: black;
+}
+
+.jupyterhubserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+	color: black;
+	
+}
+
+.jupyterlabserver:before {
+	
+  font-family: "Font Awesome 5 Brands"  !important;
+  content: "\f3e2"  !important;
+	color: black;
+	
+}
+
 .geeserver:before {
 	
   font-family: "Font Awesome 5 Free"  !important;

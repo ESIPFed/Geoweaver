@@ -162,6 +162,7 @@ public class LocalSessionWinImpl implements LocalSession {
 
     history_tool.saveHistory(history);
 
+    pt.updateJupyter(history, this.token);
   }
 
   @Override
@@ -224,6 +225,112 @@ public class LocalSessionWinImpl implements LocalSession {
       }
 
       log.info("returning to the client..");
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      this.endWithError(token, e.getLocalizedMessage());
+
+    } finally {
+
+      this.isClose = true;
+    }
+  }
+
+  @Override
+  public void runJupyter(
+      String history_id,
+      String script,
+      String processid,
+      boolean isjoin,
+      String bin,
+      String env,
+      String basedir,
+      String token) {
+
+    this.initHistory(history_id, script, processid, isjoin, token);
+
+    try {
+
+      GWProcess pro = pt.getProcessById(processid);
+
+      ProcessBuilder builder = new ProcessBuilder();
+
+      builder.directory(
+          new File(
+              bt.normalizedPath(workspace_folder_path)
+                  + "/"
+                  + history_id)); // this folder is only used to find data files, not the execution
+                                  // command
+
+      String pythonfilename = pro.getName();
+
+      log.info("Start to execute jupyter notebook: " + pythonfilename);
+
+      if (!pythonfilename.endsWith(".ipynb")) pythonfilename += ".ipynb";
+
+      pythonfilename =
+          bt.normalizedPath(workspace_folder_path) + "/" + history_id + "/" + pythonfilename;
+
+      if (BaseTool.isNull(bin)) {
+        builder.command(
+            new String[] {
+              "jupyter",
+              "nbconvert",
+              "--inplace",
+              "--to",
+              "notebook",
+              "--allow-errors",
+              "--execute",
+              pythonfilename
+            });
+      } else {
+        builder.command(
+            new String[] {
+              bin,
+              "-m",
+              "jupyter",
+              "nbconvert",
+              "--inplace",
+              "--to",
+              "notebook",
+              "--allow-errors",
+              "--execute",
+              pythonfilename
+            });
+      }
+
+      builder.redirectErrorStream(true);
+
+      Process process = builder.start();
+
+      InputStream stdout = process.getInputStream();
+
+      log.info("Local session established");
+
+      input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
+
+      sender.init(input, token, history_id, pro.getLang(), pythonfilename);
+
+      thread = new Thread(sender);
+
+      thread.setName("SSH Command output thread");
+
+      log.info("starting sending thread");
+
+      thread.start();
+
+      sender.setProcess(process);
+
+      log.info("returning to the client..");
+
+      if (isjoin) {
+
+        process.waitFor();
+      }
+
+      log.info("Local Session Windows Implementation is done.");
 
     } catch (Exception e) {
 

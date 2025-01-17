@@ -150,4 +150,21 @@ public class HistoryTest extends AbstractHelperMethodsTest{
 
 	}
 
+
+	void createJupyterNotebookHistory(String jid) {
+
+		HttpHeaders jupyterHeaders = new HttpHeaders();
+		jupyterHeaders.setContentType(MediaType.TEXT_HTML);
+		jupyterHeaders.set("referer", "http://localhost:" + this.port + "/Geoweaver/" + jid);
+		// Add test notebook body to include in history.
+		String jupyterBody = bt.readStringFromFile(bt.testResourceFiles() + "/add_jupyter_body.json");
+
+		// save jupyter notebook modification as history.
+		// Each save generates a history id
+		hist.saveJupyterCheckpoints(jid, jupyterBody, jupyterHeaders);
+		hist.saveJupyterCheckpoints(jid, jupyterBody, jupyterHeaders);
+		hist.saveJupyterCheckpoints(jid, jupyterBody, jupyterHeaders);
+
+	}
+
 }

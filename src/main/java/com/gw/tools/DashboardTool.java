@@ -112,11 +112,19 @@ public class DashboardTool {
 
     int process_shell_num = processrepository.findShellProcess().size();
 
+    int process_notebook_num = processrepository.findNotebookProcess().size();
+
     int process_python_num = processrepository.findPythonProcess().size();
 
     int process_builtin_num = processrepository.findBuiltinProcess().size();
 
     int host_ssh_num = hostrepository.findSSHHosts().size();
+
+    int host_jupyter_num = hostrepository.findJupyterNotebookHosts().size();
+
+    int host_jupyterlab_num = hostrepository.findJupyterLabHosts().size();
+
+    int host_jupyterhub_num = hostrepository.findJupyterHubHosts().size();
 
     int host_gee_num = hostrepository.findGEEHosts().size();
 
@@ -143,11 +151,21 @@ public class DashboardTool {
     jsonbuf.append("\"environment_num\":").append(environment_num).append(",");
 
     jsonbuf.append("\"process_shell_num\":").append(process_shell_num).append(",");
+
+    jsonbuf.append("\"process_notebook_num\":").append(process_notebook_num).append(",");
+
     jsonbuf.append("\"process_python_num\":").append(process_python_num).append(",");
 
     jsonbuf.append("\"process_builtin_num\":").append(process_builtin_num).append(",");
 
     jsonbuf.append("\"host_ssh_num\":").append(host_ssh_num).append(",");
+
+    jsonbuf.append("\"host_jupyter_num\":").append(host_jupyter_num).append(",");
+
+    jsonbuf.append("\"host_jupyterlab_num\":").append(host_jupyterlab_num).append(",");
+
+    jsonbuf.append("\"host_jupyterhub_num\":").append(host_jupyterhub_num).append(",");
+
     jsonbuf.append("\"host_gee_num\":").append(host_gee_num).append(",");
 
     jsonbuf.append("\"running_process_num\":").append(running_process_num).append(",");

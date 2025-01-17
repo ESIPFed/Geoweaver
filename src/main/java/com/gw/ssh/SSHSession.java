@@ -77,6 +77,16 @@ public interface SSHSession {
   public void runBash(
       String history_id, String script, String processid, boolean isjoin, String token);
 
+  public void runJupyter(
+      String history_id,
+      String script,
+      String processid,
+      boolean isjoin,
+      String bin,
+      String env,
+      String basedir,
+      String token);
+
   public void runPython(
       String history_id,
       String script,

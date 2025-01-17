@@ -237,6 +237,117 @@ public class LocalSessionNixImpl implements LocalSession {
   }
 
   @Override
+  public void runJupyter(
+      String history_id,
+      String notebookjson,
+      String processid,
+      boolean isjoin,
+      String bin,
+      String env,
+      String basedir,
+      String token) {
+
+    this.initHistory(history_id, notebookjson, processid, isjoin, token);
+
+    try {
+
+      log.info("starting command");
+
+      tempfile =
+          bt.normalizedPath(workspace_folder_path)
+              + "/"
+              + history_id
+              + "/gw-"
+              + token
+              + "-"
+              + history.getHistory_id()
+              + ".ipynb";
+
+      bt.writeString2File(notebookjson, tempfile);
+
+      // Get a list of all environment variables
+      Map<String, String> envMap = new HashMap<String, String>(System.getenv());
+
+      ProcessBuilder builder = new ProcessBuilder();
+
+      builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
+
+      if (BaseTool.isNull(bin)) {
+
+        builder.command(
+            new String[] {
+              "jupyter",
+              "nbconvert",
+              "--inplace",
+              "--allow-errors",
+              "--to",
+              "notebook",
+              "--execute",
+              tempfile
+            });
+
+      } else {
+
+        builder.command(
+            new String[] {
+              bin,
+              "-m",
+              "jupyter",
+              "nbconvert",
+              "--inplace",
+              "--allow-errors",
+              "--to",
+              "notebook",
+              "--execute",
+              tempfile
+            });
+      }
+
+      builder.redirectErrorStream(true);
+
+      process = builder.start();
+
+      InputStream stdout = process.getInputStream();
+
+      log.info("Local session established");
+
+      input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
+
+      sender.init(input, token, history_id, "juyter", tempfile);
+
+      // moved here on 10/29/2018
+      // all SSH sessions must have a output thread
+
+      thread = new Thread(sender);
+
+      thread.setName("SSH Command output thread");
+
+      log.info("starting sending thread");
+
+      thread.start();
+
+      log.info("returning to the client..");
+
+      sender.setProcess(process);
+
+      if (isjoin) {
+
+        process.waitFor();
+      }
+
+    } catch (Exception e) {
+
+      e.printStackTrace();
+
+      this.endWithError(token, e.getLocalizedMessage());
+
+    } finally {
+
+      this.isClose = true;
+    }
+  }
+
+  @Override
   public void runPython(
       String history_id,
       String python,
@@ -322,6 +433,8 @@ public class LocalSessionNixImpl implements LocalSession {
     history.setIndicator(status);
 
     history_tool.saveHistory(history);
+
+    pt.updateJupyter(history, this.token);
   }
 
   @Override
