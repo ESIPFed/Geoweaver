@@ -56,7 +56,7 @@ GW.process.sidepanel = {
                 $(this).remove();
             });
         }
-    }, 5000);
+    }, 3000);
 
     // // Optionally, add event listeners for the buttons if users want to select
     // $('#viewHistoryVersion').click(function() {
