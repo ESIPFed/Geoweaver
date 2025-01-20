@@ -605,3 +605,65 @@ a {
   animation-timing-function: ease-in-out;
 }
 
+/*** Floating banner for alerting code version ***/
+.floating-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85); /* Slightly darker transparent background */
+  color: #ffffff; /* White text for better visibility */
+  padding: 10px 20px;
+  border-radius: 20px; /* Rounded bubble shape */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Slightly larger shadow for depth */
+  z-index: 9999;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Spacing between elements */
+  animation: fadeIn 0.5s ease-out; /* Smooth entrance animation */
+}
+
+/*** Close button styling ***/
+.banner-close-btn {
+  cursor: pointer;
+  font-size: 12px; /* Compact size */
+  color: rgba(255, 255, 255, 0.6); /* Subtle color */
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5); /* Transparent background for blending */
+  border-radius: 50%; /* Circular shape */
+  padding: 4px 8px;
+  line-height: 1;
+  border: none; /* Remove default styles */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.banner-close-btn:hover {
+  background: rgba(255, 255, 255, 0.8); /* Brighten background on hover */
+  color: #000000; /* Darker text for contrast */
+}
+
+.banner-button {
+  padding: 4px 10px; /* Smaller padding for compact size */
+  background-color: #007bff; /* Blue background */
+  color: white; /* White text */
+  font-size: 12px; /* Smaller font size for a neat appearance */
+  border: none;
+  border-radius: 12px; /* Rounded edges for a modern look */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 60px; /* Ensures consistent button width */
+  text-align: center;
+}
+
+.banner-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.03); /* Subtle scale effect */
+}
+
+

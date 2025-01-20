@@ -17,6 +17,63 @@ GW.process.sidepanel = {
 
   init: function () {},
 
+  // Show a banner with buttons to choose between versions
+  // Show a floating banner with buttons to choose between versions in the code editor
+  showVersionChoiceBanner: function(history_id) {
+    const bannerHTML = `
+        <div id="versionBanner" class="floating-banner">
+            <span class="banner-close-btn" id="closeBanner">&times;</span>
+            <p>You are viewing the latest code version, and the log shown is for ID: <strong>${history_id}</strong>. To view a previous version, click the "Details" button in the history table.</p>
+        </div>
+    `;
+    // Add banner to the body
+    $('body').prepend(bannerHTML);
+
+    // Close the banner when the close icon is clicked
+    $('#closeBanner').click(function() {
+        $('#versionBanner').fadeOut(300, function() {
+            $(this).remove();
+        });
+    });
+
+    // Set a flag to track whether the mouse is over the banner
+    let isMouseOverBanner = false;
+
+    // Stop auto-closing when the mouse enters the banner
+    $('#versionBanner').on('mouseenter', function() {
+        isMouseOverBanner = true;
+    });
+
+    // Allow auto-closing when the mouse leaves the banner
+    $('#versionBanner').on('mouseleave', function() {
+        isMouseOverBanner = false;
+    });
+
+    // Hide the banner after 5 seconds if no action is taken and the mouse is not over the banner
+    setTimeout(function() {
+        if ($('#versionBanner').length > 0 && !isMouseOverBanner) {
+            $('#versionBanner').fadeOut(300, function() {
+                $(this).remove();
+            });
+        }
+    }, 5000);
+
+    // // Optionally, add event listeners for the buttons if users want to select
+    // $('#viewHistoryVersion').click(function() {
+    //     this.loadVersion('history');
+    //     $('#versionBanner').fadeOut(300, function() {
+    //         $(this).remove();
+    //     });
+    // }.bind(this));
+
+    // $('#viewLatestVersion').click(function() {
+    //     this.loadVersion('latest');
+    //     $('#versionBanner').fadeOut(300, function() {
+    //         $(this).remove();
+    //     });
+    // }.bind(this));
+  },
+
   open_panel: function (
     workflow_history_id,
     workflow_process_id,
@@ -29,6 +86,7 @@ GW.process.sidepanel = {
     this.current_workflow_process_id = workflow_process_id;
     this.current_process_id = workflow_process_id.split("-")[0];
     this.current_process_name = process_name;
+
 
     $.ajax({
       url: "detail",
@@ -187,7 +245,7 @@ GW.process.sidepanel = {
           workflow_history_id +
           "&processid=" +
           process_id,
-      })
+        })
         .done(function (msg) {
           msg = GW.general.parseResponse(msg);
 
@@ -197,6 +255,8 @@ GW.process.sidepanel = {
             msgout = msg.history_output.replaceAll("\n", "<br/>");
 
             $("#prompt-panel-process-log-window").append(msgout);
+            // Show banner with buttons for version choice
+            GW.process.sidepanel.showVersionChoiceBanner(msg.history_id);
           } else {
             $("#prompt_panel_log_switch")
               .prop("checked", false)
