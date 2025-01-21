@@ -13,6 +13,10 @@ GW.process.sidepanel = {
   current_process_category: null,
   dockmode: "no",
 
+  isResizing: false,
+  startX: null,
+  startWidth: null,
+
   editor: null,
 
   init: function () {},
@@ -327,7 +331,9 @@ GW.process.sidepanel = {
 
     // add process code and history combo
     let process_code_history_content =
-      `<div id="prompt-panel-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
+      `
+      <div id="resize-btn"></div>
+      <div id="prompt-panel-editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: white;">
 
         <div class="subtab tab titleshadow" style="margin-top: 0; max-width: 100%">
           
@@ -458,6 +464,46 @@ GW.process.sidepanel = {
         }
       }
     });
+
+    this.enablePanelResizer()
+
+  },
+
+  // Mouse move event to resize the panel
+  onMouseMove: function(e) {
+    if (GW.process.sidepanel.isResizing) {
+        const newWidth = GW.process.sidepanel.startWidth + (GW.process.sidepanel.startX - e.clientX);
+        // Set the new width only if it's within a reasonable range
+        if (newWidth > 100 && newWidth < window.innerWidth) {
+          GW.process.sidepanel.panel.style.width = `${newWidth}px`;
+        }
+    }
+  },
+
+  // Mouse up event to stop resizing
+  onMouseUp: function () {
+      document.removeEventListener('mousemove', GW.process.sidepanel.onMouseMove);
+      document.removeEventListener('mouseup', GW.process.sidepanel.onMouseUp);
+  },
+
+  enablePanelResizer: function(){
+    // Getting the DOM elements
+    GW.process.sidepanel.panel = document.getElementById('prompt-panel-main').parentElement;
+    const resizeBtn = document.getElementById('resize-btn');
+
+    GW.process.sidepanel.isResizing = false;
+    
+    // Mouse down event to start resizing
+    resizeBtn.addEventListener('mousedown', (e) => {
+      GW.process.sidepanel.isResizing = true;
+      GW.process.sidepanel.startX = e.clientX;
+      GW.process.sidepanel.startWidth = GW.process.sidepanel.panel.offsetWidth;
+      document.addEventListener('mousemove', GW.process.sidepanel.onMouseMove);
+      document.addEventListener('mouseup', GW.process.sidepanel.onMouseUp);
+      e.preventDefault(); // Prevent text selection or other actions while dragging
+    });
+
+    
   },
 
   /**

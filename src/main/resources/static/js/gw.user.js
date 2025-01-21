@@ -479,7 +479,7 @@ GW.user = {
               $("#email").val() +
               '"' +
               "}",
-          })
+            })
             .done(function (msg) {
               // msg = $.parseJSON(msg);
 

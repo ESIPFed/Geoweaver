@@ -666,4 +666,21 @@ a {
   transform: scale(1.03); /* Subtle scale effect */
 }
 
+#resize-btn {
+  width: 6px; /* Slightly wider for better usability */
+  height: 100%;
+  background: linear-gradient(to right, #ddd, #bbb); /* Light gradient for a softer appearance */
+  position: absolute;
+  left: -5px; /* Positioning it slightly to the left for better grip */
+  top: 0;
+  cursor: ew-resize; /* Indicates the resizable feature */
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2); /* Softer shadow for subtle depth */
+  transition: background-color 0.2s ease, width 0.2s ease; /* Smooth transitions */
+}
+
+#resize-btn:hover {
+  background: linear-gradient(to right, #eee, #ccc); /* Lighter gradient on hover */
+  width: 8px; /* Slightly wider on hover for better visibility */
+}
+
 

@@ -235,10 +235,7 @@ GW.process.util = {
     }
   
   },
-
   
-
-
   activateResizer: function (resizer_line_id) {
     // Query the element
     const resizer = document.getElementById(resizer_line_id);
