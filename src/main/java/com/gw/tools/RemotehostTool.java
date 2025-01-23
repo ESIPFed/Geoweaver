@@ -216,8 +216,6 @@ public class RemotehostTool {
 
         code = p.getCode();
 
-        code = pt.unescape(code);
-
         name = p.getName();
 
         String filepath = folderpath;
