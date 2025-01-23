@@ -53,7 +53,7 @@ jobs:
 
       - name: Archive videos on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: cypress/videos
