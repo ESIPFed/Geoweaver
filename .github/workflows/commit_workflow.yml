@@ -32,7 +32,7 @@ jobs:
           fi
 
       - name: Save Geoweaver JaCoCo HTML Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: geoweaver-jacoco-coverage-report
           path: target/site/jacoco
@@ -84,7 +84,7 @@ jobs:
         fi
 
     - name: Save Geoweaver JaCoCo HTML Report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: geoweaver-jacoco-coverage-report
         path: target/site/jacoco
