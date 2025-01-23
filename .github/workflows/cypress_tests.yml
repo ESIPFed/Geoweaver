@@ -46,7 +46,7 @@ jobs:
           working-directory: ./cypress
       - name: Archive screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: cypress/screenshots
