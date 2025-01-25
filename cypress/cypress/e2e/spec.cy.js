@@ -135,7 +135,11 @@ describe('Add Process to Weaver', () => {
 describe('Delete Process', () => {
     it('Delete Python Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('.introjs-skipbutton').click();
+      cy.get('.introjs-skipbutton').click().then(
+        () => {
+          cy.get('#process_folder_python > a', { timeout: 10000 }).should('be.visible');
+        }
+      )
       cy.get('#process_folder_python').click();
       cy.wait(1000)
       cy.get('ul#process_folder_python_target').contains('python_test').click();

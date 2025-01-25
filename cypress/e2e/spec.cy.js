@@ -253,11 +253,18 @@ describe('Process Testing', () => {
   it('Create Python Process', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
-    cy.get('#newprocess').click();
+    cy.get('#newprocess').click().then(
+      () => {
+        cy.get(".new-process-code-area", { timeout: 10000 }).should("be.visible")
+      }
+    );
     cy.get('form select.form-control.form-control-sm').select('Python');
     cy.get('form > :nth-child(1) > :nth-child(4)').clear('t');
     cy.get('form > :nth-child(1) > :nth-child(4)').type('python_test');
-    cy.get('.modal-footer').contains('Add').click();
+    cy.get('.modal-footer').contains('Add').click().then(
+      cy.get('ul#process_folder_python_target', { timeout: 10000 }).should("be.visible")
+    );
+
     cy.get('ul#process_folder_python_target').should('contain', 'python_test');
   })
 
@@ -300,9 +307,12 @@ describe('Edit Process Name', () => {
         cy.get('#processname', { timeout: 10000 }).should('be.visible');
       }
     );
-    cy.get('#processname').clear('ushell_test');
-    cy.get('#processname').type('updated_shell_test');
-    cy.get('[onclick="GW.process.editSwitch()"] > .glyphicon').click();
+    cy.get('#processname').should('be.visible').and('not.be.disabled');
+    cy.get('#processname').clear();
+    cy.get('#processname', { timeout: 10000 }).should('be.visible'); // Waits for up to 10 seconds
+    cy.get('#processname').type('updated_shell_test', { force: true }) // Type the text
+      .should('have.value', 'updated_shell_test'); // Check the value
+    cy.get('.process-edit-right-icon').click();
     cy.wait(2000);
     cy.get('ul#process_folder_shell_target').should('contain', 'updated_shell_test');
 
@@ -314,11 +324,9 @@ describe('Edit Process Name', () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
     );
-    cy.get('#process_folder_shell').click().then(
-      () => {
-        cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
-      }
-    );
+    cy.wait(2000);
+    cy.get('#process_folder_shell').click();
+    cy.wait(1000)
     cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
     cy.get('#processcategory').should('be.disabled');
     cy.get('#processid').should('be.disabled')
@@ -331,12 +339,12 @@ describe('Delete Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
       cy.get('.introjs-skipbutton').click().then(
         () => {
-          cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
+          cy.get('.new-process-code-area', { timeout: 10000 }).should('be.visible');
         }
       );
       cy.get('#process_folder_shell').click().then(
         () => {
-          cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
+          cy.get('#process_folder_shell_target', { timeout: 10000 }).should('be.visible');
         }
       );
       cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
@@ -348,7 +356,11 @@ describe('Delete Process', () => {
 
     it('Delete Python Process', () => {
       cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('.introjs-skipbutton').click();
+      cy.get('.introjs-skipbutton').click().then(
+        () => {
+          cy.get('#process_folder_python',  { timeout: 10000 }).should("be.visible")
+        }
+      );
       cy.get('#process_folder_python').click();
       cy.get('ul#process_folder_python_target').contains('python_test').click();
       cy.contains('button', 'Delete').click();
@@ -390,8 +402,11 @@ describe('Create Python process and run it', () => {
     cy.get('#newprocess').click();
 
     cy.get('form select.form-control.form-control-sm').select('Python');
-    cy.get('form > :nth-child(1) > :nth-child(4)').type('hello_world.py');
-    cy.wait(1000)
+    cy.get('form > :nth-child(1) > :nth-child(4)').type('hello_world.py').then(
+      () => {
+        cy.get('.CodeMirror-lines', { timeout: 10000 }).should("be.visible")
+      }
+    );
     cy.get('.CodeMirror-lines').type("\nprint('hello world!')");
     cy.get('.modal-footer').contains('Add').click();
 
