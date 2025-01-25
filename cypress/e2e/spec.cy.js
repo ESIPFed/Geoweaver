@@ -6,6 +6,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
   return false;
 });
+
 describe('Application Build Check', () => {
   it('Application is up and running', () => {
     cy.request('http://localhost:8070/Geoweaver')
@@ -27,7 +28,7 @@ describe('Application Build Check', () => {
 });
 
 
-describe('User Signup Test', () => {
+// describe('User Signup Test', () => {
   // it('Test unsuccessful signup with already registered email address', () => {
 
   //   cy.visit('http://localhost:8070/Geoweaver');
@@ -190,20 +191,20 @@ describe('Navigation', () => {
   });   
 });
 
-
 describe('Host Testing', () => {
   it('should submit a create new host form successfully', () => {
-        cy.visit('http://localhost:8070/Geoweaver'); 
-        cy.get('.introjs-skipbutton').click();
-        cy.get('#newhost').click();
-    
-        cy.get('#hostip').type('1.1.1.1');
-        cy.get('#hostport').type('8000');
-        cy.get('#username').type('newuser');
-    
-        cy.get('#host-add-btn').click();
-        cy.get('.nav-side-menu').contains('New Host')
-      });
+    cy.visit('http://localhost:8070/Geoweaver'); 
+    cy.get('.introjs-skipbutton').click();
+    cy.get('#newhost').click();
+
+    cy.get('#hostip').type('1.1.1.1');
+    cy.get('#hostport').type('8000');
+    cy.get('#username').type('newuser');
+
+    cy.get('#host-add-btn').click();
+    cy.get('.nav-side-menu').contains('New Host')
+  });
+
   it('Search result should be successful after creating the host', () => {
     /* ==== Generated with Cypress Studio ==== */
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
@@ -225,15 +226,6 @@ describe('Host Testing', () => {
       '[style="position: absolute; top: -18px; left: 8px; width: 8px; height: 8px; cursor: pointer; margin: 0px; padding: 0px; box-sizing: content-box; font-family: sans-serif; text-align: center; font-size: 8px; line-height: 8px; border-width: 1px; border-radius: 5px; border-color: rgb(252, 97, 92); border-style: solid; background-color: rgb(252, 97, 92); color: white; z-index: 50; user-select: none;"]'
     ).click();
   })
-
-
-//   it('Global Search for Host', () => {
-//   cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-//   cy.get('.introjs-skipbutton').click();
-//   cy.get('#instant_search_bar').clear('N');
-//   cy.get('#instant_search_bar').type('New ');
-//   cy.get('#host-b4ijvz').should('be.visible');
-//   })
 });
 
 describe('Process Testing', () => {
