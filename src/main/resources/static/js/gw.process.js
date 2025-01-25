@@ -1027,7 +1027,7 @@ GW.process = {
       "     </div>" +
       confidential_field +
       "   </div>" +
-      '   <div class="form-group row required" id="codearea-' +
+      '   <div class="form-group row required new-process-code-area" id="codearea-' +
       GW.process.cmid +
       '"></div>' +
       '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class="fa fa-edit subalignicon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to apply edits. </p>' +
