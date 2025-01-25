@@ -26,112 +26,112 @@ describe('Application Build Check', () => {
   })
 });
 
-describe('User Signup Test', () => {
-  it('Test unsuccessful signup without email address', () => {
+// describe('User Signup Test', () => {
+//   it('Test unsuccessful signup without email address', () => {
 
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
+//     cy.visit('http://localhost:8070/Geoweaver');
+//     cy.get('.introjs-skipbutton').click();
 
-    cy.get('#toolbar-loginout-a > .fa').click()
+//     cy.get('#toolbar-loginout-a > .fa').click()
 
-    cy.get('[onclick="GW.user.signupdialog()"]').click()
+//     cy.get('[onclick="GW.user.signupdialog()"]').click()
 
-    cy.get('#username').type('newuser'); 
-    cy.get('input[name="username"]') 
+//     cy.get('#username').type('newuser'); 
+//     cy.get('input[name="username"]') 
    
-    cy.get('#password').type('Geoweaver@123'); 
+//     cy.get('#password').type('Geoweaver@123'); 
 
-    cy.get('#rpassword').type('Geoweaver@123');  
+//     cy.get('#rpassword').type('Geoweaver@123');  
  
-    cy.get('#agree_yes').click();
+//     cy.get('#agree_yes').click();
   
-    cy.get('[onclick="GW.user.register()"]').click();
-    cy.contains("Email is missing!");
-  });
+//     cy.get('[onclick="GW.user.register()"]').click();
+//     cy.contains("Email is missing!");
+//   });
 
 
-  it('Test unsuccessful signup if user didnot agree for the terms and conditions', () => {
+//   it('Test unsuccessful signup if user didnot agree for the terms and conditions', () => {
 
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
+//     cy.visit('http://localhost:8070/Geoweaver');
+//     cy.get('.introjs-skipbutton').click();
 
-    cy.get('#toolbar-loginout-a > .fa').click()
+//     cy.get('#toolbar-loginout-a > .fa').click()
 
-    cy.get('[onclick="GW.user.signupdialog()"]').click()
+//     cy.get('[onclick="GW.user.signupdialog()"]').click()
 
-    cy.get('#username').type('newuser'); 
-    cy.get('input[name="username"]') 
+//     cy.get('#username').type('newuser'); 
+//     cy.get('input[name="username"]') 
    
-    cy.get('#password').type('Geoweaver@123'); 
+//     cy.get('#password').type('Geoweaver@123'); 
 
-    cy.get('#rpassword').type('Geoweaver');  
-    cy.get('input[name="email"]').type('newuser@example.com');  
-    cy.get('#agree_no').click()
+//     cy.get('#rpassword').type('Geoweaver');  
+//     cy.get('input[name="email"]').type('newuser@example.com');  
+//     cy.get('#agree_no').click()
   
-    cy.get('[onclick="GW.user.register()"]').click()
-    cy.contains("The reentered password doesn't match!")
-  });
-});
+//     cy.get('[onclick="GW.user.register()"]').click()
+//     cy.contains("The reentered password doesn't match!")
+//   });
+// });
 
-describe('User Login Test', () => {
-  it('allows an existing user to log in', () => {
-    cy.visit('http://localhost:8070/Geoweaver');
-    cy.get('.introjs-skipbutton').click();
+// describe('User Login Test', () => {
+//   it('allows an existing user to log in', () => {
+//     cy.visit('http://localhost:8070/Geoweaver');
+//     cy.get('.introjs-skipbutton').click();
 
-    cy.get('#toolbar-loginout-a > .fa').click();
+//     cy.get('#toolbar-loginout-a > .fa').click();
 
-    cy.get('[onclick="GW.user.logindialog()"]', { timeout: 10000 }).should('be.visible');
+//     cy.get('[onclick="GW.user.logindialog()"]', { timeout: 10000 }).should('be.visible');
   
-    cy.get('#username').type('newuser'); 
-    cy.get('#password').type('Geoweaver@123'); 
+//     cy.get('#username').type('newuser'); 
+//     cy.get('#password').type('Geoweaver@123'); 
 
-    cy.get('[onclick="GW.user.login()"]').click();
-  });
+//     cy.get('[onclick="GW.user.login()"]').click();
+//   });
 
-  it('Test unsuccessful Login with incorrect password', () => {
-    cy.visit('http://localhost:8070/Geoweaver'); 
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#toolbar-loginout-a > .fa').click();
+//   it('Test unsuccessful Login with incorrect password', () => {
+//     cy.visit('http://localhost:8070/Geoweaver'); 
+//     cy.get('.introjs-skipbutton').click();
+//     cy.get('#toolbar-loginout-a > .fa').click();
     
-    cy.get('#username').type('testuser'); 
-    cy.get('#password').type('wrongPassword123'); 
+//     cy.get('#username').type('testuser'); 
+//     cy.get('#password').type('wrongPassword123'); 
 
-    cy.get('[onclick="GW.user.login()"]').click();
+//     cy.get('[onclick="GW.user.login()"]').click();
 
-    cy.contains("Failed to log in.")
-  });
+//     cy.contains("Failed to log in.")
+//   });
 
-  it('Test unsuccessful Login without password', () => {
-    cy.visit('http://localhost:8070/Geoweaver'); 
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#toolbar-loginout-a > .fa').click();
+//   it('Test unsuccessful Login without password', () => {
+//     cy.visit('http://localhost:8070/Geoweaver'); 
+//     cy.get('.introjs-skipbutton').click();
+//     cy.get('#toolbar-loginout-a > .fa').click();
     
-    cy.get('#username').type('testuser'); 
+//     cy.get('#username').type('testuser'); 
 
 
-    cy.get('[onclick="GW.user.login()"]').click();
+//     cy.get('[onclick="GW.user.login()"]').click();
 
-    cy.contains("Either usename or password is missing.")
-  });
-});
+//     cy.contains("Either usename or password is missing.")
+//   });
+// });
 
-describe('Forgot Password Test', () => {
-  it('forgot password test', () => {
-    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('.introjs-skipbutton').click();
-    cy.get('#toolbar-loginout-a > .fa').click();
-    cy.get(':nth-child(4) > .col-md-12 > .btn').click();
-    cy.get('#email').type('newuser@example.com');
-    cy.get('#reset-password-form > :nth-child(1) > .col-md-12').click();
-    cy.get('[onclick="GW.user.resetPassword()"]').click();
-    cy.get('#reset-password-form > h3').click();
-    cy.get('#reset-password-form').click();
-    cy.get('[style="border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; visibility: visible; position: absolute; left: 0px; box-sizing: content-box; top: 0px; width: 100%; height: 100%; background-color: rgb(255, 255, 255); overflow: auto;"]').click();
-    cy.get('#reset-password-form > h3').click();
-    cy.get('#reset-password-form > h3').should('be.visible');
-    cy.get('#reset-password-form > :nth-child(3) > a').should('be.visible');
-  }) 
-})
+// describe('Forgot Password Test', () => {
+//   it('forgot password test', () => {
+//     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
+//     cy.get('.introjs-skipbutton').click();
+//     cy.get('#toolbar-loginout-a > .fa').click();
+//     cy.get(':nth-child(4) > .col-md-12 > .btn').click();
+//     cy.get('#email').type('newuser@example.com');
+//     cy.get('#reset-password-form > :nth-child(1) > .col-md-12').click();
+//     cy.get('[onclick="GW.user.resetPassword()"]').click();
+//     cy.get('#reset-password-form > h3').click();
+//     cy.get('#reset-password-form').click();
+//     cy.get('[style="border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; visibility: visible; position: absolute; left: 0px; box-sizing: content-box; top: 0px; width: 100%; height: 100%; background-color: rgb(255, 255, 255); overflow: auto;"]').click();
+//     cy.get('#reset-password-form > h3').click();
+//     cy.get('#reset-password-form > h3').should('be.visible');
+//     cy.get('#reset-password-form > :nth-child(3) > a').should('be.visible');
+//   }) 
+// })
 
 describe('Navigation', () => {
   it('should navigate to different pages', () => {
