@@ -535,7 +535,7 @@ GW.process.util = {
         GW.history.stopAllTimers();
 
           $(process_history_container_id).html(
-              GW.history.getProcessHistoryTable(msg),
+              GW.history.getProcessHistoryTable(msg, pid, pname),
           );
           GW.history.startActiveTimer();
 
