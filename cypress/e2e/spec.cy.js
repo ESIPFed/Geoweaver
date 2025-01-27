@@ -313,7 +313,6 @@ describe('Edit Process Name', () => {
     cy.get('#processname').type('updated_shell_test', { force: true }) // Type the text
       .should('have.value', 'updated_shell_test'); // Check the value
     cy.get('.process-edit-right-icon').click();
-    cy.wait(2000);
     cy.get('ul#process_folder_shell_target').should('contain', 'updated_shell_test');
 
   })
@@ -324,9 +323,7 @@ describe('Edit Process Name', () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
     );
-    cy.wait(2000);
     cy.get('#process_folder_shell').click();
-    cy.wait(1000)
     cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
     cy.get('#processcategory').should('be.disabled');
     cy.get('#processid').should('be.disabled')
@@ -454,7 +451,6 @@ describe('Hosts Testing', () => {
   it('Delete New Host', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
-    cy.wait(1000)
     cy.get('#host_folder_ssh > a').click();
     cy.get('ul#host_folder_ssh_target').contains('New Host').click();
     cy.get('.fa-minus').click();
@@ -464,7 +460,6 @@ describe('Hosts Testing', () => {
   it('LocalHost testing', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
-    cy.wait(2000)
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
     cy.get('#_host_name').should('have.value', 'Localhost');
@@ -479,7 +474,6 @@ describe('Hosts Testing', () => {
   it('LocalHost Read Python Env', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
-    cy.wait(2000)
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
     cy.get('.fab').click();
