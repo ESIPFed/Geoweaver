@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
@@ -576,29 +577,23 @@ public class BaseTool {
    * @param filepath
    */
   public void writeString2File(String content, String filepath) {
-
     try {
+        filepath = this.normalizedPath(filepath);
 
-      filepath = this.normalizedPath(filepath);
+        // Ensure the parent directories exist
+        createWorkspace(filepath);
 
-      // logger.info("Writing to file: " + filepath);
+        File nf = new File(filepath);
 
-      createWorkspace(filepath);
+        // Use FileWriter with UTF-8 encoding
+        try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(nf), StandardCharsets.UTF_8))) {
+            out.print(content); // Use print instead of println to avoid adding unwanted newline
+        }
 
-      File nf = new File(filepath);
-
-      if (nf.exists()) nf.delete();
-
-      PrintWriter out;
-
-      out = new PrintWriter(filepath);
-
-      out.println(content);
-
-      out.close();
+        logger.debug("File written successfully to: " + filepath);
 
     } catch (Exception e) {
-      e.printStackTrace();
+        e.printStackTrace();
     }
   }
 

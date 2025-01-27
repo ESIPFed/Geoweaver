@@ -1027,10 +1027,10 @@ GW.process = {
       "     </div>" +
       confidential_field +
       "   </div>" +
-      '   <div class="form-group row required" id="codearea-' +
+      '   <div class="form-group row required new-process-code-area" id="codearea-' +
       GW.process.cmid +
       '"></div>' +
-      '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class="fa fa-edit subalignicon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to apply edits. </p>' +
+      '   <p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save edits. Click <i class="fa fa-edit subalignicon process-edit-icon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to apply edits. </p>' +
       " </form></div>";
 
     return content;
@@ -1260,7 +1260,7 @@ GW.process = {
       "   </div>" +
       '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >' +
       '	     <div class="col-md-6" style="padding:0;" >' +
-      '			<p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save. Click <i class="fa fa-edit subalignicon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to edit.' +
+      '			<p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save. Click <i class="fa fa-edit subalignicon process-edit-icon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to edit.' +
       '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>' +
       '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">' +
       ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>' +
@@ -1297,7 +1297,7 @@ GW.process = {
       `');" >
 					<i class="glyphicon glyphicon-play"></i>
 				</button>
-				<button class="btn pull-right" onclick="GW.process.editSwitch()" >
+				<button class="btn pull-right process-edit-right-icon" onclick="GW.process.editSwitch()" >
 					<i class="glyphicon glyphicon-floppy-saved"></i>
 				</button>
 				<button class="btn pull-right" onclick="GW.process.bottomDock()" >

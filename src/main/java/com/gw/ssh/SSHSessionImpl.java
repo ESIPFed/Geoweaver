@@ -431,15 +431,6 @@ public class SSHSessionImpl implements SSHSession {
       String basedir,
       String token) {
     try {
-      // Log that the Python script execution is starting.
-      log.info("Starting command: " + python);
-
-      // Escape any special characters in the Python script.
-      python = escapeJupter(python);
-
-      // Log the processed Python script.
-      log.info("\nCommand: " + python);
-
       // Build the command line for execution.
       String cmdline = "mkdir -p " + workspace_folder_path + "; cd " + workspace_folder_path + "; ";
 
