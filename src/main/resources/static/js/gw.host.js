@@ -820,8 +820,8 @@ GW.host = {
       `', 'host')">&nbsp;&nbsp;&nbsp;` +
       one.name +
       `</li>`;
-
-    $("#host_folder_" + one.type + "_target").append(one_item);
+    // add to the first, not the last
+    $("#host_folder_" + one.type + "_target").prepend(one_item);
   },
 
   expand: function (one) {

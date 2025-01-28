@@ -1318,7 +1318,7 @@ GW.workflow = {
   addMenuItem: function (one) {
     if (one.name == "") one.name = "null";
 
-    $("#" + GW.menu.getPanelIdByType("workflow")).append(
+    $("#" + GW.menu.getPanelIdByType("workflow")).prepend(
       '<li class="workflow" id="workflow-' +
         one.id +
         '" onclick="GW.menu.details(\'' +

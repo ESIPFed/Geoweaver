@@ -1659,9 +1659,9 @@ GW.process = {
         folder_ul = $("#process_folder_" + folder + "_target");
       }
 
-      folder_ul.append(menuItem);
+      folder_ul.prepend(menuItem);
     } else {
-      $("#" + GW.menu.getPanelIdByType("process")).append(menuItem);
+      $("#" + GW.menu.getPanelIdByType("process")).prepend(menuItem);
     }
   },
 
