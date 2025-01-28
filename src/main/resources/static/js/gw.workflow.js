@@ -1264,6 +1264,29 @@ GW.workflow = {
         msg = $.parseJSON(msg);
         nodes = GW.workspace.theGraph.nodes;
 
+        let statusArray = []; // Array to store status of process
+        let ajaxPromises = []; // Array to store AJAX call promises
+
+        for (let i = 0; i < msg.output.length; i++) {
+          ajaxPromises.push(
+            $.ajax({
+              url: "log",
+              method: "POST",
+              data: "type=process&id=" + msg.output[i],
+            }).then(function (response) {
+              if (response && response.trim().length > 0) {
+              response = GW.general.parseResponse(response);
+              const status = response.status;
+              statusArray[i] = status; 
+              }
+              else{
+                statusArray[i] = "Unknown";
+              }
+            })
+          );
+        }
+
+        Promise.all(ajaxPromises).then(function () {
         var content =
           '<div class="modal-body" style="font-size: 12px;"><table class="table"> ' +
           "  <thead> " +
@@ -1271,6 +1294,7 @@ GW.workflow = {
           '      <th scope="col">Process Id</th> ' +
           '      <th scope="col">Process Name</th> ' +
           '      <th scope="col">History Id</th> ' +
+          '      <th scope="col">Status</th> ' +
           '      <th scope="col">Action</th> ' +
           "    </tr> " +
           "  </thead> " +
@@ -1287,6 +1311,9 @@ GW.workflow = {
             "</td> " +
             "      <td>" +
             msg.output[i] +
+            "</td> " +
+            "      <td>" +
+            statusArray[i] + 
             "</td> " +
             "      <td><a href=\"javascript: GW.process.showHistoryDetails('" +
             msg.output[i] +
@@ -1310,6 +1337,7 @@ GW.workflow = {
 
         frame.on(".general-cancel-btn", "click", (_frame, evt) => {
           _frame.closeFrame();
+        });
         });
       })
       .fail(function () {});
