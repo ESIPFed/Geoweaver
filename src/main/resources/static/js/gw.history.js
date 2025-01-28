@@ -156,7 +156,7 @@ GW.history = {
      * @param {Array} msg - Array of process history data.
      * @returns {string} - HTML content of the process execution history table.
      */
-    getProcessHistoryTable: function(msg){
+    getProcessHistoryTable: function(msg, pid, pname){
         let hasFailedProcess;
         if (msg.length > 0) {
             hasFailedProcess = msg.some((item) => item.indicator === "Failed");
@@ -174,6 +174,11 @@ GW.history = {
                 </select>
                 <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
             </div>
+            <button id="refresh-history" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('${pid}','${pname}');"
+                class="history-refresh-button" 
+                style="margin-right: 10px;">
+                Refresh
+            </button>
             <div id="statusFilterContainer">`;
 
             if (msg.length && hasFailedProcess) {
