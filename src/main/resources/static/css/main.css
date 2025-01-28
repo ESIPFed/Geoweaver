@@ -69,27 +69,26 @@ form .progress {
 	border-style: solid;
 }
 
-/* The snackbar - positioned at the bottom center of the screen */
+/* The snackbar - subtle design at the bottom of the screen */
 #snackbar {
   visibility: hidden; /* Hidden by default */
-  min-width: 320px; /* More room for longer text */
+  min-width: 300px; /* Comfortable width for text */
   max-width: 90%; /* Flexible width for smaller screens */
-  background-color: rgba(0, 0, 0, 0.8); /* Sleek semi-transparent background */
-  color: #f5f5f5; /* Soft white text */
+  background-color: rgba(50, 50, 50, 0.8); /* Soft dark background */
+  color: #d1d1d1; /* Subtle light-gray text */
   text-align: center; /* Center the text */
-  border-radius: 12px; /* Rounded corners for a smooth design */
-  padding: 16px 24px; /* Balanced padding for content */
+  border-radius: 8px; /* Slightly rounded corners */
+  padding: 12px 20px; /* Compact padding */
   position: fixed; /* Fixed position on the screen */
   z-index: 9999; /* High z-index to appear on top */
   left: 50%; /* Center horizontally */
-  bottom: 16px; /* Adjusted closer to the bottom */
-  transform: translateX(-50%) translateY(20px); /* Centered and slightly off-screen */
-  opacity: 0; /* Invisible initially */
-  transition: transform 0.4s ease, opacity 0.4s ease; /* Smooth transition effects */
-  font-family: 'Roboto', sans-serif; /* Modern and clean font */
-  font-size: 16px; /* Comfortable text size */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Soft shadow for depth */
-  overflow: hidden; /* Prevent text overflow */
+  bottom: 16px; /* Closer to the bottom */
+  transform: translateX(-50%) translateY(10px); /* Slightly off-screen initially */
+  opacity: 0; /* Hidden initially */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth, quick transition */
+  font-family: 'Arial', sans-serif; /* Simple, readable font */
+  font-size: 14px; /* Smaller, less intrusive text */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 /* Snackbar visible state */
@@ -103,7 +102,7 @@ form .progress {
 @keyframes fadein {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(10px);
   }
   to {
     opacity: 1;
@@ -118,14 +117,15 @@ form .progress {
   }
   to {
     opacity: 0;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(10px);
   }
 }
 
 /* Adding animations to the snackbar */
 #snackbar.show {
-  animation: fadein 0.4s ease, fadeout 0.4s ease 3s; /* Show for 3 seconds */
+  animation: fadein 0.3s ease, fadeout 0.3s ease 2.5s; /* Show for 2.5 seconds */
 }
+
 
 .bare-window {
   padding:0;
