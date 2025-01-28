@@ -14,6 +14,8 @@ GW.general = {
       if (event.ctrlKey || event.metaKey) {
         switch (String.fromCharCode(event.which).toLowerCase()) {
           case "s":
+            // Listen to Ctrl+S universally here
+            // come back here please search "Ctrl Save Shortcut Hot Key"
             //need to check if the current page to call the correct method
             event.preventDefault();
             // // clean the search bar. Every save will reset the search input bar.

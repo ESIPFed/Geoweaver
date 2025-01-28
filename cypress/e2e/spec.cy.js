@@ -481,6 +481,7 @@ describe('Hosts Testing', () => {
     cy.get('#inputpswd').type('1234');
     cy.get('#pswd-confirm-btn').click();
     cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
+    
     cy.wait('@readEnvironment').then((interception) => {
       expect(interception.response.statusCode).to.equal(200);
     });
