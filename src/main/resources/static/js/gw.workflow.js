@@ -1312,9 +1312,7 @@ GW.workflow = {
             "      <td>" +
             msg.output[i] +
             "</td> " +
-            "      <td>" +
-            statusArray[i] + 
-            "</td> " +
+            GW.history.getProcessStatusCol(msg.output[i], statusArray[i]) +
             "      <td><a href=\"javascript: GW.process.showHistoryDetails('" +
             msg.output[i] +
             "')\">Check</a></td> " +
