@@ -1090,7 +1090,7 @@ GW.workspace = {
       switch (d3.event.keyCode) {
         case consts.BACKSPACE_KEY:
         case consts.DELETE_KEY:
-          //   d3.event.preventDefault();
+          // d3.event.preventDefault();
           //only delete the process nodes when there is no dialog in sight
           if (
             !GW.workspace.if_any_frame_on &&
