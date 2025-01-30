@@ -880,7 +880,7 @@ GW.workspace = {
         .attr("width", useHW)
         .append("xhtml:p")
         .attr("id", consts.activeEditId)
-        .attr("contentEditable", "true")
+        .attr("contentEditable", "false")
         .text(d.title)
         .on("mousedown", function (d) {
           d3.event.stopPropagation();
@@ -936,10 +936,11 @@ GW.workspace = {
           // clicked, not dragged
           if (d3.event.shiftKey) {
             // shift-clicked node: edit text content
-            var d3txt = thisGraph.changeTextOfNode(d3node, d);
-            var txtNode = d3txt.node();
-            thisGraph.selectElementContents(txtNode);
-            txtNode.focus();
+            // var d3txt = thisGraph.changeTextOfNode(d3node, d);
+            // var txtNode = d3txt.node();
+            // thisGraph.selectElementContents(txtNode);
+            // txtNode.focus();
+
           } else {
             if (state.selectedEdge) {
               thisGraph.removeSelectFromEdge();
@@ -976,26 +977,7 @@ GW.workspace = {
         // dragged not clicked
         state.justScaleTransGraph = false;
       } else if (state.graphMouseDown && d3.event.shiftKey) {
-        // clicked not dragged from svg
-        var xycoords = d3.mouse(thisGraph.svgG.node()),
-          d = {
-            id: thisGraph.idct++,
-            title: "new concept",
-            x: xycoords[0],
-            y: xycoords[1],
-          };
-        thisGraph.nodes.push(d);
-        thisGraph.updateGraph();
-        // make title of text immediently editable
-        var d3txt = thisGraph.changeTextOfNode(
-            thisGraph.circles.filter(function (dval) {
-              return dval.id === d.id;
-            }),
-            d,
-          ),
-          txtNode = d3txt.node();
-        thisGraph.selectElementContents(txtNode);
-        txtNode.focus();
+        // do nothing
       } else if (state.shiftNodeDrag) {
         // dragged from node
         state.shiftNodeDrag = false;
