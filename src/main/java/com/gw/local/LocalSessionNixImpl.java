@@ -54,6 +54,8 @@ public class LocalSessionNixImpl implements LocalSession {
 
   private BufferedReader input;
 
+  public static String SHELL_COMMAND = "bash";
+
   //    private OutputStream     output;
 
   @Autowired private LocalSessionOutput sender;
@@ -184,7 +186,7 @@ public class LocalSessionNixImpl implements LocalSession {
       builder.directory(new File(bt.normalizedPath(workspace_folder_path) + "/" + history_id));
 
       // Specify the command to execute (the path to the temporary script file).
-      builder.command(tempfile);
+      builder.command(SHELL_COMMAND, tempfile);
 
       // Redirect the error stream to the standard output stream.
       builder.redirectErrorStream(true);
