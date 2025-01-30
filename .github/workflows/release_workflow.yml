@@ -78,7 +78,7 @@ jobs:
           dpkg-deb --build . geoweaver.deb
 
       - name: Upload Geoweaver Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: geoweaver-artifacts
           path: |
