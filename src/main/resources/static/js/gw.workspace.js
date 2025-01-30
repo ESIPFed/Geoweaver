@@ -12,10 +12,16 @@ GW.workspace = {
 
   if_any_frame_on: false,
 
+  workflow_unsaved: false,
+
   showNonSaved: function () {
+    
     console.log("changes happened");
+    
+    GW.workspace.workflow_unsaved = true;
 
     $("#main-workspace-tab").html("Weaver *");
+  
   },
 
   closeOtherFrames: function () {
@@ -28,7 +34,11 @@ GW.workspace = {
   },
 
   showSaved: function () {
+
+    GW.workspace.workflow_unsaved = false;
+
     $("#main-workspace-tab").html("Weaver");
+  
   },
 
   resizeIframe: function (obj) {},

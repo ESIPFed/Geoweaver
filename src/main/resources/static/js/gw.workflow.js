@@ -777,6 +777,11 @@ GW.workflow = {
     var phs = this.findCache(id);
 
     if (phs == null) {
+
+      // first save the workflow if there are unsaved changes
+      if(GW.workspace.workflow_unsaved)
+        GW.workspace.saveWorkflow();
+
       //get all the nodes in the workflow
 
       //first, get the workflow details
