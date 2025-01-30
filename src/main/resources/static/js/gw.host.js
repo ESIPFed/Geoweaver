@@ -1145,6 +1145,7 @@ GW.host = {
   },
 
   showEnvironmentTable: function (msg) {
+    $("#loading-environment").hide();
     var content =
       '<h4 class="border-bottom">Environment List  <button type="button" class="btn btn-secondary btn-sm" id="closeEnvironmentPanel" >close</button></h4>' +
       '<div class="modal-body" style="font-size: 12px;">' +
@@ -1183,7 +1184,7 @@ GW.host = {
 
     content += "</tbody>" + "</table>" + "</div>";
 
-    $("#environment-iframe").html(content);
+    $("#host-environment-content").html(content);
 
     $("#closeEnvironmentPanel").click(function () {
       $("#environment-iframe").html("");
@@ -1248,21 +1249,22 @@ GW.host = {
     GW.host.start_auth_single(hid, req, GW.host.readEnvironmentCallback);
   },
 
-  display: function (msg) {
-    GW.process.editOn = false;
-
-    var content = '<div class="modal-body">';
-
-    content += '<div class="row" style="font-size: 12px;">';
-    content += '<form class="well form-horizontal" id="info_form">';
+  get_host_details_panel: function(msg){
+    var content = '<form class="well form-horizontal" id="info_form">';
     content +=
       "<legend><center><h2><b>Host Details</b></h2></center></legend><br>";
-    var hostid = null,
-      hostip = null,
-      hosttype = null,
-      confidential = null,
-      owner = null,
-      envs = null;
+    // Parse msg data
+    jQuery.each(msg, function (i, val) {
+        if (val != null && val != "null" && val != "") {
+            if (typeof val == "object") val = JSON.stringify(val);
+            if (i == "id") hostid = val;
+            if (i == "ip") hostip = val;
+            if (i == "type") hosttype = val;
+            if (i == "confidential") confidential = val;
+            if (i == "owner") owner = val;
+            if (i == "envs") envs = val;
+        }
+    });
 
     jQuery.each(msg, function (i, val) {
       if (val != null && val != "null" && val != "") {
@@ -1405,20 +1407,22 @@ GW.host = {
 
     content += "</form>";
 
+    return content;
+  },
+
+  get_host_toolbar: function(msg){
     var delbtn = "";
 
     //          if(hostip!="127.0.0.1")
     if (msg.id != "100001")
       delbtn =
         '<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this host" onclick="GW.menu.del(\'' +
-        hostid +
+        msg.id +
         "','host')\"></i>";
 
-    content +=
-      "</div>" +
-      '<div class="col-md-12">' +
+    content ='<div class="col-md-12">' +
       '<p align="right">' +
-      this.getToolbar(hostid, hosttype) +
+      this.getToolbar(msg.id, msg.type) +
       delbtn +
       "</p>" +
       "</div>" +
@@ -1434,12 +1438,330 @@ GW.host = {
       "</div>" +
       "</div>";
 
+    return content;
+
+  },
+
+  display: function (msg) {
+    GW.process.editOn = false;
+
+    var hostid = null,
+        hostip = null,
+        hosttype = null,
+        confidential = null,
+        owner = null,
+        envs = null;
+    
+    // Tabbed structure
+    var content = `
+      <div class="modal-body">
+          <ul class="nav nav-tabs" id="host-tabs" role="tablist">
+              <li class="nav-item">
+                  <a class="nav-link active" id="host-info-tab" data-toggle="tab" href="#host-info" role="tab" aria-controls="host-info" aria-selected="true">Information</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="host-file-upload-tab" data-toggle="tab" href="#host-file-upload" role="tab" aria-controls="host-file-upload" aria-selected="false">File Uploading</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="host-file-browser-tab" data-toggle="tab" href="#host-file-browser" role="tab" aria-controls="host-file-browser" aria-selected="false">File Browser</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="host-python-environment-tab" data-toggle="tab" href="#host-python-environment" role="tab" aria-controls="host-python-environment" aria-selected="false">Python Environment</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" id="host-history-tab" data-toggle="tab" href="#host-history" role="tab" aria-controls="host-history" aria-selected="false">History</a>
+              </li>
+          </ul>
+          <div class="tab-content" id="host-tab-content">
+              <div class="tab-pane fade show active" id="host-info" role="tabpanel" aria-labelledby="host-info-tab">
+                  `+ GW.host.get_host_details_panel(msg) + GW.host.get_host_toolbar(msg) + `
+              </div>
+              <div class="tab-pane fade" id="host-file-upload" role="tabpanel" aria-labelledby="host-file-upload-tab">
+                  <div class="col-md-12" id="host-file-upload-content"></div>
+              </div>
+              <div class="tab-pane fade" id="host-file-browser" role="tabpanel" aria-labelledby="host-file-browser-tab">
+                  <div class="col-md-12" id="host-file-browser-content"></div>
+              </div>
+              <div class="tab-pane fade" id="host-python-environment" role="tabpanel" aria-labelledby="host-python-environment-tab">
+                  <div class="col-md-12">
+                      <div id="loading-environment" style="text-align: center; padding: 20px;">
+                        <img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
+                      </div>
+                      <div id="host-environment-table-content"></div>
+                  </div>
+              </div>
+              <div class="tab-pane fade" id="host-history" role="tabpanel" aria-labelledby="host-history-tab">
+                  <div class="col-md-12" id="host-history-content"></div>
+              </div>
+          </div>
+      </div>`;
+
+    // Inject HTML content into modal
     $("#main-host-content").html(content);
+
+    // Bootstrap tab switching fix
+    $('#host-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        console.log("Switched to tab:", e.target.id);
+        
+        // Hide all tab panes and remove 'show active' before showing the selected one
+        $('.tab-pane').removeClass('show active');
+        
+        var target = $(e.target).attr("href"); // Get target pane ID
+        $(target).addClass("show active"); // Show selected tab
+    });
+
+    // Handle Python Environment tab loading
+    $("#host-python-environment-tab").on("click", function () {
+        $("#loading-environment").show(); // Show loading spinner
+        $("#host-environment-table-content").empty(); // Clear previous content
+
+        GW.host.loadPythonEnvironmentTab(msg, function () {
+            $("#loading-environment").hide(); // Hide loading when done
+        });
+    });
 
     GW.ssh.current_process_log_length = 0;
 
+    // $('#host-info-tab').tab('show');
+
     GW.general.switchTab("host");
+
+
+    // Ensure tab switch works
+    $('#host-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      console.log("Switched to tab:", e.target.id);
+    });
+
+    // Show loading GIF, then load content
+    $("#host-python-environment-tab").on("click", function () {
+        $("#loading-environment").show();
+        GW.host.loadPythonEnvironmentTab(msg, function () {
+            $("#loading-environment").hide();
+        });
+    });
+
+
+    // Add onclick event handlers for each tab
+    // $("#host-info-tab").on("click", function () {
+    //   // GW.host.loadInfoTab(msg);
+    //   $("#host-info").html(GW.host.get_host_details_panel(msg) + GW.host.get_host_toolbar(msg))
+    // });
+
+    // $("#host-file-upload-tab").on("click", function () {
+    //   $('#host-file-upload-tab').tab('show');
+    // });
+
+    // $("#host-file-browser-tab").on("click", function () {
+    //   $('#host-file-browser-tab').tab('show');
+    // });
+
+    // $("#host-python-environment-tab").on("click", function () {
+    //   $('#host-python-environment-tab').tab('show');
+    //   $("#loading-environment").show();
+    //   console.log("host id = " + msg.id)
+    //     // GW.host.loadPythonEnvironmentTab(msg);
+    //   GW.host.readEnvironment(msg.id)
+    // });
+
+    // $("#host-history-tab").on("click", function () {
+    //   $('#host-history-tab').tab('show');
+    // });
+
   },
+
+
+  // display: function (msg) {
+  //   GW.process.editOn = false;
+
+  //   var content = '<div class="modal-body">';
+
+  //   content += '<div class="row" style="font-size: 12px;">';
+  //   content += '<form class="well form-horizontal" id="info_form">';
+  //   content +=
+  //     "<legend><center><h2><b>Host Details</b></h2></center></legend><br>";
+  //   var hostid = null,
+  //     hostip = null,
+  //     hosttype = null,
+  //     confidential = null,
+  //     owner = null,
+  //     envs = null;
+
+  //   jQuery.each(msg, function (i, val) {
+  //     if (val != null && val != "null" && val != "") {
+  //       if (typeof val == "object") {
+  //         val = JSON.stringify(val);
+  //       }
+
+  //       if (i == "id") {
+  //         hostid = val;
+  //       }
+
+  //       if (i == "ip") {
+  //         hostip = val;
+  //       }
+
+  //       if (i == "type") {
+  //         hosttype = val;
+  //       }
+
+  //       if (i == "confidential") {
+  //         confidential = val;
+  //         return;
+  //       } else if (i == "owner") {
+  //         owner = val;
+  //         return;
+  //       } else if (i == "envs") {
+  //         envs = val;
+  //         return;
+  //       }
+
+  //       content += `<div class="row m-0">`;
+
+  //       if (i == "id" || i == "ip" || i == "type" || i == "url") {
+  //         if (i == "ip") {
+  //           content +=
+  //             '<div class="col col-md-3 control-label">' +
+  //             "IP Address" +
+  //             "</div>";
+  //         } else if (i == "id") {
+  //           content +=
+  //             '<div class="col col-md-3 control-label">' +
+  //             i.toUpperCase() +
+  //             "</div>";
+  //         } else if (i == "url") {
+  //           content +=
+  //             '<div class="col col-md-3 control-label">' + "URL" + "</div>";
+  //         } else {
+  //           content +=
+  //             '<div class="col col-md-3 control-label">' +
+  //             i.charAt(0).toUpperCase() +
+  //             i.slice(1) +
+  //             "</div>";
+  //         }
+  //       } else {
+  //         content +=
+  //           '<div class="col col-md-3 control-label">' +
+  //           i.charAt(0).toUpperCase() +
+  //           i.slice(1) +
+  //           "</div>";
+  //       }
+
+  //       if (i == "id" || i == "type") {
+  //         content +=
+  //           '<div class="col col-md-7" id="_host_' + i + '" >' + val + "</div>";
+  //       } else {
+  //         if (i == "name") {
+  //           content +=
+  //             '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>' +
+  //             '<input class="host-value-field form-control" type="text" id="_host_' +
+  //             i +
+  //             '" disabled="true" value="' +
+  //             val +
+  //             '" /></div></div>';
+  //         } else if (i == "ip") {
+  //           content +=
+  //             '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span>' +
+  //             '<input class="host-value-field form-control" type="text" id="_host_' +
+  //             i +
+  //             '" disabled="true" value="' +
+  //             val +
+  //             '" /></div></div>';
+  //         } else if (i == "port") {
+  //           content +=
+  //             '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-transfer"></i></span>' +
+  //             '<input class="host-value-field form-control" type="text" id="_host_' +
+  //             i +
+  //             '" disabled="true" value="' +
+  //             val +
+  //             '" /></div></div>';
+  //         } else if (i == "username") {
+  //           content +=
+  //             '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>' +
+  //             '<input class="host-value-field form-control" type="text" id="_host_' +
+  //             i +
+  //             '" disabled="true" value="' +
+  //             val +
+  //             '" /></div></div>';
+  //         } else {
+  //           content +=
+  //             '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-link"></i></span>' +
+  //             '<input class="host-value-field form-control" type="text" id="_host_' +
+  //             i +
+  //             '" disabled="true" value="' +
+  //             val +
+  //             '" /></div></div>';
+  //         }
+  //       }
+
+  //       content += `</div>`;
+  //     }
+  //   });
+
+  //   content += `<div class="row m-0">`;
+
+  //   content +=
+  //     '<div class="col col-md-3 control-label">Confidential</div>' +
+  //     '<div class="col col-md-7">';
+
+  //   if (confidential == "FALSE") {
+  //     content +=
+  //       '       <input type="radio" name="confidential" value="FALSE" checked> ' +
+  //       '       <label id="public_radio" for="confidential">Public</label>';
+
+  //     if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
+  //       content +=
+  //         '       <input type="radio" name="confidential" value="TRUE"> ' +
+  //         '       <label id="private_radio" for="confidential">Private</label>';
+  //   } else {
+  //     content +=
+  //       '       <input type="radio" name="confidential" value="FALSE"> ' +
+  //       '       <label id="public_radio" for="confidential">Public</label>';
+
+  //     if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
+  //       content +=
+  //         '       <input type="radio" name="confidential" value="TRUE" checked> ' +
+  //         '       <label id="private_radio" for="confidential">Private</label>';
+  //   }
+
+  //   content += `</div></div>`;
+
+  //   content += "</form>";
+
+  //   var delbtn = "";
+
+  //   //          if(hostip!="127.0.0.1")
+  //   if (msg.id != "100001")
+  //     delbtn =
+  //       '<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this host" onclick="GW.menu.del(\'' +
+  //       hostid +
+  //       "','host')\"></i>";
+
+  //   content +=
+  //     "</div>" +
+  //     '<div class="col-md-12">' +
+  //     '<p align="right">' +
+  //     this.getToolbar(hostid, hosttype) +
+  //     delbtn +
+  //     "</p>" +
+  //     "</div>" +
+  //     '<div class="col-md-12" style="max-height:600px;margin:0;" id="environment-iframe">' +
+  //     "</div>" +
+  //     '<div class="col-md-12" style="max-height:600px;margin:0;" id="ssh-terminal-iframe">' +
+  //     "</div>" +
+  //     '<div class="col-md-12" style="margin:0;" id="host-file-uploader">' +
+  //     "</div>" +
+  //     '<div class="col-md-12" style="max-height:800px;margin:0;" id="host-file-browser">' +
+  //     "</div>" +
+  //     '<div class="col-md-12" style="max-height:800px;margin:0;" id="host-history-browser">' +
+  //     "</div>" +
+  //     "</div>";
+
+  //   $("#main-host-content").html(content);
+
+  //   GW.ssh.current_process_log_length = 0;
+
+  //   GW.general.switchTab("host");
+  // },
 
   viewJupyter: function (history_id) {
     $.ajax({
