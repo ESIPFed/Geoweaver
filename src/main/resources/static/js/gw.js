@@ -9,7 +9,7 @@ edu = {
         sponsor:
           "ESIPLab incubator project, NASA ACCESS project, NSF Geoinformatics project, NSF Cybertraining project",
 
-        version: "1.8.8",
+        version: "1.8.9",
 
         author: "open source contributors",
 
