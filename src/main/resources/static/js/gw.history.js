@@ -173,13 +173,13 @@ GW.history = {
                     <option value="less">Less Than</option>
                 </select>
                 <input type="number" id="durationValue" placeholder="Enter duration" style="color: black;">
-            </div>
-            <button id="refresh-history" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('${pid}','${pname}');"
+            </div>`+
+            /*`<button id="refresh-history" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('${pid}','${pname}');"
                 class="history-refresh-button" 
                 style="margin-right: 10px;">
                 Refresh
-            </button>
-            <div id="statusFilterContainer">`;
+            </button>`+*/
+            `<div id="statusFilterContainer">`;
 
             if (msg.length && hasFailedProcess) {
 
