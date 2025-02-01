@@ -202,14 +202,42 @@ GW.menu = {
   },
 
   toggle_side_panel: function () {
-    if ($("#sidemenu").width() != 0) {
-      $("#sidemenu").addClass("invisible").width(0);
-      $("#main_panel_div").addClass("col-md-12").removeClass("col-md-9");
-      $(".workspace_collapse_btn").css("visibility", "visible");
+    var sideMenu = $("#sidemenu");
+    var mainPanel = $("#main_panel_div");
+    var workspaceBtn = $(".workspace_collapse_btn");
+    
+    // Check if the side menu is already collapsed
+    if (sideMenu.width() != 0) {
+      // Collapse the side menu with smooth transition
+      sideMenu.css({
+          "transition": "width 0.3s ease",
+          "width": "0",
+      }).addClass("invisible");
+      
+      // Adjust the main panel size
+      mainPanel.removeClass("col-md-9").addClass("col-md-12");
+      
+      // Show the workspace button
+      workspaceBtn.css({
+          "visibility": "visible",
+          "transition": "visibility 0.3s ease", // Smooth transition for visibility
+      });
     } else {
-      $("#sidemenu").removeClass("invisible").width("");
-      $("#main_panel_div").addClass("col-md-9").removeClass("col-md-12");
-      $(".workspace_collapse_btn").css("visibility", "hidden");
+      // Expand the side menu with smooth transition
+      sideMenu.removeClass("invisible").css({
+          "transition": "width 0.3s ease",
+          "width": "", // Reset width to default
+      });
+      
+      // Adjust the main panel size back to normal
+      mainPanel.removeClass("col-md-12").addClass("col-md-9");
+      
+      // Hide the workspace button (using opacity for smoother transition)
+      workspaceBtn.css({
+          "visibility": "hidden",
+          "transition": "visibility 0.3s ease", // Smooth transition for visibility
+      });
     }
   },
+
 };

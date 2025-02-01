@@ -411,36 +411,61 @@ form .progress {
 }
 
 .side_menu_collapse_btn {
-
   position: absolute;
   border: none;
-  height: 40px;
-  width: 40px;
+  height: 40px; /* Increased button height */
+  width: 40px;  /* Increased button width */
   border-radius: 50%;
-  box-shadow: 0px 1px 4px 1px rgba(0 ,0, 0, .3);
+  box-shadow: 0px 1px 6px 1px rgba(0 ,0, 0, .3); /* Increased shadow size */
   left: 100%;
   top: 50%;
   z-index: 999;
   transform: translateX(-50%);
   cursor: pointer;
+  display: flex; /* Using flexbox for centering the icon */
+  justify-content: center; /* Centering icon horizontally */
+  align-items: center; /* Centering icon vertically */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff; /* Button background color */
+}
 
+.side_menu_collapse_btn i {
+  font-size: 40px; /* Increased icon size for better visibility */
+  color: #4CAF50; /* Modern color for the icon */
+}
+
+.side_menu_collapse_btn:hover {
+  transform: translateX(-50%) scale(1.1); /* Slightly scale up on hover */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
 }
 
 .workspace_collapse_btn {
-
   position: absolute;
   border: none;
-  height: 40px;
-  width: 40px;
+  height: 40px; /* Increased button height */
+  width: 40px;  /* Increased button width */
   border-radius: 50%;
-  box-shadow: 0px 1px 4px 1px rgba(0 ,0, 0, .3);
-  left: 0;
+  box-shadow: 0px 1px 6px 1px rgba(0 ,0, 0, .3); /* Increased shadow size */
+  left: 0px;
   top: 50%;
   z-index: 999;
   visibility: hidden;
   transform: translateX(-50%);
   cursor: pointer;
+  transition: visibility 0.3s ease;
+  display: flex; /* Using flexbox for centering the icon */
+  justify-content: center; /* Centering icon horizontally */
+  align-items: center; /* Centering icon vertically */
+}
 
+.workspace_collapse_btn i {
+  font-size: 40px; /* Increased icon size */
+  color: #4CAF50; /* Icon color */
+}
+
+.workspace_collapse_btn:hover {
+  transform: translateX(-50%) scale(1.1); /* Slightly scale up on hover */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
 }
 
 /* Result page style */
