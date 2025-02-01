@@ -431,7 +431,7 @@ form .progress {
 
 .side_menu_collapse_btn i {
   font-size: 40px; /* Increased icon size for better visibility */
-  color: #4CAF50; /* Modern color for the icon */
+  color: #8A8D91; /* Modern color for the icon */
 }
 
 .side_menu_collapse_btn:hover {
@@ -460,7 +460,7 @@ form .progress {
 
 .workspace_collapse_btn i {
   font-size: 40px; /* Increased icon size */
-  color: #4CAF50; /* Icon color */
+  color: #8A8D91; /* Icon color */
 }
 
 .workspace_collapse_btn:hover {
