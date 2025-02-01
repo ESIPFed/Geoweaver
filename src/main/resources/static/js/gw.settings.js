@@ -3,7 +3,7 @@ GW.settings = {
   // These settings will only be saved in the browser storage. Cleaning cache will reset everything.
   // The server side won't store any of these settings. 
 
-  default_monaco_theme: 'vs-dark',
+  default_monaco_theme: 'vs-light',
 
   selected_monaco_theme: null,
 
