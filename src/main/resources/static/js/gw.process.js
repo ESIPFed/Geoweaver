@@ -2097,7 +2097,7 @@ GW.process = {
 
             GW.process.env_frame = GW.process.createJSFrameDialog(
               520,
-              340,
+              450,
               content,
               "Set " + req.lang + " environment"
             );
