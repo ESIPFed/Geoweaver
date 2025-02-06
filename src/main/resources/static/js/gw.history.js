@@ -272,7 +272,7 @@ GW.history = {
         content =
         // "<h4 class=\"border-bottom\">History Section  <button type=\"button\" class=\"btn btn-secondary btn-sm\" id=\"closeHistory\" >close</button></h4>"+
         "<div id=\"process-chart-container\">"+
-        "<canvas id=\"process-history-chart\"></canvas>"+
+        "<canvas id=\"process-history-chart\" style=\"display: block;height: 400px;width: 1093px;\"></canvas>"+
         "</div>" + content ;
 
 
