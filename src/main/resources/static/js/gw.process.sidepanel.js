@@ -174,8 +174,9 @@ GW.process.sidepanel = {
           GW.process.sidepanel.dockmode = "left";
           GW.process.sidepanel.renderDock();
         } else {
-          GW.process.sidepanel.dockmode = "bottom";
-          GW.process.sidepanel.renderDock();
+          // keep the dock location as is
+          // GW.process.sidepanel.dockmode = "bottom";
+          // GW.process.sidepanel.renderDock();
         }
       })
       .fail(function (jxr, status) {
