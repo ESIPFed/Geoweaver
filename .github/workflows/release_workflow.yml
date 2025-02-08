@@ -227,7 +227,7 @@ jobs:
             -d '{"name": "${{ env.VERSION }}"}'
 
       - name: Upload JAR Asset
-        uses: actions/upload-gh-release@v2
+        uses: softprops/upload-gh-release@v2
         with:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: /home/runner/work/Geoweaver/Geoweaver/target/geoweaver.jar
@@ -237,7 +237,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload DEB Asset
-        uses: actions/upload-gh-release@v2
+        uses: softprops/upload-gh-release@v2
         with:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: /home/runner/work/Geoweaver/Geoweaver/linux-deployment/geoweaver.deb
@@ -247,7 +247,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload .dmg file to Release
-        uses: actions/upload-gh-release@v2
+        uses: softprops/upload-gh-release@v2
         with:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: Geoweaver.dmg
@@ -257,7 +257,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows Installer to Release
-        uses: actions/upload-gh-release@v2
+        uses: softprops/upload-gh-release@v2
         with:
           upload_url: ${{ env.UPLOAD_URL }}
           asset_path: GeoweaverInstaller.exe
