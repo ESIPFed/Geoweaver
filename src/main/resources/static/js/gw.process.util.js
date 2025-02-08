@@ -144,8 +144,7 @@ GW.process.util = {
 
         var editorContainerId = code_editor_container_id.substring(1); // Assuming it starts with '#'
         var container = document.getElementById(editorContainerId);
-        console.log("Editor container: " + editorContainerId);
-
+        
         if (!container) {
             console.error('Editor container not found.');
             return;

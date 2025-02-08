@@ -810,8 +810,6 @@ GW.host = {
   },
 
   addMenuItem: function (one) {
-    console.log("Add host to the tree");
-
     var one_item =
       ` <li class="host" id="host-` +
       one.id +

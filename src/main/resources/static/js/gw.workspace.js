@@ -16,8 +16,6 @@ GW.workspace = {
 
   showNonSaved: function () {
     
-    console.log("changes happened");
-    
     GW.workspace.workflow_unsaved = true;
 
     $("#main-workspace-tab").html("Weaver *");
@@ -1332,7 +1330,6 @@ GW.workspace = {
           return "black";
         })
         .attr("fill", function (d) {
-          console.log("circle append called " + d.color);
           if (d.skip == "true" || d.skip == true) {
             return "url(#diagonalHatch)";
           } else {
@@ -1348,13 +1345,6 @@ GW.workspace = {
 
     GW.workspace.GraphCreator.prototype.zoomed = function () {
       this.state.justScaleTransGraph = true;
-      console.log(
-        "d3.event.translate: " +
-          d3.event.translate +
-          ": d3.event.scale = " +
-          d3.event.scale,
-      );
-
       d3.select("." + this.consts.graphClass).attr(
         "transform",
         "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")",
