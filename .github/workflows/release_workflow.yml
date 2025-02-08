@@ -227,41 +227,30 @@ jobs:
             -d '{"name": "${{ env.VERSION }}"}'
 
       - name: Upload JAR Asset
-        uses: softprops/upload-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: /home/runner/work/Geoweaver/Geoweaver/target/geoweaver.jar
-          asset_name: geoweaver.jar
-          asset_content_type: application/java-archive
+          files: /home/runner/work/Geoweaver/Geoweaver/target/geoweaver.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload DEB Asset
-        uses: softprops/upload-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: /home/runner/work/Geoweaver/Geoweaver/linux-deployment/geoweaver.deb
-          asset_name: geoweaver.deb
-          asset_content_type: application/vnd.debian.binary-package
+          files: /home/runner/work/Geoweaver/Geoweaver/linux-deployment/geoweaver.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Upload .dmg file to Release
-        uses: softprops/upload-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: Geoweaver.dmg
-          asset_name: Geoweaver.dmg
-          asset_content_type: application/x-diskcopy
+          files: Geoweaver.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Upload Windows Installer to Release
-        uses: softprops/upload-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: GeoweaverInstaller.exe
-          asset_name: GeoweaverInstaller.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
+          files: GeoweaverInstaller.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
