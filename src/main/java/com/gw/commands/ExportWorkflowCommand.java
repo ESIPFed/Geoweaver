@@ -20,9 +20,9 @@ public class ExportWorkflowCommand implements Runnable {
       description =
           "exportation model options: \n"
               + "   1 - workflow only \n"
-              + "    2 - workflow with process code \n"
+              + "   2 - workflow with process code \n"
               + "   3 - workflow with process code and only good history \n"
-              + " 4 - workflow with process code and all the history.default option is 4.")
+              + "   4 - workflow with process code and all the history.default option is 4.")
   int export_mode;
 
   @Parameters(index = "0", description = "Geoweaver workflow ID")
