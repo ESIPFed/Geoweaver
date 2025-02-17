@@ -2,14 +2,14 @@
 
 <div id="jsframe-container"></div>
 
-<div class="container" style="margin:0; padding:0; width:100%; height:calc(100vh); display: flex;">
+<div class="container-fluid">
     <!-- Top menu bar -->
-    <div class="row" id="site_main_div" style="height:calc(100vh); top: 80px; margin: 0px; padding: 0px; padding-top: 1px; width:100%; flex-shrink: 0; flex-basis: auto;">
+    <div class="row flex-grow-1" id="site_main_div">
 
         <!--Side menu-->
-        <div th:replace="fragments/content/sidemenu" class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); margin: 0;padding: 0; overflow-y: hidden;"></div>
+        <div th:replace="fragments/content/sidemenu" class="col-md-3 col-lg-3 d-flex flex-column" id="sidemenu"></div>
         <!-- Workspace -->
-        <div th:replace="fragments/content/workspace"></div>
+        <div th:replace="fragments/content/workspace" class="col d-flex flex-column"></div>
         <!-- Result Modal -->
         <div th:replace="fragments/content/result-modal"></div>
     </div>
@@ -17,7 +17,7 @@
     <div th:replace="fragments/content/sidepanel"></div>
 
     <!-- The actual snackbar showing the saved/code update message -->
-    <div id="snackbar" style="z-index: 100;">Some message..</div>
+    <div id="snackbar">Some message..</div>
 </div>
 
 <script th:replace="fragments/config/scripts"></script>
