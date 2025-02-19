@@ -1,8 +1,10 @@
+html,
 body {
-	padding-bottom: 2rem;
+  height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+    /* Prevents unwanted scrolling */
 }
 
 nav {
@@ -13,6 +15,39 @@ nav li.active {
 	border-bottom: 4px solid #28a745;	
 }
 
+.container-fluid {
+  height: 100vh;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 15px;
+}
+
+
+#site_main_div {
+  flex-grow: 1;
+  /* Fills remaining space */
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+#sidemenu {
+
+  /* Adjust width as needed */
+  height: 100vh;
+  overflow-y: auto;
+  /* Allows scrolling inside sidemenu */
+}
+
+/* ✅ Fixed workspace height */
+#workspace {
+  flex-grow: 1;
+  /* Takes up remaining space */
+  height: 100vh;
+  overflow-y: auto;
+  /* Enables scrolling inside the workspace */
+}
 .row {
 	margin-bottom: 1rem;
 }
