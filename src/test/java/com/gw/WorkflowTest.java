@@ -261,8 +261,11 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "# Workflow Name: SampleWorkflow\n\n" +
             "## Description\n" +
             "This is a sample workflow description.\n\n" +
-            "## Processes\n\n\n" +
+            //"## Processes\n\n\n" +
             "### Process Descriptions\n\n\n" +
+            "| Process Name | Description |\n" +
+            "|--------------|-------------|\n" +
+            "| ExampleProcess | Example description |\n\n" +
             "## Steps to use the workflow\n\n" +
             "This section provides detailed instructions on how to use the workflow. Follow these steps to set up and execute the workflow using Geoweaver.\n\n" +
             "### Step-by-Step Instructions\n\n" +
