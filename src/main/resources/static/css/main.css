@@ -79,6 +79,7 @@ hr {
 	height: 180px;	
 }
 
+
 /* These are for the single examle */
 .preview-img {
 	width: 64px;
@@ -448,6 +449,29 @@ form .progress {
   color: white;
 }
 
+.log-section {
+  display: none;
+  /* Hide all tabs by default */
+}
+
+.log-section.active-log {
+  display: block !important;
+  /* Show only the active tab */
+}
+
+.log-tab {
+  cursor: pointer;
+  padding: 8px 15px;
+  font-weight: bold;
+  border: none;
+  background: none;
+}
+
+.log-tab.active {
+  border-bottom: 3px solid #007bff;
+  /* Highlight active tab */
+  color: #007bff;
+}
 .side_menu_collapse_btn {
   position: absolute;
   border: none;
