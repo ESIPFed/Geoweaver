@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -251,7 +254,7 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         Workflow wf = new Workflow();
         wf.setName("SampleWorkflow");
         wf.setDescription("This is a sample workflow description.");
-       
+    
         // Call the function
         String result = wtmock.createReadme(wf);
         
@@ -261,7 +264,6 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "# Workflow Name: SampleWorkflow\n\n" +
             "## Description\n" +
             "This is a sample workflow description.\n\n" +
-            //"## Processes\n\n\n" +
             "### Process Descriptions\n\n\n" +
             "| Process Name | Description |\n" +
             "|--------------|-------------|\n" +
@@ -274,7 +276,7 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "Open Geoweaver running on your local machine. [video guidance](https://youtu.be/jUd1dzi18EQ)\n" +
             "1. Click on \"Weaver\" in the top navigation bar.\n" +
             "2. A workspace to add a workflow opens up. Select the \"Import\" icon in the top navigation bar.\n" +
-            "3. Choose the downloaded zip file" +
+            "3. Choose the downloaded zip file\n" +
             "4. Click on \"Start\" to upload the file. If the file is valid, a prompt will ask for your permission to upload. Click \"OK\".\n" +
             "5. Once the file is uploaded, Geoweaver will create a new workflow.\n\n" +
             "### Step 3: Execute the Workflow\n" +
@@ -286,10 +288,9 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "2. Note: Green indicates the process is successful, Yellow indicates the process is running, and Red indicates the process has failed.\n" +
             "3. Once the execution is complete, the results will be available immediately.\n\n" +
             "By following these steps, you will be able to set up and execute the snow cover mapping workflow using Geoweaver.\n";
+        
         // Assert the result
         assertEquals(expectedReadme, result);
-        assertThat(expectedReadme).contains(result);
-
     }
 
     @Test
