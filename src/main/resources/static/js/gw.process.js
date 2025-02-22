@@ -797,6 +797,143 @@ GW.process = {
     });
   },
 
+  // Add the AI Summarizer function at the end of GW.process
+  aiSummarize: async function () {
+    let aiButton = document.querySelector("#aiSummarizerButton"); // Select the button
+
+    if (!GW.process.editor) {
+      alert("Editor not found!");
+      return;
+    }
+
+    let code = GW.process.editor.getValue().trim();
+    if (!code) {
+      alert("The code editor is empty!");
+      return;
+    }
+
+    // 🌀 Show loading state
+    aiButton.innerHTML =
+      '<i class="fas fa-spinner fa-spin"></i> Summarizing...';
+    aiButton.disabled = true;
+
+    const OPENAI_API_KEY = "OPEN_API_KEY";
+    const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+
+    let prompt =
+      `Analyze the following code and provide a detailed summary:\n\n${code}\n\n` +
+      "The summary should include:\n" +
+      "- The purpose of the code and its functionality.\n" +
+      "- Key features, algorithms, or logic used.\n" +
+      "- Any input handling and special cases.\n" +
+      "- Performance considerations or optimizations, if applicable.\n" +
+      "- Any recommendations for improvement or optimization.";
+
+    let requestData = {
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an AI assistant that analyzes code and provides comprehensive summaries.",
+        },
+        { role: "user", content: prompt },
+      ],
+      max_tokens: 300,
+    };
+
+    try {
+      let response = await fetch(OPENAI_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      let jsonResponse = await response.json();
+      console.log("Full API Response:", jsonResponse); // 🔍 Debug: Log full response
+
+      if (!jsonResponse.choices || !jsonResponse.choices.length) {
+        alert("Error: Unexpected response format. Check console logs.");
+        return;
+      }
+
+      let summary = jsonResponse.choices[0].message.content.trim();
+
+      // Log summary in AI Output tab instead of showing a modal
+      GW.process.logAIOutput(summary);
+    } catch (error) {
+      console.error("API Request Failed:", error);
+      alert("Error: " + error.message);
+    } finally {
+      // Restore button state
+      aiButton.innerHTML = "Code Summarizer";
+      aiButton.disabled = false;
+    }
+  },
+
+  // Function to log AI Output inside the AI Output tab (with clearing previous content)
+  logAIOutput: function (summary) {
+    let aiOutputDiv = document.getElementById("ai-output-window");
+
+    if (!aiOutputDiv) {
+      console.error("AI Output log section not found!");
+      return;
+    }
+
+    // Clear previous AI output before adding new summary
+    aiOutputDiv.innerHTML = "";
+
+    // Formatting AI summary output
+    let formattedSummary = summary
+      .replace(/\n\d+\./g, "<br><strong>•</strong>") // Convert numbered points to bullet points
+      .replace(/- /g, "<br><strong>•</strong> ") // Convert dashes to bullet points
+      .replace(
+        /Performance Considerations:/g,
+        "<br><br><strong>🔹 Performance Considerations:</strong>"
+      )
+      .replace(
+        /Key Features and Algorithms:/g,
+        "<br><br><strong>🔹 Key Features and Algorithms:</strong>"
+      )
+      .replace(
+        /Recommendations for Improvement:/g,
+        "<br><br><strong>🔹 Recommendations for Improvement:</strong>"
+      );
+
+    // Append the Code summary to the AI Output tab
+    let logEntry = document.createElement("div");
+    logEntry.classList.add("log-entry");
+    logEntry.innerHTML = `<strong>📌 Code Summary:</strong> <br>${formattedSummary}`;
+
+    aiOutputDiv.appendChild(logEntry);
+    aiOutputDiv.scrollTop = aiOutputDiv.scrollHeight; // Auto-scroll to the latest entry
+
+    // Automatically switch to AI Output tab
+    GW.process.switchLogTab("log-content-ai", "log-tab-ai");
+  },
+
+  // Function to switch tabs (Logging / AI Output)
+  switchLogTab: function (contentId, tabId) {
+    // Hide all tab content
+    document.querySelectorAll(".log-section").forEach((el) => {
+      el.classList.remove("active-log");
+    });
+
+    // Remove active class from all tabs
+    document.querySelectorAll(".log-tab").forEach((el) => {
+      el.classList.remove("active");
+    });
+
+    // Show the selected tab content
+    document.getElementById(contentId).classList.add("active-log");
+
+    // Set the clicked tab as active
+    document.getElementById(tabId).classList.add("active");
+  },
+
   /**
    * This function is called after people click on "Details" in the process history table
    * @param {*} history_id
@@ -1306,6 +1443,9 @@ GW.process = {
 				<button class="btn pull-right" onclick="GW.process.leftDock()" >
 					<i class="fas fa-window-maximize fa-rotate-270"></i>
 				</button> 
+        <button id="aiSummarizerButton" class="btn pull-right" onclick="GW.process.aiSummarize()">
+          Code Summary
+        </button>
 			</div>
 			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
 						<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
@@ -1314,12 +1454,43 @@ GW.process = {
 							</div> 
 							<div class="resizer" id="dragMe"></div>
 							<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);">
-								<h4>Logging</h4>
-								<div id="process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: unset; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);"> </div>
-								<div class="row" style="padding:0px; margin:0px;" >
-									<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
-										<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
-									</div>
+
+<!-- Tab Navigation -->
+<div class="log-tabs" style="display: flex; border-bottom: 2px solid var(--monaco-editor-foreground-color);">
+    <button class="log-tab active" id="log-tab-logging" onclick="GW.process.switchLogTab('log-content-logging', 'log-tab-logging')">Logging</button>
+    <button class="log-tab" id="log-tab-ai" onclick="GW.process.switchLogTab('log-content-ai', 'log-tab-ai')">Code Summary</button>
+</div>
+
+<!-- Tab Content -->
+<div class="log-content">
+    <!-- Logging Section -->
+    <div id="log-content-logging" class="log-section active-log">
+        <h4>Logging</h4>
+        <div id="process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: auto; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);">
+        </div>
+    </div>
+    
+    <!-- AI Output Section -->
+    <div id="log-content-ai" class="log-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4>Code Summary</h4>
+        </div>
+        <div id="ai-output-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: auto; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);">
+        </div>
+    </div>
+</div>
+
+<!-- Console Output -->
+<div class="row" style="padding:0px; margin:0px;">
+    <div class="col col-md-12" id="console-output" style="width:100%; padding:0px; margin:0px; height:calc(100%-50px);">
+        <div class="d-flex justify-content-center">
+            <div class="dot-flashing invisible"></div>
+        </div>
+    </div>
+</div>
+
+
+
 								</div>
 							</div>
 					</div>

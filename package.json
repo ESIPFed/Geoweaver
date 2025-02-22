@@ -8,6 +8,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "jquery": "^3.7.1",
     "jsdom-global": "^3.0.2"
   }

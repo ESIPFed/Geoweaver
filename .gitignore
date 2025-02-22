@@ -6,6 +6,8 @@
 *.iml
 /install/
 *.class
+.env
+
 
 
 /gitcypress/node_modules/
