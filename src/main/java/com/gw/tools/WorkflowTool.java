@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,6 +34,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import com.gw.tools.ProcessTool;
+
+
 
 /**
  * @author JensenSun
@@ -735,15 +739,15 @@ public class WorkflowTool {
       }
   }
 
-
+ 
   public String createReadme(Workflow wf) {
     String readmeTemplate = 
         "![Workflow Badge](https://img.shields.io/badge/Workflow-{workflow_name}-blue.svg)\n\n" +
         "# Workflow Name: {workflow_name}\n\n" +
         "## Description\n" +
         "{description}\n\n" +
-        //"## Processes\n" +
-        //"{processes}\n\n" +
+        "## Processes\n" +
+        "{processes}\n\n" +
         "### Process Descriptions\n" +
         "{processDescriptions}\n\n" +
         "## Steps to use the workflow\n\n" +
@@ -767,12 +771,12 @@ public class WorkflowTool {
         "3. Once the execution is complete, the results will be available immediately.\n\n" +
         "By following these steps, you will be able to set up and execute the snow cover mapping workflow using Geoweaver.\n";
 
-    //String processes = getProcessTitles(wf);
+    String processes = getProcessTitles(wf);
     String processDescriptions = getProcessDescriptions(wf);
 
     String readmeContent = readmeTemplate.replace("{workflow_name}", wf.getName())
     .replace("{description}", wf.getDescription())
-    //.replace("{processes}", processes)
+    .replace("{processes}", processes)
     .replace("{processDescriptions}", processDescriptions);
 
     return readmeContent;
@@ -802,9 +806,6 @@ public class WorkflowTool {
   private String getProcessDescriptions(Workflow wf) {
     StringBuilder processDescriptions = new StringBuilder();
     JSONParser jsonParser = new JSONParser();
-    List<String[]> rows = new ArrayList<>();
-    int maxNameLength = "Process Name".length();  // Initialize with header length
-    int maxDescLength = "Description".length();  // Initialize with header length
 
     try {
         JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
@@ -813,42 +814,13 @@ public class WorkflowTool {
             String process_workflow_id = (String) jsonObj.get("id");
             String process_id = process_workflow_id.split("-")[0];
             GWProcess p = pt.getProcessById(process_id);
-            String description = p.getDescription() != null && !p.getDescription().isEmpty() ? p.getDescription() : "No description available";
-            rows.add(new String[]{p.getName(), description});
-            maxNameLength = Math.max(maxNameLength, p.getName().length());
-            maxDescLength = Math.max(maxDescLength, description.length());
+            processDescriptions.append(p.getName()).append(": ").append(p.getDescription()).append("\n");
         }
-    } catch (ParseException e) {
+    } catch (Exception e) {
         e.printStackTrace();
     }
-
-    // Calculate the total width for the top and bottom lines
-    int totalWidth = maxNameLength + maxDescLength + 5; // Plus spaces and vertical bars
-
-    // Top line
-    processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
-
-    // Header format with padding
-    String headerFormat = "| %-" + maxNameLength + "s | %-" + maxDescLength + "s |\n";
-    processDescriptions.append(String.format(headerFormat, "Process Name", "Description"));
-    
-    // Separator line
-    processDescriptions.append("|")
-                       .append("-".repeat(maxNameLength + 2))
-                       .append("|")
-                       .append("-".repeat(maxDescLength + 2))
-                       .append("|\n");
-
-    // Rows formatted to the dynamic column widths
-    for (String[] row : rows) {
-        processDescriptions.append(String.format(headerFormat, row[0], row[1]));
-    }
-
-    // Bottom line
-    processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
-
     return processDescriptions.toString();
-}
+  }
 
   public String precheck(String filename) {
 
