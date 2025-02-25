@@ -19,7 +19,7 @@ nav li.active {
   height: 100vh;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 15px;
+  padding: 0px 15px 0px 15px;
 }
 
 
