@@ -806,21 +806,89 @@ public class WorkflowTool {
   private String getProcessDescriptions(Workflow wf) {
     StringBuilder processDescriptions = new StringBuilder();
     JSONParser jsonParser = new JSONParser();
+    List<String[]> rows = new ArrayList<>();
+    int maxNameLength = "Process Name".length();  // Initialize with header length
+    int maxDescLength = "Description".length();  // Initialize with header length
 
     try {
-        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        String nodesStr = wf.getNodes();
+        logger.info("Generating table for nodes..");
+
+        if (nodesStr == null || nodesStr.trim().isEmpty()) {
+            logger.error("Error: Workflow has no nodes.");
+            return "";
+        }
+
+        logger.info("Parsing JSON nodes from workflow...");
+        JSONArray nodes = (JSONArray) jsonParser.parse(nodesStr);
+
         for (Object node : nodes) {
             JSONObject jsonObj = (JSONObject) node;
             String process_workflow_id = (String) jsonObj.get("id");
+
+            if (process_workflow_id == null || !process_workflow_id.contains("-")) {
+                logger.warn("Skipping node due to missing or invalid ID format: " + process_workflow_id);
+                continue;
+            }
+
             String process_id = process_workflow_id.split("-")[0];
-            GWProcess p = pt.getProcessById(process_id);
-            processDescriptions.append(p.getName()).append(": ").append(p.getDescription()).append("\n");
+            logger.info("Fetching process from DB: Process ID = " + process_id);
+
+            GWProcess p = null;
+            try {
+                p = pt.getProcessById(process_id);
+                if (p == null) {
+                    logger.warn("No process found for ID: " + process_id);
+                    continue;
+                }
+            } catch (Exception e) {
+                logger.error("Database connection error while fetching process: " + process_id, e);
+                return "Error: Database connection issue.";
+            }
+
+            String description = (p.getDescription() != null && !p.getDescription().isEmpty()) ? p.getDescription() : "No description available";
+            rows.add(new String[]{p.getName(), description});
+
+            maxNameLength = Math.max(maxNameLength, p.getName().length());
+            maxDescLength = Math.max(maxDescLength, description.length());
+
+            logger.info("Process fetched: Name = " + p.getName() + ", Description = " + description);
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return processDescriptions.toString();
+
+      } catch (ParseException e) {
+          logger.error("JSON Parsing error while processing workflow nodes", e);
+          return "Error: Invalid workflow node format.";
+      } catch (Exception e) {
+          logger.error("Unexpected error in getProcessDescriptions", e);
+          return "Error: Unexpected issue occurred.";
+      }
+
+      // Calculate total width for the top and bottom lines
+      int totalWidth = maxNameLength + maxDescLength + 5; // Plus spaces and vertical bars
+
+      // Construct table header
+      processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
+
+      String headerFormat = "| %-" + maxNameLength + "s | %-" + maxDescLength + "s |\n";
+      processDescriptions.append(String.format(headerFormat, "Process Name", "Description"));
+
+      processDescriptions.append("|")
+              .append("-".repeat(maxNameLength + 2))
+              .append("|")
+              .append("-".repeat(maxDescLength + 2))
+              .append("|\n");
+
+      // Populate rows
+      for (String[] row : rows) {
+          processDescriptions.append(String.format(headerFormat, row[0], row[1]));
+      }
+
+      processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
+
+      logger.info("Successfully generated process description table.");
+      return processDescriptions.toString();
   }
+
 
   public String precheck(String filename) {
 
