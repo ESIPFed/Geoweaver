@@ -811,9 +811,16 @@ public class WorkflowTool {
     int maxDescLength = "Description".length();  // Initialize with header length
 
     try {
-        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
-       for (Object node : nodes) {
-           JSONObject jsonObj = (JSONObject) node;
+      String nodesStr = wf.getNodes();
+      logger.info("Generating table for nodes..");
+      if (nodesStr == null || nodesStr.trim().isEmpty()) {
+        logger.error("Error: Workflow has no nodes.");
+        return "";
+      }
+
+      JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+      for (Object node : nodes) {
+          JSONObject jsonObj = (JSONObject) node;
             String process_workflow_id = (String) jsonObj.get("id");
             String process_id = process_workflow_id.split("-")[0];
             GWProcess p = pt.getProcessById(process_id);
@@ -821,7 +828,7 @@ public class WorkflowTool {
             rows.add(new String[]{p.getName(), description});
             maxNameLength = Math.max(maxNameLength, p.getName().length());
             maxDescLength = Math.max(maxDescLength, description.length());
-        }
+      }
     } catch (ParseException e) {
         e.printStackTrace();
     }
