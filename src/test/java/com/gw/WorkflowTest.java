@@ -213,6 +213,8 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
                 "http://localhost:" + this.port + "/Geoweaver/web/downloadworkflow",
                 postRequest, String.class);
 
+        assertTrue(Postresult != null);
+
         // remove unnecesary path from result
         Postresult = Postresult.replaceAll("download/temp/", "");
 
