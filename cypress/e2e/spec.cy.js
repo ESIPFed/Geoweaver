@@ -265,17 +265,17 @@ describe('Process Testing', () => {
     cy.get('form select.form-control.form-control-sm').select('Python');
   
     // Clear the input field and type the new process name
-    cy.get('form > :nth-child(1) > :nth-child(4)').clear().type('python_test');
+    cy.get('form > :nth-child(1) > :nth-child(4)').clear().type('python_test_2');
   
     // Click the "Add" button and ensure the process folder is visible
     cy.get('.modal-footer').contains('Add').click();
   
     // Use cy.wait() to ensure any delays are accounted for before checking the process folder
-    cy.wait(1000);  // You can increase this value if necessary to ensure the process list is visible
+    cy.wait(3000);  // You can increase this value if necessary to ensure the process list is visible
   
     // Ensure the process folder is visible and contains the new process
     cy.get('ul#process_folder_python_target', { timeout: 10000 }).should('be.visible');
-    cy.get('ul#process_folder_python_target').should('contain', 'python_test');
+    cy.get('ul#process_folder_python_target').should('contain', 'python_test_2');
   });
   
 
@@ -477,7 +477,7 @@ describe('Delete Process', () => {
         }
       );
       cy.get('#process_folder_python').click();
-      cy.get('ul#process_folder_python_target').contains('python_test').click();
+      cy.get('ul#process_folder_python_target').contains('python_test_2').click();
       cy.contains('button', 'Delete').click();
       cy.get('#del-confirm-btn').click();
       cy.get('#main-general-content').click();
