@@ -124,7 +124,7 @@ describe('Add Process to Weaver', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click();
     cy.get('#process_folder_python').click();
-    cy.wait(1000);
+    cy.wait(3000);
     cy.get('ul#process_folder_python_target').contains('button', 'Add to Weaver').click();
     cy.get('circle').should('be.visible');
   })
