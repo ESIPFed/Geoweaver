@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -33,6 +34,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import com.gw.tools.ProcessTool;
+
+
 
 /**
  * @author JensenSun
@@ -735,15 +739,15 @@ public class WorkflowTool {
       }
   }
 
-
+ 
   public String createReadme(Workflow wf) {
     String readmeTemplate = 
         "![Workflow Badge](https://img.shields.io/badge/Workflow-{workflow_name}-blue.svg)\n\n" +
         "# Workflow Name: {workflow_name}\n\n" +
         "## Description\n" +
         "{description}\n\n" +
-        //"## Processes\n" +
-        //"{processes}\n\n" +
+        "## Processes\n" +
+        "{processes}\n\n" +
         "### Process Descriptions\n" +
         "{processDescriptions}\n\n" +
         "## Steps to use the workflow\n\n" +
@@ -767,12 +771,12 @@ public class WorkflowTool {
         "3. Once the execution is complete, the results will be available immediately.\n\n" +
         "By following these steps, you will be able to set up and execute the snow cover mapping workflow using Geoweaver.\n";
 
-    //String processes = getProcessTitles(wf);
+    String processes = getProcessTitles(wf);
     String processDescriptions = getProcessDescriptions(wf);
 
     String readmeContent = readmeTemplate.replace("{workflow_name}", wf.getName())
     .replace("{description}", wf.getDescription())
-    //.replace("{processes}", processes)
+    .replace("{processes}", processes)
     .replace("{processDescriptions}", processDescriptions);
 
     return readmeContent;
@@ -807,48 +811,84 @@ public class WorkflowTool {
     int maxDescLength = "Description".length();  // Initialize with header length
 
     try {
-        JSONArray nodes = (JSONArray) jsonParser.parse(wf.getNodes());
+        String nodesStr = wf.getNodes();
+        logger.info("Generating table for nodes..");
+
+        if (nodesStr == null || nodesStr.trim().isEmpty()) {
+            logger.error("Error: Workflow has no nodes.");
+            return "";
+        }
+
+        logger.info("Parsing JSON nodes from workflow...");
+        JSONArray nodes = (JSONArray) jsonParser.parse(nodesStr);
+
         for (Object node : nodes) {
             JSONObject jsonObj = (JSONObject) node;
             String process_workflow_id = (String) jsonObj.get("id");
+
+            if (process_workflow_id == null || !process_workflow_id.contains("-")) {
+                logger.warn("Skipping node due to missing or invalid ID format: " + process_workflow_id);
+                continue;
+            }
+
             String process_id = process_workflow_id.split("-")[0];
-            GWProcess p = pt.getProcessById(process_id);
-            String description = p.getDescription() != null && !p.getDescription().isEmpty() ? p.getDescription() : "No description available";
+            logger.info("Fetching process from DB: Process ID = " + process_id);
+
+            GWProcess p = null;
+            try {
+                p = pt.getProcessById(process_id);
+                if (p == null) {
+                    logger.warn("No process found for ID: " + process_id);
+                    continue;
+                }
+            } catch (Exception e) {
+                logger.error("Database connection error while fetching process: " + process_id, e);
+                return "Error: Database connection issue.";
+            }
+
+            String description = (p.getDescription() != null && !p.getDescription().isEmpty()) ? p.getDescription() : "No description available";
             rows.add(new String[]{p.getName(), description});
+
             maxNameLength = Math.max(maxNameLength, p.getName().length());
             maxDescLength = Math.max(maxDescLength, description.length());
+
+            logger.info("Process fetched: Name = " + p.getName() + ", Description = " + description);
         }
-    } catch (ParseException e) {
-        e.printStackTrace();
-    }
 
-    // Calculate the total width for the top and bottom lines
-    int totalWidth = maxNameLength + maxDescLength + 5; // Plus spaces and vertical bars
+      } catch (ParseException e) {
+          logger.error("JSON Parsing error while processing workflow nodes", e);
+          return "Error: Invalid workflow node format.";
+      } catch (Exception e) {
+          logger.error("Unexpected error in getProcessDescriptions", e);
+          return "Error: Unexpected issue occurred.";
+      }
 
-    // Top line
-    processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
+      // Calculate total width for the top and bottom lines
+      int totalWidth = maxNameLength + maxDescLength + 5; // Plus spaces and vertical bars
 
-    // Header format with padding
-    String headerFormat = "| %-" + maxNameLength + "s | %-" + maxDescLength + "s |\n";
-    processDescriptions.append(String.format(headerFormat, "Process Name", "Description"));
-    
-    // Separator line
-    processDescriptions.append("|")
-                       .append("-".repeat(maxNameLength + 2))
-                       .append("|")
-                       .append("-".repeat(maxDescLength + 2))
-                       .append("|\n");
+      // Construct table header
+      processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
 
-    // Rows formatted to the dynamic column widths
-    for (String[] row : rows) {
-        processDescriptions.append(String.format(headerFormat, row[0], row[1]));
-    }
+      String headerFormat = "| %-" + maxNameLength + "s | %-" + maxDescLength + "s |\n";
+      processDescriptions.append(String.format(headerFormat, "Process Name", "Description"));
 
-    // Bottom line
-    processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
+      processDescriptions.append("|")
+              .append("-".repeat(maxNameLength + 2))
+              .append("|")
+              .append("-".repeat(maxDescLength + 2))
+              .append("|\n");
 
-    return processDescriptions.toString();
-}
+      // Populate rows
+      for (String[] row : rows) {
+          processDescriptions.append(String.format(headerFormat, row[0], row[1]));
+      }
+
+      processDescriptions.append("|").append("-".repeat(totalWidth)).append("|\n");
+
+      logger.info("Successfully generated process description table.");
+      return processDescriptions.toString();
+  }
+
 
   public String precheck(String filename) {
 

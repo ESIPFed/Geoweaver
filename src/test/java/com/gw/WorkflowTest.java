@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -20,11 +23,13 @@ import java.util.Date;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gw.jpa.GWProcess;
 import com.gw.jpa.Workflow;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.LocalhostTool;
+import com.gw.tools.ProcessTool;
 import com.gw.tools.UserTool;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
@@ -208,6 +213,8 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
                 "http://localhost:" + this.port + "/Geoweaver/web/downloadworkflow",
                 postRequest, String.class);
 
+        assertTrue(Postresult != null);
+
         // remove unnecesary path from result
         Postresult = Postresult.replaceAll("download/temp/", "");
 
@@ -263,6 +270,9 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
             "This is a sample workflow description.\n\n" +
             "## Processes\n\n\n" +
             "### Process Descriptions\n\n\n" +
+
+
+
             "## Steps to use the workflow\n\n" +
             "This section provides detailed instructions on how to use the workflow. Follow these steps to set up and execute the workflow using Geoweaver.\n\n" +
             "### Step-by-Step Instructions\n\n" +
