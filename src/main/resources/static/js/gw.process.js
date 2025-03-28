@@ -868,6 +868,7 @@ GW.process = {
       "</p>" +
       "<p> The old code used has been refreshed in the code editor.</p>" +
       "<div>" +
+      `<div style="padding-bottom :15px">` +
       output +
       "</div>";
 
