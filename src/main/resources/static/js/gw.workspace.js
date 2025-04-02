@@ -695,19 +695,29 @@ GW.workspace = {
         this.setIdCt(jsonObj.nodes.length + 1);
 
         var newEdges = GW.general.parseResponse(jsonObj.edges);
+        var validEdges = [];
 
         newEdges.forEach(function (e, i) {
-          newEdges[i] = {
-            source: GW.workspace.theGraph.nodes.filter(function (n) {
-              return n.id == e.source.id;
-            })[0],
-            target: GW.workspace.theGraph.nodes.filter(function (n) {
-              return n.id == e.target.id;
-            })[0],
-          };
+          var sourceNode = GW.workspace.theGraph.nodes.filter(function (n) {
+            return n.id == e.source.id;
+          })[0];
+          
+          var targetNode = GW.workspace.theGraph.nodes.filter(function (n) {
+            return n.id == e.target.id;
+          })[0];
+          
+          // Only add edges with valid source and target nodes
+          if (sourceNode !== undefined && targetNode !== undefined) {
+            validEdges.push({
+              source: sourceNode,
+              target: targetNode
+            });
+          } else {
+            console.warn("Skipping edge with undefined source or target: ", e);
+          }
         });
 
-        this.edges = newEdges;
+        this.edges = validEdges;
 
         this.updateGraph();
       } catch (err) {
@@ -914,16 +924,21 @@ GW.workspace = {
 
       if (mouseDownNode !== d) {
         // we're in a different node: create new edge for mousedown edge and add to graph
-        var newEdge = { source: mouseDownNode, target: d };
-        var filtRes = thisGraph.paths.filter(function (d) {
-          if (d.source === newEdge.target && d.target === newEdge.source) {
-            thisGraph.edges.splice(thisGraph.edges.indexOf(d), 1);
+        // Ensure both source and target are defined before creating the edge
+        if (mouseDownNode && d) {
+          var newEdge = { source: mouseDownNode, target: d };
+          var filtRes = thisGraph.paths.filter(function (d) {
+            if (d.source === newEdge.target && d.target === newEdge.source) {
+              thisGraph.edges.splice(thisGraph.edges.indexOf(d), 1);
+            }
+            return d.source === newEdge.source && d.target === newEdge.target;
+          });
+          if (!filtRes[0].length) {
+            thisGraph.edges.push(newEdge);
+            thisGraph.updateGraph();
           }
-          return d.source === newEdge.source && d.target === newEdge.target;
-        });
-        if (!filtRes[0].length) {
-          thisGraph.edges.push(newEdge);
-          thisGraph.updateGraph();
+        } else {
+          console.warn("Attempted to create edge with undefined source or target");
         }
       } else {
         // we're in the same node
@@ -1113,13 +1128,28 @@ GW.workspace = {
         state = thisGraph.state;
 
       this.setIdCt(this.nodes.length);
+      
+      // Filter out any edges with undefined source or target before rendering
+      thisGraph.edges = thisGraph.edges.filter(function(edge) {
+        if (!edge.source || !edge.target) {
+          console.warn("Removing invalid edge with undefined source or target");
+          return false;
+        }
+        return true;
+      });
 
       // remove old links
       thisGraph.paths = thisGraph.paths.data([], function (d) {
         return String(d.source.id) + "+" + String(d.target.id);
       });
       thisGraph.paths.exit().remove();
-      thisGraph.paths = thisGraph.paths.data(thisGraph.edges, function (d) {
+      
+      // Filter out edges with undefined source or target
+      var validEdges = thisGraph.edges.filter(function(d) {
+        return d.source !== undefined && d.target !== undefined;
+      });
+      
+      thisGraph.paths = thisGraph.paths.data(validEdges, function (d) {
         return String(d.source.id) + "+" + String(d.target.id);
       });
       var paths = thisGraph.paths;
@@ -1408,7 +1438,12 @@ GW.workspace = {
 
       var tonode = thisGraph.getNodeById(topid);
 
-      thisGraph.edges.push({ source: fromnode, target: tonode });
+      // Only add edge if both source and target nodes exist
+      if (fromnode !== null && tonode !== null) {
+        thisGraph.edges.push({ source: fromnode, target: tonode });
+      } else {
+        console.warn("Cannot add edge: source or target node not found", frompid, topid);
+      }
     };
 
     GW.workspace.GraphCreator.prototype.renderStatus = function (statusList) {
