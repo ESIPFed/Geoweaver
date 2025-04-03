@@ -167,7 +167,7 @@ describe('Create Python process and run it', () => {
     cy.get('[onclick*="runProcess"]').last().click();
     cy.get('#host-execute-btn').click();
     cy.get('#process-confirm-btn').click();
-    cy.get('#inputpswd').clear().type('1234'); 
+    cy.get('#inputpswd').clear().type('123456'); 
     cy.get('#pswd-confirm-btn').click();
     cy.get('#process-log-window > :nth-child(3)').click();
     cy.get('#process-log-window > :nth-child(3) > span').should('be.visible');

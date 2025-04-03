@@ -385,7 +385,7 @@ describe('Edit Process Name', () => {
             // Use Monaco's API to simulate actual typing
             editor.focus(); // Ensure the editor is focused
             editor.executeEdits("", [{ range: model.getFullModelRange(), text: "print('hello world!')" }]);
-            editor.trigger("keyboard", "type", { text: " " }); // Simulate a keystroke to trigger Monaco's change detection
+            editor.trigger("keyboard", "type", { text: "" }); // Simulate a keystroke to trigger Monaco's change detection
           });
     
           // Wait for the Monaco editor to reflect the change
@@ -435,7 +435,7 @@ describe('Edit Process Name', () => {
             // Use Monaco's API to simulate actual typing
             editor.focus(); // Ensure the editor is focused
             editor.executeEdits("", [{ range: model.getFullModelRange(), text: "\ntest edit" }]);
-            editor.trigger("keyboard", "type", { text: " " }); // Simulate a keystroke to trigger Monaco's change detection
+            editor.trigger("keyboard", "type", { text: "" }); // Simulate a keystroke to trigger Monaco's change detection
           });
     
           // Wait for the Monaco editor to reflect the change
@@ -557,7 +557,7 @@ describe('Create Python process and run it', () => {
           cy.wrap(null).should(() => {
             editor.focus(); // Ensure the editor is focused
             model.setValue("print('hello world!')"); // Set value
-            editor.trigger("keyboard", "type", { text: " " }); // Simulate keystroke to force UI update
+            editor.trigger("keyboard", "type", { text: "" }); // Simulate keystroke to force UI update
           });
     
           // **Wait until Monaco editor actually reflects the new value**
@@ -583,7 +583,7 @@ describe('Create Python process and run it', () => {
 
     cy.get('#process-confirm-btn').click();
     cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('1234');
+    cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
 
     cy.wait(5000);
@@ -643,7 +643,7 @@ describe('Hosts Testing', () => {
     cy.get('#host-100001').click();
     cy.get('.fab').click();
     cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('1234');
+    cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
     cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
     
