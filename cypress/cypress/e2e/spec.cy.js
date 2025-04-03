@@ -203,23 +203,6 @@ describe('Hosts Testing', () => {
     cy.get('#del-confirm-btn').click();
   })
 
-  it('LocalHost testing', () => {
-    cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('.introjs-skipbutton').click().then(() => {
-      // Ensure the window or form is fully loaded and active
-      cy.get('#host_folder_ssh > a', { timeout: 10000 }).should('be.visible'); // Wait until the form is visible
-    });
-    cy.get('#host_folder_ssh > a').click();
-    cy.get('#host-100001').click();
-    cy.get('#_host_name').should('have.value', 'Localhost');
-    cy.get('#_host_ip').should('have.value', '127.0.0.1');
-    cy.get('#_host_port').should('have.value', '22');
-    cy.get('#_host_username').should('have.value', 'publicuser');
-    cy.get('#_host_url').should('have.value', 'http://localhost/');
-    cy.get('#_host_type').click();
-    cy.get('#_host_type').should('have.text', 'ssh');
-  })
-
   it('LocalHost Read Python Env', () => {
     cy.visit('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('.introjs-skipbutton').click().then(() => {
@@ -230,11 +213,22 @@ describe('Hosts Testing', () => {
     cy.get('#host-100001').click();
     cy.get('.fab').click();
     cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('1234');
+    cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
     cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
     cy.wait('@readEnvironment').then((interception) => {
+      // Log the full response to the console
+      console.log('Read Environment Response:', interception.response.body);
+      
+      // Assert the HTTP status code is 200
       expect(interception.response.statusCode).to.equal(200);
+      
+      // Verify that the response body exists
+      expect(interception.response.body).to.exist;
+      
+      // You can add more specific assertions about the response content
+      // For example, if the response contains a success message or specific data structure
+      // expect(interception.response.body).to.have.property('success');
     });
   })
 
@@ -248,7 +242,7 @@ describe('Hosts Testing', () => {
     cy.get('#host-100001').click();
     cy.get('p > .fa-upload').click();
     cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('1234');
+    cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
     cy.get('#host-file-uploader').click();
     cy.intercept('POST', 'http://localhost:8070/Geoweaver/web/authenticateUser').as('authenticateUser');

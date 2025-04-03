@@ -648,7 +648,7 @@ describe('Hosts Testing', () => {
     cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
     
     cy.wait('@readEnvironment').then((interception) => {
-      cy.log(interception)
+      cy.log(interception.response)
       expect(interception.response.statusCode).to.equal(200);
     });
   })
