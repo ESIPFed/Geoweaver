@@ -80,7 +80,11 @@ GW.ssh = {
           if (returnmsg.builtin) {
             GW.process.callback(returnmsg);
           } else {
-            GW.workspace.updateStatus(returnmsg); 
+            if (returnmsg.workflow_status == "completed") {
+              GW.monitor.stopMonitor();
+            } else {
+              GW.workspace.updateStatus(returnmsg);
+            }
           }
         } catch (errors) {
           console.error(errors);
@@ -294,7 +298,7 @@ GW.ssh = {
         message.indexOf(GW.ssh.special.ready) == -1 &&
         message.indexOf("No SSH connection is active") == -1
       ) {
-        GW.ssh.echo(message);
+        GW.ssh.echo(message); // this function will be used to process all polling responses
       }
     });
     
