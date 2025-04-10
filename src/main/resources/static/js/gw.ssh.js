@@ -77,16 +77,10 @@ GW.ssh = {
 
           console.log(returnmsg);
 
-          if (returnmsg.ret == "success") {
-            setTimeout(function () {
-              GW.process.callback(returnmsg);
-            }, 2000);
-          }
-
           if (returnmsg.builtin) {
             GW.process.callback(returnmsg);
           } else {
-            // GW.workspace.updateStatus(returnmsg); // the workflow status message should only come from the workflow-socket
+            GW.workspace.updateStatus(returnmsg); 
           }
         } catch (errors) {
           console.error(errors);
