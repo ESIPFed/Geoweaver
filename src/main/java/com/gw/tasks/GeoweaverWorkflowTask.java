@@ -192,31 +192,30 @@ public class GeoweaverWorkflowTask {
 
       refreshMonitor();
 
-      if (monitor != null) {
+      JSONArray array = new JSONArray();
 
-        JSONArray array = new JSONArray();
+      for (int i = 0; i < nodes.size(); i++) {
 
-        for (int i = 0; i < nodes.size(); i++) {
+        String id = (String) ((JSONObject) nodes.get(i)).get("id");
 
-          String id = (String) ((JSONObject) nodes.get(i)).get("id");
+        String history_id = (String) ((JSONObject) nodes.get(i)).get("history_id");
 
-          String history_id = (String) ((JSONObject) nodes.get(i)).get("history_id");
+        JSONObject obj = new JSONObject();
 
-          JSONObject obj = new JSONObject();
+        obj.put("id", id);
 
-          obj.put("id", id);
+        obj.put("history_id", history_id);
 
-          obj.put("history_id", history_id);
+        obj.put("status", flags[i].toString());
 
-          obj.put("status", flags[i].toString());
-
-          array.add(obj);
-        }
-
-        log.debug("Send workflow process status back to the client: " + array);
-
-        monitor.getBasicRemote().sendText(array.toJSONString());
+        array.add(obj);
       }
+
+      log.debug("Send workflow process status back to the client: " + array);
+
+      // Use the WorkflowServlet's sendMessageToSocket method which handles channel selection
+      // This will automatically use the configured default channel (WebSocket or long polling)
+      WorkflowServlet.sendMessageToSocket(token, array.toJSONString());
 
     } catch (Exception e) {
 
@@ -230,19 +229,19 @@ public class GeoweaverWorkflowTask {
     try {
       log.info("close the websocket session from server side");
 
-      if (!BaseTool.isNull(monitor))
-        monitor
-            .getBasicRemote()
-            .sendText(
-                "{\"workflow_status\": \"completed\", \"workflow_history_id\":\""
-                    + this.history_id
-                    + "\"}");
+      // Use the WorkflowServlet's sendMessageToSocket method which handles channel selection
+      // This will automatically use the configured default channel (WebSocket or long polling)
+      WorkflowServlet.sendMessageToSocket(
+          token,
+          "{\"workflow_status\": \"completed\", \"workflow_history_id\":\""
+              + this.history_id
+              + "\"}");
       // if(!BaseTool.isNull(monitor))
       // 	monitor.close();
 
       // wt.token2ws.remove(token);
 
-    } catch (IOException e) {
+    } catch (Exception e) {
 
       e.printStackTrace();
     }

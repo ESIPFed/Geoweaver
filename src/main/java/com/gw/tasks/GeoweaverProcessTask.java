@@ -578,17 +578,20 @@ public class GeoweaverProcessTask extends Task {
 
   }
 
+  /**
+   * Sends a message to the workflow WebSocket or long polling channel based on the configured default channel.
+   * Uses the WorkflowServlet's sendMessageToSocket method which handles the channel selection and fallback.
+   *
+   * @param msg The message to send
+   */
   void sendMessage2WorkflowWebsocket(String msg) {
-
-    if (workflow_monitor != null) {
-
-      synchronized (workflow_monitor) {
-        try {
-          workflow_monitor.getBasicRemote().sendText(msg);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
+    try {
+      // Use the WorkflowServlet's sendMessageToSocket method which handles channel selection
+      // This will automatically use the configured default channel (WebSocket or long polling)
+      WorkflowServlet.sendMessageToSocket(token, msg);
+    } catch (Exception e) {
+      logger.error("Error sending workflow message: " + e.getMessage());
+      e.printStackTrace();
     }
   }
 

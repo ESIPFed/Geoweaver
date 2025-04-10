@@ -89,11 +89,26 @@ public class LocalSessionOutput implements Runnable {
   
   /**
    * Sends a message to the associated WebSocket session.
-   * If WebSocket is unavailable, falls back to HTTP long polling.
+   * If WebSocket is unavailable or closed, attempts to reconnect before sending.
+   * Falls back to HTTP long polling if WebSocket connection cannot be established.
    *
    * @param msg The message to be sent to the WebSocket.
    */
   public void sendMessage2WebSocket(String msg) {
+    // Check if WebSocket is null or closed and try to reconnect
+    if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+      log.debug("WebSocket connection is null or closed, attempting to reconnect for token: " + this.token);
+      // Try to get a new session
+      wsout = CommandServlet.findSessionById(token);
+      
+      // If we still don't have a valid session, we'll rely on the fallback mechanism
+      if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+        log.debug("Could not reconnect WebSocket for token: " + this.token);
+      } else {
+        log.debug("Successfully reconnected WebSocket for token: " + this.token);
+      }
+    }
+    
     // Use the CommandServlet's unified message sending method
     // This handles both WebSocket and long polling automatically
     Session session = CommandServlet.sendMessageToSocket(this.token, msg);
@@ -112,11 +127,20 @@ public class LocalSessionOutput implements Runnable {
 
   /**
    * Refreshes the log monitor for WebSocket interaction. If the WebSocket session is null or
-   * closed, it attempts to retrieve the session.
+   * closed, it attempts to retrieve the session and ensure it's properly registered.
    */
   public void refreshLogMonitor() {
     if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+      log.debug("Refreshing WebSocket connection for token: " + this.token);
+      // Try to get a new session
       wsout = CommandServlet.findSessionById(token);
+      
+      // If we still don't have a valid session, log the issue
+      if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+        log.debug("Could not refresh WebSocket connection for token: " + this.token);
+      } else {
+        log.debug("Successfully refreshed WebSocket connection for token: " + this.token);
+      }
     }
   }
 
@@ -267,14 +291,20 @@ public class LocalSessionOutput implements Runnable {
             // token); // Log each line of output
             logs.append(line).append("\n"); // Append the line to the logs
 
-            if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
-              if (prelog.toString() != null) {
-                line = prelog.toString() + line;
-                prelog = new StringBuffer();
-              }
-              this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
-            } else {
-              prelog.append(line).append("\n"); // Append to the prelog if WebSocket isn't available
+            // Always try to send via WebSocket with automatic reconnection
+            // First check if we have any buffered content in prelog
+            if (prelog.length() > 0) {
+              line = prelog.toString() + line;
+              prelog = new StringBuffer();
+            }
+            
+            // Send the message - our improved sendMessage2WebSocket will try to reconnect if needed
+            this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
+            
+            // If we're using the fallback mechanism (determined in sendMessage2WebSocket),
+            // log this information for debugging purposes
+            if (useWebSocketFallback) {
+              log.debug("Using long polling fallback for message delivery to history_id: " + this.history_id);
             }
           }
         } catch (Exception e) {
