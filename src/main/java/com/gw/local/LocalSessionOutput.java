@@ -4,6 +4,7 @@ import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.server.LongPollingController;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import java.io.BufferedReader;
@@ -80,25 +81,32 @@ public class LocalSessionOutput implements Runnable {
     run = false;
   }
 
+  @Autowired
+  private LongPollingController longPollingController;
+
+  // Flag to track if we should use long polling fallback
+  private boolean useWebSocketFallback = false;
+  
   /**
    * Sends a message to the associated WebSocket session.
+   * If WebSocket is unavailable, falls back to HTTP long polling.
    *
    * @param msg The message to be sent to the WebSocket.
    */
   public void sendMessage2WebSocket(String msg) {
-    try {
-      this.wsout = CommandServlet.findSessionById(token);
-      if (!BaseTool.isNull(wsout)) {
-        if (wsout.isOpen()) {
-          wsout.getBasicRemote().sendText(msg);
-        } else {
-          CommandServlet.removeSessionById(token);
-        }
-      } else {
-        log.warn(String.format("cannot find websocket for token %s", token));
-      }
-    } catch (IOException e1) {
-      e1.printStackTrace();
+    // Use the CommandServlet's unified message sending method
+    // This handles both WebSocket and long polling automatically
+    Session session = CommandServlet.sendMessageToSocket(this.token, msg);
+    
+    // Update our local reference if a valid session was returned
+    if (session != null) {
+      this.wsout = session;
+      useWebSocketFallback = false;
+      log.debug("Message sent via WebSocket to history_id: " + this.history_id);
+    } else {
+      // If no session was returned, we're likely using long polling
+      useWebSocketFallback = true;
+      log.debug("Message sent via long polling fallback to history_id: " + this.history_id);
     }
   }
 

@@ -48,9 +48,14 @@ public class CommandServlet {
     try {
       logger.debug("Command-socket WebSocket channel opened");
 
-      // You can register the session here for further tracking
-      // For example: this.registerSession(session);
+      // Store the session ID temporarily until we receive a token from the client
+      // The actual registration with a token happens in the echo method when a token message is received
+      logger.debug("WebSocket session opened with ID: " + session.getId());
+      
+      // We don't register the session here because we don't have a token yet
+      // The session will be registered when a token message is received in the echo method
     } catch (Exception e) {
+      logger.error("Error opening WebSocket connection: " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -63,11 +68,26 @@ public class CommandServlet {
    *     user.
    */
   public void registerSession(Session session, String token) {
+    if (session == null || token == null || token.isEmpty()) {
+      logger.warn("Cannot register null session or empty token");
+      return;
+    }
+    
     // Cast the session to a WsSession
     WsSession wss = (WsSession) session;
-
+    
+    // Log the registration for debugging
+    logger.debug("Registering WebSocket session for token: " + token);
+    
     // Associate the session with the user's token in the map
     peers.put(token, wss);
+    
+    // Verify registration was successful
+    if (peers.containsKey(token)) {
+      logger.debug("WebSocket session successfully registered for token: " + token);
+    } else {
+      logger.error("Failed to register WebSocket session for token: " + token);
+    }
   }
 
   /**
@@ -122,6 +142,19 @@ public class CommandServlet {
           logger.debug(" - Token: " + tokenfromclient);
           // Register the WebSocket session with the token
           this.registerSession(session, tokenfromclient);
+        }
+        // Check if the message starts with "execution:"
+        else if (message.startsWith("execution:")) {
+          // Extract the history ID from the message (substring from the 10th character)
+          String historyId = message.substring(10);
+          // Log the execution history ID for debugging
+          logger.debug(" - Execution History ID: " + historyId);
+          // Register the WebSocket session with the history ID
+          this.registerSession(session, historyId);
+          // Send confirmation message back to client
+          if (session.isOpen()) {
+            session.getBasicRemote().sendText(historyId + BaseTool.log_separator + "WebSocket session connected to execution: " + historyId);
+          }
         }
       }
 
@@ -236,36 +269,175 @@ public class CommandServlet {
    * @return The WebSocket session, or null if not found.
    */
   public static javax.websocket.Session findSessionById(String token) {
+    if (token == null || token.isEmpty()) {
+      logger.warn("Cannot find session with null or empty token");
+      return null;
+    }
+    
     javax.websocket.Session se = null;
     if (peers.containsKey(token)) {
       se = peers.get(token);
+      if (se == null) {
+        logger.warn("Session found in peers map for token '" + token + "' but is null");
+      }
+    } else {
+      logger.debug("No WebSocket session found for token: " + token);
     }
     return se;
   }
 
   /**
    * Sends a message to a specific WebSocket session identified by its token.
+   * Uses the configured default communication channel (WebSocket or HTTP long polling)
+   * based on the geoweaver.communication.default-channel property.
    *
    * @param token The token of the target WebSocket session.
    * @param message The message to be sent.
+   * @return The WebSocket session if successful via WebSocket, null if sent via long polling or failed.
    */
   public static Session sendMessageToSocket(String token, String message) {
-    try {
-      Session wsout = CommandServlet.findSessionById(token);
-      if (!BaseTool.isNull(wsout)) {
-        if (wsout.isOpen()) {
-          wsout.getBasicRemote().sendText(message);
-        } else {
-          CommandServlet.removeSessionById(token);
-        }
-      } else {
-        logger.warn(String.format("cannot find websocket for token %s", token));
-      }
-      return wsout;
-    } catch (IOException e1) {
-      e1.printStackTrace();
+    if (token == null || token.isEmpty() || message == null) {
+      logger.error("Cannot send message: token or message is null/empty");
+      return null;
     }
-    return null;
+    
+    boolean messageSent = false;
+    Session wsout = null;
+    String channelUsed = "none";
+    
+    // Get the communication config to determine which channel to try first
+    com.gw.utils.CommunicationConfig communicationConfig = null;
+    try {
+      communicationConfig = com.gw.utils.BeanTool.getBean(com.gw.utils.CommunicationConfig.class);
+    } catch (Exception e) {
+      logger.warn("Could not get CommunicationConfig bean, defaulting to WebSocket first");
+    }
+    
+    boolean tryWebSocketFirst = communicationConfig == null || communicationConfig.isWebSocketDefault();
+    
+    // Try the configured default channel first
+    if (tryWebSocketFirst) {
+      // Try WebSocket first
+      boolean webSocketSuccess = sendViaWebSocket(token, message);
+      if (webSocketSuccess) {
+        wsout = findSessionById(token);
+        messageSent = true;
+        channelUsed = "websocket";
+        logger.debug("Message sent successfully via WebSocket to token: " + token);
+      } else {
+        // Fallback to long polling
+        boolean longPollingSuccess = sendViaLongPolling(token, message);
+        if (longPollingSuccess) {
+          messageSent = true;
+          channelUsed = "longpolling";
+          logger.debug("Message sent successfully via long polling to token: " + token);
+        }
+      }
+    } else {
+      // Try long polling first
+      boolean longPollingSuccess = sendViaLongPolling(token, message);
+      if (longPollingSuccess) {
+        messageSent = true;
+        channelUsed = "longpolling";
+        logger.debug("Message sent successfully via long polling to token: " + token);
+      } else {
+        // Fallback to WebSocket
+        boolean webSocketSuccess = sendViaWebSocket(token, message);
+        if (webSocketSuccess) {
+          wsout = findSessionById(token);
+          messageSent = true;
+          channelUsed = "websocket";
+          logger.debug("Message sent successfully via WebSocket to token: " + token);
+        }
+      }
+    }
+    
+    if (!messageSent) {
+      logger.error("Failed to send message to token '" + token + "' via any communication channel");
+    }
+    
+    return wsout; // Only return non-null if WebSocket was used successfully
+  }
+  
+  /**
+   * Attempts to send a message via WebSocket.
+   * 
+   * @param token The client token
+   * @param message The message to send
+   * @return true if the message was sent successfully, false otherwise
+   */
+  private static boolean sendViaWebSocket(String token, String message) {
+    if (token == null || token.isEmpty() || message == null) {
+      logger.error("Cannot send WebSocket message: token or message is null/empty");
+      return false;
+    }
+    
+    try {
+      // Find the WebSocket session by token
+      Session wsout = CommandServlet.findSessionById(token);
+      
+      // Check if session exists
+      if (wsout == null) {
+        logger.warn("WebSocket session not found for token: " + token);
+        return false;
+      }
+      
+      // Check if session is open
+      if (!wsout.isOpen()) {
+        logger.warn("WebSocket session found but not open for token: " + token);
+        // Remove the closed session from the peers map
+        CommandServlet.removeSessionById(token);
+        return false;
+      }
+      
+      // Send the message
+      wsout.getBasicRemote().sendText(message);
+      logger.debug("Message sent via WebSocket to token: " + token);
+      return true;
+      
+    } catch (IOException e) {
+      logger.error("WebSocket communication error for token '" + token + "': " + e.getMessage());
+      e.printStackTrace();
+      return false;
+    }
+  }
+  
+  /**
+   * Attempts to send a message via HTTP long polling.
+   * 
+   * @param token The client token
+   * @param message The message to send
+   * @return true if the message was sent successfully, false otherwise
+   */
+  private static boolean sendViaLongPolling(String token, String message) {
+    if (token == null || token.isEmpty() || message == null) {
+      logger.error("Cannot send long polling message: token or message is null/empty");
+      return false;
+    }
+    
+    try {
+      // Get the LongPollingController bean from Spring context
+      LongPollingController longPollingController = 
+          com.gw.utils.BeanTool.getBean(LongPollingController.class);
+      
+      if (longPollingController == null) {
+        logger.error("Could not get LongPollingController bean");
+        return false;
+      }
+      
+      boolean sent = longPollingController.sendMessageToClient(token, message);
+      if (sent) {
+        logger.debug("Message sent via long polling to token: " + token);
+        return true;
+      } else {
+        logger.error("Failed to send message via long polling to token: " + token);
+        return false;
+      }
+    } catch (Exception e) {
+      logger.error("Error using long polling for token '" + token + "': " + e.getMessage());
+      e.printStackTrace();
+      return false;
+    }
   }
 
   /**
@@ -274,7 +446,19 @@ public class CommandServlet {
    * @param token The token of the WebSocket session to be removed.
    */
   public static void removeSessionById(String token) {
+    if (token == null || token.isEmpty()) {
+      logger.warn("Cannot remove session with null or empty token");
+      return;
+    }
+    
+    boolean existed = peers.containsKey(token);
     peers.remove(token);
+    
+    if (existed) {
+      logger.debug("WebSocket session removed for token: " + token);
+    } else {
+      logger.debug("No WebSocket session found to remove for token: " + token);
+    }
   }
 
   /** Clears all WebSocket sessions from the peers map. */
