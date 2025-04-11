@@ -82,7 +82,7 @@ GW.monitor = {
     
     // If communication module isn't available or connected, check server preference
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+    xhr.open("GET", GW.path.getBasePath() + "api/config/communication-channel", false); // Synchronous request
     
     try {
       xhr.send();
@@ -251,7 +251,7 @@ GW.monitor = {
       // Try HTTP fallback
       try {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/Geoweaver/api/longpoll/send/" + GW.general.CLIENT_TOKEN, false);
+        xhr.open("POST", GW.path.getBasePath() + "api/longpoll/send/" + GW.general.CLIENT_TOKEN, false);
         xhr.setRequestHeader("Content-Type", "text/plain");
         xhr.send(data);
       } catch (error) {
@@ -285,7 +285,7 @@ GW.monitor = {
       if (GW.monitor.checker_swich) {
         // Check server preference before restarting WebSocket
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+        xhr.open("GET", GW.path.getBasePath() + "api/config/communication-channel", false); // Synchronous request
         
         try {
           xhr.send();
@@ -326,7 +326,7 @@ GW.monitor = {
     } else {
       // Check server preference before creating/restarting WebSocket
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+      xhr.open("GET", GW.path.getBasePath() + "api/config/communication-channel", false); // Synchronous request
       var useWebSocket = true;
       
       try {
@@ -360,7 +360,7 @@ GW.monitor = {
         console.log("Using HTTP long polling for workflow monitoring");
         // Send token through HTTP to register for polling
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/Geoweaver/api/longpoll/register/" + token, true);
+        xhr.open("POST", GW.path.getBasePath() + "api/longpoll/register/" + token, true);
         xhr.send();
       }
     }

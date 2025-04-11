@@ -73,7 +73,7 @@ GW.communication = {
         setTimeout(function() {
             // Use HTTP POST to send the token
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/Geoweaver/api/longpoll/send/" + GW.communication.token, true);
+            xhr.open("POST", GW.path.getBasePath() + "api/longpoll/send/" + GW.communication.token, true);
             xhr.setRequestHeader("Content-Type", "text/plain");
             xhr.send("token:" + GW.communication.token);
         }, 1000);
@@ -107,7 +107,7 @@ GW.communication = {
         }
         
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/Geoweaver/api/longpoll/poll/" + this.token, true);
+        xhr.open("GET", GW.path.getBasePath() + "api/longpoll/poll/" + this.token, true);
         xhr.timeout = 35000; // Slightly longer than server timeout
         
         xhr.onload = function() {
@@ -159,7 +159,7 @@ GW.communication = {
     send: function(message) {
         // Use HTTP POST for all communication
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/Geoweaver/api/longpoll/send/" + this.token, true);
+        xhr.open("POST", GW.path.getBasePath() + "api/longpoll/send/" + this.token, true);
         xhr.setRequestHeader("Content-Type", "text/plain");
         xhr.send(message);
     },

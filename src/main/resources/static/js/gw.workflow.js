@@ -1139,7 +1139,7 @@ GW.workflow = {
       )
     ) {
       $.ajax({
-        url: `/Geoweaver/checkpoint/restoreWorkflow`,
+        url: GW.path.getBasePath() + `checkpoint/restoreWorkflow`,
         method: "POST",
         data: JSON.stringify({
           workflowId: workflowId,

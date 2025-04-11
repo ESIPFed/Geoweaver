@@ -17,12 +17,19 @@ GW.path = {
     var contextPath = window.location.pathname;
     // Extract the base path (everything up to and including /Geoweaver/)
     var basePath = "/";
+    
+    // Handle complex proxy paths like https://ondemand.orc.gmu.edu/rnode/hop044.orc.gmu.edu/27289/Geoweaver/
     if (contextPath.includes("/Geoweaver/")) {
+      // Keep the entire path up to and including /Geoweaver/
       basePath = contextPath.substring(0, contextPath.indexOf("/Geoweaver/") + "/Geoweaver/".length);
+    } else if (contextPath.endsWith("/Geoweaver")) {
+      // If the path ends with /Geoweaver (no trailing slash)
+      basePath = contextPath + "/";
     } else if (contextPath.startsWith("/Geoweaver")) {
       basePath = "/Geoweaver/";
     }
     
+    console.log("Using base path: " + basePath);
     return basePath;
   },
   
