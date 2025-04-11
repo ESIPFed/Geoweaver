@@ -77,16 +77,14 @@ GW.ssh = {
 
           console.log(returnmsg);
 
-          if (returnmsg.ret == "success") {
-            setTimeout(function () {
-              GW.process.callback(returnmsg);
-            }, 2000);
-          }
-
           if (returnmsg.builtin) {
             GW.process.callback(returnmsg);
           } else {
-            // GW.workspace.updateStatus(returnmsg); // the workflow status message should only come from the workflow-socket
+            if (returnmsg.workflow_status == "completed") {
+              GW.monitor.stopMonitor();
+            } else {
+              GW.workspace.updateStatus(returnmsg);
+            }
           }
         } catch (errors) {
           console.error(errors);
@@ -103,7 +101,9 @@ GW.ssh = {
 
   send: function (data) {
     if (this.ws != null) {
-      this.ws.send(data);
+      // Use the communication module to send data
+      // This will automatically use WebSocket or HTTP fallback as appropriate
+      GW.communication.send(data);
     } else {
       if (data != this.token) {
         this.error("not connected!");
@@ -191,38 +191,38 @@ GW.ssh = {
     var dt = new Date();
     var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
-    cont_splits = content.split("*_*");
+    // Split content by the log separator
+    var cont_splits = content.split("*_*");
+    var log_history_id = null;
 
-    log_history_id = null;
-
+    // Extract history ID if present
     if (cont_splits.length > 1) {
       log_history_id = cont_splits[0];
       let newArray = cont_splits.slice(1);
       content = newArray.join(" ");
     }
 
+    console.log("Log received - history_id: " + log_history_id + ", current process history_id: " + GW.process.history_id);
+
+    // Style based on content
     var style1 = "";
     if (content.includes("Start to execute")) {
       style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-      $(".dot-flashing").removeClass("invisible");
-      $(".dot-flashing").addClass("visible");
-    } else if (content.includes("===== Process")) {
+      $(".dot-flashing").removeClass("invisible").addClass("visible");
+    } else if (content.includes("===== Process") || content.includes("Connected to process execution")) {
       style1 = "color: blue; font-weight: bold; text-decoration: underline;";
-
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
+      $(".dot-flashing").removeClass("visible").addClass("invisible");
     } else if (content == "disconnected") {
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
+      $(".dot-flashing").removeClass("visible").addClass("invisible");
     } else if (log_history_id == GW.process.history_id) {
-      $(".dot-flashing").removeClass("invisible");
-      $(".dot-flashing").addClass("visible");
+      // This log belongs to the current process
+      style1 = "color: black;";
+      $(".dot-flashing").removeClass("invisible").addClass("visible");
     } else {
-      $(".dot-flashing").removeClass("visible");
-      $(".dot-flashing").addClass("invisible");
+      $(".dot-flashing").removeClass("visible").addClass("invisible");
     }
 
+    // Create the HTML for the log line
     var newline =
       `<p style="line-height:1.1; text-align:left; margin-top: 10px; ` +
       `margin-bottom: 10px;"><span style="` +
@@ -231,31 +231,32 @@ GW.ssh = {
       content +
       `</span></p>`;
 
-    this.current_log_length += 1; //line number plus 1
-
+    // Add to main log window with limit
+    this.current_log_length += 1;
     if (this.current_log_length > 5000) {
       $("#log-window").find("p:first").remove();
       this.current_log_length -= 1;
     }
-
     $("#log-window").append(newline);
 
-    //don't output log to process log if the current executed is workflow
+    // Add to process-specific log window if it exists and matches current process
     if ($("#" + GW.ssh.process_output_id).length) {
+      // Manage process log length
       if (this.current_process_log_length > 5000) {
-        $("#" + GW.ssh.process_output_id)
-          .find("p:first")
-          .remove();
-
+        $("#" + GW.ssh.process_output_id).find("p:first").remove();
         this.current_process_log_length -= 1;
       }
 
-      if (GW.process.history_id == log_history_id) {
-        // only display the log if the current history id is the correct one
+      // Only display logs for the current process
+      if (log_history_id == null || GW.process.history_id == log_history_id) {
         $("#" + GW.ssh.process_output_id).append(newline);
+        // Scroll to bottom of log window
+        var logWindow = document.getElementById(GW.ssh.process_output_id);
+        if (logWindow) {
+          logWindow.scrollTop = logWindow.scrollHeight;
+        }
+        this.current_process_log_length += 1;
       }
-
-      this.current_process_log_length += 1;
     }
   },
 
@@ -289,56 +290,84 @@ GW.ssh = {
   },
 
   startLogSocket: function (token) {
+    // Close existing connection if any
     if (GW.ssh.all_ws) GW.ssh.all_ws.close();
-
-    GW.ssh.all_ws = new WebSocket(this.getWsPrefixURL() + "command-socket");
-
-    GW.ssh.ws = GW.ssh.all_ws;
-
+    
     GW.ssh.output_div_id = "log_box_id";
-
     GW.ssh.token = token; //token is the jsession id
-
-    //			this.echo("Running process " + token)
-
-    GW.ssh.all_ws.onopen = function (e) {
-      GW.ssh.ws_onopen(e);
+    
+    // Initialize the communication module with the token and message handler
+    // Using polling as the primary and only communication method
+    GW.communication.init(token, function(message) {
+      // This is the message handler that will be called for polling
+      if (message.indexOf("Session_Status:Active") != -1) {
+        GW.ssh.checker_swich = false;
+      } else if (
+        message.indexOf(GW.ssh.special.prompt) == -1 &&
+        message.indexOf(GW.ssh.special.ready) == -1 &&
+        message.indexOf("No SSH connection is active") == -1
+      ) {
+        GW.ssh.echo(message); // this function will be used to process all polling responses
+      }
+    });
+    
+    // Set up references to the communication module
+    // Maintain the same interface for backward compatibility
+    GW.ssh.all_ws = {
+      close: function() {
+        GW.communication.close();
+      },
+      send: function(data) {
+        GW.communication.send(data);
+      },
+      readyState: function() {
+        return GW.communication.isConnected ? WebSocket.OPEN : WebSocket.CLOSED;
+      }
     };
-
-    GW.ssh.all_ws.onclose = function (e) {
-      GW.ssh.ws_onclose(e);
-    };
-
-    GW.ssh.all_ws.onmessage = function (e) {
-      GW.ssh.ws_onmessage(e);
-    };
-
-    GW.ssh.all_ws.onerror = function (e) {
-      GW.ssh.ws_onerror(e);
-    };
+    
+    GW.ssh.ws = GW.ssh.all_ws;
   },
 
-  connectWsSessionWithExecution: function (msg) {},
+  connectWsSessionWithExecution: function (msg) {
+    // This function connects the WebSocket session with a process execution
+    // by associating the history_id with the current session
+    
+    // Store the history ID for reference
+    GW.process.history_id = msg.history_id;
+    
+    // Ensure we have an active communication connection
+    if (GW.ssh.all_ws != null) {
+      // Check connection and reconnect if needed
+      GW.communication.checkConnection();
+    } else {
+      console.log("No communication connection exists. Establishing connection...");
+      GW.ssh.startLogSocket(msg.token);
+    }
+    
+    // Send a message to the server to associate this session with the execution
+    setTimeout(function() {
+      GW.ssh.send("execution:" + msg.history_id);
+      // Clear any existing logs in the process log window
+      if ($("#" + GW.ssh.process_output_id).length) {
+        $("#" + GW.ssh.process_output_id).html("");
+      }
+      // Add initial log message to confirm connection
+      GW.ssh.addlog(msg.history_id + GW.utils.BaseTool.log_separator + "=======\nConnected to process execution: " + msg.history_id);
+    }, 1000);
+    
+    console.log("WebSocket session connected with execution ID: " + msg.history_id);
+  },
 
   openLog: function (msg) {
-    //check if the websocket session is alive, otherwise, restore the connection
-
-    if (
-      GW.ssh.all_ws != null &&
-      (GW.ssh.all_ws.readyState === WebSocket.CLOSED ||
-        GW.ssh.all_ws.readyState === WebSocket.CLOSING)
-    ) {
-      // GW.ssh.all_ws.close();
-
-      console.log(
-        "The command websocket connection is detected to be closed. Try to reconnect...",
-      );
-
-      GW.ssh.startLogSocket(msg.token);
-
-      console.log("The console websocket connection is restored..");
+    // Check if the communication connection is alive, otherwise restore it
+    // This will work with both WebSocket and long polling fallback
+    
+    if (GW.ssh.all_ws != null) {
+      // Check connection and reconnect if needed
+      GW.communication.checkConnection();
     } else {
-      GW.ssh.checkSessionStatus();
+      console.log("No communication connection exists. Establishing connection...");
+      GW.ssh.startLogSocket(msg.token);
     }
 
     if (msg.history_id.length == 12)
@@ -346,5 +375,35 @@ GW.ssh = {
     else this.addlog("=======\nStart to execute Workflow " + msg.history_id);
   },
 
-  openTerminal: function (token, terminal_div_id) {},
+  openTerminal: function (token, terminal_div_id) {
+    // This function sets up a terminal interface in the specified div
+    
+    // Store the token and output div ID
+    GW.ssh.token = token;
+    GW.ssh.output_div_id = terminal_div_id;
+    
+    // Clear any existing content in the terminal div
+    $("#" + terminal_div_id).html("");
+    
+    // Add terminal-specific styling to the div
+    $("#" + terminal_div_id).addClass("terminal-container");
+    
+    // Initialize the communication connection if it doesn't exist
+    if (GW.ssh.all_ws == null) {
+      GW.ssh.startLogSocket(token);
+    } else {
+      // Check connection and reconnect if needed
+      GW.communication.checkConnection();
+    }
+    
+    // Send a message to the server to initialize the terminal
+    setTimeout(function() {
+      GW.ssh.send("terminal:init");
+    }, 1000);
+    
+    // Add a welcome message to the terminal
+    GW.ssh.echo("Terminal connected. Type commands to interact with the server.");
+    
+    console.log("Terminal opened in div: " + terminal_div_id);
+  },
 };

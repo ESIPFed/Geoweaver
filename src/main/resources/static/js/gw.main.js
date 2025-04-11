@@ -101,13 +101,13 @@ GW.main = {
 
     // console.log("Current JS Session ID: " + current_jssessionid);
 
-    var current_token = GW.general.makeid(40); // this is no longer used
+    // var current_token = GW.general.makeid(40); // this is no longer used
 
-    console.log("Current token is: " + current_token);
+    // console.log("Current token is: " + current_token);
 
-    GW.ssh.startLogSocket(current_token);
+    GW.ssh.startLogSocket(GW.general.CLIENT_TOKEN);
 
-    GW.monitor.startSocket(current_token); //this token will be saved as GW.monitor.token and can be used everywhere
+    GW.monitor.startSocket(GW.general.CLIENT_TOKEN); //this token will be saved as GW.monitor.token and can be used everywhere
 
     GW.board.init();
 
