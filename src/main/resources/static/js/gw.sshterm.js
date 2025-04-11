@@ -202,12 +202,20 @@ function getContextURLPath() {
 }
 
 function getWsPrefixURL() {
+  // Get the context path from the current location
+  var contextPath = window.location.pathname;
+  // Extract the base path (everything up to and including /Geoweaver/)
+  var basePath = "/";
+  if (contextPath.includes("/Geoweaver/")) {
+    basePath = contextPath.substring(0, contextPath.indexOf("/Geoweaver/") + "/Geoweaver/".length);
+  } else if (contextPath.startsWith("/Geoweaver")) {
+    basePath = "/Geoweaver/";
+  }
+  
   var s =
     (window.location.protocol === "https:" ? "wss://" : "ws://") +
     window.location.host +
-    "/";
-
-  //	s +=  "Geoweaver/";
+    basePath;
 
   console.log("Ws URL Prefix: ", s);
 
@@ -217,7 +225,7 @@ function getWsPrefixURL() {
 $(document).ready(function ($) {
   //    ws = new SockJS("shell");
 
-  ws = new WebSocket(getWsPrefixURL() + "Geoweaver/terminal-socket");
+  ws = new WebSocket(getWsPrefixURL() + "terminal-socket");
 
   ws.onopen = function (e) {
     ws_onopen(e);
