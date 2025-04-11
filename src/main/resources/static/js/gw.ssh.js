@@ -289,8 +289,9 @@ GW.ssh = {
     GW.ssh.token = token; //token is the jsession id
     
     // Initialize the communication module with the token and message handler
+    // Using polling as the primary and only communication method
     GW.communication.init(token, function(message) {
-      // This is the message handler that will be called for both WebSocket and long polling
+      // This is the message handler that will be called for polling
       if (message.indexOf("Session_Status:Active") != -1) {
         GW.ssh.checker_swich = false;
       } else if (
@@ -303,8 +304,8 @@ GW.ssh = {
     });
     
     // Set up references to the communication module
+    // Maintain the same interface for backward compatibility
     GW.ssh.all_ws = {
-      // Provide a compatible interface for existing code
       close: function() {
         GW.communication.close();
       },

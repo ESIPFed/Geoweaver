@@ -43,121 +43,40 @@ GW.communication = {
     },
     
     /**
-     * Check the server's preferred communication channel
-     * This queries the server for its configuration setting
+     * Initialize communication using HTTP long polling
+     * WebSocket support has been removed, polling is now the primary method
      */
     checkServerPreference: function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/Geoweaver/api/config/communication-channel", true);
-        xhr.timeout = 5000;
-        
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response && response.defaultChannel) {
-                        // If server prefers polling, start with that
-                        if (response.defaultChannel === "polling") {
-                            console.log("Server prefers HTTP long polling, starting with that");
-                            GW.communication.usingFallback = true;
-                            GW.communication.startPolling();
-                        } else {
-                            // Otherwise use WebSocket (default)
-                            console.log("Server prefers WebSocket, starting with that");
-                            GW.communication.connect();
-                        }
-                    } else {
-                        // Default to WebSocket if response is invalid
-                        GW.communication.connect();
-                    }
-                } catch (error) {
-                    console.error("Error parsing server preference:", error);
-                    GW.communication.connect();
-                }
-            } else {
-                // Default to WebSocket if request fails
-                GW.communication.connect();
-            }
-        };
-        
-        xhr.onerror = function() {
-            console.error("Error checking server preference");
-            GW.communication.connect();
-        };
-        
-        xhr.ontimeout = function() {
-            console.error("Timeout checking server preference");
-            GW.communication.connect();
-        };
-        
-        xhr.send();
+        console.log("Using HTTP long polling as primary communication channel");
+        GW.communication.usingFallback = true;
+        GW.communication.startPolling();
     },
     
     /**
-     * Connect to the server using WebSocket
-     * Falls back to long polling if WebSocket connection fails
+     * Connect to the server using HTTP long polling
+     * WebSocket support has been removed
      */
     connect: function() {
         // Reset connection status
         this.isConnected = false;
-        this.usingFallback = false;
+        this.usingFallback = true;
         
-        try {
-            // Get WebSocket URL prefix
-            var wsPrefix = (window.location.protocol === "https:" ? "wss://" : "ws://") + 
-                          window.location.host + "/Geoweaver/";
-            
-            // Create WebSocket connection
-            this.ws = new WebSocket(wsPrefix + "command-socket");
-            
-            // Set up WebSocket event handlers
-            this.ws.onopen = function(e) {
-                console.log("WebSocket connection established");
-                GW.communication.isConnected = true;
-                
-                // Send token to register the session
-                setTimeout(function() {
-                    GW.communication.send("token:" + GW.communication.token);
-                }, 1000);
-            };
-            
-            this.ws.onclose = function(e) {
-                console.log("WebSocket connection closed");
-                GW.communication.isConnected = false;
-                
-                // Switch to fallback if not already using it
-                if (!GW.communication.usingFallback) {
-                    console.log("Switching to long polling fallback");
-                    GW.communication.usingFallback = true;
-                    GW.communication.startPolling();
-                }
-            };
-            
-            this.ws.onerror = function(e) {
-                console.error("WebSocket error:", e);
-                GW.communication.isConnected = false;
-                
-                // Switch to fallback if not already using it
-                if (!GW.communication.usingFallback) {
-                    console.log("WebSocket error, switching to long polling fallback");
-                    GW.communication.usingFallback = true;
-                    GW.communication.startPolling();
-                }
-            };
-            
-            this.ws.onmessage = function(e) {
-                // Handle incoming WebSocket messages
-                if (GW.communication.messageHandler) {
-                    GW.communication.messageHandler(e.data);
-                }
-            };
-        } catch (error) {
-            console.error("Error creating WebSocket connection:", error);
-            
-            // Switch to fallback
-            this.usingFallback = true;
-            this.startPolling();
-        }
+        console.log("Initializing HTTP long polling connection");
+        
+        // Start polling immediately
+        this.startPolling();
+        
+        // Set connection as established
+        this.isConnected = true;
+        
+        // Send token to register the session
+        setTimeout(function() {
+            // Use HTTP POST to send the token
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Geoweaver/api/longpoll/send/" + GW.communication.token, true);
+            xhr.setRequestHeader("Content-Type", "text/plain");
+            xhr.send("token:" + GW.communication.token);
+        }, 1000);
     },
     
     /**
@@ -232,30 +151,25 @@ GW.communication = {
     },
     
     /**
-     * Send a message to the server
-     * Uses WebSocket if available, falls back to HTTP POST if not
+     * Send a message to the server using HTTP POST
+     * WebSocket support has been removed
      * 
      * @param {string} message - The message to send
      */
     send: function(message) {
-        if (!this.usingFallback && this.ws && this.ws.readyState === WebSocket.OPEN) {
-            // Use WebSocket
-            this.ws.send(message);
-        } else {
-            // Use HTTP POST fallback
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/Geoweaver/api/longpoll/send/" + this.token, true);
-            xhr.setRequestHeader("Content-Type", "text/plain");
-            xhr.send(message);
-        }
+        // Use HTTP POST for all communication
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Geoweaver/api/longpoll/send/" + this.token, true);
+        xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.send(message);
     },
     
     /**
      * Check connection status and reconnect if needed
      */
     checkConnection: function() {
-        if (!this.usingFallback && (!this.ws || this.ws.readyState === WebSocket.CLOSED)) {
-            console.log("Connection check: WebSocket is closed, reconnecting...");
+        if (!this.isConnected) {
+            console.log("Connection check: Polling connection is not active, reconnecting...");
             this.connect();
         }
     },
@@ -267,16 +181,7 @@ GW.communication = {
         // Stop polling
         this.stopPolling();
         
-        // Close WebSocket if open
-        if (this.ws) {
-            try {
-                this.ws.close();
-            } catch (error) {
-                console.error("Error closing WebSocket:", error);
-            }
-            this.ws = null;
-        }
-        
+        // Reset connection state
         this.isConnected = false;
     }
 };

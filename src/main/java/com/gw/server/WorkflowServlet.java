@@ -154,76 +154,41 @@ public class WorkflowServlet {
   }
   
   /**
-   * Sends a message to a specific WebSocket session identified by its token.
-   * Uses the configured default communication channel (WebSocket or HTTP long polling)
-   * based on the geoweaver.communication.default-channel property.
+   * Send a message to a specific client identified by token.
    *
-   * @param token The token of the target WebSocket session.
-   * @param message The message to be sent.
-   * @return The WebSocket session if successful via WebSocket, null if sent via long polling or failed.
+   * @param token The client token
+   * @param message The message to send
+   * @return The WebSocket session if successful, null otherwise
    */
   public static Session sendMessageToSocket(String token, String message) {
     if (token == null || token.isEmpty() || message == null) {
-      Logger.getLogger(WorkflowServlet.class).error("Cannot send message: token or message is null/empty");
+      Logger.getLogger(WorkflowServlet.class).warn("Attempted to send message with null token or message");
       return null;
     }
-    
-    boolean messageSent = false;
-    Session wsout = null;
+
     String channelUsed = "none";
-    
-    // Get the communication config to determine which channel to try first
-    CommunicationConfig communicationConfig = null;
+
     try {
-      communicationConfig = BeanTool.getBean(CommunicationConfig.class);
-    } catch (Exception e) {
-      Logger.getLogger(WorkflowServlet.class).warn("Could not get CommunicationConfig bean, defaulting to WebSocket first");
-    }
-    
-    boolean tryWebSocketFirst = communicationConfig == null || communicationConfig.isWebSocketDefault();
-    
-    // Try the configured default channel first
-    if (tryWebSocketFirst) {
-      // Try WebSocket first
-      boolean webSocketSuccess = sendViaWebSocket(token, message);
-      if (webSocketSuccess) {
-        wsout = findSessionByToken(token);
-        messageSent = true;
-        channelUsed = "websocket";
-        Logger.getLogger(WorkflowServlet.class).debug("Message sent successfully via WebSocket to token: " + token);
-      } else {
-        // Fallback to long polling
-        boolean longPollingSuccess = sendViaLongPolling(token, message);
-        if (longPollingSuccess) {
-          messageSent = true;
-          channelUsed = "longpolling";
-          Logger.getLogger(WorkflowServlet.class).debug("Message sent successfully via long polling to token: " + token);
-        }
-      }
-    } else {
-      // Try long polling first
+      // Use long polling as the primary communication method
       boolean longPollingSuccess = sendViaLongPolling(token, message);
       if (longPollingSuccess) {
-        messageSent = true;
+        Logger.getLogger(WorkflowServlet.class).debug("Message sent via long polling");
         channelUsed = "longpolling";
-        Logger.getLogger(WorkflowServlet.class).debug("Message sent successfully via long polling to token: " + token);
       } else {
-        // Fallback to WebSocket
-        boolean webSocketSuccess = sendViaWebSocket(token, message);
-        if (webSocketSuccess) {
-          wsout = findSessionByToken(token);
-          messageSent = true;
+        // For backward compatibility, try WebSocket as fallback
+        Session wsout = findSessionByToken(token);
+        if (wsout != null && wsout.isOpen()) {
+          wsout.getBasicRemote().sendText(message);
           channelUsed = "websocket";
-          Logger.getLogger(WorkflowServlet.class).debug("Message sent successfully via WebSocket to token: " + token);
+          return wsout;
         }
       }
+    } catch (Exception e) {
+      Logger.getLogger(WorkflowServlet.class).error("Failed to send message: " + e.getMessage());
     }
-    
-    if (!messageSent) {
-      Logger.getLogger(WorkflowServlet.class).error("Failed to send message to token '" + token + "' via any communication channel");
-    }
-    
-    return wsout; // Only return non-null if WebSocket was used successfully
+
+    Logger.getLogger(WorkflowServlet.class).debug("Message sent via: " + channelUsed);
+    return null;
   }
   
   /**

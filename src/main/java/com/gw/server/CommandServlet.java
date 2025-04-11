@@ -287,76 +287,41 @@ public class CommandServlet {
   }
 
   /**
-   * Sends a message to a specific WebSocket session identified by its token.
-   * Uses the configured default communication channel (WebSocket or HTTP long polling)
-   * based on the geoweaver.communication.default-channel property.
+   * Send a message to a specific client identified by token.
    *
-   * @param token The token of the target WebSocket session.
-   * @param message The message to be sent.
-   * @return The WebSocket session if successful via WebSocket, null if sent via long polling or failed.
+   * @param token The client token
+   * @param message The message to send
+   * @return The WebSocket session if successful, null otherwise
    */
   public static Session sendMessageToSocket(String token, String message) {
-    if (token == null || token.isEmpty() || message == null) {
-      logger.error("Cannot send message: token or message is null/empty");
+    if (BaseTool.isNull(token) || BaseTool.isNull(message)) {
+      logger.warn("Attempted to send message with null token or message");
       return null;
     }
-    
-    boolean messageSent = false;
-    Session wsout = null;
+
     String channelUsed = "none";
-    
-    // Get the communication config to determine which channel to try first
-    com.gw.utils.CommunicationConfig communicationConfig = null;
+
     try {
-      communicationConfig = com.gw.utils.BeanTool.getBean(com.gw.utils.CommunicationConfig.class);
-    } catch (Exception e) {
-      logger.warn("Could not get CommunicationConfig bean, defaulting to WebSocket first");
-    }
-    
-    boolean tryWebSocketFirst = communicationConfig == null || communicationConfig.isWebSocketDefault();
-    
-    // Try the configured default channel first
-    if (tryWebSocketFirst) {
-      // Try WebSocket first
-      boolean webSocketSuccess = sendViaWebSocket(token, message);
-      if (webSocketSuccess) {
-        wsout = findSessionById(token);
-        messageSent = true;
-        channelUsed = "websocket";
-        logger.debug("Message sent successfully via WebSocket to token: " + token);
-      } else {
-        // Fallback to long polling
-        boolean longPollingSuccess = sendViaLongPolling(token, message);
-        if (longPollingSuccess) {
-          messageSent = true;
-          channelUsed = "longpolling";
-          logger.debug("Message sent successfully via long polling to token: " + token);
-        }
-      }
-    } else {
-      // Try long polling first
+      // Use long polling as the primary communication method
       boolean longPollingSuccess = sendViaLongPolling(token, message);
       if (longPollingSuccess) {
-        messageSent = true;
+        logger.debug("Message sent via long polling");
         channelUsed = "longpolling";
-        logger.debug("Message sent successfully via long polling to token: " + token);
       } else {
-        // Fallback to WebSocket
-        boolean webSocketSuccess = sendViaWebSocket(token, message);
-        if (webSocketSuccess) {
-          wsout = findSessionById(token);
-          messageSent = true;
+        // For backward compatibility, try WebSocket as fallback
+        Session wsout = findSessionById(token);
+        if (wsout != null && wsout.isOpen()) {
+          wsout.getBasicRemote().sendText(message);
           channelUsed = "websocket";
-          logger.debug("Message sent successfully via WebSocket to token: " + token);
+          return wsout;
         }
       }
+    } catch (Exception e) {
+      logger.error("Failed to send message: " + e.getMessage());
     }
-    
-    if (!messageSent) {
-      logger.error("Failed to send message to token '" + token + "' via any communication channel");
-    }
-    
-    return wsout; // Only return non-null if WebSocket was used successfully
+
+    logger.debug("Message sent via: " + channelUsed);
+    return null;
   }
   
   /**

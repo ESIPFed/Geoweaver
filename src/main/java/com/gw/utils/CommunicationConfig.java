@@ -16,9 +16,9 @@ public class CommunicationConfig {
     
     /**
      * The default communication channel to use.
-     * Possible values: "websocket" (default) or "polling"
+     * Possible values: "websocket" or "polling" (default)
      */
-    @Value("${geoweaver.communication.default-channel:websocket}")
+    @Value("${geoweaver.communication.default-channel:polling}")
     private String defaultChannel;
     
     /**
