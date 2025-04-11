@@ -351,7 +351,8 @@ public class GeoweaverProcessTask extends Task {
 
       et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
-      this.curstatus = ExecutionStatus.DONE;
+      History process_history = hist.getHistoryById(history_id);
+      this.curstatus = ExecutionStatus.DONE; // this is wrong, need to check history status for real status
 
     } catch (Exception e) {
 
@@ -438,7 +439,7 @@ public class GeoweaverProcessTask extends Task {
 
           } else if (ExecutionStatus.FAILED.equals(c_history_status)) {
 
-            errorcheck = 1;
+            errorcheck = 1; //mark it but don't interrupt other processes
 
           }
 
@@ -448,7 +449,7 @@ public class GeoweaverProcessTask extends Task {
         
         sendMessage2WorkflowWebsocket(array.toJSONString());
 
-        if (errorcheck == 1 && ExecutionStatus.DONE.equals(workflow_status)) {
+        if (errorcheck == 1) {
 
           workflow_status = ExecutionStatus.FAILED;
         }
@@ -466,8 +467,9 @@ public class GeoweaverProcessTask extends Task {
             || ExecutionStatus.SKIPPED.equals(workflow_status)) {
           sendMessage2WorkflowWebsocket(
               "{\"workflow_status\": \"completed\", \"workflow_history_id\": \""
-                  + workflow_history_id
-                  + "\"}");
+              + workflow_history_id+ "\", " 
+              +"\"execution_final_status\": \"" + workflow_status
+              + "\"}");
         }
       }
 

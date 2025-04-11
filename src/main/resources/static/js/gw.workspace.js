@@ -49,7 +49,7 @@ GW.workspace = {
     var content =
       '<div height="100%">' +
       '<iframe width="100%" height="600" frameborder="0" scrolling="no" onload="GW.workspace.resizeIframe(this)" ' +
-      ' id="jupyter-iframe" src="/Geoweaver/web/jupyter-proxy/"></iframe>' +
+      ' id="jupyter-iframe" src="'+GW.path.getBasePath()+'web/jupyter-proxy/"></iframe>' +
       "</div>";
 
     GW.workspace.jsFrame = GW.process.createJSFrameDialog(

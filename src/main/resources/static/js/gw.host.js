@@ -1087,11 +1087,11 @@ GW.host = {
   },
 
   openJupyter: function (hostid) {
-    window.open("/Geoweaver/jupyter-proxy/" + hostid + "/", "_blank");
+    window.open(GW.path.getBasePath() + "jupyter-proxy/" + hostid + "/", "_blank");
   },
 
   openGoogleEarth: function (hostid) {
-    window.open("/Geoweaver/GoogleEarth-proxy/" + hostid + "/", "_blank");
+    window.open(GW.path.getBasePath() + "GoogleEarth-proxy/" + hostid + "/", "_blank");
   },
 
   getToolbar: function (hostid, hosttype) {

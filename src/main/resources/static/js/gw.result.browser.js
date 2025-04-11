@@ -156,7 +156,7 @@ GW.result.browser = {
             e.preventDefault(); // Prevent default action
             console.log("download called once")
             var filePath = $(this).data('path');
-            window.open('/Geoweaver/download?path=' + encodeURIComponent(filePath), '_blank');
+            window.open(GW.path.getBasePath() + 'download?path=' + encodeURIComponent(filePath), '_blank');
         });
 
         // Display button click event for images
@@ -167,7 +167,7 @@ GW.result.browser = {
             console.log('Display path:', path); // Print the data-path value to the console
             var filePath = $(this).data('path');
             var imgWindow = window.open('', '_blank');
-            imgWindow.document.write('<img src="/Geoweaver/download?path=' + encodeURIComponent(filePath) + '" style="width:100%">');
+            imgWindow.document.write('<img src="'+GW.path.getBasePath()+'download?path=' + encodeURIComponent(filePath) + '" style="width:100%">');
         });
 
     },
@@ -193,7 +193,7 @@ GW.result.browser = {
         GW.result.browser.fileTable.clear().draw();
 
         $.ajax({
-            url: '/Geoweaver/results', // API endpoint to get file list
+            url: GW.path.getBasePath() + 'results', // API endpoint to get file list
             data: { subfolder: folderPath }, // Send the current folder path
             method: 'GET',
             success: function (data) {
@@ -244,7 +244,7 @@ GW.result.browser = {
 
     loadFileList: function() {
         $.ajax({
-            url: '/Geoweaver/results',
+            url: GW.path.getBasePath() + 'results',
             method: 'GET',
             success: function(data) {
                 // Populate the file list
