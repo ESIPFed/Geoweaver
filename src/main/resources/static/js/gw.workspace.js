@@ -1448,56 +1448,72 @@ GW.workspace = {
 
     GW.workspace.GraphCreator.prototype.renderStatus = function (statusList) {
 
-      console.log("monitor workflow status called");
+      console.log("monitor workflow status called", statusList);
 
+      // Handle single process update
       if (statusList.message_type == "single_process") {
-
         var id = statusList.id;
-
         var history_id = statusList.history_id;
-
         var flag = statusList.status; //true or false
-
         var num = this.getNodeNumById(id);
-
-        GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
-
-        GW.workspace.theGraph.nodes[num].status = flag;
-
-        GW.monitor.updateProgress(id, flag);
+        
+        if (num !== null) {
+          GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+          GW.workspace.theGraph.nodes[num].status = flag;
+          GW.monitor.updateProgress(id, flag);
+        } else {
+          console.error("Node not found with id:", id);
+        }
 
         GW.workspace.theGraph.updateGraph();
-
-      } else if (typeof statusList === "object") {
-        var newnodes = [];
-
+      } 
+      // Handle array of status updates
+      else if (Array.isArray(statusList)) {
+        var updatedAnyNode = false;
+        
         for (var i = 0; i < statusList.length; i++) {
-          //single node
-
           var id = statusList[i].id;
-
           var flag = statusList[i].status; //true or false
-
-          var node = this.getNodeById(id);
-
-          node.color = GW.workspace.getColorByFlag(flag);
-
-          node.status = flag
-
-          newnodes.push(node);
-
-          GW.monitor.updateProgress(id, flag);
+          var num = this.getNodeNumById(id);
+          
+          if (num !== null) {
+            GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+            GW.workspace.theGraph.nodes[num].status = flag;
+            GW.monitor.updateProgress(id, flag);
+            updatedAnyNode = true;
+          } else {
+            console.error("Node not found with id:", id);
+          }
         }
-
-        if (newnodes.length == 0) {
-          console.error("Lost all the nodes");
-        } else {
-          GW.workspace.theGraph.nodes = newnodes;
-
+        
+        if (updatedAnyNode) {
           GW.workspace.theGraph.updateGraph();
         }
-
-        // console.log("circle should change its color");
+      } 
+      // Handle object with array property
+      else if (typeof statusList === "object" && statusList.length > 0) {
+        var updatedAnyNode = false;
+        
+        for (var i = 0; i < statusList.length; i++) {
+          var id = statusList[i].id;
+          var flag = statusList[i].status; //true or false
+          var num = this.getNodeNumById(id);
+          
+          if (num !== null) {
+            GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+            GW.workspace.theGraph.nodes[num].status = flag;
+            GW.monitor.updateProgress(id, flag);
+            updatedAnyNode = true;
+          } else {
+            console.error("Node not found with id:", id);
+          }
+        }
+        
+        if (updatedAnyNode) {
+          GW.workspace.theGraph.updateGraph();
+        }
+      } else {
+        console.error("Unrecognized status update format:", statusList);
       }
     };
     /**

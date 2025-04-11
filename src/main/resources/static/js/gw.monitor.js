@@ -68,10 +68,39 @@ GW.monitor = {
   },
 
   startSocket: function (token) {
-    console.log("WebSocket Channel is Openned");
+    console.log("Starting workflow monitoring connection");
 
     GW.monitor.token = token; //token is the jsession id
 
+    // Check if we should use the communication module instead of direct WebSocket
+    if (GW.communication && GW.communication.isConnected) {
+      console.log("Using existing communication channel for workflow monitoring");
+      // Register our message handler with the communication module
+      GW.communication.send("token:" + token);
+      return;
+    }
+    
+    // If communication module isn't available or connected, check server preference
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+    
+    try {
+      xhr.send();
+      if (xhr.status === 200) {
+        var response = JSON.parse(xhr.responseText);
+        if (response && response.defaultChannel === "polling") {
+          console.log("Server prefers HTTP long polling, not creating WebSocket");
+          // Don't create WebSocket, use long polling instead
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Error checking server preference:", error);
+    }
+    
+    // If we get here, either server prefers WebSocket or we couldn't check preference
+    console.log("Creating WebSocket connection for workflow monitoring");
+    
     GW.monitor.all_ws = new WebSocket(
       GW.ssh.getWsPrefixURL() + "workflow-socket",
     );
@@ -92,11 +121,7 @@ GW.monitor = {
       GW.monitor.ws_onerror(e);
     };
 
-    // setTimeout(function () {
-    // 	GW.monitor.all_ws.send("token:"+token);
-    // }, 3000);
-
-    console.log("token has been sent to server");
+    console.log("WebSocket connection initialized for workflow monitoring");
   },
 
   clearProgressIndicator: function () {
@@ -213,11 +238,27 @@ GW.monitor = {
   },
 
   send: function (data) {
-    if (this.all_ws != null) {
+    // If we're using the communication module, use that instead
+    if (GW.communication && GW.communication.isConnected) {
+      GW.communication.send(data);
+      return;
+    }
+    
+    // Check if WebSocket is available and open
+    if (this.all_ws != null && this.all_ws.readyState === WebSocket.OPEN) {
       this.all_ws.send(data);
     } else {
-      if (data != this.token) {
-        this.error("not connected!");
+      // Try HTTP fallback
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Geoweaver/api/longpoll/send/" + GW.general.CLIENT_TOKEN, false);
+        xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.send(data);
+      } catch (error) {
+        console.error("Failed to send message via any channel:", error);
+        if (data != this.token) {
+          this.error("not connected!");
+        }
       }
     }
   },
@@ -227,11 +268,39 @@ GW.monitor = {
     // return GW.ssh.all_ws.readyState;
 
     GW.monitor.checker_swich = true;
-
-    GW.monitor.send("token:" + GW.general.CLIENT_TOKEN);
+    
+    // If we're using the communication module, use that instead
+    if (GW.communication && GW.communication.isConnected) {
+      GW.communication.send("token:" + GW.general.CLIENT_TOKEN);
+      GW.monitor.checker_swich = false;
+      return;
+    }
+    
+    // Only send through WebSocket if it exists and is open
+    if (GW.monitor.all_ws && GW.monitor.all_ws.readyState === WebSocket.OPEN) {
+      GW.monitor.send("token:" + GW.general.CLIENT_TOKEN);
+    }
 
     setTimeout(() => {
       if (GW.monitor.checker_swich) {
+        // Check server preference before restarting WebSocket
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+        
+        try {
+          xhr.send();
+          if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            if (response && response.defaultChannel === "polling") {
+              console.log("Server prefers HTTP long polling, not restarting WebSocket");
+              GW.monitor.checker_swich = false;
+              return;
+            }
+          }
+        } catch (error) {
+          console.error("Error checking server preference:", error);
+        }
+        
         //restart the websocket if the switch is still true two seconds later
         GW.monitor.startSocket(GW.monitor.token);
         GW.monitor.checker_swich = false;
@@ -249,18 +318,51 @@ GW.monitor = {
   startMonitor: function (token) {
     GW.workspace.currentmode = 2;
 
-    if (
-      GW.monitor.all_ws == null ||
-      GW.monitor.all_ws.readyState === WebSocket.CLOSED
-    ) {
-      console.log(
-        "Detect there is no workflow websocket or the current one is closed, restarting..",
-      );
-
-      GW.monitor.startSocket(token);
+    // Check if we should use the communication module
+    if (GW.communication && GW.communication.isConnected) {
+      console.log("Using existing communication channel for workflow monitoring");
+      // Register with the communication module
+      GW.communication.send("token:" + token);
     } else {
-      //check
-      GW.monitor.checkSessionStatus();
+      // Check server preference before creating/restarting WebSocket
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/Geoweaver/api/config/communication-channel", false); // Synchronous request
+      var useWebSocket = true;
+      
+      try {
+        xhr.send();
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          if (response && response.defaultChannel === "polling") {
+            console.log("Server prefers HTTP long polling for workflow monitoring");
+            useWebSocket = false;
+          }
+        }
+      } catch (error) {
+        console.error("Error checking server preference:", error);
+      }
+      
+      if (useWebSocket) {
+        if (
+          GW.monitor.all_ws == null ||
+          GW.monitor.all_ws.readyState === WebSocket.CLOSED
+        ) {
+          console.log(
+            "Detect there is no workflow websocket or the current one is closed, restarting..",
+          );
+
+          GW.monitor.startSocket(token);
+        } else {
+          //check
+          GW.monitor.checkSessionStatus();
+        }
+      } else {
+        console.log("Using HTTP long polling for workflow monitoring");
+        // Send token through HTTP to register for polling
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Geoweaver/api/longpoll/register/" + token, true);
+        xhr.send();
+      }
     }
 
     //			//only start when the mode is in monitor mode

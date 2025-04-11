@@ -4,6 +4,7 @@ import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
+import com.gw.server.LongPollingController;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import java.io.BufferedReader;
@@ -80,35 +81,66 @@ public class LocalSessionOutput implements Runnable {
     run = false;
   }
 
+  @Autowired
+  private LongPollingController longPollingController;
+
+  // Flag to track if we should use long polling fallback
+  private boolean useWebSocketFallback = false;
+  
   /**
    * Sends a message to the associated WebSocket session.
+   * If WebSocket is unavailable or closed, attempts to reconnect before sending.
+   * Falls back to HTTP long polling if WebSocket connection cannot be established.
    *
    * @param msg The message to be sent to the WebSocket.
    */
   public void sendMessage2WebSocket(String msg) {
-    try {
-      this.wsout = CommandServlet.findSessionById(token);
-      if (!BaseTool.isNull(wsout)) {
-        if (wsout.isOpen()) {
-          wsout.getBasicRemote().sendText(msg);
-        } else {
-          CommandServlet.removeSessionById(token);
-        }
+    // Check if WebSocket is null or closed and try to reconnect
+    if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+      log.debug("WebSocket connection is null or closed, attempting to reconnect for token: " + this.token);
+      // Try to get a new session
+      wsout = CommandServlet.findSessionById(token);
+      
+      // If we still don't have a valid session, we'll rely on the fallback mechanism
+      if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+        log.debug("Could not reconnect WebSocket for token: " + this.token);
       } else {
-        log.warn(String.format("cannot find websocket for token %s", token));
+        log.debug("Successfully reconnected WebSocket for token: " + this.token);
       }
-    } catch (IOException e1) {
-      e1.printStackTrace();
+    }
+    
+    // Use the CommandServlet's unified message sending method
+    // This handles both WebSocket and long polling automatically
+    Session session = CommandServlet.sendMessageToSocket(this.token, msg);
+    
+    // Update our local reference if a valid session was returned
+    if (session != null) {
+      this.wsout = session;
+      useWebSocketFallback = false;
+      log.debug("Message sent via WebSocket to history_id: " + this.history_id);
+    } else {
+      // If no session was returned, we're likely using long polling
+      useWebSocketFallback = true;
+      log.debug("Message sent via long polling fallback to history_id: " + this.history_id);
     }
   }
 
   /**
    * Refreshes the log monitor for WebSocket interaction. If the WebSocket session is null or
-   * closed, it attempts to retrieve the session.
+   * closed, it attempts to retrieve the session and ensure it's properly registered.
    */
   public void refreshLogMonitor() {
     if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+      log.debug("Refreshing WebSocket connection for token: " + this.token);
+      // Try to get a new session
       wsout = CommandServlet.findSessionById(token);
+      
+      // If we still don't have a valid session, log the issue
+      if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+        log.debug("Could not refresh WebSocket connection for token: " + this.token);
+      } else {
+        log.debug("Successfully refreshed WebSocket connection for token: " + this.token);
+      }
     }
   }
 
@@ -259,14 +291,20 @@ public class LocalSessionOutput implements Runnable {
             // token); // Log each line of output
             logs.append(line).append("\n"); // Append the line to the logs
 
-            if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
-              if (prelog.toString() != null) {
-                line = prelog.toString() + line;
-                prelog = new StringBuffer();
-              }
-              this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
-            } else {
-              prelog.append(line).append("\n"); // Append to the prelog if WebSocket isn't available
+            // Always try to send via WebSocket with automatic reconnection
+            // First check if we have any buffered content in prelog
+            if (prelog.length() > 0) {
+              line = prelog.toString() + line;
+              prelog = new StringBuffer();
+            }
+            
+            // Send the message - our improved sendMessage2WebSocket will try to reconnect if needed
+            this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
+            
+            // If we're using the fallback mechanism (determined in sendMessage2WebSocket),
+            // log this information for debugging purposes
+            if (useWebSocketFallback) {
+              log.debug("Using long polling fallback for message delivery to history_id: " + this.history_id);
             }
           }
         } catch (Exception e) {
