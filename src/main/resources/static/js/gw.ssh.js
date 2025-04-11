@@ -216,7 +216,7 @@ GW.ssh = {
       $(".dot-flashing").removeClass("visible").addClass("invisible");
     } else if (log_history_id == GW.process.history_id) {
       // This log belongs to the current process
-      style1 = "color: green;";
+      style1 = "color: black;";
       $(".dot-flashing").removeClass("invisible").addClass("visible");
     } else {
       $(".dot-flashing").removeClass("visible").addClass("invisible");
