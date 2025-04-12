@@ -152,6 +152,25 @@ GW.workspace = {
       .attr("d", "M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2")
       .attr("stroke", "#000000")
       .attr("stroke-width", 1);
+
+    // Define pattern that includes the gradient + hatch lines
+    var skippedPattern = defs.append("pattern")
+      .attr("id", "node-gradient-skipped-pattern")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", 10)
+      .attr("height", 10);
+
+    // Background fill using the gradient
+    skippedPattern.append("rect")
+      .attr("width", 10)
+      .attr("height", 10)
+      .attr("fill", "url(#node-gradient-skipped)");
+
+    // Diagonal hatch lines
+    skippedPattern.append("path")
+      .attr("d", "M -10,10 L 10,-10 M 0,10 L 20,-10 M 10,10 L 30,-10")
+      .attr("stroke", "#004400")
+      .attr("stroke-width", 1);
       
     // Create enhanced 3D effect gradients for nodes
     // Default node gradient (gray)
@@ -172,6 +191,24 @@ GW.workspace = {
     nodeGradientDefault.append("stop")
       .attr("offset", "100%")
       .attr("stop-color", "#707070");
+
+    var nodeGradientSkipped = defs.append("radialGradient")
+      .attr("id", "node-gradient-skipped")
+      .attr("cx", "25%")
+      .attr("cy", "25%")
+      .attr("r", "75%");
+    
+    nodeGradientSkipped.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#f0f0f0");  // light center
+    
+    nodeGradientSkipped.append("stop")
+      .attr("offset", "70%")
+      .attr("stop-color", "#c0c0c0");  // mid gray
+    
+    nodeGradientSkipped.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#a0a0a0");  // outer edge    
       
     // Running node gradient (blue)
     var nodeGradientRunning = defs.append("radialGradient")
@@ -1413,7 +1450,7 @@ GW.workspace = {
     
       thisGraph.circles
         .attr("stroke", "black")
-        .attr("fill", d => (d.skip ? "url(#diagonalHatch)" : d.color))
+        // .attr("fill", d => (d.skip ? "url(#diagonalHatch)" : d.color))
         .attr("transform", d => `translate(${d.x},${d.y})`);
     
       thisGraph.circles.each(function (d) {
@@ -1483,11 +1520,13 @@ GW.workspace = {
       newGs
         .append("circle")
         .attr("r", consts.nodeRadius)
-        .attr("class", d => `status-${d.status || "none"}`)
+        // .attr("class", d => `status-${d.status || "none"}`)
         .attr("stroke-width", 2)
         .attr("stroke", d => d.stroke || "#4285f4")
         .attr("fill", d => {
-          if (d.skip) return "url(#diagonalHatch)";
+          // if (d.skip) return "url(#diagonalHatch)";
+          if (d.skip) return "url(#node-gradient-skipped-pattern)";
+          console.log("fill color for node: " + d.status);
           switch (d.status) {
             case "Running": return "url(#node-gradient-running)";
             case "Done": return "url(#node-gradient-done)";

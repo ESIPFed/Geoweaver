@@ -11,29 +11,6 @@
   stroke-opacity: 0.8;
 }
 
-/* 3D effect for circles with radial gradient */
-.conceptG circle {
-  /* Default gradient if specific status gradient is not applied */
-  fill: url(#node-gradient-default);
-}
-
-/* Status-specific styles with 3D gradients */
-.conceptG circle.status-none {
-  fill: url(#node-gradient-default);
-}
-
-.conceptG circle.status-Running {
-  fill: url(#node-gradient-running);
-}
-
-.conceptG circle.status-Done {
-  fill: url(#node-gradient-done);
-}
-
-.conceptG circle.status-Failed {
-  fill: url(#node-gradient-failed);
-}
-
 /* Status icon styles */
 .status-icon {
   /* Base positioning for all status icons */

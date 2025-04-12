@@ -14,40 +14,6 @@ g.conceptG circle {
 
 /* Process Node States with modern color palette and gradients */
 /* Default state - subtle gradient with blue border */
-g.conceptG circle.status-none {
-  fill: #f8f9fa;
-  stroke: #4285f4;
-  /* Add subtle inner shadow for 3D effect */
-  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.25)) drop-shadow(0px 1px 2px rgba(66, 133, 244, 0.3) inset);
-}
-
-/* Running state - vibrant blue gradient with animated border */
-g.conceptG circle.status-running {
-  fill: #e8f0fe;
-  stroke: #1a73e8;
-  filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.4));
-}
-
-/* Success state - fresh green gradient */
-g.conceptG circle.status-success {
-  fill: #e6f4ea;
-  stroke: #0f9d58;
-  filter: drop-shadow(2px 4px 6px rgba(15, 157, 88, 0.4));
-}
-
-/* Failed state - soft red gradient */
-g.conceptG circle.status-failed {
-  fill: #fce8e6;
-  stroke: #ea4335;
-  filter: drop-shadow(2px 4px 6px rgba(234, 67, 53, 0.4));
-}
-
-/* Skipped state - diagonal pattern with improved contrast */
-g.conceptG circle.status-skipped {
-  fill: url(#diagonalHatch);
-  stroke: #5f6368;
-  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.25));
-}
 
 /* Enhanced hover effects for all nodes */
 g.conceptG:hover circle {
