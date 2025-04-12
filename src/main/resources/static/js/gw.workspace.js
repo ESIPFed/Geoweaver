@@ -167,10 +167,10 @@ GW.workspace = {
       .attr("fill", "url(#node-gradient-skipped)");
 
     // Diagonal hatch lines
-    skippedPattern.append("path")
-      .attr("d", "M -10,10 L 10,-10 M 0,10 L 20,-10 M 10,10 L 30,-10")
-      .attr("stroke", "#004400")
-      .attr("stroke-width", 1);
+    // skippedPattern.append("path")
+    //   .attr("d", "M -10,10 L 10,-10 M 0,10 L 20,-10 M 10,10 L 30,-10")
+    //   .attr("stroke", "#004400")
+    //   .attr("stroke-width", 1);
       
     // Create enhanced 3D effect gradients for nodes
     // Default node gradient (gray)

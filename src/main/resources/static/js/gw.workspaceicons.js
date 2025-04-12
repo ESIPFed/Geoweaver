@@ -44,22 +44,52 @@ GW.workspaceicons = {
      * @param {String} status - The status of the process ("Running", "Done", "Failed")
      */
     addStatusIcon: function(node, status) {
-        // First remove any existing status icons
+        // Remove any existing icons
         node.selectAll(".status-icon, .loading-spinner").remove();
         
-        // Add the appropriate icon based on status
+        const iconOffset = 16; // Offset from center (adjust based on radius)
+        
         if (status === "Running") {
-            node.append(function() {
-                return new DOMParser().parseFromString(GW.workspaceicons.getLoadingSpinner(), "image/svg+xml").documentElement.firstChild;
-            });
+            // Add a spinning circle
+            node.append("circle")
+                .attr("class", "loading-spinner status-icon")
+                .attr("r", 5)
+                .attr("cx", iconOffset)
+                .attr("cy", -iconOffset)
+                .style("stroke", "#007bff")
+                .style("stroke-width", 2)
+                .style("fill", "none")
+                .style("stroke-dasharray", "10,4")
+                .style("animation", "spin 1s linear infinite");
+            
         } else if (status === "Done") {
-            node.append(function() {
-                return new DOMParser().parseFromString(GW.workspaceicons.getCheckmark(), "image/svg+xml").documentElement.firstChild;
-            });
+            // Add a checkmark path
+            node.append("path")
+                .attr("class", "status-icon")
+                .attr("d", "M -6 0 L -2 4 L 6 -4")   // Simple checkmark shape
+                .attr("transform", `translate(${iconOffset}, ${-iconOffset})`)
+                .style("stroke", "green")
+                .style("stroke-width", 2)
+                .style("fill", "none");
+        
         } else if (status === "Failed") {
-            node.append(function() {
-                return new DOMParser().parseFromString(GW.workspaceicons.getCross(), "image/svg+xml").documentElement.firstChild;
+            // Add a cross (X) symbol
+            node.append("g")
+            .attr("class", "status-icon")
+            .attr("transform", `translate(${iconOffset}, ${-iconOffset})`)
+            .call(g => {
+                g.append("line")
+                .attr("x1", -5).attr("y1", -5)
+                .attr("x2", 5).attr("y2", 5)
+                .style("stroke", "red")
+                .style("stroke-width", 2);
+                g.append("line")
+                .attr("x1", -5).attr("y1", 5)
+                .attr("x2", 5).attr("y2", -5)
+                .style("stroke", "red")
+                .style("stroke-width", 2);
             });
         }
     }
+      
 };
