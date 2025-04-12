@@ -453,7 +453,7 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         // Execute workflow
         String whid = ExecuteWorkflow(wid);
 
-        bt.sleep(5); // sleep to allow time for process execution to finish
+        bt.sleep(8); // sleep to allow time for process execution to finish
 
         // Get workflow logs from /log
         HttpEntity postRequest = new HttpEntity<>("id=" + whid + "&type=workflow", postHeaders);
