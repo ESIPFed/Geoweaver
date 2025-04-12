@@ -1,0 +1,137 @@
+/* Professional Workflow Styling for Geoweaver
+ * Enhances the visual appearance of workflow process circles and connections
+ * with 3D effects, modern colors, and improved visual hierarchy
+ */
+
+/* Process Node Styling */
+g.conceptG circle {
+  /* Base styling for all process nodes */
+  stroke-width: 2px;
+  transition: all 0.3s ease;
+  /* Enhanced 3D effect with stronger shadow */
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* Process Node States with modern color palette and gradients */
+/* Default state - subtle gradient with blue border */
+g.conceptG circle.status-none {
+  fill: #f8f9fa;
+  stroke: #4285f4;
+  /* Add subtle inner shadow for 3D effect */
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.25)) drop-shadow(0px 1px 2px rgba(66, 133, 244, 0.3) inset);
+}
+
+/* Running state - vibrant blue gradient with animated border */
+g.conceptG circle.status-running {
+  fill: #e8f0fe;
+  stroke: #1a73e8;
+  filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.4));
+}
+
+/* Success state - fresh green gradient */
+g.conceptG circle.status-success {
+  fill: #e6f4ea;
+  stroke: #0f9d58;
+  filter: drop-shadow(2px 4px 6px rgba(15, 157, 88, 0.4));
+}
+
+/* Failed state - soft red gradient */
+g.conceptG circle.status-failed {
+  fill: #fce8e6;
+  stroke: #ea4335;
+  filter: drop-shadow(2px 4px 6px rgba(234, 67, 53, 0.4));
+}
+
+/* Skipped state - diagonal pattern with improved contrast */
+g.conceptG circle.status-skipped {
+  fill: url(#diagonalHatch);
+  stroke: #5f6368;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.25));
+}
+
+/* Enhanced hover effects for all nodes */
+g.conceptG:hover circle {
+  stroke-width: 3px;
+  /* Stronger shadow on hover for more pronounced 3D effect */
+  filter: drop-shadow(3px 6px 10px rgba(0, 0, 0, 0.4));
+  cursor: pointer;
+  /* Subtle scale effect on hover */
+  transform: scale(1.05);
+}
+
+/* Selected node styling with enhanced 3D effect */
+g.selected circle {
+  stroke-width: 3px;
+  filter: drop-shadow(3px 6px 10px rgba(0, 0, 0, 0.4));
+  /* Subtle glow effect for selected nodes */
+  box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+}
+
+g.selected:hover circle {
+  stroke-width: 4px;
+  /* Even stronger shadow when hovering over selected node */
+  filter: drop-shadow(4px 8px 12px rgba(0, 0, 0, 0.5));
+}
+
+/* Connection styling with improved visual appearance */
+path.link {
+  fill: none;
+  stroke: #5f6368;
+  stroke-width: 2.5px;
+  cursor: default;
+  transition: all 0.3s ease;
+  /* Subtle shadow for depth */
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+path.link:hover {
+  stroke: #4285f4;
+  stroke-width: 3.5px;
+  /* Enhanced shadow on hover */
+  filter: drop-shadow(1px 2px 3px rgba(66, 133, 244, 0.4));
+}
+
+path.link.selected {
+  stroke: #673ab7;
+  stroke-width: 3.5px;
+  /* Enhanced shadow for selected links */
+  filter: drop-shadow(1px 2px 3px rgba(103, 58, 183, 0.4));
+}
+
+/* Enhanced animation for running processes */
+@keyframes pulse-border {
+  0% {
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.3));
+  }
+  50% {
+    stroke-width: 4px;
+    stroke-opacity: 0.9;
+    filter: drop-shadow(3px 6px 10px rgba(26, 115, 232, 0.5));
+  }
+  100% {
+    stroke-width: 2px;
+    stroke-opacity: 1;
+    filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.3));
+  }
+}
+
+.circle-running circle {
+  animation: pulse-border 1.8s infinite;
+  animation-timing-function: ease-in-out;
+}
+
+/* Improved diagonal hatch pattern for skipped nodes */
+pattern#diagonalHatch {
+  patternUnits: userSpaceOnUse;
+  width: 4;
+  height: 4;
+  patternTransform: rotate(45);
+  fill: #f1f3f4;
+}
+
+pattern#diagonalHatch path {
+  stroke: #5f6368;
+  stroke-width: 1;
+}

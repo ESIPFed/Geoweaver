@@ -1,0 +1,79 @@
+/**
+ * Workflow Status Icons CSS
+ * Styles for process status indicators in the workflow graph
+ */
+
+/* Base styles for status icons */
+.status-icon {
+  pointer-events: none; /* Prevent icons from interfering with mouse events */
+  transform: translate(0, 0); /* Center the icon in the node */
+}
+
+/* Loading spinner animation */
+.loading-spinner {
+  transform: translate(0, 0); /* Center the spinner */
+}
+
+.loading-spinner circle {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+}
+
+/* Status-specific styles */
+.status-done {
+  opacity: 1;
+}
+
+.status-failed {
+  opacity: 1;
+}
+
+/* Node status classes - these apply to the circle elements */
+circle.status-Running {
+  stroke: #4285f4 !important;
+  stroke-width: 2.5px !important;
+}
+
+circle.status-Done {
+  stroke: #34a853 !important;
+  stroke-width: 2px !important;
+}
+
+circle.status-Failed {
+  stroke: #ea4335 !important;
+  stroke-width: 2px !important;
+}
+
+/* Enhanced 3D pulsing animation for running nodes */
+@keyframes pulse-3d {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.3));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(3px 6px 10px rgba(26, 115, 232, 0.5));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(2px 4px 6px rgba(26, 115, 232, 0.3));
+  }
+}
+
+/* Apply the 3D pulsing animation to running nodes */
+.circle-running circle {
+  animation: pulse-3d 1.8s infinite;
+  animation-timing-function: ease-in-out;
+}
+
+/* Rotate animation for the loading spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Apply the spin animation to the loading spinner */
+.loading-spinner {
+  animation: spin 1.5s linear infinite;
+}

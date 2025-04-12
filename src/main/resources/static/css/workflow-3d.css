@@ -1,0 +1,107 @@
+/* 3D Workflow Visualization Styles */
+
+/* Node styles - Enhanced 3D ball effect */
+.conceptG circle {
+  /* Base style for all circles */
+  stroke-width: 2px;
+  transition: all 0.3s ease;
+  /* Always apply 3D effect */
+  filter: url(#drop-shadow);
+  /* Add subtle highlight to enhance 3D appearance */
+  stroke-opacity: 0.8;
+}
+
+/* 3D effect for circles with radial gradient */
+.conceptG circle {
+  /* Default gradient if specific status gradient is not applied */
+  fill: url(#node-gradient-default);
+}
+
+/* Status-specific styles with 3D gradients */
+.conceptG circle.status-none {
+  fill: url(#node-gradient-default);
+}
+
+.conceptG circle.status-Running {
+  fill: url(#node-gradient-running);
+}
+
+.conceptG circle.status-Done {
+  fill: url(#node-gradient-done);
+}
+
+.conceptG circle.status-Failed {
+  fill: url(#node-gradient-failed);
+}
+
+/* Status icon styles */
+.status-icon {
+  /* Base positioning for all status icons */
+  pointer-events: none; /* Allow clicks to pass through to the node */
+}
+
+/* Position the status icons */
+.status-icon.status-done {
+  /* Specific styling for checkmark icon */
+}
+
+.status-icon.status-failed {
+  /* Specific styling for X icon */
+}
+
+/* Loading spinner animation */
+.loading-spinner {
+  pointer-events: none; /* Allow clicks to pass through to the node */
+}
+
+/* Add animation for running status */
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.loading-spinner circle {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* Hover effect for nodes - enhanced 3D */
+.conceptG:hover circle {
+  filter: url(#drop-shadow-hover);
+  transform: scale(1.05);
+  stroke-opacity: 1;
+}
+
+/* Selected node effect - enhanced 3D */
+.conceptG.selected circle {
+  filter: url(#drop-shadow-selected);
+  stroke-width: 3px;
+  stroke-opacity: 1;
+}
+
+/* Connection styles */
+.link {
+  stroke: url(#edge-gradient);
+  stroke-width: 2.5px;
+  filter: url(#edge-shadow);
+  transition: all 0.3s ease;
+}
+
+/* Hover effect for connections */
+.link:hover {
+  stroke-width: 4px;
+  filter: url(#edge-shadow-hover);
+}
+
+/* Selected connection */
+.link.selected {
+  stroke-width: 4px;
+  filter: url(#edge-shadow-selected);
+}
+
+/* Dragline style */
+.dragline {
+  stroke: url(#edge-gradient-drag);
+  stroke-width: 3px;
+  filter: url(#edge-shadow);
+}

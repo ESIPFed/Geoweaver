@@ -1,3 +1,4 @@
+// Extend GW.workspace with additional properties instead of replacing it
 GW.workspace = {
   selectedWorkflow: undefined,
   theGraph: null,
@@ -121,11 +122,12 @@ GW.workspace = {
       .attr("id", "end-arrow")
       .attr("viewBox", "0 -5 10 10")
       .attr("refX", "32")
-      .attr("markerWidth", 3.5)
-      .attr("markerHeight", 3.5)
+      .attr("markerWidth", 5)
+      .attr("markerHeight", 5)
       .attr("orient", "auto")
       .append("svg:path")
-      .attr("d", "M0,-5L10,0L0,5");
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("fill", "#5f6368"); // Modern gray color for edge arrows
 
     // define arrow markers for leading arrow
     defs
@@ -150,6 +152,242 @@ GW.workspace = {
       .attr("d", "M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2")
       .attr("stroke", "#000000")
       .attr("stroke-width", 1);
+      
+    // Create enhanced 3D effect gradients for nodes
+    // Default node gradient (gray)
+    var nodeGradientDefault = defs.append("radialGradient")
+      .attr("id", "node-gradient-default")
+      .attr("cx", "25%")
+      .attr("cy", "25%")
+      .attr("r", "75%");
+      
+    nodeGradientDefault.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#b0b0b0");
+      
+    nodeGradientDefault.append("stop")
+      .attr("offset", "70%")
+      .attr("stop-color", "#909090");
+      
+    nodeGradientDefault.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#707070");
+      
+    // Running node gradient (blue)
+    var nodeGradientRunning = defs.append("radialGradient")
+      .attr("id", "node-gradient-running")
+      .attr("cx", "25%")
+      .attr("cy", "25%")
+      .attr("r", "75%");
+      
+    nodeGradientRunning.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#c6dbff");
+      
+    nodeGradientRunning.append("stop")
+      .attr("offset", "70%")
+      .attr("stop-color", "#a4c2f4");
+      
+    nodeGradientRunning.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#4285f4");
+      
+    // Done node gradient (green)
+    var nodeGradientDone = defs.append("radialGradient")
+      .attr("id", "node-gradient-done")
+      .attr("cx", "25%")
+      .attr("cy", "25%")
+      .attr("r", "75%");
+      
+    nodeGradientDone.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#d4f5e9");
+      
+    nodeGradientDone.append("stop")
+      .attr("offset", "70%")
+      .attr("stop-color", "#a8e6cf");
+      
+    nodeGradientDone.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#34a853");
+      
+    // Failed node gradient (red)
+    var nodeGradientFailed = defs.append("radialGradient")
+      .attr("id", "node-gradient-failed")
+      .attr("cx", "25%")
+      .attr("cy", "25%")
+      .attr("r", "75%");
+      
+    nodeGradientFailed.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#ffd7d7");
+      
+    nodeGradientFailed.append("stop")
+      .attr("offset", "70%")
+      .attr("stop-color", "#ffabab");
+      
+    nodeGradientFailed.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#ea4335");
+      
+    // Edge gradient
+    var edgeGradient = defs.append("linearGradient")
+      .attr("id", "edge-gradient")
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "0%");
+      
+    edgeGradient.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#9aa0a6");
+      
+    edgeGradient.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#5f6368");
+      
+    // Drag edge gradient
+    var edgeGradientDrag = defs.append("linearGradient")
+      .attr("id", "edge-gradient-drag")
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "0%");
+      
+    edgeGradientDrag.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", "#c2c7ca");
+      
+    edgeGradientDrag.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", "#9aa0a6");
+      
+    // Enhanced 3D drop shadow for nodes
+    var dropShadow = defs.append("filter")
+      .attr("id", "drop-shadow")
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%");
+      
+    // Create a stronger blur for better 3D effect
+    dropShadow.append("feGaussianBlur")
+      .attr("in", "SourceAlpha")
+      .attr("stdDeviation", 4)
+      .attr("result", "blur");
+      
+    // Add a slight color adjustment for more realistic shadow
+    dropShadow.append("feColorMatrix")
+      .attr("in", "blur")
+      .attr("type", "matrix")
+      .attr("values", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0")
+      .attr("result", "coloredBlur");
+      
+    // Position the shadow to create 3D effect
+    dropShadow.append("feOffset")
+      .attr("in", "coloredBlur")
+      .attr("dx", 4)
+      .attr("dy", 5)
+      .attr("result", "offsetBlur");
+      
+    var feMerge = dropShadow.append("feMerge");
+    feMerge.append("feMergeNode")
+      .attr("in", "offsetBlur");
+    feMerge.append("feMergeNode")
+      .attr("in", "SourceGraphic");
+      
+    // Enhanced hover shadow for nodes
+    var dropShadowHover = defs.append("filter")
+      .attr("id", "drop-shadow-hover")
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%");
+      
+    // Larger blur for hover state
+    dropShadowHover.append("feGaussianBlur")
+      .attr("in", "SourceAlpha")
+      .attr("stdDeviation", 6)
+      .attr("result", "blur");
+      
+    // Add a slight color adjustment for more realistic shadow
+    dropShadowHover.append("feColorMatrix")
+      .attr("in", "blur")
+      .attr("type", "matrix")
+      .attr("values", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0")
+      .attr("result", "coloredBlur");
+      
+    // Position the shadow to create 3D effect
+    dropShadowHover.append("feOffset")
+      .attr("in", "coloredBlur")
+      .attr("dx", 5)
+      .attr("dy", 6)
+      .attr("result", "offsetBlur");
+      
+    var feMergeHover = dropShadowHover.append("feMerge");
+    feMergeHover.append("feMergeNode")
+      .attr("in", "offsetBlur");
+    feMergeHover.append("feMergeNode")
+      .attr("in", "SourceGraphic");
+      
+    // Enhanced selected shadow for nodes
+    var dropShadowSelected = defs.append("filter")
+      .attr("id", "drop-shadow-selected")
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%");
+      
+    // Larger blur for selected state
+    dropShadowSelected.append("feGaussianBlur")
+      .attr("in", "SourceAlpha")
+      .attr("stdDeviation", 6)
+      .attr("result", "blur");
+      
+    // Add a color adjustment for highlighted selection
+    dropShadowSelected.append("feColorMatrix")
+      .attr("in", "blur")
+      .attr("type", "matrix")
+      .attr("values", "0 0 0 0 0.2 0 0 0 0 0.4 0 0 0 0 0.9 0 0 0 0.7 0")
+      .attr("result", "coloredBlur");
+      
+    // Position the shadow to create 3D effect
+    dropShadowSelected.append("feOffset")
+      .attr("in", "coloredBlur")
+      .attr("dx", 4)
+      .attr("dy", 5)
+      .attr("result", "offsetBlur");
+      
+    var feMergeSelected = dropShadowSelected.append("feMerge");
+    feMergeSelected.append("feMergeNode")
+      .attr("in", "offsetBlur");
+    feMergeSelected.append("feMergeNode")
+      .attr("in", "SourceGraphic");
+      
+    // Edge shadow
+    var edgeShadow = defs.append("filter")
+      .attr("id", "edge-shadow")
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%");
+      
+    edgeShadow.append("feGaussianBlur")
+      .attr("in", "SourceAlpha")
+      .attr("stdDeviation", 2)
+      .attr("result", "blur");
+      
+    edgeShadow.append("feOffset")
+      .attr("in", "blur")
+      .attr("dx", 1)
+      .attr("dy", 1)
+      .attr("result", "offsetBlur");
+      
+    var feMergeEdge = edgeShadow.append("feMerge");
+    feMergeEdge.append("feMergeNode")
+      .attr("in", "offsetBlur");
+    feMergeEdge.append("feMergeNode")
+      .attr("in", "SourceGraphic");
 
     thisGraph.svg = svg;
     thisGraph.svgG = svg.append("g").classed(thisGraph.consts.graphClass, true);
@@ -1121,222 +1359,112 @@ GW.workspace = {
       this.state.lastKeyDown = -1;
     };
 
-    // call to propagate changes to graph
     GW.workspace.GraphCreator.prototype.updateGraph = function () {
-      var thisGraph = this,
-        consts = thisGraph.consts,
-        state = thisGraph.state;
-
+      const thisGraph = this;
+      const { consts, state } = thisGraph;
+    
       this.setIdCt(this.nodes.length);
-      
-      // Filter out any edges with undefined source or target before rendering
-      thisGraph.edges = thisGraph.edges.filter(function(edge) {
+    
+      // Clean edges
+      thisGraph.edges = thisGraph.edges.filter(edge => {
         if (!edge.source || !edge.target) {
           console.warn("Removing invalid edge with undefined source or target");
           return false;
         }
         return true;
       });
-
-      // remove old links
-      thisGraph.paths = thisGraph.paths.data([], function (d) {
-        return String(d.source.id) + "+" + String(d.target.id);
-      });
+    
+      // Update paths
+      thisGraph.paths = thisGraph.paths.data([], d => `${d.source.id}+${d.target.id}`);
       thisGraph.paths.exit().remove();
-      
-      // Filter out edges with undefined source or target
-      var validEdges = thisGraph.edges.filter(function(d) {
-        return d.source !== undefined && d.target !== undefined;
-      });
-      
-      thisGraph.paths = thisGraph.paths.data(validEdges, function (d) {
-        return String(d.source.id) + "+" + String(d.target.id);
-      });
-      var paths = thisGraph.paths;
-      // update existing paths
+    
+      const validEdges = thisGraph.edges;
+      thisGraph.paths = thisGraph.paths.data(validEdges, d => `${d.source.id}+${d.target.id}`);
+      const paths = thisGraph.paths;
+    
       paths
         .style("marker-end", "url(#end-arrow)")
-        .classed(consts.selectedClass, function (d) {
-          return d === state.selectedEdge;
-        })
-        .attr("d", function (d) {
-          return (
-            "M" +
-            d.source.x +
-            "," +
-            d.source.y +
-            "L" +
-            d.target.x +
-            "," +
-            d.target.y
-          );
-        });
-
-      // add new paths
+        .classed(consts.selectedClass, d => d === state.selectedEdge)
+        .attr("d", d => `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`)
+        .style("stroke", "url(#edge-gradient)")
+        .style("stroke-width", "2.5px")
+        .style("filter", "url(#edge-shadow)");
+    
       paths
         .enter()
         .append("path")
         .style("marker-end", "url(#end-arrow)")
         .classed("link", true)
-        .attr("d", function (d) {
-          return (
-            "M" +
-            d.source.x +
-            "," +
-            d.source.y +
-            "L" +
-            d.target.x +
-            "," +
-            d.target.y
-          );
-        })
+        .attr("d", d => `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`)
+        .style("stroke", "url(#edge-gradient)")
+        .style("stroke-width", "2.5px")
+        .style("filter", "url(#edge-shadow)")
         .on("mousedown", function (d) {
           thisGraph.pathMouseDown.call(thisGraph, d3.select(this), d);
         })
-        .on("mouseup", function (d) {
+        .on("mouseup", () => {
           state.mouseDownLink = null;
         });
-
-      // update existing nodes
-      // remove old nodes
-      thisGraph.circles = thisGraph.circles.data([], function (d) {
-        return d.id;
-      });
+    
+      // Update nodes
+      thisGraph.circles = thisGraph.circles.data([], d => d.id);
       thisGraph.circles.exit().remove();
-      thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, function (d) {
-        return d.id;
-      });
+      thisGraph.circles = thisGraph.circles.data(thisGraph.nodes, d => d.id);
+    
       thisGraph.circles
-        .attr("stroke", function (d) {
-          return "black";
-        })
-        .attr("fill", function (d) {
-          console.log("circles together fill color: " + d.color);
-          if (d.skip == "true" || d.skip == true) {
-            return "url(#diagonalHatch)";
-          } else {
-            return d.color;
-          }
-        })
-        .attr("transform", function (d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        });
-
-      // add new nodes
-      var newGs = thisGraph.circles.enter().append("g");
-
-      var defs = GW.workspace.svg.append("defs");
-
-      var dropShadowFilter = defs
-        .append("svg:filter")
-        .attr("id", "drop-shadow")
-        .attr("filterUnits", "userSpaceOnUse")
-        .attr("width", "250%")
-        .attr("height", "250%");
-      dropShadowFilter
-        .append("svg:feGaussianBlur")
-        .attr("in", "SourceGraphic")
-        .attr("stdDeviation", 4)
-        .attr("result", "blur-out");
-      dropShadowFilter
-        .append("svg:feColorMatrix")
-        .attr("in", "blur-out")
-        .attr("type", "hueRotate")
-        .attr("values", 180)
-        .attr("result", "color-out");
-      dropShadowFilter
-        .append("svg:feOffset")
-        .attr("in", "color-out")
-        .attr("dx", 4)
-        .attr("dy", 4)
-        .attr("result", "the-shadow");
-      dropShadowFilter
-        .append("svg:feBlend")
-        .attr("in", "SourceGraphic")
-        .attr("in2", "the-shadow")
-        .attr("mode", "normal");
-
-      defs
-        .append("pattern")
-        .attr("id", "diagonalHatch")
-        .attr("patternUnits", "userSpaceOnUse")
-        .attr("width", 4)
-        .attr("height", 4)
-        .attr("fill", "AliceBlue")
-        .append("path")
-        .attr("d", "M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2")
-        .attr("stroke", "#006400")
-        .attr("stroke-width", 1);
-
-      // Define the div for the tooltip
-      if (!GW.workspace.tooltipdiv)
+        .attr("stroke", "black")
+        .attr("fill", d => (d.skip ? "url(#diagonalHatch)" : d.color))
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+    
+      thisGraph.circles.each(function (d) {
+        if (["Running", "Done", "Failed"].includes(d.status)) {
+          d3.select(this).selectAll(".status-icon, .loading-spinner").remove();
+          GW.workspaceicons.addStatusIcon(d3.select(this), d.status);
+        }
+      });
+    
+      const newGs = thisGraph.circles.enter().append("g");
+    
+      if (!GW.workspace.tooltipdiv) {
         GW.workspace.tooltipdiv = d3
           .select("body")
           .append("div")
           .attr("class", "processtooltip")
           .style("opacity", 0);
-
-      var ismouseinside = false;
-
+      }
+    
+      let ismouseinside = false;
+    
       newGs
         .classed(consts.circleGClass, true)
-        .classed("circle-running", function (d) {
-          return d.hasOwnProperty("status") && d.status === "Running"; // Add 'running' class if the node is in the running state
-        })
-        .attr("transform", function (d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        })
+        .classed("circle-running", d => d.status === "Running")
+        .attr("transform", d => `translate(${d.x},${d.y})`)
         .on("mouseover", function (d) {
           ismouseinside = true;
-          if (state.shiftNodeDrag) {
-            d3.select(this).classed(consts.connectClass, true);
-          }
-          var process_id = d.id.split("-")[0];
-          var pageX = d3.event.pageX;
-          var pageY = d3.event.pageY;
-
-          GW.menu.details(process_id, "process", function (msg) {
-            //sometimes the mouse moves too quickly, the mouse is already out but the response doesn't arrive yet. The div will persist forever. So ismouseinside is used.
+          if (state.shiftNodeDrag) d3.select(this).classed(consts.connectClass, true);
+    
+          const process_id = d.id.split("-")[0];
+          const [pageX, pageY] = [d3.event.pageX, d3.event.pageY];
+    
+          GW.menu.details(process_id, "process", msg => {
             if (ismouseinside) {
               GW.workspace.tooltipdiv
-                .transition()
-                .duration(200)
-                .style("opacity", 0.9);
-
+                .transition().duration(200).style("opacity", 0.9);
+    
               GW.workspace.tooltipdiv
-                .html(
-                  `
-								<table>
-									<tr>
-										<td><b>ID</b></td>
-										<td>` +
-                    msg.id +
-                    `</td>
-									</tr>
-									<tr>
-										<td><b>Language</b></td>
-										<td>` +
-                    msg.lang +
-                    `</td>
-									</tr>
-									<tr>
-										<td><b>Code</b></td>
-										<td>` +
-                    GW.general.shorten_long_string(
-                      GW.general.escapeCodeforHTML(msg.code),
-                      200,
-                    ) +
-                    `</td>
-									</tr>
-								</table>
-							`,
-                )
-                .style("left", pageX + "px")
-                .style("top", pageY + "px");
+                .html(`
+                  <table>
+                    <tr><td><b>ID</b></td><td>${msg.id}</td></tr>
+                    <tr><td><b>Language</b></td><td>${msg.lang}</td></tr>
+                    <tr><td><b>Code</b></td><td>${GW.general.shorten_long_string(GW.general.escapeCodeforHTML(msg.code), 200)}</td></tr>
+                  </table>
+                `)
+                .style("left", `${pageX}px`)
+                .style("top", `${pageY}px`);
             }
           });
         })
-        .on("mouseout", function (d) {
+        .on("mouseout", function () {
           d3.select(this).classed(consts.connectClass, false);
           GW.workspace.tooltipdiv.transition().duration(1).style("opacity", 0);
           ismouseinside = false;
@@ -1351,23 +1479,30 @@ GW.workspace = {
           thisGraph.circleDdlClick.call(thisGraph, d3.select(this), d);
         })
         .call(thisGraph.drag);
-
+    
       newGs
         .append("circle")
-        .attr("r", String(consts.nodeRadius))
+        .attr("r", consts.nodeRadius)
+        .attr("class", d => `status-${d.status || "none"}`)
         .attr("stroke-width", 2)
-        .attr("stroke", function (d) {
-          return "black";
-        })
-        .attr("fill", function (d) {
-          if (d.skip == "true" || d.skip == true) {
-            return "url(#diagonalHatch)";
-          } else {
-            return d.color;
+        .attr("stroke", d => d.stroke || "#4285f4")
+        .attr("fill", d => {
+          if (d.skip) return "url(#diagonalHatch)";
+          switch (d.status) {
+            case "Running": return "url(#node-gradient-running)";
+            case "Done": return "url(#node-gradient-done)";
+            case "Failed": return "url(#node-gradient-failed)";
+            default: return "url(#node-gradient-default)";
           }
         })
-        .attr("filter", "url(#drop-shadow)"); //add color
-
+        .style("filter", "url(#drop-shadow)");
+    
+      newGs.each(function (d) {
+        if (["Running", "Done", "Failed"].includes(d.status)) {
+          GW.workspaceicons.addStatusIcon(d3.select(this), d.status);
+        }
+      });
+    
       newGs.each(function (d) {
         thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
       });
@@ -1458,9 +1593,30 @@ GW.workspace = {
         var num = this.getNodeNumById(id);
         
         if (num !== null) {
-          GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+          // Update node status
           GW.workspace.theGraph.nodes[num].status = flag;
           GW.monitor.updateProgress(id, flag);
+          
+          // Update the node's circle with appropriate 3D gradient based on status
+          var nodeSelection = d3.select("g.conceptG[id='" + id + "']");
+          if (!nodeSelection.empty()) {
+            // Update the status class on the circle for CSS styling
+            nodeSelection.select("circle")
+              .attr("class", "status-" + flag)
+              .attr("fill", function() {
+                // Apply appropriate 3D gradient based on status
+                if (flag === "Running") return "url(#node-gradient-running)";
+                else if (flag === "Done") return "url(#node-gradient-done)";
+                else if (flag === "Failed") return "url(#node-gradient-failed)";
+                else return "url(#node-gradient-default)";
+              })
+              .style("filter", "url(#drop-shadow)");
+              
+            // Remove any existing status icons first
+            nodeSelection.selectAll(".status-icon, .loading-spinner").remove();
+            // Add status icon
+            GW.workspaceicons.addStatusIcon(nodeSelection, flag);
+          }
         } else {
           console.error("Node not found with id:", id);
         }
@@ -1477,30 +1633,7 @@ GW.workspace = {
           var num = this.getNodeNumById(id);
           
           if (num !== null) {
-            GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
-            GW.workspace.theGraph.nodes[num].status = flag;
-            GW.monitor.updateProgress(id, flag);
-            updatedAnyNode = true;
-          } else {
-            console.error("Node not found with id:", id);
-          }
-        }
-        
-        if (updatedAnyNode) {
-          GW.workspace.theGraph.updateGraph();
-        }
-      } 
-      // Handle object with array property
-      else if (typeof statusList === "object" && statusList.length > 0) {
-        var updatedAnyNode = false;
-        
-        for (var i = 0; i < statusList.length; i++) {
-          var id = statusList[i].id;
-          var flag = statusList[i].status; //true or false
-          var num = this.getNodeNumById(id);
-          
-          if (num !== null) {
-            GW.workspace.theGraph.nodes[num].color = GW.workspace.getColorByFlag(flag);
+            // Update node status
             GW.workspace.theGraph.nodes[num].status = flag;
             GW.monitor.updateProgress(id, flag);
             updatedAnyNode = true;
@@ -1516,6 +1649,7 @@ GW.workspace = {
         console.error("Unrecognized status update format:", statusList);
       }
     };
+
     /**
      * NodeS
      */
@@ -1578,20 +1712,20 @@ GW.workspace = {
   },
 
   getColorByFlag: function (flag) {
-    var color = "white";
+    var color = "#ffffff";
 
     if (flag == "Ready") {
-      color = "blue";
+      color = "#2196f3"; // Professional blue
     } else if (flag == "Running") {
-      color = "orange";
+      color = "#e3f2fd"; // Light blue background for running state
     } else if (flag == "Done") {
-      color = "green";
+      color = "#e8f5e9"; // Light green background for success
     } else if (flag == "Failed") {
-      color = "red";
+      color = "#ffebee"; // Light red background for failure
     } else if (flag == "Skipped") {
-      color = "darkseagreen";
+      color = "#f5f5f5"; // Light gray for skipped
     } else if (flag == "Stopped") {
-      color = "#A9A9A9";
+      color = "#eeeeee"; // Light gray for stopped
     } else if (flag == null) {
       color = "blue";
     }
