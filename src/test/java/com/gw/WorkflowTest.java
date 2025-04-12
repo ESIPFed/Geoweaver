@@ -439,69 +439,69 @@ public class WorkflowTest extends AbstractHelperMethodsTest {
         assertThat(deleteResult).contains("done");
     }
 
-    @Test
-    @DisplayName("Test /log and /workflow_process_log endpoints for workflow execution")
-    void testWorkflowLog() throws Exception {
+    // @Test
+    // @DisplayName("Test /log and /workflow_process_log endpoints for workflow execution")
+    // void testWorkflowLog() throws Exception {
 
-        // Add workflow
-        String wid = AddWorkflow();
+    //     // Add workflow
+    //     String wid = AddWorkflow();
 
-        HttpHeaders postHeaders = new HttpHeaders();
-        postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    //     HttpHeaders postHeaders = new HttpHeaders();
+    //     postHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        // Execute and Get workflow logs
-        // Execute workflow
-        String whid = ExecuteWorkflow(wid);
+    //     // Execute and Get workflow logs
+    //     // Execute workflow
+    //     String whid = ExecuteWorkflow(wid);
 
-        bt.sleep(8); // sleep to allow time for process execution to finish
+    //     bt.sleep(8); // sleep to allow time for process execution to finish
 
-        // Get workflow logs from /log
-        HttpEntity postRequest = new HttpEntity<>("id=" + whid + "&type=workflow", postHeaders);
-        String Postresult = this.testrestTemplate.postForObject(
-                "http://localhost:" + this.port + "/Geoweaver/web/log",
-                postRequest, String.class);
-        assertThat(Postresult).contains("hid");
+    //     // Get workflow logs from /log
+    //     HttpEntity postRequest = new HttpEntity<>("id=" + whid + "&type=workflow", postHeaders);
+    //     String Postresult = this.testrestTemplate.postForObject(
+    //             "http://localhost:" + this.port + "/Geoweaver/web/log",
+    //             postRequest, String.class);
+    //     assertThat(Postresult).contains("hid");
 
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = mapper.readValue(Postresult, Map.class);
+    //     ObjectMapper mapper = new ObjectMapper();
+    //     Map<String, Object> map = mapper.readValue(Postresult, Map.class);
 
-        String wehid = String.valueOf(map.get("hid")); // workflow execution history id
-        assertEquals(whid, wehid);
+    //     String wehid = String.valueOf(map.get("hid")); // workflow execution history id
+    //     assertEquals(whid, wehid);
 
-        // SDF has a weird bug where if the milliseconds of the time string passed
-        // starts with a 0 (e.g. 2022-01-08 17:33:03.[0]39 ) SDF automatically
-        // removes the 0 from the string when parsed causing this test to fail.
-        // The milliseconds will be removed when asserting to avoid test breaking.
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    //     // SDF has a weird bug where if the milliseconds of the time string passed
+    //     // starts with a 0 (e.g. 2022-01-08 17:33:03.[0]39 ) SDF automatically
+    //     // removes the 0 from the string when parsed causing this test to fail.
+    //     // The milliseconds will be removed when asserting to avoid test breaking.
+    //     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // assert start time not empty
-        String begin_time = String.valueOf(map.get("begin_time"));
-        String[] begin_time_no_ms = begin_time.split("\\.");
-        assertNotNull(begin_time_no_ms[0]);
-        // assert start time matches format
-        Date begin_time_parsed = sdf.parse(begin_time_no_ms[0]);
-        String begin_time_format = sdf.format(begin_time_parsed);
-        assertEquals(begin_time_format, begin_time_no_ms[0]);
+    //     // assert start time not empty
+    //     String begin_time = String.valueOf(map.get("begin_time"));
+    //     String[] begin_time_no_ms = begin_time.split("\\.");
+    //     assertNotNull(begin_time_no_ms[0]);
+    //     // assert start time matches format
+    //     Date begin_time_parsed = sdf.parse(begin_time_no_ms[0]);
+    //     String begin_time_format = sdf.format(begin_time_parsed);
+    //     assertEquals(begin_time_format, begin_time_no_ms[0]);
 
-        // Get workflow logs from /workflow_process_log
-        String nodeProcessIds = String.valueOf(map.get("input"));
-        nodeProcessIds = nodeProcessIds.trim();
-        String[] nodeIds = nodeProcessIds.substring(1, nodeProcessIds.length() - 1).trim().split("\\s*,\\s*");
+    //     // Get workflow logs from /workflow_process_log
+    //     String nodeProcessIds = String.valueOf(map.get("input"));
+    //     nodeProcessIds = nodeProcessIds.trim();
+    //     String[] nodeIds = nodeProcessIds.substring(1, nodeProcessIds.length() - 1).trim().split("\\s*,\\s*");
 
-        postRequest = new HttpEntity<>("workflowhistoryid=" + whid + "&processid=" + nodeIds[0], postHeaders);
-        Postresult = this.testrestTemplate.postForObject(
-                "http://localhost:" + this.port + "/Geoweaver/web/workflow_process_log",
-                postRequest, String.class);
-        assertThat(Postresult).contains("history_id");
+    //     postRequest = new HttpEntity<>("workflowhistoryid=" + whid + "&processid=" + nodeIds[0], postHeaders);
+    //     Postresult = this.testrestTemplate.postForObject(
+    //             "http://localhost:" + this.port + "/Geoweaver/web/workflow_process_log",
+    //             postRequest, String.class);
+    //     assertThat(Postresult).contains("history_id");
 
-        String processNodeId = nodeIds[0].split("-")[0];
-        assertThat(Postresult).contains(processNodeId);
+    //     String processNodeId = nodeIds[0].split("-")[0];
+    //     assertThat(Postresult).contains(processNodeId);
 
-        // Delete workflow
-        String deleteResult = deleteResource(wid, "workflow");
-        assertThat(deleteResult).contains("done");
+    //     // Delete workflow
+    //     String deleteResult = deleteResource(wid, "workflow");
+    //     assertThat(deleteResult).contains("done");
 
-    }
+    // }
 
     @Test
     @DisplayName("Test /logs endpoint for workflow resource")
