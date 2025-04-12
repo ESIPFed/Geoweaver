@@ -80,7 +80,7 @@ Geoweaver is a powerful tool for geospatial data processing, offering a range of
 
 Before you begin, ensure that you have the following dependencies installed:
 
-- Java 1.8 or higher (OpenJDK 8 or higher)
+- Java 11 or higher (OpenJDK 11 or higher)
 - Docker (required only for the Docker installation method)
 
 # Demo
