@@ -11,6 +11,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.HostTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.ProcessStatusCache;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,8 @@ public class GeoweaverProcessTask extends Task {
   @Autowired HistoryRepository hr;
 
   @Autowired TaskManager tm;
+  
+  @Autowired ProcessStatusCache processStatusCache;
 
   String pid;
 
@@ -154,25 +157,32 @@ public class GeoweaverProcessTask extends Task {
       int check = 0;
 
       for (int i = 0; i < prehistoryid.size(); i++) {
+        String historyId = (String) prehistoryid.get(i);
+        String cachedStatus = processStatusCache.getStatus(historyId);
+        String current_status;
+        
+        // Check cache first, if not found, query database
+        if (cachedStatus != null) {
+          current_status = cachedStatus;
+          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
+        } else {
+          Optional<History> ho = hr.findById(historyId);
 
-        Optional<History> ho = hr.findById((String) prehistoryid.get(i));
-
-        if (ho.isPresent()) {
-
-          String current_status = ho.get().getIndicator();
-
-          if (BaseTool.isNull(current_status)
-              || current_status.equals(ExecutionStatus.RUNNING)
-              || current_status.equals(ExecutionStatus.READY)) {
+          if (ho.isPresent()) {
+            current_status = ho.get().getIndicator();
+            // Update cache with status from database
+            processStatusCache.updateStatus(historyId, current_status);
+          } else {
             check = 1;
             break;
           }
+        }
 
-        } else {
-
+        if (BaseTool.isNull(current_status)
+            || current_status.equals(ExecutionStatus.RUNNING)
+            || current_status.equals(ExecutionStatus.READY)) {
           check = 1;
           break;
-
         }
       }
 
@@ -198,22 +208,32 @@ public class GeoweaverProcessTask extends Task {
       int check = 0;
 
       for (int i = 0; i < prehistoryid.size(); i++) {
+        String historyId = (String) prehistoryid.get(i);
+        String cachedStatus = processStatusCache.getStatus(historyId);
+        String current_status;
+        
+        // Check cache first, if not found, query database
+        if (cachedStatus != null) {
+          current_status = cachedStatus;
+          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
+        } else {
+          Optional<History> ho = hr.findById(historyId);
 
-        Optional<History> ho = hr.findById((String) prehistoryid.get(i));
-
-        if (ho.isPresent()) {
-
-          String current_status = ho.get().getIndicator();
-
-          if (BaseTool.isNull(current_status)
-              || current_status.equals(ExecutionStatus.FAILED)
-              || current_status.equals(ExecutionStatus.STOPPED)) {
-            check = 1;
-            break;
+          if (ho.isPresent()) {
+            current_status = ho.get().getIndicator();
+            // Update cache with status from database
+            processStatusCache.updateStatus(historyId, current_status);
+          } else {
+            continue;
           }
-
         }
 
+        if (BaseTool.isNull(current_status)
+            || current_status.equals(ExecutionStatus.FAILED)
+            || current_status.equals(ExecutionStatus.STOPPED)) {
+          check = 1;
+          break;
+        }
       }
 
       if (check == 1) this.shouldPass = true;
@@ -337,7 +357,7 @@ public class GeoweaverProcessTask extends Task {
 
     try {
 
-      Thread.sleep(500); // sleep 1s to wait for the client to catch up
+      // Thread.sleep(500); // sleep 1s to wait for the client to catch up
 
       // get the nodes and edges of the workflows
 
@@ -346,19 +366,23 @@ public class GeoweaverProcessTask extends Task {
       this.history_output = "";
 
       this.curstatus = ExecutionStatus.RUNNING;
+      
+      processStatusCache.updateStatus(history_id, this.curstatus);
 
       this.updateEverything();
 
       et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
-      History process_history = hist.getHistoryById(history_id);
-      this.curstatus = ExecutionStatus.DONE; // this is wrong, need to check history status for real status
-
+      this.curstatus = ExecutionStatus.DONE;
+      
     } catch (Exception e) {
 
       e.printStackTrace();
 
       this.curstatus = ExecutionStatus.FAILED;
+      
+      // Update the cache with the new status
+      processStatusCache.updateStatus(history_id, this.curstatus);
 
       this.history_output = e.getLocalizedMessage();
 
@@ -416,19 +440,9 @@ public class GeoweaverProcessTask extends Task {
 
           String c_history_status = null;
 
-          if(c_history_id.equals(this.history_id)){
-
-            // the current history might not be flushed to the database yet. to be safe, directly use from memory
-            c_history_status = this.curstatus;
-
-          }else{
-
-            History c_his = hist.getHistoryById(c_history_id);
-
-            c_history_status = c_his.getIndicator();
-
-          }
-
+          // Check cache first
+          c_history_status = processStatusCache.getStatus(c_history_id);
+          
           obj.put("status", c_history_status);
 
           if (BaseTool.isNull(c_history_status)
@@ -514,46 +528,41 @@ public class GeoweaverProcessTask extends Task {
 
   public void saveHistory() {
 
-    this.history_end_time = BaseTool.getCurrentSQLDate();
+    // this.history_end_time = BaseTool.getCurrentSQLDate();
 
-    History history = hist.getHistoryById(this.history_id);
+    // History history = hist.getHistoryById(this.history_id);
 
-    if (ExecutionStatus.RUNNING.equals(history.getHistory_output())) {
+    // history.setHistory_begin_time(this.history_begin_time);
 
-      bt.sleep(1); // wait for 1 seconds
-      history = hist.getHistoryById(this.history_id);
-    }
+    // history.setHistory_end_time(this.history_end_time);
 
-    history.setHistory_begin_time(this.history_begin_time);
+    // history.setHistory_process(this.pid);
 
-    history.setHistory_end_time(this.history_end_time);
+    // if (!BaseTool.isNull(this.history_input) && BaseTool.isNull(history.getHistory_input()))
+    //   history.setHistory_input(this.history_input);
 
-    history.setHistory_process(this.pid);
+    // if (!BaseTool.isNull(this.history_output))
+    //   history.setHistory_output(this.history_output); // save the error message to the output
+    // // if the process is already failed, don't update the status again because it is already failed
+    // if (!ExecutionStatus.FAILED.equals(history.getIndicator()))
+    //   history.setIndicator(this.curstatus.toString());
 
-    if (!BaseTool.isNull(this.history_input) && BaseTool.isNull(history.getHistory_input()))
-      history.setHistory_input(this.history_input);
+    // history.setHost_id(this.host);
 
-    if (!BaseTool.isNull(this.history_output))
-      history.setHistory_output(this.history_output); // save the error message to the output
-    // if the process is already failed, don't update the status again because it is already failed
-    if (!ExecutionStatus.FAILED.equals(history.getIndicator()))
-      history.setIndicator(this.curstatus.toString());
-
-    history.setHost_id(this.host);
-
-    if (!ExecutionStatus.RUNNING.equals(history.getHistory_output()))
-      hist.saveHistory(history); // only save if the historyoutput is not Running.
+    // if (!ExecutionStatus.RUNNING.equals(history.getHistory_output())) {
+    //   hist.saveHistory(history); // only save if the historyoutput is not Running.
+    // }
   }
 
   /** Update the database history table and notify the workflow websocket session */
   public void updateEverything() {
 
-    saveHistory();
+    // saveHistory();
 
-    logger.debug(
+    logger.info(
         "updateeverything is called and this.workflow_history_id = " + this.workflow_history_id);
 
-    refreshWorkflowMonitor();
+    // refreshWorkflowMonitor();
 
     // this.sendSingleTaskStatus(workflow_pid, history_id, this.curstatus);
     this.sendWorkflowTaskStatus();
@@ -616,6 +625,9 @@ public class GeoweaverProcessTask extends Task {
     logger.error("Process execution is failed " + e.getLocalizedMessage());
 
     this.curstatus = ExecutionStatus.FAILED;
+    
+    // Update the cache with the new status
+    processStatusCache.updateStatus(history_id, this.curstatus);
 
     this.updateEverything();
 

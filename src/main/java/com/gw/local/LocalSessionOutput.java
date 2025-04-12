@@ -7,6 +7,7 @@ import com.gw.server.CommandServlet;
 import com.gw.server.LongPollingController;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.ProcessStatusCache;
 import java.io.BufferedReader;
 import java.io.IOException;
 import javax.websocket.Session;
@@ -30,6 +31,8 @@ public class LocalSessionOutput implements Runnable {
   @Autowired HistoryTool ht;
 
   @Autowired HistoryRepository historyRepository;
+  
+  @Autowired ProcessStatusCache processStatusCache;
 
   protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -72,8 +75,7 @@ public class LocalSessionOutput implements Runnable {
     this.run = true;
     this.history_id = history_id;
     this.lang = lang;
-    this.jupyterfilepath = jupyterfilepath; // this is passed null and being used in Windows Impl
-    refreshLogMonitor();
+    this.jupyterfilepath = jupyterfilepath; 
   }
 
   /** Stops the local session output processing. */
@@ -130,18 +132,18 @@ public class LocalSessionOutput implements Runnable {
    * closed, it attempts to retrieve the session and ensure it's properly registered.
    */
   public void refreshLogMonitor() {
-    if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
-      log.debug("Refreshing WebSocket connection for token: " + this.token);
-      // Try to get a new session
-      wsout = CommandServlet.findSessionById(token);
+    // if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+    //   log.debug("Refreshing WebSocket connection for token: " + this.token);
+    //   // Try to get a new session
+    //   wsout = CommandServlet.findSessionById(token);
       
-      // If we still don't have a valid session, log the issue
-      if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
-        log.debug("Could not refresh WebSocket connection for token: " + this.token);
-      } else {
-        log.debug("Successfully refreshed WebSocket connection for token: " + this.token);
-      }
-    }
+    //   // If we still don't have a valid session, log the issue
+    //   if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+    //     log.debug("Could not refresh WebSocket connection for token: " + this.token);
+    //   } else {
+    //     log.debug("Successfully refreshed WebSocket connection for token: " + this.token);
+    //   }
+    // }
   }
 
   /** Cleans the WebSocket session by removing it from the CommandServlet. */
@@ -170,10 +172,13 @@ public class LocalSessionOutput implements Runnable {
     // Get the latest history
     History h = ht.getHistoryById(this.history_id);
 
+    String status;
     if (exitvalue == 0) {
-      h.setIndicator(ExecutionStatus.DONE);
+      status = ExecutionStatus.DONE;
+      h.setIndicator(status);
     } else {
-      h.setIndicator(ExecutionStatus.FAILED);
+      status = ExecutionStatus.FAILED;
+      h.setIndicator(status);
     }
 
     h.setHistory_end_time(BaseTool.getCurrentSQLDate());
@@ -216,6 +221,7 @@ public class LocalSessionOutput implements Runnable {
     h.setIndicator(status);
 
     ht.saveHistory(h);
+    
   }
 
   /**
@@ -252,7 +258,7 @@ public class LocalSessionOutput implements Runnable {
       while ((line = in.readLine()) != null) {
         try {
           log.info(line);
-          refreshLogMonitor(); // Check and refresh the WebSocket session
+          // refreshLogMonitor(); // Check and refresh the WebSocket session
 
           // readLine will block if nothing to send
           if (BaseTool.isNull(in)) {
@@ -319,7 +325,7 @@ public class LocalSessionOutput implements Runnable {
 
       // Depending on the language (e.g., "jupyter"), update the status to "Done"
 
-        this.updateStatus(logs.toString(), "Done");
+      this.updateStatus(logs.toString(), "Done");
 
 
       // If the process is available, attempt to stop and get its exit code

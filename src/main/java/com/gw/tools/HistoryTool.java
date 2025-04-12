@@ -5,6 +5,7 @@ import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.jpa.HistoryDTO;
+import com.gw.utils.ProcessStatusCache;
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
@@ -42,6 +43,8 @@ public class HistoryTool {
   Logger log = Logger.getLogger(this.getClass());
 
   @Autowired HistoryRepository historyrepository;
+  
+  @Autowired ProcessStatusCache processStatusCache;
 
   @Value("${geoweaver.upload_file_path}")
   String upload_file_path;
@@ -119,11 +122,25 @@ public class HistoryTool {
 
     History h;
 
+    // Check if status is in cache first
+    String cachedStatus = processStatusCache.getStatus(hid);
+    
     Optional<History> ho = historyrepository.findById(hid);
 
     if (ho.isPresent()) {
 
       h = ho.get();
+      
+      // If we have a cached status that's different from the database,
+      // it might be more recent, so use it
+      if (cachedStatus != null && !cachedStatus.equals(h.getIndicator())) {
+        logger.debug("Using cached status for history ID: " + hid + ": " + cachedStatus + 
+                   " (database had: " + h.getIndicator() + ")");
+        h.setIndicator(cachedStatus);
+      } else if (cachedStatus == null) {
+        // Update cache with status from database
+        processStatusCache.updateStatus(hid, h.getIndicator());
+      }
 
     } else {
 
@@ -147,8 +164,17 @@ public class HistoryTool {
       logger.warn("This indicator shouldn't be null in all scenarios");
     }
 
+    processStatusCache.updateStatus(history.getHistory_id(), history.getIndicator());
+
     synchronized (historyrepository) {
       historyrepository.saveAndFlush(history);
+      
+      // Update the cache with the latest status
+      if (history.getHistory_id() != null && history.getIndicator() != null) {
+        
+        logger.info("Updated cache after saving history ID: " + history.getHistory_id() + 
+                   " with status: " + history.getIndicator());
+      }
     }
   }
 
