@@ -1,0 +1,137 @@
+<!-- Modern Side Menu for Geoweaver -->
+<div class="col col-sm-3 col-md-3 col-lg-3 small-height" id="sidemenu" style="height:calc(100vh); top: 0; margin: 0;padding: 0; overflow-y: hidden; position: relative;">
+
+    <button class="modern-side-menu-collapse-btn">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+
+    <!-- Header with logo -->
+    <div class="modern-sidemenu-header">
+        <img src="../img/header.png" alt="Geoweaver Logo"/>
+    </div>
+
+    <div class="modern-nav-side-menu">
+        <!-- Modern search bar -->
+        <div class="modern-search-form">
+            <input type="text" id="instant_search_bar" placeholder="Search anything...">
+            <i class="fa fa-search search-icon"></i>
+            <i class="fa fa-times-circle clear-icon" id="clean_search_field"></i>
+        </div>
+
+        <div class="menu-list" data-intro="Side menu contains all the existing resources in Geoweaver database">
+            <ul class="modern-category">
+                <!-- Hosts Category -->
+                <li data-intro="Hosts are computing platforms, e.g., a laptop, a Linux server, a Jupyter Notebook server, a JupyterHub, Google Earth Engine. You can add and manage multiple hosts in one place.">
+                    <div class="modern-category-header" data-toggle="collapse" data-target="#hosts">
+                        <i class="fa fa-server"></i>
+                        <span class="title">Hosts</span>
+                        <button type="button" class="new-btn" id="newhost">New</button>
+                        <i class="fas fa-chevron-up toggle-icon"></i>
+                    </div>
+                    <ul class="modern-subcategory expanded" id="hosts">
+                        <li>
+                            <div class="modern-subcategory-header" data-toggle="collapse" data-target="#host_folder_ssh_target">
+                                <span class="title">Linux/Win/Mac Computers</span>
+                                <i class="fas fa-chevron-up toggle-icon"></i>
+                            </div>
+                            <ul class="modern-subcategory expanded" id="host_folder_ssh_target">
+                                <!-- Host items will be dynamically added here -->
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Process Category -->
+                <li data-intro="Processes are programs like Python code, shell scripts, Jupyter Notebooks, Google Earth Engine scripts, etc. You can manage all your code here in one place and run on different hosts.">
+                    <div class="modern-category-header" data-toggle="collapse" data-target="#processes">
+                        <i class="fa fa-cog"></i>
+                        <span class="title">Process</span>
+                        <button type="button" class="new-btn" id="newprocess">New</button>
+                        <i class="fas fa-chevron-up toggle-icon"></i>
+                    </div>
+                    <ul class="modern-subcategory expanded" id="processes">
+                        <li>
+                            <div class="modern-subcategory-header" data-toggle="collapse" data-target="#process_folder_shell_target">
+                                <span class="title">Shell</span>
+                                <i class="fas fa-chevron-up toggle-icon"></i>
+                            </div>
+                            <ul class="modern-subcategory expanded" id="process_folder_shell_target">
+                                <!-- Shell process items will be dynamically added here -->
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="modern-subcategory-header" data-toggle="collapse" data-target="#process_folder_builtin_target">
+                                <span class="title">Builtin Process</span>
+                                <i class="fas fa-chevron-up toggle-icon"></i>
+                            </div>
+                            <ul class="modern-subcategory expanded" id="process_folder_builtin_target">
+                                <!-- Builtin process items will be dynamically added here -->
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="modern-subcategory-header" data-toggle="collapse" data-target="#process_folder_python_target">
+                                <span class="title">Python</span>
+                                <i class="fas fa-chevron-up toggle-icon"></i>
+                            </div>
+                            <ul class="modern-subcategory expanded" id="process_folder_python_target">
+                                <!-- Python process items will be dynamically added here -->
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Workflows Category -->
+                <li data-intro="Workflows are linked pipes of a number of processes. You can easily turn complicated scientific experiments into several worflows and execute and manage them from here.">
+                    <div class="modern-category-header" data-toggle="collapse" data-target="#workflows">
+                        <i class="fa fa-cogs"></i>
+                        <span class="title">Workflows</span>
+                        <button type="button" class="new-btn" id="newworkflow">New</button>
+                        <i class="fas fa-chevron-up toggle-icon"></i>
+                    </div>
+                    <ul class="modern-subcategory expanded" id="workflows">
+                        <!-- Workflow items will be dynamically added here -->
+                    </ul>
+                </li>
+
+                <!-- Tools Category -->
+                <li data-intro="All the other tools" class="modern-tools">
+                    <div class="modern-category-header" data-toggle="collapse" data-target="#tools">
+                        <i class="fa fa-cube"></i>
+                        <span class="title">Tools</span>
+                        <i class="fas fa-chevron-up toggle-icon"></i>
+                    </div>
+                    <ul class="modern-subcategory expanded" id="tools">
+                        <li class="modern-item" id="toolbar-search">
+                            <i class="fa fa-search item-icon"></i>
+                            <span class="item-title">Search</span>
+                        </li>
+                        <li class="modern-item" id="toolbar-history">
+                            <i class="fa fa-history item-icon"></i>
+                            <span class="item-title">History</span>
+                        </li>
+                        <li class="modern-item" id="toolbar-monitor">
+                            <i class="fa fa-film item-icon"></i>
+                            <span class="item-title">Monitor</span>
+                        </li>
+                        <li class="modern-item" id="toolbar-settings">
+                            <i class="fa fa-cog item-icon"></i>
+                            <span class="item-title">Settings</span>
+                        </li>
+                        <li class="modern-item" onclick="GW.tutorial.showDialog()">
+                            <i class="fa fa-book item-icon"></i>
+                            <span class="item-title">Tutorial</span>
+                        </li>
+                        <li class="modern-item" onclick="GW.about.showDialog()">
+                            <i class="fa fa-info item-icon"></i>
+                            <span class="item-title">About</span>
+                        </li>
+                        <li class="modern-item" onclick="GW.feedback.showDialog()">
+                            <i class="fa fa-comment item-icon"></i>
+                            <span class="item-title">Contact</span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

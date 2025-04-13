@@ -205,14 +205,24 @@ GW.menu = {
     var sideMenu = $("#sidemenu");
     var mainPanel = $("#main_panel_div");
     var workspaceBtn = $(".workspace_collapse_btn");
+    var collapseBtn = $(".modern-side-menu-collapse-btn i");
     
     // Check if the side menu is already collapsed
-    if (sideMenu.width() != 0) {
+    if (sideMenu.width() != 0 && !sideMenu.hasClass("collapsed")) {
       // Collapse the side menu with smooth transition
       sideMenu.css({
           "transition": "width 0.3s ease",
-          "width": "0",
-      }).addClass("invisible");
+          "width": "60px",
+      }).addClass("collapsed");
+      
+      // Update collapse button icon
+      if (collapseBtn.length) {
+        collapseBtn.removeClass("fa-chevron-left").addClass("fa-chevron-right");
+      }
+      
+      // Hide text elements in modern menu
+      $(".modern-category-header .title, .modern-category-header .new-btn, .modern-subcategory").css("display", "none");
+      $(".modern-category-header").css("justifyContent", "center");
       
       // Adjust the main panel size
       mainPanel.removeClass("col-md-9").addClass("col-md-12");
@@ -220,24 +230,37 @@ GW.menu = {
       // Show the workspace button
       workspaceBtn.css({
           "visibility": "visible",
-          "transition": "visibility 0.3s ease", // Smooth transition for visibility
+          "transition": "visibility 0.3s ease",
       });
     } else {
       // Expand the side menu with smooth transition
-      sideMenu.removeClass("invisible").css({
+      sideMenu.removeClass("collapsed").css({
           "transition": "width 0.3s ease",
           "width": "", // Reset width to default
       });
       
+      // Update collapse button icon
+      if (collapseBtn.length) {
+        collapseBtn.removeClass("fa-chevron-right").addClass("fa-chevron-left");
+      }
+      
+      // Show text elements in modern menu
+      $(".modern-category-header .title, .modern-category-header .new-btn").css("display", "");
+      $(".modern-subcategory.expanded").css("display", "");
+      $(".modern-category-header").css("justifyContent", "");
+      
       // Adjust the main panel size back to normal
       mainPanel.removeClass("col-md-12").addClass("col-md-9");
       
-      // Hide the workspace button (using opacity for smoother transition)
+      // Hide the workspace button
       workspaceBtn.css({
           "visibility": "hidden",
-          "transition": "visibility 0.3s ease", // Smooth transition for visibility
+          "transition": "visibility 0.3s ease",
       });
     }
-  },
+    
+    // Trigger a resize event to ensure proper layout adjustment
+    $(window).trigger('resize');
+  }
 
 };

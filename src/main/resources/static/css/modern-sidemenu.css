@@ -1,0 +1,305 @@
+/* Modern Side Menu Styles for Geoweaver
+ * This file contains styles for the redesigned left panel
+ */
+
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --accent-color: #e74c3c;
+  --light-bg: #f8f9fa;
+  --dark-bg: #343a40;
+  --text-color: #333;
+  --light-text: #f8f9fa;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  --transition-speed: 0.3s;
+}
+
+/* Main side menu container */
+.modern-nav-side-menu {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--light-bg);
+  height: calc(100vh - 50px);
+  overflow-y: auto;
+  transition: all var(--transition-speed) ease;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  padding: 0;
+  color: var(--text-color);
+}
+
+/* Header with logo */
+.modern-sidemenu-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 0;
+  background-color: var(--secondary-color);
+}
+
+.modern-sidemenu-header img {
+  height: 35px;
+  width: auto;
+}
+
+/* Modern search bar */
+.modern-search-form {
+  position: relative;
+  padding: 15px;
+  background-color: var(--light-bg);
+}
+
+.modern-search-form input {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  transition: all var(--transition-speed) ease;
+  background-color: white;
+}
+
+.modern-search-form input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.modern-search-form .search-icon {
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  color: #aaa;
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-search-form input:focus + .search-icon {
+  color: var(--primary-color);
+}
+
+.modern-search-form .clear-icon {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  color: #aaa;
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-search-form input:not(:placeholder-shown) + .search-icon + .clear-icon {
+  opacity: 1;
+}
+
+/* Category headers */
+.modern-category {
+  margin: 0;
+  list-style: none;
+  padding: 0;
+}
+
+.modern-category-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: var(--light-bg);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-category-header:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+.modern-category-header i {
+  margin-right: 10px;
+  font-size: 18px;
+  color: var(--primary-color);
+  width: 24px;
+  text-align: center;
+}
+
+.modern-category-header .title {
+  font-weight: 500;
+  flex-grow: 1;
+}
+
+.modern-category-header .toggle-icon {
+  transition: transform var(--transition-speed) ease;
+}
+
+.modern-category-header.collapsed .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.modern-category-header .new-btn {
+  margin-right: 10px;
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-category-header .new-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+/* Subcategories */
+.modern-subcategory {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background-color: rgba(0,0,0,0.02);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height var(--transition-speed) ease;
+}
+
+.modern-subcategory.expanded {
+  max-height: 1000px;
+}
+
+.modern-subcategory-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px 10px 35px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.modern-subcategory-header:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.modern-subcategory-header .title {
+  font-weight: 400;
+  flex-grow: 1;
+}
+
+.modern-subcategory-header .toggle-icon {
+  transition: transform var(--transition-speed) ease;
+}
+
+.modern-subcategory-header.collapsed .toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* Items */
+.modern-item {
+  padding: 8px 15px 8px 55px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  display: flex;
+  align-items: center;
+}
+
+.modern-item:hover {
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.modern-item.active {
+  background-color: rgba(52, 152, 219, 0.2);
+  border-left: 3px solid var(--primary-color);
+}
+
+.modern-item .item-icon {
+  margin-right: 10px;
+  font-size: 14px;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.modern-item .item-title {
+  font-size: 14px;
+  flex-grow: 1;
+}
+
+.modern-item .item-actions {
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.modern-item:hover .item-actions {
+  opacity: 1;
+}
+
+.modern-item .item-actions button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 2px;
+  margin-left: 5px;
+  font-size: 14px;
+  opacity: 0.7;
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-item .item-actions button:hover {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* Tools section */
+.modern-tools {
+  margin-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.modern-tools .modern-item {
+  padding-left: 35px;
+}
+
+.modern-tools .modern-item .item-icon {
+  color: var(--secondary-color);
+}
+
+/* Collapse button */
+.modern-side-menu-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  transform: translateY(-50%);
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--box-shadow);
+  transition: all var(--transition-speed) ease;
+}
+
+.modern-side-menu-collapse-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .modern-nav-side-menu {
+    width: 100%;
+    position: fixed;
+    z-index: 1000;
+    left: -100%;
+  }
+  
+  .modern-nav-side-menu.show {
+    left: 0;
+  }
+  
+  .modern-side-menu-collapse-btn {
+    right: 10px;
+  }
+}

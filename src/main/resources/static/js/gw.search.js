@@ -14,9 +14,19 @@ GW.search = {
       GW.menu.refreshSearchResults();
 
       if (GW.search.keywords != "") {
-        $("#clean_search_field").css("visibility", "visible");
+        // Support both old and new UI
+        if($("#clean_search_field").hasClass("clear-icon")) {
+          $("#clean_search_field").css("opacity", "1");
+        } else {
+          $("#clean_search_field").css("visibility", "visible");
+        }
       } else {
-        $("#clean_search_field").css("visibility", "hidden");
+        // Support both old and new UI
+        if($("#clean_search_field").hasClass("clear-icon")) {
+          $("#clean_search_field").css("opacity", "0");
+        } else {
+          $("#clean_search_field").css("visibility", "hidden");
+        }
       }
     });
 
@@ -25,7 +35,12 @@ GW.search = {
 
       GW.search.keywords = "";
 
-      $("#clean_search_field").css("visibility", "hidden");
+      // Support both old and new UI
+      if($(this).hasClass("clear-icon")) {
+        $(this).css("opacity", "0");
+      } else {
+        $(this).css("visibility", "hidden");
+      }
 
       GW.menu.refreshSearchResults();
     });
