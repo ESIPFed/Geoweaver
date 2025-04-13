@@ -134,12 +134,15 @@ GW.monitor = {
     $("#workspace_progress_indicator").addClass("visible");
   },
 
-  closeProgressIndicator: function () {
-    $("#workspace_progress_indicator").removeClass("visible");
-
-    $("#workspace_progress_indicator").addClass("invisible");
-
-    this.clearProgressIndicator(); //after the workflow is done, clear the progress bar.
+  closeProgressIndicator: function (force = false) {
+    // Check if auto-close is enabled or if force close is requested
+    var autoClose = localStorage.getItem('gw_progress_auto_close') === 'true';
+    
+    if (autoClose || force) {
+      $("#workspace_progress_indicator").removeClass("visible");
+      $("#workspace_progress_indicator").addClass("invisible");
+      this.clearProgressIndicator(); //after the workflow is done, clear the progress bar.
+    }
   },
 
   updateProgress: function (id, flag) {
@@ -400,6 +403,7 @@ GW.monitor = {
 
     GW.workspace.currentmode = 1;
 
+    // Close progress indicator based on user settings
     GW.monitor.closeProgressIndicator();
 
     GW.monitor.closeWorkspaceIndicator();

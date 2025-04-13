@@ -11,6 +11,10 @@ GW.settings = {
 
     this.selected_monaco_theme = localStorage.getItem('editorTheme') || GW.settings.default_monaco_theme
     
+    // Initialize progress indicator auto-close setting if not set
+    if (localStorage.getItem('gw_progress_auto_close') === null) {
+      localStorage.setItem('gw_progress_auto_close', 'false'); // Default to manual close
+    }
   },
 
   clearCache: function () {
@@ -120,6 +124,15 @@ GW.settings = {
       "            </select> " +
       "        </span> " +
       "    </div> " +
+      '    <div class="list-group-item clearfix"> ' +
+      "        Auto-close Progress Indicator " +
+      '        <span class="pull-right"> ' +
+      '            <select id="progress-autoclose-selector" class="form-control" style="width: auto;">' +
+      '                <option value="true">Yes</option>' +
+      '                <option value="false">No</option>' +
+      "            </select> " +
+      "        </span> " +
+      "    </div> " +
       "</div>";
 
     var frame = GW.process.createJSFrameDialog(360, 320, content, "Settings");
@@ -129,6 +142,10 @@ GW.settings = {
     // Set the current theme as selected in the dropdown
     $('#editor-theme-selector').val(GW.settings.selected_monaco_theme);
 
+    // Set the current progress auto-close setting
+    var autoCloseProgress = localStorage.getItem('gw_progress_auto_close') || 'false';
+    $('#progress-autoclose-selector').val(autoCloseProgress);
+
     // Add event listener to save the selected theme
     $('#editor-theme-selector').on('change', function () {
       var selectedTheme = $(this).val();
@@ -137,6 +154,13 @@ GW.settings = {
       localStorage.setItem('editorTheme', selectedTheme); // Save to local storage
       monaco.editor.setTheme(selectedTheme); // Apply the theme to Monaco Editor
       GW.settings.syncMonacoStyles(GW.process.editor)
+    });
+    
+    // Add event listener to save the progress auto-close setting
+    $('#progress-autoclose-selector').on('change', function () {
+      var autoClose = $(this).val();
+      console.log("Progress auto-close setting changed to: " + autoClose);
+      localStorage.setItem('gw_progress_auto_close', autoClose); // Save to local storage
     });
 
   },
