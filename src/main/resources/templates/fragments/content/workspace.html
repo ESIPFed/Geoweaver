@@ -55,8 +55,17 @@
             <div id="workspace" class="tabcontent" style="height:100%; margin: 0;padding: 0;">
                 <!-- status indicator right bottom -->
                 <div th:replace="fragments/content/workspace/status-indicator"></div>
-                <!-- progress right bottom, above the status indicator -->
-                <div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;"></div>                
+                <!-- Enhanced progress indicator -->
+                <div id="workspace_progress_indicator" class="workspace-progress-container visible">
+                    <div class="progress-header">
+                        <h6 class="progress-title">Workflow Progress</h6>
+                        <span class="progress-close" onclick="GW.monitor.closeProgressIndicator()"><i class="fa fa-times"></i></span>
+                    </div>
+                    <div id="progress-tasks-container">
+                        <!-- Progress tasks will be dynamically inserted here -->
+                        <div class="progress-empty-message">No active tasks</div>
+                    </div>
+                </div>                
                 <div th:replace="fragments/content/workspace/toolbox" class="d-md-block"></div>
             </div>
         </div>
