@@ -1,0 +1,44 @@
+/* Workflow Status Indicator Styling */
+
+#workspace_status_indicator {
+    transition: all 0.3s ease;
+}
+
+.workflow-status-container {
+    transition: all 0.3s ease;
+}
+
+.workflow-status-container:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+#workflow_info:hover {
+    background-color: rgba(255,255,255,0.9) !important;
+    color: #007bff !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#current_workflow_na {
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Ensure the workflow status doesn't overlap with other UI elements */
+@media (max-width: 768px) {
+    #workspace_status_indicator {
+        bottom: 80px; /* Move up on smaller screens to avoid overlap */
+    }
+    
+    .workflow-status-container {
+        padding: 6px 8px;
+    }
+    
+    #current_workflow_na {
+        max-width: 150px;
+        font-size: 14px !important;
+    }
+}

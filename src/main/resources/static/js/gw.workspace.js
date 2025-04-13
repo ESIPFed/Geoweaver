@@ -1055,6 +1055,11 @@ GW.workspace = {
     ) {
       var thisGraph = this;
       d3Path.classed(thisGraph.consts.selectedClass, true);
+      // Add visual feedback for selected edge
+      d3Path.style("stroke", "#4285f4");
+      d3Path.style("stroke-width", "4px");
+      d3Path.style("filter", "url(#drop-shadow-selected)");
+      
       if (thisGraph.state.selectedEdge) {
         thisGraph.removeSelectFromEdge();
       }
@@ -1099,7 +1104,10 @@ GW.workspace = {
         .filter(function (cd) {
           return cd === thisGraph.state.selectedEdge;
         })
-        .classed(thisGraph.consts.selectedClass, false);
+        .classed(thisGraph.consts.selectedClass, false)
+        .style("stroke", "url(#edge-gradient)")
+        .style("stroke-width", "2.5px")
+        .style("filter", "url(#edge-shadow)");
       thisGraph.state.selectedEdge = null;
       GW.workspace.showNonSaved();
     };
@@ -1326,6 +1334,7 @@ GW.workspace = {
           thisGraph.removeNode(pid);
         } else if (selectedEdge) {
           //removing an edge is much easier than removing a process
+          console.log("Removing selected edge");
           thisGraph.edges.splice(thisGraph.edges.indexOf(selectedEdge), 1);
           state.selectedEdge = null;
           GW.workspace.showNonSaved();
@@ -1378,8 +1387,8 @@ GW.workspace = {
       switch (d3.event.keyCode) {
         case consts.BACKSPACE_KEY:
         case consts.DELETE_KEY:
-          // d3.event.preventDefault();
-          //only delete the process nodes when there is no dialog in sight
+          d3.event.preventDefault();
+          //only delete the process nodes or edges when there is no dialog in sight
           if (
             !GW.workspace.if_any_frame_on &&
             !GW.process.sidepanel.isPresent()
@@ -1441,6 +1450,13 @@ GW.workspace = {
         })
         .on("mouseup", () => {
           state.mouseDownLink = null;
+        })
+        .on("mouseover", function() {
+          d3.select(this).style("cursor", "pointer");
+          d3.select(this).style("stroke-width", "4px");
+        })
+        .on("mouseout", function() {
+          d3.select(this).style("stroke-width", "2.5px");
         });
     
       // Update nodes

@@ -1,10 +1,9 @@
-<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; right: 20px; height: 50px; z-index:1;">
-    <h2>
-        <i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:20px;color:red"></i>
-        <span id="current_workflow_na" class="badge badge-info" style="font-size: 20px;" ></span>
-        <i class="btn fa fa-info-circle fa-2x" id="workflow_info"
-           style="font-size:20px; margin: 0; padding: 0; vertical-align: middle; color:darkgray">
-            <span> metadata</span>
+<div id="workspace_status_indicator" style="position: absolute; bottom: 20px; left: 20px; height: 50px; z-index:1;">
+    <div class="workflow-status-container" style="display: flex; align-items: center; background: linear-gradient(to right, rgba(240,240,240,0.9), rgba(240,240,240,0.7)); border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <i class="fa fa-spinner fa-spin invisible" id="running_spinner" style="font-size:18px; color:#dc3545; margin-right: 8px;"></i>
+        <span id="current_workflow_na" class="badge badge-primary" style="font-size: 16px; margin-right: 10px; background-color: #007bff; padding: 5px 10px; border-radius: 4px;"></span>
+        <i class="btn fa fa-info-circle" id="workflow_info" style="font-size:18px; margin: 0; padding: 5px; color:#495057; background-color: rgba(255,255,255,0.7); border-radius: 4px; transition: all 0.2s ease;">
+            <span style="font-size: 14px; font-weight: 500; margin-left: 4px;">Metadata</span>
         </i>
-    </h2>
+    </div>
 </div>

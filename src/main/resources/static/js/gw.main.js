@@ -111,6 +111,24 @@ GW.main = {
 
     GW.board.init();
 
+    // Initialize chatbot
+    if (GW.chatbot) {
+      // Check if LLM API is configured before initializing chatbot
+      $.ajax({
+        url: GW.path.getBasePath() + 'api/chatbot/config-status',
+        type: 'GET',
+        async: false, // Use synchronous request to ensure configuration is checked before proceeding
+        success: function(response) {
+          if (response.configured) {
+            GW.chatbot.init();
+          }
+        },
+        error: function(error) {
+          console.error('Error checking chatbot configuration:', error);
+        }
+      });
+    }
+
     introJs().start();
 
     $(window).on("beforeunload", GW.main.exitWarning);

@@ -442,10 +442,15 @@ form .progress {
 }
 
 .log_window {
-  border-radius: 10px;
-  background: #333333;
+  background-color: #f8f9fa;
+  color: #333333;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.5;
   padding: 10px;
-  color: white;
+  border-radius: 10px;
+  border: 1px solid #dee2e6;
+  overflow-y: auto;
 }
 
 .side_menu_collapse_btn {

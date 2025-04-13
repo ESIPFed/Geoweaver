@@ -191,6 +191,12 @@ GW.ssh = {
     var dt = new Date();
     var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
+    // Skip messages containing token: or execution:
+    if (content.indexOf("token:") !== -1 || content.indexOf("execution:") !== -1) {
+      console.log("Filtered log message containing token: or execution:");
+      return;
+    }
+
     // Split content by the log separator
     var cont_splits = content.split("*_*");
     var log_history_id = null;
@@ -205,18 +211,19 @@ GW.ssh = {
     console.log("Log received - history_id: " + log_history_id + ", current process history_id: " + GW.process.history_id);
 
     // Style based on content
-    var style1 = "";
+    var style1 = "color: #333333; background-color: transparent;";
     if (content.includes("Start to execute")) {
-      style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+      style1 = "color: #0056b3; font-weight: bold; text-decoration: underline; background-color: #f8f9fa;";
       $(".dot-flashing").removeClass("invisible").addClass("visible");
     } else if (content.includes("===== Process") || content.includes("Connected to process execution")) {
-      style1 = "color: blue; font-weight: bold; text-decoration: underline;";
+      style1 = "color: #0056b3; font-weight: bold; text-decoration: underline; background-color: #f8f9fa;";
       $(".dot-flashing").removeClass("visible").addClass("invisible");
     } else if (content == "disconnected") {
+      style1 = "color: #dc3545; background-color: #f8f9fa;";
       $(".dot-flashing").removeClass("visible").addClass("invisible");
     } else if (log_history_id == GW.process.history_id) {
       // This log belongs to the current process
-      style1 = "color: black;";
+      style1 = "color: #333333; background-color: transparent;";
       $(".dot-flashing").removeClass("invisible").addClass("visible");
     } else {
       $(".dot-flashing").removeClass("visible").addClass("invisible");
@@ -224,7 +231,7 @@ GW.ssh = {
 
     // Create the HTML for the log line
     var newline =
-      `<p style="line-height:1.1; text-align:left; margin-top: 10px; ` +
+      `<p style="line-height:1.3; text-align:left; margin-top: 10px; ` +
       `margin-bottom: 10px;"><span style="` +
       style1 +
       `">` +

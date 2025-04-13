@@ -1,0 +1,146 @@
+/* 
+ * Progress Indicator Styles
+ * Modern, professional styling for workflow progress indicators
+ */
+
+.workspace-progress-container {
+  position: absolute;
+  max-height: 350px;
+  top: 80px;
+  right: 10px;
+  width: 280px;
+  z-index: 10;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.progress-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #495057;
+  margin: 0;
+}
+
+.progress-task {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+  transition: all 0.2s ease;
+}
+
+.progress-task:hover {
+  background-color: #f1f3f5;
+}
+
+.progress-task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.task-id {
+  font-weight: 600;
+  font-size: 13px;
+  color: #495057;
+}
+
+.task-status {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status-running {
+  background-color: #cce5ff;
+  color: #0056b3;
+}
+
+.status-done {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.progress {
+  height: 8px;
+  margin-bottom: 4px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-custom {
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+.progress-bar-running {
+  background: linear-gradient(45deg, #007bff 25%, #0069d9 25%, #0069d9 50%, #007bff 50%, #007bff 75%, #0069d9 75%);
+  background-size: 20px 20px;
+  animation: progress-bar-stripes 1s linear infinite;
+}
+
+.progress-bar-done {
+  background-color: #28a745;
+}
+
+.progress-bar-failed {
+  background-color: #dc3545;
+}
+
+.progress-percentage {
+  text-align: right;
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.progress-empty-message {
+  text-align: center;
+  color: #6c757d;
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+.progress-close {
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s ease;
+}
+
+.progress-close:hover {
+  color: #343a40;
+}
+
+@keyframes progress-bar-stripes {
+  from { background-position: 0 0; }
+  to { background-position: 20px 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .workspace-progress-container {
+    width: 240px;
+  }
+}
