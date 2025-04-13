@@ -144,44 +144,57 @@ GW.monitor = {
 
   updateProgress: function (id, flag) {
     var percent = 0;
-
     var barcolor = "";
+    var statusClass = "";
+    
+    // Get task name from the workspace graph if available
+    var taskName = "Task";
+    if (GW.workspace && GW.workspace.theGraph) {
+      for (var i = 0; i < GW.workspace.theGraph.nodes.length; i++) {
+        if (GW.workspace.theGraph.nodes[i].id == id) {
+          taskName = GW.workspace.theGraph.nodes[i].title || "Task";
+          break;
+        }
+      }
+    }
 
     if (flag == "Running") {
       percent = 30;
-      barcolor = "progress-bar-success progress-bar-striped active";
+      barcolor = "progress-bar-running";
+      statusClass = "status-running";
     } else if (flag == "Done") {
       percent = 100;
-      barcolor = "progress-bar-success progress-bar-striped";
+      barcolor = "progress-bar-done";
+      statusClass = "status-done";
     } else if (flag == "Failed") {
       percent = 100;
-      barcolor = "progress-bar-danger progress-bar-striped";
+      barcolor = "progress-bar-failed";
+      statusClass = "status-failed";
     }
 
+    // Check if the progress task already exists
     if (!$("#progress-" + id).length) {
-      $("#workspace_progress_indicator").append(
-        '<div id="progress-' + id + '">	</div>',
+      // Create a new progress task with modern styling
+      $("#progress-tasks-container").find(".progress-empty-message").remove(); // Remove empty message if present
+      
+      $("#progress-tasks-container").append(
+        '<div id="progress-' + id + '" class="progress-task">\t</div>'
       );
     }
 
+    // Update the progress task with task name, status, and close button
     $("#progress-" + id).html(
-      "		Task " +
-        id +
-        " " +
-        '		<div class="progress"> ' +
-        '		  <div class="progress-bar ' +
-        barcolor +
-        '" role="progressbar" ' +
-        '		  aria-valuenow="' +
-        percent +
-        '" aria-valuemin="0" aria-valuemax="100" style="width:' +
-        percent +
-        '%"> ' +
-        "		    " +
-        percent +
-        "% " +
-        "		  </div> " +
-        "		</div> ",
+      '<div class="progress-task-header">' +
+      '  <span class="task-id">' + taskName + ' (' + id + ')</span>' +
+      '  <div class="d-flex align-items-center">' +
+      '    <span class="task-status ' + statusClass + '">' + flag + '</span>' +
+      '    <span class="task-close ml-2" onclick="$(this).closest(\'#progress-' + id + '\').remove();"><i class="fa fa-times"></i></span>' +
+      '  </div>' +
+      '</div>' +
+      '<div class="progress">' +
+      '  <div class="progress-bar-custom ' + barcolor + '" style="width:' + percent + '%"></div>' +
+      '</div>' +
+      '<div class="progress-percentage">' + percent + '%</div>'
     );
   },
 

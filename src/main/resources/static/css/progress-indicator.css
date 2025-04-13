@@ -123,14 +123,19 @@
   padding: 20px 0;
 }
 
-.progress-close {
+.progress-close, .task-close {
   cursor: pointer;
   color: #6c757d;
   transition: color 0.2s ease;
 }
 
-.progress-close:hover {
+.progress-close:hover, .task-close:hover {
   color: #343a40;
+}
+
+.task-close {
+  margin-left: 8px;
+  font-size: 12px;
 }
 
 @keyframes progress-bar-stripes {
