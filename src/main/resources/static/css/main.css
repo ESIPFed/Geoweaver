@@ -164,6 +164,9 @@ form .progress {
   animation: fadein 0.3s ease, fadeout 0.3s ease 2.5s; /* Show for 2.5 seconds */
 }
 
+[id*="code-embed"] {
+  overflow-y: hidden !important; /* Completely removes vertical scroll */
+}
 
 .bare-window {
   padding:0;
@@ -424,7 +427,7 @@ form .progress {
   background-color: #cbd5e0;
   cursor: ew-resize;
   height: 100%;
-  width: 2px;
+  width: 8px !important;
 }
 
 .fullscreen {
