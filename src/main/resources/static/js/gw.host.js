@@ -165,7 +165,13 @@ GW.host = {
       content,
       "Host Password",
     );
-
+    //automatic focus - input password focus
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+          document.getElementById("inputpswd")?.focus();
+      });
+  }, 100);  
+    
     $("#inputpswd").on("keypress", function (e) {
       if (e.which == 13) {
         $("#pswd-confirm-btn").click();
@@ -1072,19 +1078,41 @@ GW.host = {
 
   editSwitch: function () {
     if (GW.host.checkIfHostPanelActive()) {
-      console.log("Turn on/off the fields");
+        console.log("Turn on/off the fields");
 
-      $(".host-value-field").prop("disabled", GW.process.editOn);
+        // Enable input fields for editing
+        $(".host-value-field").prop("disabled", false);
 
-      GW.process.editOn = !GW.process.editOn;
+        // Remove any existing Save Changes button to prevent duplicates
+        $("#save-changes-btn").remove();
 
-      if (!GW.process.editOn) {
-        console.log("Save the changes if any");
+        // Add "Save Changes" button dynamically
+        $("#edit-tab").append(`
+            <button id="save-changes-btn" type="button" class="btn btn-success" onclick="GW.host.saveChanges()" style="margin-top: 10px;">Save Changes</button>
+        `);
 
-        this.edit();
-      }
+        // Set edit mode to true
+        GW.process.editOn = true;
     }
-  },
+},
+
+saveChanges: function () {
+  console.log("Saving the changes if any");
+
+  // Disable input fields after saving
+  $(".host-value-field").prop("disabled", true);
+
+  // Call the edit function to update the host details
+  GW.host.edit();  // Saves the changes
+
+  // Remove the "Save Changes" button after saving
+  $("#save-changes-btn").remove();
+
+  // Reset the edit mode
+  GW.process.editOn = false;
+
+  console.log("Changes saved successfully!");
+},
 
   openJupyter: function (hostid) {
     window.open(GW.path.getBasePath() + "jupyter-proxy/" + hostid + "/", "_blank");
@@ -1095,53 +1123,92 @@ GW.host = {
   },
 
   getToolbar: function (hostid, hosttype) {
-    var content =
-      '<i class="fa fa-edit subalignicon" onclick="GW.host.editSwitch()" data-toggle="tooltip" title="Edit"></i>';
+    return `
+      <div class="tab-container" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
+        <!-- Tabs Navigation -->
+        <ul class="tab-list" style="display: flex; list-style-type: none; padding: 0; margin: 0; border-bottom: 2px solid #ccc; width: 100%; justify-content: space-evenly; background: #f9f9f9;">
+          <li class="tab-item active" onclick="GW.host.switchTab(event, 'edit-tab', 'GW.host.editSwitch()')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Edit</li>
+          ${hosttype === "ssh" || hosttype === "null" || hosttype === null ? `
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'python-env-tab', 'GW.host.readEnvironment(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Python Env</li>
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'upload-tab', 'GW.fileupload.uploadfile(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Upload</li>
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'browse-tab', 'GW.filebrowser.start(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Browse</li>
+          ` : ""}
+          ${hosttype === "jupyter" || hosttype === "jupyterhub" || hosttype === "jupyterlab" ? `
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'history-tab', 'GW.host.recent(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">History</li>
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'jupyter-tab', 'GW.host.openJupyter(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Open Jupyter</li>
+          ` : ""}
+          ${hosttype === "gee" ? `
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'history-tab', 'GW.host.recent(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">History</li>
+            <li class="tab-item" onclick="GW.host.switchTab(event, 'google-earth-tab', 'GW.host.openGoogleEarth(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Google Earth</li>
+          ` : ""}
+        </ul>
 
-    if (hosttype == "ssh" || hosttype == null || hosttype == "null") {
-      // "<i class=\"fas fa-external-link-alt subalignicon\" onclick=\"GW.host.openssh('"+
+        <!-- Tabs Content -->
+        <div class="tab-content" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 15px; background: #fff;">
+          <div id="edit-tab" class="tab-pane active" style="display: block; width: 100%; text-align: center;"></div>
+          <div id="python-env-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+          <div id="upload-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+          <div id="browse-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+          <div id="history-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+          <div id="jupyter-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+          <div id="google-earth-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
+        </div>
+      </div>
+    `;
+},
 
-      //  hostid + "')\" data-toggle=\"tooltip\" title=\"Connect SSH\"></i>"+ //this is a problematic function
 
-      //              "<i class=\"fa fa-line-chart subalignicon\" onclick=\"GW.host.recent('"+
-      //
-      //              hostid + "')\" data-toggle=\"tooltip\" title=\"History\"></i>"+
+switchTab: function (event, tabId, action) {
+  let tabItems = document.querySelectorAll(".tab-item");
+  let tabPanes = document.querySelectorAll(".tab-pane");
 
-      content +=
-        '<i class="fab fa-python subalignicon" onclick="GW.host.readEnvironment(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="Read Python Environment"></i>' +
-        '<i class="fa fa-upload subalignicon" onclick="GW.fileupload.uploadfile(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="Upload File"></i>' +
-        ' <i class="fa fa-sitemap subalignicon" onclick="GW.filebrowser.start(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="Browser File Hierarchy"></i>';
-    } else if (
-      hosttype == "jupyter" ||
-      hosttype == "jupyterhub" ||
-      hosttype == "jupyterlab"
-    ) {
-      content +=
-        '<i class="fas fa-chart-line subalignicon" onclick="GW.host.recent(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="History"></i>' +
-        '<i class="fas fa-external-link-alt subalignicon" onclick="GW.host.openJupyter(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="Open Jupyter"></i>';
-    } else if (hosttype == "gee") {
-      content +=
-        '<i class="fa fa-line-chart subalignicon" onclick="GW.host.recent(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="History"></i>' +
-        '<i class="fas fa-external-link-alt subalignicon" onclick="GW.host.openGoogleEarth(\'' +
-        hostid +
-        '\')" data-toggle="tooltip" title="Open Google Earth"></i>';
+  // Remove active state from all tabs
+  tabItems.forEach(tab => tab.classList.remove("active"));
+
+  // Hide all tab panes and remove previous content
+  tabPanes.forEach(pane => {
+    pane.style.display = "none";
+    pane.innerHTML = ""; // Clear previous tab content
+  });
+
+  // Activate the clicked tab
+  event.currentTarget.classList.add("active");
+
+  // Show the selected tab
+  let activePane = document.getElementById(tabId);
+  activePane.style.display = "block";
+
+  // If there's an action, execute it
+  if (action) {
+    setTimeout(() => {
+      eval(action); // Execute the function dynamically
+    }, 100);
+  }
+
+  // Close any existing modals/popups to ensure a clean switch
+  if (GW.host.ssh_password_frame) {
+    try {
+      GW.host.ssh_password_frame.closeFrame();
+      GW.host.ssh_password_frame = null;
+    } catch (e) {
+      console.error("Error closing SSH password popup:", e);
     }
+  }
 
-    return content;
-  },
+  if (GW.host.password_frame) {
+    try {
+      GW.host.password_frame.closeFrame();
+      GW.host.password_frame = null;
+    } catch (e) {
+      console.error("Error closing password popup:", e);
+    }
+  }
 
+  // Remove environment list or other content if it exists
+  document.getElementById("environment-iframe").innerHTML = "";
+  document.getElementById("host-file-uploader").innerHTML = "";
+  document.getElementById("host-file-browser").innerHTML = "";
+},
   showEnvironmentTable: function (msg) {
     var content =
       '<h4 class="border-bottom">Environment List  <button type="button" class="btn btn-secondary btn-sm" id="closeEnvironmentPanel" >close</button></h4>' +
