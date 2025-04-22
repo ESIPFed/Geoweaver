@@ -213,20 +213,21 @@ public void updateStatus(String logs, String status) {
           this.updateStatus(logs.toString(), "Running");
         }
 
-        if (!BaseTool.isNull(wsout) && wsout.isOpen()) {
+        // Always attempt to send the log line regardless of WebSocket status
+        // This will use the configured communication channel (polling or websocket)
+        if (prelog.toString() != null && !prelog.toString().isEmpty()) {
+          line = prelog.toString() + line;
+          prelog = new StringBuffer();
+        }
 
-          if (prelog.toString() != null) {
+        CommandServlet.sendMessageToSocket(token, history_id + BaseTool.log_separator + line);
 
-            line = prelog.toString() + line;
-
-            prelog = new StringBuffer();
+        // If message couldn't be sent, store it in prelog buffer for next attempt
+        if (!BaseTool.isNull(wsout) && !wsout.isOpen()) {
+          wsout = CommandServlet.findSessionById(token);
+          if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
+            prelog.append(line).append("\n");
           }
-
-          CommandServlet.sendMessageToSocket(token, history_id + BaseTool.log_separator + line);
-
-        } else {
-
-          prelog.append(line).append("\n");
         }
       }
 

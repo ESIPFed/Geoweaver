@@ -486,6 +486,10 @@ public class SSHSessionImpl implements SSHSession {
       // Initialize an input stream for reading command output.
       input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
 
+      // Send initial message to client to confirm process has started
+      CommandServlet.sendMessageToSocket(
+          token, history_id + BaseTool.log_separator + "Process started on remote host");
+
       // Initialize the command sender for handling output.
       cmdsender.init(input, token, history_id);
 
@@ -505,8 +509,11 @@ public class SSHSessionImpl implements SSHSession {
     } catch (Exception e) {
       // Handle any exceptions that occur during execution.
       e.printStackTrace();
+      // Send error message to client
+      CommandServlet.sendMessageToSocket(
+          token, history_id + BaseTool.log_separator + "Error executing process: " + e.getMessage());
       // Alternatively, you can call the 'endWithError' method here to handle errors.
-      // this.endWithError(token, history_id, e.getLocalizedMessage());
+      this.endWithError(token, history_id, e.getLocalizedMessage());
     }
   }
   
