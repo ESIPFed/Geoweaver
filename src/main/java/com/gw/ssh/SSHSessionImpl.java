@@ -456,11 +456,13 @@ public class SSHSessionImpl implements SSHSession {
       String filename = processRepository.findById(processid).get().getName();
       filename = filename.trim().endsWith(".py") ? filename : filename + ".py";
 
-      // Build the Python execution command.
+      // Build the Python execution command with tee to save logs to file
+      // Create logs directory if it doesn't exist
+      
       if (BaseTool.isNull(bin) || "default".equals(bin)) {
-        cmdline += "python -u " + filename + ";";
+        cmdline += "python -u " + filename + " 2>&1 | tee " + workspace_folder_path + "/" + history_id + ".log;";
       } else {
-        cmdline += bin + " -u " + filename + ";";
+        cmdline += bin + " -u " + filename + " 2>&1 | tee "+ workspace_folder_path + "/" + history_id + ".log;";
       }
 
       // Set the exit code to the result of the executed Python script.
