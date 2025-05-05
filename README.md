@@ -24,9 +24,11 @@ https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
 ![logo](src/main/resources/static/img/geoweaver-new-banner.png)
 
 
-### GitHub Repo: https://github.com/ESIPFed/Geoweaver 
-### Pygeoweaver (Python Bindings): https://github.com/ESIPFed/pygeoweaver
-### Live Demo: https://geobrain.csiss.gmu.edu/Geoweaver
+## Quick Links
+
+- **GitHub Repository**: [ESIPFed/Geoweaver](https://github.com/ESIPFed/Geoweaver)
+- **Python Bindings**: [ESIPFed/pygeoweaver](https://github.com/ESIPFed/pygeoweaver)
+- **Live Demo**: [Geoweaver Demo](https://geobrain.csiss.gmu.edu/Geoweaver)
 
 
 
@@ -34,54 +36,97 @@ Geoweaver is an in-browser software allowing users to easily compose and execute
 
 It can be run from both local and remote (distributed) machines.
 
-# Why choose Geoweaver?
+## Why Choose Geoweaver?
 
-1) Safely Store all your progress along the way.
-2) Stay organised and productive through out your years-long research
-4) Seamlessly connect to external servers with SSH.
-5) In-Built Web UI with full support for Python.
+**Key Benefits**:
 
-For further insights into Geoweaver, please explore the website at https://geoweaver.dev.
-GeoWeaver is a community effort. Any contribution is welcome and greatly appreciated! 
+1. **Data Safety**: Securely store and track all your research progress
+2. **Research Organization**: Stay organized throughout long-term research projects
+3. **Seamless Connectivity**: Easy SSH connection to external servers
+4. **Python Integration**: Built-in web UI with comprehensive Python support
+5. **Community-Driven**: Active community with ongoing development and support
+
+For detailed information, visit [Geoweaver Documentation](https://geoweaver.dev).
+
+> Geoweaver is a community effort. Any contribution is welcome and greatly appreciated!
 
 # Features
 
-1) **Host Management**:
-  - Register machines via SSH as hosts for running processes.
-  - Add Jupyter Servers as host resources for interaction and workflow editing.
+## Core Features
 
-2) **Process Variety**:
-  - Add various types of processes, such as bash scripts for data downloading.
+### 🖥️ Host Management
+- Register and manage SSH-enabled machines for process execution
+- Integrate Jupyter Servers for interactive workflow development
+- Secure connection management with encrypted credentials
 
-3) **Jupyter Notebook Integration**:
-  - Upload or import Jupyter notebooks.
-  - Intercept websocket traffic to save notebook versions, enabling easy revision history access.
+### 🔄 Process Management
+- Support for multiple process types (Python, Bash, R, etc.)
+- Real-time process monitoring and control
+- Version control for process code
 
-4) **Process History and Logging**:
-  - Detailed history of every process run, including logs and outputs, is stored.
+### 📓 Jupyter Integration
+- Seamless notebook import/export
+- Automatic version tracking
+- Interactive notebook editing
 
-5) **Workflow Management**:
-  - Link processes to create workflows for parallel or sequential execution across different resources.
-  - All aspects of workflow management are centralized within GeoWeaver.
+### 📊 Workflow Orchestration
+- Visual workflow builder
+- Parallel and sequential execution support
+- Cross-resource workflow distribution
+- Centralized workflow management
 
-6) **Boosts Data Pipeline's Tangibility**:
-  - Geoweaver provides an intuitive, interactive interface for visualizing data workflows, making it easier for users to understand and manage complex data pipelines.
-  - This clear visualization helps users to see the connections and dependencies between different components of their workflows.
+### 📝 History & Logging
+- Comprehensive execution history
+- Detailed process logs
+- Automated backup and recovery
 
-7) **Enhances Research Productivity and Reduces Work Anxiety**:
-  - Geoweaver has automated scheduling and execution of tasks, researchers can set up their workflows to run at specified times or conditions without manual intervention. 
-  - This automation reduces the burden of monitoring and manual execution, allowing researchers to focus on analysis and innovation. 
+### 🔍 Data Pipeline Visualization
+- Interactive workflow diagrams
+- Dependency tracking
+- Real-time execution monitoring
 
-# [Geoweaver Installation Guide](docs/install.md)
+### ⚡ Research Productivity
+- Automated task scheduling
+- Reduced manual intervention
+- Focus on research, not infrastructure 
 
-Geoweaver is a powerful tool for geospatial data processing, offering a range of features and capabilities. This guide will walk you through the steps to install Geoweaver on your system.
+## Installation
 
-## Prerequisites
+### Prerequisites
 
-Before you begin, ensure that you have the following dependencies installed:
+- ☕ Java 11 or higher (OpenJDK 11 or higher)
+- 🐳 Docker (optional, for Docker installation)
 
-- Java 11 or higher (OpenJDK 11 or higher)
-- Docker (required only for the Docker installation method)
+### Quick Start
+
+#### 🐍 Python Method (Recommended)
+
+```bash
+# Install PyGeoweaver
+pip install pygeoweaver --upgrade
+
+# Start Geoweaver
+gw start
+```
+
+#### ☕ Java Method
+
+1. Download [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
+2. Run: `java -jar geoweaver.jar`
+
+#### 🐳 Docker Method
+
+```bash
+# Pull the image
+docker pull geoweaver/geoweaver
+
+# Run Geoweaver
+docker run -t -i -p 8070:8070 geoweaver/geoweaver
+```
+
+> 📝 Access Geoweaver at http://localhost:8070/Geoweaver
+
+[Detailed Installation Guide](docs/install.md)
 
 # Demo
 
