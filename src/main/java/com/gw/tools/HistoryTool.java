@@ -123,7 +123,7 @@ public class HistoryTool {
 
     History h;
 
-    // Check if status is in cache first
+    // Always check cache first for status
     String cachedStatus = processStatusCache.getStatus(hid);
     
     Optional<History> ho = historyrepository.findById(hid);
@@ -132,14 +132,13 @@ public class HistoryTool {
 
       h = ho.get();
       
-      // If we have a cached status that's different from the database,
-      // it might be more recent, so use it
-      if (cachedStatus != null && !cachedStatus.equals(h.getIndicator())) {
-        logger.debug("Using cached status for history ID: " + hid + ": " + cachedStatus + 
-                   " (database had: " + h.getIndicator() + ")");
+      // Always prioritize cached status over database status during workflow execution
+      // This ensures we're using the most up-to-date status that might not be flushed to DB yet
+      if (cachedStatus != null) {
+        logger.debug("Using cached status for history ID: " + hid + ": " + cachedStatus);
         h.setIndicator(cachedStatus);
-      } else if (cachedStatus == null) {
-        // Update cache with status from database
+      } else {
+        // Only if cache doesn't have the status, update cache with database value
         processStatusCache.updateStatus(hid, h.getIndicator());
       }
 
@@ -148,6 +147,11 @@ public class HistoryTool {
       h = new History();
 
       h.setHistory_id(hid);
+      
+      // If we have a cached status but no database entry, still use the cached status
+      if (cachedStatus != null) {
+        h.setIndicator(cachedStatus);
+      }
     }
 
     return h;
@@ -494,6 +498,8 @@ public class HistoryTool {
       h.setHistory_process(processid);
 
       historyrepository.save(h);
+
+      processStatusCache.updateStatus(historyid, ExecutionStatus.SKIPPED);
 
     } catch (Exception e) {
 

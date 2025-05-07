@@ -158,24 +158,24 @@ public class GeoweaverProcessTask extends Task {
 
       for (int i = 0; i < prehistoryid.size(); i++) {
         String historyId = (String) prehistoryid.get(i);
-        String cachedStatus = processStatusCache.getStatus(historyId);
-        String current_status;
+        // Always use cache for status checks during workflow execution
+        String current_status = processStatusCache.getStatus(historyId);
         
-        // Check cache first, if not found, query database
-        if (cachedStatus != null) {
-          current_status = cachedStatus;
-          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
-        } else {
+        // If not in cache, we need to check the database once
+        if (current_status == null) {
           Optional<History> ho = hr.findById(historyId);
 
           if (ho.isPresent()) {
             current_status = ho.get().getIndicator();
-            // Update cache with status from database
+            // Update cache with status from database for future checks
             processStatusCache.updateStatus(historyId, current_status);
+            logger.debug("Updated cache from database for history ID: " + historyId + ": " + current_status);
           } else {
             check = 1;
             break;
           }
+        } else {
+          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
         }
 
         if (BaseTool.isNull(current_status)
@@ -209,23 +209,23 @@ public class GeoweaverProcessTask extends Task {
 
       for (int i = 0; i < prehistoryid.size(); i++) {
         String historyId = (String) prehistoryid.get(i);
-        String cachedStatus = processStatusCache.getStatus(historyId);
-        String current_status;
+        // Always use cache for status checks during workflow execution
+        String current_status = processStatusCache.getStatus(historyId);
         
-        // Check cache first, if not found, query database
-        if (cachedStatus != null) {
-          current_status = cachedStatus;
-          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
-        } else {
+        // If not in cache, we need to check the database once
+        if (current_status == null) {
           Optional<History> ho = hr.findById(historyId);
 
           if (ho.isPresent()) {
             current_status = ho.get().getIndicator();
-            // Update cache with status from database
+            // Update cache with status from database for future checks
             processStatusCache.updateStatus(historyId, current_status);
+            logger.debug("Updated cache from database for history ID: " + historyId + ": " + current_status);
           } else {
             continue;
           }
+        } else {
+          logger.debug("Using cached status for history ID: " + historyId + ": " + current_status);
         }
 
         if (BaseTool.isNull(current_status)
@@ -414,6 +414,8 @@ public class GeoweaverProcessTask extends Task {
 
       if (!BaseTool.isNull(this.workflow_history_id)) {
 
+        // Get workflow data from database only to retrieve the process and history lists
+        // This is necessary as we need the structure information
         History wf = hist.getHistoryById(workflow_history_id);
 
         String[] member_process_id_list = wf.getHistory_input().split(";");
@@ -438,10 +440,8 @@ public class GeoweaverProcessTask extends Task {
 
           obj.put("history_id", c_history_id);
 
-          String c_history_status = null;
-
-          // Check cache first
-          c_history_status = processStatusCache.getStatus(c_history_id);
+          // Always use cache for status - never query database for status during workflow execution
+          String c_history_status = processStatusCache.getStatus(c_history_id);
           
           obj.put("status", c_history_status);
 
@@ -468,7 +468,10 @@ public class GeoweaverProcessTask extends Task {
           workflow_status = ExecutionStatus.FAILED;
         }
 
-        // update workflow status
+        // Update workflow status in cache first
+        processStatusCache.updateStatus(workflow_history_id, workflow_status);
+        
+        // Then update database
         this.history_end_time = BaseTool.getCurrentSQLDate();
         wf.setHistory_end_time(this.history_begin_time);
         wf.setIndicator(workflow_status);

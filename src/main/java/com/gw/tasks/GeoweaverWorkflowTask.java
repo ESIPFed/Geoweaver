@@ -133,8 +133,6 @@ public class GeoweaverWorkflowTask {
 
     this.history_end_time = BaseTool.getCurrentSQLDate();
 
-    this.history_end_time = BaseTool.getCurrentSQLDate();
-
     History history = hist.getHistoryById(this.history_id);
 
     history.setHistory_begin_time(this.history_begin_time);
@@ -149,8 +147,13 @@ public class GeoweaverWorkflowTask {
 
     history.setHost_id(bt.array2String(hosts, ";"));
 
-    history.setIndicator(this.history_indicator.toString());
+    // Update the status in the cache first to ensure real-time status tracking
+    if (this.history_indicator != null) {
+      // This will update the cache before database flush
+      history.setIndicator(this.history_indicator.toString());
+    }
 
+    // Then save to database
     hist.saveHistory(history);
   }
 
