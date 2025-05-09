@@ -1542,7 +1542,7 @@ GW.workspace = {
         .attr("fill", d => {
           // if (d.skip) return "url(#diagonalHatch)";
           if (d.skip) return "url(#node-gradient-skipped-pattern)";
-          console.log("fill color for node: " + d.status);
+          // console.log("fill color for node: " + d.status);
           switch (d.status) {
             case "Running": return "url(#node-gradient-running)";
             case "Done": return "url(#node-gradient-done)";

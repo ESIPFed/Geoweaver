@@ -35,6 +35,16 @@ GW.general = {
     console.log("created new client token: " + GW.general.CLIENT_TOKEN);
   },
 
+  showElement: function (element_id) {
+    $(element_id).removeClass("invisible");
+    $(element_id).addClass("visible");
+  },
+
+  hideElement: function (element_id) {
+    $(element_id).removeClass("visible");
+    $(element_id).addClass("invisible");
+  },
+
   toDateString: function (longdate) {
     var date = new Date(longdate);
 

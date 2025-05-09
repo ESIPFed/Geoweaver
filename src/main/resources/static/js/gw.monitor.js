@@ -125,7 +125,7 @@ GW.monitor = {
   },
 
   clearProgressIndicator: function () {
-    $("#workspace_progress_indicator").empty(); //empty the progress bar
+    $("#progress-tasks-container").html(`<div class="progress-empty-message">No active tasks</div>`); //empty the progress bar
   },
 
   openProgressIndicator: function () {
@@ -135,6 +135,7 @@ GW.monitor = {
   },
 
   closeProgressIndicator: function (force = false) {
+    
     // Check if auto-close is enabled or if force close is requested
     var autoClose = localStorage.getItem('gw_progress_auto_close') === 'true';
     
@@ -207,16 +208,20 @@ GW.monitor = {
         "Current workflow : " + GW.workflow.loaded_workflow,
       );
 
-      $("#current_workflow_name").removeClass("invisible");
+      GW.general.showElement("#current_workflow_name")
 
-      $("#current_workflow_name").addClass("visible");
-
-      $("#running_spinner").removeClass("invisible");
-
-      $("#running_spinner").addClass("visible");
+      GW.monitor.showWorkflowSpinner(); //show the workflow spinner when the workspace is ope
 
       console.log("workspace indicator is opened");
     }
+  },
+
+  showWorkflowSpinner: function () {
+    GW.general.showElement("#running_spinner");
+  },
+
+  hideWorkflowSpinner: function () {
+    GW.general.hideElement("#running_spinner")
   },
 
   /**
@@ -242,13 +247,9 @@ GW.monitor = {
   closeWorkspaceIndicator: function () {
     $("#current_workflow_name").html("");
 
-    $("#current_workflow_name").removeClass("visible");
+    GW.general.hideElement("#current_workflow_name");
 
-    $("#current_workflow_name").addClass("invisible");
-
-    $("#running_spinner").removeClass("visible");
-
-    $("#running_spinner").addClass("invisible");
+    GW.monitor.hideWorkflowSpinner(); //hide the workflow spinner when the workspace is closed
 
     console.log("workspace indicator is closed");
   },

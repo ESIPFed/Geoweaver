@@ -36,6 +36,10 @@ GW.workflow = {
   },
 
   display: function (msg) {
+    
+    GW.monitor.clearProgressIndicator();
+    GW.monitor.hideWorkflowSpinner();
+
     let content =
       '<div class="modal-body" style="height:100%; padding: 10px;">';
 
