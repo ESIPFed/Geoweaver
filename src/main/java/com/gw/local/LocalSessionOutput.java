@@ -4,7 +4,6 @@ import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
-import com.gw.server.LongPollingController;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.ProcessStatusCache;
@@ -69,22 +68,26 @@ public class LocalSessionOutput implements Runnable {
    */
   public void init(
       BufferedReader in, String token, String history_id, String lang, String jupyterfilepath) {
-    log.info("LocalSessionOutput created for token " + token);
+    log.info("LocalSessionOutput created for token " + (token != null ? token : "<null>"));
     this.in = in;
     this.token = token;
     this.run = true;
     this.history_id = history_id;
     this.lang = lang;
-    this.jupyterfilepath = jupyterfilepath; 
+    this.jupyterfilepath = jupyterfilepath;
+    
+    // Check if we're in CLI mode (token might be null)
+    if (token == null) {
+      log.info("Detected CLI mode execution - WebSocket functionality will be limited");
+      // In CLI mode, we'll still process the output but won't try to send it to WebSockets
+      useWebSocketFallback = false;
+    }
   }
 
   /** Stops the local session output processing. */
   public void stop() {
     run = false;
   }
-
-  @Autowired
-  private LongPollingController longPollingController;
 
   // Flag to track if we should use long polling fallback
   private boolean useWebSocketFallback = false;
@@ -93,10 +96,18 @@ public class LocalSessionOutput implements Runnable {
    * Sends a message to the associated WebSocket session.
    * If WebSocket is unavailable or closed, attempts to reconnect before sending.
    * Falls back to HTTP long polling if WebSocket connection cannot be established.
+   * In CLI mode, logs the message instead of attempting to send via WebSocket.
    *
    * @param msg The message to be sent to the WebSocket.
    */
   public void sendMessage2WebSocket(String msg) {
+    // Check if we're in CLI mode (token is null)
+    if (token == null) {
+      // In CLI mode, just log the message instead of trying to send it
+      log.info("CLI Mode - Output: " + msg);
+      return;
+    }
+    
     // Check if WebSocket is null or closed and try to reconnect
     if (BaseTool.isNull(wsout) || !wsout.isOpen()) {
       log.debug("WebSocket connection is null or closed, attempting to reconnect for token: " + this.token);
@@ -152,12 +163,16 @@ public class LocalSessionOutput implements Runnable {
   }
 
   /**
-   * Sets the associated process for this LocalSessionOutput.
+   * Sets the process associated with this output session.
+   * In CLI mode, the process might be null, so we need to handle that case.
    *
    * @param p The process to be associated with this session output.
    */
   public void setProcess(Process p) {
     this.theprocess = p;
+    if (p == null) {
+      log.warn("Null process provided to LocalSessionOutput. This may indicate a problem in CLI mode.");
+    }
   }
 
   /**
@@ -222,6 +237,17 @@ public class LocalSessionOutput implements Runnable {
 
     ht.saveHistory(h);
     
+    // Update the cache with the status if available
+    // This is important for CLI mode where the cache might be used for status tracking
+    try {
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, status);
+        log.debug("Updated cache for history ID: " + history_id + " with status: " + status);
+      }
+    } catch (Exception e) {
+      log.warn("Failed to update process status cache: " + e.getMessage());
+      // Continue execution even if cache update fails
+    }
   }
 
   /**
@@ -231,14 +257,11 @@ public class LocalSessionOutput implements Runnable {
   @Override
   public void run() {
     // Initialize StringBuffer for storing pre-log content and the logs generated during execution
-    StringBuffer prelog =
-        new StringBuffer(); // The part that is generated before the WebSocket session is started
+    StringBuffer prelog = new StringBuffer(); // The part that is generated before the WebSocket session is started
     StringBuffer logs = new StringBuffer();
 
     try {
-      log.info(
-          "Local session output thread started"); // Log that the local session output thread has
-                                                  // started
+      log.info("Local session output thread started"); // Log that the local session output thread has started
 
       // Initialize counters and statuses for monitoring and logging
       int linenumber = 0; // Line number of the current output
@@ -247,10 +270,20 @@ public class LocalSessionOutput implements Runnable {
 
       // Update the status of the executed command as "Running" in the history record
       this.updateStatus("Running", "Running");
+      
+      // Update the cache with the running status
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, ExecutionStatus.RUNNING);
+      }
 
       // Send a message to the WebSocket indicating that the process has started
-      this.sendMessage2WebSocket(
-          this.history_id + BaseTool.log_separator + "Process " + this.history_id + " Started");
+      try {
+        this.sendMessage2WebSocket(
+            this.history_id + BaseTool.log_separator + "Process " + this.history_id + " Started");
+      } catch (Exception e) {
+        // In CLI mode, this might fail but we should continue processing
+        log.debug("Error sending start message (expected in CLI mode): " + e.getMessage());
+      }
 
       String line = null; // Initialize a variable to store each line of output
 
@@ -305,18 +338,28 @@ public class LocalSessionOutput implements Runnable {
             }
             
             // Send the message - our improved sendMessage2WebSocket will try to reconnect if needed
-            this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
-            
-            // If we're using the fallback mechanism (determined in sendMessage2WebSocket),
-            // log this information for debugging purposes
-            if (useWebSocketFallback) {
-              log.debug("Using long polling fallback for message delivery to history_id: " + this.history_id);
+            try {
+              this.sendMessage2WebSocket(this.history_id + BaseTool.log_separator + line);
+              
+              // If we're using the fallback mechanism (determined in sendMessage2WebSocket),
+              // log this information for debugging purposes
+              if (useWebSocketFallback) {
+                log.debug("Using long polling fallback for message delivery to history_id: " + this.history_id);
+              }
+            } catch (Exception e) {
+              // In CLI mode, this might fail but we should continue processing
+              log.debug("Error sending message to WebSocket (expected in CLI mode): " + e.getMessage());
             }
           }
         } catch (Exception e) {
           e.printStackTrace();
           // Depending on the language, update the status to "Failed"
           this.updateStatus(logs.toString(), "Failed");
+          
+          // Update the cache with the failed status
+          if (processStatusCache != null) {
+            processStatusCache.updateStatus(history_id, ExecutionStatus.FAILED);
+          }
           break;
         } finally {
           // session.saveHistory(logs.toString()); //write the failed record
@@ -324,9 +367,12 @@ public class LocalSessionOutput implements Runnable {
       }
 
       // Depending on the language (e.g., "jupyter"), update the status to "Done"
-
       this.updateStatus(logs.toString(), "Done");
-
+      
+      // Update the cache with the done status
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, ExecutionStatus.DONE);
+      }
 
       // If the process is available, attempt to stop and get its exit code
       if (!BaseTool.isNull(theprocess)) {
@@ -341,8 +387,13 @@ public class LocalSessionOutput implements Runnable {
       }
 
       // Send a message to the WebSocket indicating that the process has finished
-      this.sendMessage2WebSocket(
-          this.history_id + BaseTool.log_separator + "The process " + history_id + " is finished.");
+      try {
+        this.sendMessage2WebSocket(
+            this.history_id + BaseTool.log_separator + "The process " + history_id + " is finished.");
+      } catch (Exception e) {
+        // In CLI mode, this might fail but we've already completed the process
+        log.debug("Error sending completion message (expected in CLI mode): " + e.getMessage());
+      }
 
       // This thread will end by itself when the task is finished; you don't have to close it
       // manually
@@ -353,13 +404,23 @@ public class LocalSessionOutput implements Runnable {
       e.printStackTrace();
       // Depending on the language, update the status to "Failed"
       this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
+      
+      // Update the cache with the failed status
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, ExecutionStatus.FAILED);
+      }
     } finally {
-      this.sendMessage2WebSocket(
-          this.history_id
-              + BaseTool.log_separator
-              + "======= Process "
-              + this.history_id
-              + " ended");
+      try {
+        this.sendMessage2WebSocket(
+            this.history_id
+                + BaseTool.log_separator
+                + "======= Process "
+                + this.history_id
+                + " ended");
+      } catch (Exception e) {
+        // In CLI mode, this might fail but we've already logged the end
+        log.debug("Error sending end message (expected in CLI mode): " + e.getMessage());
+      }
     }
   }
 }

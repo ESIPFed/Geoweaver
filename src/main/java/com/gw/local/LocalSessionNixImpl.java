@@ -126,17 +126,27 @@ public class LocalSessionNixImpl implements LocalSession {
 
     this.isClose = true;
 
-    if (!BaseTool.isNull(message))
-      CommandServlet.sendMessageToSocket(
-          token, this.history.getHistory_id() + BaseTool.log_separator + message);
+    try {
+      // In CLI mode, CommandServlet might not be available
+      // Only try to send messages if we're not in CLI mode
+      if (!BaseTool.isNull(message)) {
+        CommandServlet.sendMessageToSocket(
+            token, this.history.getHistory_id() + BaseTool.log_separator + message);
+      }
 
-    CommandServlet.sendMessageToSocket(
-        token,
-        this.history.getHistory_id()
-            + BaseTool.log_separator
-            + "The process "
-            + this.history.getHistory_id()
-            + " is stopped.");
+      CommandServlet.sendMessageToSocket(
+          token,
+          this.history.getHistory_id()
+              + BaseTool.log_separator
+              + "The process "
+              + this.history.getHistory_id()
+              + " is stopped.");
+    } catch (Exception e) {
+      // In CLI mode, we might not have access to the web components
+      // Just log the error message instead of trying to send it through web channels
+      log.info("CLI Mode - Process failed: " + message);
+      log.debug("Error sending failure message (expected in CLI mode): " + e.getMessage());
+    }
   }
 
   /**
@@ -252,6 +262,28 @@ public class LocalSessionNixImpl implements LocalSession {
     this.initHistory(history_id, python, processid, isjoin, token);
 
     try {
+      // Check if sender is null - this can happen in CLI mode
+      if (sender == null) {
+        log.warn("LocalSessionOutput (sender) is null. This may be a CLI execution.");
+        // Create a minimal implementation for CLI mode
+        this.sender = new LocalSessionOutput() {
+          @Override
+          public void init(BufferedReader input, String token, String history_id, String type, String script) {
+            log.info("Initialized minimal LocalSessionOutput for CLI mode");
+          }
+          
+          @Override
+          public void run() {
+            log.info("Running minimal LocalSessionOutput for CLI mode");
+          }
+          
+          @Override
+          public void setProcess(Process process) {
+            // No operation needed for minimal implementation
+          }
+        };
+        log.info("Created minimal LocalSessionOutput implementation for CLI mode");
+      }
 
       // log.info("save to local file: " + python);
 
@@ -279,36 +311,37 @@ public class LocalSessionNixImpl implements LocalSession {
 
       input = new BufferedReader(new InputStreamReader(stdout), BaseTool.BUFFER_SIZE);
 
-      sender.init(input, token, history_id, "python", null);
+      try {
+        sender.init(input, token, history_id, "python", null);
 
-      // moved here on 10/29/2018
-      // all SSH sessions must have a output thread
+        // moved here on 10/29/2018
+        // all SSH sessions must have a output thread
 
-      thread = new Thread(sender);
+        thread = new Thread(sender);
 
-      thread.setName("SSH Command output thread");
+        thread.setName("SSH Command output thread");
 
-      log.info("starting sending thread");
+        log.info("starting sending thread");
 
-      thread.start();
+        thread.start();
 
-      sender.setProcess(process);
+        sender.setProcess(process);
+      } catch (Exception e) {
+        log.warn("Error initializing sender thread. Continuing execution without output streaming: " + e.getMessage());
+        // Continue execution even if sender initialization fails
+        // This allows CLI mode to work without the web components
+      }
 
       log.info("returning to the client..");
 
       if (isjoin) {
-
         process.waitFor();
       }
 
     } catch (Exception e) {
-
       e.printStackTrace();
-
       this.endWithError(token, e.getLocalizedMessage());
-
     } finally {
-
       this.isClose = true;
     }
   }

@@ -248,25 +248,41 @@ public class WorkflowServlet {
     }
     
     try {
-      // Get the LongPollingController bean from Spring context
-      LongPollingController longPollingController = 
-          BeanTool.getBean(LongPollingController.class);
-      
-      if (longPollingController == null) {
-        Logger.getLogger(WorkflowServlet.class).error("Could not get LongPollingController bean");
-        return false;
+      // Check if we're running in CLI mode by checking if ApplicationContext is available
+      if (BeanTool.getApplicationContext() == null) {
+        Logger.getLogger(WorkflowServlet.class).info("Running in CLI mode, skipping long polling message send");
+        // In CLI mode, just log the message and return success
+        Logger.getLogger(WorkflowServlet.class).info("CLI Message: " + message);
+        return true;
       }
       
-      boolean sent = longPollingController.sendMessageToClient(token, message);
-      if (sent) {
-        Logger.getLogger(WorkflowServlet.class).debug("Message sent via long polling to token: " + token);
+      try {
+        // Get the LongPollingController bean from Spring context
+        LongPollingController longPollingController = 
+            BeanTool.getBean(LongPollingController.class);
+        
+        if (longPollingController == null) {
+          Logger.getLogger(WorkflowServlet.class).error("Could not get LongPollingController bean");
+          return false;
+        }
+        
+        boolean sent = longPollingController.sendMessageToClient(token, message);
+        if (sent) {
+          Logger.getLogger(WorkflowServlet.class).debug("Message sent via long polling to token: " + token);
+          return true;
+        } else {
+          Logger.getLogger(WorkflowServlet.class).error("Failed to send message via long polling to token: " + token);
+          return false;
+        }
+      } catch (Exception e) {
+        // If we can't get the bean, we might be in CLI mode with partial context initialization
+        Logger.getLogger(WorkflowServlet.class).info("Could not use long polling, likely in CLI mode: " + e.getMessage());
+        // Log the message and return success for CLI mode
+        Logger.getLogger(WorkflowServlet.class).info("CLI Message: " + message);
         return true;
-      } else {
-        Logger.getLogger(WorkflowServlet.class).error("Failed to send message via long polling to token: " + token);
-        return false;
       }
     } catch (Exception e) {
-      Logger.getLogger(WorkflowServlet.class).error("Error using long polling for token '" + token + "': " + e.getMessage());
+      Logger.getLogger(WorkflowServlet.class).error("Error in sendViaLongPolling for token '" + token + "': " + e.getMessage());
       e.printStackTrace();
       return false;
     }

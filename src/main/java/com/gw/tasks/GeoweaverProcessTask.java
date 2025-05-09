@@ -604,8 +604,10 @@ public class GeoweaverProcessTask extends Task {
       // This will automatically use the configured default channel (WebSocket or long polling)
       WorkflowServlet.sendMessageToSocket(token, msg);
     } catch (Exception e) {
-      logger.error("Error sending workflow message: " + e.getMessage());
-      e.printStackTrace();
+      // In CLI mode, we might not have access to the web components
+      // Just log the message instead of trying to send it through web channels
+      logger.info("CLI Mode - Workflow message: " + msg);
+      logger.debug("Error sending workflow message (expected in CLI mode): " + e.getMessage());
     }
   }
 

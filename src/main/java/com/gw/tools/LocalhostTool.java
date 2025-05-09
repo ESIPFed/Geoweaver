@@ -135,9 +135,14 @@ public class LocalhostTool {
 
       session.runBash(history_id, code, id, isjoin, token);
 
-      GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+      // Add null checks to prevent NullPointerException
+      if (token != null && session != null) {
+        GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+      }
 
-      GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
+      if (history_id != null && session != null) {
+        GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
+      }
 
       resp =
           "{\"history_id\": \""
@@ -166,16 +171,15 @@ public class LocalhostTool {
     LocalSession session = null;
 
     if (OSValidator.isWindows()) {
-
       session = BeanTool.getBean(LocalSessionWinImpl.class);
-
     } else if (OSValidator.isMac() || OSValidator.isUnix()) {
-
       session = BeanTool.getBean(LocalSessionNixImpl.class);
-
     } else {
-
       throw new RuntimeException("This operating system is not supported as localhost.");
+    }
+
+    if (session == null) {
+      throw new RuntimeException("Failed to create LocalSession bean. Application context may not be properly initialized.");
     }
 
     return session;
@@ -246,20 +250,40 @@ public class LocalhostTool {
       localizeAllPython(history_id);
 
       // get code of the process
-
       String code = pt.getCodeById(id);
 
       this.saveHistory(id, code, history_id);
 
+      // Get a local session and ensure it's not null
       LocalSession session = getLocalSession();
+      
+      if (session == null) {
+        logger.error("Failed to create a valid LocalSession instance");
+        throw new RuntimeException("Failed to initialize local session. Session is null.");
+      }
 
-      GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+      // Register the session in the session manager
+      // This is important for both web and CLI modes
+      try {
+        if (token != null) {
+          GeoweaverController.sessionManager.localSessionByToken.put(token, session);
+          logger.debug("Registered session with token: " + token);
+        }
 
-      GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
+        if (history_id != null) {
+          GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
+          logger.debug("Registered session with history_id: " + history_id);
+        }
+      } catch (Exception e) {
+        logger.warn("Failed to register session in session manager: " + e.getMessage());
+        // Continue execution even if session registration fails
+        // This allows CLI mode to work without the web components
+      }
 
       // save environment
       et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");
 
+      // Execute the Python process
       session.runPython(history_id, code, id, isjoin, bin, pyenv, basedir, token);
 
       resp =
@@ -270,9 +294,7 @@ public class LocalhostTool {
               + "\", \"ret\": \"success\"}";
 
     } catch (Exception e) {
-
       e.printStackTrace();
-
       throw new RuntimeException(e.getLocalizedMessage());
     }
 

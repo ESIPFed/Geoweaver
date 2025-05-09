@@ -68,15 +68,11 @@ public class Worker extends Thread {
   }
 
   private void unloadTask() {
-
-    //		System.out.println("task unloaded\n notify the manager that a work is freed");
-
+    
     this.t = null;
 
     this.setStatus(false);
-
-    //		wm.notifyWorkerManager(this);
-
+    
   }
 
   @Override
@@ -91,8 +87,6 @@ public class Worker extends Thread {
       while (running) {
 
         if (this.t != null) {
-
-          //					System.out.println("=== task loaded");
 
           t.execute();
 
