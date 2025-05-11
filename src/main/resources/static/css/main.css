@@ -363,13 +363,13 @@ form .progress {
 /* render scrollbar color */
 /* Works on Firefox */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: thick;
   scrollbar-color: rgb(28, 28, 28);
 }
 
 /* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 5px;
+  width: 10px;
 }
 
 *::-webkit-scrollbar-track {
