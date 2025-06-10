@@ -5,7 +5,7 @@
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n" />
 
     <!-- Define the log file location -->
-    <property name="LOG_FILE" value="${user.home}/geoweaver.log" />
+    <property name="LOG_FILE" value="${user.home}/geoweaver/logs/geoweaver.log" />
 
     <!-- Console appender configuration -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -20,9 +20,13 @@
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
+        <!-- Create parent directories if they don't exist -->
+        <prudent>true</prudent>
+        <immediateFlush>true</immediateFlush>
+        <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>logs/spring-boot-application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${user.home}/geoweaver/logs/geoweaver.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>

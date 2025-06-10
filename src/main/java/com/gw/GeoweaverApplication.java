@@ -9,6 +9,7 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -40,6 +41,9 @@ public class GeoweaverApplication {
   private static String workspace;
 
   public static void main(String[] args) {
+    // Create log directory before anything else to avoid NoSuchFileException
+    createLogDirectory();
+    
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
 
@@ -76,6 +80,27 @@ public class GeoweaverApplication {
 
       System.out.println("GeoWeaver is started and ready for use..");
       System.out.println("URL: http://localhost:"+BaseTool.get_current_port()+"/Geoweaver");
+    }
+  }
+
+  /**
+   * Creates the log directory structure before logging starts
+   * to prevent NoSuchFileException for lock files
+   */
+  private static void createLogDirectory() {
+    try {
+      String logDir = System.getProperty("user.home") + "/geoweaver/logs";
+      File logDirectory = new File(logDir);
+      if (!logDirectory.exists()) {
+        boolean created = logDirectory.mkdirs();
+        if (created) {
+          System.out.println("Created log directory: " + logDir);
+        } else {
+          System.err.println("Failed to create log directory: " + logDir);
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("Error creating log directory: " + e.getMessage());
     }
   }
 
