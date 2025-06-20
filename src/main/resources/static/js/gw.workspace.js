@@ -210,24 +210,39 @@ GW.workspace = {
       .attr("offset", "100%")
       .attr("stop-color", "#a0a0a0");  // outer edge    
       
-    // Running node gradient (blue)
+    // Running node gradient (blue) with animated arrow
     var nodeGradientRunning = defs.append("radialGradient")
-      .attr("id", "node-gradient-running")
-      .attr("cx", "25%")
-      .attr("cy", "25%")
-      .attr("r", "75%");
-      
+        .attr("id", "node-gradient-running")
+        .attr("cx", "50%")
+        .attr("cy", "50%")
+        .attr("r", "50%");
+
     nodeGradientRunning.append("stop")
-      .attr("offset", "0%")
-      .attr("stop-color", "#c6dbff");
-      
+        .attr("offset", "0%")
+        .attr("stop-color", "#e3f2fd"); // Lighter blue center
+
     nodeGradientRunning.append("stop")
-      .attr("offset", "70%")
-      .attr("stop-color", "#a4c2f4");
-      
-    nodeGradientRunning.append("stop")
-      .attr("offset", "100%")
-      .attr("stop-color", "#4285f4");
+        .attr("offset", "100%")
+        .attr("stop-color", "#4285f4"); // Deeper blue edge
+
+    // Animated arrow for "Running" state
+    var runningAnimation = defs.append("g").attr("id", "running-arrow-animation");
+    
+    // A more professional, curved arrow shape
+    var arrowShape = "M-6,-6 L8,0 L-6,6 Q-2,0 -6,-6 Z";
+    // The circular path for the arrow to follow
+    var animationPath = "M0,-28 A28,28 0 1,1 0,28 A28,28 0 1,1 0,-28";
+
+    runningAnimation.append("path")
+        .attr("d", arrowShape)
+        .attr("fill", "white")
+        .attr("stroke", "#4285f4")
+        .attr("stroke-width", 1)
+        .append("animateMotion")
+        .attr("dur", "2s")
+        .attr("repeatCount", "indefinite")
+        .attr("rotate", "auto")
+        .attr("path", animationPath);
       
     // Done node gradient (green)
     var nodeGradientDone = defs.append("radialGradient")
@@ -718,89 +733,45 @@ GW.workspace = {
     });
 
     d3.select("#show-full-view").on("click", function () {
-      console.log("restore the window extent to full view of workflow graph");
+      if (GW.workspace.theGraph.nodes.length === 0) return;
 
-      // get the current workflow's extent
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      let minX = Infinity;
-      let minY = Infinity;
+      const svgNode = GW.workspace.svg;
+      const svgGroup = GW.workspace.theGraph.svgG;
+      const viewportWidth = +svgNode.attr("width");
+      const viewportHeight = +svgNode.attr("height");
+      
+      // Get the actual rendered size of the entire graph group
+      const graphBBox = svgGroup.node().getBBox();
+      const graphWidth = graphBBox.width;
+      const graphHeight = graphBBox.height;
 
-      // Iterate through the list of points
-      for (let i = 0; i < GW.workspace.theGraph.nodes.length; i++) {
-        const node = GW.workspace.theGraph.nodes[i];
+      // If the graph has no size, do nothing.
+      if (graphWidth === 0 || graphHeight === 0) return;
 
-        // Check and update maximum x and y values
-        if (node.x > maxX) {
-          maxX = node.x;
-        }
-        if (node.y > maxY) {
-          maxY = node.y;
-        }
+      // Set padding to 10% of the viewport dimension on each side.
+      const horizontalPadding = viewportWidth * 0.1;
+      const verticalPadding = viewportHeight * 0.1;
 
-        // Check and update minimum x and y values
-        if (node.x < minX) {
-          minX = node.x;
-        }
-        if (node.y < minY) {
-          minY = node.y;
-        }
-      }
+      // The area available for the graph after accounting for padding.
+      const availableWidth = viewportWidth - 2 * horizontalPadding;
+      const availableHeight = viewportHeight - 2 * verticalPadding;
+      
+      // Determine the scale to fit the graph into the available area.
+      const scale = Math.min(availableWidth / graphWidth, availableHeight / graphHeight);
+      
+      // Calculate the X and Y translation to center the graph.
+      // This positions the top-left of the scaled graph at (horizontalPadding, verticalPadding).
+      const translateX = horizontalPadding - (graphBBox.x * scale);
+      const translateY = verticalPadding - (graphBBox.y * scale);
 
-      console.log(
-        "found the max and min X and Y: " +
-          maxX +
-          " " +
-          minX +
-          " " +
-          maxY +
-          " " +
-          minY,
-      );
-
-      // add a offset to leave space for margin
-      offset_space = 80;
-
-      // calculate the translate and scale
-      newWidth = maxX - minX + offset_space;
-      newHeight = maxY - minY + offset_space;
-
-      const svg = GW.workspace.svg;
-
-      // Get the width and height attributes
-      const oldWidth = +svg.attr("width"); // Convert to a number
-      const oldHeight = +svg.attr("height"); // Convert to a number
-
-      const newScaleX = oldWidth / newWidth;
-      const newScaleY = oldHeight / newHeight;
-
-      // You can use either newScaleX or newScaleY depending on your requirements
-      const newScale = Math.min(newScaleX, newScaleY);
-
-      // Calculate the translation to center the new extent within the SVG
-      const translateX =
-        (oldWidth - newWidth * newScale) / 2 -
-        minX * newScale +
-        offset_space / 2;
-      const translateY =
-        (oldHeight - newHeight * newScale) / 2 -
-        minY * newScale +
-        offset_space / 2;
-
-      // update the zoom object and do the transition
-      thisGraph.zoom.on("zoom", function () {
-        if (d3.event.sourceEvent.shiftKey) {
-          return false;
-        } else {
-          thisGraph.zoomed.call(thisGraph);
-        }
-        return true;
-      });
-
-      thisGraph.zoom.scale(newScale);
+      // Apply the new transform with a smooth animation.
+      svgGroup.transition()
+          .duration(750)
+          .attr("transform", `translate(${translateX},${translateY}) scale(${scale})`);
+      
+      // Update D3's zoom behavior to match the new view.
+      thisGraph.zoom.scale(scale);
       thisGraph.zoom.translate([translateX, translateY]);
-
-      svg.call(thisGraph.zoom.event);
     });
 
     d3.select("#hidden-file-upload").on("change", function () {

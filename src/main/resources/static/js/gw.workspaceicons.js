@@ -50,18 +50,30 @@ GW.workspaceicons = {
         const iconOffset = 16; // Offset from center (adjust based on radius)
         
         if (status === "Running") {
-            // Add a spinning circle
-            node.append("circle")
-                .attr("class", "loading-spinner status-icon")
-                .attr("r", 5)
-                .attr("cx", iconOffset)
-                .attr("cy", -iconOffset)
-                .style("stroke", "#007bff")
-                .style("stroke-width", 2)
-                .style("fill", "none")
-                .style("stroke-dasharray", "10,4")
-                .style("animation", "spin 1s linear infinite");
-            
+            // A highly visible "snake chasing its tail" effect
+            const nodeRadius = 20;
+            const circumference = 2 * Math.PI * nodeRadius;
+
+            // Clean up any old animations
+            node.selectAll(".status-icon").remove();
+
+            const g = node.append("g")
+                .attr("class", "status-icon running-snake-anim");
+
+            g.append("circle")
+                .attr("r", nodeRadius)
+                .attr("fill", "none")
+                .attr("stroke", "#ADFF2F") // A bright, vibrant green-yellow
+                .attr("stroke-width", 3.5) // Thicker for visibility
+                .attr("stroke-linecap", "round")
+                .attr("stroke-dasharray", `${circumference * 0.6} ${circumference * 0.4}`) // A longer "snake"
+                .attr("transform", "rotate(-90 0 0)") // Start animation from the top
+                .append("animate")
+                    .attr("attributeName", "stroke-dashoffset")
+                    .attr("from", circumference)
+                    .attr("to", 0)
+                    .attr("dur", "1.5s")
+                    .attr("repeatCount", "indefinite");
         } else if (status === "Done") {
             // Add a checkmark path
             node.append("path")

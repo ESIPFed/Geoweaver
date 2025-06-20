@@ -39,6 +39,7 @@ GW.workflow = {
     
     GW.monitor.clearProgressIndicator();
     GW.monitor.hideWorkflowSpinner();
+    
 
     let content =
       '<div class="modal-body" style="height:100%; padding: 10px;">';
@@ -693,6 +694,8 @@ GW.workflow = {
         GW.workflow.loaded_workflow = msg.id;
 
         GW.workspace.theGraph.load(msg);
+
+        $("#show-full-view").click();
       })
       .fail(function (jxr, status) {
         alert("fail to get workflow info");
@@ -762,6 +765,8 @@ GW.workflow = {
       });
     } else {
       GW.workflow.showWorkflow(wid);
+
+      $("#show-full-view").click();
 
       GW.general.switchTab("workspace");
 
