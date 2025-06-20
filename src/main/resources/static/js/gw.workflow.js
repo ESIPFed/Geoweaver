@@ -409,9 +409,7 @@ GW.workflow = {
     })
       .done(function (msg) {
         GW.workspace.showSaved();
-
-        GW.general.showToasts("updated");
-
+        GW.general.showToasts("Workflow saved successfully.");
         GW.workflow.refreshWorkflowList();
       })
       .fail(function (jxr, status) {
@@ -663,6 +661,7 @@ GW.workflow = {
       })
         .done(function (msg) {
           GW.workspace.showSaved();
+          GW.general.showToasts("Workflow saved successfully.");
           // alert("Saved!!!");
         })
         .fail(function (jxr, status) {

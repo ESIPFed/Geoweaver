@@ -38,11 +38,13 @@ GW.general = {
   showElement: function (element_id) {
     $(element_id).removeClass("invisible");
     $(element_id).addClass("visible");
+    $(element_id).css({ display: "inline-block", visibility: "visible", opacity: 1 });
   },
 
   hideElement: function (element_id) {
     $(element_id).removeClass("visible");
     $(element_id).addClass("invisible");
+    $(element_id).css({ display: "none", visibility: "hidden", opacity: 0 });
   },
 
   toDateString: function (longdate) {
@@ -113,14 +115,17 @@ GW.general = {
     // Get the snackbar DIV
     var x = document.getElementById("snackbar");
 
-    // Add the "show" class to DIV
-    x.className = "show";
-
+    // 设置内容
     $("#snackbar").html(message);
 
-    // After 3 seconds, remove the show class from DIV
+    // 显示浮动提示
+    x.style.visibility = "visible";
+    x.style.opacity = "1";
+
+    // 2秒后隐藏
     setTimeout(function () {
-      x.className = x.className.replace("show", "");
+      x.style.opacity = "0";
+      x.style.visibility = "hidden";
     }, 2000);
   },
 
