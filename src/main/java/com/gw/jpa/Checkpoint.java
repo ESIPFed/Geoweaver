@@ -12,20 +12,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import java.util.Date;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "WorkflowCheckpoint")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Checkpoint {
 
   @Id

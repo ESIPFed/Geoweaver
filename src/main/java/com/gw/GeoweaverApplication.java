@@ -42,7 +42,7 @@ public class GeoweaverApplication {
 
   public static void main(String[] args) {
     // Create log directory before anything else to avoid NoSuchFileException
-    createLogDirectory();
+    createRequiredDirectories();
     
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
@@ -87,20 +87,26 @@ public class GeoweaverApplication {
    * Creates the log directory structure before logging starts
    * to prevent NoSuchFileException for lock files
    */
-  private static void createLogDirectory() {
+  private static void createRequiredDirectories() {
     try {
-      String logDir = System.getProperty("user.home") + "/geoweaver/logs";
-      File logDirectory = new File(logDir);
-      if (!logDirectory.exists()) {
-        boolean created = logDirectory.mkdirs();
-        if (created) {
-          System.out.println("Created log directory: " + logDir);
-        } else {
-          System.err.println("Failed to create log directory: " + logDir);
+      String home = System.getProperty("user.home");
+      String[] dirs = {
+        home + "/geoweaver/logs",
+        home + "/geoweaver/sqlite"
+      };
+      for (String dir : dirs) {
+        File directory = new File(dir);
+        if (!directory.exists()) {
+          boolean created = directory.mkdirs();
+          if (created) {
+            System.out.println("Created directory: " + dir);
+          } else {
+            System.err.println("Failed to create directory: " + dir);
+          }
         }
       }
     } catch (Exception e) {
-      System.err.println("Error creating log directory: " + e.getMessage());
+      System.err.println("Error creating required directories: " + e.getMessage());
     }
   }
 

@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.Lob;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Process POJO
@@ -14,6 +15,7 @@ import javax.persistence.Id;
  *
  */
 @Entity
+@Table(name="gw_process")
 @Getter
 @Setter
 @NoArgsConstructor

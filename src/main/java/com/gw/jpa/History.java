@@ -1,8 +1,6 @@
 package com.gw.jpa;
 
-
 import lombok.Data;
-
 
 import javax.persistence.Column;
 import javax.persistence.Lob;
