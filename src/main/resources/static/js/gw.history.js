@@ -381,6 +381,7 @@ GW.history = {
     applyBootstrapTable: function(table_id){
 
         var table = $(table_id).DataTable({
+            lengthMenu: [100, 50, 10, 200, -1],
             columnDefs : [
                 { type: 'time-date-sort',
                   targets: [1],

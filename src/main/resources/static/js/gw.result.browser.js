@@ -76,6 +76,7 @@ GW.result.browser = {
 
     render_file_list: function(){
         GW.result.browser.fileTable = $('#file-list-table').DataTable({
+            lengthMenu: [100, 50, 10, -1],
             columns: [
                 { data: 'name', render: function (data, type, row) {
                     let icon = '<i class="fas fa-file"></i>'; // Default icon
