@@ -539,7 +539,7 @@ GW.process.util = {
           GW.history.startActiveTimer();
 
         var table_selector = `${process_history_container_id} ${process_history_table_id}`;
-        GW.history.applyBootstrapTable(table_selector);
+        GW.history.applyBootstrapTable(table_selector, pid, pname);
 
         GW.chart.renderProcessHistoryChart(msg, pname, process_history_container_id);
 

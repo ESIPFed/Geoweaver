@@ -1221,11 +1221,11 @@ GW.workflow = {
 
         msg = $.parseJSON(msg);
 
-        var content = GW.history.getWorkflowHistoryTable(msg);
+        var content = GW.history.getWorkflowHistoryTable(msg, wid, name);
 
         $("#workflow-history-container").html(content);
 
-        GW.history.applyBootstrapTable("workflow-history-table");
+        GW.history.applyBootstrapTable("#workflow-history-table", null, null, wid, name);
 
         GW.chart.renderWorkflowHistoryChart(msg);
 

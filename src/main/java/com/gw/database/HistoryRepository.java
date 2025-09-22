@@ -168,4 +168,20 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   @Modifying
   @Query(value = "DELETE FROM history WHERE history_process = ?1 AND indicator = ?2", nativeQuery = true)
   void deleteByProcessAndIndicator(String historyProcess, String indicator);
+
+  /**
+   * Delete all skipped history records that have "No code saved" as input.
+   * This removes all the useless skipped history records.
+   */
+  @Modifying
+  @Query(value = "DELETE FROM history WHERE history_input = 'No code saved'", nativeQuery = true)
+  void deleteSkippedHistory();
+
+  /**
+   * Delete skipped history records for a specific process that have "No code saved" as input.
+   * This removes the useless skipped history records for a specific process.
+   */
+  @Modifying
+  @Query(value = "DELETE FROM history WHERE history_process = ?1 AND history_input = 'No code saved'", nativeQuery = true)
+  void deleteSkippedHistoryByProcess(String processId);
 }

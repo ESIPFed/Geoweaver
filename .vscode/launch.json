@@ -49,7 +49,7 @@
       "request": "launch",
       "mainClass": "com.gw.GeoweaverCLI",
       "projectName": "geoweaver",
-      "args": "run workflow -h 100001 -e 23geik 29k6vmj3n94y128j4aab -p xxx"
+      "args": "run workflow -h 100001 -e 23geik 4h8i32uisb6i6fehprol -p 123456"
     },
     {
       "type": "java",

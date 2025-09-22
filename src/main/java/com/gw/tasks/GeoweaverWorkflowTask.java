@@ -393,9 +393,10 @@ public class GeoweaverWorkflowTask {
 
         String nexthistoryid = String.valueOf(((JSONObject) nodes.get(i)).get("history_id"));
 
-        String skip = String.valueOf(((JSONObject) nodes.get(i)).get("skip"));
+        Object skipObj = ((JSONObject) nodes.get(i)).get("skip");
+        String skip = (skipObj == null) ? "false" : String.valueOf(skipObj);
 
-        log.debug("this round is : " + nextid);
+        log.debug("this round is : " + nextid + ", skip status: " + skip);
 
         this.updateNodeStatus(nextid, flags, nodes, ExecutionStatus.READY);
 

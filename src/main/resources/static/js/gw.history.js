@@ -148,7 +148,168 @@ GW.history = {
             body: formData,
         }
         fetch("delete-failed", options)
-        // GW.process.sidepanel.history(processId, 'testing_data_integration');
+            .then(response => {
+                if (response.ok) {
+                    console.log('Failed history removed successfully');
+                    // Refresh only the history table instead of the entire page
+                    GW.history.refreshHistoryTable();
+                } else {
+                    console.error('Failed to remove failed history');
+                    alert('Failed to remove failed history. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing failed history:', error);
+                alert('Error removing failed history. Please try again.');
+            });
+    },
+
+    removeSkippedHistory: function(historyProcess) {
+        // Get the current process ID from the table
+        const processId = $('#process_history_table').data('process-id');
+        
+        const formData = new FormData();
+        if (processId) {
+            formData.append('processId', processId);
+        }
+        
+        const options = {
+            method: 'DELETE',
+            body: formData,
+        }
+        fetch("delete-skipped", options)
+            .then(response => {
+                if (response.ok) {
+                    console.log('Skipped history removed successfully');
+                    // Refresh only the history table instead of the entire page
+                    GW.history.refreshHistoryTable();
+                } else {
+                    console.error('Failed to remove skipped history');
+                    alert('Failed to remove skipped history. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error removing skipped history:', error);
+                alert('Error removing skipped history. Please try again.');
+            });
+    },
+
+    refreshHistoryTable: function() {
+        // Get the current process ID and name from the page
+        const processId = $('#process_history_table').data('process-id');
+        const processName = $('#process_history_table').data('process-name');
+        
+        if (processId && processName) {
+            // Show loading indicator
+            $('#process-history-container').html('<div style="text-align: center; padding: 20px;">🔄 Refreshing history...</div>');
+            
+            // Make AJAX request to get fresh data
+            $.ajax({
+                url: "logs",
+                method: "POST",
+                data: "type=process&id=" + processId + "&pname=" + processName,
+            })
+            .done(function (msg) {
+                // Hide loading indicator
+                $("#process-history-container").css("display", "block");
+                $("#history-tab-loader-main-detail").css("display", "none");
+
+                if (!msg.length) {
+                    $('#process-history-container').html('<div style="text-align: center; padding: 20px; color: #666;">No history found</div>');
+                    return;
+                }
+
+                msg = GW.general.parseResponse(msg);
+
+                // Stop all existing timers
+                GW.history.stopAllTimers();
+
+                // Destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#process_history_table')) {
+                    $('#process_history_table').DataTable().destroy();
+                }
+
+                // Clear the entire container completely
+                $('#process-history-container').empty();
+
+                // Rebuild the table from scratch
+                $('#process-history-container').html(
+                    GW.history.getProcessHistoryTable(msg, processId, processName)
+                );
+                
+                // Reinitialize the DataTable
+                var table_selector = '#process-history-container #process_history_table';
+                GW.history.applyBootstrapTable(table_selector, processId, processName);
+                
+                // Restart timers
+                GW.history.startActiveTimer();
+                
+                console.log('History table refreshed successfully');
+            })
+            .fail(function (jxr, status) {
+                console.error('Failed to refresh history:', status);
+                $('#process-history-container').html('<div style="text-align: center; padding: 20px; color: #dc3545;">❌ Failed to refresh history. Please try again.</div>');
+            });
+        } else {
+            // Fallback: reload the entire page if we can't get the process info
+            console.warn('Cannot get process info, reloading entire page');
+            location.reload();
+        }
+    },
+
+    refreshWorkflowHistoryTable: function() {
+        // Get the current workflow ID and name from the page
+        const workflowId = $('#workflow-history-table').data('workflow-id');
+        const workflowName = $('#workflow-history-table').data('workflow-name');
+        
+        if (workflowId && workflowName) {
+            // Show loading indicator
+            $('#workflow-history-container').html('<div style="text-align: center; padding: 20px;">🔄 Refreshing workflow history...</div>');
+            
+            // Make AJAX request to get fresh data
+            $.ajax({
+                url: "logs",
+                method: "POST",
+                data: "type=workflow&id=" + workflowId,
+            })
+            .done(function (msg) {
+                if (!msg.length) {
+                    $('#workflow-history-container').html('<div style="text-align: center; padding: 20px; color: #666;">No workflow history found</div>');
+                    return;
+                }
+
+                msg = $.parseJSON(msg);
+
+                // Destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#workflow-history-table')) {
+                    $('#workflow-history-table').DataTable().destroy();
+                }
+
+                // Clear the entire container completely
+                $('#workflow-history-container').empty();
+
+                // Rebuild the table from scratch
+                $('#workflow-history-container').html(
+                    GW.history.getWorkflowHistoryTable(msg, workflowId, workflowName)
+                );
+                
+                // Reinitialize the DataTable
+                GW.history.applyBootstrapTable("#workflow-history-table");
+                
+                // Reinitialize the chart
+                GW.chart.renderWorkflowHistoryChart(msg);
+                
+                console.log('Workflow history table refreshed successfully');
+            })
+            .fail(function (jxr, status) {
+                console.error('Failed to refresh workflow history:', status);
+                $('#workflow-history-container').html('<div style="text-align: center; padding: 20px; color: #dc3545;">❌ Failed to refresh workflow history. Please try again.</div>');
+            });
+        } else {
+            // Fallback: reload the entire page if we can't get the workflow info
+            console.warn('Cannot get workflow info, reloading entire page');
+            location.reload();
+        }
     },
     /**
      * Generates an HTML table with process execution history data.
@@ -181,25 +342,51 @@ GW.history = {
             // </button>`+
             `<div id="statusFilterContainer">`;
 
+            // Check if there are any skipped history records
+            // let hasSkippedProcess = false;
+            // if (msg.length) {
+            //     hasSkippedProcess = msg.some(record => 
+            //         record.history_input === "No code saved" && 
+            //         record.indicator === "Skipped"
+            //     );
+            // }
+
             if (msg.length && hasFailedProcess) {
 
                 content += `<button id="failed-history-rm" 
-                                onclick="(function(){ GW.history.removeFailedHistory('${msg[0]['history_process']}'); 
-                                window.alert('Actions will reflect on next page load. Processing.') })()" 
+                                onclick="GW.history.removeFailedHistory('${msg[0]['history_process']}')" 
                                     class="history-remove-failed" 
                                     data-history-process="` + msg[0]['history_process'] + `"
                                     >
                                 Remove Failed History</button>`;
             }
+
+            // if (hasSkippedProcess) {
+                content += `<button id="skipped-history-rm" 
+                                onclick="GW.history.removeSkippedHistory('` + msg[0]['history_process'] + `')" 
+                                    class="history-remove-skipped" >
+                                Remove Skipped History</button>`;
+            // }
                 content += `<label for="statusFilter">Status:</label>
                 <select id="statusFilter" style="color: black;">
-                        <option value="">All</option> <!-- Changed to "All" -->
+                        <option value="all-except-skipped">All (Except Skipped)</option>
+                        <option value="">All</option>
                         <option value="Running ">Running</option>
                         <option value="Done">Done</option>
                         <option value="Stopped">Stopped</option>
                         <option value="Failed">Failed</option>
                         <option value="Skipped">Skipped</option>
                 </select>
+                <button id="refresh-history-btn" 
+                        onclick="GW.history.refreshHistoryTable()" 
+                        style="background-color: #007bff; color: white; border: none; padding: 8px 16px; 
+                               border-radius: 4px; cursor: pointer; margin-left: 10px; 
+                               font-size: 14px; font-weight: bold;"
+                        onmouseover="this.style.backgroundColor='#0056b3'"
+                        onmouseout="this.style.backgroundColor='#007bff'"
+                        title="Refresh History Table">
+                    🔄 Refresh
+                </button>
             </div> 
             
         </div>
@@ -325,9 +512,64 @@ GW.history = {
 
 	},
 
-    getWorkflowHistoryTable: function(msg){
+    getWorkflowHistoryTable: function(msg, workflowId, workflowName){
 
-		var content = "<div class=\"modal-body\" style=\"font-size:12px;\" ><table class=\"table table-color\" id=\"workflow-history-table\" > "+
+        // Check if there are any skipped history records
+        
+
+        // Check if there are any failed history records
+        let hasFailedProcess = false;
+        if (msg.length) {
+            hasFailedProcess = msg.some(record => 
+                record.indicator === "Failed"
+            );
+        }
+
+		var content = "<div class=\"modal-body\" style=\"font-size:12px;\" >";
+        
+        // Add control buttons
+        content += `<div id="workflow-statusFilterContainer">`;
+        
+        if (hasFailedProcess) {
+            content += `<button id="workflow-failed-history-rm" 
+                            onclick="GW.history.removeFailedHistory('${msg[0]['history_process']}')" 
+                                class="history-remove-failed" 
+                                data-history-process="` + msg[0]['history_process'] + `"
+                                >
+                            Remove Failed History</button>`;
+        }
+
+        content += `<button id="workflow-skipped-history-rm" 
+                        onclick="GW.history.removeSkippedHistory('`
+                        +msg[0]['history_process']+
+                        `')" 
+                            class="history-remove-skipped" 
+                            >
+                        Remove Skipped History</button>`;
+        
+        content += `<label for="workflow-statusFilter">Status:</label>
+            <select id="workflow-statusFilter" style="color: black;">
+                    <option value="all-except-skipped">All (Except Skipped)</option>
+                    <option value="">All</option>
+                    <option value="Running ">Running</option>
+                    <option value="Done">Done</option>
+                    <option value="Stopped">Stopped</option>
+                    <option value="Failed">Failed</option>
+                    <option value="Skipped">Skipped</option>
+            </select>
+            <button id="workflow-refresh-history-btn" 
+                    onclick="GW.history.refreshWorkflowHistoryTable()" 
+                    style="background-color: #007bff; color: white; border: none; padding: 8px 16px; 
+                           border-radius: 4px; cursor: pointer; margin-left: 10px; 
+                           font-size: 14px; font-weight: bold;"
+                    onmouseover="this.style.backgroundColor='#0056b3'"
+                    onmouseout="this.style.backgroundColor='#007bff'"
+                    title="Refresh Workflow History Table">
+                🔄 Refresh
+            </button>
+        </div>`;
+
+        content += "<table class=\"table table-color\" id=\"workflow-history-table\" > "+
 		"  <thead> "+
 		"    <tr> "+
 		"      <th scope=\"col\">Execution Id</th> "+
@@ -378,7 +620,18 @@ GW.history = {
 
 	},
 
-    applyBootstrapTable: function(table_id){
+    applyBootstrapTable: function(table_id, processId, processName, workflowId, workflowName){
+
+        // Add data attributes to the table for refresh functionality
+        if (processId && processName) {
+            $(table_id).attr('data-process-id', processId);
+            $(table_id).attr('data-process-name', processName);
+        }
+        
+        if (workflowId && workflowName) {
+            $(table_id).attr('data-workflow-id', workflowId);
+            $(table_id).attr('data-workflow-name', workflowName);
+        }
 
         var table = $(table_id).DataTable({
             lengthMenu: [100, 50, 10, 200, -1],
@@ -429,11 +682,41 @@ GW.history = {
                     console.error('Error: history-remove-failed attribute is missing or undefined.');
                 }
             });
+
+            $(document).on('click', '#skipped-history-rm', function () {
+                GW.history.removeSkippedHistory(historyProcess);
+            });
+
+            // Workflow history event listeners
+            $(document).on('click', '#workflow-failed-history-rm', function () {
+                const historyProcess = $(this).data("history-remove-failed");
+                if (historyProcess) {
+                    GW.history.removeFailedHistory(historyProcess);
+                } else {
+                    console.error('Error: workflow history-remove-failed attribute is missing or undefined.');
+                }
+            });
+
+            $(document).on('click', '#workflow-skipped-history-rm', function () {
+                GW.history.removeSkippedHistory();
+            });
             
             // Function to apply search filter
             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                const selectedStatus = ($('#statusFilter').val() || "").toLowerCase();  // Ensure it's a string
+                // Determine which filter to use based on the table
+                let selectedStatus = "";
+                if (settings.nTable.id === 'process_history_table') {
+                    selectedStatus = ($('#statusFilter').val() || "").toLowerCase();
+                } else if (settings.nTable.id === 'workflow-history-table') {
+                    selectedStatus = ($('#workflow-statusFilter').val() || "").toLowerCase();
+                }
+                
                 const rowStatus = (data[4] || "").toLowerCase();  // Ensure it's a string
+                
+                // Handle "All (Except Skipped)" option
+                if (selectedStatus === "all-except-skipped") {
+                    return rowStatus !== "skipped";
+                }
                 
                 // If selected status is empty and the row status is "skipped", exclude this row
                 if (selectedStatus === "" && rowStatus === "skipped") {
@@ -457,6 +740,13 @@ GW.history = {
         });
 
         $('#statusFilter').on('change', function () {
+            var value = $(this).val();
+            
+            table.draw();
+        });
+
+        // Workflow status filter event listener
+        $('#workflow-statusFilter').on('change', function () {
             var value = $(this).val();
             
             table.draw();
