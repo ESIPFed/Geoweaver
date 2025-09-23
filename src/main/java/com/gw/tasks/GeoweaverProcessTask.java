@@ -230,7 +230,8 @@ public class GeoweaverProcessTask extends Task {
 
         if (BaseTool.isNull(current_status)
             || current_status.equals(ExecutionStatus.FAILED)
-            || current_status.equals(ExecutionStatus.STOPPED)) {
+            || current_status.equals(ExecutionStatus.STOPPED)
+            || current_status.equals(ExecutionStatus.SKIPPED)) {
           check = 1;
           break;
         }

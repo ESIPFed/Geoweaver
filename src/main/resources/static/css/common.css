@@ -39,6 +39,20 @@
     transform: scale(1.05);
 }
 
+.history-remove-skipped {
+    background: indianred;
+    border: 0;
+    margin-right: 15px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.history-remove-skipped:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
 .history-refresh-button {
     background: #0099CC;
     border: 0;

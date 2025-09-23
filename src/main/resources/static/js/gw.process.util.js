@@ -524,8 +524,16 @@ GW.process.util = {
         $("#history-tab-loader-main-detail").css("display", "none");
 
         if (!msg.length) {
-          alert("no history found");
-
+          // Show friendly empty state message instead of alert
+          $(process_history_container_id).html(`
+            <div style="text-align: center; padding: 40px; color: #666; background-color: #f8f9fa; border-radius: 8px; margin: 20px;">
+                <div style="font-size: 48px; margin-bottom: 20px; color: #6c757d;">
+                    <i class="glyphicon glyphicon-stats" style="font-size: 48px;"></i>
+                </div>
+                <h4 style="color: #495057; margin-bottom: 10px; font-weight: 500;">No History Available</h4>
+                <p style="color: #6c757d; font-size: 14px; margin: 0;">This process hasn't been executed yet or all history records have been cleared.</p>
+            </div>
+          `);
           return;
         }
 
@@ -534,12 +542,12 @@ GW.process.util = {
         GW.history.stopAllTimers();
 
           $(process_history_container_id).html(
-              GW.history.getProcessHistoryTable(msg, pid, pname),
+              GW.history.getProcessHistoryTable(msg, pid, pname, process_history_table_id.replace('#', ''), process_history_container_id.replace('#', '')),
           );
           GW.history.startActiveTimer();
 
         var table_selector = `${process_history_container_id} ${process_history_table_id}`;
-        GW.history.applyBootstrapTable(table_selector);
+        GW.history.applyBootstrapTable(table_selector, pid, pname);
 
         GW.chart.renderProcessHistoryChart(msg, pname, process_history_container_id);
 

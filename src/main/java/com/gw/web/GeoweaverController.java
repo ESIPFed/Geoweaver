@@ -1644,4 +1644,23 @@ public class GeoweaverController {
       response.put("success", true);
       return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete-skipped")
+    public ResponseEntity<Map<String, Boolean>> deleteSkippedHistory(@RequestParam(required = false) String processId) {
+      Map<String, Boolean> response = new HashMap<>();
+      try {
+        if (processId != null && !processId.trim().isEmpty()) {
+          // Delete skipped history for specific process
+          hist.deleteSkippedHistoryByProcess(processId);
+        } else {
+          // Delete all skipped history
+          hist.deleteSkippedHistory();
+        }
+        response.put("success", true);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+      } catch (Exception e) {
+        response.put("success", false);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 }

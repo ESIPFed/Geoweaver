@@ -645,7 +645,7 @@ GW.process.sidepanel = {
       process_id,
       process_name,
       "#prompt-panel-process-history-container",
-      "#process_history_table",
+      "#prompt-panel-process-history-table",
       "#closeHistory",
       "prompt-panel-main-process-info-history-tab",
       "prompt-panel-main-process-info-history",
