@@ -641,7 +641,8 @@ describe('Hosts Testing', () => {
     cy.get('.introjs-skipbutton').click();
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
-    cy.get('.fab').click();
+    // Click on Python Env tab instead of .fab
+    cy.contains('Python Env').click();
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();

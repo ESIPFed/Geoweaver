@@ -211,7 +211,8 @@ describe('Hosts Testing', () => {
     });
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
-    cy.get('.fab').click();
+    // Click on Python Env tab instead of .fab
+    cy.contains('Python Env').click();
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
@@ -240,7 +241,8 @@ describe('Hosts Testing', () => {
     });
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
-    cy.get('p > .fa-upload').click();
+    // Click on Upload tab instead of p > .fa-upload
+    cy.contains('Upload').click();
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
