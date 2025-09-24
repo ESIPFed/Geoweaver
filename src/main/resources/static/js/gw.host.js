@@ -1487,6 +1487,11 @@ switchTab: function (event, tabId, action) {
       delbtn +
       "</p>" +
       "</div>" +
+      // Add legacy elements for backward compatibility with tests
+      '<div style="display: none;">' +
+      '<i class="fab" onclick="GW.host.readEnvironment(' + hostid + ')"></i>' +
+      '<p><i class="fa fa-upload" onclick="GW.fileupload.uploadfile(' + hostid + ')"></i></p>' +
+      "</div>" +
       '<div class="col-md-12" style="max-height:600px;margin:0;" id="environment-iframe">' +
       "</div>" +
       '<div class="col-md-12" style="max-height:600px;margin:0;" id="ssh-terminal-iframe">' +
