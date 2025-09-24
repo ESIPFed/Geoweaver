@@ -154,6 +154,11 @@ GW.settings = {
       localStorage.setItem('editorTheme', selectedTheme); // Save to local storage
       monaco.editor.setTheme(selectedTheme); // Apply the theme to Monaco Editor
       GW.settings.syncMonacoStyles(GW.process.editor)
+      
+      // Apply theme to history panels
+      if (typeof GW.history !== 'undefined' && GW.history.applyHistoryTheme) {
+        GW.history.applyHistoryTheme();
+      }
     });
     
     // Add event listener to save the progress auto-close setting

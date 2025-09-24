@@ -4,17 +4,17 @@ GW.history = {
 
     active_process_history_list: [],
 
-    // History panel theme management (integrated with global theme)
+    // History panel theme management (integrated with editor theme)
     getHistoryTheme: function() {
-        // Get theme from global theme system
-        const globalTheme = localStorage.getItem('globalTheme') || 'light';
-        return globalTheme;
+        // Get theme from editor theme system
+        const editorTheme = localStorage.getItem('editorTheme') || 'vs-light';
+        return editorTheme;
     },
 
     applyHistoryTheme: function() {
         const themeName = this.getHistoryTheme();
         const themes = {
-            light: {
+            'vs-light': {
                 containerBg: '#ffffff',
                 tableBg: '#ffffff',
                 tableHeaderBg: '#f8f9fa',
@@ -25,20 +25,31 @@ GW.history = {
                 emptyStateText: '#6c757d',
                 emptyStateTitle: '#495057'
             },
-            dark: {
-                containerBg: '#2d3748',
-                tableBg: '#2d3748',
-                tableHeaderBg: '#4a5568',
-                tableText: '#e2e8f0',
-                tableHeaderText: '#e2e8f0',
-                chartBg: '#2d3748',
-                emptyStateBg: '#4a5568',
-                emptyStateText: '#a0aec0',
-                emptyStateTitle: '#e2e8f0'
+            'vs-dark': {
+                containerBg: '#1e1e1e',
+                tableBg: '#1e1e1e',
+                tableHeaderBg: '#2d2d30',
+                tableText: '#d4d4d4',
+                tableHeaderText: '#d4d4d4',
+                chartBg: '#1e1e1e',
+                emptyStateBg: '#2d2d30',
+                emptyStateText: '#a0a0a0',
+                emptyStateTitle: '#d4d4d4'
+            },
+            'hc-black': {
+                containerBg: '#000000',
+                tableBg: '#000000',
+                tableHeaderBg: '#1a1a1a',
+                tableText: '#ffffff',
+                tableHeaderText: '#ffffff',
+                chartBg: '#000000',
+                emptyStateBg: '#1a1a1a',
+                emptyStateText: '#cccccc',
+                emptyStateTitle: '#ffffff'
             }
         };
         
-        const theme = themes[themeName] || themes.light;
+        const theme = themes[themeName] || themes['vs-light'];
         
         // Apply theme to existing elements
         $('.history-panel-container').css({
@@ -426,18 +437,23 @@ GW.history = {
         if (!msg || msg.length === 0) {
             const themeName = GW.history.getHistoryTheme();
             const themes = {
-                light: {
+                'vs-light': {
                     emptyStateBg: '#f8f9fa',
                     emptyStateText: '#6c757d',
                     emptyStateTitle: '#495057'
                 },
-                dark: {
-                    emptyStateBg: '#4a5568',
-                    emptyStateText: '#a0aec0',
-                    emptyStateTitle: '#e2e8f0'
+                'vs-dark': {
+                    emptyStateBg: '#2d2d30',
+                    emptyStateText: '#a0a0a0',
+                    emptyStateTitle: '#d4d4d4'
+                },
+                'hc-black': {
+                    emptyStateBg: '#1a1a1a',
+                    emptyStateText: '#cccccc',
+                    emptyStateTitle: '#ffffff'
                 }
             };
-            const theme = themes[themeName] || themes.light;
+            const theme = themes[themeName] || themes['vs-light'];
             return `
                 <div class="history-panel-container" style="text-align: center; padding: 40px; color: ${theme.emptyStateText}; background-color: ${theme.emptyStateBg}; border-radius: 8px; margin: 20px;">
                     <div style="font-size: 48px; margin-bottom: 20px; color: ${theme.emptyStateText};">
@@ -458,7 +474,7 @@ GW.history = {
 
         const themeName = GW.history.getHistoryTheme();
         const themes = {
-            light: {
+            'vs-light': {
                 containerBg: '#ffffff',
                 tableBg: '#ffffff',
                 tableHeaderBg: '#f8f9fa',
@@ -466,16 +482,24 @@ GW.history = {
                 tableHeaderText: '#495057',
                 chartBg: '#ffffff'
             },
-            dark: {
-                containerBg: '#2d3748',
-                tableBg: '#2d3748',
-                tableHeaderBg: '#4a5568',
-                tableText: '#e2e8f0',
-                tableHeaderText: '#e2e8f0',
-                chartBg: '#2d3748'
+            'vs-dark': {
+                containerBg: '#1e1e1e',
+                tableBg: '#1e1e1e',
+                tableHeaderBg: '#2d2d30',
+                tableText: '#d4d4d4',
+                tableHeaderText: '#d4d4d4',
+                chartBg: '#1e1e1e'
+            },
+            'hc-black': {
+                containerBg: '#000000',
+                tableBg: '#000000',
+                tableHeaderBg: '#1a1a1a',
+                tableText: '#ffffff',
+                tableHeaderText: '#ffffff',
+                chartBg: '#000000'
             }
         };
-        const theme = themes[themeName] || themes.light;
+        const theme = themes[themeName] || themes['vs-light'];
         let content = `
         <div class="history-panel-container" style="background-color: ${theme.containerBg}; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 20px;">
