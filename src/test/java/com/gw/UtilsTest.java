@@ -2,43 +2,19 @@ package com.gw;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.mail.MessagingException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gw.database.UserRepository;
-import com.gw.jpa.GWUser;
-import com.gw.tools.UserTool;
-import com.gw.utils.BaseTool;
 import com.gw.utils.EmailValidator;
 import com.gw.utils.GmailAPI;
-import com.gw.utils.GmailOperations;
 import com.gw.utils.MasterRequestObject;
 import com.gw.utils.SpatialExtentValidator;
 import com.gw.utils.Message;
 
 import org.apache.log4j.Logger;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 
@@ -81,7 +57,7 @@ public class UtilsTest {
 
             GmailAPI.getMailBody("Google");
 
-            GmailOperations.sendEmail();
+            // GmailOperations functionality has been removed
         }catch(Exception e){
 
         }finally{

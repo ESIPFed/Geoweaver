@@ -5,8 +5,6 @@ import com.gw.jpa.GWUser;
 import com.gw.ssh.RSAEncryptTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.EmailService;
-import com.gw.utils.HttpUtil;
 import com.gw.utils.RandomString;
 import java.util.Date;
 import java.util.Optional;
@@ -36,7 +34,6 @@ public class UserController {
 
   @Autowired UserRepository userRepository;
 
-  @Autowired EmailService et;
 
   @PostMapping("/profile")
   public @ResponseBody String profile(@Validated @RequestBody GWUser newUser) {
@@ -167,12 +164,9 @@ public class UserController {
       Iterable<GWUser> users = userRepository.findAll();
       for (GWUser user : users) {
         if (user.getEmail().equals(newUser.getEmail())) {
-          HttpUtil httpUtil = new HttpUtil();
-          String siteUrl = httpUtil.getSiteURL(request);
-          System.out.println("User  exists!");
-          // send out password reset email
-          et.send_resetpassword(user, siteUrl);
-          resp = "{\"status\":\"success\", \"message\":\"a password reset email has been sent\"}";
+          System.out.println("User exists!");
+          // Email functionality has been removed
+          resp = "{\"status\":\"success\", \"message\":\"password reset functionality is not available\"}";
         }
       }
 

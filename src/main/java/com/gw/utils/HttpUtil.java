@@ -15,11 +15,14 @@ public class HttpUtil {
     String result = "";
     try {
       String siteURL = request.getHeader("referer");
+      if (siteURL == null) {
+        return "NullPointerException";
+      }
       result = siteURL.replace(request.getServletPath(), "");
-      siteURL = siteURL.replaceAll("\\s", "");
+      result = result.replaceAll("\\s", "");
 
-      if (!siteURL.endsWith("/")) {
-        siteURL += "/";
+      if (!result.endsWith("/")) {
+        result += "/";
       }
     } catch (Exception e) {
 
