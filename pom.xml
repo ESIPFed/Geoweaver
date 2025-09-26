@@ -86,6 +86,7 @@
 			<version>1.18.30</version>
 			<scope>provided</scope>
 		</dependency>
+		
 
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
@@ -421,7 +422,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version>
+				<version>0.8.12</version>
 				<executions>
 					<execution>
 						<goals>
