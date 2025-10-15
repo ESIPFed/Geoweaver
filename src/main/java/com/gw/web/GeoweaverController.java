@@ -21,12 +21,14 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.UserTool;
 import com.gw.tools.WorkflowTool;
+import com.gw.tools.AsyncExportManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -115,6 +117,7 @@ public class GeoweaverController {
 
 	@Autowired LocalhostTool lt;
 
+  @Autowired AsyncExportManager asyncExportManager;
 
   @Autowired private CheckpointRepository checkpointRepository;
 
@@ -407,6 +410,134 @@ public class GeoweaverController {
       throw new RuntimeException("failed " + e.getLocalizedMessage());
     }
 
+    return resp;
+  }
+
+  /**
+   * Start async workflow export
+   * @param model The ModelMap to store response data.
+   * @param request The WebRequest containing request parameters.
+   * @param session The user's HTTP session.
+   * @param httprequest The HTTP request.
+   * @return A JSON response containing the task ID for tracking the export progress.
+   */
+  @RequestMapping(value = "/async-downloadworkflow", method = RequestMethod.POST)
+  public @ResponseBody String asyncDownloadworkflow(
+      ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest) {
+    
+    String resp = null;
+    
+    try {
+      String option = request.getParameter("option");
+      String wid = request.getParameter("id");
+      
+      // Get user ID
+      String userId = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
+      
+      // Start async export task
+      String taskId = asyncExportManager.startAsyncExport(wid, userId, option);
+      
+      resp = String.format("{\"taskId\": \"%s\", \"status\": \"PENDING\", \"message\": \"Export task started, please check export status later\"}", taskId);
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Failed to start async export: " + e.getLocalizedMessage());
+    }
+    
+    return resp;
+  }
+
+  /**
+   * Get async export task status
+   * @param model The ModelMap to store response data.
+   * @param request The WebRequest containing request parameters.
+   * @param session The user's HTTP session.
+   * @param httprequest The HTTP request.
+   * @return A JSON response containing the export task status.
+   */
+  @RequestMapping(value = "/export-status", method = RequestMethod.POST)
+  public @ResponseBody String getExportStatus(
+      ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest) {
+    
+    String resp = null;
+    
+    try {
+      String taskId = request.getParameter("taskId");
+      
+      if (BaseTool.isNull(taskId)) {
+        throw new RuntimeException("Task ID cannot be empty");
+      }
+      
+      AsyncExportManager.ExportTask task = asyncExportManager.getExportTask(taskId);
+      
+      if (task == null) {
+        resp = "{\"error\": \"Task does not exist or has expired\"}";
+      } else {
+        resp = String.format(
+          "{\"taskId\": \"%s\", \"status\": \"%s\", \"downloadUrl\": \"%s\", \"errorMessage\": \"%s\", \"createdAt\": \"%s\", \"completedAt\": \"%s\"}",
+          task.getTaskId(),
+          task.getStatus().toString(),
+          task.getDownloadUrl() != null ? task.getDownloadUrl() : "",
+          task.getErrorMessage() != null ? task.getErrorMessage() : "",
+          task.getCreatedAt().toString(),
+          task.getCompletedAt() != null ? task.getCompletedAt().toString() : ""
+        );
+      }
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Failed to get export status: " + e.getLocalizedMessage());
+    }
+    
+    return resp;
+  }
+
+  /**
+   * Get all export tasks for a user
+   * @param model The ModelMap to store response data.
+   * @param request The WebRequest containing request parameters.
+   * @param session The user's HTTP session.
+   * @param httprequest The HTTP request.
+   * @return A JSON response containing all export tasks for the user.
+   */
+  @RequestMapping(value = "/user-export-tasks", method = RequestMethod.POST)
+  public @ResponseBody String getUserExportTasks(
+      ModelMap model, WebRequest request, HttpSession session, HttpServletRequest httprequest) {
+    
+    String resp = null;
+    
+    try {
+      // Get user ID
+      String userId = ut.getAuthUserId(session.getId(), ut.getClientIp(httprequest));
+      
+      // Get all export tasks for the user
+      ConcurrentHashMap<String, AsyncExportManager.ExportTask> userTasks = asyncExportManager.getUserExportTasks(userId);
+      
+      StringBuilder jsonBuilder = new StringBuilder("[");
+      String prefix = "";
+      
+      for (AsyncExportManager.ExportTask task : userTasks.values()) {
+        jsonBuilder.append(prefix).append(String.format(
+          "{\"taskId\": \"%s\", \"workflowId\": \"%s\", \"status\": \"%s\", \"downloadUrl\": \"%s\", \"errorMessage\": \"%s\", \"createdAt\": \"%s\", \"completedAt\": \"%s\"}",
+          task.getTaskId(),
+          task.getWorkflowId(),
+          task.getStatus().toString(),
+          task.getDownloadUrl() != null ? task.getDownloadUrl() : "",
+          task.getErrorMessage() != null ? task.getErrorMessage() : "",
+          task.getCreatedAt().toString(),
+          task.getCompletedAt() != null ? task.getCompletedAt().toString() : ""
+        ));
+        prefix = ",";
+      }
+      
+      jsonBuilder.append("]");
+      resp = jsonBuilder.toString();
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Failed to get user export tasks: " + e.getLocalizedMessage());
+    }
+    
     return resp;
   }
 

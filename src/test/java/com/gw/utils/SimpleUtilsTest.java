@@ -17,10 +17,8 @@ public class SimpleUtilsTest {
         assertNotNull(CommandLineUtil.class);
         assertNotNull(CommunicationConfig.class);
         assertNotNull(EmailMessage.class);
-        assertNotNull(EmailService.class);
         assertNotNull(EmailValidator.class);
         assertNotNull(GmailAPI.class);
-        assertNotNull(GmailOperations.class);
         assertNotNull(HttpUtil.class);
         assertNotNull(MasterRequestObject.class);
         assertNotNull(OSValidator.class);

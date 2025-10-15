@@ -593,43 +593,249 @@ GW.workspace = {
             "input[name='workflowdownloadoption']:checked",
           ).val();
 
+          // Use async export
           $.ajax({
-            url: "downloadworkflow",
-
+            url: "async-downloadworkflow",
             method: "POST",
-
-            data:
-              "id=" + GW.workflow.loaded_workflow + "&option=" + exportoption,
+            data: "id=" + GW.workflow.loaded_workflow + "&option=" + exportoption,
           })
-            .done(function (msg) {
-              if (msg.startsWith("download/temp/")) {
-                let zipurl = "../" + msg;
-
-                window.open(zipurl);
-
-                GW.workspace.jsFrame.closeFrame();
-              } else {
-                alert("Failed to export workflow.");
+            .done(function (response) {
+              try {
+                const result = JSON.parse(response);
+                if (result.taskId) {
+                  // Show notification
+                  GW.general.showToasts("Export task started, processing in background...");
+                  
+                  // Close dialog
+                  GW.workspace.jsFrame.closeFrame();
+                  
+                  // Start polling task status
+                  GW.workspace.pollExportStatus(result.taskId);
+                } else {
+                  throw new Error("Unable to get task ID");
+                }
+              } catch (e) {
+                console.error("Failed to parse response:", e);
+                alert("Failed to start export task: " + e.message);
+                $("#export-loading-waiter").css("display", "none");
+                $("#workflow-download-confirm-btn").css("display", "inline-block");
               }
-
-              $("#export-loading-waiter").css("display", "none");
-              $("#workflow-download-confirm-btn").css(
-                "display",
-                "inline-block",
-              );
             })
-            .fail(function (msg) {
-              alert("Fail to download workflow: " + msg);
+            .fail(function (xhr, status, error) {
+              console.error("Failed to start export task:", error);
+              alert("Failed to start export task: " + error);
+              $("#export-loading-waiter").css("display", "none");
+              $("#workflow-download-confirm-btn").css("display", "inline-block");
             });
         });
 
-        $("#workflow-download-cancel-btn").click(function () {
-          GW.workspace.jsFrame.closeFrame();
-        });
-      } else {
-        alert("No workflow in the workspace to download.");
-      }
+    $("#workflow-download-cancel-btn").click(function () {
+      GW.workspace.jsFrame.closeFrame();
     });
+  } else {
+    alert("No workflow in the workspace to download.");
+  }
+});
+
+// Poll export status
+GW.workspace.pollExportStatus = function(taskId) {
+  const pollInterval = setInterval(function() {
+    $.ajax({
+      url: "export-status",
+      method: "POST",
+      data: "taskId=" + taskId,
+    })
+    .done(function(response) {
+      try {
+        const result = JSON.parse(response);
+        
+        if (result.error) {
+          console.error("Export task error:", result.error);
+          GW.general.showToasts("Export task failed: " + result.error);
+          clearInterval(pollInterval);
+          return;
+        }
+        
+        switch (result.status) {
+          case "PENDING":
+            // Task is still waiting, continue polling
+            break;
+          case "PROCESSING":
+            // Task is processing, show progress
+            GW.general.showToasts("Exporting workflow, please wait...");
+            break;
+          case "COMPLETED":
+            // Task completed
+            clearInterval(pollInterval);
+            GW.general.showToasts("Workflow export completed!");
+            
+            if (result.downloadUrl) {
+              // Auto download file
+              const downloadUrl = "../" + result.downloadUrl;
+              window.open(downloadUrl);
+            }
+            break;
+          case "FAILED":
+            // Task failed
+            clearInterval(pollInterval);
+            const errorMsg = result.errorMessage || "Export failed";
+            GW.general.showToasts("Export failed: " + errorMsg);
+            break;
+          default:
+            console.warn("Unknown export status:", result.status);
+        }
+      } catch (e) {
+        console.error("Failed to parse export status response:", e);
+        clearInterval(pollInterval);
+        GW.general.showToasts("Failed to get export status");
+      }
+    })
+    .fail(function(xhr, status, error) {
+      console.error("Failed to get export status:", error);
+      clearInterval(pollInterval);
+      GW.general.showToasts("Failed to get export status: " + error);
+    });
+  }, 2000); // Poll every 2 seconds
+  
+  // Set timeout, stop polling after 30 minutes
+  setTimeout(function() {
+    clearInterval(pollInterval);
+    GW.general.showToasts("Export task timeout, please check export status manually");
+  }, 30 * 60 * 1000);
+};
+
+// Export task management functionality
+GW.workspace.initExportTasks = function() {
+  // Bind export task menu click event
+  $("#toolbar-export-tasks").click(function() {
+    GW.general.switchTab('export-tasks');
+    GW.workspace.loadExportTasks();
+  });
+  
+  // Bind refresh button click event
+  $("#refresh-export-tasks-btn").click(function() {
+    GW.workspace.loadExportTasks();
+  });
+};
+
+// Load export task list
+GW.workspace.loadExportTasks = function() {
+  const container = $("#export-tasks-container");
+  
+  // Show loading state
+  container.html(`
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <p>Loading export tasks...</p>
+    </div>
+  `);
+  
+  $.ajax({
+    url: "user-export-tasks",
+    method: "POST",
+    data: "",
+  })
+  .done(function(response) {
+    try {
+      const tasks = JSON.parse(response);
+      GW.workspace.renderExportTasks(tasks);
+    } catch (e) {
+      console.error("Failed to parse export task response:", e);
+      container.html(`
+        <div class="alert alert-danger">
+          <h4>Loading Failed</h4>
+          <p>Unable to parse server response: ${e.message}</p>
+        </div>
+      `);
+    }
+  })
+  .fail(function(xhr, status, error) {
+    console.error("Failed to load export tasks:", error);
+    container.html(`
+      <div class="alert alert-danger">
+        <h4>Loading Failed</h4>
+        <p>Unable to connect to server: ${error}</p>
+        <button class="btn btn-primary" onclick="GW.workspace.loadExportTasks()">Retry</button>
+      </div>
+    `);
+  });
+};
+
+// Render export task list
+GW.workspace.renderExportTasks = function(tasks) {
+  const container = $("#export-tasks-container");
+  
+  if (!tasks || tasks.length === 0) {
+    container.html(`
+      <div class="text-center">
+        <i class="fa fa-download fa-3x text-muted mb-3"></i>
+        <h4 class="text-muted">No Export Tasks</h4>
+        <p class="text-muted">You haven't created any export tasks yet</p>
+      </div>
+    `);
+    return;
+  }
+  
+  let html = '<div class="row">';
+  
+  tasks.forEach(function(task) {
+    const statusClass = GW.workspace.getStatusClass(task.status);
+    const statusText = GW.workspace.getStatusText(task.status);
+    const createdAt = new Date(task.createdAt).toLocaleString();
+    const completedAt = task.completedAt ? new Date(task.completedAt).toLocaleString() : '-';
+    
+    html += `
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Task ${task.taskId.substring(0, 8)}...</h6>
+            <span class="badge badge-${statusClass}">${statusText}</span>
+          </div>
+          <div class="card-body">
+            <p class="card-text"><strong>Workflow ID:</strong> ${task.workflowId}</p>
+            <p class="card-text"><strong>Created:</strong> ${createdAt}</p>
+            <p class="card-text"><strong>Completed:</strong> ${completedAt}</p>
+            ${task.errorMessage ? `<p class="card-text text-danger"><strong>Error:</strong> ${task.errorMessage}</p>` : ''}
+            ${task.downloadUrl ? `
+              <div class="mt-3">
+                <a href="../${task.downloadUrl}" class="btn btn-success btn-sm" target="_blank">
+                  <i class="fa fa-download"></i> Download File
+                </a>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.html(html);
+};
+
+// Get status style class
+GW.workspace.getStatusClass = function(status) {
+  switch (status) {
+    case 'PENDING': return 'warning';
+    case 'PROCESSING': return 'info';
+    case 'COMPLETED': return 'success';
+    case 'FAILED': return 'danger';
+    default: return 'secondary';
+  }
+};
+
+// Get status text
+GW.workspace.getStatusText = function(status) {
+  switch (status) {
+    case 'PENDING': return 'Waiting';
+    case 'PROCESSING': return 'Processing';
+    case 'COMPLETED': return 'Completed';
+    case 'FAILED': return 'Failed';
+    default: return 'Unknown';
+  }
+};
 
     d3.select("#new-workflow").on("click", function () {
       thisGraph.nodes = [];
@@ -1845,5 +2051,8 @@ GW.workspace = {
     GW.workspace.theGraph = new GW.workspace.GraphCreator(svg, nodes, edges);
 
     GW.workspace.theGraph.updateGraph();
+    
+    // Initialize export task management functionality
+    GW.workspace.initExportTasks();
   },
 };

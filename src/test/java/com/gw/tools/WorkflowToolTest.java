@@ -810,4 +810,124 @@ public class WorkflowToolTest {
             workflowTool.skip_process(workflowId, workflowProcessId, skip);
         });
     }
+
+    @Test
+    @Timeout(10)
+    void testDownloadWithProcessCode() throws ParseException {
+        // Given
+        String workflowId = "workflow123";
+        String option = "workflowwithprocesscode";
+        
+        Workflow workflow = new Workflow();
+        workflow.setId(workflowId);
+        workflow.setName("Test Workflow");
+        workflow.setDescription("Test Description");
+        workflow.setNodes("[{\"id\":\"process123-obj1\",\"title\":\"Test Process\"}]");
+        workflow.setEdges("[]");
+
+        when(workflowRepository.findById(workflowId)).thenReturn(Optional.of(workflow));
+        when(baseTool.getFileTransferFolder()).thenReturn("/tmp/transfer");
+        when(baseTool.deleteDirectory(any(File.class))).thenReturn(true);
+        doNothing().when(baseTool).writeString2File(anyString(), anyString());
+        when(baseTool.toJSON(any())).thenReturn("{}");
+        doNothing().when(baseTool).zipFolder(anyString(), anyString());
+
+        // When
+        String result = workflowTool.download(workflowId, option);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.startsWith("download/temp/"));
+        assertTrue(result.endsWith(".zip"));
+    }
+
+    @Test
+    @Timeout(10)
+    void testDownloadWithHistory() throws ParseException {
+        // Given
+        String workflowId = "workflow123";
+        String option = "workflowwithprocesscodehistory";
+        
+        Workflow workflow = new Workflow();
+        workflow.setId(workflowId);
+        workflow.setName("Test Workflow");
+        workflow.setDescription("Test Description");
+        workflow.setNodes("[{\"id\":\"process123-obj1\",\"title\":\"Test Process\"}]");
+        workflow.setEdges("[]");
+
+        when(workflowRepository.findById(workflowId)).thenReturn(Optional.of(workflow));
+        when(baseTool.getFileTransferFolder()).thenReturn("/tmp/transfer");
+        when(baseTool.deleteDirectory(any(File.class))).thenReturn(true);
+        doNothing().when(baseTool).writeString2File(anyString(), anyString());
+        when(baseTool.toJSON(any())).thenReturn("{}");
+        doNothing().when(baseTool).zipFolder(anyString(), anyString());
+
+        // When
+        String result = workflowTool.download(workflowId, option);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.startsWith("download/temp/"));
+        assertTrue(result.endsWith(".zip"));
+    }
+
+    @Test
+    @Timeout(10)
+    void testDownloadWorkflowOnly() throws ParseException {
+        // Given
+        String workflowId = "workflow123";
+        String option = "workflowonly";
+        
+        Workflow workflow = new Workflow();
+        workflow.setId(workflowId);
+        workflow.setName("Test Workflow");
+        workflow.setDescription("Test Description");
+        workflow.setNodes("[]");
+        workflow.setEdges("[]");
+
+        when(workflowRepository.findById(workflowId)).thenReturn(Optional.of(workflow));
+        when(baseTool.getFileTransferFolder()).thenReturn("/tmp/transfer");
+        when(baseTool.deleteDirectory(any(File.class))).thenReturn(true);
+        doNothing().when(baseTool).writeString2File(anyString(), anyString());
+        when(baseTool.toJSON(any())).thenReturn("{}");
+        doNothing().when(baseTool).zipFolder(anyString(), anyString());
+
+        // When
+        String result = workflowTool.download(workflowId, option);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.startsWith("download/temp/"));
+        assertTrue(result.endsWith(".zip"));
+    }
+
+    @Test
+    @Timeout(10)
+    void testDownloadWithGoodHistory() throws ParseException {
+        // Given
+        String workflowId = "workflow123";
+        String option = "workflowwithprocesscodegoodhistory";
+        
+        Workflow workflow = new Workflow();
+        workflow.setId(workflowId);
+        workflow.setName("Test Workflow");
+        workflow.setDescription("Test Description");
+        workflow.setNodes("[{\"id\":\"process123-obj1\",\"title\":\"Test Process\"}]");
+        workflow.setEdges("[]");
+
+        when(workflowRepository.findById(workflowId)).thenReturn(Optional.of(workflow));
+        when(baseTool.getFileTransferFolder()).thenReturn("/tmp/transfer");
+        when(baseTool.deleteDirectory(any(File.class))).thenReturn(true);
+        doNothing().when(baseTool).writeString2File(anyString(), anyString());
+        when(baseTool.toJSON(any())).thenReturn("{}");
+        doNothing().when(baseTool).zipFolder(anyString(), anyString());
+
+        // When
+        String result = workflowTool.download(workflowId, option);
+
+        // Then
+        assertNotNull(result);
+        assertTrue(result.startsWith("download/temp/"));
+        assertTrue(result.endsWith(".zip"));
+    }
 }
