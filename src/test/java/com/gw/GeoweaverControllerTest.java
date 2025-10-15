@@ -97,6 +97,27 @@ public class GeoweaverControllerTest extends AbstractHelperMethodsTest {
                         String.class);
                         logger.debug(result);
         
+        // Test async download workflow endpoint
+        request = new HttpEntity<>("id=workflow123&option=workflowwithprocesscodehistory", headers);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/async-downloadworkflow",
+                        request,
+                        String.class);
+                        logger.debug("Async download result: " + result);
+        
+        // Test export status endpoint
+        request = new HttpEntity<>("taskId=testtask123", headers);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/export-status",
+                        request,
+                        String.class);
+                        logger.debug("Export status result: " + result);
+        
+        // Test user export tasks endpoint
+        request = new HttpEntity<>("", headers);
+        result = this.testrestTemplate.postForObject("http://localhost:" + this.port + "/Geoweaver/web/user-export-tasks",
+                        request,
+                        String.class);
+                        logger.debug("User export tasks result: " + result);
+        
         
     }
     
