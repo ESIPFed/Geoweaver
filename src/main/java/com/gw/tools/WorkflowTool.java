@@ -596,7 +596,14 @@ public class WorkflowTool {
    * @throws ParseException
    */
   public String download(String wid, String option) throws ParseException {
+    logger.info("Starting workflow export, workflow ID: " + wid + ", option: " + option);
+    
     Workflow wf = getById(wid);
+    if (wf == null) {
+        logger.error("Workflow not found, ID: " + wid);
+        return null;
+    }
+    
     String fileUrl = "download/temp/" + wf.getId() + ".zip";
     String saveFilePath = bt.getFileTransferFolder() + wf.getId() + File.separator;
     String targetFilePath = bt.getFileTransferFolder() + wf.getId() + ".zip";
@@ -605,37 +612,65 @@ public class WorkflowTool {
     bt.deleteDirectory(targetDir);
     if (!targetDir.exists()) targetDir.mkdirs();
     
+    // Save workflow basic information - this is most important, must succeed
     try {
+        logger.info("Saving workflow basic information...");
         bt.writeString2File(bt.toJSON(wf), saveFilePath + "workflow.json");
+        logger.info("Successfully saved workflow basic information");
     } catch (Exception e) {
+        logger.error("Failed to save workflow basic information: " + e.getMessage(), e);
         e.printStackTrace();
-        return null;
+        return null; // If workflow basic info save fails, entire export fails
     }
     
+    // Save process code - if fails, log error but continue
     try {
         if (option.contains("processcode")) {
+            logger.info("Saving process code...");
             saveProcessCode(wf, saveFilePath);
+            logger.info("Successfully saved process code");
         }
     } catch (Exception e) {
+        logger.error("Failed to save process code, but continuing export: " + e.getMessage(), e);
         e.printStackTrace();
+        // Continue exporting other content even if process code save fails
     }
     
+    // Save history records - if fails, log error but continue
     try {
         if (option.contains("history")) {
+            logger.info("Saving history records...");
             saveWorkflowHistory(wid, option, saveFilePath);
+            logger.info("History records saving completed");
         }
     } catch (Exception e) {
+        logger.error("Failed to save history records, but continuing export: " + e.getMessage(), e);
+        e.printStackTrace();
+        // Continue exporting other content even if history save fails
+    }
+    
+    // Create README file - if fails, log error but continue
+    try {
+        logger.info("Creating README file...");
+        bt.writeString2File(createReadme(wf), saveFilePath + "README.md");
+        logger.info("Successfully created README file");
+    } catch (Exception e) {
+        logger.error("Failed to create README file, but continuing export: " + e.getMessage(), e);
         e.printStackTrace();
     }
     
+    // Create ZIP file - this is the final step, must succeed
     try {
-        bt.writeString2File(createReadme(wf), saveFilePath + "README.md");
+        logger.info("Creating ZIP file...");
         bt.zipFolder(saveFilePath, targetFilePath);
+        logger.info("Successfully created ZIP file: " + targetFilePath);
     } catch (Exception e) {
+        logger.error("Failed to create ZIP file: " + e.getMessage(), e);
         e.printStackTrace();
         return null;
     }
     
+    logger.info("Workflow export completed, download URL: " + fileUrl);
     return fileUrl;
   }
 
@@ -643,98 +678,268 @@ public class WorkflowTool {
       String codeSavePath = saveFilePath + "code" + File.separator;
       new File(codeSavePath).mkdirs();
       
+      logger.info("Starting to save process code, save path: " + codeSavePath);
+      
       JSONArray nodes;
       try {
           nodes = (JSONArray) new JSONParser().parse(wf.getNodes());
+          logger.info("Successfully parsed workflow nodes, node count: " + nodes.size());
       } catch (Exception e) {
+          logger.error("Failed to parse workflow nodes: " + e.getMessage(), e);
           e.printStackTrace();
           return;
       }
       
       StringBuilder processJson = new StringBuilder("[");
       String prefix = "";
+      int savedProcessCount = 0;
       
       for (Object obj : nodes) {
           try {
               JSONObject node = (JSONObject) obj;
-              String processId = ((String) node.get("id")).split("-")[0];
-              File targetFile = new File(codeSavePath + pt.getProcessFileName(processId));
+              String nodeId = (String) node.get("id");
+              if (nodeId == null || !nodeId.contains("-")) {
+                  logger.warn("Skipping invalid node ID: " + nodeId);
+                  continue;
+              }
               
-              if (!targetFile.exists()) {
+              String processId = nodeId.split("-")[0];
+              logger.debug("Processing process ID: " + processId);
+              
+              try {
                   GWProcess process = pt.getProcessById(processId);
-                  bt.writeString2File(process.getCode(), targetFile.getPath());
-                  processJson.append(prefix).append(pt.toJSON(process));
-                  prefix = ",";
+                  if (process == null) {
+                      logger.warn("Process not found, ID: " + processId);
+                      continue;
+                  }
+                  
+                  File targetFile = new File(codeSavePath + pt.getProcessFileName(processId));
+                  
+                  if (!targetFile.exists()) {
+                      String processCode = process.getCode();
+                      if (processCode != null && !processCode.isEmpty()) {
+                          bt.writeString2File(processCode, targetFile.getPath());
+                          logger.debug("Saved process code file: " + targetFile.getName());
+                      } else {
+                          logger.warn("Process code is empty, skipping save: " + processId);
+                      }
+                  }
+                  
+                  String processJsonStr = pt.toJSON(process);
+                  if (processJsonStr != null && !processJsonStr.isEmpty()) {
+                      processJson.append(prefix).append(processJsonStr);
+                      prefix = ",";
+                      savedProcessCount++;
+                      logger.debug("Successfully serialized process: " + processId);
+                  } else {
+                      logger.warn("Process serialization result is empty: " + processId);
+                  }
+              } catch (Exception e) {
+                  logger.error("Failed to process process, ID: " + processId + ", error: " + e.getMessage(), e);
+                  e.printStackTrace();
               }
           } catch (Exception e) {
+              logger.error("Error processing node: " + e.getMessage(), e);
               e.printStackTrace();
           }
       }
       
       processJson.append("]");
-      bt.writeString2File(processJson.toString(), codeSavePath + "process.json");
+      
+      try {
+          String jsonContent = processJson.toString();
+          bt.writeString2File(jsonContent, codeSavePath + "process.json");
+          logger.info("Successfully saved process code, saved process count: " + savedProcessCount);
+      } catch (Exception e) {
+          logger.error("Failed to save process JSON file: " + e.getMessage(), e);
+          e.printStackTrace();
+      }
   }
 
   private void saveWorkflowHistory(String wid, String option, String saveFilePath) {
       String historySavePath = saveFilePath + "history" + File.separator;
       new File(historySavePath).mkdirs();
       
-      List<History> workflowHistory = historyrepository.findByWorkflowId(wid);
-      saveHistoryList(workflowHistory, historySavePath + wid + ".json", option);
+      logger.info("Starting to save workflow history, workflow ID: " + wid + ", option: " + option);
+      
+      // Try to get workflow history records with error handling and logging
+      List<History> workflowHistory = new ArrayList<>();
+      try {
+          logger.info("Querying workflow history records...");
+          workflowHistory = historyrepository.findByWorkflowId(wid);
+          logger.info("Successfully queried " + workflowHistory.size() + " workflow history records");
+          
+          // Log details about each workflow history record
+          for (History h : workflowHistory) {
+              logger.debug("Workflow history record - ID: " + h.getHistory_id() + 
+                         ", Input: " + h.getHistory_input() + 
+                         ", Output: " + h.getHistory_output() + 
+                         ", Status: " + h.getIndicator());
+          }
+      } catch (Exception e) {
+          logger.error("Failed to query workflow history records, workflow ID: " + wid + ", error: " + e.getMessage(), e);
+          e.printStackTrace();
+          // Continue export even if query fails, but log the error
+          workflowHistory = new ArrayList<>();
+      }
+      
+      // Save workflow history records
+      try {
+          saveHistoryList(workflowHistory, historySavePath + wid + ".json", option);
+          logger.info("Successfully saved workflow history records to file: " + historySavePath + wid + ".json");
+      } catch (Exception e) {
+          logger.error("Failed to save workflow history records: " + e.getMessage(), e);
+          e.printStackTrace();
+      }
       
       Set<String> processIds = new HashSet<>();
       Set<String> processHistoryIds = new HashSet<>();
       
+      // Process workflow history records to extract process IDs
       for (History h : workflowHistory) {
-          if (option.equals("workflowwithprocesscodegoodhistory") && !ExecutionStatus.DONE.equals(h.getIndicator())) {
-              continue;
+          try {
+              if (option.equals("workflowwithprocesscodegoodhistory") && !ExecutionStatus.DONE.equals(h.getIndicator())) {
+                  logger.debug("Skipping non-completed history record: " + h.getHistory_id() + ", status: " + h.getIndicator());
+                  continue;
+              }
+              
+              // Extract process IDs by removing the part after the '-'
+              if (h.getHistory_input() != null && !h.getHistory_input().isEmpty()) {
+                  String[] historyInputs = h.getHistory_input().split(";");
+                  logger.debug("Processing history inputs: " + Arrays.toString(historyInputs));
+                  for (String input : historyInputs) {
+                      if (input != null && input.contains("-")) {
+                          String processId = input.split("-")[0];  // Take only the part before the '-'
+                          if (!processId.isEmpty()) {
+                              processIds.add(processId);  // Add to the set to deduplicate
+                              logger.debug("Extracted process ID: " + processId + " from input: " + input);
+                          }
+                      }
+                  }
+              }
+              
+              // Add processHistoryId without modification
+              if (h.getHistory_output() != null && !h.getHistory_output().isEmpty()) {
+                  String[] outputs = h.getHistory_output().split(";");
+                  logger.debug("Processing history outputs: " + Arrays.toString(outputs));
+                  for (String output : outputs) {
+                      if (output != null && !output.trim().isEmpty()) {
+                          processHistoryIds.add(output.trim());
+                          logger.debug("Added process history ID: " + output.trim());
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              logger.error("Error processing workflow history record, history ID: " + h.getHistory_id() + ", error: " + e.getMessage(), e);
+              e.printStackTrace();
           }
-          
-          // Extract process IDs by removing the part after the '-'
-          String[] historyInputs = h.getHistory_input().split(";");
-          for (String input : historyInputs) {
-              String processId = input.split("-")[0];  // Take only the part before the '-'
-              processIds.add(processId);  // Add to the set to deduplicate
-          }
-          
-          // Add processHistoryId without modification
-          processHistoryIds.addAll(Arrays.asList(h.getHistory_output().split(";")));
       }
       
-      // for (String processHistoryId : processHistoryIds) {
-      //     Optional<History> historyOpt = historyrepository.findById(processHistoryId);
-      //     historyOpt.ifPresent(hist -> saveHistoryList(Collections.singletonList(hist), 
-      //             historySavePath + hist.getHistory_id() + ".json", option));
-      // }
+      logger.info("Extracted " + processIds.size() + " process IDs and " + processHistoryIds.size() + " process history IDs");
       
-      if (option.contains("allhistory") || "workflowwithprocesscodegoodhistory".equals(option)) {
+      // Save individual process history records
+      try {
+          logger.info("Saving individual process history records...");
+          for (String processHistoryId : processHistoryIds) {
+              if (processHistoryId != null && !processHistoryId.trim().isEmpty()) {
+                  try {
+                      logger.debug("Looking up process history record: " + processHistoryId);
+                      Optional<History> historyOpt = historyrepository.findById(processHistoryId);
+                      if (historyOpt.isPresent()) {
+                          History hist = historyOpt.get();
+                          saveHistoryList(Collections.singletonList(hist), 
+                                  historySavePath + hist.getHistory_id() + ".json", option);
+                          logger.debug("Saved process history record: " + hist.getHistory_id());
+                      } else {
+                          logger.warn("Process history record not found: " + processHistoryId);
+                      }
+                  } catch (Exception e) {
+                      logger.error("Failed to save process history record, ID: " + processHistoryId + ", error: " + e.getMessage(), e);
+                      e.printStackTrace();
+                  }
+              }
+          }
+      } catch (Exception e) {
+          logger.error("Error in batch saving process history records: " + e.getMessage(), e);
+          e.printStackTrace();
+      }
+      
+      // Save all process history records for each process
+      if (option.contains("history") || "workflowwithprocesscodegoodhistory".equals(option)) {
+          logger.info("Starting to save all process history records, process count: " + processIds.size());
           for (String processId : processIds) {
-              List<History> processHistory = historyrepository.findByProcessIdFull(processId);
-              saveHistoryList(processHistory, historySavePath + "process_" + processId + ".json", option);
+              try {
+                  logger.debug("Querying process history records, process ID: " + processId);
+                  List<History> processHistory = historyrepository.findByProcessIdFull(processId);
+                  logger.debug("Found " + processHistory.size() + " process history records");
+                  
+                  if (!processHistory.isEmpty()) {
+                      saveHistoryList(processHistory, historySavePath + "process_" + processId + ".json", option);
+                      logger.debug("Successfully saved process history records, process ID: " + processId);
+                  } else {
+                      logger.warn("No process history records found for process ID: " + processId);
+                  }
+              } catch (Exception e) {
+                  logger.error("Failed to save process history records, process ID: " + processId + ", error: " + e.getMessage(), e);
+                  e.printStackTrace();
+                  // Continue processing other processes even if one fails
+              }
           }
       }
+      
+      logger.info("Workflow history saving completed");
   }
 
   private void saveHistoryList(List<History> historyList, String filePath, String option) {
+      logger.debug("Starting to save history list, file path: " + filePath + ", history count: " + historyList.size());
+      
       StringBuilder historyJson = new StringBuilder("[");
       String prefix = "";
+      int savedCount = 0;
+      int skippedCount = 0;
       
       for (History hist : historyList) {
           try {
+              // Log details about each history record being processed
+              logger.debug("Processing history record - ID: " + hist.getHistory_id() + 
+                         ", Status: " + hist.getIndicator() + 
+                         ", Input: " + hist.getHistory_input() + 
+                         ", Output: " + hist.getHistory_output());
+              
               if (option.equals("workflowwithprocesscodegoodhistory") && !ExecutionStatus.DONE.equals(hist.getIndicator())) {
+                  logger.debug("Skipping non-completed history record: " + hist.getHistory_id() + ", status: " + hist.getIndicator());
+                  skippedCount++;
                   continue;
               }
-              historyJson.append(prefix).append(bt.toJSON(hist));
-              prefix = ",";
+              
+              String histJson = bt.toJSON(hist);
+              if (histJson != null && !histJson.isEmpty()) {
+                  historyJson.append(prefix).append(histJson);
+                  prefix = ",";
+                  savedCount++;
+                  logger.debug("Successfully serialized history record: " + hist.getHistory_id());
+              } else {
+                  logger.warn("History record serialization result is empty: " + hist.getHistory_id());
+              }
           } catch (Exception e) {
+              logger.error("Failed to serialize history record, history ID: " + hist.getHistory_id() + ", error: " + e.getMessage(), e);
               e.printStackTrace();
           }
       }
       historyJson.append("]");
       
       try {
-          bt.writeString2File(historyJson.toString(), filePath);
+          String jsonContent = historyJson.toString();
+          if (jsonContent.length() > 2) { // Not just "[]"
+              bt.writeString2File(jsonContent, filePath);
+              logger.info("Successfully saved history records to file: " + filePath + ", saved count: " + savedCount + ", skipped count: " + skippedCount);
+          } else {
+              logger.warn("History list is empty, creating empty file: " + filePath);
+              // Create an empty file even if empty, to indicate that saving was attempted
+              bt.writeString2File("[]", filePath);
+          }
       } catch (Exception e) {
+          logger.error("Failed to save history file, file path: " + filePath + ", error: " + e.getMessage(), e);
           e.printStackTrace();
       }
   }
@@ -843,6 +1048,7 @@ public class WorkflowTool {
                 }
             } catch (Exception e) {
                 logger.error("Database connection error while fetching process: " + process_id, e);
+                e.printStackTrace();
                 return "Error: Database connection issue.";
             }
 
@@ -860,6 +1066,7 @@ public class WorkflowTool {
           return "Error: Invalid workflow node format.";
       } catch (Exception e) {
           logger.error("Unexpected error in getProcessDescriptions", e);
+          e.printStackTrace();
           return "Error: Unexpected issue occurred.";
       }
 
