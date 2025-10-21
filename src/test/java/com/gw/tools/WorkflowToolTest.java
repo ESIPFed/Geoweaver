@@ -671,10 +671,12 @@ public class WorkflowToolTest {
 
         when(workflowRepository.findById(workflowId)).thenReturn(Optional.empty());
 
-        // When & Then
-        assertThrows(NullPointerException.class, () -> {
-            workflowTool.download(workflowId, option);
-        });
+        // When
+        String result = workflowTool.download(workflowId, option);
+
+        // Then
+        // The method should return null when workflow is not found, not throw exception
+        assertNull(result);
     }
 
     @Test
