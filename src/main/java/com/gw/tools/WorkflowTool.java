@@ -795,27 +795,45 @@ public class WorkflowTool {
       Set<String> processIds = new HashSet<>();
       Set<String> processHistoryIds = new HashSet<>();
       
-      // Process workflow history records to extract process IDs
+      // ALWAYS extract process IDs directly from workflow definition - this is the correct approach
+      logger.info("Extracting process IDs from workflow definition...");
+      try {
+          Workflow wf = getById(wid);
+          if (wf != null && wf.getNodes() != null && !wf.getNodes().isEmpty()) {
+              JSONArray nodes = (JSONArray) new JSONParser().parse(wf.getNodes());
+              logger.info("Found " + nodes.size() + " nodes in workflow definition");
+              
+              for (Object obj : nodes) {
+                  try {
+                      JSONObject node = (JSONObject) obj;
+                      String nodeId = (String) node.get("id");
+                      if (nodeId != null && nodeId.contains("-")) {
+                          String processId = nodeId.split("-")[0];
+                          if (!processId.isEmpty()) {
+                              processIds.add(processId);
+                              logger.debug("Extracted process ID from workflow definition: " + processId);
+                          }
+                      }
+                  } catch (Exception e) {
+                      logger.error("Error processing workflow node: " + e.getMessage(), e);
+                      e.printStackTrace();
+                  }
+              }
+              logger.info("Successfully extracted " + processIds.size() + " process IDs from workflow definition");
+          } else {
+              logger.warn("Workflow definition not found or has no nodes, workflow ID: " + wid);
+          }
+      } catch (Exception e) {
+          logger.error("Failed to extract process IDs from workflow definition: " + e.getMessage(), e);
+          e.printStackTrace();
+      }
+      
+      // Process workflow history records to extract process history IDs (for individual history records)
       for (History h : workflowHistory) {
           try {
               if (option.equals("workflowwithprocesscodegoodhistory") && !ExecutionStatus.DONE.equals(h.getIndicator())) {
                   logger.debug("Skipping non-completed history record: " + h.getHistory_id() + ", status: " + h.getIndicator());
                   continue;
-              }
-              
-              // Extract process IDs by removing the part after the '-'
-              if (h.getHistory_input() != null && !h.getHistory_input().isEmpty()) {
-                  String[] historyInputs = h.getHistory_input().split(";");
-                  logger.debug("Processing history inputs: " + Arrays.toString(historyInputs));
-                  for (String input : historyInputs) {
-                      if (input != null && input.contains("-")) {
-                          String processId = input.split("-")[0];  // Take only the part before the '-'
-                          if (!processId.isEmpty()) {
-                              processIds.add(processId);  // Add to the set to deduplicate
-                              logger.debug("Extracted process ID: " + processId + " from input: " + input);
-                          }
-                      }
-                  }
               }
               
               // Add processHistoryId without modification
@@ -835,7 +853,7 @@ public class WorkflowTool {
           }
       }
       
-      logger.info("Extracted " + processIds.size() + " process IDs and " + processHistoryIds.size() + " process history IDs");
+      logger.info("Total extracted " + processIds.size() + " process IDs and " + processHistoryIds.size() + " process history IDs");
       
       // Save individual process history records
       try {
@@ -864,7 +882,7 @@ public class WorkflowTool {
           e.printStackTrace();
       }
       
-      // Save all process history records for each process
+      // Save all process history records for each process - ALWAYS execute this regardless of workflow history
       if (option.contains("history") || "workflowwithprocesscodegoodhistory".equals(option)) {
           logger.info("Starting to save all process history records, process count: " + processIds.size());
           for (String processId : processIds) {
