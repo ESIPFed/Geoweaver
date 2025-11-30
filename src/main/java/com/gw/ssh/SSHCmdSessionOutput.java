@@ -36,6 +36,8 @@ public class SSHCmdSessionOutput implements Runnable {
   protected boolean run = true;
 
   protected String history_id;
+  
+  protected String hostInfo; // Store host information for logging
 
   @Autowired BaseTool bt;
 
@@ -48,12 +50,17 @@ public class SSHCmdSessionOutput implements Runnable {
   }
 
   public void init(BufferedReader in, String token, String history_id) {
+    init(in, token, history_id, null);
+  }
+  
+  public void init(BufferedReader in, String token, String history_id, String hostInfo) {
 
     log.info("created");
     this.in = in;
     this.token = token;
     this.run = true;
     this.history_id = history_id;
+    this.hostInfo = hostInfo != null ? hostInfo : "Remote Host";
     wsout = CommandServlet.findSessionById(token);
   }
 
@@ -88,7 +95,7 @@ public void endWithCode(String token, String history_id, int exitvalue) {
     log.info("Exit code: " + exitvalue);
 
     CommandServlet.sendMessageToSocket(
-        token, history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
+        token, history_id + BaseTool.log_separator + "Exit Code: " + exitvalue + " (on " + hostInfo + ")");
   }
 
 public void updateStatus(String logs, String status) {
@@ -163,7 +170,7 @@ public void updateStatus(String logs, String status) {
     updateStatus("Running", "Running"); // initiate the history record
 
     CommandServlet.sendMessageToSocket(
-        token, history_id + BaseTool.log_separator + "Process " + this.history_id + " Started");
+        token, history_id + BaseTool.log_separator + "Process " + this.history_id + " Started on " + hostInfo);
 
     String line = null;
 
@@ -246,7 +253,7 @@ public void updateStatus(String logs, String status) {
 
       CommandServlet.sendMessageToSocket(
           token,
-          history_id + BaseTool.log_separator + "The process " + this.history_id + " is finished.");
+          history_id + BaseTool.log_separator + "The process " + this.history_id + " is finished on " + hostInfo + ".");
 
     } catch (Exception e) {
 
@@ -258,7 +265,7 @@ public void updateStatus(String logs, String status) {
 
       CommandServlet.sendMessageToSocket(
           token,
-          history_id + BaseTool.log_separator + "======= Process " + this.history_id + " ended");
+          history_id + BaseTool.log_separator + "======= Process " + this.history_id + " ended on " + hostInfo + " =======");
     }
 
     // GeoweaverController.sessionManager.closeByToken(token);

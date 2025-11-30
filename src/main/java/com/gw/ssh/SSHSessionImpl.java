@@ -727,7 +727,27 @@ public class SSHSessionImpl implements SSHSession {
       String pidFile = workspace_folder_path + "/" + history_id + ".pid";
       this.currentPidFile = pidFile;
       
-      log.info("=== Starting Python execution for history ID: {} ===", history_id);
+      // Get host information for logging
+      String hostInfo = "Remote Host";
+      if (hostid != null) {
+        try {
+          Host h = hostrepo.findById(hostid).orElse(null);
+          if (h != null) {
+            String hostName = h.getName() != null ? h.getName() : hostid;
+            String hostIp = h.getIp() != null ? h.getIp() : "unknown";
+            hostInfo = hostName + " (" + hostIp + ")";
+          } else {
+            hostInfo = "Host ID: " + hostid;
+          }
+        } catch (Exception e) {
+          hostInfo = "Host ID: " + hostid;
+        }
+      } else if (host != null) {
+        hostInfo = host;
+      }
+      
+      log.info("=== Starting Python execution on {} ===", hostInfo);
+      log.info("History ID: {}", history_id);
       log.info("PID file path: {}", pidFile);
       log.info("Workspace folder: {}", workspace_folder_path);
       
@@ -791,7 +811,7 @@ public class SSHSessionImpl implements SSHSession {
       cmdline += "exit $exitcode;";
 
       // Log the final command line.
-      log.info("=== Final command line for execution ===");
+      log.info("=== Final command line for execution on {} ===", hostInfo);
       log.info("Command length: {} characters", cmdline.length());
       log.info("Command: {}", cmdline);
       log.info("History ID: {}", history_id);
@@ -799,7 +819,7 @@ public class SSHSessionImpl implements SSHSession {
       log.info("Is join mode: {}", isjoin);
 
       // Execute the command on the SSH session.
-      log.info("Executing command on SSH session...");
+      log.info("Executing command on SSH session for {}...", hostInfo);
       long execStartTime = System.currentTimeMillis();
       Command cmd = session.exec(cmdline);
       long execEndTime = System.currentTimeMillis();
@@ -811,20 +831,20 @@ public class SSHSessionImpl implements SSHSession {
       log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Log the establishment of the SSH command session.
-      log.info("SSH command session established successfully");
+      log.info("SSH command session established successfully on {}", hostInfo);
       log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Initialize an input stream for reading command output.
       input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
-      log.info("Input stream reader created for command output");
+      log.info("Input stream reader created for command output on {}", hostInfo);
 
       // Send initial message to client to confirm process has started
       CommandServlet.sendMessageToSocket(
-          token, history_id + BaseTool.log_separator + "Process started on remote host");
-      log.info("Initial process start message sent to client");
+          token, history_id + BaseTool.log_separator + "Process started on " + hostInfo);
+      log.info("Initial process start message sent to client for {}", hostInfo);
 
       // Initialize the command sender for handling output.
-      cmdsender.init(input, token, history_id);
+      cmdsender.init(input, token, history_id, hostInfo);
 
       // Create and start a thread for sending command output.
       thread = new Thread(cmdsender);
@@ -834,16 +854,16 @@ public class SSHSessionImpl implements SSHSession {
 
       // If the 'isjoin' flag is set, wait for the process to complete.
       if (isjoin) {
-        log.info("Waiting for command to complete (join mode enabled)...");
+        log.info("Waiting for command to complete on {} (join mode enabled)...", hostInfo);
         long joinStartTime = System.currentTimeMillis();
         cmd.join(7, TimeUnit.DAYS); // Allow the process to run for up to a week.
         long joinEndTime = System.currentTimeMillis();
         int exitStatus = cmd.getExitStatus();
-        log.info("Command completed after {} ms with exit code: {}", (joinEndTime - joinStartTime), exitStatus);
-        log.info("Command exit status: {}", exitStatus);
+        log.info("Command completed on {} after {} ms with exit code: {}", hostInfo, (joinEndTime - joinStartTime), exitStatus);
+        log.info("Command exit status on {}: {}", hostInfo, exitStatus);
         cmdsender.endWithCode(token, history_id, exitStatus);
       } else {
-        log.info("Command execution started in non-join mode (not waiting for completion)");
+        log.info("Command execution started on {} in non-join mode (not waiting for completion)", hostInfo);
       }
     } catch (Exception e) {
       // Handle any exceptions that occur during execution.
@@ -919,7 +939,27 @@ public class SSHSessionImpl implements SSHSession {
       String pidFile = workspace_folder_path + "/" + history_id + ".pid";
       this.currentPidFile = pidFile;
       
-      log.info("=== Starting Bash execution for history ID: {} ===", history_id);
+      // Get host information for logging
+      String hostInfo = "Remote Host";
+      if (hostid != null) {
+        try {
+          Host h = hostrepo.findById(hostid).orElse(null);
+          if (h != null) {
+            String hostName = h.getName() != null ? h.getName() : hostid;
+            String hostIp = h.getIp() != null ? h.getIp() : "unknown";
+            hostInfo = hostName + " (" + hostIp + ")";
+          } else {
+            hostInfo = "Host ID: " + hostid;
+          }
+        } catch (Exception e) {
+          hostInfo = "Host ID: " + hostid;
+        }
+      } else if (host != null) {
+        hostInfo = host;
+      }
+      
+      log.info("=== Starting Bash execution on {} ===", hostInfo);
+      log.info("History ID: {}", history_id);
       log.info("PID file path: {}", pidFile);
       log.info("Workspace folder: {}", workspace_folder_path);
       
@@ -964,7 +1004,7 @@ public class SSHSessionImpl implements SSHSession {
       cmdline = cmdline.replace("./geoweaver-" + history_id + ".sh;", trackedScriptCmd + "; ");
 
       // Log the final command line.
-      log.info("=== Final bash command line for execution ===");
+      log.info("=== Final bash command line for execution on {} ===", hostInfo);
       log.info("Command length: {} characters", cmdline.length());
       log.info("Command: {}", cmdline);
       log.info("History ID: {}", history_id);
@@ -992,8 +1032,8 @@ public class SSHSessionImpl implements SSHSession {
       log.info("Input stream reader created for command output");
 
       // Initialize the command sender for handling output.
-      cmdsender.init(input, token, history_id);
-      log.info("Command sender initialized");
+      cmdsender.init(input, token, history_id, hostInfo);
+      log.info("Command sender initialized with host info: {}", hostInfo);
 
       // Create and start a thread for sending command output.
       thread = new Thread(cmdsender);
@@ -1006,16 +1046,16 @@ public class SSHSessionImpl implements SSHSession {
 
       // If the 'isjoin' flag is set, wait for the process to complete.
       if (isjoin) {
-        log.info("Waiting for bash command to complete (join mode enabled)...");
+        log.info("Waiting for bash command to complete on {} (join mode enabled)...", hostInfo);
         long joinStartTime = System.currentTimeMillis();
         cmd.join(7, TimeUnit.DAYS); // Allow the process to run for up to a week.
         long joinEndTime = System.currentTimeMillis();
         int exitStatus = cmd.getExitStatus();
-        log.info("Bash command completed after {} ms with exit code: {}", (joinEndTime - joinStartTime), exitStatus);
-        log.info("Command exit status: {}", exitStatus);
+        log.info("Bash command completed on {} after {} ms with exit code: {}", hostInfo, (joinEndTime - joinStartTime), exitStatus);
+        log.info("Command exit status on {}: {}", hostInfo, exitStatus);
         cmdsender.endWithCode(token, history_id, exitStatus);
       } else {
-        log.info("Bash command execution started in non-join mode (not waiting for completion)");
+        log.info("Bash command execution started on {} in non-join mode (not waiting for completion)", hostInfo);
       }
     } catch (Exception e) {
       // Handle any exceptions that occur during execution.
@@ -1061,7 +1101,26 @@ public class SSHSessionImpl implements SSHSession {
    * @return true if the command was successfully stopped, false otherwise
    */
   public boolean stop() {
-    log.info("=== Starting process stop operation ===");
+    // Get host information for logging
+    String hostInfo = "Remote Host";
+    if (hostid != null) {
+      try {
+        Host h = hostrepo.findById(hostid).orElse(null);
+        if (h != null) {
+          String hostName = h.getName() != null ? h.getName() : hostid;
+          String hostIp = h.getIp() != null ? h.getIp() : "unknown";
+          hostInfo = hostName + " (" + hostIp + ")";
+        } else {
+          hostInfo = "Host ID: " + hostid;
+        }
+      } catch (Exception e) {
+        hostInfo = "Host ID: " + hostid;
+      }
+    } else if (host != null) {
+      hostInfo = host;
+    }
+    
+    log.info("=== Starting process stop operation on {} ===", hostInfo);
     log.info("History ID: {}", historyId);
     log.info("PID file: {}", currentPidFile);
     log.info("SSH client available: {}", ssh != null);
@@ -1092,12 +1151,12 @@ public class SSHSessionImpl implements SSHSession {
       // Try to kill the remote process using PID file
       // CRITICAL: Always attempt to kill, even if PID file or SSH client is null
       // We can still try to find and kill processes by name
-      log.info("=== Attempting to kill remote process ===");
-      log.info("PID file path: {}", currentPidFile);
-      log.info("History ID: {}", historyId);
-      log.info("Workspace folder: {}", workspace_folder_path);
-      log.info("SSH client available: {}", ssh != null);
-      log.info("SSH session available: {}", session != null);
+          log.info("=== Attempting to kill remote process on {} ===", hostInfo);
+          log.info("PID file path: {}", currentPidFile);
+          log.info("History ID: {}", historyId);
+          log.info("Workspace folder: {}", workspace_folder_path);
+          log.info("SSH client available: {}", ssh != null);
+          log.info("SSH session available: {}", session != null);
       
       // CRITICAL FIX: If SSH client is null, we MUST still try to kill the process
       // Use the existing session if available, or try to create a new SSH connection

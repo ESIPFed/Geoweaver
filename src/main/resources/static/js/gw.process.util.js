@@ -407,6 +407,31 @@ GW.process.util = {
     element.style.setProperty("height", "100%");
     element.style.setProperty("display", "flex");
 
+    // Show process ID, confidential checkbox, and toolbar when not maximized
+    var modalBody = document.querySelector('.modal-body');
+    if (modalBody) {
+      // Show the first row containing Category, Name, ID, and Confidential
+      var processInfoRow = modalBody.querySelector('.row:first-child');
+      if (processInfoRow && (processInfoRow.querySelector('#processid') || processInfoRow.querySelector('#processname'))) {
+        processInfoRow.style.setProperty("display", "");
+        processInfoRow.style.setProperty("visibility", "");
+        processInfoRow.style.setProperty("height", "");
+        processInfoRow.style.setProperty("padding", "");
+        processInfoRow.style.setProperty("margin", "");
+      }
+      // Show the toolbar row containing edit buttons and log switch
+      var toolbarRows = modalBody.querySelectorAll('.form-group.row');
+      toolbarRows.forEach(function(toolbarRow) {
+        if (toolbarRow.querySelector('#log_switch') || toolbarRow.querySelector('.process-edit-icon') || toolbarRow.querySelector('#showCurrent')) {
+          toolbarRow.style.setProperty("display", "");
+          toolbarRow.style.setProperty("visibility", "");
+          toolbarRow.style.setProperty("height", "");
+          toolbarRow.style.setProperty("padding", "");
+          toolbarRow.style.setProperty("margin", "");
+        }
+      });
+    }
+
     // activating resizer functionality
     GW.process.util.activateVerticalResizer(resize_line_id);
 
@@ -434,6 +459,31 @@ GW.process.util = {
     element.style.setProperty("width", "100%");
     element.style.setProperty("height", "40%");
     element.style.setProperty("display", "flow");
+
+    // Hide process ID, confidential checkbox, and toolbar when maximized
+    var modalBody = document.querySelector('.modal-body');
+    if (modalBody) {
+      // Hide the first row containing Category, Name, ID, and Confidential
+      var processInfoRow = modalBody.querySelector('.row:first-child');
+      if (processInfoRow && (processInfoRow.querySelector('#processid') || processInfoRow.querySelector('#processname'))) {
+        processInfoRow.style.setProperty("display", "none");
+        processInfoRow.style.setProperty("visibility", "hidden");
+        processInfoRow.style.setProperty("height", "0");
+        processInfoRow.style.setProperty("padding", "0");
+        processInfoRow.style.setProperty("margin", "0");
+      }
+      // Hide the toolbar row containing edit buttons and log switch
+      var toolbarRows = modalBody.querySelectorAll('.form-group.row');
+      toolbarRows.forEach(function(toolbarRow) {
+        if (toolbarRow.querySelector('#log_switch') || toolbarRow.querySelector('.process-edit-icon') || toolbarRow.querySelector('#showCurrent')) {
+          toolbarRow.style.setProperty("display", "none");
+          toolbarRow.style.setProperty("visibility", "hidden");
+          toolbarRow.style.setProperty("height", "0");
+          toolbarRow.style.setProperty("padding", "0");
+          toolbarRow.style.setProperty("margin", "0");
+        }
+      });
+    }
 
     // activating resizer functionality
     GW.process.util.activateVerticalResizer(resize_line_id);
@@ -463,6 +513,31 @@ GW.process.util = {
     element.style.setProperty("width", "40%");
     element.style.setProperty("height", "100%");
     element.style.setProperty("display", "flow");
+
+    // Hide process ID, confidential checkbox, and toolbar when maximized
+    var modalBody = document.querySelector('.modal-body');
+    if (modalBody) {
+      // Hide the first row containing Category, Name, ID, and Confidential
+      var processInfoRow = modalBody.querySelector('.row:first-child');
+      if (processInfoRow && (processInfoRow.querySelector('#processid') || processInfoRow.querySelector('#processname'))) {
+        processInfoRow.style.setProperty("display", "none");
+        processInfoRow.style.setProperty("visibility", "hidden");
+        processInfoRow.style.setProperty("height", "0");
+        processInfoRow.style.setProperty("padding", "0");
+        processInfoRow.style.setProperty("margin", "0");
+      }
+      // Hide the toolbar row containing edit buttons and log switch
+      var toolbarRows = modalBody.querySelectorAll('.form-group.row');
+      toolbarRows.forEach(function(toolbarRow) {
+        if (toolbarRow.querySelector('#log_switch') || toolbarRow.querySelector('.process-edit-icon') || toolbarRow.querySelector('#showCurrent')) {
+          toolbarRow.style.setProperty("display", "none");
+          toolbarRow.style.setProperty("visibility", "hidden");
+          toolbarRow.style.setProperty("height", "0");
+          toolbarRow.style.setProperty("padding", "0");
+          toolbarRow.style.setProperty("margin", "0");
+        }
+      });
+    }
 
     // activating resizer functionality
     GW.process.util.activateResizer(resize_line_id);
