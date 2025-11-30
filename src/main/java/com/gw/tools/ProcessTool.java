@@ -460,23 +460,53 @@ public class ProcessTool {
 		String resp = null;
 		
 		try {
+			logger.info("=== ProcessTool.stop() called for history ID: {} ===", hisid);
 			
-			//stop remote ssh session
+			//stop remote ssh session - properly terminate the remote process
 			SSHSession remotesession = GeoweaverController.sessionManager.sshSessionByToken.get(hisid);
 			
-			if(!BaseTool.isNull(remotesession)) remotesession.getSSHJSession().close();
+			logger.info("Remote SSH session retrieved: {}", remotesession != null);
+			if (remotesession != null) {
+				logger.info("Remote SSH session class: {}", remotesession.getClass().getName());
+				logger.info("Is SSHSessionImpl instance: {}", remotesession instanceof com.gw.ssh.SSHSessionImpl);
+			}
+			
+			if(!BaseTool.isNull(remotesession)) {
+				// Use the stop() method which properly terminates the remote command
+				if (remotesession instanceof com.gw.ssh.SSHSessionImpl) {
+					logger.info("Calling SSHSessionImpl.stop() for history ID: {}", hisid);
+					boolean stopResult = ((com.gw.ssh.SSHSessionImpl) remotesession).stop();
+					logger.info("SSHSessionImpl.stop() returned: {}", stopResult);
+				} else {
+					logger.warn("Remote session is not SSHSessionImpl, using fallback close method");
+					// Fallback: close the session if stop() method is not available
+					remotesession.getSSHJSession().close();
+				}
+			} else {
+				logger.warn("Remote SSH session is null for history ID: {}", hisid);
+				logger.warn("Available sessions in sshSessionByToken: {}", 
+					GeoweaverController.sessionManager.sshSessionByToken.keySet());
+			}
 
 			//stop local session
 			LocalSession localsession = GeoweaverController.sessionManager.localSessionByToken.get(hisid);
+			logger.info("Local session retrieved: {}", localsession != null);
 
-			if(!BaseTool.isNull(localsession)) localsession.stop();
+			if(!BaseTool.isNull(localsession)) {
+				logger.info("Stopping local session for history ID: {}", hisid);
+				localsession.stop();
+			}
 			
+			logger.info("Calling history_tool.stop() for history ID: {}", hisid);
 			history_tool.stop(hisid);
 			
 			resp = "{\"history_id\": \""+hisid+"\", \"ret\": \"stopped\"}";
+			logger.info("ProcessTool.stop() completed successfully for history ID: {}", hisid);
 			
 		} catch (Exception e) {
-			
+			logger.error("=== Error in ProcessTool.stop() ===");
+			logger.error("History ID: {}", hisid);
+			logger.error("Exception: {}", e.getMessage());
 			e.printStackTrace();
 			
 			throw new RuntimeException(e.getLocalizedMessage());

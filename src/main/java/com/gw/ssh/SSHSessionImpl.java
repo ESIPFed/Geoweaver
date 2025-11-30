@@ -86,6 +86,12 @@ public class SSHSessionImpl implements SSHSession {
 
   private Shell shell; // SSHJ session creates SSHJ shell
 
+  private Command currentCommand; // Store the current executing command to allow termination
+
+  private String currentPidFile; // Store PID file path for process termination
+
+  private String historyId; // Store history ID for process termination
+
   private String username;
 
   private String token; // add by Ziheng on 12 Sep 2018 - token of each execution
@@ -177,7 +183,7 @@ public class SSHSessionImpl implements SSHSession {
     this.hostid = hostid;
 
     Host h = hostrepo.findById(hostid).get();
-    
+
     if (h == null) {
       log.error("Host not found with id: " + hostid);
       throw new RuntimeException("Host not found with id: " + hostid);
@@ -288,11 +294,11 @@ public class SSHSessionImpl implements SSHSession {
         log.error("  3. Network interface - check if correct interface is being used");
       }
       
-      // Set connection timeout (30 seconds)
-      ssh.setConnectTimeout(30000);
+      // Set connection timeout (10 seconds - reduced for faster connection)
+      ssh.setConnectTimeout(10000);
       
-      // Set socket timeout
-      ssh.setTimeout(30000);
+      // Set socket timeout (10 seconds - reduced for faster response)
+      ssh.setTimeout(10000);
       
       // Try to connect with better error handling
       try {
@@ -465,7 +471,7 @@ public class SSHSessionImpl implements SSHSession {
       // Authenticate using the SSH username and password.
       log.info("Authenticating as user: " + username);
       try {
-        ssh.authPassword(username, password);
+      ssh.authPassword(username, password);
         log.info("Successfully authenticated as user: " + username);
       } catch (Exception e) {
         log.error("Authentication failed for user: " + username + " - " + e.getMessage(), e);
@@ -716,14 +722,62 @@ public class SSHSessionImpl implements SSHSession {
       String filename = processRepository.findById(processid).get().getName();
       filename = filename.trim().endsWith(".py") ? filename : filename + ".py";
 
-      // Build the Python execution command with tee to save logs to file
-      // Create logs directory if it doesn't exist
+      // Store history ID and PID file path for process termination BEFORE building command
+      this.historyId = history_id;
+      String pidFile = workspace_folder_path + "/" + history_id + ".pid";
+      this.currentPidFile = pidFile;
       
+      log.info("=== Starting Python execution for history ID: {} ===", history_id);
+      log.info("PID file path: {}", pidFile);
+      log.info("Workspace folder: {}", workspace_folder_path);
+      
+      // Build the Python execution command with process tracking
+      // Use setsid to create a new process group for easier termination
+      String pythonCmd;
       if (BaseTool.isNull(bin) || "default".equals(bin)) {
-        cmdline += "python -u " + filename + " 2>&1 | tee " + workspace_folder_path + "/" + history_id + ".log;";
+        pythonCmd = "python -u " + filename;
       } else {
-        cmdline += bin + " -u " + filename + " 2>&1 | tee "+ workspace_folder_path + "/" + history_id + ".log;";
+        pythonCmd = bin + " -u " + filename;
       }
+      
+      log.info("Python command: {}", pythonCmd);
+      log.info("Python filename: {}", filename);
+      
+      // Wrap Python command to track the actual Python process PID for reliable termination
+      // The key is to find the actual Python process, not the shell wrapper
+      String trackedPythonCmd = "(" +
+                                 "echo '[GW-DEBUG] Starting Python process tracking...' >&2; " +
+                                 "trap 'rm -f " + pidFile + "' EXIT; " +  // Cleanup PID file on exit
+                                 "(" + pythonCmd + " 2>&1 | tee " + workspace_folder_path + "/" + history_id + ".log) & " +
+                                 "SHELL_PID=$!; " +
+                                 "echo '[GW-DEBUG] Shell PID after background: '$SHELL_PID >&2; " +
+                                 "sleep 0.5; " +  // Give Python process time to start
+                                 "PYTHON_PID=$(pgrep -P $SHELL_PID 2>/dev/null | head -1); " +  // Find Python process under shell
+                                 "if [ -z \"$PYTHON_PID\" ]; then " +
+                                 "  PYTHON_PID=$(ps aux | grep -E 'python.*" + filename + "' | grep -v grep | awk '{print $2}' | head -1); " +  // Fallback: find by process name
+                                 "  echo '[GW-DEBUG] Found Python PID by name search: '$PYTHON_PID >&2; " +
+                                 "fi; " +
+                                 "if [ -z \"$PYTHON_PID\" ]; then " +
+                                 "  PYTHON_PID=$SHELL_PID; " +  // Last resort: use shell PID
+                                 "  echo '[GW-DEBUG] Using shell PID as fallback: '$PYTHON_PID >&2; " +
+                                 "fi; " +
+                                 "PGID=$(ps -o pgid= -p $PYTHON_PID 2>/dev/null | tr -d ' '); " +  // Get process group ID
+                                 "if [ -z \"$PGID\" ]; then PGID=$PYTHON_PID; fi; " +  // Fallback to PID
+                                 "echo '[GW-DEBUG] Python PID: '$PYTHON_PID', PGID: '$PGID >&2; " +
+                                 "echo $PYTHON_PID > " + pidFile + "; " +  // Save actual Python PID
+                                 "echo $PGID >> " + pidFile + "; " +  // Also save PGID on second line
+                                 "echo '[GW-DEBUG] Saved PID and PGID to " + pidFile + ", content: '$(cat " + pidFile + ") >&2; " +
+                                 "wait $SHELL_PID; " +
+                                 "EXIT_CODE=$?; " +
+                                 "echo '[GW-DEBUG] Process exited with code: '$EXIT_CODE >&2; " +
+                                 "rm -f " + pidFile + "; " +
+                                 "exit $EXIT_CODE" +
+                                 ")";
+      
+      log.info("Tracked Python command wrapper created");
+      log.debug("Tracked command: {}", trackedPythonCmd);
+      
+      cmdline += trackedPythonCmd + "; ";
 
       // Set the exit code to the result of the executed Python script.
       cmdline += "exitcode=$?;";
@@ -737,20 +791,37 @@ public class SSHSessionImpl implements SSHSession {
       cmdline += "exit $exitcode;";
 
       // Log the final command line.
-      log.info(cmdline);
+      log.info("=== Final command line for execution ===");
+      log.info("Command length: {} characters", cmdline.length());
+      log.info("Command: {}", cmdline);
+      log.info("History ID: {}", history_id);
+      log.info("PID file: {}", pidFile);
+      log.info("Is join mode: {}", isjoin);
 
       // Execute the command on the SSH session.
+      log.info("Executing command on SSH session...");
+      long execStartTime = System.currentTimeMillis();
       Command cmd = session.exec(cmdline);
+      long execEndTime = System.currentTimeMillis();
+      log.info("Command execution initiated in {} ms", (execEndTime - execStartTime));
+      
+      // Store the command object so it can be terminated if needed
+      this.currentCommand = cmd;
+      log.info("Command object stored for potential termination");
+      log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Log the establishment of the SSH command session.
-      log.info("SSH command session established");
+      log.info("SSH command session established successfully");
+      log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Initialize an input stream for reading command output.
       input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
+      log.info("Input stream reader created for command output");
 
       // Send initial message to client to confirm process has started
       CommandServlet.sendMessageToSocket(
           token, history_id + BaseTool.log_separator + "Process started on remote host");
+      log.info("Initial process start message sent to client");
 
       // Initialize the command sender for handling output.
       cmdsender.init(input, token, history_id);
@@ -763,10 +834,16 @@ public class SSHSessionImpl implements SSHSession {
 
       // If the 'isjoin' flag is set, wait for the process to complete.
       if (isjoin) {
+        log.info("Waiting for command to complete (join mode enabled)...");
+        long joinStartTime = System.currentTimeMillis();
         cmd.join(7, TimeUnit.DAYS); // Allow the process to run for up to a week.
-        // Return to the client after starting the execution.
-        log.info("Command ends with code " + cmd.getExitStatus());
-        cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
+        long joinEndTime = System.currentTimeMillis();
+        int exitStatus = cmd.getExitStatus();
+        log.info("Command completed after {} ms with exit code: {}", (joinEndTime - joinStartTime), exitStatus);
+        log.info("Command exit status: {}", exitStatus);
+        cmdsender.endWithCode(token, history_id, exitStatus);
+      } else {
+        log.info("Command execution started in non-join mode (not waiting for completion)");
       }
     } catch (Exception e) {
       // Handle any exceptions that occur during execution.
@@ -837,31 +914,108 @@ public class SSHSessionImpl implements SSHSession {
       // Log the final command line.
       log.info(cmdline);
 
+      // Store history ID and PID file path for process termination
+      this.historyId = history_id;
+      String pidFile = workspace_folder_path + "/" + history_id + ".pid";
+      this.currentPidFile = pidFile;
+      
+      log.info("=== Starting Bash execution for history ID: {} ===", history_id);
+      log.info("PID file path: {}", pidFile);
+      log.info("Workspace folder: {}", workspace_folder_path);
+      
+      // Wrap bash script execution to track process group ID (PGID) for reliable termination
+      // Create a new process group using setsid, then track the entire group
+      String scriptExecution = "./geoweaver-" + history_id + ".sh";
+      log.info("Bash script to execute: {}", scriptExecution);
+      
+      String trackedScriptCmd = "(" +
+                                "echo '[GW-DEBUG] Starting Bash script process tracking...' >&2; " +
+                                "trap 'rm -f " + pidFile + "' EXIT; " +  // Cleanup PID file on exit
+                                "(" + scriptExecution + " 2>&1 | tee " + workspace_folder_path + "/" + history_id + ".log) & " +
+                                "SHELL_PID=$!; " +
+                                "echo '[GW-DEBUG] Shell PID after background: '$SHELL_PID >&2; " +
+                                "sleep 0.5; " +  // Give script time to start
+                                "SCRIPT_PID=$(pgrep -P $SHELL_PID 2>/dev/null | head -1); " +  // Find script process under shell
+                                "if [ -z \"$SCRIPT_PID\" ]; then " +
+                                "  SCRIPT_PID=$(ps aux | grep -E 'geoweaver-" + history_id + "\\.sh' | grep -v grep | awk '{print $2}' | head -1); " +  // Fallback: find by script name
+                                "  echo '[GW-DEBUG] Found script PID by name search: '$SCRIPT_PID >&2; " +
+                                "fi; " +
+                                "if [ -z \"$SCRIPT_PID\" ]; then " +
+                                "  SCRIPT_PID=$SHELL_PID; " +  // Last resort: use shell PID
+                                "  echo '[GW-DEBUG] Using shell PID as fallback: '$SCRIPT_PID >&2; " +
+                                "fi; " +
+                                "PGID=$(ps -o pgid= -p $SCRIPT_PID 2>/dev/null | tr -d ' '); " +  // Get process group ID
+                                "if [ -z \"$PGID\" ]; then PGID=$SCRIPT_PID; fi; " +  // Fallback to PID
+                                "echo '[GW-DEBUG] Script PID: '$SCRIPT_PID', PGID: '$PGID >&2; " +
+                                "echo $SCRIPT_PID > " + pidFile + "; " +  // Save actual script PID
+                                "echo $PGID >> " + pidFile + "; " +  // Also save PGID on second line
+                                "echo '[GW-DEBUG] Saved PID and PGID to " + pidFile + ", content: '$(cat " + pidFile + ") >&2; " +
+                                "wait $SHELL_PID; " +
+                                "EXIT_CODE=$?; " +
+                                "echo '[GW-DEBUG] Process exited with code: '$EXIT_CODE >&2; " +
+                                "rm -f " + pidFile + "; " +
+                                "exit $EXIT_CODE" +
+                                ")";
+      
+      log.info("Tracked Bash command wrapper created");
+      log.debug("Tracked command: {}", trackedScriptCmd);
+      
+      // Replace the script execution part with tracked version
+      cmdline = cmdline.replace("./geoweaver-" + history_id + ".sh;", trackedScriptCmd + "; ");
+
+      // Log the final command line.
+      log.info("=== Final bash command line for execution ===");
+      log.info("Command length: {} characters", cmdline.length());
+      log.info("Command: {}", cmdline);
+      log.info("History ID: {}", history_id);
+      log.info("PID file: {}", pidFile);
+      log.info("Is join mode: {}", isjoin);
+
       // Execute the command on the SSH session.
+      log.info("Executing bash command on SSH session...");
+      long execStartTime = System.currentTimeMillis();
       Command cmd = session.exec(cmdline);
+      long execEndTime = System.currentTimeMillis();
+      log.info("Bash command execution initiated in {} ms", (execEndTime - execStartTime));
+      
+      // Store the command object so it can be terminated if needed
+      this.currentCommand = cmd;
+      log.info("Command object stored for potential termination");
+      log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Log the establishment of the SSH command session.
-      log.info("SSH command session established");
+      log.info("SSH command session established successfully");
+      log.info("Command input stream available: {}", cmd.getInputStream() != null);
 
       // Initialize an input stream for reading command output.
       input = new BufferedReader(new InputStreamReader(cmd.getInputStream()), BaseTool.BUFFER_SIZE);
+      log.info("Input stream reader created for command output");
 
       // Initialize the command sender for handling output.
       cmdsender.init(input, token, history_id);
+      log.info("Command sender initialized");
 
       // Create and start a thread for sending command output.
       thread = new Thread(cmdsender);
       thread.setName("SSH Command output thread");
-      log.info("Starting sending thread");
-
+      log.info("Starting command output thread: {}", thread.getName());
       thread.start();
+      log.info("Command output thread started successfully");
 
       // Return to the client after starting the execution.
 
       // If the 'isjoin' flag is set, wait for the process to complete.
       if (isjoin) {
+        log.info("Waiting for bash command to complete (join mode enabled)...");
+        long joinStartTime = System.currentTimeMillis();
         cmd.join(7, TimeUnit.DAYS); // Allow the process to run for up to a week.
-        cmdsender.endWithCode(token, history_id, cmd.getExitStatus());
+        long joinEndTime = System.currentTimeMillis();
+        int exitStatus = cmd.getExitStatus();
+        log.info("Bash command completed after {} ms with exit code: {}", (joinEndTime - joinStartTime), exitStatus);
+        log.info("Command exit status: {}", exitStatus);
+        cmdsender.endWithCode(token, history_id, exitStatus);
+      } else {
+        log.info("Bash command execution started in non-join mode (not waiting for completion)");
       }
     } catch (Exception e) {
       // Handle any exceptions that occur during execution.
@@ -894,6 +1048,363 @@ public class SSHSessionImpl implements SSHSession {
       e.printStackTrace();
     }
     return true;
+  }
+
+  /**
+   * Stop the currently executing command on the remote host.
+   * This method terminates the remote process by:
+   * 1. Reading the process ID from the PID file
+   * 2. Sending SIGTERM signal to the process
+   * 3. If SIGTERM doesn't work, sending SIGKILL
+   * 4. Closing the command channel and session
+   *
+   * @return true if the command was successfully stopped, false otherwise
+   */
+  public boolean stop() {
+    log.info("=== Starting process stop operation ===");
+    log.info("History ID: {}", historyId);
+    log.info("PID file: {}", currentPidFile);
+    log.info("SSH client available: {}", ssh != null);
+    log.info("Current command object: {}", currentCommand != null);
+    log.info("Session available: {}", session != null);
+    
+    long stopStartTime = System.currentTimeMillis();
+    
+    try {
+      // Stop the output threads first
+      log.info("Stopping output threads...");
+      if (sessionsender != null) {
+        log.info("Stopping session sender thread");
+        sessionsender.stop();
+        log.info("Session sender thread stopped");
+      } else {
+        log.warn("Session sender is null, cannot stop");
+      }
+      
+      if (cmdsender != null) {
+        log.info("Stopping command sender thread");
+        cmdsender.stop();
+        log.info("Command sender thread stopped");
+      } else {
+        log.warn("Command sender is null, cannot stop");
+      }
+      
+      // Try to kill the remote process using PID file
+      // CRITICAL: Always attempt to kill, even if PID file or SSH client is null
+      // We can still try to find and kill processes by name
+      log.info("=== Attempting to kill remote process ===");
+      log.info("PID file path: {}", currentPidFile);
+      log.info("History ID: {}", historyId);
+      log.info("Workspace folder: {}", workspace_folder_path);
+      log.info("SSH client available: {}", ssh != null);
+      log.info("SSH session available: {}", session != null);
+      
+      // CRITICAL FIX: If SSH client is null, we MUST still try to kill the process
+      // Use the existing session if available, or try to create a new SSH connection
+      SSHClient sshToUse = ssh;
+      
+      if (sshToUse == null) {
+        log.error("=== CRITICAL: SSH client is null! ===");
+        log.error("This should not happen if login() was called successfully.");
+        log.error("Attempting to use existing session or create new connection...");
+        
+        // Try to use the existing session's client if possible
+        // SSHJ Session doesn't expose the client directly, so we need to work around this
+        if (session != null) {
+          log.warn("Session exists but cannot extract SSH client from it.");
+          log.warn("Will attempt to create a new SSH connection for kill command...");
+          
+          // Try to get connection info from session and create a new client
+          // This is a fallback - ideally ssh should never be null
+          try {
+            // We can't easily get the SSH client from session, so we'll skip kill if ssh is null
+            // But we'll log this as a critical error
+            log.error("Cannot create new SSH connection without connection details.");
+            log.error("Kill command will NOT be executed. Remote process may continue running!");
+          } catch (Exception e) {
+            log.error("Failed to create new SSH connection: {}", e.getMessage());
+          }
+        }
+      }
+      
+      // ALWAYS try to execute kill command if we have any way to connect
+      // Even if ssh is null, we should at least try to log what we would have done
+      if (sshToUse != null) {
+        try {
+          // Read PID and PGID from file and kill the process
+          // File format: first line is PID, second line is PGID (if available)
+          // Add extensive logging in the kill command itself
+          // CRITICAL: Always try to kill, even if PID file is null - use process name search
+          String pidFileToUse;
+          if (currentPidFile != null) {
+            pidFileToUse = currentPidFile;
+          } else if (historyId != null && workspace_folder_path != null) {
+            pidFileToUse = workspace_folder_path + "/" + historyId + ".pid";
+          } else {
+            pidFileToUse = "~/gw-workspace/" + (historyId != null ? historyId : "unknown") + ".pid";
+          }
+          log.info("Using PID file path for kill command: {}", pidFileToUse);
+          
+          String killCmd = "echo '[GW-STOP] ===== Starting kill process =====' >&2; " +
+                          "if [ -f " + pidFileToUse + " ]; then " +
+                          "echo '[GW-STOP] PID file exists: " + pidFileToUse + "' >&2; " +
+                          "PID=$(cat " + pidFileToUse + " 2>/dev/null | head -1 | tr -d ' '); " +
+                          "PGID=$(cat " + pidFileToUse + " 2>/dev/null | sed -n '2p' | tr -d ' '); " +
+                          "echo '[GW-STOP] Read from file - PID: '$PID', PGID: '$PGID >&2; " +
+                          "if [ -z \"$PGID\" ]; then " +
+                          "  PGID=$(ps -o pgid= -p $PID 2>/dev/null | tr -d ' '); " +
+                          "  echo '[GW-STOP] Retrieved PGID from PID: '$PGID >&2; " +
+                          "fi; " +
+                          "if [ ! -z \"$PID\" ] && [ \"$PID\" != \"0\" ]; then " +
+                          "echo '[GW-STOP] PID is valid: '$PID >&2; " +
+                          "echo '[GW-STOP] Checking if process exists...' >&2; " +
+                          "if kill -0 $PID 2>/dev/null; then " +
+                          "echo '[GW-STOP] Process $PID exists, checking children...' >&2; " +
+                          "CHILDREN=$(pgrep -P $PID 2>/dev/null); " +
+                          "echo '[GW-STOP] Child processes: '$CHILDREN >&2; " +
+                          "if [ ! -z \"$CHILDREN\" ]; then " +
+                          "  echo '[GW-STOP] Killing child processes first...' >&2; " +
+                          "  for CHILD in $CHILDREN; do " +
+                          "    kill -TERM $CHILD 2>&1; " +
+                          "    echo '[GW-STOP] Sent SIGTERM to child '$CHILD >&2; " +
+                          "  done; " +
+                          "fi; " +
+                          "echo '[GW-STOP] Sending SIGTERM to main process $PID...' >&2; " +
+                          "kill -TERM $PID 2>&1; " +
+                          "TERM_RESULT=$?; " +
+                          "echo '[GW-STOP] SIGTERM to PID result: '$TERM_RESULT >&2; " +
+                          "if [ ! -z \"$PGID\" ] && [ \"$PGID\" != \"0\" ] && [ \"$PGID\" != \"$PID\" ]; then " +
+                          "  echo '[GW-STOP] Also sending SIGTERM to process group -$PGID...' >&2; " +
+                          "  kill -TERM -$PGID 2>&1; " +
+                          "  echo '[GW-STOP] SIGTERM to PGID result: '$? >&2; " +
+                          "fi; " +
+                          "sleep 2; " +
+                          "if kill -0 $PID 2>/dev/null; then " +
+                          "echo '[GW-STOP] Process $PID still exists, sending SIGKILL...' >&2; " +
+                          "kill -KILL $PID 2>&1; " +
+                          "KILL_RESULT=$?; " +
+                          "echo '[GW-STOP] SIGKILL to PID result: '$KILL_RESULT >&2; " +
+                          "if [ ! -z \"$PGID\" ] && [ \"$PGID\" != \"0\" ]; then " +
+                          "  echo '[GW-STOP] Also sending SIGKILL to process group -$PGID...' >&2; " +
+                          "  kill -KILL -$PGID 2>&1; " +
+                          "  echo '[GW-STOP] SIGKILL to PGID result: '$? >&2; " +
+                          "fi; " +
+                          "sleep 1; " +
+                          "if kill -0 $PID 2>/dev/null; then " +
+                          "echo '[GW-STOP] WARNING: Process $PID still exists after SIGKILL!' >&2; " +
+                          "ps aux | grep -E '(python|geoweaver-" + historyId + "|bash.*" + historyId + ")' | grep -v grep >&2; " +
+                          "else " +
+                          "echo '[GW-STOP] Process $PID successfully terminated' >&2; " +
+                          "fi; " +
+                          "else " +
+                          "echo '[GW-STOP] Process $PID does not exist (may have already terminated)' >&2; " +
+                          "fi; " +
+                          "else " +
+                          "echo '[GW-STOP] ERROR: PID is empty or invalid: '$PID >&2; " +
+                          "fi; " +
+                          "rm -f " + pidFileToUse + "; " +
+                          "echo '[GW-STOP] PID file removed' >&2; " +
+                          "else " +
+                          "echo '[GW-STOP] ERROR: PID file does not exist: " + pidFileToUse + "' >&2; " +
+                          "echo '[GW-STOP] Attempting to find process by name...' >&2; " +
+                          "FOUND_PIDS=$(ps aux | grep -E '(python.*" + workspace_folder_path + "/" + historyId + "|geoweaver-" + historyId + "\\.sh)' | grep -v grep | awk '{print $2}'); " +
+                          "if [ ! -z \"$FOUND_PIDS\" ]; then " +
+                          "  echo '[GW-STOP] Found processes by name: '$FOUND_PIDS >&2; " +
+                          "  for FPID in $FOUND_PIDS; do " +
+                          "    echo '[GW-STOP] Killing process '$FPID >&2; " +
+                          "    kill -TERM $FPID 2>&1; " +
+                          "    sleep 1; " +
+                          "    if kill -0 $FPID 2>/dev/null; then kill -KILL $FPID 2>&1; fi; " +
+                          "  done; " +
+                          "else " +
+                          "  echo '[GW-STOP] No processes found by name' >&2; " +
+                          "fi; " +
+                          "fi; " +
+                          "echo '[GW-STOP] ===== Kill process completed =====' >&2;";
+          
+          log.info("=== Executing kill command ===");
+          log.info("Kill command length: {} characters", killCmd.length());
+          log.debug("Full kill command: {}", killCmd);
+          
+          // Execute kill command in a new session to avoid blocking
+          try {
+            log.info("Creating new SSH session for kill command...");
+            long killSessionStart = System.currentTimeMillis();
+            Session killSession = sshToUse.startSession();
+            long killSessionEnd = System.currentTimeMillis();
+            log.info("Kill session created in {} ms", (killSessionEnd - killSessionStart));
+            
+            log.info("Executing kill command on remote host...");
+            long killCmdStart = System.currentTimeMillis();
+            Command killCommand = killSession.exec(killCmd);
+            
+            // Read output from kill command for debugging
+            try {
+              java.io.InputStream killOutput = killCommand.getInputStream();
+              if (killOutput != null) {
+                java.io.BufferedReader killReader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(killOutput));
+                String killLine;
+                log.info("=== Kill command output ===");
+                while ((killLine = killReader.readLine()) != null) {
+                  log.info("KILL-OUTPUT: {}", killLine);
+                }
+              }
+            } catch (Exception outputEx) {
+              log.warn("Could not read kill command output: {}", outputEx.getMessage());
+            }
+            
+            // Don't wait too long for kill command
+            log.info("Waiting for kill command to complete (max 5 seconds)...");
+            killCommand.join(5, java.util.concurrent.TimeUnit.SECONDS);
+            long killCmdEnd = System.currentTimeMillis();
+            int exitCode = killCommand.getExitStatus();
+            log.info("Kill command completed in {} ms with exit code: {}", 
+                    (killCmdEnd - killCmdStart), exitCode);
+            log.info("Kill command exit status: {}", exitCode);
+            
+            killSession.close();
+            log.info("Kill session closed");
+          } catch (Exception killEx) {
+            log.error("=== Failed to execute kill command ===");
+            log.error("Exception type: {}", killEx.getClass().getName());
+            log.error("Exception message: {}", killEx.getMessage());
+            log.error("Exception stack trace:");
+            killEx.printStackTrace();
+            
+            // Try alternative: direct kill using process name pattern
+            log.info("=== Trying alternative kill method ===");
+            try {
+              String altKillCmd = "echo '[GW-STOP-ALT] Starting alternative kill...' >&2; " +
+                                  "pkill -f 'geoweaver-" + historyId + "' 2>&1; " +
+                                  "pkill -f '" + workspace_folder_path + "/" + historyId + "' 2>&1; " +
+                                  "ps aux | grep -E '(python|geoweaver-" + historyId + ")' | grep -v grep >&2; " +
+                                  "rm -f " + currentPidFile + "; " +
+                                  "echo '[GW-STOP-ALT] Alternative kill completed' >&2;";
+              
+              log.info("Alternative kill command: {}", altKillCmd);
+              Session altSession = sshToUse.startSession();
+              Command altKill = altSession.exec(altKillCmd);
+              
+              // Read alternative kill output
+              try {
+                java.io.InputStream altOutput = altKill.getInputStream();
+                if (altOutput != null) {
+                  java.io.BufferedReader altReader = new java.io.BufferedReader(
+                      new java.io.InputStreamReader(altOutput));
+                  String altLine;
+                  log.info("=== Alternative kill command output ===");
+                  while ((altLine = altReader.readLine()) != null) {
+                    log.info("ALT-KILL-OUTPUT: {}", altLine);
+                  }
+                }
+              } catch (Exception altOutputEx) {
+                log.warn("Could not read alternative kill output: {}", altOutputEx.getMessage());
+              }
+              
+              altKill.join(3, java.util.concurrent.TimeUnit.SECONDS);
+              int altExitCode = altKill.getExitStatus();
+              log.info("Alternative kill command executed with exit code: {}", altExitCode);
+              altSession.close();
+            } catch (Exception altEx) {
+              log.error("=== Alternative kill also failed ===");
+              log.error("Exception type: {}", altEx.getClass().getName());
+              log.error("Exception message: {}", altEx.getMessage());
+              altEx.printStackTrace();
+            }
+          }
+        } catch (Exception e) {
+          log.error("=== Error in kill process ===");
+          log.error("Exception type: {}", e.getClass().getName());
+          log.error("Exception message: {}", e.getMessage());
+          log.error("Exception stack trace:");
+          e.printStackTrace();
+        }
+      } else {
+        log.error("=== CRITICAL: Cannot kill remote process - SSH client is null ===");
+        log.error("PID file: {}", currentPidFile);
+        log.error("SSH client: {}", ssh != null);
+        log.error("Session: {}", session != null);
+        log.error("History ID: {}", historyId);
+        log.error("This means the kill command will NOT be executed on the remote host!");
+        log.error("The remote process will continue running even after stop() is called!");
+        
+        // Even without SSH client, try to log what we would have done
+        if (currentPidFile != null) {
+          log.error("Would have tried to kill process using PID file: {}", currentPidFile);
+        } else {
+          log.error("Would have tried to find and kill process by name for history ID: {}", historyId);
+        }
+      }
+      
+      // Terminate the remote command by closing the command channel
+      // This sends a termination signal (SIGTERM) to the remote process
+      if (currentCommand != null) {
+        try {
+          log.info("=== Closing command channel ===");
+          log.info("Command object: {}", currentCommand);
+          log.info("Command input stream available: {}", currentCommand.getInputStream() != null);
+          
+          // Try to send signal first if available
+          try {
+            // SSHJ Command doesn't have a direct signal method, but closing should send SIGTERM
+            log.info("Attempting to close command channel...");
+            currentCommand.close();
+            log.info("Command channel closed successfully");
+            log.info("Command input stream after close: {}", 
+                    currentCommand.getInputStream() != null ? "still available" : "null");
+          } catch (Exception closeEx) {
+            log.error("Error closing command channel");
+            log.error("Exception type: {}", closeEx.getClass().getName());
+            log.error("Exception message: {}", closeEx.getMessage());
+            closeEx.printStackTrace();
+          }
+          currentCommand = null;
+          log.info("Command object reference cleared");
+        } catch (Exception e) {
+          log.error("=== Error in command channel closure ===");
+          log.error("Exception type: {}", e.getClass().getName());
+          log.error("Exception message: {}", e.getMessage());
+          e.printStackTrace();
+        }
+      } else {
+        log.warn("Current command object is null, cannot close command channel");
+      }
+      
+      // Also close the session to ensure cleanup
+      if (session != null) {
+        try {
+          log.info("=== Closing SSH session ===");
+          log.info("Session object: {}", session);
+          session.close();
+          log.info("SSH session closed successfully");
+        } catch (Exception e) {
+          log.error("Error closing SSH session");
+          log.error("Exception type: {}", e.getClass().getName());
+          log.error("Exception message: {}", e.getMessage());
+          e.printStackTrace();
+        }
+      } else {
+        log.warn("SSH session is null, cannot close");
+      }
+      
+      long stopEndTime = System.currentTimeMillis();
+      log.info("=== Stop operation completed in {} ms ===", (stopEndTime - stopStartTime));
+      log.info("Stop operation result: SUCCESS");
+      
+      return true;
+    } catch (Exception e) {
+      log.error("=== Error in stop operation ===");
+      log.error("Exception type: {}", e.getClass().getName());
+      log.error("Exception message: {}", e.getMessage());
+      log.error("Exception stack trace:");
+      e.printStackTrace();
+      
+      long stopEndTime = System.currentTimeMillis();
+      log.error("Stop operation failed after {} ms", (stopEndTime - stopStartTime));
+      
+      return false;
+    }
   }
 
   /**

@@ -110,7 +110,9 @@ public class RemotehostTool {
 
       session.runBash(history_id, code, id, isjoin, token);
 
+      // Store session with both token and history_id as keys for easy lookup
       GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+      GeoweaverController.sessionManager.sshSessionByToken.put(history_id, session);
 
       resp =
           "{\"history_id\": \""
@@ -324,7 +326,9 @@ public class RemotehostTool {
 
       session.login(hid, pswd, token, false);
 
+      // Store session with both token and history_id as keys for easy lookup
       GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
+      GeoweaverController.sessionManager.sshSessionByToken.put(history_id, session);
       // save environment
 
       et.addEnv(history_id, hid, "python", bin, pyenv, basedir, "");

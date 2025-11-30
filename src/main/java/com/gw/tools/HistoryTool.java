@@ -439,14 +439,31 @@ public class HistoryTool {
   public void stop(String history_id) {
 
     try {
+      log.info("=== HistoryTool.stop() called for history ID: " + history_id + " ===");
 
       SSHSession session = GeoweaverController.sessionManager.sshSessionByToken.get(history_id);
 
+      log.info("SSH session retrieved: " + (session != null));
       if (session != null) {
+        log.info("SSH session class: " + session.getClass().getName());
+        log.info("Is SSHSessionImpl instance: " + (session instanceof com.gw.ssh.SSHSessionImpl));
+      } else {
+        log.warn("SSH session is null for history ID: " + history_id);
+        log.warn("Available sessions in sshSessionByToken: " + 
+            GeoweaverController.sessionManager.sshSessionByToken.keySet());
+      }
 
-        session
-            .getSsh()
-            .close(); // this line close the shell session and the associated command is stopped
+      if (session != null) {
+        // Use the stop() method which properly terminates the remote command
+        if (session instanceof com.gw.ssh.SSHSessionImpl) {
+          log.info("Calling SSHSessionImpl.stop() for history ID: " + history_id);
+          boolean stopResult = ((com.gw.ssh.SSHSessionImpl) session).stop();
+          log.info("SSHSessionImpl.stop() returned: " + stopResult);
+        } else {
+          log.warn("SSH session is not SSHSessionImpl, using fallback close method");
+          // Fallback: close the SSH client if stop() method is not available
+          session.getSsh().close();
+        }
       }
 
       if (historyrepository.findById(history_id).isPresent()) {
@@ -458,10 +475,15 @@ public class HistoryTool {
         oldh.setIndicator("Stopped");
 
         historyrepository.save(oldh);
+        log.info("History status updated to 'Stopped' for history ID: " + history_id);
+      } else {
+        log.warn("History record not found for history ID: " + history_id);
       }
 
     } catch (Exception e) {
-
+      log.error("=== Error in HistoryTool.stop() ===");
+      log.error("History ID: " + history_id);
+      log.error("Exception: " + e.getMessage());
       e.printStackTrace();
 
       throw new RuntimeException(e.getLocalizedMessage());
