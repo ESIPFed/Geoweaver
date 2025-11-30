@@ -70,6 +70,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.apache.commons.text.StringEscapeUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Controller for SSH related activities, including all the handlers for Geoweaver. This controller
@@ -1350,17 +1353,107 @@ public class GeoweaverController {
 
       String hid = request.getParameter("hid");
 
+      // Check if the host is localhost - if so, file is already in gw-workspace, no need for SSH upload
+      if (bt.islocal(hid)) {
+        logger.info("Host is localhost (127.0.0.1), file is already in gw-workspace. Skipping SSH upload.");
+        // File is already in the workspace, get the full path and return success
+        String fullPath = filepath;
+        // Normalize the path to use proper file separators
+        fullPath = fullPath.replace("\\", "/");
+        resp = "{\"filename\": \"" + filename + "\", \"fullpath\": \"" + StringEscapeUtils.escapeJson(fullPath) + "\", \"ret\": \"success\"}";
+        logger.info("File uploaded to localhost, full path: " + fullPath);
+        return resp;
+      }
+
       String encrypted = request.getParameter("encrypted");
+      
+      if (encrypted == null || encrypted.isEmpty()) {
+        logger.error("Encrypted password is missing for host: " + hid);
+        resp = "{\"ret\": \"failed\", \"reason\": \"Password is required for SSH upload\"}";
+        return resp;
+      }
 
       String password = RSAEncryptTool.getPassword(encrypted, session.getId());
 
-      resp = ft.scp_upload(hid, password, filepath);
+      // Get host information before upload to build full remote path
+      Host host = ht.getHostById(hid);
+      
+      if (host == null) {
+        logger.error("Host not found: " + hid);
+        resp = "{\"ret\": \"failed\", \"reason\": \"Host not found: " + hid + "\"}";
+        return resp;
+      }
+      
+      try {
+        resp = ft.scp_upload(hid, password, filepath);
+        
+        // Parse the response to add full remote path information
+        if (host != null && resp != null) {
+          try {
+            // Parse the response JSON to get the remote filename
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(resp);
+            String remoteFilename = jsonNode.has("filename") ? jsonNode.get("filename").asText() : filename;
+            
+            // Build full remote path: username@ip:remotePath
+            String fullRemotePath = host.getUsername() + "@" + host.getIp() + ":" + remoteFilename;
+            
+            // Create a new JSON object with fullpath added
+            JsonNode retNode = jsonNode.get("ret");
+            String retValue = retNode != null ? retNode.asText() : "success";
+            
+            resp = "{\"filename\": \"" + StringEscapeUtils.escapeJson(remoteFilename) + 
+                   "\", \"fullpath\": \"" + StringEscapeUtils.escapeJson(fullRemotePath) + 
+                   "\", \"ret\": \"" + retValue + "\"}";
+            
+            logger.info("File uploaded to remote host, full path: " + fullRemotePath);
+          } catch (Exception e) {
+            logger.warn("Failed to add full remote path to response: " + e.getMessage());
+            e.printStackTrace();
+            // Continue with original response if path building fails
+          }
+        }
+      } catch (RuntimeException e) {
+        // Handle SSH connection errors gracefully
+        String errorMessage = e.getLocalizedMessage();
+        if (errorMessage == null || errorMessage.isEmpty()) {
+          errorMessage = e.getMessage();
+        }
+        logger.error("SSH upload failed for host " + hid + ": " + errorMessage, e);
+        e.printStackTrace();
+        
+        // Return a user-friendly error message
+        String reason = "SSH connection failed";
+        if (errorMessage != null) {
+          if (errorMessage.contains("No route to host")) {
+            reason = "Cannot connect to host. Please check if the host is reachable and the IP address is correct.";
+          } else if (errorMessage.contains("Authentication") || errorMessage.contains("password")) {
+            reason = "Authentication failed. Please check your SSH password.";
+          } else if (errorMessage.contains("Connection refused")) {
+            reason = "Connection refused. Please check if SSH service is running on the remote host.";
+          } else if (errorMessage.contains("timeout")) {
+            reason = "Connection timeout. Please check network connectivity.";
+          } else {
+            reason = "SSH upload failed: " + errorMessage;
+          }
+        }
+        
+        resp = "{\"ret\": \"failed\", \"reason\": \"" + StringEscapeUtils.escapeJson(reason) + "\"}";
+        return resp;
+      }
 
     } catch (Exception e) {
-
+      logger.error("Unexpected error during file upload: " + e.getMessage(), e);
       e.printStackTrace();
-
-      throw new RuntimeException("failed " + e.getLocalizedMessage());
+      
+      String errorMessage = e.getLocalizedMessage();
+      if (errorMessage == null || errorMessage.isEmpty()) {
+        errorMessage = e.getMessage();
+      }
+      
+      resp = "{\"ret\": \"failed\", \"reason\": \"" + StringEscapeUtils.escapeJson(
+          errorMessage != null ? errorMessage : "Unexpected error occurred") + "\"}";
+      return resp;
     }
 
     return resp;

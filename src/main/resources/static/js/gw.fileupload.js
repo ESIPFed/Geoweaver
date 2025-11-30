@@ -13,12 +13,16 @@ GW.fileupload = {
 
   password_frame: null,
 
+  hostInfo: null, // Store host information including IP address
+
   clean: function () {
     console.log("clean everything");
 
-    hid = null;
+    GW.fileupload.hid = null;
+    
+    GW.fileupload.hostInfo = null;
 
-    encrypted = null;
+    GW.fileupload.encrypted = null;
   },
 
   uploadfile: function (hid) {
@@ -37,6 +41,28 @@ GW.fileupload = {
       //open the login page
 
       msg = $.parseJSON(msg);
+      
+      // Store host information for later use
+      GW.fileupload.hostInfo = msg;
+      
+      // Log host information for debugging
+      console.log("=== SSH File Upload - Host Information ===");
+      console.log("Host ID: " + hid);
+      console.log("Host Name: " + (msg.name || "N/A"));
+      console.log("Host IP: " + (msg.ip || "N/A"));
+      console.log("Host Port: " + (msg.port || "N/A"));
+      console.log("Host Username: " + (msg.username || "N/A"));
+      console.log("Host Type: " + (msg.type || "N/A"));
+      console.log("Full Host Info:", JSON.stringify(msg, null, 2));
+      
+      // Check if host is localhost
+      var isLocalhost = false;
+      if (msg.ip === "127.0.0.1" || msg.ip === "localhost") {
+        isLocalhost = true;
+        console.log("Host is localhost - will skip SSH upload");
+      } else {
+        console.log("Host is remote - will use SSH upload");
+      }
 
       if (GW.host.findCache(hid) == null) {
         if (GW.fileupload.password_frame != null) {
@@ -51,10 +77,15 @@ GW.fileupload = {
           GW.fileupload.password_frame = null;
         }
 
+        // Different password prompt for localhost vs SSH host
+        var passwordLabel = isLocalhost 
+          ? "Input Geoweaver Password : " 
+          : "Input SSH Host Password : ";
+
         var content =
           '<div class="modal-body" style="font-size: 12px;">' +
           '<div class="row">' +
-          '<div class="col col-md-5">Input Host Password : </div>' +
+          '<div class="col col-md-5">' + passwordLabel + '</div>' +
           '<div class="col col-md-5">' +
           '	  <input type="password" class="form-control" id="inputpswd" placeholder="Password">' +
           "</div>" +
@@ -109,69 +140,54 @@ GW.fileupload = {
             GW.host.setCache(hid, GW.fileupload.password);
           }
 
-             	
-						$.ajax({
-			
-							url: "key",
-							
-							type: "POST",
-							
-							data: ""
-							
-						}).done(function(msg){ 
-							var req = {};
+          // For localhost, authenticate with Geoweaver password
+          // For SSH hosts, skip authentication and use SSH password directly
+          if (isLocalhost) {
+            // Authenticate Geoweaver password for localhost
+            $.ajax({
+              url: "key",
+              type: "POST",
+              data: ""
+            }).done(function(msg){ 
+              var req = {};
+              var encrypt = new JSEncrypt();
+              msg = $.parseJSON(msg);
+              req.host = hid;
+              req.token = GW.general.CLIENT_TOKEN;
+              encrypt.setPublicKey(msg.rsa_public);
+              req.password= encrypt.encrypt(GW.fileupload.password);
 
-							var encrypt = new JSEncrypt();
-
-							msg = $.parseJSON(msg);
-							
-							req.host = hid;
-
-							req.token = GW.general.CLIENT_TOKEN;
-						
-							encrypt.setPublicKey(msg.rsa_public);
-							
-							req.password= encrypt.encrypt(GW.fileupload.password);
-
-							$.ajax({
-
-								url: "authenticateUser",
-
-								method: "POST",
-
-								data: req
-
-							}).done(function(){
-
-								GW.fileupload.showUploadDialog();
-
-								if(GW.fileupload.password_frame) {
-
-									GW.fileupload.password_frame.closeFrame();	  
-
-								}  		
-
-							}).fail(function(){
-		
-								alert("Authentication Failed");
-
-								if($("#inputpswd").length) $("#inputpswd").val("");
-				
-								if ($("#pswd-confirm-btn").prop("disabled")) {
-
-									$("#pswd-confirm-btn").prop("disabled", false);
-
-								}
-							})
-						
-							
-						});
+              $.ajax({
+                url: "authenticateUser",
+                method: "POST",
+                data: req
+              }).done(function(){
+                GW.fileupload.showUploadDialog();
+                if(GW.fileupload.password_frame) {
+                  GW.fileupload.password_frame.closeFrame();	  
+                }  		
+              }).fail(function(){
+                alert("Authentication Failed");
+                if($("#inputpswd").length) $("#inputpswd").val("");
+                if ($("#pswd-confirm-btn").prop("disabled")) {
+                  $("#pswd-confirm-btn").prop("disabled", false);
+                }
+              });
+            });
+          } else {
+            // For SSH hosts, skip authentication and use SSH password directly
+            GW.fileupload.showUploadDialog();
+            if(GW.fileupload.password_frame) {
+              GW.fileupload.password_frame.closeFrame();	  
+            }
+          }
 						
 					})
 					$("#pswd-cancel-btn").click(function(){
 						GW.fileupload.password_frame.closeFrame();	    		
 					})
       } else {
+        // Password is in cache
         GW.fileupload.password = GW.host.findCache(hid);
 
         if (GW.fileupload.password == "") {
@@ -180,9 +196,41 @@ GW.fileupload = {
           return;
         }
 
-        GW.fileupload.showUploadDialog();
+        // For localhost with cached password, we still need to verify it's a valid Geoweaver password
+        // For SSH hosts, cached password is SSH password, no verification needed
+        if (isLocalhost) {
+          // Verify cached Geoweaver password for localhost
+          $.ajax({
+            url: "key",
+            type: "POST",
+            data: ""
+          }).done(function(msg){ 
+            var req = {};
+            var encrypt = new JSEncrypt();
+            msg = $.parseJSON(msg);
+            req.host = hid;
+            req.token = GW.general.CLIENT_TOKEN;
+            encrypt.setPublicKey(msg.rsa_public);
+            req.password= encrypt.encrypt(GW.fileupload.password);
 
-        GW.fileupload.password_frame.closeFrame();
+            $.ajax({
+              url: "authenticateUser",
+              method: "POST",
+              data: req
+            }).done(function(){
+              GW.fileupload.showUploadDialog();
+            }).fail(function(){
+              alert("Cached password is invalid. Please re-enter password.");
+              // Clear cache for this host and show password dialog again
+              GW.host.setCache(hid, null);
+              // Trigger password input again by calling uploadfile recursively
+              GW.fileupload.uploadfile(hid);
+            });
+          });
+        } else {
+          // For SSH hosts, use cached SSH password directly
+          GW.fileupload.showUploadDialog();
+        }
       }
     });
   },
@@ -297,13 +345,27 @@ GW.fileupload = {
     let content = GW.fileupload.getUploadDialogContent(true);
 
     content =
-      '<h4 class="border-bottom">File Uploader Section  <button type="button" class="btn btn-secondary btn-sm" id="closeFileUploader" >close</button></h4>' +
-      content;
+      '<div class="container-fluid" style="padding: 20px;">' +
+      '<div class="d-flex justify-content-between align-items-center mb-3">' +
+      '<h4 style="margin: 0;"><i class="fas fa-upload"></i> File Uploader</h4>' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="closeFileUploader">Close</button>' +
+      '</div>' +
+      content +
+      '</div>';
 
-    $("#host-file-uploader").html(content);
+    // Put content in the upload-tab-pane
+    $("#upload-tab-pane").html(content);
+    
+    // Also update the old container for backward compatibility
+    if ($("#host-file-uploader").length) {
+      $("#host-file-uploader").html(content);
+    }
 
     $("#closeFileUploader").click(function () {
-      $("#host-file-uploader").html("");
+      $("#upload-tab-pane").html("");
+      if ($("#host-file-uploader").length) {
+        $("#host-file-uploader").html("");
+      }
     });
 
     this.listenUploadButtons(true, false);
@@ -418,16 +480,51 @@ GW.fileupload = {
     });
 
     $("#upload-close").click(function () {
-      if (iftransfer) $("#host-file-uploader").html("");
+      if (iftransfer) {
+        $("#upload-tab-pane").html("");
+        if ($("#host-file-uploader").length) {
+          $("#host-file-uploader").html("");
+        }
+      }
 
       if (ifworkflow) GW.fileupload.closeUploaderJSFrame();
     });
   },
 
   transfer: function (id, url) {
-    GW.fileupload.ui_add_log(
-      "Start to transfer to file to remote host, please wait until it is finished...",
-    );
+    console.log("=== SSH File Upload - Transfer Started ===");
+    console.log("File ID: " + id);
+    console.log("File URL: " + url);
+    
+    // Check if host is localhost
+    var isLocalhost = false;
+    if (GW.fileupload.hostInfo && GW.fileupload.hostInfo.ip) {
+      isLocalhost = (GW.fileupload.hostInfo.ip === "127.0.0.1" || GW.fileupload.hostInfo.ip === "localhost");
+    }
+    
+    // Log host information for transfer
+    if (GW.fileupload.hostInfo) {
+      console.log("Transfer Host ID: " + GW.fileupload.hid);
+      console.log("Transfer Host IP: " + (GW.fileupload.hostInfo.ip || "N/A"));
+      console.log("Transfer Host Port: " + (GW.fileupload.hostInfo.port || "N/A"));
+      console.log("Transfer Host Username: " + (GW.fileupload.hostInfo.username || "N/A"));
+      console.log("Transfer Host Name: " + (GW.fileupload.hostInfo.name || "N/A"));
+    } else {
+      console.warn("Host information not available in GW.fileupload.hostInfo");
+    }
+    
+    if (isLocalhost) {
+      console.log("Transfer type: LOCALHOST (no SSH needed)");
+      GW.fileupload.ui_add_log(
+        "Host is localhost. File is already in gw-workspace. Getting full path...",
+      );
+    } else {
+      console.log("Transfer type: REMOTE SSH");
+      console.log("Will connect to: " + (GW.fileupload.hostInfo.ip || "N/A") + ":" + (GW.fileupload.hostInfo.port || "22") + " as user: " + (GW.fileupload.hostInfo.username || "N/A"));
+      GW.fileupload.ui_add_log(
+        "Start to transfer to file to remote host, please wait until it is finished...",
+      );
+    }
 
     //Two-step encryption is applied here.
     //First, get public key from server.
@@ -449,10 +546,19 @@ GW.fileupload = {
         encrypt.setPublicKey(msg.rsa_public);
 
         var encrypted = encrypt.encrypt(GW.fileupload.password);
-
-        //                GW.fileupload.encrypted = encrypted;
-
-        //                GW.fileupload.showUploadDialog();
+        
+        console.log("=== SSH File Upload - Request Preparation ===");
+        console.log("Host ID (hid): " + GW.fileupload.hid);
+        console.log("File path: " + url);
+        console.log("Password encrypted: " + (encrypted ? "Yes (length: " + encrypted.length + ")" : "No"));
+        
+        // Log host details that will be sent to server
+        if (GW.fileupload.hostInfo) {
+          console.log("Host details to be used by server:");
+          console.log("  - IP: " + (GW.fileupload.hostInfo.ip || "N/A"));
+          console.log("  - Port: " + (GW.fileupload.hostInfo.port || "N/A (default: 22)"));
+          console.log("  - Username: " + (GW.fileupload.hostInfo.username || "N/A"));
+        }
 
         var req = {
           hid: GW.fileupload.hid,
@@ -461,7 +567,14 @@ GW.fileupload = {
 
           filepath: url,
         };
+        
+        console.log("Upload request payload:", JSON.stringify({
+          hid: req.hid,
+          filepath: req.filepath,
+          encrypted: req.encrypted ? "***ENCRYPTED***" : "N/A"
+        }, null, 2));
 
+        console.log("Sending upload request to server...");
         $.ajax({
           url: "upload",
 
@@ -470,17 +583,61 @@ GW.fileupload = {
           data: req,
         })
           .done(function (data) {
-            data = $.parseJSON(data);
+            console.log("=== SSH File Upload - Server Response ===");
+            console.log("Raw response:", data);
+            
+            try {
+              data = $.parseJSON(data);
+            } catch (e) {
+              console.error("Failed to parse response: " + data);
+              console.error("Parse error:", e);
+              GW.fileupload.ui_add_log("Failed to parse server response");
+              GW.fileupload.ui_multi_update_file_status(id, "danger", "Upload Failed");
+              $("#upload-start").prop("disabled", false);
+              return;
+            }
 
-            console.log("response: " + data);
+            console.log("Parsed response:", JSON.stringify(data, null, 2));
 
-            GW.fileupload.ui_add_log(
-              "Temporary file in Geoweaver temporary folder is removed",
-            );
+            // Check if upload failed
+            if (data.ret === "failed") {
+              var errorMsg = data.reason || "Upload failed";
+              console.error("Upload failed: " + errorMsg);
+              GW.fileupload.ui_add_log("Upload failed: " + errorMsg);
+              GW.fileupload.ui_multi_update_file_status(id, "danger", "Upload Failed");
+              $("#upload-start").prop("disabled", false);
+              return;
+            }
 
-            GW.fileupload.ui_add_log(
-              "File has been on remote host!" + data.filename,
-            );
+            if (isLocalhost) {
+              GW.fileupload.ui_add_log(
+                "File upload complete for localhost.",
+              );
+              
+              if (data.fullpath) {
+                GW.fileupload.ui_add_log(
+                  "Full path on localhost: " + data.fullpath,
+                );
+              }
+              
+              GW.fileupload.ui_add_log(
+                "File is ready: " + data.filename,
+              );
+            } else {
+              GW.fileupload.ui_add_log(
+                "Temporary file in Geoweaver temporary folder is removed",
+              );
+
+              GW.fileupload.ui_add_log(
+                "File has been uploaded to remote host: " + data.filename,
+              );
+              
+              if (data.fullpath) {
+                GW.fileupload.ui_add_log(
+                  "Full path on remote host: " + data.fullpath,
+                );
+              }
+            }
 
             GW.fileupload.ui_multi_update_file_progress(
               id,
@@ -505,20 +662,53 @@ GW.fileupload = {
 
             //    				GW.fileupload.uploader.setClosable(true);
           })
-          .fail(function () {
-            console.error("fail to transfer the file to remote host");
+          .fail(function (jxr, status) {
+            console.error("=== SSH File Upload - Request Failed ===");
+            console.error("Status: " + status);
+            console.error("HTTP Status Code: " + (jxr.status || "N/A"));
+            console.error("Response Text:", jxr.responseText);
+            console.error("Response JSON:", jxr.responseJSON);
+            
+            // Log the request that failed
+            console.error("Failed request details:");
+            console.error("  - Host ID: " + GW.fileupload.hid);
+            if (GW.fileupload.hostInfo) {
+              console.error("  - Host IP: " + (GW.fileupload.hostInfo.ip || "N/A"));
+              console.error("  - Host Port: " + (GW.fileupload.hostInfo.port || "N/A"));
+              console.error("  - Host Username: " + (GW.fileupload.hostInfo.username || "N/A"));
+            }
+            console.error("  - File path: " + url);
+            
+            var errorMsg = "Failed to transfer the file to remote host";
+            
+            // Try to extract error message from response
+            if (jxr.responseJSON && jxr.responseJSON.reason) {
+              errorMsg = jxr.responseJSON.reason;
+            } else if (jxr.responseText) {
+              try {
+                var errorData = $.parseJSON(jxr.responseText);
+                if (errorData.reason) {
+                  errorMsg = errorData.reason;
+                } else if (errorData.message) {
+                  errorMsg = errorData.message;
+                }
+              } catch (e) {
+                // If parsing fails, use the response text or status
+                if (jxr.status === 500) {
+                  errorMsg = "Internal server error. Please check server logs.";
+                } else if (jxr.status === 0) {
+                  errorMsg = "Network error. Please check your connection.";
+                }
+              }
+            }
+            
+            console.error("Final error message: " + errorMsg);
 
-            GW.fileupload.ui_add_log("Fail to transfer");
-
-            //	    				var $btn = $("#btn-start");
-            //
-            //	    				$btn.enable();
-            //
-            //	    				$btn.stopSpin();
+            GW.fileupload.ui_add_log("Upload failed: " + errorMsg);
+            
+            GW.fileupload.ui_multi_update_file_status(id, "danger", "Upload Failed");
 
             $("#upload-start").prop("disabled", false);
-
-            //    				GW.fileupload.uploader.setClosable(true);
           });
       })
       .fail(function (jxr, status) {

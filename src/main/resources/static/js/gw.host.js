@@ -1083,18 +1083,35 @@ GW.host = {
         // Enable input fields for editing
         $(".host-value-field").prop("disabled", false);
 
-        // Remove any existing Save Changes button to prevent duplicates
+        // Remove any existing Save Changes and Cancel buttons to prevent duplicates
         $("#save-changes-btn").remove();
+        $("#cancel-changes-btn").remove();
 
-        // Add "Save Changes" button dynamically
-        $("#edit-tab").append(`
-            <button id="save-changes-btn" type="button" class="btn btn-success" onclick="GW.host.saveChanges()" style="margin-top: 10px;">Save Changes</button>
-        `);
+        // Add action buttons dynamically in the details tab
+        var actionButtons = '<div class="mt-4 d-flex justify-content-end gap-2">' +
+          '<button id="cancel-changes-btn" type="button" class="btn btn-secondary" onclick="GW.host.cancelEdit()">Cancel</button>' +
+          '<button id="save-changes-btn" type="button" class="btn btn-success" onclick="GW.host.saveChanges()">Save Changes</button>' +
+          '</div>';
+        $("#details-tab-pane").append(actionButtons);
 
         // Set edit mode to true
         GW.process.editOn = true;
     }
-},
+  },
+  
+  cancelEdit: function () {
+    // Disable input fields
+    $(".host-value-field").prop("disabled", true);
+    
+    // Remove action buttons
+    $("#save-changes-btn").remove();
+    $("#cancel-changes-btn").remove();
+    
+    // Reset edit mode
+    GW.process.editOn = false;
+    
+    console.log("Edit cancelled");
+  },
 
 saveChanges: function () {
   console.log("Saving the changes if any");
@@ -1105,8 +1122,9 @@ saveChanges: function () {
   // Call the edit function to update the host details
   GW.host.edit();  // Saves the changes
 
-  // Remove the "Save Changes" button after saving
+  // Remove the action buttons after saving
   $("#save-changes-btn").remove();
+  $("#cancel-changes-btn").remove();
 
   // Reset the edit mode
   GW.process.editOn = false;
@@ -1122,98 +1140,245 @@ saveChanges: function () {
     window.open(GW.path.getBasePath() + "GoogleEarth-proxy/" + hostid + "/", "_blank");
   },
 
-  getToolbar: function (hostid, hosttype) {
+  getToolbar: function (hostid, hosttype, detailsContent) {
+    // If detailsContent is provided, include it in the details tab pane
+    var detailsPaneContent = detailsContent || '';
+    
     return `
-      <div class="tab-container" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
-        <!-- Tabs Navigation -->
-        <ul class="tab-list" style="display: flex; list-style-type: none; padding: 0; margin: 0; border-bottom: 2px solid #ccc; width: 100%; justify-content: space-evenly; background: #f9f9f9;">
-          <li class="tab-item active" onclick="GW.host.switchTab(event, 'edit-tab', 'GW.host.editSwitch()')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Edit</li>
-          ${hosttype === "ssh" || hosttype === "null" || hosttype === null ? `
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'python-env-tab', 'GW.host.readEnvironment(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Python Env</li>
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'upload-tab', 'GW.fileupload.uploadfile(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Upload</li>
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'browse-tab', 'GW.filebrowser.start(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Browse</li>
-          ` : ""}
-          ${hosttype === "jupyter" || hosttype === "jupyterhub" || hosttype === "jupyterlab" ? `
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'history-tab', 'GW.host.recent(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">History</li>
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'jupyter-tab', 'GW.host.openJupyter(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Open Jupyter</li>
-          ` : ""}
-          ${hosttype === "gee" ? `
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'history-tab', 'GW.host.recent(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">History</li>
-            <li class="tab-item" onclick="GW.host.switchTab(event, 'google-earth-tab', 'GW.host.openGoogleEarth(${hostid})')" style="padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-bottom: none; background: #f1f1f1; flex-grow: 1; text-align: center;">Google Earth</li>
-          ` : ""}
-        </ul>
+      <!-- Tabs Navigation - Professional Design -->
+      <ul class="nav nav-tabs host-tabs" role="tablist" style="margin-bottom: 0; border-bottom: 2px solid #dee2e6; background-color: #f8f9fa;">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="details-tab-btn" data-bs-toggle="tab" data-bs-target="#details-tab-pane" 
+                  type="button" role="tab" onclick="GW.host.switchTab(event, 'details-tab-pane', null)"
+                  style="border: none; border-bottom: 3px solid #007bff; color: #007bff; font-weight: 500; padding: 12px 20px;">
+            <i class="fas fa-info-circle"></i> Details
+          </button>
+        </li>
+        ${hosttype === "ssh" || hosttype === "null" || hosttype === null ? `
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="python-env-tab-btn" data-bs-toggle="tab" data-bs-target="#python-env-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'python-env-tab-pane', 'GW.host.readEnvironment(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fab fa-python"></i> Python Env
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="upload-tab-btn" data-bs-toggle="tab" data-bs-target="#upload-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'upload-tab-pane', 'GW.fileupload.uploadfile(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fas fa-upload"></i> Upload
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="browse-tab-btn" data-bs-toggle="tab" data-bs-target="#browse-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'browse-tab-pane', 'GW.filebrowser.start(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fas fa-folder-open"></i> Browse
+            </button>
+          </li>
+        ` : ""}
+        ${hosttype === "jupyter" || hosttype === "jupyterhub" || hosttype === "jupyterlab" ? `
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab-btn" data-bs-toggle="tab" data-bs-target="#history-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'history-tab-pane', 'GW.host.recent(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fas fa-history"></i> History
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="jupyter-tab-btn" data-bs-toggle="tab" data-bs-target="#jupyter-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'jupyter-tab-pane', 'GW.host.openJupyter(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fab fa-python"></i> Jupyter
+            </button>
+          </li>
+        ` : ""}
+        ${hosttype === "gee" ? `
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab-btn" data-bs-toggle="tab" data-bs-target="#history-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'history-tab-pane', 'GW.host.recent(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fas fa-history"></i> History
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="google-earth-tab-btn" data-bs-toggle="tab" data-bs-target="#google-earth-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'google-earth-tab-pane', 'GW.host.openGoogleEarth(\\'${hostid}\\')')"
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+              <i class="fas fa-globe"></i> Google Earth
+            </button>
+          </li>
+        ` : ""}
+      </ul>
 
-        <!-- Tabs Content -->
-        <div class="tab-content" style="display: flex; flex-direction: column; align-items: center; width: 100%; padding: 15px; background: #fff;">
-          <div id="edit-tab" class="tab-pane active" style="display: block; width: 100%; text-align: center;"></div>
-          <div id="python-env-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-          <div id="upload-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-          <div id="browse-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-          <div id="history-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-          <div id="jupyter-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-          <div id="google-earth-tab" class="tab-pane" style="display: none; width: 100%; text-align: center;"></div>
-        </div>
+      <!-- Tabs Content Container -->
+      <div class="tab-content host-tab-content" style="width: 100%; min-height: 400px; background: #fff; padding: 20px; position: relative; overflow: visible;">
+        <div id="details-tab-pane" class="tab-pane fade show active" role="tabpanel" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative;">${detailsPaneContent}</div>
+        <div id="python-env-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
+        <div id="upload-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
+        <div id="browse-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
+        <div id="history-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
+        <div id="jupyter-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
+        <div id="google-earth-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
       </div>
     `;
-},
+  },
 
 
 switchTab: function (event, tabId, action) {
-  let tabItems = document.querySelectorAll(".tab-item");
-  let tabPanes = document.querySelectorAll(".tab-pane");
+  // Get all tab buttons and panes
+  let tabButtons = document.querySelectorAll(".host-tabs .nav-link");
+  let tabPanes = document.querySelectorAll(".host-tab-content .tab-pane");
 
   // Remove active state from all tabs
-  tabItems.forEach(tab => tab.classList.remove("active"));
-
-  // Hide all tab panes and remove previous content
-  tabPanes.forEach(pane => {
-    pane.style.display = "none";
-    pane.innerHTML = ""; // Clear previous tab content
+  tabButtons.forEach(btn => {
+    btn.classList.remove("active");
+    btn.style.borderBottom = "none";
+    btn.style.color = "#6c757d";
   });
 
-  // Activate the clicked tab
-  event.currentTarget.classList.add("active");
+  // Hide all tab panes and clear content (except details tab which should keep its content)
+  tabPanes.forEach(pane => {
+    if (pane.id === tabId) {
+      // Show the selected tab pane - use !important to override any conflicting styles
+      pane.style.setProperty("display", "block", "important");
+      pane.style.setProperty("visibility", "visible", "important");
+      pane.style.setProperty("opacity", "1", "important");
+      pane.classList.add("show", "active");
+    } else {
+      // Hide other tab panes
+      pane.style.setProperty("display", "none", "important");
+      pane.classList.remove("show", "active");
+      // Only clear content for non-details tabs to avoid losing host details
+      if (pane.id !== "details-tab-pane") {
+        // Don't clear details tab content, but clear others when switching away
+        if (tabId !== "details-tab-pane") {
+          pane.innerHTML = "";
+        }
+      }
+    }
+  });
 
-  // Show the selected tab
+  // Activate the clicked tab button
+  if (event && event.currentTarget) {
+    event.currentTarget.classList.add("active");
+    event.currentTarget.style.borderBottom = "3px solid #007bff";
+    event.currentTarget.style.color = "#007bff";
+  } else {
+    // If called programmatically, find the button by tabId
+    let buttonId = tabId.replace("-pane", "-btn");
+    let button = document.getElementById(buttonId);
+    if (button) {
+      button.classList.add("active");
+      button.style.borderBottom = "3px solid #007bff";
+      button.style.color = "#007bff";
+    }
+  }
+
+  // The selected tab pane is already shown in the forEach loop above
+  // This is just a safety check
   let activePane = document.getElementById(tabId);
-  activePane.style.display = "block";
+  if (activePane && activePane.style.display === "none") {
+    activePane.style.display = "block";
+    activePane.classList.add("show", "active");
+  }
 
   // If there's an action, execute it
   if (action) {
     setTimeout(() => {
-      eval(action); // Execute the function dynamically
+      try {
+        eval(action); // Execute the function dynamically
+      } catch (e) {
+        console.error("Error executing tab action:", e);
+      }
     }, 100);
   }
 
   // Close any existing modals/popups to ensure a clean switch
   if (GW.host.ssh_password_frame) {
     try {
-      GW.host.ssh_password_frame.closeFrame();
+      // Check if the frame still exists and has the closeFrame method
+      if (GW.host.ssh_password_frame && typeof GW.host.ssh_password_frame.closeFrame === 'function') {
+        GW.host.ssh_password_frame.closeFrame();
+      }
       GW.host.ssh_password_frame = null;
     } catch (e) {
-      console.error("Error closing SSH password popup:", e);
+      // Silently handle errors - frame may already be closed
+      GW.host.ssh_password_frame = null;
     }
   }
 
   if (GW.host.password_frame) {
     try {
-      GW.host.password_frame.closeFrame();
+      // Check if the frame still exists and has the closeFrame method
+      if (GW.host.password_frame && typeof GW.host.password_frame.closeFrame === 'function') {
+        GW.host.password_frame.closeFrame();
+      }
       GW.host.password_frame = null;
     } catch (e) {
-      console.error("Error closing password popup:", e);
+      // Silently handle errors - frame may already be closed
+      GW.host.password_frame = null;
     }
   }
 
-  // Remove environment list or other content if it exists
-  document.getElementById("environment-iframe").innerHTML = "";
-  document.getElementById("host-file-uploader").innerHTML = "";
-  document.getElementById("host-file-browser").innerHTML = "";
+  // Update content placement based on tab
+  // Python Environment tab
+  if (tabId === "python-env-tab-pane") {
+    let envContainer = document.getElementById("python-env-tab-pane");
+    if (envContainer && document.getElementById("environment-iframe")) {
+      let envContent = document.getElementById("environment-iframe").innerHTML;
+      if (envContent) {
+        envContainer.innerHTML = envContent;
+        document.getElementById("environment-iframe").innerHTML = "";
+      }
+    }
+  }
+  
+  // Upload tab
+  if (tabId === "upload-tab-pane") {
+    let uploadContainer = document.getElementById("upload-tab-pane");
+    if (uploadContainer && document.getElementById("host-file-uploader")) {
+      let uploadContent = document.getElementById("host-file-uploader").innerHTML;
+      if (uploadContent) {
+        uploadContainer.innerHTML = uploadContent;
+        document.getElementById("host-file-uploader").innerHTML = "";
+      }
+    }
+  }
+  
+  // Browse tab
+  if (tabId === "browse-tab-pane") {
+    let browseContainer = document.getElementById("browse-tab-pane");
+    if (browseContainer && document.getElementById("host-file-browser")) {
+      let browseContent = document.getElementById("host-file-browser").innerHTML;
+      if (browseContent) {
+        browseContainer.innerHTML = browseContent;
+        document.getElementById("host-file-browser").innerHTML = "";
+      }
+    }
+  }
+  
+  // History tab
+  if (tabId === "history-tab-pane") {
+    let historyContainer = document.getElementById("history-tab-pane");
+    if (historyContainer && document.getElementById("host-history-browser")) {
+      let historyContent = document.getElementById("host-history-browser").innerHTML;
+      if (historyContent) {
+        historyContainer.innerHTML = historyContent;
+        document.getElementById("host-history-browser").innerHTML = "";
+      }
+    }
+  }
 },
   showEnvironmentTable: function (msg) {
     var content =
-      '<h4 class="border-bottom">Environment List  <button type="button" class="btn btn-secondary btn-sm" id="closeEnvironmentPanel" >close</button></h4>' +
-      '<div class="modal-body" style="font-size: 12px;">' +
-      '<table class="table table-striped" id="environment_table"> ' +
+      '<div class="container-fluid" style="padding: 20px;">' +
+      '<div class="d-flex justify-content-between align-items-center mb-3">' +
+      '<h4 style="margin: 0;"><i class="fab fa-python"></i> Python Environment List</h4>' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="closeEnvironmentPanel">Close</button>' +
+      '</div>' +
+      '<div style="font-size: 12px;">' +
+      '<table class="table table-striped table-hover" id="environment_table"> ' +
       '  <thead class="thead-light"> ' +
       "    <tr> " +
       '      <th scope="col">Name</th> ' +
@@ -1225,33 +1390,49 @@ switchTab: function (event, tabId, action) {
       "  </thead> " +
       "  <tbody> ";
 
-    for (var i = 0; i < msg.length; i++) {
+    if (msg.length == 0) {
       content +=
         "    <tr> " +
-        "      <td>" +
-        msg[i].name +
-        "</td> " +
-        "      <td>" +
-        msg[i].bin +
-        "</td> " +
-        "      <td>" +
-        msg[i].pyenv +
-        "</td> " +
-        "      <td>" +
-        msg[i].basedir +
-        "</td> " +
-        "      <td>" +
-        msg[i].settings +
-        "</td> " +
-        "    </tr>";
+        '      <td colspan="5" style="text-align: center;">No environment found</td> ' +
+        "    </tr> ";
+    } else {
+      for (var i = 0; i < msg.length; i++) {
+        content +=
+          "    <tr> " +
+          "      <td>" +
+          (msg[i].name || "") +
+          "</td> " +
+          "      <td>" +
+          (msg[i].bin || "") +
+          "</td> " +
+          "      <td>" +
+          (msg[i].pyenv || "") +
+          "</td> " +
+          "      <td>" +
+          (msg[i].basedir || "") +
+          "</td> " +
+          "      <td>" +
+          (msg[i].settings || "") +
+          "</td> " +
+          "    </tr>";
+      }
     }
 
-    content += "</tbody>" + "</table>" + "</div>";
+    content += "</tbody>" + "</table>" + "</div>" + "</div>";
 
-    $("#environment-iframe").html(content);
+    // Put content in the python-env-tab-pane
+    $("#python-env-tab-pane").html(content);
+    
+    // Also update the old container for backward compatibility
+    if ($("#environment-iframe").length) {
+      $("#environment-iframe").html(content);
+    }
 
     $("#closeEnvironmentPanel").click(function () {
-      $("#environment-iframe").html("");
+      $("#python-env-tab-pane").html("");
+      if ($("#environment-iframe").length) {
+        $("#environment-iframe").html("");
+      }
     });
   },
 
@@ -1316,19 +1497,15 @@ switchTab: function (event, tabId, action) {
   display: function (msg) {
     GW.process.editOn = false;
 
-    var content = '<div class="modal-body">';
-
-    content += '<div class="row" style="font-size: 12px;">';
-    content += '<form class="well form-horizontal" id="info_form">';
-    content +=
-      "<legend><center><h2><b>Host Details</b></h2></center></legend><br>";
     var hostid = null,
       hostip = null,
       hosttype = null,
       confidential = null,
       owner = null,
-      envs = null;
+      envs = null,
+      hostname = null;
 
+    // First, extract all host information
     jQuery.each(msg, function (i, val) {
       if (val != null && val != "null" && val != "") {
         if (typeof val == "object") {
@@ -1337,172 +1514,125 @@ switchTab: function (event, tabId, action) {
 
         if (i == "id") {
           hostid = val;
-        }
-
-        if (i == "ip") {
+        } else if (i == "ip") {
           hostip = val;
-        }
-
-        if (i == "type") {
+        } else if (i == "type") {
           hosttype = val;
-        }
-
-        if (i == "confidential") {
+        } else if (i == "name") {
+          hostname = val;
+        } else if (i == "confidential") {
           confidential = val;
-          return;
         } else if (i == "owner") {
           owner = val;
-          return;
         } else if (i == "envs") {
           envs = val;
-          return;
         }
-
-        content += `<div class="row m-0">`;
-
-        if (i == "id" || i == "ip" || i == "type" || i == "url") {
-          if (i == "ip") {
-            content +=
-              '<div class="col col-md-3 control-label">' +
-              "IP Address" +
-              "</div>";
-          } else if (i == "id") {
-            content +=
-              '<div class="col col-md-3 control-label">' +
-              i.toUpperCase() +
-              "</div>";
-          } else if (i == "url") {
-            content +=
-              '<div class="col col-md-3 control-label">' + "URL" + "</div>";
-          } else {
-            content +=
-              '<div class="col col-md-3 control-label">' +
-              i.charAt(0).toUpperCase() +
-              i.slice(1) +
-              "</div>";
-          }
-        } else {
-          content +=
-            '<div class="col col-md-3 control-label">' +
-            i.charAt(0).toUpperCase() +
-            i.slice(1) +
-            "</div>";
-        }
-
-        if (i == "id" || i == "type") {
-          content +=
-            '<div class="col col-md-7" id="_host_' + i + '" >' + val + "</div>";
-        } else {
-          if (i == "name") {
-            content +=
-              '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>' +
-              '<input class="host-value-field form-control" type="text" id="_host_' +
-              i +
-              '" disabled="true" value="' +
-              val +
-              '" /></div></div>';
-          } else if (i == "ip") {
-            content +=
-              '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span>' +
-              '<input class="host-value-field form-control" type="text" id="_host_' +
-              i +
-              '" disabled="true" value="' +
-              val +
-              '" /></div></div>';
-          } else if (i == "port") {
-            content +=
-              '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-transfer"></i></span>' +
-              '<input class="host-value-field form-control" type="text" id="_host_' +
-              i +
-              '" disabled="true" value="' +
-              val +
-              '" /></div></div>';
-          } else if (i == "username") {
-            content +=
-              '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>' +
-              '<input class="host-value-field form-control" type="text" id="_host_' +
-              i +
-              '" disabled="true" value="' +
-              val +
-              '" /></div></div>';
-          } else {
-            content +=
-              '<div class="col col-md-7 inputGroupContainer"><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-link"></i></span>' +
-              '<input class="host-value-field form-control" type="text" id="_host_' +
-              i +
-              '" disabled="true" value="' +
-              val +
-              '" /></div></div>';
-          }
-        }
-
-        content += `</div>`;
       }
     });
 
-    content += `<div class="row m-0">`;
-
-    content +=
-      '<div class="col col-md-3 control-label">Confidential</div>' +
-      '<div class="col col-md-7">';
-
-    if (confidential == "FALSE") {
-      content +=
-        '       <input type="radio" name="confidential" value="FALSE" checked> ' +
-        '       <label id="public_radio" for="confidential">Public</label>';
-
-      if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
-        content +=
-          '       <input type="radio" name="confidential" value="TRUE"> ' +
-          '       <label id="private_radio" for="confidential">Private</label>';
-    } else {
-      content +=
-        '       <input type="radio" name="confidential" value="FALSE"> ' +
-        '       <label id="public_radio" for="confidential">Public</label>';
-
-      if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
-        content +=
-          '       <input type="radio" name="confidential" value="TRUE" checked> ' +
-          '       <label id="private_radio" for="confidential">Private</label>';
+    // Build the host details content for the Details tab
+    var detailsContent = '<div class="container-fluid" style="padding: 20px;">';
+    detailsContent += '<div class="d-flex justify-content-between align-items-center mb-4">';
+    detailsContent += '<h3 style="margin: 0; color: #333;"><i class="fas fa-server"></i> Host Details</h3>';
+    
+    // Add action buttons
+    var actionButtons = '<div class="btn-group" role="group">';
+    actionButtons += '<button class="btn btn-primary btn-sm" onclick="GW.host.editSwitch()" title="Edit host details">' +
+                     '<i class="fas fa-edit"></i> Edit</button>';
+    if (msg.id != "100001") {
+      actionButtons += '<button class="btn btn-danger btn-sm" onclick="GW.menu.del(\'' + hostid + '\',\'host\')" title="Delete this host">' +
+                      '<i class="fas fa-trash"></i> Delete</button>';
     }
+    actionButtons += '</div>';
+    detailsContent += actionButtons;
+    detailsContent += '</div>';
 
-    content += `</div></div>`;
+    detailsContent += '<form class="form-horizontal" id="info_form" style="background: #f8f9fa; padding: 20px; border-radius: 8px;">';
+    
+    // Build form fields
+    jQuery.each(msg, function (i, val) {
+      if (val != null && val != "null" && val != "" && 
+          i != "confidential" && i != "owner" && i != "envs") {
+        if (typeof val == "object") {
+          val = JSON.stringify(val);
+        }
 
-    content += "</form>";
+        detailsContent += '<div class="row mb-3">';
+        
+        // Label
+        var label = i.charAt(0).toUpperCase() + i.slice(1);
+        if (i == "ip") label = "IP Address";
+        else if (i == "id") label = "ID";
+        else if (i == "url") label = "URL";
+        
+        detailsContent += '<div class="col-md-3"><label class="form-label fw-bold">' + label + '</label></div>';
+        
+        // Value field
+        if (i == "id" || i == "type") {
+          detailsContent += '<div class="col-md-9"><div class="form-control-plaintext" id="_host_' + i + '">' + val + '</div></div>';
+        } else {
+          var icon = "glyphicon-link";
+          if (i == "name") icon = "glyphicon-pencil";
+          else if (i == "ip") icon = "glyphicon-globe";
+          else if (i == "port") icon = "glyphicon-transfer";
+          else if (i == "username") icon = "glyphicon-user";
+          
+          detailsContent += '<div class="col-md-9">' +
+            '<div class="input-group">' +
+            '<span class="input-group-addon"><i class="glyphicon ' + icon + '"></i></span>' +
+            '<input class="host-value-field form-control" type="text" id="_host_' + i + 
+            '" disabled="true" value="' + val + '" />' +
+            '</div></div>';
+        }
+        
+        detailsContent += '</div>';
+      }
+    });
 
-    var delbtn = "";
+    // Add Confidential field
+    detailsContent += '<div class="row mb-3">';
+    detailsContent += '<div class="col-md-3"><label class="form-label fw-bold">Confidential</label></div>';
+    detailsContent += '<div class="col-md-9">';
+    
+    if (confidential == "FALSE") {
+      detailsContent += '<div class="form-check form-check-inline">' +
+        '<input class="form-check-input" type="radio" name="confidential" value="FALSE" checked id="public_radio">' +
+        '<label class="form-check-label" for="public_radio">Public</label>' +
+        '</div>';
+      if (GW.user.current_userid == owner && GW.user.current_userid != "111111") {
+        detailsContent += '<div class="form-check form-check-inline">' +
+          '<input class="form-check-input" type="radio" name="confidential" value="TRUE" id="private_radio">' +
+          '<label class="form-check-label" for="private_radio">Private</label>' +
+          '</div>';
+      }
+    } else {
+      detailsContent += '<div class="form-check form-check-inline">' +
+        '<input class="form-check-input" type="radio" name="confidential" value="FALSE" id="public_radio">' +
+        '<label class="form-check-label" for="public_radio">Public</label>' +
+        '</div>';
+      if (GW.user.current_userid == owner && GW.user.current_userid != "111111") {
+        detailsContent += '<div class="form-check form-check-inline">' +
+          '<input class="form-check-input" type="radio" name="confidential" value="TRUE" checked id="private_radio">' +
+          '<label class="form-check-label" for="private_radio">Private</label>' +
+          '</div>';
+      }
+    }
+    
+    detailsContent += '</div></div>';
+    detailsContent += '</form>';
+    detailsContent += '</div>';
 
-    //          if(hostip!="127.0.0.1")
-    if (msg.id != "100001")
-      delbtn =
-        '<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this host" onclick="GW.menu.del(\'' +
-        hostid +
-        "','host')\"></i>";
-
-    content +=
-      "</div>" +
-      '<div class="col-md-12">' +
-      '<p align="right">' +
-      this.getToolbar(hostid, hosttype) +
-      delbtn +
-      "</p>" +
-      "</div>" +
-      '<div class="col-md-12" style="max-height:600px;margin:0;" id="environment-iframe">' +
-      "</div>" +
-      '<div class="col-md-12" style="max-height:600px;margin:0;" id="ssh-terminal-iframe">' +
-      "</div>" +
-      '<div class="col-md-12" style="margin:0;" id="host-file-uploader">' +
-      "</div>" +
-      '<div class="col-md-12" style="max-height:800px;margin:0;" id="host-file-browser">' +
-      "</div>" +
-      '<div class="col-md-12" style="max-height:800px;margin:0;" id="host-history-browser">' +
-      "</div>" +
-      "</div>";
+    // Build the main content with tabs at the top, including details content
+    var content = '<div style="width: 100%;">';
+    
+    // Add toolbar (tabs) at the top, passing detailsContent so it's included directly
+    content += this.getToolbar(hostid, hosttype, detailsContent);
+    
+    content += '</div>';
 
     $("#main-host-content").html(content);
 
     GW.ssh.current_process_log_length = 0;
-
     GW.general.switchTab("host");
   },
 
@@ -1759,7 +1889,13 @@ switchTab: function (event, tabId, action) {
 
         content += "</tbody></div>";
 
-        $("#host-history-browser").html(content);
+        // Put content in the history-tab-pane
+        $("#history-tab-pane").html(content);
+        
+        // Also update the old container for backward compatibility
+        if ($("#host-history-browser").length) {
+          $("#host-history-browser").html(content);
+        }
 
         // initialize the tab with editable cells
 
@@ -1798,7 +1934,10 @@ switchTab: function (event, tabId, action) {
         });
 
         $("#closeHostHistoryBtn").on("click", function () {
-          $("#host-history-browser").html("");
+          $("#history-tab-pane").html("");
+          if ($("#host-history-browser").length) {
+            $("#host-history-browser").html("");
+          }
         });
 
         $("#deleteHostHistoryBtn").on("click", function () {

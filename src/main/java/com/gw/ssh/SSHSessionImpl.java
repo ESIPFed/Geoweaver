@@ -177,8 +177,35 @@ public class SSHSessionImpl implements SSHSession {
     this.hostid = hostid;
 
     Host h = hostrepo.findById(hostid).get();
+    
+    if (h == null) {
+      log.error("Host not found with id: " + hostid);
+      throw new RuntimeException("Host not found with id: " + hostid);
+    }
+    
+    String ip = h.getIp();
+    String port = h.getPort();
+    String username = h.getUsername();
+    
+    // Validate host information
+    if (ip == null || ip.isEmpty()) {
+      log.error("Host IP is null or empty for hostid: " + hostid);
+      throw new RuntimeException("Host IP is not configured for host: " + hostid);
+    }
+    
+    if (port == null || port.isEmpty()) {
+      log.warn("Host port is null or empty for hostid: " + hostid + ", using default port 22");
+      port = "22";
+    }
+    
+    if (username == null || username.isEmpty()) {
+      log.error("Host username is null or empty for hostid: " + hostid);
+      throw new RuntimeException("Host username is not configured for host: " + hostid);
+    }
+    
+    log.info("Attempting SSH login to host: " + ip + ":" + port + " as user: " + username);
 
-    return this.login(h.getIp(), h.getPort(), h.getUsername(), password, token, false);
+    return this.login(ip, port, username, password, token, isTerminal);
   }
 
   /**
@@ -198,13 +225,29 @@ public class SSHSessionImpl implements SSHSession {
   public boolean login(
       String host, String port, String username, String password, String token, boolean isTerminal)
       throws AuthenticationException {
+    // Store original network preferences to restore later
+    String originalIpv4Preference = System.getProperty("java.net.preferIPv4Stack");
+    String originalIpv6Addresses = System.getProperty("java.net.preferIPv6Addresses");
+    
     try {
       // Ensure that any existing session is logged out before creating a new one.
       logout();
 
+      // Force IPv4 preference before creating SSH client
+      try {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        System.setProperty("java.net.preferIPv6Addresses", "false");
+        log.info("Set network preferences: preferIPv4Stack=true, preferIPv6Addresses=false");
+      } catch (Exception e) {
+        log.warn("Failed to set network preferences: " + e.getMessage());
+      }
+
       // Create a new SSH client instance.
       log.info("Creating a new SSHClient");
       ssh = new SSHClient();
+      
+      // Note: We'll test if binding to en0 works in the connectivity test
+      // If it works, we may need to use a workaround to force SSHJ to use en0
 
       // Disable host key verification (Note: This can be a security risk).
       log.info("Disabling host key verification");
@@ -221,12 +264,213 @@ public class SSHSessionImpl implements SSHSession {
           });
 
       // Connect to the remote host using the provided hostname and port.
-      log.info("Connecting to the remote host");
-      ssh.connect(host, Integer.parseInt(port));
+      log.info("Connecting to the remote host: " + host + ":" + port);
+      
+      // Validate port
+      int portNum;
+      try {
+        portNum = Integer.parseInt(port);
+      } catch (NumberFormatException e) {
+        log.error("Invalid port number: " + port);
+        throw new RuntimeException("Invalid port number: " + port);
+      }
+      
+      // Network diagnostics - comprehensive connectivity test
+      log.info("=== Starting Network Connectivity Diagnostics ===");
+      boolean networkAccessible = testNetworkConnectivity(host, portNum);
+      log.info("=== Network Connectivity Test Result: " + (networkAccessible ? "PASSED" : "FAILED") + " ===");
+      
+      if (!networkAccessible) {
+        log.error("Network connectivity test failed. SSH connection will likely fail.");
+        log.error("Please check:");
+        log.error("  1. Firewall rules - ensure Java application can access " + host + ":" + portNum);
+        log.error("  2. Network routing - verify route to " + host);
+        log.error("  3. Network interface - check if correct interface is being used");
+      }
+      
+      // Set connection timeout (30 seconds)
+      ssh.setConnectTimeout(30000);
+      
+      // Set socket timeout
+      ssh.setTimeout(30000);
+      
+      // Try to connect with better error handling
+      try {
+        log.info("Attempting SSH connection to " + host + ":" + portNum);
+        
+        // Automatically find the correct network interface on the same subnet as target
+        // This works for any interface name (en0, eth0, wlan0, etc.)
+        java.net.InetAddress bindInterface = null;
+        String bindInterfaceName = null;
+        try {
+          java.net.InetAddress target = java.net.InetAddress.getByName(host);
+          String targetIp = target.getHostAddress();
+          log.info("Looking for network interface on same subnet as target: " + targetIp);
+          
+          java.util.Enumeration<java.net.NetworkInterface> interfaces = 
+              java.net.NetworkInterface.getNetworkInterfaces();
+          
+          while (interfaces.hasMoreElements()) {
+            java.net.NetworkInterface ni = interfaces.nextElement();
+            
+            // Skip loopback and down interfaces
+            if (ni.isLoopback() || !ni.isUp()) {
+              continue;
+            }
+            
+            String interfaceName = ni.getName();
+            log.debug("Checking interface: " + interfaceName + " (isUp=" + ni.isUp() + ")");
+            
+            java.util.List<java.net.InetAddress> addresses = 
+                java.util.Collections.list(ni.getInetAddresses());
+            
+            for (java.net.InetAddress localAddr : addresses) {
+              if (localAddr instanceof java.net.Inet4Address) {
+                String localIp = localAddr.getHostAddress();
+                String[] localParts = localIp.split("\\.");
+                String[] targetParts = targetIp.split("\\.");
+                
+                if (localParts.length == 4 && targetParts.length == 4) {
+                  // Check if on same subnet (first 3 octets match)
+                  boolean sameSubnet = localParts[0].equals(targetParts[0]) && 
+                                      localParts[1].equals(targetParts[1]) && 
+                                      localParts[2].equals(targetParts[2]);
+                  
+                  if (sameSubnet) {
+                    bindInterface = localAddr;
+                    bindInterfaceName = interfaceName;
+                    log.info("Found interface " + interfaceName + " on same subnet as target");
+                    log.info("  Interface IP: " + localIp);
+                    log.info("  Target IP: " + targetIp);
+                    log.info("  Will attempt to use this interface for SSH connection");
+                    break;
+                  } else {
+                    log.debug("  Interface " + interfaceName + " IP " + localIp + " is on different subnet");
+                  }
+                }
+              }
+            }
+            
+            if (bindInterface != null) {
+              break; // Found the right interface
+            }
+          }
+          
+          if (bindInterface == null) {
+            log.warn("Could not find network interface on same subnet as target " + targetIp);
+            log.warn("Will use default routing (may fail if wrong interface is selected)");
+          }
+        } catch (Exception ifEx) {
+          log.error("Could not find network interface: " + ifEx.getMessage());
+          ifEx.printStackTrace();
+        }
+        
+        // Note: SSHJ doesn't directly support binding to a specific interface
+        // But we can set system properties to influence interface selection
+        if (bindInterface != null) {
+          log.info("Target interface identified: " + bindInterfaceName + " (" + bindInterface.getHostAddress() + ")");
+          log.info("Note: SSHJ will use system routing, which should prefer this interface");
+        }
+        
+        // If host is an IP address, try connecting directly
+        // Otherwise, let SSHJ handle the resolution
+        if (host.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$")) {
+          log.info("Connecting to IPv4 address: " + host);
+          ssh.connect(host, portNum);
+        } else {
+          log.info("Connecting to hostname: " + host + " (will be resolved)");
+          ssh.connect(host, portNum);
+        }
+        
+        log.info("Successfully connected to " + host + ":" + port);
+      } catch (java.net.NoRouteToHostException e) {
+        log.error("No route to host " + host + ":" + port);
+        log.error("This usually means:");
+        log.error("  1. Network routing issue - check if the host is reachable from this machine");
+        log.error("  2. Firewall blocking Java application - check firewall rules");
+        log.error("  3. Network interface binding issue - Java may be using wrong network interface");
+        log.error("  4. IPv4/IPv6 mismatch - try using explicit IPv4 address");
+        log.error("Current network interfaces:");
+        try {
+          // First, explicitly check for en0
+          try {
+            java.net.NetworkInterface en0 = java.net.NetworkInterface.getByName("en0");
+            if (en0 != null) {
+              log.error("  en0 interface found: isUp=" + en0.isUp() + ", Addresses: " + 
+                       java.util.Collections.list(en0.getInetAddresses()));
+              if (!en0.isUp()) {
+                log.error("  WARNING: en0 interface exists but is NOT UP!");
+              }
+            } else {
+              log.error("  en0 interface NOT FOUND!");
+            }
+          } catch (Exception en0Ex) {
+            log.error("  Failed to get en0 interface: " + en0Ex.getMessage());
+          }
+          
+          // List all interfaces
+          java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+          while (interfaces.hasMoreElements()) {
+            java.net.NetworkInterface ni = interfaces.nextElement();
+            if (ni.isUp() && !ni.isLoopback()) {
+              java.util.List<java.net.InetAddress> addrs = java.util.Collections.list(ni.getInetAddresses());
+              log.error("  Interface: " + ni.getName() + ", isUp=" + ni.isUp() + 
+                       ", Addresses: " + addrs);
+              // Check if this is en0
+              if (ni.getName().equals("en0")) {
+                log.error("    -> This is en0! Checking for IPv4 address...");
+                for (java.net.InetAddress addr : addrs) {
+                  if (addr instanceof java.net.Inet4Address) {
+                    log.error("    -> en0 has IPv4: " + addr.getHostAddress());
+                  }
+                }
+              }
+            } else {
+              // Log interfaces that are down or loopback for debugging
+              if (ni.getName().equals("en0")) {
+                log.error("  Interface en0 found but isUp=" + ni.isUp() + ", isLoopback=" + ni.isLoopback());
+              }
+            }
+          }
+        } catch (Exception ex) {
+          log.error("Failed to list network interfaces: " + ex.getMessage());
+          ex.printStackTrace();
+        }
+        throw new RuntimeException("No route to host " + host + ":" + port + ". Please check network connectivity and firewall settings.", e);
+      } catch (java.net.ConnectException e) {
+        log.error("Connection refused to " + host + ":" + port);
+        log.error("This usually means the SSH service is not running or not accessible on that port");
+        throw new RuntimeException("Connection refused to " + host + ":" + port + ". Please check if SSH service is running.", e);
+      } catch (java.net.SocketTimeoutException e) {
+        log.error("Connection timeout to " + host + ":" + port);
+        log.error("This usually means the host is not reachable or firewall is blocking the connection");
+        throw new RuntimeException("Connection timeout to " + host + ":" + port + ". Please check network connectivity.", e);
+      } catch (Exception e) {
+        log.error("Failed to connect to " + host + ":" + port + " - " + e.getMessage(), e);
+        log.error("Exception type: " + e.getClass().getName());
+        
+        // Additional diagnostic: try to ping the host
+        try {
+          java.net.InetAddress addr = java.net.InetAddress.getByName(host);
+          log.error("Attempting to ping " + addr.getHostAddress());
+          boolean pingResult = addr.isReachable(5000);
+          log.error("Ping result: " + pingResult);
+        } catch (Exception pingEx) {
+          log.error("Ping test failed: " + pingEx.getMessage());
+        }
+        
+        throw e;
+      }
 
       // Authenticate using the SSH username and password.
-      log.info("Authenticating as user: {}", username);
-      ssh.authPassword(username, password);
+      log.info("Authenticating as user: " + username);
+      try {
+        ssh.authPassword(username, password);
+        log.info("Successfully authenticated as user: " + username);
+      } catch (Exception e) {
+        log.error("Authentication failed for user: " + username + " - " + e.getMessage(), e);
+        throw e;
+      }
 
       // Start an SSH session (SSH client creates a new SSH session).
       log.info("Starting SSH session");
@@ -272,6 +516,22 @@ public class SSHSessionImpl implements SSHSession {
 
       // Throw an SSHAuthenticationException with the error message.
       throw new SSHAuthenticationException(e.getMessage(), e);
+    } finally {
+      // Restore original network preference settings
+      try {
+        if (originalIpv4Preference != null) {
+          System.setProperty("java.net.preferIPv4Stack", originalIpv4Preference);
+        } else {
+          System.clearProperty("java.net.preferIPv4Stack");
+        }
+        if (originalIpv6Addresses != null) {
+          System.setProperty("java.net.preferIPv6Addresses", originalIpv6Addresses);
+        } else {
+          System.clearProperty("java.net.preferIPv6Addresses");
+        }
+      } catch (Exception e) {
+        log.warn("Failed to restore network preferences: " + e.getMessage());
+      }
     }
     return true;
   }
@@ -756,5 +1016,305 @@ public class SSHSessionImpl implements SSHSession {
     }
 
     return resp;
+  }
+  
+  /**
+   * Test network connectivity to a host and port using multiple methods
+   * 
+   * @param host The hostname or IP address
+   * @param port The port number
+   * @return true if connectivity test passes, false otherwise
+   */
+  private boolean testNetworkConnectivity(String host, int port) {
+    boolean allTestsPassed = false;
+    
+    try {
+      // Test 1: DNS Resolution
+      log.info("Test 1: DNS Resolution");
+      java.net.InetAddress targetAddr;
+      if (host.matches("^\\d+\\.\\d+\\.\\d+\\.\\d+$")) {
+        // It's an IPv4 address, use it directly
+        targetAddr = java.net.InetAddress.getByName(host);
+        log.info("  Using IPv4 address directly: " + targetAddr.getHostAddress());
+      } else {
+        // It's a hostname, resolve it
+        targetAddr = java.net.InetAddress.getByName(host);
+        log.info("  Resolved hostname " + host + " to IP: " + targetAddr.getHostAddress());
+      }
+      
+      // Check if it's IPv6 and log warning
+      if (targetAddr instanceof java.net.Inet6Address) {
+        log.warn("  Host resolved to IPv6 address. This may cause connection issues. Consider using IPv4 address.");
+      }
+      
+      // Test 2: ICMP Ping (may not work if ICMP is blocked by firewall)
+      log.info("Test 2: ICMP Ping Test");
+      try {
+        boolean reachable = targetAddr.isReachable(5000);
+        log.info("  ICMP ping result: " + reachable);
+        if (!reachable) {
+          log.warn("  ICMP ping failed, but this doesn't necessarily mean SSH will fail (ICMP may be blocked)");
+        }
+      } catch (Exception e) {
+        log.warn("  ICMP ping test failed: " + e.getMessage() + " (this is often normal if ICMP is blocked)");
+      }
+      
+      // Test 3: Raw Socket Connection Test (most reliable for SSH)
+      log.info("Test 3: Raw Socket Connection Test (most reliable)");
+      boolean socketTestPassed = false;
+      java.net.Socket testSocket = null;
+      try {
+        testSocket = new java.net.Socket();
+        testSocket.setSoTimeout(5000); // 5 second timeout
+        log.info("  Attempting to connect to " + targetAddr.getHostAddress() + ":" + port);
+        testSocket.connect(new java.net.InetSocketAddress(targetAddr, port), 5000);
+        socketTestPassed = testSocket.isConnected();
+        log.info("  Socket connection test: " + (socketTestPassed ? "SUCCESS" : "FAILED"));
+        if (socketTestPassed) {
+          log.info("  Java application CAN access " + host + ":" + port);
+          allTestsPassed = true;
+        }
+      } catch (java.net.NoRouteToHostException e) {
+        log.error("  Socket connection test FAILED: No route to host");
+        log.error("  This means Java cannot reach " + host + ":" + port);
+        log.error("  DIAGNOSTIC: Trying to bind to interface on same subnet as target...");
+        
+        // Try binding to interface on same subnet - this is the KEY TEST
+        // Works for any interface name (en0, eth0, wlan0, etc.)
+        boolean interfaceBindingWorks = false;
+        String workingInterfaceName = null;
+        try {
+          java.util.Enumeration<java.net.NetworkInterface> interfaces = 
+              java.net.NetworkInterface.getNetworkInterfaces();
+          
+          while (interfaces.hasMoreElements()) {
+            java.net.NetworkInterface ni = interfaces.nextElement();
+            
+            // Skip loopback and down interfaces
+            if (ni.isLoopback() || !ni.isUp()) {
+              continue;
+            }
+            
+            String interfaceName = ni.getName();
+            java.util.List<java.net.InetAddress> addresses = 
+                java.util.Collections.list(ni.getInetAddresses());
+            
+            for (java.net.InetAddress localAddr : addresses) {
+              if (localAddr instanceof java.net.Inet4Address) {
+                String localIp = localAddr.getHostAddress();
+                String[] localParts = localIp.split("\\.");
+                String[] targetParts = targetAddr.getHostAddress().split("\\.");
+                
+                if (localParts.length == 4 && targetParts.length == 4) {
+                  // Check if on same subnet
+                  boolean sameSubnet = localParts[0].equals(targetParts[0]) && 
+                                      localParts[1].equals(targetParts[1]) && 
+                                      localParts[2].equals(targetParts[2]);
+                  
+                  if (sameSubnet) {
+                    log.error("  Found interface " + interfaceName + " on same subnet: " + localIp);
+                    log.error("  Attempting connection bound to " + interfaceName + " interface...");
+                    java.net.Socket boundSocket = null;
+                    try {
+                      boundSocket = new java.net.Socket();
+                      boundSocket.setSoTimeout(5000);
+                      log.error("  Binding socket to " + interfaceName + ": " + localIp);
+                      boundSocket.bind(new java.net.InetSocketAddress(localAddr, 0));
+                      log.error("  Socket bound successfully, now connecting to " + targetAddr.getHostAddress() + ":" + port);
+                      boundSocket.connect(new java.net.InetSocketAddress(targetAddr, port), 5000);
+                      if (boundSocket.isConnected()) {
+                        log.error("  *** SUCCESS! Connection works when bound to " + interfaceName + "! ***");
+                        log.error("  This confirms the problem: Java default routing is using wrong interface");
+                        log.error("  SOLUTION: Need to force SSHJ to bind to " + interfaceName + " interface");
+                        interfaceBindingWorks = true;
+                        workingInterfaceName = interfaceName;
+                        boundSocket.close();
+                        // This is the key finding - we need to use this interface!
+                        break;
+                      }
+                    } catch (java.net.NoRouteToHostException boundEx) {
+                      log.error("  Connection bound to " + interfaceName + " also failed with NoRouteToHostException");
+                      log.error("  This suggests a deeper network/firewall issue");
+                    } catch (Exception boundEx) {
+                      log.error("  Connection bound to " + interfaceName + " failed: " + boundEx.getMessage());
+                      log.error("  Exception type: " + boundEx.getClass().getSimpleName());
+                      if (boundEx.getCause() != null) {
+                        log.error("  Cause: " + boundEx.getCause().getClass().getSimpleName() + " - " + boundEx.getCause().getMessage());
+                      }
+                    } finally {
+                      if (boundSocket != null && !boundSocket.isClosed()) {
+                        try {
+                          boundSocket.close();
+                        } catch (Exception closeEx) {
+                          // Ignore
+                        }
+                      }
+                    }
+                    
+                    if (interfaceBindingWorks) {
+                      break; // Found working interface, no need to check others
+                    }
+                  }
+                }
+              }
+            }
+            
+            if (interfaceBindingWorks) {
+              break; // Found working interface
+            }
+          }
+          
+          if (!interfaceBindingWorks) {
+            log.error("  Could not find any interface on same subnet that allows connection");
+            log.error("  This suggests a network/firewall issue affecting all interfaces");
+          }
+        } catch (Exception interfaceTestEx) {
+          log.error("  Failed to test interface binding: " + interfaceTestEx.getMessage());
+          interfaceTestEx.printStackTrace();
+        }
+        
+        if (interfaceBindingWorks) {
+          log.error("  *** CRITICAL FINDING: Binding to " + workingInterfaceName + " works, but default connection fails ***");
+          log.error("  This means we MUST configure SSHJ to bind to " + workingInterfaceName + " interface");
+        }
+        
+        log.error("  Possible causes:");
+        log.error("    - Firewall blocking Java application (most common on macOS)");
+        log.error("    - Network routing issue");
+        log.error("    - Wrong network interface being used");
+        log.error("  DIAGNOSTIC: Checking which network interface Java is trying to use...");
+        
+        // Try to determine which interface would be used
+        try {
+          java.net.InetAddress target = java.net.InetAddress.getByName(host);
+          java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+          
+          while (interfaces.hasMoreElements()) {
+            java.net.NetworkInterface ni = interfaces.nextElement();
+            if (ni.isUp() && !ni.isLoopback()) {
+              java.util.List<java.net.InetAddress> addresses = java.util.Collections.list(ni.getInetAddresses());
+              for (java.net.InetAddress localAddr : addresses) {
+                if (localAddr instanceof java.net.Inet4Address) {
+                  String localIp = localAddr.getHostAddress();
+                  String[] localParts = localIp.split("\\.");
+                  String[] targetParts = target.getHostAddress().split("\\.");
+                  
+                  if (localParts.length == 4 && targetParts.length == 4) {
+                    // Check if on same subnet
+                    boolean sameSubnet = localParts[0].equals(targetParts[0]) && 
+                                        localParts[1].equals(targetParts[1]) && 
+                                        localParts[2].equals(targetParts[2]);
+                    
+                    log.error("    Interface: " + ni.getName() + ", Local IP: " + localIp + 
+                             (sameSubnet ? " (SAME SUBNET as target)" : " (different subnet)"));
+                    
+                    if (sameSubnet) {
+                      log.error("    -> This interface should be able to reach the target!");
+                    }
+                  }
+                }
+              }
+            }
+          }
+        } catch (Exception diagEx) {
+          log.error("  Failed to diagnose network interface: " + diagEx.getMessage());
+        }
+        
+        log.error("  SOLUTION SUGGESTIONS:");
+        log.error("    1. macOS Firewall - Check OUTBOUND rules (not just inbound):");
+        log.error("       - System Settings > Network > Firewall > Options");
+        log.error("       - Look for 'Block all incoming connections' - this shouldn't affect outbound");
+        log.error("       - Check if there are any third-party firewall apps (Little Snitch, etc.)");
+        log.error("    2. Check network routing from terminal:");
+        log.error("       Run: route get " + host);
+        log.error("       Compare with what Java sees (check Test 4 output above)");
+        log.error("    3. Try binding Socket to specific network interface:");
+        log.error("       This may require code changes to bind to the correct interface");
+        log.error("    4. Check macOS security settings:");
+        log.error("       - System Settings > Privacy & Security > Full Disk Access");
+        log.error("       - System Settings > Privacy & Security > Network Extensions");
+        log.error("    5. Check if VPN or network proxy is interfering");
+        log.error("    6. Try running Geoweaver with sudo (temporary test only):");
+        log.error("       This will help determine if it's a permissions issue");
+      } catch (java.net.ConnectException e) {
+        log.warn("  Socket connection test: Connection refused (host is reachable but port may be closed)");
+        log.warn("  This usually means the host is reachable but SSH service may not be running");
+        // This is actually a good sign - it means we can reach the host
+        allTestsPassed = true;
+      } catch (java.net.SocketTimeoutException e) {
+        log.error("  Socket connection test FAILED: Connection timeout");
+        log.error("  This means Java cannot reach " + host + ":" + port + " within timeout period");
+      } catch (Exception e) {
+        log.error("  Socket connection test FAILED: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+      } finally {
+        if (testSocket != null && !testSocket.isClosed()) {
+          try {
+            testSocket.close();
+          } catch (Exception e) {
+            log.warn("  Error closing test socket: " + e.getMessage());
+          }
+        }
+      }
+      
+      // Test 4: List available network interfaces
+      log.info("Test 4: Network Interface Information");
+      try {
+        java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+        int interfaceCount = 0;
+        while (interfaces.hasMoreElements()) {
+          java.net.NetworkInterface ni = interfaces.nextElement();
+          if (ni.isUp() && !ni.isLoopback()) {
+            interfaceCount++;
+            java.util.List<java.net.InetAddress> addresses = java.util.Collections.list(ni.getInetAddresses());
+            log.info("  Interface " + interfaceCount + ": " + ni.getName());
+            for (java.net.InetAddress addr : addresses) {
+              log.info("    - " + addr.getHostAddress() + " (" + (addr instanceof java.net.Inet4Address ? "IPv4" : "IPv6") + ")");
+            }
+          }
+        }
+        if (interfaceCount == 0) {
+          log.warn("  No active network interfaces found (excluding loopback)");
+        }
+      } catch (Exception e) {
+        log.warn("  Failed to list network interfaces: " + e.getMessage());
+      }
+      
+      // Test 5: Check if we can bind to a local address on the same network
+      log.info("Test 5: Local Network Binding Test");
+      try {
+        // Try to find a local address on the same network
+        java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+          java.net.NetworkInterface ni = interfaces.nextElement();
+          if (ni.isUp() && !ni.isLoopback()) {
+            java.util.List<java.net.InetAddress> addresses = java.util.Collections.list(ni.getInetAddresses());
+            for (java.net.InetAddress localAddr : addresses) {
+              if (localAddr instanceof java.net.Inet4Address) {
+                log.info("  Found local IPv4 address: " + localAddr.getHostAddress());
+                // Check if target is on same network (simple check)
+                String localIp = localAddr.getHostAddress();
+                String[] localParts = localIp.split("\\.");
+                String[] targetParts = targetAddr.getHostAddress().split("\\.");
+                if (localParts.length == 4 && targetParts.length == 4) {
+                  // Check if first 3 octets match (same subnet)
+                  if (localParts[0].equals(targetParts[0]) && 
+                      localParts[1].equals(targetParts[1]) && 
+                      localParts[2].equals(targetParts[2])) {
+                    log.info("  Target host appears to be on the same subnet as local interface");
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        log.warn("  Local network binding test failed: " + e.getMessage());
+      }
+      
+    } catch (Exception e) {
+      log.error("Network connectivity test failed with exception: " + e.getMessage(), e);
+    }
+    
+    return allTestsPassed;
   }
 }

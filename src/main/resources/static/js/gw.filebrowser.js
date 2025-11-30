@@ -406,7 +406,10 @@ GW.filebrowser = {
       });
     }
 
-    $("#host-file-browser").html("");
+    $("#browse-tab-pane").html("");
+    if ($("#host-file-browser").length) {
+      $("#host-file-browser").html("");
+    }
   },
 
   showFolderBrowserDialog: function (msg) {
@@ -429,12 +432,23 @@ GW.filebrowser = {
       "</div>";
 
     cont =
-      '<h4 class="border-bottom">File Browser Section  <button type="button" class="btn btn-secondary btn-sm" id="closeFileBrowser" >close</button></h4>' +
-      cont;
+      '<div class="container-fluid" style="padding: 20px;">' +
+      '<div class="d-flex justify-content-between align-items-center mb-3">' +
+      '<h4 style="margin: 0;"><i class="fas fa-folder-open"></i> File Browser</h4>' +
+      '<button type="button" class="btn btn-secondary btn-sm" id="closeFileBrowser">Close</button>' +
+      '</div>' +
+      cont +
+      '</div>';
 
     //			var frame = GW.process.createJSFrameDialog(800, 640, cont, 'File Browser')
 
-    $("#host-file-browser").html(cont);
+    // Put content in the browse-tab-pane
+    $("#browse-tab-pane").html(cont);
+    
+    // Also update the old container for backward compatibility
+    if ($("#host-file-browser").length) {
+      $("#host-file-browser").html(cont);
+    }
 
     GW.filebrowser.updateBrowser(msg);
 

@@ -193,41 +193,71 @@ public class FileTool {
     String resp = null;
 
     try {
+      // Validate local file exists
+      File localfile = new File(localPath);
+      if (!localfile.exists()) {
+        log.error("Local file does not exist: " + localPath);
+        throw new RuntimeException("Local file does not exist: " + localPath);
+      }
+
+      log.info("Starting SCP upload for host: " + hid + ", file: " + localPath);
 
       // establish SSH session and generate a token for it
-
-      session.login(hid, passwd, null, false);
-
-      File localfile = new File(localPath);
+      boolean loginSuccess = session.login(hid, passwd, null, false);
+      
+      if (!loginSuccess) {
+        log.error("SSH login failed for host: " + hid);
+        throw new RuntimeException("SSH login failed for host: " + hid);
+      }
 
       String filename = localfile.getName();
 
       String fileloc = filename; // upload file to temporary folder
 
-      log.info("upload " + localPath + " to " + fileloc);
+      log.info("Uploading " + localPath + " to " + fileloc + " on remote host");
 
       SCPFileTransfer transfer = session.getSsh().newSCPFileTransfer();
 
       transfer.upload(localPath, fileloc);
+      
+      log.info("File uploaded successfully to remote host: " + fileloc);
 
       // remove the local temporal files
 
       localfile.delete();
+      
+      log.info("Local temporary file deleted: " + localPath);
 
       session.getSsh().close();
-
-      String file_url = null;
+      
+      log.info("SSH connection closed");
 
       resp = "{\"filename\": \"" + fileloc + "\", \"ret\": \"success\"}";
 
     } catch (Exception e) {
-
+      log.error("SCP upload failed for host: " + hid + ", error: " + e.getMessage(), e);
       e.printStackTrace();
 
-      throw new RuntimeException(e.getLocalizedMessage());
+      // Provide more detailed error message
+      String errorMsg = e.getLocalizedMessage();
+      if (errorMsg == null || errorMsg.isEmpty()) {
+        errorMsg = e.getMessage();
+      }
+      if (errorMsg == null || errorMsg.isEmpty()) {
+        errorMsg = e.getClass().getSimpleName();
+      }
+      
+      throw new RuntimeException(errorMsg);
 
     } finally {
-
+      // Ensure SSH connection is closed even if an error occurs
+      try {
+        if (session != null && session.getSsh() != null && session.getSsh().isConnected()) {
+          session.getSsh().close();
+        }
+      } catch (Exception e) {
+        log.warn("Error closing SSH connection in finally block: " + e.getMessage());
+      }
     }
 
     return resp;
