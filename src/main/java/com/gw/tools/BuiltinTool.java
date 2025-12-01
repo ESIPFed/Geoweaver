@@ -258,15 +258,16 @@ public class BuiltinTool {
       his = histool.getHistoryById(history_id);
 
       if (!BaseTool.isNull(his)) {
-
-        if (resp.indexOf("failure") == -1) his.setIndicator(ExecutionStatus.DONE);
-        else his.setIndicator(ExecutionStatus.FAILED);
+        // Check response for failure indicators first
+        if (resp.indexOf("failure") != -1 || resp.indexOf("\"ret\":\"failed\"") != -1) {
+          his.setIndicator(ExecutionStatus.FAILED);
+        } else {
+          his.setIndicator(ExecutionStatus.DONE);
+        }
+        his.setHistory_end_time(BaseTool.getCurrentSQLDate());
+        his.setHistory_output(resp);
+        histool.saveHistory(his);
       }
-
-      his.setIndicator(ExecutionStatus.DONE);
-      his.setHistory_end_time(BaseTool.getCurrentSQLDate());
-      his.setHistory_output(resp);
-      histool.saveHistory(his);
 
     } catch (Exception e) {
 

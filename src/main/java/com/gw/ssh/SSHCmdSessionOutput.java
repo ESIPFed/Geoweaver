@@ -5,6 +5,7 @@ import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.ProcessStatusCache;
 import java.io.BufferedReader;
 import javax.websocket.Session;
 import org.slf4j.Logger;
@@ -42,6 +43,8 @@ public class SSHCmdSessionOutput implements Runnable {
   @Autowired BaseTool bt;
 
   @Autowired HistoryTool ht;
+  
+  @Autowired ProcessStatusCache processStatusCache;
 
   public SSHCmdSessionOutput() {
 
@@ -78,21 +81,36 @@ public class SSHCmdSessionOutput implements Runnable {
 public void endWithCode(String token, String history_id, int exitvalue) {
 
     History h = ht.getHistoryById(history_id);
-
-    if (exitvalue == 0) {
-
-      h.setIndicator(ExecutionStatus.DONE);
-
-    } else {
-
-      h.setIndicator(ExecutionStatus.FAILED);
+    
+    if (h == null) {
+      log.error("History record not found for history_id: " + history_id + ", cannot set exit code");
+      return;
     }
 
+    String status;
+    if (exitvalue == 0) {
+      status = ExecutionStatus.DONE;
+      log.info("Process completed successfully on " + hostInfo + " (exit code: 0)");
+    } else {
+      status = ExecutionStatus.FAILED;
+      log.warn("Process failed on " + hostInfo + " (exit code: " + exitvalue + ")");
+    }
+
+    h.setIndicator(status);
     h.setHistory_end_time(BaseTool.getCurrentSQLDate());
-
     ht.saveHistory(h);
+    
+    // Update cache with the status
+    try {
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, status);
+        log.debug("Updated cache for history ID: " + history_id + " with status: " + status);
+      }
+    } catch (Exception e) {
+      log.warn("Failed to update process status cache: " + e.getMessage());
+    }
 
-    log.info("Exit code: " + exitvalue);
+    log.info("Exit code: " + exitvalue + " for history ID: " + history_id + " on " + hostInfo);
 
     CommandServlet.sendMessageToSocket(
         token, history_id + BaseTool.log_separator + "Exit Code: " + exitvalue + " (on " + hostInfo + ")");
@@ -127,25 +145,34 @@ public void updateStatus(String logs, String status) {
   }
 
   int get_exit_code_from_log_line(String last_line){
-    int exit_code = 0;
+    // Default to -1 (unknown) instead of 0 (success) to avoid incorrectly marking failed processes as successful
+    int exit_code = -1;
     try {
+      if (BaseTool.isNull(last_line) || last_line.trim().isEmpty()) {
+        log.warn("Cannot extract exit code from empty or null line");
+        return exit_code;
+      }
+      
       // Split the line based on the equals sign
       String[] parts = last_line.split("=");
   
       if (parts.length == 2) {
-          String key = parts[0];  // gw_exit_code
-          String value = parts[1]; // 1
+          String key = parts[0].trim();  // gw_exit_code
+          String value = parts[1].trim(); // 1
           
           // Check if the key is "gw_exit_code"
           if (key.equals("gw_exit_code")) {
               exit_code = Integer.parseInt(value);
-              System.out.println("The key is 'gw_exit_code' and code is " + value);
+              log.info("Extracted exit code from log line: " + exit_code);
+          } else {
+              log.debug("Line does not contain gw_exit_code, key: " + key);
           }
       } else {
-          System.err.println("Invalid line format: " + last_line);
+          log.debug("Line format does not match expected pattern (key=value): " + last_line);
       }
     } catch (Exception e) {
-        System.err.println("Error processing line: " + last_line);
+        log.error("Error processing exit code from line: " + last_line);
+        log.error("Exception: " + e.getMessage());
         e.printStackTrace();
     }
     return exit_code;
@@ -240,14 +267,34 @@ public void updateStatus(String logs, String status) {
 
       exit_code = get_exit_code_from_log_line(last_non_null_line);
 
-      if(exit_code == 0){
-
+      // Only update status if we successfully extracted exit code from log
+      // If exit_code is -1 (unknown), it means endWithCode() should have been called
+      // or will be called, so we should not override the status here
+      if (exit_code == 0) {
+        log.info("Process completed successfully (exit code: 0)");
         this.updateStatus(logs.toString(), "Done");
-
-      }else{
-
+      } else if (exit_code > 0) {
+        log.warn("Process failed with exit code: " + exit_code);
         this.updateStatus(logs.toString(), "Failed");
-
+      } else {
+        // exit_code is -1 (unknown), check if status was already set by endWithCode()
+        History h = ht.getHistoryById(history_id);
+        if (h != null) {
+          String currentStatus = h.getIndicator();
+          if (BaseTool.isNull(currentStatus) || ExecutionStatus.RUNNING.equals(currentStatus)) {
+            // Status not set yet, assume failure if we can't determine exit code
+            log.warn("Cannot determine exit code from logs, but status not set. Assuming failure to be safe.");
+            this.updateStatus(logs.toString(), "Failed");
+          } else {
+            log.info("Status already set to: " + currentStatus + ", not overriding");
+            // Just update the logs, don't change the status
+            this.updateStatus(logs.toString(), currentStatus);
+          }
+        } else {
+          log.error("History record not found for history_id: " + history_id);
+          // If history doesn't exist, mark as failed to be safe
+          this.updateStatus(logs.toString(), "Failed");
+        }
       }
       
 

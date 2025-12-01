@@ -8,7 +8,6 @@ import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.ProcessStatusCache;
 import java.io.BufferedReader;
-import java.io.IOException;
 import javax.websocket.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,22 +185,42 @@ public class LocalSessionOutput implements Runnable {
 
     // Get the latest history
     History h = ht.getHistoryById(this.history_id);
+    
+    if (h == null) {
+      log.error("History record not found for history_id: " + this.history_id + ", cannot set exit code");
+      return;
+    }
 
     String status;
     if (exitvalue == 0) {
       status = ExecutionStatus.DONE;
-      h.setIndicator(status);
+      log.info("Process completed successfully (exit code: 0) for history ID: " + this.history_id);
     } else {
       status = ExecutionStatus.FAILED;
-      h.setIndicator(status);
+      log.warn("Process failed (exit code: " + exitvalue + ") for history ID: " + this.history_id);
     }
 
+    h.setIndicator(status);
     h.setHistory_end_time(BaseTool.getCurrentSQLDate());
-
     ht.saveHistory(h);
+    
+    // Update cache with the status
+    try {
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, status);
+        log.debug("Updated cache for history ID: " + history_id + " with status: " + status);
+      }
+    } catch (Exception e) {
+      log.warn("Failed to update process status cache: " + e.getMessage());
+    }
 
-    this.sendMessage2WebSocket(
-        this.history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
+    try {
+      this.sendMessage2WebSocket(
+          this.history_id + BaseTool.log_separator + "Exit Code: " + exitvalue);
+    } catch (Exception e) {
+      // In CLI mode, this might fail but we should continue
+      log.debug("Error sending exit code message (expected in CLI mode): " + e.getMessage());
+    }
   }
 
   /**
@@ -315,8 +334,9 @@ public class LocalSessionOutput implements Runnable {
               if ((startrecorder + nullnumber) == linenumber) {
                 log.debug("Null output lines exceed 10. Disconnected.");
 
-                // Depending on the language (e.g., "jupyter"), update the status
-                this.updateStatus(logs.toString(), "Done");
+                // Don't set status to Done here - wait for process exit code
+                // The status will be set based on exit code after the loop
+                log.info("Detected disconnection (10 null lines), will check process exit code");
                 break;
               } else {
                 startrecorder = -1;
@@ -366,23 +386,60 @@ public class LocalSessionOutput implements Runnable {
         }
       }
 
-      // Depending on the language (e.g., "jupyter"), update the status to "Done"
-      this.updateStatus(logs.toString(), "Done");
+      // Get the exit code first before setting status
+      int exitCode = -1; // Default to -1 (unknown) to avoid incorrectly marking failed processes as successful
+      String finalStatus = ExecutionStatus.FAILED; // Default to Failed to be safe
       
-      // Update the cache with the done status
-      if (processStatusCache != null) {
-        processStatusCache.updateStatus(history_id, ExecutionStatus.DONE);
-      }
-
-      // If the process is available, attempt to stop and get its exit code
+      // If the process is available, get its exit code
       if (!BaseTool.isNull(theprocess)) {
         try {
-          //					log.info("This output thread corresponding process: " + theprocess.pid());
-          if (theprocess.isAlive()) theprocess.destroy();
-          this.endWithCode(token, theprocess.exitValue());
+          // Wait for the process to finish if it's still alive
+          if (theprocess.isAlive()) {
+            log.info("Process is still alive, waiting for it to complete...");
+            theprocess.waitFor();
+          }
+          
+          exitCode = theprocess.exitValue();
+          log.info("Process exit code: " + exitCode);
+          
+          // Set status based on exit code
+          if (exitCode == 0) {
+            finalStatus = ExecutionStatus.DONE;
+            log.info("Process completed successfully (exit code: 0)");
+          } else {
+            finalStatus = ExecutionStatus.FAILED;
+            log.warn("Process failed with exit code: " + exitCode);
+          }
         } catch (Exception e) {
           e.printStackTrace();
-          log.error("the process doesn't end well" + e.getLocalizedMessage());
+          log.error("Error getting process exit code: " + e.getLocalizedMessage());
+          // If we can't get the exit code, assume failure to be safe
+          finalStatus = ExecutionStatus.FAILED;
+        }
+      } else {
+        log.warn("Process object is null, cannot determine exit code. Assuming failure to be safe.");
+        finalStatus = ExecutionStatus.FAILED;
+      }
+      
+      // Update status based on exit code
+      this.updateStatus(logs.toString(), finalStatus);
+      
+      // Update the cache with the final status
+      if (processStatusCache != null) {
+        processStatusCache.updateStatus(history_id, finalStatus);
+      }
+      
+      // Also call endWithCode to ensure history is properly updated
+      if (exitCode != -1) {
+        this.endWithCode(token, exitCode);
+      } else {
+        // If we couldn't get exit code, still update history with failed status
+        History h = ht.getHistoryById(this.history_id);
+        if (h != null) {
+          h.setIndicator(ExecutionStatus.FAILED);
+          h.setHistory_end_time(BaseTool.getCurrentSQLDate());
+          ht.saveHistory(h);
+          log.warn("Updated history to Failed due to inability to determine exit code");
         }
       }
 
