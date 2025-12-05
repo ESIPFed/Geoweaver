@@ -416,7 +416,7 @@ GW.process.sidepanel = {
                 <div class="row" id="prompt-panel-process-history-container" style="display: 'none'; padding:0; color:white; margin:0; background-color:rgb(28, 28, 28);" ></div>
                 <div id="history-tab-loader-process-detail" style="display: 'flex'; flex: 1; height: 100px; width: 100px; position: absolute; top: -100px; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
                 	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
-					<h5 style="width: 100vw; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
+					<h5 style="width: 100%; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
 				</div>
             </div>
 

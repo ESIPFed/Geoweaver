@@ -416,7 +416,11 @@ form .progress {
 .container__right {
   /* Take the remaining width */
   flex: 1;
-  padding: 10px;
+  padding: 5px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
   /* Misc */
   /* align-items: center; */
   /* display: flex; */

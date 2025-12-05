@@ -76,7 +76,11 @@ GW.editor = {
       };
       editorDiv.addClass("fullscreen");
       editorDiv.height("100vh");
-      editorDiv.width("100vw");
+      // Use 100% instead of 100vw to respect parent container width
+      // This prevents the panel from exceeding its parent container
+      editorDiv.css("width", "100%");
+      editorDiv.css("max-width", "100%");
+      editorDiv.css("box-sizing", "border-box");
       subtabCodeDiv.height("calc(100%)");
       subtabHistoryDiv.height("calc(100%)");
       this.isfullscreen = true;
@@ -84,6 +88,10 @@ GW.editor = {
       editorDiv.removeClass("fullscreen");
       editorDiv.height(this.beforeFullscreen.height);
       editorDiv.width(this.beforeFullscreen.width);
+      // Ensure width is reset to 100% if it was set to 100vw
+      editorDiv.css("width", "100%");
+      editorDiv.css("max-width", "100%");
+      editorDiv.css("box-sizing", "border-box");
       subtabCodeDiv.height("calc(100% - 150px)");
       subtabHistoryDiv.height("calc(100% - 150px)");
       this.isfullscreen = false;

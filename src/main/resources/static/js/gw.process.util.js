@@ -423,6 +423,28 @@ GW.process.util = {
           processLogWindow.style.setProperty("min-width", "0", "important");
           processLogWindow.style.setProperty("max-width", "100%", "important");
           processLogWindow.style.setProperty("box-sizing", "border-box", "important");
+          processLogWindow.style.setProperty("overflow-x", "hidden", "important");
+          processLogWindow.style.setProperty("overflow-wrap", "break-word", "important");
+          processLogWindow.style.setProperty("word-wrap", "break-word", "important");
+          processLogWindow.style.setProperty("word-break", "break-word", "important");
+        }
+        
+        // Also ensure single-console-content has width constraints
+        const singleConsoleContent = document.getElementById("single-console-content");
+        if (singleConsoleContent) {
+          singleConsoleContent.style.setProperty("width", "100%", "important");
+          singleConsoleContent.style.setProperty("max-width", "100%", "important");
+          singleConsoleContent.style.setProperty("box-sizing", "border-box", "important");
+          singleConsoleContent.style.setProperty("overflow-x", "hidden", "important");
+        }
+        
+        // Ensure console-output also respects width
+        const consoleOutput = document.getElementById("console-output");
+        if (consoleOutput) {
+          consoleOutput.style.setProperty("width", "100%", "important");
+          consoleOutput.style.setProperty("max-width", "100%", "important");
+          consoleOutput.style.setProperty("box-sizing", "border-box", "important");
+          consoleOutput.style.setProperty("overflow", "hidden", "important");
         }
         
         // Ensure resizer remains visible and positioned correctly

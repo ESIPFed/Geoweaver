@@ -1373,15 +1373,15 @@ GW.process = {
               <div class="col col-md-6" id="code-embed" style="width: 100%; height: 100%; padding: 0px; margin: 0px;"></div>
 							</div> 
 							<div class="resizer" id="dragMe"></div>
-            <div id="single-console-content" class="container__right" style="height: 100%; overflow-y: auto; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color); flex: 1; min-width: 0; display: flex; flex-direction: column;">
-              <div style="padding: 8px 12px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa; flex-shrink: 0;">
-                <h5 style="margin: 0; font-size: 13px; font-weight: 600; color: #333;">
+            <div id="single-console-content" class="container__right" style="height: 100%; width: 100%; max-width: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color); flex: 1; min-width: 0; display: flex; flex-direction: column; box-sizing: border-box;">
+              <div style="padding: 8px 12px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa; flex-shrink: 0; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+                <h5 style="margin: 0; font-size: 13px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                   <i class="fas fa-terminal"></i> Logging
                 </h5>
               </div>
-              <div id="process-log-window" style="flex: 1; overflow-wrap: break-word; overflow-y: auto; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; min-height: 0;"></div>
-              <div class="row" style="padding: 0px; margin: 0px; flex-shrink: 0;">
-                <div class="col col-md-12" id="console-output" style="width: 100%; padding: 0px; margin: 0px;">
+              <div id="process-log-window" style="flex: 1; width: 100%; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; overflow-y: auto; overflow-x: hidden; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; min-height: 0; box-sizing: border-box;"></div>
+              <div class="row" style="padding: 0px; margin: 0px; flex-shrink: 0; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+                <div class="col col-md-12" id="console-output" style="width: 100%; max-width: 100%; padding: 0px; margin: 0px; box-sizing: border-box; overflow: hidden;">
 										<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 									</div>
 								</div>
@@ -1393,7 +1393,7 @@ GW.process = {
           <div class="row" id="process-history-container" style="padding: 0; margin: 0; background-color: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
           <div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
                 	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
-					<h5 style="width: 100vw; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
+					<h5 style="width: 100%; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
           </div>
         </div>
       </div>
@@ -1466,9 +1466,15 @@ GW.process = {
           }
           if (consoleElement) {
             consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("max-width", `${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex-grow", "0", "important");
+            consoleElement.style.setProperty("box-sizing", "border-box", "important");
+            consoleElement.style.setProperty("overflow-x", "hidden", "important");
+            
+            // Ensure all child elements respect parent width
+            GW.process.ensureConsoleWidthConstraints();
           }
         }
       } else if (GW.process.dockmode == "bottom") {
@@ -1531,12 +1537,21 @@ GW.process = {
           }
           if (consoleElement) {
             consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("max-width", `${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
             consoleElement.style.setProperty("flex-grow", "0", "important");
+            consoleElement.style.setProperty("box-sizing", "border-box", "important");
+            consoleElement.style.setProperty("overflow-x", "hidden", "important");
+            
+            // Ensure all child elements respect parent width
+            GW.process.ensureConsoleWidthConstraints();
           }
         }
       }
+      
+      // Ensure console width constraints after log switch
+      GW.process.ensureConsoleWidthConstraints();
       
       // Refresh Monaco editor layout if it exists
       if (GW.process.editor) {
@@ -1629,11 +1644,11 @@ GW.process = {
 
   switchTab: function (ele, name) {
     console.log("Turn on the tab " + name);
-    
-    // Restore layout ratios when switching tabs to maintain consistency
-    setTimeout(function() {
-      GW.process.restoreLayoutRatios();
-    }, 100);
+
+    // Save current layout ratios before switching tabs to preserve them
+    // We save the ratios, not pixel values, so they work regardless of container size
+    var wasCodeTabVisible = document.getElementById("main-process-info-code") && 
+                            document.getElementById("main-process-info-code").style.display !== "none";
 
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent-process");
@@ -1658,6 +1673,59 @@ GW.process = {
       ele.style.borderBottom = "3px solid #f5576c";
       ele.style.color = "#f5576c";
     }
+    
+    // Ensure editor-history-tab-panel always has correct width (100%, not 100vw)
+    // This must be done immediately and with a delay to catch any code that sets it to 100vw later
+    var tabPanel = document.getElementById("editor-history-tab-panel");
+    if (tabPanel) {
+      // Force set width to 100% immediately
+      tabPanel.style.setProperty("width", "100%", "important");
+      tabPanel.style.setProperty("max-width", "100%", "important");
+      tabPanel.style.setProperty("box-sizing", "border-box", "important");
+      
+      // Also check and fix after a short delay to catch any code that sets it to 100vw
+      setTimeout(function() {
+        var currentWidth = tabPanel.style.width || window.getComputedStyle(tabPanel).width;
+        if (currentWidth.includes('vw') || (!currentWidth.includes('%') && currentWidth !== 'auto')) {
+          tabPanel.style.setProperty("width", "100%", "important");
+          tabPanel.style.setProperty("max-width", "100%", "important");
+          tabPanel.style.setProperty("box-sizing", "border-box", "important");
+          console.log("switchTab: Fixed editor-history-tab-panel width from", currentWidth, "to 100%");
+        }
+      }, 50);
+      
+      // Check again after a longer delay to catch any async code
+      setTimeout(function() {
+        var currentWidth = tabPanel.style.width || window.getComputedStyle(tabPanel).width;
+        if (currentWidth.includes('vw')) {
+          tabPanel.style.setProperty("width", "100%", "important");
+          tabPanel.style.setProperty("max-width", "100%", "important");
+          tabPanel.style.setProperty("box-sizing", "border-box", "important");
+          console.log("switchTab: Fixed editor-history-tab-panel width from", currentWidth, "to 100% (delayed check)");
+        }
+      }, 200);
+    }
+    
+    // Only restore layout ratios when switching back to code tab
+    // This ensures the logging window width is preserved
+    if (name === "main-process-info-code") {
+      setTimeout(function() {
+        // Restore the saved layout ratios (width/height percentages) FIRST
+        // This will set the percentage widths on both code editor and console
+        GW.process.restoreLayoutRatios();
+        
+        // Then ensure console child elements respect parent width constraints
+        // This must be called AFTER restoreLayoutRatios to preserve the percentage width
+        GW.process.ensureConsoleWidthConstraints();
+        
+        // Refresh Monaco editor layout if it exists
+        if (GW.process.editor) {
+          GW.process.editor.layout();
+        }
+      }, 100);
+    }
+    // When switching to history tab, we don't need to do anything
+    // The code tab (with logging window) is hidden, so its layout is preserved
 
     // GW.process.util.refreshCodeEditor();
   },
@@ -2028,10 +2096,13 @@ GW.process = {
       }
       
       // Force refresh of content panel to adapt to new size
+      // Only set height for fullscreen, width should remain 100% (relative to parent)
       var tabPanel = document.getElementById("editor-history-tab-panel");
       if (tabPanel) {
-        tabPanel.style.width = "100%";
-        tabPanel.style.height = "calc(100vh - " + tabsHeight + "px)";
+        tabPanel.style.setProperty("width", "100%", "important");
+        tabPanel.style.setProperty("max-width", "100%", "important");
+        tabPanel.style.setProperty("height", "calc(100vh - " + tabsHeight + "px)", "important");
+        tabPanel.style.setProperty("box-sizing", "border-box", "important");
       }
       
       // Show exit button and hide maximize button
@@ -2162,8 +2233,10 @@ GW.process = {
       // Reset content panel to original size
       var tabPanel = document.getElementById("editor-history-tab-panel");
       if (tabPanel) {
-        tabPanel.style.width = "";
-        tabPanel.style.height = "";
+        tabPanel.style.setProperty("width", "100%", "important");
+        tabPanel.style.setProperty("max-width", "100%", "important");
+        tabPanel.style.setProperty("height", "", "important");
+        tabPanel.style.setProperty("box-sizing", "border-box", "important");
       }
       
       // Force hide metadata panel if it should be collapsed
@@ -2332,8 +2405,54 @@ GW.process = {
     }
   },
   
+  ensureConsoleWidthConstraints: function() {
+    // Ensure all console child elements respect parent width constraints to prevent exceeding
+    // NOTE: Do NOT set width on single-console-content itself - it should maintain its percentage width
+    // Only set constraints on its child elements
+    
+    const processLogWindow = document.getElementById("process-log-window");
+    if (processLogWindow) {
+      processLogWindow.style.setProperty("width", "100%", "important");
+      processLogWindow.style.setProperty("max-width", "100%", "important");
+      processLogWindow.style.setProperty("box-sizing", "border-box", "important");
+      processLogWindow.style.setProperty("overflow-x", "hidden", "important");
+      processLogWindow.style.setProperty("overflow-wrap", "break-word", "important");
+      processLogWindow.style.setProperty("word-wrap", "break-word", "important");
+      processLogWindow.style.setProperty("word-break", "break-word", "important");
+    }
+    
+    const consoleOutput = document.getElementById("console-output");
+    if (consoleOutput) {
+      consoleOutput.style.setProperty("width", "100%", "important");
+      consoleOutput.style.setProperty("max-width", "100%", "important");
+      consoleOutput.style.setProperty("box-sizing", "border-box", "important");
+      consoleOutput.style.setProperty("overflow", "hidden", "important");
+    }
+    
+    // Only set max-width and overflow-x on single-console-content, not width
+    // This preserves the percentage width set by restoreLayoutRatios
+    const singleConsoleContent = document.getElementById("single-console-content");
+    if (singleConsoleContent) {
+      // Don't override width - it should be a percentage (e.g., 40%)
+      // Only ensure it doesn't exceed its allocated space
+      var currentWidth = singleConsoleContent.style.width || window.getComputedStyle(singleConsoleContent).width;
+      if (currentWidth && !currentWidth.includes('%')) {
+        // If width is not a percentage, we need to preserve the percentage from saved ratio
+        if (GW.process.savedLeftWidthRatio !== null) {
+          var rightWidth = 100 - GW.process.savedLeftWidthRatio;
+          singleConsoleContent.style.setProperty("width", `${rightWidth}%`, "important");
+        }
+      }
+      singleConsoleContent.style.setProperty("max-width", "100%", "important");
+      singleConsoleContent.style.setProperty("box-sizing", "border-box", "important");
+      singleConsoleContent.style.setProperty("overflow-x", "hidden", "important");
+    }
+  },
+  
   restoreLayoutRatios: function() {
     // Restore saved width/height ratios to maintain layout consistency
+    // IMPORTANT: Always restore BOTH code editor and logging window widths/heights together
+    // to prevent width exceeding problems
     var codeElement = document.getElementById("process_code_window");
     var consoleElement = document.getElementById("single-console-content");
     
@@ -2352,37 +2471,106 @@ GW.process = {
     }
     
     if (GW.process.dockmode === "left" || GW.process.dockmode === "no" || !GW.process.dockmode) {
-      // Left/right layout - restore width ratio
-      var leftWidth = GW.process.savedLeftWidthRatio !== null ? GW.process.savedLeftWidthRatio : 60;
-      var rightWidth = 100 - leftWidth;
+      // Left/right layout - restore width ratio for BOTH elements
+      var leftWidth, rightWidth;
       
+      if (GW.process.savedLeftWidthRatio !== null) {
+        // Use saved ratio
+        leftWidth = GW.process.savedLeftWidthRatio;
+        rightWidth = 100 - leftWidth;
+      } else {
+        // No saved ratio - calculate from current widths and save it, then apply it
+        var codeComputedStyle = window.getComputedStyle(codeElement);
+        var consoleComputedStyle = window.getComputedStyle(consoleElement);
+        var codeWidth = parseFloat(codeComputedStyle.width);
+        var consoleWidth = parseFloat(consoleComputedStyle.width);
+        var totalWidth = codeWidth + consoleWidth;
+        
+        if (totalWidth > 0) {
+          leftWidth = (codeWidth / totalWidth) * 100;
+          // Save the current ratio so it's preserved
+          GW.process.savedLeftWidthRatio = leftWidth;
+          rightWidth = 100 - leftWidth;
+          console.log("restoreLayoutRatios: Calculated and saved current width ratio:", leftWidth);
+        } else {
+          // Fallback to default if calculation fails
+          leftWidth = 60;
+          rightWidth = 40;
+          GW.process.savedLeftWidthRatio = leftWidth;
+        }
+      }
+      
+      // ALWAYS set BOTH code editor and logging window widths together
       codeElement.style.setProperty("width", `${leftWidth}%`, "important");
       codeElement.style.setProperty("flex", `0 0 ${leftWidth}%`, "important");
       codeElement.style.setProperty("flex-basis", `${leftWidth}%`, "important");
       codeElement.style.setProperty("flex-grow", "0", "important");
       codeElement.style.setProperty("flex-shrink", "0", "important");
+      codeElement.style.setProperty("min-width", "0", "important");
+      codeElement.style.setProperty("max-width", "none", "important");
       
       consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
       consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
       consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
       consoleElement.style.setProperty("flex-grow", "0", "important");
       consoleElement.style.setProperty("flex-shrink", "0", "important");
-    } else if (GW.process.dockmode === "bottom") {
-      // Top/bottom layout - restore height ratio
-      var topHeight = GW.process.savedTopHeightRatio !== null ? GW.process.savedTopHeightRatio : 60;
-      var bottomHeight = 100 - topHeight;
+      consoleElement.style.setProperty("min-width", "0", "important");
+      consoleElement.style.setProperty("max-width", `${rightWidth}%`, "important");
+      consoleElement.style.setProperty("box-sizing", "border-box", "important");
+      consoleElement.style.setProperty("overflow-x", "hidden", "important");
       
+      // Ensure all child elements of console respect parent width
+      GW.process.ensureConsoleWidthConstraints();
+      
+      console.log("restoreLayoutRatios: Restored widths - code:", leftWidth + "%", "console:", rightWidth + "%");
+    } else if (GW.process.dockmode === "bottom") {
+      // Top/bottom layout - restore height ratio for BOTH elements
+      var topHeight, bottomHeight;
+      
+      if (GW.process.savedTopHeightRatio !== null) {
+        // Use saved ratio
+        topHeight = GW.process.savedTopHeightRatio;
+        bottomHeight = 100 - topHeight;
+      } else {
+        // No saved ratio - calculate from current heights and save it, then apply it
+        var codeComputedStyle = window.getComputedStyle(codeElement);
+        var consoleComputedStyle = window.getComputedStyle(consoleElement);
+        var codeHeight = parseFloat(codeComputedStyle.height);
+        var consoleHeight = parseFloat(consoleComputedStyle.height);
+        var totalHeight = codeHeight + consoleHeight;
+        
+        if (totalHeight > 0) {
+          topHeight = (codeHeight / totalHeight) * 100;
+          // Save the current ratio so it's preserved
+          GW.process.savedTopHeightRatio = topHeight;
+          bottomHeight = 100 - topHeight;
+          console.log("restoreLayoutRatios: Calculated and saved current height ratio:", topHeight);
+        } else {
+          // Fallback to default if calculation fails
+          topHeight = 60;
+          bottomHeight = 40;
+          GW.process.savedTopHeightRatio = topHeight;
+        }
+      }
+      
+      // ALWAYS set BOTH code editor and logging window heights together
       codeElement.style.setProperty("height", `${topHeight}%`, "important");
       codeElement.style.setProperty("flex", `0 0 ${topHeight}%`, "important");
       codeElement.style.setProperty("flex-basis", `${topHeight}%`, "important");
       codeElement.style.setProperty("flex-grow", "0", "important");
       codeElement.style.setProperty("flex-shrink", "0", "important");
+      codeElement.style.setProperty("min-height", "0", "important");
+      codeElement.style.setProperty("max-height", "none", "important");
       
       consoleElement.style.setProperty("height", `${bottomHeight}%`, "important");
       consoleElement.style.setProperty("flex", `0 0 ${bottomHeight}%`, "important");
       consoleElement.style.setProperty("flex-basis", `${bottomHeight}%`, "important");
       consoleElement.style.setProperty("flex-grow", "0", "important");
       consoleElement.style.setProperty("flex-shrink", "0", "important");
+      consoleElement.style.setProperty("min-height", "0", "important");
+      consoleElement.style.setProperty("max-height", "none", "important");
+      
+      console.log("restoreLayoutRatios: Restored heights - code:", topHeight + "%", "console:", bottomHeight + "%");
     }
     
     // Refresh Monaco editor layout if it exists
