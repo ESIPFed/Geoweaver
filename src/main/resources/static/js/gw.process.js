@@ -17,6 +17,10 @@ GW.process = {
 
   editOn: false, //false: disable is false, all fields are activated; true: all fields are deactivated.
 
+  // Store width/height ratios to maintain layout consistency
+  savedLeftWidthRatio: null, // Percentage width of left side (code editor) in left/right layout
+  savedTopHeightRatio: null, // Percentage height of top side (code editor) in top/bottom layout
+
   jsFrame: new JSFrame({ parentElement: $("#jsframe-container")[0] }),
 
   env_frame: null,
@@ -1191,6 +1195,9 @@ GW.process = {
 
     code_type = msg.lang == null ? msg.description : msg.lang;
 
+    // Store code type for tab title updates
+    GW.process.current_code_type = code_type;
+
     code = msg.code;
 
     if (code != null && code.includes('\\"')) {
@@ -1202,6 +1209,10 @@ GW.process = {
     GW.process.process_id = msg.id;
 
     process_name = msg.name;
+    
+    // Store process info for tab title updates
+    GW.process.current_process_name = process_name;
+    GW.process.current_code_type = code_type;
 
     owner = msg.owner;
 
@@ -1234,102 +1245,166 @@ GW.process = {
 
     confidential_field += "     </div>";
 
-    var content = '<div class="modal-body" style="height:100%;padding:5px;">';
+    var content = '<div id="process-main-container" style="width: 100%; height: 100%; display: flex; flex-direction: column; margin: 0; padding: 0;">';
+    
+    // Collapsible Process Info Bar - hidden by default
+    content += `
+      <!-- Collapsible Process Info Bar - hidden by default -->
+      <div id="process-info-bar" style="background-color: #fff; border-bottom: 1px solid #e0e0e0; padding: 0; margin: 0; flex-shrink: 0; flex-basis: 0; overflow: hidden; max-height: 0; display: none; visibility: hidden; height: 0; min-height: 0; transition: max-height 0.3s ease-out;">
+        <div style="padding: 12px 20px;">
+          <div class="row" style="margin: 0; align-items: center;">
+            <div class="col-md-2" style="padding: 0 8px;">
+              <label class="form-label" style="font-weight: 600; margin: 0 0 4px 0; font-size: 11px; color: #6c757d; display: block;">Category</label>
+              <select class="form-control form-control-sm" id="processcategory" disabled style="padding: 2px 8px; font-size: 12px; height: 28px;">
+                <option value="shell">Shell</option>
+                <option value="builtin">Built-In</option>
+                <option value="python">Python</option>
+              </select>
+            </div>
+            <div class="col-md-3" style="padding: 0 8px;">
+              <label class="form-label" style="font-weight: 600; margin: 0 0 4px 0; font-size: 11px; color: #6c757d; display: block;">Name</label>
+              <input type="text" class="form-control form-control-sm" id="processname" style="padding: 2px 8px; font-size: 12px; height: 28px;">
+            </div>
+            <div class="col-md-2" style="padding: 0 8px;">
+              <label class="form-label" style="font-weight: 600; margin: 0 0 4px 0; font-size: 11px; color: #6c757d; display: block;">ID</label>
+              <input type="text" class="form-control form-control-sm" id="processid" disabled style="padding: 2px 8px; font-size: 12px; height: 28px;">
+            </div>
+            <div class="col-md-4" style="padding: 0 8px;">
+              <label class="form-label" style="font-weight: 600; margin: 0 0 4px 0; font-size: 11px; color: #6c757d; display: block;">Confidential</label>
+              <div style="padding-top: 4px;">
+                ${msg.confidential == "FALSE" ? 
+                  '<div class="form-check form-check-inline" style="margin: 0;"><input class="form-check-input" type="radio" name="confidential_process" value="FALSE" checked id="public_radio_process" style="margin: 0;"><label class="form-check-label" for="public_radio_process" style="font-size: 12px; margin: 0 0 0 4px;">Public</label></div>' + 
+                  (GW.user.current_userid == owner && GW.user.current_userid != "111111" ? 
+                    '<div class="form-check form-check-inline" style="margin: 0 0 0 8px;"><input class="form-check-input" type="radio" name="confidential_process" value="TRUE" id="private_radio_process" style="margin: 0;"><label class="form-check-label" for="private_radio_process" style="font-size: 12px; margin: 0 0 0 4px;">Private</label></div>' : '') :
+                  '<div class="form-check form-check-inline" style="margin: 0;"><input class="form-check-input" type="radio" name="confidential_process" value="FALSE" id="public_radio_process" style="margin: 0;"><label class="form-check-label" for="public_radio_process" style="font-size: 12px; margin: 0 0 0 4px;">Public</label></div>' + 
+                  (GW.user.current_userid == owner && GW.user.current_userid != "111111" ? 
+                    '<div class="form-check form-check-inline" style="margin: 0 0 0 8px;"><input class="form-check-input" type="radio" name="confidential_process" value="TRUE" checked id="private_radio_process" style="margin: 0;"><label class="form-check-label" for="private_radio_process" style="font-size: 12px; margin: 0 0 0 4px;">Private</label></div>' : '')
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    content +=
-      '  <div class="row" style="padding-top:10px;margin:0px;font-size: 12px;"> ' +
-      '     <div class="col-sm-1 col-form-label control-label">Category</div>' +
-      '     <div class="col-sm-2" style="padding:0;">' +
-      '			<select class="form-control form-control-sm" id="processcategory" disabled  >' +
-      '    			<option value="shell">Shell</option>' +
-      '    			<option value="builtin">Built-In Process</option>' +
-      '    			<option value="python">Python</option>' +
-      /*'    			<option value="r">R</option>'+
-		   '    			<option value="matlab">Matlab</option>'+*/
-      "  			</select>" +
-      "     </div>" +
-      '     <div class="col-sm-1 col-form-label control-label">Name</div>' +
-      '     <div class="col-sm-2" style="padding:0;">' +
-      '			<input type="text" class="form-control form-control-sm" id="processname"></input>' +
-      "     </div>" +
-      '     <div class="col-sm-1 col-form-label control-label">ID</div>' +
-      '     <div class="col-sm-2" style="padding:0;">' +
-      '			<input type="text" class="form-control form-control-sm" id="processid" disabled></input>' +
-      "     </div>" +
-      confidential_field +
-      "   </div>" +
-      '   <div class="form-group row" style="padding-left:10px;padding-right:10px; margin:0px;" >' +
-      '	     <div class="col-md-6" style="padding:0;" >' +
-      '			<p class="h6"> <span class="badge badge-secondary">Ctrl+S</span> to save. Click <i class="fa fa-edit subalignicon process-edit-icon" onclick="GW.process.editSwitch()" data-toggle="tooltip" title="Enable Edit"></i> to edit.' +
-      '				<label class="text-primary" style="margin-left:5px;" for="log_switch">Log</label>' +
-      '				<input type="checkbox" style="margin-left:5px;" checked id="log_switch">' +
-      ' 				<button type="button" class="btn btn-secondary btn-sm" id="showCurrent">Latest Code</button>' +
-      '				<button type="button" class="btn btn-secondary btn-sm" id="clearProcessLog">Clear Log</button>' +
-      "			</p>" +
-      "		 </div>" +
-      '	 	 <div class="col-md-6 " style="padding:0;" id="process-btn-group">' +
-      "		</div>" +
-      "   </div>";
-
-    content +=
-      `<div id="editor-history-tab-panel" style="height:100%; width:100%; margin:0; padding: 0; background-color: var(--monaco-background-color);">
-			
-			<div class="subtab tab titleshadow" data-intro="this is a tab inside the process tab panel">
-				<button class="tablinks-process" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')">` +
-      GW.process.util.get_icon_by_process_type(code_type) +
-      ` ` +
-      process_name +
-      `</button>
-				<button class="tablinks-process" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('` +
-      process_id +
-      `', '` +
-      process_name +
-      `')">History</button>
-				<button class="btn pull-right" onclick="GW.editor.switchFullScreen()" >
-					<i class="glyphicon glyphicon-fullscreen"></i>
+      <!-- Tabs and Content Parent Container -->
+      <div id="process-tabs-content-wrapper" style="flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+        <!-- Compact Tabs Navigation with Integrated Toolbar -->
+        <div id="process-tabs-container" style="background-color: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 20px; flex-shrink: 0; height: 38px; display: flex; align-items: center; justify-content: space-between;">
+          <!-- Left: Tabs -->
+          <ul class="nav nav-tabs process-tabs" role="tablist" style="margin: 0; border-bottom: none; background-color: transparent; height: 100%; flex: 1;">
+            <li class="nav-item" role="presentation" style="height: 100%;">
+              <button class="nav-link active" id="main-process-info-code-tab" onclick="GW.process.openCity(event, 'main-process-info-code')" 
+                      style="border: none; border-bottom: 3px solid #f5576c; color: #f5576c; font-weight: 500; padding: 6px 14px; margin-right: 4px; transition: all 0.3s ease; font-size: 12px; height: 100%; display: flex; align-items: center;">
+                ${GW.process.util.get_icon_by_process_type(code_type)} ${process_name || 'Process'} - Code & Log
+              </button>
+            </li>
+            <li class="nav-item" role="presentation" style="height: 100%;">
+              <button class="nav-link" id="main-process-info-history-tab" onclick="GW.process.openCity(event, 'main-process-info-history'); GW.process.history('${process_id}', '${process_name}')" 
+                      style="border: none; color: #6c757d; font-weight: 500; padding: 6px 14px; margin-right: 4px; transition: all 0.3s ease; font-size: 12px; height: 100%; display: flex; align-items: center;">
+                <i class="fas fa-history"></i> History
+              </button>
+            </li>
+          </ul>
+          
+          <!-- Right: Integrated Toolbar -->
+          <div class="d-flex align-items-center" style="gap: 6px; flex-shrink: 0; flex-wrap: nowrap; margin-left: 15px;">
+            <!-- Primary Actions -->
+            <button class="btn btn-sm" onclick="GW.process.runProcess('${process_id}', '${process_name}', '${code_type}');" title="Run Process" style="padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 3px; background-color: #f5576c; border: none; color: #fff; display: inline-flex; align-items: center;">
+              <i class="fas fa-play"></i> <span style="margin-left: 4px;">Run</span>
 				</button>
-				<button class="btn pull-right" onclick="GW.process.runProcess('` +
-      process_id +
-      `', '` +
-      process_name +
-      `', '` +
-      code_type +
-      `');" >
-					<i class="glyphicon glyphicon-play"></i>
+            <button class="btn btn-sm process-edit-right-icon" onclick="GW.process.editSwitch()" title="Edit Process" style="padding: 4px 10px; font-size: 11px; font-weight: 500; border-radius: 3px; background-color: #6c757d; border: none; color: #fff; display: inline-flex; align-items: center;">
+              <i class="fas fa-edit"></i> <span style="margin-left: 4px;">Edit</span>
 				</button>
-				<button class="btn pull-right process-edit-right-icon" onclick="GW.process.editSwitch()" >
-					<i class="glyphicon glyphicon-floppy-saved"></i>
+            
+            <!-- Layout Controls -->
+            <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
+            <button class="btn btn-sm" id="bottom-dock-btn" onclick="GW.process.bottomDock()" title="Dock Log to Bottom" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+              <i class="fas fa-grip-lines"></i>
+            <button class="btn btn-sm" id="left-dock-btn" onclick="GW.process.leftDock()" title="Dock Log to Right" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+            <i class="fas fa-grip-lines-vertical"></i>
 				</button>
-				<button class="btn pull-right" onclick="GW.process.bottomDock()" >
-					<i class="fas fa-window-maximize"></i>
+              
 				</button>
-				<button class="btn pull-right" onclick="GW.process.leftDock()" >
-					<i class="fas fa-window-maximize fa-rotate-270"></i>
+            <button class="btn btn-sm" id="no-dock-btn" onclick="GW.process.noDock()" title="Restore Normal Layout" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+              <i class="fas fa-th"></i>
 				</button> 
+            
+            <!-- Fullscreen Control -->
+            <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
+            <button class="btn btn-sm" id="maximize-btn" onclick="GW.process.maximize()" title="Fullscreen" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+              <i class="fas fa-expand"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" id="exit-maximize-btn" onclick="GW.process.exitMaximize()" title="Exit Fullscreen" style="display: none; padding: 4px 10px; font-size: 11px; border-radius: 3px; display: inline-flex; align-items: center;">
+              <i class="fas fa-times"></i> <span style="margin-left: 4px;">Exit</span>
+            </button>
+            
+            <!-- Log Actions -->
+            <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
+            <div class="form-check form-check-inline" style="margin: 0; display: inline-flex; align-items: center; flex-shrink: 0;">
+              <input class="form-check-input" type="checkbox" checked id="log_switch" style="margin: 0;">
+              <label class="form-check-label" for="log_switch" style="margin: 0 0 0 4px; font-size: 11px; color: #495057; font-weight: 500;">Log</label>
 			</div>
-			<div id="main-process-info-code" class="tabcontent-process generalshadow" style="height:calc(100% - 150px);left:0; margin:0; padding: 0; ">
-						<div class="code__container" style="font-size: 12px; margin:0; height:100%;" id="process-code-history-section">
-							<div id="process_code_window" class="container__left" style="height:100%; padding:0; scrollbar-color: var(--monaco-scrollbar-color);" >
-								<div class="col col-md-6" id="code-embed" style="width:100%; margin-top:5px; padding: 0px; margin: 0px; height: calc(100%-50px);" ></div>
+            <button type="button" class="btn btn-sm" id="clearProcessLog" title="Clear Log" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center;">
+              <i class="fas fa-eraser"></i> <span style="margin-left: 4px;">Clear</span>
+            </button>
+            <button type="button" class="btn btn-sm" id="showCurrent" title="Show Latest Log" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center;">
+              <i class="fas fa-arrow-down"></i> <span style="margin-left: 4px;">Latest</span>
+            </button>
+            
+            <!-- Utility Actions -->
+            <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
+            <button class="btn btn-sm" id="toggle-details-btn" onclick="GW.process.toggleDetails()" title="Show/Hide Details" style="padding: 4px 10px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center;">
+              <i class="fas fa-chevron-down"></i> <span style="margin-left: 4px;">Details</span>
+            </button>
+            <button class="btn btn-sm" onclick="GW.menu.del('${process_id}', 'process')" title="Delete Process" style="padding: 4px 8px; font-size: 11px; background-color: #dc3545; border: none; color: #fff; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn btn-sm" onclick="GW.process.downloadProcess('${process_id}')" title="Download Process" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabs Content Container - Maximized -->
+        <div id="editor-history-tab-panel" style="flex: 1; width: 100%; margin: 0; padding: 0; background-color: var(--monaco-background-color); overflow: hidden; min-height: 0; position: relative; flex-shrink: 0;">
+        <div id="main-process-info-code" class="tabcontent-process" style="height: 100%; left: 0; margin: 0; padding: 0; display: block; overflow: hidden;">
+          <div class="code__container" style="font-size: 12px; margin: 0; height: 100%; display: flex;" id="process-code-history-section">
+            <div id="process_code_window" class="container__left" style="height: 100%; padding: 0; scrollbar-color: var(--monaco-scrollbar-color); flex: 1; min-width: 0;">
+              <div class="col col-md-6" id="code-embed" style="width: 100%; height: 100%; padding: 0px; margin: 0px;"></div>
 							</div> 
 							<div class="resizer" id="dragMe"></div>
-							<div id="single-console-content" class="container__right" style="height:100%; overflow-y: scroll; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);">
-								<h4>Logging</h4>
-								<div id="process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: unset; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);"> </div>
-								<div class="row" style="padding:0px; margin:0px;" >
-									<div class="col col-md-12" id="console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+            <div id="single-console-content" class="container__right" style="height: 100%; overflow-y: auto; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color); flex: 1; min-width: 0; display: flex; flex-direction: column;">
+              <div style="padding: 8px 12px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa; flex-shrink: 0;">
+                <h5 style="margin: 0; font-size: 13px; font-weight: 600; color: #333;">
+                  <i class="fas fa-terminal"></i> Logging
+                </h5>
+              </div>
+              <div id="process-log-window" style="flex: 1; overflow-wrap: break-word; overflow-y: auto; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; min-height: 0;"></div>
+              <div class="row" style="padding: 0px; margin: 0px; flex-shrink: 0;">
+                <div class="col col-md-12" id="console-output" style="width: 100%; padding: 0px; margin: 0px;">
 										<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 									</div>
 								</div>
 							</div>
 					</div>
-			</div>`;
+        </div>
 
-    content += `<div id="main-process-info-history" class="tabcontent-process generalshadow" style="height:calc(100% - 150px); overflow-y: scroll; left:0; margin:0; padding: 0; display:none; background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);">
-				<div class="row" id="process-history-container" style="padding:0; margin:0; background-color:var(--monaco-editor-background-color); color:var(--monaco-editor-foreground-color);" ></div>
-				<div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: -100px; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
+        <div id="main-process-info-history" class="tabcontent-process" style="height: 100%; overflow-y: auto; left: 0; margin: 0; padding: 15px; display: none; background-color: #f8f9fa;">
+          <div class="row" id="process-history-container" style="padding: 0; margin: 0; background-color: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></div>
+          <div id="history-tab-loader-main-detail" style="display: flex; flex: 1; height: 100px; width: 100px; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto; flex-direction: column;">
                 	<img src="../gif/loading-spinner-black.gif" style="height: 6rem;" alt="loading..." />
 					<h5 style="width: 100vw; margin-left: -75px; margin-top: 0">Please wait while we fetch the history</h5>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+      <!-- Floating Exit Button for Maximized View -->
+      <div id="maximize-exit-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; pointer-events: none;">
+        <div style="position: absolute; top: 15px; right: 15px; pointer-events: auto;">
+          <button class="btn btn-danger btn-lg" id="maximize-exit-btn" onclick="GW.process.exitMaximize()" title="Exit Maximize View" style="box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 50%; width: 50px; height: 50px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-times" style="font-size: 20px;"></i>
+          </button>
 				</div>
 			</div>
 		</div>`;
@@ -1361,28 +1436,189 @@ GW.process = {
     });
 
     $("#log_switch").change(function () {
+      var codeElement = document.getElementById("process_code_window");
+      var consoleElement = document.getElementById("single-console-content");
+      
       if (GW.process.dockmode == "left") {
         if (!this.checked) {
-          $(".container__right").hide();
-          $(".container__left").css("width", "100%");
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "none", "important");
+            consoleElement.style.setProperty("visibility", "hidden", "important");
+          }
+          if (codeElement) {
+            codeElement.style.setProperty("width", "100%", "important");
+            codeElement.style.setProperty("flex", "1 1 100%", "important");
+            codeElement.style.setProperty("flex-basis", "100%", "important");
+          }
         } else {
-          $(".container__right").show();
-          $(".container__left").css("width", "60%");
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "flex", "important");
+            consoleElement.style.setProperty("visibility", "visible", "important");
+          }
+          // Restore saved width ratio or use default
+          var leftWidth = GW.process.savedLeftWidthRatio !== null ? GW.process.savedLeftWidthRatio : 60;
+          var rightWidth = 100 - leftWidth;
+          if (codeElement) {
+            codeElement.style.setProperty("width", `${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex", `0 0 ${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex-basis", `${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex-grow", "0", "important");
+          }
+          if (consoleElement) {
+            consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex-grow", "0", "important");
+          }
         }
       } else if (GW.process.dockmode == "bottom") {
         if (!this.checked) {
-          $(".container__right").hide();
-          $(".container__left").css("height", "100%");
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "none", "important");
+            consoleElement.style.setProperty("visibility", "hidden", "important");
+          }
+          if (codeElement) {
+            codeElement.style.setProperty("height", "100%", "important");
+            codeElement.style.setProperty("flex", "1 1 100%", "important");
+            codeElement.style.setProperty("flex-basis", "100%", "important");
+          }
         } else {
-          $(".container__right").show();
-          $(".container__left").css("height", "60%");
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "flex", "important");
+            consoleElement.style.setProperty("visibility", "visible", "important");
+          }
+          // Restore saved height ratio or use default
+          var topHeight = GW.process.savedTopHeightRatio !== null ? GW.process.savedTopHeightRatio : 60;
+          var bottomHeight = 100 - topHeight;
+          if (codeElement) {
+            codeElement.style.setProperty("height", `${topHeight}%`, "important");
+            codeElement.style.setProperty("flex", `0 0 ${topHeight}%`, "important");
+            codeElement.style.setProperty("flex-basis", `${topHeight}%`, "important");
+            codeElement.style.setProperty("flex-grow", "0", "important");
+          }
+          if (consoleElement) {
+            consoleElement.style.setProperty("height", `${bottomHeight}%`, "important");
+            consoleElement.style.setProperty("flex", `0 0 ${bottomHeight}%`, "important");
+            consoleElement.style.setProperty("flex-basis", `${bottomHeight}%`, "important");
+            consoleElement.style.setProperty("flex-grow", "0", "important");
+          }
         }
+      } else {
+        // Default side-by-side layout
+        if (!this.checked) {
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "none", "important");
+            consoleElement.style.setProperty("visibility", "hidden", "important");
+          }
+          if (codeElement) {
+            codeElement.style.setProperty("width", "100%", "important");
+            codeElement.style.setProperty("flex", "1 1 100%", "important");
+            codeElement.style.setProperty("flex-basis", "100%", "important");
+          }
+        } else {
+          if (consoleElement) {
+            consoleElement.style.setProperty("display", "flex", "important");
+            consoleElement.style.setProperty("visibility", "visible", "important");
+          }
+          // Restore saved width ratio or use default
+          var leftWidth = GW.process.savedLeftWidthRatio !== null ? GW.process.savedLeftWidthRatio : 60;
+          var rightWidth = 100 - leftWidth;
+          if (codeElement) {
+            codeElement.style.setProperty("width", `${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex", `0 0 ${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex-basis", `${leftWidth}%`, "important");
+            codeElement.style.setProperty("flex-grow", "0", "important");
+          }
+          if (consoleElement) {
+            consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
+            consoleElement.style.setProperty("flex-grow", "0", "important");
+          }
+        }
+      }
+      
+      // Refresh Monaco editor layout if it exists
+      if (GW.process.editor) {
+        setTimeout(function() {
+          GW.process.editor.layout();
+        }, 50);
       }
     });
 
     $("#clearProcessLog").click(GW.ssh.clearProcessLog);
 
+    // Set default resizer style to match left mode style
+    setTimeout(function() {
+      var dragMe = document.getElementById("dragMe");
+      if (dragMe) {
+        // Apply consistent resizer style (same as left mode)
+        dragMe.style.setProperty("height", "100%", "important");
+        dragMe.style.setProperty("width", "4px", "important");
+        dragMe.style.setProperty("display", "block", "important");
+        dragMe.style.setProperty("visibility", "visible", "important");
+        dragMe.style.setProperty("cursor", "ew-resize", "important");
+        dragMe.style.setProperty("background-color", "#cbd5e0", "important");
+        dragMe.style.setProperty("flex-shrink", "0", "important");
+        dragMe.style.setProperty("z-index", "100", "important");
+        dragMe.style.setProperty("user-select", "none", "important");
+        dragMe.style.setProperty("position", "relative", "important");
+        dragMe.style.setProperty("pointer-events", "auto", "important");
+        dragMe.style.setProperty("touch-action", "none", "important");
+        dragMe.style.setProperty("transition", "background-color 0.2s", "important");
+        dragMe.style.setProperty("opacity", "1", "important");
+        
+        // Add hover effect
+        dragMe.onmouseenter = function() {
+          this.style.setProperty("background-color", "#a0aec0", "important");
+        };
+        dragMe.onmouseleave = function() {
+          this.style.setProperty("background-color", "#cbd5e0", "important");
+        };
+        
+        // Check current dock mode and activate appropriate resizer
+        if (GW.process.dockmode === "bottom") {
+          GW.process.util.activateVerticalResizer("dragMe");
+        } else if (GW.process.dockmode === "left") {
     GW.process.util.activateResizer("dragMe");
+        } else {
+          // Default: activate horizontal resizer for side-by-side layout
+          GW.process.util.activateResizer("dragMe");
+        }
+      } else {
+        console.warn("dragMe element not found, retrying...");
+        setTimeout(function() {
+          var dragMe = document.getElementById("dragMe");
+          if (dragMe) {
+            // Apply consistent resizer style
+            dragMe.style.setProperty("height", "100%", "important");
+            dragMe.style.setProperty("width", "4px", "important");
+            dragMe.style.setProperty("display", "block", "important");
+            dragMe.style.setProperty("visibility", "visible", "important");
+            dragMe.style.setProperty("cursor", "ew-resize", "important");
+            dragMe.style.setProperty("background-color", "#cbd5e0", "important");
+            dragMe.style.setProperty("flex-shrink", "0", "important");
+            dragMe.style.setProperty("z-index", "100", "important");
+            dragMe.style.setProperty("user-select", "none", "important");
+            dragMe.style.setProperty("position", "relative", "important");
+            dragMe.style.setProperty("pointer-events", "auto", "important");
+            dragMe.style.setProperty("touch-action", "none", "important");
+            dragMe.style.setProperty("transition", "background-color 0.2s", "important");
+            dragMe.style.setProperty("opacity", "1", "important");
+            
+            // Add hover effect
+            dragMe.onmouseenter = function() {
+              this.style.setProperty("background-color", "#a0aec0", "important");
+            };
+            dragMe.onmouseleave = function() {
+              this.style.setProperty("background-color", "#cbd5e0", "important");
+            };
+            
+            GW.process.util.activateResizer("dragMe");
+          }
+        }, 200);
+      }
+    }, 100);
   },
 
   openCity: function (evt, name) {
@@ -1393,18 +1629,35 @@ GW.process = {
 
   switchTab: function (ele, name) {
     console.log("Turn on the tab " + name);
+    
+    // Restore layout ratios when switching tabs to maintain consistency
+    setTimeout(function() {
+      GW.process.restoreLayoutRatios();
+    }, 100);
 
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent-process");
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
-    tablinks = document.getElementsByClassName("tablinks-process");
+    
+    // Update tab buttons styling
+    tablinks = document.querySelectorAll(".process-tabs .nav-link");
     for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
+      tablinks[i].classList.remove("active");
+      tablinks[i].style.borderBottom = "none";
+      tablinks[i].style.color = "#6c757d";
     }
+    
+    // Show selected tab content
     document.getElementById(name).style.display = "block";
-    ele.className += " active";
+    
+    // Update selected tab button
+    if (ele) {
+      ele.classList.add("active");
+      ele.style.borderBottom = "3px solid #f5576c";
+      ele.style.color = "#f5576c";
+    }
 
     // GW.process.util.refreshCodeEditor();
   },
@@ -1473,14 +1726,30 @@ GW.process = {
     this.isSaved = false;
     console.log("change event called");
     $("#main-process-tab").html("Process*");
-    $("#main-process-info-code-tab").html("Code*");
+    
+    // Update code tab with icon, name, and asterisk, preserving original format
+    var codeTab = $("#main-process-info-code-tab");
+    if (codeTab.length && GW.process.current_process_name && GW.process.current_code_type) {
+      var icon = GW.process.util.get_icon_by_process_type(GW.process.current_code_type);
+      codeTab.html(icon + " " + GW.process.current_process_name + " - Code & Log*");
+    } else {
+      codeTab.html("Code*");
+    }
   },
 
   showSaved: function () {
     this.isSaved = true;
     console.log("save event called");
     $("#main-process-tab").html("Process");
-    $("#main-process-info-code-tab").html("Code");
+    
+    // Update code tab with icon and name, preserving original format
+    var codeTab = $("#main-process-info-code-tab");
+    if (codeTab.length && GW.process.current_process_name && GW.process.current_code_type) {
+      var icon = GW.process.util.get_icon_by_process_type(GW.process.current_code_type);
+      codeTab.html(icon + " " + GW.process.current_process_name + " - Code & Log");
+    } else {
+      codeTab.html("Code");
+    }
   },
 
   //edit switch should always be on
@@ -1525,8 +1794,56 @@ GW.process = {
     GW.process.dockmode = "bottom";
   },
 
+  downloadProcess: function(process_id) {
+    // Get process code and download it as a file
+    $.ajax({
+      url: "detail",
+      method: "POST",
+      data: "type=process&id=" + process_id
+    })
+    .done(function(msg) {
+      try {
+        var processData = JSON.parse(msg);
+        var code = processData.code || "";
+        var name = processData.name || "process";
+        var lang = processData.lang || "shell";
+        
+        // Determine file extension based on language
+        var ext = "sh";
+        if (lang === "python" || lang === "Python") {
+          ext = "py";
+        } else if (lang === "builtin") {
+          ext = "txt";
+        }
+        
+        // Create a blob with the code
+        var blob = new Blob([code], { type: "text/plain" });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = name + "." + ext;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        GW.general.showToasts("Process code downloaded successfully");
+      } catch (e) {
+        console.error("Failed to download process:", e);
+        console.error("Response received:", msg);
+        alert("Failed to download process: " + e.message);
+      }
+    })
+    .fail(function(xhr, status, error) {
+      console.error("Failed to download process:", error);
+      console.error("Status:", status);
+      console.error("Response:", xhr.responseText);
+      alert("Failed to download process: " + error);
+    });
+  },
+
   bottomDock: function () {
-    if (GW.process.dockmode != "bottom") {
+    // Just change layout to dock log to bottom, no fullscreen
       GW.process.util.bottomDock(
         "process-code-history-section",
         "process_code_window",
@@ -1534,19 +1851,10 @@ GW.process = {
         "dragMe"
       );
       GW.process.dockmode = "bottom";
-    } else {
-      GW.process.util.noDock(
-        "process-code-history-section",
-        "process_code_window",
-        "single-console-content",
-        "dragMe"
-      );
-      GW.process.dockmode = "no";
-    }
   },
 
   leftDock: function () {
-    if (GW.process.dockmode != "left") {
+    // Just change layout, don't maximize
       GW.process.util.leftDock(
         "process-code-history-section",
         "process_code_window",
@@ -1554,14 +1862,534 @@ GW.process = {
         "dragMe"
       );
       GW.process.dockmode = "left";
+  },
+
+  noDock: function () {
+    // Restore normal layout - hide console, show code editor full height
+    GW.process.util.noDock(
+        "process-code-history-section",
+        "process_code_window",
+        "single-console-content",
+        "dragMe"
+      );
+    GW.process.dockmode = "no";
+    
+    // Ensure process-info-bar is visible if it was expanded before
+    var infoBar = document.getElementById("process-info-bar");
+    var toggleBtn = document.getElementById("toggle-details-btn");
+    if (infoBar && toggleBtn) {
+      var icon = toggleBtn.querySelector('i');
+      // Only show if it was expanded (chevron-up icon)
+      if (icon && icon.className.includes("chevron-up")) {
+        infoBar.style.setProperty("display", "block", "important");
+        infoBar.style.setProperty("visibility", "visible", "important");
+        infoBar.style.setProperty("height", "auto", "important");
+        infoBar.style.setProperty("max-height", "200px", "important");
+        infoBar.style.setProperty("overflow", "visible", "important");
+        infoBar.style.setProperty("padding", "12px 20px", "important");
+        infoBar.style.setProperty("margin", "", "important");
+        infoBar.style.setProperty("position", "relative", "important");
+        infoBar.style.setProperty("top", "auto", "important");
+        infoBar.style.setProperty("left", "auto", "important");
+        infoBar.style.setProperty("z-index", "auto", "important");
+        infoBar.style.setProperty("opacity", "1", "important");
+        infoBar.style.setProperty("pointer-events", "auto", "important");
+      }
+    }
+    
+    // Refresh Monaco editor layout if it exists
+    if (GW.process.editor) {
+      setTimeout(function() {
+        GW.process.editor.layout();
+      }, 100);
+    }
+  },
+
+  maximize: function () {
+    // True fullscreen maximize function
+    var tabsContentWrapper = document.getElementById("process-tabs-content-wrapper");
+    var processContainer = document.getElementById("process-main-container");
+    var mainContent = document.getElementById("main-process-content");
+    var mainProcessInfo = document.getElementById("main-process-info");
+    var tabsContainer = document.getElementById("process-tabs-container");
+    
+    if (tabsContentWrapper) {
+      // Store original styles
+      if (!GW.process.originalStyles) {
+        GW.process.originalStyles = {
+          tabsContentWrapper: {
+            position: tabsContentWrapper.style.position || "",
+            top: tabsContentWrapper.style.top || "",
+            left: tabsContentWrapper.style.left || "",
+            width: tabsContentWrapper.style.width || "",
+            height: tabsContentWrapper.style.height || "",
+            zIndex: tabsContentWrapper.style.zIndex || "",
+            overflow: tabsContentWrapper.style.overflow || "",
+            backgroundColor: tabsContentWrapper.style.backgroundColor || ""
+          }
+        };
+        if (processContainer) {
+          GW.process.originalStyles.processContainer = {
+            position: processContainer.style.position || "",
+            top: processContainer.style.top || "",
+            left: processContainer.style.left || "",
+            width: processContainer.style.width || "",
+            height: processContainer.style.height || "",
+            zIndex: processContainer.style.zIndex || "",
+            overflow: processContainer.style.overflow || "",
+            backgroundColor: processContainer.style.backgroundColor || ""
+          };
+        }
+        if (mainContent) {
+          GW.process.originalStyles.mainContent = {
+            position: mainContent.style.position || "",
+            top: mainContent.style.top || "",
+            left: mainContent.style.left || "",
+            width: mainContent.style.width || "",
+            height: mainContent.style.height || "",
+            zIndex: mainContent.style.zIndex || "",
+            overflow: mainContent.style.overflow || ""
+          };
+        }
+        if (mainProcessInfo) {
+          GW.process.originalStyles.mainProcessInfo = {
+            position: mainProcessInfo.style.position || "",
+            top: mainProcessInfo.style.top || "",
+            left: mainProcessInfo.style.left || "",
+            width: mainProcessInfo.style.width || "",
+            height: mainProcessInfo.style.height || "",
+            zIndex: mainProcessInfo.style.zIndex || "",
+            overflow: mainProcessInfo.style.overflow || ""
+          };
+        }
+        if (tabsContainer) {
+          GW.process.originalStyles.tabsContainer = {
+            position: tabsContainer.style.position || "",
+            top: tabsContainer.style.top || "",
+            left: tabsContainer.style.left || "",
+            width: tabsContainer.style.width || "",
+            zIndex: tabsContainer.style.zIndex || ""
+          };
+        }
+      }
+      
+      // Make the tabs-content-wrapper fullscreen - cover entire browser window
+      // But keep tabs container visible at the top
+      var tabsHeight = tabsContainer ? tabsContainer.offsetHeight : 38;
+      tabsContentWrapper.style.position = "fixed";
+      tabsContentWrapper.style.top = tabsHeight + "px";
+      tabsContentWrapper.style.left = "0";
+      tabsContentWrapper.style.width = "100vw";
+      tabsContentWrapper.style.height = "calc(100vh - " + tabsHeight + "px)";
+      tabsContentWrapper.style.zIndex = "9999";
+      tabsContentWrapper.style.overflow = "hidden";
+      tabsContentWrapper.style.backgroundColor = "#fff";
+      
+      // Ensure tabs container is also fixed and visible
+      if (tabsContainer) {
+        tabsContainer.style.position = "fixed";
+        tabsContainer.style.top = "0";
+        tabsContainer.style.left = "0";
+        tabsContainer.style.width = "100vw";
+        tabsContainer.style.zIndex = "10000";
+      }
+      
+      // Also make parent containers fullscreen to ensure proper layering
+      if (processContainer) {
+        processContainer.style.position = "fixed";
+        processContainer.style.top = "0";
+        processContainer.style.left = "0";
+        processContainer.style.width = "100vw";
+        processContainer.style.height = "100vh";
+        processContainer.style.zIndex = "9999";
+        processContainer.style.overflow = "hidden";
+        processContainer.style.backgroundColor = "#fff";
+      }
+      
+      if (mainContent) {
+        mainContent.style.position = "fixed";
+        mainContent.style.top = "0";
+        mainContent.style.left = "0";
+        mainContent.style.width = "100vw";
+        mainContent.style.height = "100vh";
+        mainContent.style.zIndex = "9999";
+        mainContent.style.overflow = "hidden";
+        mainContent.style.backgroundColor = "#fff";
+      }
+      
+      if (mainProcessInfo) {
+        mainProcessInfo.style.position = "fixed";
+        mainProcessInfo.style.top = "0";
+        mainProcessInfo.style.left = "0";
+        mainProcessInfo.style.width = "100vw";
+        mainProcessInfo.style.height = "100vh";
+        mainProcessInfo.style.zIndex = "9999";
+        mainProcessInfo.style.overflow = "hidden";
+      }
+      
+      // Force refresh of content panel to adapt to new size
+      var tabPanel = document.getElementById("editor-history-tab-panel");
+      if (tabPanel) {
+        tabPanel.style.width = "100%";
+        tabPanel.style.height = "calc(100vh - " + tabsHeight + "px)";
+      }
+      
+      // Show exit button and hide maximize button
+      var exitBtn = document.getElementById("exit-maximize-btn");
+      var maximizeBtn = document.getElementById("maximize-btn");
+      if (exitBtn) exitBtn.style.display = "inline-flex";
+      if (maximizeBtn) maximizeBtn.style.display = "none";
+    }
+  },
+
+  exitMaximize: function () {
+    // Restore original styles
+    var tabsContentWrapper = document.getElementById("process-tabs-content-wrapper");
+    var processContainer = document.getElementById("process-main-container");
+    var mainContent = document.getElementById("main-process-content");
+    var mainProcessInfo = document.getElementById("main-process-info");
+    var tabsContainer = document.getElementById("process-tabs-container");
+    var infoBar = document.getElementById("process-info-bar");
+    
+    if (tabsContentWrapper && GW.process.originalStyles) {
+      // Restore tabs container
+      if (tabsContainer && GW.process.originalStyles.tabsContainer) {
+        var styles = GW.process.originalStyles.tabsContainer;
+        tabsContainer.style.position = styles.position || "";
+        tabsContainer.style.top = styles.top || "";
+        tabsContainer.style.left = styles.left || "";
+        tabsContainer.style.width = styles.width || "";
+        tabsContainer.style.zIndex = styles.zIndex || "";
+      } else if (tabsContainer) {
+        // Reset to default if no saved styles
+        tabsContainer.style.position = "";
+        tabsContainer.style.top = "";
+        tabsContainer.style.left = "";
+        tabsContainer.style.width = "";
+        tabsContainer.style.zIndex = "";
+      }
+      
+      // Restore tabs-content-wrapper styles
+      if (GW.process.originalStyles.tabsContentWrapper) {
+        var styles = GW.process.originalStyles.tabsContentWrapper;
+        tabsContentWrapper.style.position = styles.position || "";
+        tabsContentWrapper.style.top = styles.top || "";
+        tabsContentWrapper.style.left = styles.left || "";
+        tabsContentWrapper.style.width = styles.width || "";
+        tabsContentWrapper.style.height = styles.height || "";
+        tabsContentWrapper.style.zIndex = styles.zIndex || "";
+        tabsContentWrapper.style.overflow = styles.overflow || "";
+        tabsContentWrapper.style.backgroundColor = styles.backgroundColor || "";
     } else {
+        // Reset to default if no saved styles
+        tabsContentWrapper.style.position = "";
+        tabsContentWrapper.style.top = "";
+        tabsContentWrapper.style.left = "";
+        tabsContentWrapper.style.width = "";
+        tabsContentWrapper.style.height = "";
+        tabsContentWrapper.style.zIndex = "";
+        tabsContentWrapper.style.overflow = "";
+        tabsContentWrapper.style.backgroundColor = "";
+      }
+      
+      // Restore process container styles
+      if (processContainer && GW.process.originalStyles.processContainer) {
+        var styles = GW.process.originalStyles.processContainer;
+        processContainer.style.position = styles.position || "";
+        processContainer.style.top = styles.top || "";
+        processContainer.style.left = styles.left || "";
+        processContainer.style.width = styles.width || "";
+        processContainer.style.height = styles.height || "";
+        processContainer.style.zIndex = styles.zIndex || "";
+        processContainer.style.overflow = styles.overflow || "";
+        processContainer.style.backgroundColor = styles.backgroundColor || "";
+      } else if (processContainer) {
+        // Reset to default if no saved styles
+        processContainer.style.position = "";
+        processContainer.style.top = "";
+        processContainer.style.left = "";
+        processContainer.style.width = "";
+        processContainer.style.height = "";
+        processContainer.style.zIndex = "";
+        processContainer.style.overflow = "";
+        processContainer.style.backgroundColor = "";
+      }
+      
+      // Restore main content styles
+      if (mainContent && GW.process.originalStyles.mainContent) {
+        var styles = GW.process.originalStyles.mainContent;
+        mainContent.style.position = styles.position || "";
+        mainContent.style.top = styles.top || "";
+        mainContent.style.left = styles.left || "";
+        mainContent.style.width = styles.width || "";
+        mainContent.style.height = styles.height || "";
+        mainContent.style.zIndex = styles.zIndex || "";
+        mainContent.style.overflow = styles.overflow || "";
+        mainContent.style.backgroundColor = "";
+      } else if (mainContent) {
+        // Reset to default if no saved styles
+        mainContent.style.position = "";
+        mainContent.style.top = "";
+        mainContent.style.left = "";
+        mainContent.style.width = "";
+        mainContent.style.height = "";
+        mainContent.style.zIndex = "";
+        mainContent.style.overflow = "";
+        mainContent.style.backgroundColor = "";
+      }
+      
+      // Restore main process info styles
+      if (mainProcessInfo && GW.process.originalStyles.mainProcessInfo) {
+        var styles = GW.process.originalStyles.mainProcessInfo;
+        mainProcessInfo.style.position = styles.position || "";
+        mainProcessInfo.style.top = styles.top || "";
+        mainProcessInfo.style.left = styles.left || "";
+        mainProcessInfo.style.width = styles.width || "";
+        mainProcessInfo.style.height = styles.height || "";
+        mainProcessInfo.style.zIndex = styles.zIndex || "";
+        mainProcessInfo.style.overflow = styles.overflow || "";
+      } else if (mainProcessInfo) {
+        // Reset to default if no saved styles
+        mainProcessInfo.style.position = "";
+        mainProcessInfo.style.top = "";
+        mainProcessInfo.style.left = "";
+        mainProcessInfo.style.width = "";
+        mainProcessInfo.style.height = "";
+        mainProcessInfo.style.zIndex = "";
+        mainProcessInfo.style.overflow = "";
+      }
+      
+      // Reset content panel to original size
+      var tabPanel = document.getElementById("editor-history-tab-panel");
+      if (tabPanel) {
+        tabPanel.style.width = "";
+        tabPanel.style.height = "";
+      }
+      
+      // Force hide metadata panel if it should be collapsed
+      // Check if it was originally collapsed by checking the toggle button icon
+      if (infoBar) {
+        var toggleBtn = document.getElementById("toggle-details-btn");
+        var icon = toggleBtn ? toggleBtn.querySelector('i') : null;
+        
+        // Check if metadata panel should be collapsed based on icon state
+        var shouldBeCollapsed = true;
+        if (icon) {
+          // If icon is chevron-down, it should be collapsed
+          shouldBeCollapsed = icon.className.includes("chevron-down");
+        }
+        
+        // Also check current state
+        var isCurrentlyCollapsed = infoBar.style.maxHeight === "0px" || 
+                                    infoBar.style.display === "none" ||
+                                    infoBar.style.visibility === "hidden" ||
+                                    infoBar.offsetHeight === 0;
+        
+        // If it should be collapsed or is currently collapsed, force hide it
+        if (shouldBeCollapsed || isCurrentlyCollapsed) {
+          // Completely hide metadata panel - use !important to override any conflicting styles
+          infoBar.style.setProperty("max-height", "0px", "important");
+          infoBar.style.setProperty("display", "none", "important");
+          infoBar.style.setProperty("visibility", "hidden", "important");
+          infoBar.style.setProperty("overflow", "hidden", "important");
+          infoBar.style.setProperty("padding", "0", "important");
+          infoBar.style.setProperty("margin", "0", "important");
+          infoBar.style.setProperty("height", "0", "important");
+          infoBar.style.setProperty("min-height", "0", "important");
+          infoBar.style.setProperty("flex-basis", "0", "important");
+          infoBar.style.setProperty("flex-shrink", "0", "important");
+          infoBar.style.setProperty("flex-grow", "0", "important");
+          infoBar.style.setProperty("position", "absolute", "important");
+          infoBar.style.setProperty("top", "-9999px", "important");
+          infoBar.style.setProperty("left", "-9999px", "important");
+          infoBar.style.setProperty("z-index", "-1", "important");
+          infoBar.style.setProperty("opacity", "0", "important");
+          infoBar.style.setProperty("pointer-events", "none", "important");
+          if (icon) {
+            icon.className = "fas fa-chevron-down";
+          }
+        } else {
+          // If expanded, ensure it doesn't block tabs container
+          infoBar.style.setProperty("position", "", "important");
+          infoBar.style.setProperty("top", "", "important");
+          infoBar.style.setProperty("left", "", "important");
+          infoBar.style.setProperty("z-index", "", "important");
+          infoBar.style.setProperty("pointer-events", "auto", "important");
+        }
+      }
+      
+      // Force layout recalculation to remove any gaps
+      if (processContainer) {
+        processContainer.style.setProperty("margin", "0", "important");
+        processContainer.style.setProperty("padding", "0", "important");
+      }
+      
+      // Ensure tabs container is at the top with no gap
+      if (tabsContainer) {
+        tabsContainer.style.setProperty("margin", "0", "important");
+        tabsContainer.style.setProperty("margin-top", "0", "important");
+        tabsContainer.style.setProperty("padding-top", "0", "important");
+        tabsContainer.style.setProperty("position", "", "important");
+        tabsContainer.style.setProperty("top", "", "important");
+      }
+      
+      // Force a reflow to ensure styles are applied
+      if (infoBar) {
+        infoBar.offsetHeight; // Trigger reflow
+      }
+      if (tabsContainer) {
+        tabsContainer.offsetHeight; // Trigger reflow
+      }
+      
+      // Show maximize button and hide exit button
+      var exitBtn = document.getElementById("exit-maximize-btn");
+      var maximizeBtn = document.getElementById("maximize-btn");
+      if (exitBtn) exitBtn.style.display = "none";
+      if (maximizeBtn) maximizeBtn.style.display = "inline-flex";
+      
+      GW.process.originalStyles = null;
+    }
+    
       GW.process.util.noDock(
         "process-code-history-section",
         "process_code_window",
         "single-console-content",
         "dragMe"
       );
-      GW.process.dockmode = "no";
+    GW.process.dockmode = "none";
+    
+    // Hide floating exit button
+    var exitOverlay = document.getElementById("maximize-exit-overlay");
+    if (exitOverlay) exitOverlay.style.display = "none";
+    
+    // Hide exit/restore buttons in header and show maximize buttons
+    var exitBtn = document.getElementById("exit-maximize-btn");
+    var restoreBtn = document.getElementById("restore-view-btn");
+    var bottomBtn = document.getElementById("bottom-dock-btn");
+    var leftBtn = document.getElementById("left-dock-btn");
+    if (exitBtn) exitBtn.style.display = "none";
+    if (restoreBtn) restoreBtn.style.display = "none";
+    if (bottomBtn) bottomBtn.style.display = "inline-block";
+    if (leftBtn) leftBtn.style.display = "inline-block";
+  },
+
+  toggleDetails: function () {
+    var infoBar = document.getElementById("process-info-bar");
+    var toggleBtn = document.getElementById("toggle-details-btn");
+    if (infoBar && toggleBtn) {
+      var icon = toggleBtn.querySelector('i');
+      var isCollapsed = infoBar.style.maxHeight === "0px" || 
+                        infoBar.style.display === "none" ||
+                        infoBar.style.visibility === "hidden" ||
+                        infoBar.offsetHeight === 0;
+      
+      if (isCollapsed) {
+        // Expand - show metadata panel
+        infoBar.style.setProperty("max-height", "200px", "important");
+        infoBar.style.setProperty("display", "block", "important");
+        infoBar.style.setProperty("visibility", "visible", "important");
+        infoBar.style.setProperty("overflow", "visible", "important");
+        infoBar.style.setProperty("height", "auto", "important");
+        infoBar.style.setProperty("min-height", "auto", "important");
+        infoBar.style.setProperty("flex-basis", "auto", "important");
+        infoBar.style.setProperty("position", "relative", "important");
+        infoBar.style.setProperty("top", "auto", "important");
+        infoBar.style.setProperty("left", "auto", "important");
+        infoBar.style.setProperty("z-index", "auto", "important");
+        infoBar.style.setProperty("opacity", "1", "important");
+        infoBar.style.setProperty("pointer-events", "auto", "important");
+        infoBar.style.setProperty("padding", "", "important");
+        infoBar.style.setProperty("margin", "", "important");
+        if (icon) {
+          icon.className = "fas fa-chevron-up";
+        }
+      } else {
+        // Collapse - hide metadata panel completely
+        infoBar.style.setProperty("max-height", "0px", "important");
+        infoBar.style.setProperty("display", "none", "important");
+        infoBar.style.setProperty("visibility", "hidden", "important");
+        infoBar.style.setProperty("overflow", "hidden", "important");
+        infoBar.style.setProperty("height", "0", "important");
+        infoBar.style.setProperty("min-height", "0", "important");
+        infoBar.style.setProperty("flex-basis", "0", "important");
+        infoBar.style.setProperty("flex-shrink", "0", "important");
+        infoBar.style.setProperty("flex-grow", "0", "important");
+        infoBar.style.setProperty("padding", "0", "important");
+        infoBar.style.setProperty("margin", "0", "important");
+        infoBar.style.setProperty("position", "absolute", "important");
+        infoBar.style.setProperty("top", "-9999px", "important");
+        infoBar.style.setProperty("left", "-9999px", "important");
+        infoBar.style.setProperty("z-index", "-1", "important");
+        infoBar.style.setProperty("opacity", "0", "important");
+        infoBar.style.setProperty("pointer-events", "none", "important");
+        if (icon) {
+          icon.className = "fas fa-chevron-down";
+        }
+      }
+      
+      // Restore width/height ratios after toggling details
+      GW.process.restoreLayoutRatios();
+    }
+  },
+  
+  restoreLayoutRatios: function() {
+    // Restore saved width/height ratios to maintain layout consistency
+    var codeElement = document.getElementById("process_code_window");
+    var consoleElement = document.getElementById("single-console-content");
+    
+    if (!codeElement || !consoleElement) {
+      return;
+    }
+    
+    // Check if console is visible
+    var consoleVisible = consoleElement.style.display !== "none" && 
+                         consoleElement.style.visibility !== "hidden" &&
+                         window.getComputedStyle(consoleElement).display !== "none";
+    
+    if (!consoleVisible) {
+      // Console is hidden, code editor should be full width/height
+      return;
+    }
+    
+    if (GW.process.dockmode === "left" || GW.process.dockmode === "no" || !GW.process.dockmode) {
+      // Left/right layout - restore width ratio
+      var leftWidth = GW.process.savedLeftWidthRatio !== null ? GW.process.savedLeftWidthRatio : 60;
+      var rightWidth = 100 - leftWidth;
+      
+      codeElement.style.setProperty("width", `${leftWidth}%`, "important");
+      codeElement.style.setProperty("flex", `0 0 ${leftWidth}%`, "important");
+      codeElement.style.setProperty("flex-basis", `${leftWidth}%`, "important");
+      codeElement.style.setProperty("flex-grow", "0", "important");
+      codeElement.style.setProperty("flex-shrink", "0", "important");
+      
+      consoleElement.style.setProperty("width", `${rightWidth}%`, "important");
+      consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");
+      consoleElement.style.setProperty("flex-basis", `${rightWidth}%`, "important");
+      consoleElement.style.setProperty("flex-grow", "0", "important");
+      consoleElement.style.setProperty("flex-shrink", "0", "important");
+    } else if (GW.process.dockmode === "bottom") {
+      // Top/bottom layout - restore height ratio
+      var topHeight = GW.process.savedTopHeightRatio !== null ? GW.process.savedTopHeightRatio : 60;
+      var bottomHeight = 100 - topHeight;
+      
+      codeElement.style.setProperty("height", `${topHeight}%`, "important");
+      codeElement.style.setProperty("flex", `0 0 ${topHeight}%`, "important");
+      codeElement.style.setProperty("flex-basis", `${topHeight}%`, "important");
+      codeElement.style.setProperty("flex-grow", "0", "important");
+      codeElement.style.setProperty("flex-shrink", "0", "important");
+      
+      consoleElement.style.setProperty("height", `${bottomHeight}%`, "important");
+      consoleElement.style.setProperty("flex", `0 0 ${bottomHeight}%`, "important");
+      consoleElement.style.setProperty("flex-basis", `${bottomHeight}%`, "important");
+      consoleElement.style.setProperty("flex-grow", "0", "important");
+      consoleElement.style.setProperty("flex-shrink", "0", "important");
+    }
+    
+    // Refresh Monaco editor layout if it exists
+    if (GW.process.editor) {
+      setTimeout(function() {
+        GW.process.editor.layout();
+      }, 50);
     }
   },
 

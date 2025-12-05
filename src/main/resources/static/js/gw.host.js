@@ -1144,35 +1144,62 @@ saveChanges: function () {
     // If detailsContent is provided, include it in the details tab pane
     var detailsPaneContent = detailsContent || '';
     
+    // Get host name for the header
+    var hostName = '';
+    try {
+      var hostNameElement = document.getElementById('_host_name');
+      if (hostNameElement) {
+        hostName = hostNameElement.value || hostNameElement.textContent || '';
+      }
+    } catch (e) {
+      // Ignore if element not found
+    }
+    
     return `
-      <!-- Tabs Navigation - Professional Design -->
-      <ul class="nav nav-tabs host-tabs" role="tablist" style="margin-bottom: 0; border-bottom: 2px solid #dee2e6; background-color: #f8f9fa;">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="details-tab-btn" data-bs-toggle="tab" data-bs-target="#details-tab-pane" 
-                  type="button" role="tab" onclick="GW.host.switchTab(event, 'details-tab-pane', null)"
-                  style="border: none; border-bottom: 3px solid #007bff; color: #007bff; font-weight: 500; padding: 12px 20px;">
-            <i class="fas fa-info-circle"></i> Details
-          </button>
-        </li>
+      <!-- Host Header Section -->
+      <div class="host-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px 30px; margin: 0; border-bottom: 1px solid #e0e0e0;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 style="margin: 0; color: #fff; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+              <i class="fas fa-server" style="font-size: 28px;"></i>
+              <span id="host-header-name">${hostName || 'Host Management'}</span>
+            </h2>
+            <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">
+              <i class="fas fa-network-wired"></i> Manage host configuration and resources
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation - Professional Design with Spacing -->
+      <div style="background-color: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 30px;">
+        <ul class="nav nav-tabs host-tabs" role="tablist" style="margin: 0; border-bottom: none; background-color: transparent;">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="details-tab-btn" data-bs-toggle="tab" data-bs-target="#details-tab-pane" 
+                    type="button" role="tab" onclick="GW.host.switchTab(event, 'details-tab-pane', null)"
+                    style="border: none; border-bottom: 3px solid #007bff; color: #007bff; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
+              <i class="fas fa-info-circle"></i> Details
+            </button>
+          </li>
         ${hosttype === "ssh" || hosttype === "null" || hosttype === null ? `
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="python-env-tab-btn" data-bs-toggle="tab" data-bs-target="#python-env-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'python-env-tab-pane', 'GW.host.readEnvironment(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fab fa-python"></i> Python Env
             </button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="upload-tab-btn" data-bs-toggle="tab" data-bs-target="#upload-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'upload-tab-pane', 'GW.fileupload.uploadfile(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fas fa-upload"></i> Upload
             </button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="browse-tab-btn" data-bs-toggle="tab" data-bs-target="#browse-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'browse-tab-pane', 'GW.filebrowser.start(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fas fa-folder-open"></i> Browse
             </button>
           </li>
@@ -1181,14 +1208,14 @@ saveChanges: function () {
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="history-tab-btn" data-bs-toggle="tab" data-bs-target="#history-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'history-tab-pane', 'GW.host.recent(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fas fa-history"></i> History
             </button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="jupyter-tab-btn" data-bs-toggle="tab" data-bs-target="#jupyter-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'jupyter-tab-pane', 'GW.host.openJupyter(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fab fa-python"></i> Jupyter
             </button>
           </li>
@@ -1197,22 +1224,23 @@ saveChanges: function () {
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="history-tab-btn" data-bs-toggle="tab" data-bs-target="#history-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'history-tab-pane', 'GW.host.recent(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fas fa-history"></i> History
             </button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="google-earth-tab-btn" data-bs-toggle="tab" data-bs-target="#google-earth-tab-pane" 
                     type="button" role="tab" onclick="GW.host.switchTab(event, 'google-earth-tab-pane', 'GW.host.openGoogleEarth(\\'${hostid}\\')')"
-                    style="border: none; color: #6c757d; font-weight: 500; padding: 12px 20px;">
+                    style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
               <i class="fas fa-globe"></i> Google Earth
             </button>
           </li>
         ` : ""}
-      </ul>
+        </ul>
+      </div>
 
-      <!-- Tabs Content Container -->
-      <div class="tab-content host-tab-content" style="width: 100%; min-height: 400px; background: #fff; padding: 20px; position: relative; overflow: visible;">
+      <!-- Tabs Content Container with Proper Spacing -->
+      <div class="tab-content host-tab-content" style="width: 100%; min-height: 400px; background: #f8f9fa; padding: 30px; position: relative; overflow: visible;">
         <div id="details-tab-pane" class="tab-pane fade show active" role="tabpanel" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative;">${detailsPaneContent}</div>
         <div id="python-env-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
         <div id="upload-tab-pane" class="tab-pane fade" role="tabpanel" style="display: none;"></div>
@@ -1225,7 +1253,7 @@ saveChanges: function () {
   },
 
 
-switchTab: function (event, tabId, action) {
+  switchTab: function (event, tabId, action) {
   // Get all tab buttons and panes
   let tabButtons = document.querySelectorAll(".host-tabs .nav-link");
   let tabPanes = document.querySelectorAll(".host-tab-content .tab-pane");
@@ -1235,6 +1263,7 @@ switchTab: function (event, tabId, action) {
     btn.classList.remove("active");
     btn.style.borderBottom = "none";
     btn.style.color = "#6c757d";
+    btn.style.backgroundColor = "transparent";
   });
 
   // Hide all tab panes and clear content (except details tab which should keep its content)
@@ -1264,6 +1293,7 @@ switchTab: function (event, tabId, action) {
     event.currentTarget.classList.add("active");
     event.currentTarget.style.borderBottom = "3px solid #007bff";
     event.currentTarget.style.color = "#007bff";
+    event.currentTarget.style.backgroundColor = "transparent";
   } else {
     // If called programmatically, find the button by tabId
     let buttonId = tabId.replace("-pane", "-btn");
@@ -1531,9 +1561,9 @@ switchTab: function (event, tabId, action) {
     });
 
     // Build the host details content for the Details tab
-    var detailsContent = '<div class="container-fluid" style="padding: 20px;">';
-    detailsContent += '<div class="d-flex justify-content-between align-items-center mb-4">';
-    detailsContent += '<h3 style="margin: 0; color: #333;"><i class="fas fa-server"></i> Host Details</h3>';
+    var detailsContent = '<div class="container-fluid" style="padding: 0;">';
+    detailsContent += '<div class="d-flex justify-content-between align-items-center mb-4" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
+    detailsContent += '<h3 style="margin: 0; color: #333; font-size: 20px; font-weight: 600;"><i class="fas fa-info-circle" style="color: #007bff;"></i> Host Details</h3>';
     
     // Add action buttons
     var actionButtons = '<div class="btn-group" role="group">';
@@ -1631,6 +1661,22 @@ switchTab: function (event, tabId, action) {
     content += '</div>';
 
     $("#main-host-content").html(content);
+    
+    // Update host name in header after content is loaded
+    setTimeout(function() {
+      try {
+        var hostNameElement = document.getElementById('_host_name');
+        if (hostNameElement) {
+          var hostName = hostNameElement.value || hostNameElement.textContent || '';
+          var headerNameElement = document.getElementById('host-header-name');
+          if (headerNameElement && hostName) {
+            headerNameElement.textContent = hostName;
+          }
+        }
+      } catch (e) {
+        // Ignore if elements not found
+      }
+    }, 100);
 
     GW.ssh.current_process_log_length = 0;
     GW.general.switchTab("host");

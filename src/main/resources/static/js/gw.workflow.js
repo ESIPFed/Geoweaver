@@ -217,94 +217,106 @@ GW.workflow = {
       }
     });
 
-    content += id_combo + name_combo;
-
-    content += `<div class="col col-md-1">Confidential</div>
-							<div class="col col-md-3">`;
-
+    // Build confidential field
+    var confidentialField = '';
     if (confidential == "FALSE") {
-      content +=
-        '       <input type="radio" name="confidential_workflow" value="FALSE" checked> ' +
-        '		<label id="public_radio"  for="confidential_workflow">Public</label>';
-
-      if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
-        content +=
-          '       <input type="radio" name="confidential_workflow" value="TRUE"> ' +
-          '		<label id="private_radio"  for="confidential_workflow">Private</label>';
+      confidentialField += '<input type="radio" name="confidential_workflow" value="FALSE" checked> <label id="public_radio" for="confidential_workflow">Public</label>';
+      if (GW.user.current_userid == owner && GW.user.current_userid != "111111") {
+        confidentialField += ' <input type="radio" name="confidential_workflow" value="TRUE"> <label id="private_radio" for="confidential_workflow">Private</label>';
+      }
     } else {
-      content +=
-        '       <input type="radio" name="confidential_workflow" value="FALSE"> ' +
-        '		<label id="public_radio"  for="confidential_workflow">Public</label>';
-
-      if (GW.user.current_userid == owner && GW.user.current_userid != "111111")
-        content +=
-          '       <input type="radio" name="confidential_workflow" value="TRUE" checked> ' +
-          '		<label id="private_radio"  for="confidential_workflow">Private</label>';
+      confidentialField += '<input type="radio" name="confidential_workflow" value="FALSE"> <label id="public_radio" for="confidential_workflow">Public</label>';
+      if (GW.user.current_userid == owner && GW.user.current_userid != "111111") {
+        confidentialField += ' <input type="radio" name="confidential_workflow" value="TRUE" checked> <label id="private_radio" for="confidential_workflow">Private</label>';
+      }
     }
 
-    content += "</div>";
+    content = `
+      <div style="width: 100%; height: 100%;">
+        <!-- Workflow Header Section -->
+        <div class="workflow-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 24px 30px; margin: 0; border-bottom: 1px solid #e0e0e0;">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 style="margin: 0; color: #fff; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-project-diagram" style="font-size: 28px;"></i>
+                <span id="workflow-header-name">${workFlowName || 'Workflow Management'}</span>
+              </h2>
+              <p style="margin: 8px 0 0 0; color: rgba(255, 255, 255, 0.9); font-size: 14px;">
+                <i class="fas fa-sitemap"></i> Manage workflow configuration and execution history
+              </p>
+            </div>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-light btn-sm" onclick="GW.workflow.add('${workFlowID}', '${workFlowName}', true)" title="Load this workflow into Weaver">
+                <i class="fas fa-play"></i> Run
+              </button>
+              <button type="button" class="btn btn-light btn-sm" onclick="GW.workflow.landingpage('${workFlowID}', '${workFlowName}')" title="Go to Landing Page">
+                <i class="fas fa-share"></i> Share
+              </button>
+              <button type="button" class="btn btn-light btn-sm" onclick="GW.menu.del('${workFlowID}','workflow')" title="Delete this workflow" style="color: #dc3545;">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
 
-    content += desc_combo;
+        <!-- Workflow Info Bar -->
+        <div style="background-color: #fff; border-bottom: 1px solid #e0e0e0; padding: 15px 30px;">
+          <div class="row" style="margin: 0; align-items: center;">
+            <div class="col-md-2" style="padding: 5px 10px;">
+              <label class="form-label" style="font-weight: 600; margin: 0; font-size: 12px; color: #6c757d;">ID</label>
+              <div id="display_workflow_id" style="margin-top: 5px; font-size: 14px;">${workFlowID || ''}</div>
+            </div>
+            <div class="col-md-3" style="padding: 5px 10px;">
+              <label class="form-label" style="font-weight: 600; margin: 0; font-size: 12px; color: #6c757d;">Name</label>
+              <input class="form-control form-control-sm" id="display_workflow_name_field" type="text" value="${workFlowName || ''}" style="margin-top: 5px;" />
+            </div>
+            <div class="col-md-2" style="padding: 5px 10px;">
+              <label class="form-label" style="font-weight: 600; margin: 0; font-size: 12px; color: #6c757d;">Confidential</label>
+              <div style="margin-top: 8px;">
+                ${confidentialField}
+              </div>
+            </div>
+            <div class="col-md-5" style="padding: 5px 10px;">
+              <label class="form-label" style="font-weight: 600; margin: 0; font-size: 12px; color: #6c757d;">Description</label>
+              <textarea style="width:100%; margin-top: 5px;" class="form-control form-control-sm" id="display_workflow_description_field" rows="2">${workFlowDescription || ''}</textarea>
+            </div>
+          </div>
+        </div>
 
-    content +=
-      `</div><div style="margin-top: 5px; margin-bottom: 5px;">
-		
-		<p align="right">
-		
-		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.history('` +
-      workFlowID +
-      `', '` +
-      workFlowName +
-      `')">
-		
-		<i class="fa fa-history subalignicon" data-toggle="tooltip" title="List history logs"></i> History </button> 
-		
-		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.add('` +
-      workFlowID +
-      `', '` +
-      workFlowName +
-      `', true)">
-		
-		<i class="fa fa-play subalignicon" data-toggle="tooltip" title="Load this workflow into Weaver"></i> Run </button> 
+        <!-- Tabs Navigation -->
+        <div style="background-color: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 30px;">
+          <ul class="nav nav-tabs workflow-tabs" role="tablist" style="margin: 0; border-bottom: none; background-color: transparent;">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="main-workflow-info-code-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-code')" 
+                      style="border: none; border-bottom: 3px solid #00f2fe; color: #00f2fe; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
+                <i class="fas fa-info-circle"></i> Info
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="main-workflow-info-history-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('${workFlowID}', '${workFlowName}')" 
+                      style="border: none; color: #6c757d; font-weight: 500; padding: 16px 24px; margin-right: 8px; transition: all 0.3s ease;">
+                <i class="fas fa-history"></i> History
+              </button>
+            </li>
+          </ul>
+        </div>
 
-		<button type="button" class="btn btn-outline-primary"  onclick="GW.workflow.landingpage('` +
-      workFlowID +
-      `', '` +
-      workFlowName +
-      `')">
-		
-		<i class="fa fa-share subalignicon" data-toggle="tooltip" title="Go to Landing Page"></i> Share </button> 
-		
-		<button type=\"button\" class=\"btn btn-outline-primary\"  onclick=\"GW.menu.del('` +
-      workFlowID +
-      `','workflow')" >
-		
-		<i class="fa fa-minus subalignicon" style="color:red;" data-toggle="tooltip" title="Delete this workflow"></i> Delete </button>
-		
-		</p></div>
-
-		<div class="subtab tab" data-intro="this is a tab inside the workflow tab panel">
-
-			<button class="tablinks-workflow " id="main-workflow-info-code-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-code')">Info</button>
-
-			<button class="tablinks-workflow" id="main-workflow-info-history-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-history'); GW.workflow.history('` +
-      workFlowID +
-      `', '` +
-      workFlowName +
-      `')">History</button>
-		 </div>
-		<div id="main-workflow-info-code" class="tabcontent-workflow generalshadow" style="height:calc(100% - 185px); overflow-y: scroll; left:0; margin:0; padding: 5px; ">
-			<div class="row" style="height:100%;margin:0;padding:1rem">` +
-      info_body +
-      `	</div>
-		</div>
-		<div id="main-workflow-info-history" class="tabcontent-workflow generalshadow" style="height:calc(100% - 185px);  overflow-y: scroll; left:0; margin:0; padding: 5px; display:none;">
-		   <div class="row" id="workflow-history-container" style="padding:0px;margin:0px; " >
-		
-	       </div>
-		</div>
-		
-		</div>`;
+        <!-- Tabs Content Container -->
+        <div style="height: calc(100% - 220px); width: 100%; margin: 0; padding: 0; background-color: #f8f9fa;">
+          <div id="main-workflow-info-code" class="tabcontent-workflow" style="height: 100%; overflow-y: auto; left: 0; margin: 0; padding: 30px; display: block; background-color: #f8f9fa;">
+            <div class="row" style="height: 100%; margin: 0; padding: 0;">
+              <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; width: 100%;">
+                ${info_body}
+              </div>
+            </div>
+          </div>
+          <div id="main-workflow-info-history" class="tabcontent-workflow" style="height: 100%; overflow-y: auto; left: 0; margin: 0; padding: 20px; display: none; background-color: #f8f9fa;">
+            <div class="row" id="workflow-history-container" style="padding: 0px; margin: 0px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
 
     $("#main-workflow-content").html(content);
 
@@ -361,12 +373,24 @@ GW.workflow = {
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
-    tablinks = document.getElementsByClassName("tablinks-workflow");
+    
+    // Update tab buttons styling
+    tablinks = document.querySelectorAll(".workflow-tabs .nav-link");
     for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
+      tablinks[i].classList.remove("active");
+      tablinks[i].style.borderBottom = "none";
+      tablinks[i].style.color = "#6c757d";
     }
+    
+    // Show selected tab content
     document.getElementById(name).style.display = "block";
-    ele.className += " active";
+    
+    // Update selected tab button
+    if (ele) {
+      ele.classList.add("active");
+      ele.style.borderBottom = "3px solid #00f2fe";
+      ele.style.color = "#00f2fe";
+    }
   },
 
   findCache: function (wid) {

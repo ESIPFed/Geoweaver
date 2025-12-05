@@ -77,8 +77,8 @@ GW.editor = {
       editorDiv.addClass("fullscreen");
       editorDiv.height("100vh");
       editorDiv.width("100vw");
-      subtabCodeDiv.height("calc(100% - 40px)");
-      subtabHistoryDiv.height("calc(100% - 40px)");
+      subtabCodeDiv.height("calc(100%)");
+      subtabHistoryDiv.height("calc(100%)");
       this.isfullscreen = true;
     } else {
       editorDiv.removeClass("fullscreen");
