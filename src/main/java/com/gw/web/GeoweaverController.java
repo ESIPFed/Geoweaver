@@ -1344,8 +1344,20 @@ public class GeoweaverController {
     try {
 
       String rel_filepath = request.getParameter("filepath");
+      
+      if (rel_filepath == null || rel_filepath.isEmpty()) {
+        logger.error("File path parameter is missing");
+        resp = "{\"ret\": \"failed\", \"reason\": \"File path parameter is required\"}";
+        return resp;
+      }
 
       String rel_url = "download/" + upload_file_path + "/";
+      
+      if (!rel_filepath.startsWith(rel_url)) {
+        logger.error("Invalid file path format: " + rel_filepath);
+        resp = "{\"ret\": \"failed\", \"reason\": \"Invalid file path format\"}";
+        return resp;
+      }
 
       String filename = rel_filepath.substring(rel_url.length());
 

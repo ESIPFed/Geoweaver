@@ -99,7 +99,12 @@ public class FileTest {
 				request,
 				String.class);
 
-		assertThat(result).contains("Internal");
+		// The endpoint now returns JSON error responses instead of throwing exceptions
+		// Check for either "failed" or "Internal" (for backward compatibility)
+		assertThat(result).satisfiesAnyOf(
+			r -> assertThat(r).contains("failed"),
+			r -> assertThat(r).contains("Internal")
+		);
 
 	}
 
