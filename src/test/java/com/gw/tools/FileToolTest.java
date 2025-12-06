@@ -2,7 +2,6 @@ package com.gw.tools;
 
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
-import com.gw.utils.RandomString;
 import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 import net.schmizz.sshj.xfer.FilePermission;
@@ -190,38 +189,63 @@ public class FileToolTest {
 
     @Test
     @Timeout(10)
-    void testScpUploadToHome() {
+    void testScpUploadToHome() throws IOException {
         // Given
         String hid = "host123";
         String passwd = "password123";
         String localPath = "/tmp/local.txt";
+        
+        // Create a temporary file for testing
+        File localFile = new File(localPath);
+        try {
+            localFile.createNewFile();
+            localFile.deleteOnExit();
 
-        when(session.login(hid, passwd, null, false)).thenReturn(true);
-        when(session.getSsh()).thenReturn(mock(net.schmizz.sshj.SSHClient.class));
-        when(session.getSsh().newSCPFileTransfer()).thenReturn(scpFileTransfer);
+            when(session.login(hid, passwd, null, false)).thenReturn(true);
+            when(session.getSsh()).thenReturn(mock(net.schmizz.sshj.SSHClient.class));
+            when(session.getSsh().newSCPFileTransfer()).thenReturn(scpFileTransfer);
 
-        // When
-        String result = fileTool.scp_upload(hid, passwd, localPath);
+            // When
+            String result = fileTool.scp_upload(hid, passwd, localPath);
 
-        // Then
-        assertNotNull(result);
-        assertTrue(result.contains("ret"));
+            // Then
+            assertNotNull(result);
+            assertTrue(result.contains("ret"));
+            assertTrue(result.contains("success"));
+        } finally {
+            // Clean up
+            if (localFile.exists()) {
+                localFile.delete();
+            }
+        }
     }
 
     @Test
     @Timeout(10)
-    void testScpUploadToHomeWithException() {
+    void testScpUploadToHomeWithException() throws IOException {
         // Given
         String hid = "host123";
         String passwd = "password123";
         String localPath = "/tmp/local.txt";
+        
+        // Create a temporary file for testing
+        File localFile = new File(localPath);
+        try {
+            localFile.createNewFile();
+            localFile.deleteOnExit();
 
-        when(session.login(hid, passwd, null, false)).thenThrow(new RuntimeException("SSH error"));
+            when(session.login(hid, passwd, null, false)).thenThrow(new RuntimeException("SSH error"));
 
-        // When & Then
-        assertThrows(RuntimeException.class, () -> {
-            fileTool.scp_upload(hid, passwd, localPath);
-        });
+            // When & Then
+            assertThrows(RuntimeException.class, () -> {
+                fileTool.scp_upload(hid, passwd, localPath);
+            });
+        } finally {
+            // Clean up
+            if (localFile.exists()) {
+                localFile.delete();
+            }
+        }
     }
 
     @Test
@@ -475,7 +499,6 @@ public class FileToolTest {
         // Given
         String filePath = "/tmp/remote.txt";
         String sessionId = "session123";
-        String filename = "remote.txt";
 
         SFTPClient mockSFTPClient = mock(SFTPClient.class);
         Map<String, SFTPClient> token2ftpclient = new HashMap<>();
