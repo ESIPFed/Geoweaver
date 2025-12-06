@@ -143,7 +143,8 @@ describe('Delete Process', () => {
       cy.get('#process_folder_python').click();
       cy.wait(1000)
       cy.get('ul#process_folder_python_target').contains('python_test').click();
-      cy.contains('button', 'Delete').click();
+      // Delete button now only has icon, no text - find by title or icon
+      cy.get('button[title="Delete Process"]').click();
       cy.get('#del-confirm-btn').click();
       cy.wait(1000);
       cy.get('#main-general-content').click();
@@ -199,7 +200,8 @@ describe('Hosts Testing', () => {
     });
     cy.get('#host_folder_ssh > a').click();
     cy.get('ul#host_folder_ssh_target').contains('New Host').click();
-    cy.get('.fa-minus').click();
+    // Delete button now uses fa-trash icon instead of fa-minus, and has "Delete" text
+    cy.contains('button', 'Delete').click();
     cy.get('#del-confirm-btn').click();
   })
 
@@ -246,7 +248,12 @@ describe('Hosts Testing', () => {
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
-    cy.get('#host-file-uploader').click();
+    // File uploader is now in upload-tab-pane, not host-file-uploader
+    // Wait for upload dialog to appear in the tab pane
+    cy.get('#upload-tab-pane', { timeout: 10000 }).should('be.visible');
+    cy.get('#upload-tab-pane').should('contain', 'File Uploader');
+    // Verify the drag-and-drop zone is present
+    cy.get('#drag-and-drop-zone', { timeout: 5000 }).should('be.visible');
     cy.intercept('POST', 'http://localhost:8070/Geoweaver/web/authenticateUser').as('authenticateUser');
     cy.wait('@authenticateUser').its('response.statusCode').should('eq', 200);
   })

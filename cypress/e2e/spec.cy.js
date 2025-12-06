@@ -463,7 +463,8 @@ describe('Delete Process', () => {
         }
       );
       cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
-      cy.contains('button', 'Delete').click();
+      // Delete button now only has icon, no text - find by title or icon
+      cy.get('button[title="Delete Process"]').click();
       cy.get('#del-confirm-btn').click();
       cy.get('#main-general-content').click();
       cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
@@ -478,7 +479,8 @@ describe('Delete Process', () => {
       );
       cy.get('#process_folder_python').click();
       cy.get('ul#process_folder_python_target').contains('python_test_2').click();
-      cy.contains('button', 'Delete').click();
+      // Delete button now only has icon, no text - find by title or icon
+      cy.get('button[title="Delete Process"]').click();
       cy.get('#del-confirm-btn').click();
       cy.get('#main-general-content').click();
       cy.get('[style="color:rgb(38, 90, 139);text-align:center;font-family:\'lato\', sans-serif;font-size:80px"]').should('be.visible');
@@ -618,7 +620,8 @@ describe('Hosts Testing', () => {
     cy.get('.introjs-skipbutton').click();
     cy.get('#host_folder_ssh > a').click();
     cy.get('ul#host_folder_ssh_target').contains('New Host').click();
-    cy.get('.fa-minus').click();
+    // Delete button now uses fa-trash icon instead of fa-minus, and has "Delete" text
+    cy.contains('button', 'Delete').click();
     cy.get('#del-confirm-btn').click();
   })
 
