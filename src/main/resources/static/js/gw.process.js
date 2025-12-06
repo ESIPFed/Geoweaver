@@ -1334,9 +1334,6 @@ GW.process = {
             <button class="btn btn-sm" id="maximize-btn" onclick="GW.process.maximize()" title="Fullscreen" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center;">
               <i class="fas fa-expand"></i>
             </button>
-            <button class="btn btn-sm btn-danger" id="exit-maximize-btn" onclick="GW.process.exitMaximize()" title="Exit Fullscreen" style="display: none; padding: 4px 10px; font-size: 11px; border-radius: 3px; display: inline-flex; align-items: center;">
-              <i class="fas fa-times"></i> <span style="margin-left: 4px;">Exit</span>
-            </button>
             
             <!-- Log Actions -->
             <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
@@ -1344,12 +1341,6 @@ GW.process = {
               <input class="form-check-input" type="checkbox" checked id="log_switch" style="margin: 0;">
               <label class="form-check-label" for="log_switch" style="margin: 0 0 0 4px; font-size: 11px; color: #495057; font-weight: 500;">Log</label>
 			</div>
-            <button type="button" class="btn btn-sm" id="clearProcessLog" title="Clear Log" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center;">
-              <i class="fas fa-eraser"></i> <span style="margin-left: 4px;">Clear</span>
-            </button>
-            <button type="button" class="btn btn-sm" id="showCurrent" title="Show Latest Log" style="padding: 4px 8px; font-size: 11px; background-color: #f8f9fa; border: 1px solid #dee2e6; color: #495057; border-radius: 3px; display: inline-flex; align-items: center;">
-              <i class="fas fa-arrow-down"></i> <span style="margin-left: 4px;">Latest</span>
-            </button>
             
             <!-- Utility Actions -->
             <div style="width: 1px; height: 20px; background-color: #e0e0e0; margin: 0 4px; display: inline-block; flex-shrink: 0; align-self: center;"></div>
@@ -1399,14 +1390,6 @@ GW.process = {
       </div>
       </div>
       
-      <!-- Floating Exit Button for Maximized View -->
-      <div id="maximize-exit-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; pointer-events: none;">
-        <div style="position: absolute; top: 15px; right: 15px; pointer-events: auto;">
-          <button class="btn btn-danger btn-lg" id="maximize-exit-btn" onclick="GW.process.exitMaximize()" title="Exit Maximize View" style="box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 50%; width: 50px; height: 50px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-times" style="font-size: 20px;"></i>
-          </button>
-				</div>
-			</div>
 		</div>`;
 
     $("#main-process-content").html(content);
@@ -1974,8 +1957,22 @@ GW.process = {
   },
 
   maximize: function () {
-    // True fullscreen maximize function
+    // Toggle fullscreen mode - if already fullscreen, exit; otherwise enter fullscreen
     var tabsContentWrapper = document.getElementById("process-tabs-content-wrapper");
+    var maximizeBtn = document.getElementById("maximize-btn");
+    
+    // Check if already in fullscreen mode by checking if position is fixed
+    var isFullscreen = tabsContentWrapper && 
+                      tabsContentWrapper.style.position === "fixed" &&
+                      GW.process.originalStyles;
+    
+    if (isFullscreen) {
+      // Exit fullscreen mode
+      GW.process.exitMaximize();
+      return;
+    }
+    
+    // Enter fullscreen mode
     var processContainer = document.getElementById("process-main-container");
     var mainContent = document.getElementById("main-process-content");
     var mainProcessInfo = document.getElementById("main-process-info");
@@ -1984,6 +1981,14 @@ GW.process = {
     if (tabsContentWrapper) {
       // Store original styles
       if (!GW.process.originalStyles) {
+        // Save the log window visibility state before entering fullscreen
+        var logSwitch = document.getElementById("log_switch");
+        var consoleElement = document.getElementById("single-console-content");
+        var logWindowVisible = logSwitch && logSwitch.checked && 
+                              consoleElement && 
+                              consoleElement.style.display !== "none" &&
+                              window.getComputedStyle(consoleElement).display !== "none";
+        
         GW.process.originalStyles = {
           tabsContentWrapper: {
             position: tabsContentWrapper.style.position || "",
@@ -1994,7 +1999,8 @@ GW.process = {
             zIndex: tabsContentWrapper.style.zIndex || "",
             overflow: tabsContentWrapper.style.overflow || "",
             backgroundColor: tabsContentWrapper.style.backgroundColor || ""
-          }
+          },
+          logWindowVisible: logWindowVisible // Save log window visibility state
         };
         if (processContainer) {
           GW.process.originalStyles.processContainer = {
@@ -2105,11 +2111,14 @@ GW.process = {
         tabPanel.style.setProperty("box-sizing", "border-box", "important");
       }
       
-      // Show exit button and hide maximize button
-      var exitBtn = document.getElementById("exit-maximize-btn");
-      var maximizeBtn = document.getElementById("maximize-btn");
-      if (exitBtn) exitBtn.style.display = "inline-flex";
-      if (maximizeBtn) maximizeBtn.style.display = "none";
+      // Update maximize button icon and title to show "exit fullscreen" state
+      if (maximizeBtn) {
+        var icon = maximizeBtn.querySelector('i');
+        if (icon) {
+          icon.className = "fas fa-compress";
+        }
+        maximizeBtn.title = "Exit Fullscreen";
+      }
     }
   },
 
@@ -2314,34 +2323,81 @@ GW.process = {
         tabsContainer.offsetHeight; // Trigger reflow
       }
       
-      // Show maximize button and hide exit button
-      var exitBtn = document.getElementById("exit-maximize-btn");
+      // Save log window visibility state BEFORE clearing originalStyles
+      var savedLogWindowVisible = null;
+      if (GW.process.originalStyles && GW.process.originalStyles.logWindowVisible !== undefined) {
+        savedLogWindowVisible = GW.process.originalStyles.logWindowVisible;
+      }
+      
+      // Update maximize button icon and title to show "enter fullscreen" state
       var maximizeBtn = document.getElementById("maximize-btn");
-      if (exitBtn) exitBtn.style.display = "none";
-      if (maximizeBtn) maximizeBtn.style.display = "inline-flex";
+      if (maximizeBtn) {
+        var icon = maximizeBtn.querySelector('i');
+        if (icon) {
+          icon.className = "fas fa-expand";
+        }
+        maximizeBtn.title = "Fullscreen";
+      }
       
       GW.process.originalStyles = null;
     }
     
-      GW.process.util.noDock(
-        "process-code-history-section",
-        "process_code_window",
-        "single-console-content",
-        "dragMe"
-      );
-    GW.process.dockmode = "none";
+    // Restore log window visibility state if it was saved before fullscreen
+    if (savedLogWindowVisible !== null) {
+      var logSwitch = document.getElementById("log_switch");
+      var consoleElement = document.getElementById("single-console-content");
+      
+      if (logSwitch && consoleElement) {
+        // Restore the checkbox state
+        logSwitch.checked = savedLogWindowVisible;
+        
+        // Restore the console element visibility
+        if (savedLogWindowVisible) {
+          // Show console and restore layout
+          consoleElement.style.setProperty("display", "flex", "important");
+          consoleElement.style.setProperty("visibility", "visible", "important");
+          // Restore layout ratios to maintain the previous layout
+          setTimeout(function() {
+            GW.process.restoreLayoutRatios();
+            GW.process.ensureConsoleWidthConstraints();
+            // Refresh Monaco editor layout if it exists
+            if (GW.process.editor) {
+              GW.process.editor.layout();
+            }
+          }, 100);
+        } else {
+          // Hide console
+          consoleElement.style.setProperty("display", "none", "important");
+          consoleElement.style.setProperty("visibility", "hidden", "important");
+        }
+      }
+    } else {
+      // If no saved state, just restore the dock mode without changing log visibility
+      // But don't call noDock if log switch is checked, as it will hide the console
+      var logSwitch = document.getElementById("log_switch");
+      if (!logSwitch || !logSwitch.checked) {
+        GW.process.util.noDock(
+          "process-code-history-section",
+          "process_code_window",
+          "single-console-content",
+          "dragMe"
+        );
+        GW.process.dockmode = "none";
+      } else {
+        // If log switch is checked, restore layout ratios instead
+        setTimeout(function() {
+          GW.process.restoreLayoutRatios();
+          GW.process.ensureConsoleWidthConstraints();
+          if (GW.process.editor) {
+            GW.process.editor.layout();
+          }
+        }, 100);
+      }
+    }
     
-    // Hide floating exit button
-    var exitOverlay = document.getElementById("maximize-exit-overlay");
-    if (exitOverlay) exitOverlay.style.display = "none";
-    
-    // Hide exit/restore buttons in header and show maximize buttons
-    var exitBtn = document.getElementById("exit-maximize-btn");
-    var restoreBtn = document.getElementById("restore-view-btn");
+    // Show dock buttons
     var bottomBtn = document.getElementById("bottom-dock-btn");
     var leftBtn = document.getElementById("left-dock-btn");
-    if (exitBtn) exitBtn.style.display = "none";
-    if (restoreBtn) restoreBtn.style.display = "none";
     if (bottomBtn) bottomBtn.style.display = "inline-block";
     if (leftBtn) leftBtn.style.display = "inline-block";
   },
