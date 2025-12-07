@@ -965,7 +965,9 @@ GW.process.util = {
     consoleElement.style.setProperty("display", "flex", "important");
     consoleElement.style.setProperty("flex-direction", "column", "important");
     consoleElement.style.setProperty("flex-shrink", "0", "important");
-    consoleElement.style.setProperty("overflow", "hidden", "important");
+    // Allow scrolling for console content - use auto to show scrollbar only when needed
+    consoleElement.style.setProperty("overflow-y", "auto", "important");
+    consoleElement.style.setProperty("overflow-x", "hidden", "important");
     consoleElement.style.setProperty("visibility", "visible", "important");
     consoleElement.style.setProperty("min-height", "0", "important");
     consoleElement.style.setProperty("flex", `0 0 ${bottomHeight}%`, "important");
@@ -1076,7 +1078,9 @@ GW.process.util = {
     consoleElement.style.setProperty("display", "flex", "important");
     consoleElement.style.setProperty("flex-direction", "column", "important");
     consoleElement.style.setProperty("flex-shrink", "0", "important");
-    consoleElement.style.setProperty("overflow", "hidden", "important");
+    // Allow scrolling for console content - use auto to show scrollbar only when needed
+    consoleElement.style.setProperty("overflow-y", "auto", "important");
+    consoleElement.style.setProperty("overflow-x", "hidden", "important");
     consoleElement.style.setProperty("visibility", "visible", "important");
     consoleElement.style.setProperty("min-width", "0", "important");
     consoleElement.style.setProperty("flex", `0 0 ${rightWidth}%`, "important");

@@ -1364,14 +1364,14 @@ GW.process = {
               <div class="col col-md-6" id="code-embed" style="width: 100%; height: 100%; padding: 0px; margin: 0px;"></div>
 							</div> 
 							<div class="resizer" id="dragMe"></div>
-            <div id="single-console-content" class="container__right" style="height: 100%; width: 100%; max-width: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color); flex: 1; min-width: 0; display: flex; flex-direction: column; box-sizing: border-box;">
-              <div style="padding: 8px 12px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa; flex-shrink: 0; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+            <div id="single-console-content" class="container__right" style="height: 100%; width: 100%; max-width: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color); box-sizing: border-box;">
+              <div style="padding: 8px 12px; border-bottom: 1px solid #e0e0e0; background: #f8f9fa; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
                 <h5 style="margin: 0; font-size: 13px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                   <i class="fas fa-terminal"></i> Logging
                 </h5>
               </div>
-              <div id="process-log-window" style="flex: 1; width: 100%; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; overflow-y: auto; overflow-x: hidden; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; min-height: 0; box-sizing: border-box;"></div>
-              <div class="row" style="padding: 0px; margin: 0px; flex-shrink: 0; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
+              <div id="process-log-window" style="width: 100%; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; overflow: visible; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; box-sizing: border-box;"></div>
+              <div class="row" style="padding: 0px; margin: 0px; width: 100%; max-width: 100%; box-sizing: border-box; overflow: hidden;">
                 <div class="col col-md-12" id="console-output" style="width: 100%; max-width: 100%; padding: 0px; margin: 0px; box-sizing: border-box; overflow: hidden;">
 										<div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
 									</div>
@@ -2353,9 +2353,25 @@ GW.process = {
         
         // Restore the console element visibility
         if (savedLogWindowVisible) {
-          // Show console and restore layout
-          consoleElement.style.setProperty("display", "flex", "important");
+          // Show console - use block display (not flex) to maintain vertical stacking of header, log window, and console-output
+          consoleElement.style.setProperty("display", "block", "important");
           consoleElement.style.setProperty("visibility", "visible", "important");
+          // Ensure overflow-y is auto for scrolling
+          consoleElement.style.setProperty("overflow-y", "auto", "important");
+          consoleElement.style.setProperty("overflow-x", "hidden", "important");
+          // Ensure child elements are block-level to maintain vertical stacking
+          var logHeader = consoleElement.querySelector('div:first-child');
+          if (logHeader) {
+            logHeader.style.setProperty("display", "block", "important");
+          }
+          var processLogWindow = document.getElementById("process-log-window");
+          if (processLogWindow) {
+            processLogWindow.style.setProperty("display", "block", "important");
+          }
+          var consoleOutputRow = consoleElement.querySelector('.row');
+          if (consoleOutputRow) {
+            consoleOutputRow.style.setProperty("display", "block", "important");
+          }
           // Restore layout ratios to maintain the previous layout
           setTimeout(function() {
             GW.process.restoreLayoutRatios();
@@ -2471,7 +2487,8 @@ GW.process = {
       processLogWindow.style.setProperty("width", "100%", "important");
       processLogWindow.style.setProperty("max-width", "100%", "important");
       processLogWindow.style.setProperty("box-sizing", "border-box", "important");
-      processLogWindow.style.setProperty("overflow-x", "hidden", "important");
+      // Ensure overflow-y is visible so scrolling happens in parent container__right
+      processLogWindow.style.setProperty("overflow", "visible", "important");
       processLogWindow.style.setProperty("overflow-wrap", "break-word", "important");
       processLogWindow.style.setProperty("word-wrap", "break-word", "important");
       processLogWindow.style.setProperty("word-break", "break-word", "important");
@@ -2502,6 +2519,8 @@ GW.process = {
       singleConsoleContent.style.setProperty("max-width", "100%", "important");
       singleConsoleContent.style.setProperty("box-sizing", "border-box", "important");
       singleConsoleContent.style.setProperty("overflow-x", "hidden", "important");
+      // Ensure overflow-y is auto so scrolling happens in container__right, not in process-log-window
+      singleConsoleContent.style.setProperty("overflow-y", "auto", "important");
     }
   },
   

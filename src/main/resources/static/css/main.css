@@ -369,7 +369,7 @@ form .progress {
 
 /* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-  width: 5px;
+  width: 12px;
 }
 
 *::-webkit-scrollbar-track {
@@ -378,8 +378,35 @@ form .progress {
 
 *::-webkit-scrollbar-thumb {
   background-color: rgb(28, 28, 28);
-  border-radius: 20px;
-  border: 3px solid rgb(177, 177, 177);
+  border-radius: 6px;
+  border: 2px solid rgb(218, 218, 218);
+  min-height: 30px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(50, 50, 50);
+}
+
+/* Make scrollbar wider and more draggable for console/logging windows */
+.container__right::-webkit-scrollbar,
+#single-console-content::-webkit-scrollbar,
+#prompt-panel-single-console-content::-webkit-scrollbar {
+  width: 14px;
+}
+
+.container__right::-webkit-scrollbar-thumb,
+#single-console-content::-webkit-scrollbar-thumb,
+#prompt-panel-single-console-content::-webkit-scrollbar-thumb {
+  background-color: rgb(28, 28, 28);
+  border-radius: 7px;
+  border: 2px solid rgb(218, 218, 218);
+  min-height: 40px;
+}
+
+.container__right::-webkit-scrollbar-thumb:hover,
+#single-console-content::-webkit-scrollbar-thumb:hover,
+#prompt-panel-single-console-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(50, 50, 50);
 }
 
 .table-color {

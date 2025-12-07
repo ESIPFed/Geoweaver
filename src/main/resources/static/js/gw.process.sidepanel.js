@@ -399,12 +399,12 @@ GW.process.sidepanel = {
                     </div>
                     <div class="resizer" id="prompt-panel-dragMe"></div>
                     <div id="prompt-panel-single-console-content" class="container__right" 
-                    style="height:100%; overflow-y: scroll; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);"
+                    style="height:100%; overflow-y: auto; overflow-x: hidden; scrollbar-color: var(--monaco-scrollbar-color); background-color: var(--monaco-background-color); color: var(--monaco-foreground-color);"
                     >
-                        <h4>Logging</h4>
-                        <div id="prompt-panel-process-log-window" style="overflow-wrap: break-word; height: calc(100% - 50px); overflow-y: unset; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color);"> </div>
+                        <h4 style="padding: 8px 12px; margin: 0; border-bottom: 1px solid #e0e0e0; background: #f8f9fa;">Logging</h4>
+                        <div id="prompt-panel-process-log-window" style="overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; overflow: visible; background-color: var(--monaco-editor-background-color); color: var(--monaco-editor-foreground-color); padding: 8px; box-sizing: border-box;"> </div>
                         <div class="row" style="padding:0px; margin:0px;" >
-                            <div class="col col-md-12" id="prompt-panel-console-output"  style="width:100%; padding:0px; margin:0px; height:calc(100%-50px); " >
+                            <div class="col col-md-12" id="prompt-panel-console-output"  style="width:100%; padding:0px; margin:0px; box-sizing: border-box;" >
                                 <div class="d-flex justify-content-center"><div class="dot-flashing invisible"></div></div>
                             </div>
                         </div>
