@@ -245,17 +245,23 @@ describe('Hosts Testing', () => {
     cy.get('#host-100001').click();
     // Click on Upload tab instead of p > .fa-upload
     cy.contains('Upload').click();
+    
+    // Set up intercept BEFORE clicking the confirm button
+    cy.intercept('POST', '**/authenticateUser').as('authenticateUser');
+    
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
+    
+    // Wait for authenticateUser request (for localhost, this authenticates Geoweaver password)
+    cy.wait('@authenticateUser', { timeout: 10000 }).its('response.statusCode').should('eq', 200);
+    
     // File uploader is now in upload-tab-pane, not host-file-uploader
-    // Wait for upload dialog to appear in the tab pane
+    // Wait for upload dialog to appear in the tab pane after authentication
     cy.get('#upload-tab-pane', { timeout: 10000 }).should('be.visible');
     cy.get('#upload-tab-pane').should('contain', 'File Uploader');
     // Verify the drag-and-drop zone is present
     cy.get('#drag-and-drop-zone', { timeout: 5000 }).should('be.visible');
-    cy.intercept('POST', 'http://localhost:8070/Geoweaver/web/authenticateUser').as('authenticateUser');
-    cy.wait('@authenticateUser').its('response.statusCode').should('eq', 200);
   })
 
 });
