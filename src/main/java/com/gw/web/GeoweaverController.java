@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -1866,6 +1867,102 @@ public class GeoweaverController {
 			throw new RuntimeException("Authentication Failed. Wrong Password.");
 		}
 
+		return resp;
+	}
+
+	/**
+	 * Handles HTTP GET requests to display the localhost login page.
+	 *
+	 * @param model The model to add attributes to.
+	 * @param session The HttpSession for user session management.
+	 * @return The name of the view to render (localhost login page).
+	 */
+	@RequestMapping(value = "/localhost-login", method = RequestMethod.GET)
+	public String localhostLogin(Model model, HttpServletRequest request, HttpServletResponse response) {
+		// Check authentication via session or cookie
+		HttpSession session = request.getSession(false);
+		boolean authenticated = false;
+		
+		// Check session
+		if (session != null && LoginInterceptor.isAuthenticated(session)) {
+			authenticated = true;
+		}
+		
+		// Check cookie if session not authenticated
+		if (!authenticated) {
+			Cookie[] cookies = request.getCookies();
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					if ("gw_localhost_auth".equals(cookie.getName()) && "true".equals(cookie.getValue())) {
+						authenticated = true;
+						// Restore session from cookie
+						if (session == null) {
+							session = request.getSession(true);
+						}
+						LoginInterceptor.markAuthenticated(session, response);
+						break;
+					}
+				}
+			}
+		}
+		
+		// If already authenticated, redirect to main page
+		if (authenticated) {
+			return "redirect:geoweaver";
+		}
+		return "localhost-login";
+	}
+
+	/**
+	 * Handles HTTP POST requests to authenticate with localhost password.
+	 *
+	 * @param model The model to add attributes to.
+	 * @param request The web request containing encrypted password.
+	 * @param session The HttpSession for user session management.
+	 * @return A JSON response indicating successful authentication or an error.
+	 */
+	@RequestMapping(value = "/authenticateLocalhost", method = RequestMethod.POST)
+	public @ResponseBody String authenticateLocalhost(
+			ModelMap model, WebRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		
+		// Set response content type to JSON
+		httpResponse.setContentType("application/json;charset=UTF-8");
+		
+		String resp = "";
+		
+		try {
+			// Ensure session exists (create if not exists)
+			HttpSession session = httpRequest.getSession(true);
+			
+			// If already authenticated, return success immediately
+			if (LoginInterceptor.isAuthenticated(session)) {
+				resp = "{\"status\":\"success\", \"message\":\"Already authenticated\"}";
+				return resp;
+			}
+			
+			String encrypted = request.getParameter("password");
+			if (BaseTool.isNull(encrypted)) {
+				resp = "{\"status\":\"failed\", \"message\":\"Password is required\"}";
+				return resp;
+			}
+			
+			// Decrypt the password
+			String password = RSAEncryptTool.getPassword(encrypted, session.getId());
+			
+			// Authenticate using localhost password
+			lt.authenticate(password);
+			
+			// Mark session as authenticated and set persistent cookie
+			LoginInterceptor.markAuthenticated(session, httpResponse);
+			
+			resp = "{\"status\":\"success\", \"message\":\"Authentication successful\"}";
+			
+		} catch (Exception e) {
+			logger.error("Localhost authentication failed: " + e.getMessage());
+			resp = "{\"status\":\"failed\", \"message\":\"" + 
+					StringEscapeUtils.escapeJson(e.getLocalizedMessage()) + "\"}";
+		}
+		
 		return resp;
 	}
 

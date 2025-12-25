@@ -425,6 +425,36 @@ GW.process.sidepanel = {
 
     
     $("#prompt-panel-main").append(process_code_history_content);
+    
+    // Set initial active state for the code tab in side panel
+    var codeTab = document.getElementById("prompt-panel-main-process-info-code-tab");
+    if (codeTab) {
+      codeTab.classList.add("active");
+      codeTab.style.backgroundColor = "#f0f0f0";
+      codeTab.style.color = "#333";
+      codeTab.style.fontWeight = "bold";
+      codeTab.style.borderBottom = "2px solid #007bff";
+    }
+    
+    // Ensure history tab is not active initially
+    var historyTab = document.getElementById("prompt-panel-main-process-info-history-tab");
+    if (historyTab) {
+      historyTab.classList.remove("active");
+      historyTab.style.backgroundColor = "";
+      historyTab.style.color = "";
+      historyTab.style.fontWeight = "";
+      historyTab.style.borderBottom = "";
+    }
+    
+    // Ensure code tab content is visible and history tab content is hidden
+    var codeContent = document.getElementById("prompt-panel-main-process-info-code");
+    var historyContent = document.getElementById("prompt-panel-main-process-info-history");
+    if (codeContent) {
+      codeContent.style.display = "block";
+    }
+    if (historyContent) {
+      historyContent.style.display = "none";
+    }
 
     // fill in values
     $("#prompt-panel-processcategory").val(code_type);

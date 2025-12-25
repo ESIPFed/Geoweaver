@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <meta charset="utf-8"></meta>
+   <meta http-equiv="cache-control" content="max-age=0" />
+   <meta http-equiv="cache-control" content="no-cache" />
+   <meta http-equiv="expires" content="0" />
+   <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+   <meta http-equiv="pragma" content="no-cache" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>Geoweaver - Localhost Login</title>
+   <link href="../css/login.css" rel="stylesheet"></link>
+   <style>
+     body {
+       font-family: Arial, sans-serif;
+       background: linear-gradient(135deg, #87ceeb 0%, #5bc0de 50%, #17a2b8 100%);
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       min-height: 100vh;
+       margin: 0;
+       padding: 20px;
+     }
+     .login-container {
+       background: white;
+       border-radius: 10px;
+       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+       padding: 40px;
+       max-width: 400px;
+       width: 100%;
+     }
+     .login-logo {
+       text-align: center;
+       margin-bottom: 20px;
+     }
+     .login-logo img {
+       max-width: 200px;
+       height: auto;
+       margin-bottom: 10px;
+     }
+     .login-header {
+       text-align: center;
+       margin-bottom: 30px;
+     }
+     .login-header h1 {
+       color: #333;
+       margin: 0 0 10px 0;
+       font-size: 28px;
+       font-weight: 600;
+     }
+     .login-header p {
+       color: #666;
+       margin: 0;
+       font-size: 14px;
+     }
+     .form-group {
+       margin-bottom: 20px;
+     }
+     .form-group label {
+       display: block;
+       margin-bottom: 8px;
+       color: #333;
+       font-weight: 500;
+       font-size: 14px;
+     }
+     .form-group input[type="password"] {
+       width: 100%;
+       padding: 12px;
+       border: 1px solid #ddd;
+       border-radius: 5px;
+       font-size: 16px;
+       box-sizing: border-box;
+     }
+     .form-group input[type="password"]:focus {
+       outline: none;
+       border-color: #17a2b8;
+       box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
+     }
+     .error-message {
+       background-color: #fee;
+       color: #c33;
+       padding: 12px;
+       border-radius: 5px;
+       margin-bottom: 20px;
+       display: none;
+       font-size: 14px;
+     }
+     .error-message.show {
+       display: block;
+     }
+     .login-button {
+       width: 100%;
+       padding: 12px;
+       background: linear-gradient(135deg, #5bc0de 0%, #17a2b8 100%);
+       color: white;
+       border: none;
+       border-radius: 5px;
+       font-size: 16px;
+       font-weight: 600;
+       cursor: pointer;
+       transition: transform 0.2s, box-shadow 0.2s;
+     }
+     .login-button:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+       background: linear-gradient(135deg, #46b8da 0%, #138496 100%);
+     }
+     .login-button:active {
+       transform: translateY(0);
+     }
+     .login-button:disabled {
+       opacity: 0.6;
+       cursor: not-allowed;
+       transform: none;
+     }
+     .info-text {
+       text-align: center;
+       color: #666;
+       font-size: 12px;
+       margin-top: 20px;
+     }
+   </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo">
+      <img src="../img/header.png" alt="Geoweaver Logo" />
+    </div>
+    <div class="login-header">
+      <h1>Geoweaver</h1>
+      <p>Please enter localhost password to continue</p>
+    </div>
+    
+    <div id="errorMessage" class="error-message"></div>
+    
+    <form id="loginForm" onsubmit="return handleLogin(event)">
+      <div class="form-group">
+        <label for="password">Password (Localhost Password)</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="Enter password"
+          required
+          autofocus
+        />
+      </div>
+      
+      <button type="submit" class="login-button" id="loginButton">
+        Login
+      </button>
+    </form>
+    
+    <div class="info-text">
+      This password is the same as the one used when running localhost processes
+    </div>
+  </div>
+
+  <script src="../js/jsencrypt.min.js"></script>
+  <script>
+    // Check if already authenticated on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      // Try to access a protected resource to check authentication
+      // If we can access it, we're already authenticated
+      fetch('../web/geoweaver', {
+        method: 'HEAD',
+        redirect: 'manual'
+      }).then(function(response) {
+        // If we get a non-redirect response (200 or other), we might be authenticated
+        // But the safest way is to check if we're redirected to login page
+        if (response.type === 'opaqueredirect' || response.status === 302) {
+          // Being redirected, likely to login page, so we're not authenticated
+          return;
+        }
+        // If we get here and status is OK, we might be authenticated
+        // But to be safe, we'll let the server-side check handle it
+      }).catch(function() {
+        // Error checking, continue with normal login flow
+      });
+    });
+
+    function showError(message) {
+      var errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
+
+    function hideError() {
+      var errorDiv = document.getElementById('errorMessage');
+      errorDiv.classList.remove('show');
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      hideError();
+      
+      var passwordInput = document.getElementById('password');
+      var loginButton = document.getElementById('loginButton');
+      var password = passwordInput.value;
+      
+      if (!password) {
+        showError('Please enter password');
+        return false;
+      }
+      
+      // Disable button during login
+      loginButton.disabled = true;
+      loginButton.textContent = 'Logging in...';
+      
+      // Get RSA public key first
+      fetch('../web/key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(keyResponse) {
+        try {
+          var keyData = JSON.parse(keyResponse);
+          
+          // Encrypt password
+          var encrypt = new JSEncrypt();
+          encrypt.setPublicKey(keyData.rsa_public);
+          var encrypted = encrypt.encrypt(password);
+          
+          // Send authentication request
+          var formData = new URLSearchParams();
+          formData.append('password', encrypted);
+          
+          return fetch('../web/authenticateLocalhost', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData
+          });
+        } catch (e) {
+          throw new Error('Encryption failed: ' + e.message);
+        }
+      })
+      .then(function(response) {
+        // Check if response is OK
+        if (!response.ok) {
+          // If redirected (status 3xx), might be intercepted
+          if (response.status >= 300 && response.status < 400) {
+            throw new Error('Request was redirected. Please check if you are already logged in.');
+          }
+          throw new Error('Server returned error: ' + response.status + ' ' + response.statusText);
+        }
+        
+        // Check content type
+        var contentType = response.headers.get('content-type');
+        if (contentType && !contentType.includes('application/json') && !contentType.includes('text/plain')) {
+          // If HTML response, might be a redirect page
+          return response.text().then(function(text) {
+            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+              // This is an HTML page, likely a redirect
+              // Try to redirect to main page
+              window.location.href = '../web/geoweaver';
+              return null;
+            }
+            throw new Error('Unexpected response format. Expected JSON but got: ' + contentType);
+          });
+        }
+        
+        return response.text();
+      })
+      .then(function(result) {
+        // If result is null, we already handled redirect
+        if (result === null) {
+          return;
+        }
+        
+        try {
+          var resultData = JSON.parse(result);
+          
+          if (resultData.status === 'success') {
+            // Redirect to main page
+            window.location.href = '../web/geoweaver';
+          } else {
+            showError(resultData.message || 'Login failed, please check password');
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
+            passwordInput.focus();
+          }
+        } catch (e) {
+          // If parsing fails, check if it's HTML (might be a redirect)
+          if (result && (result.trim().startsWith('<!DOCTYPE') || result.trim().startsWith('<html'))) {
+            // HTML response, likely already authenticated and redirected
+            window.location.href = '../web/geoweaver';
+            return;
+          }
+          throw new Error('Failed to parse response: ' + e.message + '. Response: ' + (result ? result.substring(0, 100) : 'empty'));
+        }
+      })
+      .catch(function(error) {
+        console.error('Login error:', error);
+        showError('Login failed: ' + error.message);
+        loginButton.disabled = false;
+        loginButton.textContent = 'Login';
+        passwordInput.focus();
+      });
+      
+      return false;
+    }
+    
+    // Allow Enter key to submit
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        handleLogin(e);
+      }
+    });
+  </script>
+</body>
+</html>

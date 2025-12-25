@@ -1052,6 +1052,7 @@ GW.process = {
         backgroundColor: "rgb(255,255,255)",
         fontSize: 12,
         overflow: "auto",
+        zIndex: "20000", // Set very high z-index to ensure dialog appears above all fullscreen containers
       },
       html: '<div style="font-size:12px; padding: 1px;">' + content + "</div>",
     });
@@ -1080,6 +1081,41 @@ GW.process = {
       (window.innerHeight - height) / 2,
       "LEFT_TOP"
     );
+
+    // Function to set z-index on frame and container ONLY
+    // Don't interfere with jsFrame's internal positioning
+    var setDialogZIndex = function() {
+      try {
+        var dialogZIndex = "20000";
+        
+        // Ensure jsframe-container has high z-index and relative positioning
+        var jsframeContainer = document.getElementById("jsframe-container");
+        if (jsframeContainer) {
+          jsframeContainer.style.setProperty("z-index", dialogZIndex, "important");
+          jsframeContainer.style.setProperty("position", "relative", "important");
+        }
+        
+        // Try to get the main frame element and set its z-index only
+        // Don't change its position - let jsFrame manage that
+        try {
+          var frameElement = frame.getFrameElement();
+          if (frameElement) {
+            // Only set z-index, never touch position
+            frameElement.style.setProperty("z-index", dialogZIndex, "important");
+          }
+        } catch (e) {
+          // Ignore if getFrameElement fails
+        }
+      } catch (e) {
+        console.log("Could not set z-index for frame:", e);
+      }
+    };
+    
+    // Wait a bit for jsFrame to complete its layout before setting z-index
+    // This ensures we don't interfere with jsFrame's positioning logic
+    setTimeout(setDialogZIndex, 100);
+    setTimeout(setDialogZIndex, 300);
+    setTimeout(setDialogZIndex, 500);
 
     GW.workspace.if_any_frame_on = true;
 
@@ -1639,7 +1675,7 @@ GW.process = {
       tabcontent[i].style.display = "none";
     }
     
-    // Update tab buttons styling
+    // Update tab buttons styling for main process tabs (using nav-link)
     tablinks = document.querySelectorAll(".process-tabs .nav-link");
     for (i = 0; i < tablinks.length; i++) {
       tablinks[i].classList.remove("active");
@@ -1647,14 +1683,38 @@ GW.process = {
       tablinks[i].style.color = "#6c757d";
     }
     
+    // Update tab buttons styling for side panel tabs (using tablinks-process)
+    tablinks = document.querySelectorAll(".tablinks-process");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].classList.remove("active");
+      // Remove any inline styles that might indicate active state
+      tablinks[i].style.backgroundColor = "";
+      tablinks[i].style.color = "";
+      tablinks[i].style.borderBottom = "";
+      tablinks[i].style.fontWeight = "";
+    }
+    
     // Show selected tab content
-    document.getElementById(name).style.display = "block";
+    var tabElement = document.getElementById(name);
+    if (tabElement) {
+      tabElement.style.display = "block";
+    }
     
     // Update selected tab button
     if (ele) {
       ele.classList.add("active");
-      ele.style.borderBottom = "3px solid #f5576c";
-      ele.style.color = "#f5576c";
+      // Check if it's a side panel tab (tablinks-process) or main tab (nav-link)
+      if (ele.classList.contains("tablinks-process")) {
+        // Side panel tab styling
+        ele.style.backgroundColor = "#f0f0f0";
+        ele.style.color = "#333";
+        ele.style.fontWeight = "bold";
+        ele.style.borderBottom = "2px solid #007bff";
+      } else {
+        // Main process tab styling
+        ele.style.borderBottom = "3px solid #f5576c";
+        ele.style.color = "#f5576c";
+      }
     }
     
     // Ensure editor-history-tab-panel always has correct width (100%, not 100vw)
@@ -2049,13 +2109,15 @@ GW.process = {
       
       // Make the tabs-content-wrapper fullscreen - cover entire browser window
       // But keep tabs container visible at the top
+      // Set z-index much lower than dialog (20000) to ensure dialogs appear on top
       var tabsHeight = tabsContainer ? tabsContainer.offsetHeight : 38;
       tabsContentWrapper.style.position = "fixed";
       tabsContentWrapper.style.top = tabsHeight + "px";
       tabsContentWrapper.style.left = "0";
       tabsContentWrapper.style.width = "100vw";
       tabsContentWrapper.style.height = "calc(100vh - " + tabsHeight + "px)";
-      tabsContentWrapper.style.zIndex = "9999";
+      tabsContentWrapper.style.zIndex = "100";
+      tabsContentWrapper.style.setProperty("z-index", "100", "important");
       tabsContentWrapper.style.overflow = "hidden";
       tabsContentWrapper.style.backgroundColor = "#fff";
       
@@ -2065,17 +2127,20 @@ GW.process = {
         tabsContainer.style.top = "0";
         tabsContainer.style.left = "0";
         tabsContainer.style.width = "100vw";
-        tabsContainer.style.zIndex = "10000";
+        tabsContainer.style.zIndex = "101";
+        tabsContainer.style.setProperty("z-index", "101", "important");
       }
       
       // Also make parent containers fullscreen to ensure proper layering
+      // But keep z-index low so dialogs can appear on top
       if (processContainer) {
         processContainer.style.position = "fixed";
         processContainer.style.top = "0";
         processContainer.style.left = "0";
         processContainer.style.width = "100vw";
         processContainer.style.height = "100vh";
-        processContainer.style.zIndex = "9999";
+        processContainer.style.zIndex = "100";
+        processContainer.style.setProperty("z-index", "100", "important");
         processContainer.style.overflow = "hidden";
         processContainer.style.backgroundColor = "#fff";
       }
@@ -2086,7 +2151,8 @@ GW.process = {
         mainContent.style.left = "0";
         mainContent.style.width = "100vw";
         mainContent.style.height = "100vh";
-        mainContent.style.zIndex = "9999";
+        mainContent.style.zIndex = "100";
+        mainContent.style.setProperty("z-index", "100", "important");
         mainContent.style.overflow = "hidden";
         mainContent.style.backgroundColor = "#fff";
       }
@@ -2097,7 +2163,8 @@ GW.process = {
         mainProcessInfo.style.left = "0";
         mainProcessInfo.style.width = "100vw";
         mainProcessInfo.style.height = "100vh";
-        mainProcessInfo.style.zIndex = "9999";
+        mainProcessInfo.style.zIndex = "100";
+        mainProcessInfo.style.setProperty("z-index", "100", "important");
         mainProcessInfo.style.overflow = "hidden";
       }
       

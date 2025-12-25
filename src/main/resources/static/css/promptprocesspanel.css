@@ -34,6 +34,44 @@
     height: 100vh;
     border: 1px dashed lightgray;
 }
+
+/* When side panel is fullscreen, ensure it doesn't block dialogs */
+.cd-panel__container.fullscreen {
+    z-index: 1000 !important;
+}
+
+.cd-panel.fullscreen {
+    z-index: 1000 !important;
+}
+
+/* Ensure side panel never blocks dialogs - set much lower z-index */
+.cd-panel {
+    z-index: 100 !important;
+}
+
+.cd-panel__container {
+    z-index: 100 !important;
+}
+
+.cd-panel__header {
+    z-index: 101 !important;
+}
+
+/* Override for fullscreen - still keep it much lower than dialogs (20000) */
+.cd-panel.fullscreen,
+.cd-panel__container.fullscreen {
+    z-index: 100 !important;
+}
+
+.cd-panel__header.fullscreen {
+    z-index: 101 !important;
+}
+
+/* Ensure jsframe dialogs appear above side panel */
+#jsframe-container {
+    z-index: 20000 !important;
+    position: relative;
+}
   
 .cd-panel.cd-panel--is-visible {
     visibility: visible;

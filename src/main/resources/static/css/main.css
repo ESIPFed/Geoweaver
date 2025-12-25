@@ -475,6 +475,23 @@ form .progress {
   opacity: 1;
 }
 
+/* Ensure fullscreen elements don't block dialogs - set much lower z-index */
+.fullscreen:not(#jsframe-container):not(#jsframe-container *) {
+  z-index: 100 !important;
+}
+
+/* Ensure jsframe-container has high z-index to display dialogs above all content */
+#jsframe-container {
+  position: relative;
+  z-index: 20000 !important;
+}
+
+/* Ensure jsFrame container has high z-index, but don't interfere with jsFrame's internal positioning */
+#jsframe-container {
+  z-index: 20000 !important;
+  position: relative !important;
+}
+
 .log_window {
   background-color: #f8f9fa;
   color: #333333;

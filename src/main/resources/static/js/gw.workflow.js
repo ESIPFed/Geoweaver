@@ -232,9 +232,9 @@ GW.workflow = {
     }
 
     content = `
-      <div style="width: 100%; height: 100%;">
+      <div style="width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden;">
         <!-- Workflow Header Section -->
-        <div class="workflow-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 24px 30px; margin: 0; border-bottom: 1px solid #e0e0e0;">
+        <div class="workflow-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 24px 30px; margin: 0; border-bottom: 1px solid #e0e0e0; flex-shrink: 0;">
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h2 style="margin: 0; color: #fff; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px;">
@@ -260,7 +260,7 @@ GW.workflow = {
         </div>
 
         <!-- Workflow Info Bar -->
-        <div style="background-color: #fff; border-bottom: 1px solid #e0e0e0; padding: 15px 30px;">
+        <div style="background-color: #fff; border-bottom: 1px solid #e0e0e0; padding: 15px 30px; flex-shrink: 0;">
           <div class="row" style="margin: 0; align-items: center;">
             <div class="col-md-2" style="padding: 5px 10px;">
               <label class="form-label" style="font-weight: 600; margin: 0; font-size: 12px; color: #6c757d;">ID</label>
@@ -284,7 +284,7 @@ GW.workflow = {
         </div>
 
         <!-- Tabs Navigation -->
-        <div style="background-color: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 30px;">
+        <div style="background-color: #fff; border-bottom: 2px solid #e0e0e0; padding: 0 30px; flex-shrink: 0;">
           <ul class="nav nav-tabs workflow-tabs" role="tablist" style="margin: 0; border-bottom: none; background-color: transparent;">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" id="main-workflow-info-code-tab" onclick="GW.workflow.openCity(event, 'main-workflow-info-code')" 
@@ -302,16 +302,16 @@ GW.workflow = {
         </div>
 
         <!-- Tabs Content Container -->
-        <div style="height: calc(100% - 220px); width: 100%; margin: 0; padding: 0; background-color: #f8f9fa;">
-          <div id="main-workflow-info-code" class="tabcontent-workflow" style="height: 100%; overflow-y: auto; left: 0; margin: 0; padding: 30px; display: block; background-color: #f8f9fa;">
-            <div class="row" style="height: 100%; margin: 0; padding: 0;">
-              <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; width: 100%;">
+        <div style="flex: 1; min-height: 0; width: 100%; margin: 0; padding: 0; background-color: #f8f9fa; overflow: hidden; display: flex; flex-direction: column;">
+          <div id="main-workflow-info-code" class="tabcontent-workflow" style="flex: 1; min-height: 0; overflow-y: auto; left: 0; margin: 0; padding: 30px 30px 100px 30px; display: block; background-color: #f8f9fa; box-sizing: border-box;">
+            <div class="row" style="margin: 0; padding: 0;">
+              <div style="background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 20px; width: 100%; box-sizing: border-box; margin-bottom: 40px;">
                 ${info_body}
               </div>
             </div>
           </div>
-          <div id="main-workflow-info-history" class="tabcontent-workflow" style="height: 100%; overflow-y: auto; left: 0; margin: 0; padding: 20px; display: none; background-color: #f8f9fa;">
-            <div class="row" id="workflow-history-container" style="padding: 0px; margin: 0px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <div id="main-workflow-info-history" class="tabcontent-workflow" style="flex: 1; min-height: 0; overflow-y: auto; left: 0; margin: 0; padding: 20px 20px 100px 20px; display: none; background-color: #f8f9fa; box-sizing: border-box;">
+            <div class="row" id="workflow-history-container" style="padding: 0px; margin: 0px 0px 40px 0px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box;">
             </div>
           </div>
         </div>
