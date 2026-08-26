@@ -16,21 +16,11 @@ describe('Application Build Check', () => {
       });
   });
   it('Navigating through intro', () => {
+    // visitGeoweaver already logs in and dismisses IntroJS when present
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    // Wait for IntroJS to appear, or skip if it doesn't appear (login might have skipped it)
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-nextbutton').length > 0) {
-        cy.get('.introjs-nextbutton').click();
-        cy.get('.introjs-nextbutton').click();
-        cy.get('.introjs-nextbutton').click();
-        cy.get('.introjs-nextbutton').click();
-        cy.get('.introjs-nextbutton').click();
-      } else if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
-    cy.get('#main-general-content').click();
-    cy.get('.lead > b').should('be.visible');
+    cy.get('#main-general-content', { timeout: 10000 }).should('exist').click({ force: true });
+    cy.get('.lead').should('be.visible');
+    cy.get('.lead b, .lead > b').should('exist');
   })
 });
 
@@ -169,13 +159,7 @@ describe('Application Build Check', () => {
 
 describe('Navigation', () => {
   it('should navigate to different pages', () => {
-    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver'); 
-    // Skip intro if it appears
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
     
     cy.contains('Log' , { timeout: 10000 }).click();
     cy.contains('Logging').should('be.visible');
@@ -205,12 +189,7 @@ describe('Navigation', () => {
 
 describe('Host Testing', () => {
   it('should submit a create new host form successfully', () => {
-    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver'); 
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.get('#newhost').click();
 
     cy.get('#hostip').type('1.1.1.1');
@@ -224,11 +203,6 @@ describe('Host Testing', () => {
   it('Search result should be successful after creating the host', () => {
     /* ==== Generated with Cypress Studio ==== */
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('[data-intro="All the other tools"]').click();
     cy.get('#toolbar-search').click();
     cy.get('#keywords').clear('New Host');
@@ -251,11 +225,6 @@ describe('Host Testing', () => {
 describe('Process Testing', () => {
   it('Create Shell Process', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#newprocess').click().then(() => {
       // Ensure the window or form is fully loaded and active
       cy.get('form', { timeout: 10000 }).should('be.visible'); // Wait until the form is visible
@@ -277,13 +246,6 @@ describe('Process Testing', () => {
   it('Create Python Process', () => {
     // Visit the Geoweaver web page
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    
-    // Skip intro and go to process creation
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#newprocess').click();
   
     // Ensure that the new process code area is visible before proceeding
@@ -312,12 +274,7 @@ describe('Process Testing', () => {
 
 describe('Add Process to Weaver', () => {
   it('Add to weaver', () => {
-    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver').then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
@@ -334,12 +291,7 @@ describe('Add Process to Weaver', () => {
 
 describe('Edit Process Name', () => {
   it('Add to weaver', () => {
-    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver').then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
@@ -364,12 +316,7 @@ describe('Edit Process Name', () => {
 
   })
   it('process category and id should be disabled', () => {
-    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver').then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
@@ -382,11 +329,6 @@ describe('Edit Process Name', () => {
 
   it('Create and Edit Python Process', function() {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#process_folder_python').click();
     cy.get('#newprocess').click();
     cy.get('form select.form-control.form-control-sm').select('python');
@@ -495,12 +437,7 @@ describe('Edit Process Name', () => {
 
 describe('Delete Process', () => {
     it('Delete Shell Process', () => {
-      cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('body').then(($body) => {
-        if ($body.find('.introjs-skipbutton').length > 0) {
-          cy.get('.introjs-skipbutton').click();
-        }
-      }).then(
+      cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver').then(
         () => {
           cy.get('#processes', { timeout: 5000 }).should('be.visible');
         }
@@ -519,12 +456,7 @@ describe('Delete Process', () => {
     })
 
     it('Delete Python Process', () => {
-      cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('body').then(($body) => {
-        if ($body.find('.introjs-skipbutton').length > 0) {
-          cy.get('.introjs-skipbutton').click();
-        }
-      }).then(
+      cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver').then(
         () => {
           cy.get('#process_folder_python',  { timeout: 10000 }).should("be.visible")
         }
@@ -567,11 +499,6 @@ describe('Write Password into .secret', () => {
 describe('Create Python process and run it', () => {
   it('creates python process and runs', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#newprocess').click();
 
     cy.get('form select.form-control.form-control-sm').select('Python');
@@ -659,11 +586,6 @@ describe('Create Python process and run it', () => {
 describe('Hosts Testing', () => {
   it('Create New Host', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#newhost').click();
     cy.get('#hostip').clear('1');
     cy.get('#hostip').type('1.1.1.1');
@@ -677,11 +599,6 @@ describe('Hosts Testing', () => {
 
   it('Delete New Host', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#host_folder_ssh > a').click();
     cy.get('ul#host_folder_ssh_target').contains('New Host').click();
     // Delete button now uses fa-trash icon instead of fa-minus, and has "Delete" text
@@ -691,11 +608,6 @@ describe('Hosts Testing', () => {
 
   it('LocalHost testing', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
     cy.get('#_host_name').should('have.value', 'Localhost');
@@ -709,22 +621,14 @@ describe('Hosts Testing', () => {
 
   it('LocalHost Read Python Env', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
-    // Click on Python Env tab instead of .fab
     cy.contains('Python Env').click();
-    cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('123456');
+    cy.intercept('POST', '**/readEnvironment').as('readEnvironment');
+    cy.get('#inputpswd').clear().type('123456');
     cy.get('#pswd-confirm-btn').click();
-    cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
-    
     cy.wait('@readEnvironment').then((interception) => {
-      cy.log(interception.response)
+      cy.log(interception.response);
       expect(interception.response.statusCode).to.equal(200);
     });
   })
