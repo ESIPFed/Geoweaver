@@ -34,9 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -69,6 +69,14 @@ public abstract class AbstractHelperMethodsTest {
     LocalhostTool ltmock;
 
     Logger logger = Logger.getLogger(this.getClass());
+
+    protected RestTemplate noRedirectRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(
+            new HttpComponentsClientHttpRequestFactory(
+                HttpClients.custom().disableRedirectHandling().build()));
+        return restTemplate;
+    }
 
     // This method is kept here in this file due to 3 other files
     // (EnviromentTest.java, OtherFunctionalTests.java, and HostTest.java)

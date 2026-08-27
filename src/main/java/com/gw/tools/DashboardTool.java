@@ -38,46 +38,48 @@ public class DashboardTool {
 
     for (int i = 0; i < failed_processes.size(); i++) {
 
-      // System.out.println("=========");
-
       Object[] cols = (Object[]) failed_processes.get(i);
 
-      if (cols[1] != null && cols[2] != null) {
-
-        Date begin_time = bt.parseSQLDateStr(String.valueOf(cols[1]));
-        Date end_time = bt.parseSQLDateStr(String.valueOf(cols[2]));
-
-        int diffInMillies = ((Long) Math.abs(end_time.getTime() - begin_time.getTime())).intValue();
-
-        costs[num++] = diffInMillies;
-      } else {
-
-        costs[num++] = -1;
-      }
+      costs[num++] = calculateTimeCostMillis(cols);
     }
 
     for (int i = 0; i < success_processes.size(); i++) {
 
-      // System.out.println("=========");
-
       Object[] cols = (Object[]) success_processes.get(i);
 
-      if (cols[1] != null && cols[2] != null) {
-
-        Date begin_time = bt.parseSQLDateStr(String.valueOf(cols[1]));
-
-        Date end_time = bt.parseSQLDateStr(String.valueOf(cols[2]));
-
-        int diffInMillies = ((Long) Math.abs(end_time.getTime() - begin_time.getTime())).intValue();
-
-        costs[num++] = diffInMillies;
-      } else {
-
-        costs[num++] = -1;
-      }
+      costs[num++] = calculateTimeCostMillis(cols);
     }
 
     return costs;
+  }
+
+  private int calculateTimeCostMillis(Object[] cols) {
+
+    if (cols[1] == null || cols[2] == null) {
+      return -1;
+    }
+
+    Date begin_time = toHistoryDate(cols[1]);
+    Date end_time = toHistoryDate(cols[2]);
+
+    if (begin_time == null || end_time == null) {
+      return -1;
+    }
+
+    return (int) Math.abs(end_time.getTime() - begin_time.getTime());
+  }
+
+  private Date toHistoryDate(Object value) {
+
+    if (value instanceof Date dateValue) {
+      return dateValue;
+    }
+
+    if (value instanceof java.sql.Timestamp timestamp) {
+      return new Date(timestamp.getTime());
+    }
+
+    return bt.parseSQLDateStr(String.valueOf(value));
   }
 
   public String getAllProcessTimeCostsJSON() {
@@ -100,15 +102,15 @@ public class DashboardTool {
 
   public String getJSON() {
 
-    int process_num = ((Long) processrepository.count()).intValue();
+    int process_num = (int) processrepository.count();
 
-    int history_num = ((Long) historyrepository.count()).intValue();
+    int history_num = (int) historyrepository.count();
 
-    int host_num = ((Long) hostrepository.count()).intValue();
+    int host_num = (int) hostrepository.count();
 
-    int workflow_num = ((Long) workflowrepository.count()).intValue();
+    int workflow_num = (int) workflowrepository.count();
 
-    int environment_num = ((Long) environmentrepository.count()).intValue();
+    int environment_num = (int) environmentrepository.count();
 
     int process_shell_num = processrepository.findShellProcess().size();
 

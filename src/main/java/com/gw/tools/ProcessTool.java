@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -541,17 +542,17 @@ public class ProcessTool {
 				
 				Object[] process_obj = recent_processes.get(num);
 				
-				resp.append("{ \"id\": \"").append(process_obj[0]).append("\", ");
+				resp.append("{ \"id\": \"").append(formatRecentField(process_obj[0])).append("\", ");
 				
-				resp.append("\"name\": \"").append(process_obj[14]).append("\", ");
+				resp.append("\"name\": \"").append(formatRecentField(process_obj[5])).append("\", ");
 				
-				resp.append("\"notes\": \"").append(process_obj[4]).append("\", ");
+				resp.append("\"notes\": \"").append(formatRecentField(process_obj[3])).append("\", ");
 				
-				resp.append("\"end_time\": \"").append(process_obj[2]).append("\", ");
+				resp.append("\"end_time\": \"").append(formatRecentField(process_obj[2])).append("\", ");
 				
-				resp.append("\"status\": \"").append(process_obj[8]).append("\", ");
+				resp.append("\"status\": \"").append(formatRecentField(process_obj[4])).append("\", ");
 				
-				resp.append("\"begin_time\": \"").append(process_obj[1]).append("\"}");
+				resp.append("\"begin_time\": \"").append(formatRecentField(process_obj[1])).append("\"}");
 				
 			}
 			
@@ -565,6 +566,24 @@ public class ProcessTool {
 		
 		return resp.toString();
 		
+	}
+
+	private String formatRecentField(Object value) {
+		if (value == null) {
+			return "null";
+		}
+		if (value instanceof Clob clob) {
+			try {
+				long length = clob.length();
+				if (length > Integer.MAX_VALUE) {
+					return clob.getSubString(1, Integer.MAX_VALUE);
+				}
+				return clob.getSubString(1, (int) length);
+			} catch (SQLException e) {
+				return String.valueOf(value);
+			}
+		}
+		return String.valueOf(value);
 	}
 	
 	public String removeClob(String clob) {
