@@ -6,7 +6,8 @@ module.exports = defineConfig({
     codeCoverage: {
       url: 'http://localhost:3000/__coverage__'
     },
-    home:  os.homedir(),
+    home: os.homedir(),
+    localhost_password: '123456',
   },
   e2e: {
     experimentalStudio: true,
@@ -25,8 +26,8 @@ module.exports = defineConfig({
       });}
       
     },
-  screenshotsFolder: 'cypress/screenshots',
-  videosFolder: 'cypress/videos',
+  screenshotsFolder: 'screenshots',
+  videosFolder: 'videos',
 
 
 })

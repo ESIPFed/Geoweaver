@@ -66,14 +66,14 @@ Cypress.Commands.add('visitGeoweaver', (url = 'http://localhost:8070/Geoweaver/w
   cy.url({ timeout: 5000 }).then((currentUrl) => {
     if (currentUrl.includes('/localhost-login')) {
       // We're on login page, need to login
-      cy.get('input[type="password"]', { timeout: 10000 }).should('be.visible');
+      cy.get('#password', { timeout: 10000 }).should('be.visible');
       
       // Get the password from env or use default
       const password = Cypress.env('localhost_password') || '123456';
       
       // Fill in password and submit
-      cy.get('input[type="password"]').type(password);
-      cy.get('button').contains('Login', { timeout: 10000 }).click();
+      cy.get('#password').type(password);
+      cy.get('#loginForm button[type="submit"]').contains('Login').click();
       
       // Wait for redirect to main page
       cy.url({ timeout: 10000 }).should('not.include', '/localhost-login');
@@ -85,4 +85,15 @@ Cypress.Commands.add('visitGeoweaver', (url = 'http://localhost:8070/Geoweaver/w
   
   // Wait a bit more for IntroJS to potentially start
   cy.wait(1500);
+});
+
+/**
+ * Skip IntroJS tour when the skip button is visible.
+ */
+Cypress.Commands.add('skipIntroIfPresent', () => {
+  cy.get('body', { timeout: 10000 }).then(($body) => {
+    if ($body.find('.introjs-skipbutton').length > 0) {
+      cy.get('.introjs-skipbutton').click();
+    }
+  });
 });
