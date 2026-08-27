@@ -16,7 +16,7 @@ https://img.shields.io/github/issues/ESIPFed/Geoweaver?style=for-the-badge&color
 https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
 )](https://codecov.io/)
 ![PyPi](https://img.shields.io/pypi/v/pygeoweaver?style=for-the-badge) 
-![Minimum Java Version](https://img.shields.io/badge/Java-11%2B-%23ed8b02?style=for-the-badge&logo=openjdk
+![Minimum Java Version](https://img.shields.io/badge/Java-17%2B-%23ed8b02?style=for-the-badge&logo=openjdk
 )
 ![Geoweaver Docs](https://img.shields.io/badge/Docs-Geoweaver-%23c4ff7d?style=for-the-badge&logo=readthedocs&link=https%3A%2F%2Fgeoweaver.dev%2F
 )
@@ -94,7 +94,7 @@ For detailed information, visit [Geoweaver Documentation](https://geoweaver.dev)
 
 ### Prerequisites
 
-- ☕ Java 11 or higher (OpenJDK 11 or higher)
+- ☕ Java 17 or higher (OpenJDK 17 or higher; Spring Boot 3 requires Java 17+)
 - 🐳 Docker (optional, for Docker installation)
 
 ### Quick Start
