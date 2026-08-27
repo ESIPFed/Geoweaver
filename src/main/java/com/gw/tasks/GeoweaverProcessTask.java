@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -99,10 +99,10 @@ public class GeoweaverProcessTask extends Task {
   Logger logger = Logger.getLogger(this.getClass());
 
   /** This monitor is used to return the logs while process is running */
-  javax.websocket.Session monitor = null;
+  jakarta.websocket.Session monitor = null;
 
   /** This monitor is used to return the status of the process in a running workflow */
-  javax.websocket.Session workflow_monitor = null;
+  jakarta.websocket.Session workflow_monitor = null;
 
   public GeoweaverProcessTask() {
 
@@ -326,7 +326,7 @@ public class GeoweaverProcessTask extends Task {
    *
    * @param socketsession
    */
-  public void startMonitor(javax.websocket.Session socketsession) {
+  public void startMonitor(jakarta.websocket.Session socketsession) {
 
     monitor = socketsession;
   }

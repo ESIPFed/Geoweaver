@@ -4,10 +4,10 @@ package com.gw.jpa;
 import lombok.Data;
 
 
-import javax.persistence.Column;
-import javax.persistence.Lob;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import java.util.Date;
 
 @Entity

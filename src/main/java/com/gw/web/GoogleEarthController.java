@@ -9,17 +9,10 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +41,7 @@ public class GoogleEarthController {
 
   private String scheme = "https";
 
-  @Autowired RestTemplate restTemplate;
+  private RestTemplate restTemplate;
 
   HttpHeaders headers = new HttpHeaders();
 
@@ -60,34 +53,19 @@ public class GoogleEarthController {
 
   int TIMEOUT = 30000;
 
-  public GoogleEarthController(RestTemplateBuilder builder) {}
+  public GoogleEarthController() {}
 
-  @Bean(name = "GErestTemplate")
-  @Scope("prototype")
-  public RestTemplate getRestTemplate() {
-
-    RestTemplate GErestTemplate = new RestTemplate();
-
-    HttpComponentsClientHttpRequestFactory requestFactory =
-        new HttpComponentsClientHttpRequestFactory();
-
-    requestFactory.setConnectTimeout(TIMEOUT);
-    requestFactory.setReadTimeout(TIMEOUT);
-
-    CloseableHttpClient httpClient =
-        HttpClients.custom()
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setCookieSpec(CookieSpecs.STANDARD)
-                    .setRedirectsEnabled(true)
-                    .build())
-            .build();
-
-    GErestTemplate.setRequestFactory(requestFactory);
-
-    logger.debug("A new Google Earth restTemplate is created");
-
-    return GErestTemplate;
+  private RestTemplate getRestTemplate() {
+    if (restTemplate == null) {
+      RestTemplate template = new RestTemplate();
+      SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+      requestFactory.setConnectTimeout(TIMEOUT);
+      requestFactory.setReadTimeout(TIMEOUT);
+      template.setRequestFactory(requestFactory);
+      restTemplate = template;
+      logger.debug("A new Google Earth restTemplate is created");
+    }
+    return restTemplate;
   }
 
   public String getRealTargetURL(String referurl) {
@@ -539,7 +517,7 @@ public class GoogleEarthController {
       // logger.debug(newentity.toString());
 
       ResponseEntity<byte[]> responseEntity =
-          restTemplate.exchange(targeturl, HttpMethod.GET, newentity, byte[].class);
+          getRestTemplate().exchange(targeturl, HttpMethod.GET, newentity, byte[].class);
 
       String contenttype = getHeaderProperty(responseEntity.getHeaders(), "Content-Type");
 
@@ -566,7 +544,7 @@ public class GoogleEarthController {
 
       resp = new ResponseEntity<byte[]>(newbody, headers, responseEntity.getStatusCode());
 
-      restTemplate.exchange(
+      getRestTemplate().exchange(
           "https://code.earthengine.google.com/", HttpMethod.GET, newentity, byte[].class);
 
       logger.debug("response entity: " + responseEntity.toString());
@@ -792,7 +770,7 @@ public class GoogleEarthController {
       String target_url = getRealTargetURL(newheaders.get("target_url").get(0));
 
       ResponseEntity<String> responseEntity =
-          restTemplate.exchange(target_url, method, newentity, String.class);
+          getRestTemplate().exchange(target_url, method, newentity, String.class);
 
       String newbody = addURLProxy(responseEntity.getBody(), hostid);
 

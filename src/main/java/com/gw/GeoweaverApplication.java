@@ -1,6 +1,5 @@
 package com.gw;
 
-import com.google.api.client.util.Value;
 import com.gw.jpa.GWUser;
 import com.gw.jpa.Host;
 import com.gw.tools.HostTool;
@@ -11,8 +10,6 @@ import com.gw.utils.RandomString;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.log4j.Logger;
@@ -23,22 +20,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @ServletComponentScan
-@EnableSwagger2
 public class GeoweaverApplication {
 
   static Logger logger = Logger.getLogger(GeoweaverApplication.class);
-
-  @Value("${geoweaver.workspace}")
-  private static String workspace;
 
   public static void main(String[] args) {
     // Create log directory before anything else to avoid NoSuchFileException
@@ -102,15 +89,6 @@ public class GeoweaverApplication {
     } catch (Exception e) {
       System.err.println("Error creating log directory: " + e.getMessage());
     }
-  }
-
-  @Bean
-  public Docket geoweaverAPI() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .select()
-        .apis(RequestHandlerSelectors.any())
-        .paths(PathSelectors.any())
-        .build();
   }
 
   public static void show_ascii_art(){

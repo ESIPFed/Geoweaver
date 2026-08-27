@@ -1,6 +1,6 @@
 package com.gw.tasks;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 /**
  * Class Task.java

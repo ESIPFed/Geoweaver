@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 import org.apache.tomcat.websocket.WsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,13 +268,13 @@ public class CommandServlet {
    * @param token The token used to identify the WebSocket session.
    * @return The WebSocket session, or null if not found.
    */
-  public static javax.websocket.Session findSessionById(String token) {
+  public static jakarta.websocket.Session findSessionById(String token) {
     if (token == null || token.isEmpty()) {
       logger.warn("Cannot find session with null or empty token");
       return null;
     }
     
-    javax.websocket.Session se = null;
+    jakarta.websocket.Session se = null;
     if (peers.containsKey(token)) {
       se = peers.get(token);
       if (se == null) {

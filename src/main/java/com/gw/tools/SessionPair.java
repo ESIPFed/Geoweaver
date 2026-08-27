@@ -2,7 +2,7 @@ package com.gw.tools;
 
 import java.util.Iterator;
 import java.util.Set;
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 public class SessionPair {
 

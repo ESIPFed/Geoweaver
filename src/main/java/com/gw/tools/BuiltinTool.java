@@ -6,7 +6,7 @@ import com.gw.server.CommandServlet;
 import com.gw.utils.BaseTool;
 import java.io.File;
 import java.io.IOException;
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
