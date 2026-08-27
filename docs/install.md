@@ -3,7 +3,11 @@
 
 ## Dependencies
 
-Java 1.8+ (OpenJDK 8 or higher)
+Java **17+** (OpenJDK 17 or higher). Latest Geoweaver (2.2+ / Spring Boot 3) **no longer supports JDK &lt; 17**.
+
+If you cannot bump your JDK, stay on **Geoweaver 2.1.x** (Java 11):
+see [GitHub Releases](https://github.com/ESIPFed/Geoweaver/releases)
+(example jar: [v2.1.7](https://github.com/ESIPFed/Geoweaver/releases/download/v2.1.7/geoweaver.jar)).
 
 [Docker](https://docs.docker.com/install/) 18.09.1+ (only for installation via docker)
 

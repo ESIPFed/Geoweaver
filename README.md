@@ -94,7 +94,8 @@ For detailed information, visit [Geoweaver Documentation](https://geoweaver.dev)
 
 ### Prerequisites
 
-- ☕ Java 17 or higher (OpenJDK 17 or higher; Spring Boot 3 requires Java 17+)
+- ☕ Java **17 or higher** (OpenJDK 17+). Latest Geoweaver (2.2+ / Spring Boot 3) **does not support JDK &lt; 17**.
+- If you cannot upgrade Java, use an older Geoweaver release (**2.1.x**, Java 11): [Releases](https://github.com/ESIPFed/Geoweaver/releases) (example: [v2.1.7 jar](https://github.com/ESIPFed/Geoweaver/releases/download/v2.1.7/geoweaver.jar)).
 - 🐳 Docker (optional, for Docker installation)
 
 ### Quick Start
