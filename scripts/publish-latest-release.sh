@@ -6,13 +6,11 @@
 #   https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
 #
 # Typical use after merging to main:
-#   ./scripts/publish-latest-release.sh              # version from pom.xml
-#   ./scripts/publish-latest-release.sh 2.2.0        # explicit version
-#   ./scripts/publish-latest-release.sh 2.2.0 --bump # also update pom.xml + gw.js and commit
-#   ./scripts/publish-latest-release.sh --dry-run
+#   ./scripts/publish-latest-release.sh 2.2.0 --bump
+#   ./scripts/publish-latest-release.sh 2.2.0 --promote-only v2.2.0-pre-XXXXXXXX
+#   ./scripts/publish-latest-release.sh 2.2.0 --dry-run
 #
-# Requirements: git, gh (authenticated), python3
-# Permissions: repo scope that can create releases, delete/create tags, and push.
+# Requirements: git, gh (authenticated), python3, curl
 #
 set -euo pipefail
 
@@ -24,6 +22,7 @@ WORKFLOW_FILE="release_workflow.yml"
 DRY_RUN=0
 DO_BUMP=0
 SKIP_WAIT=0
+PROMOTE_ONLY=""
 TARGET_BRANCH="main"
 VERSION_ARG=""
 
@@ -34,11 +33,12 @@ Usage: ./scripts/publish-latest-release.sh [VERSION] [options]
   VERSION           e.g. 2.2.0 (default: pom.xml version with -SNAPSHOT stripped)
 
 Options:
-  --bump            Update pom.xml + gw.js to VERSION, commit, and push to main
-  --branch NAME     Release target branch (default: main)
-  --skip-wait       Do not wait for GitHub Actions (you must retag manually later)
-  --dry-run         Print actions only
-  -h, --help        Show help
+  --bump              Update pom.xml + gw.js to VERSION, commit, and push to --branch
+  --promote-only TAG  Skip create; wait for TAG's workflow (if needed) and retag to latest
+  --branch NAME       Release target branch (default: main)
+  --skip-wait         Create release only; print promote command
+  --dry-run           Print actions only
+  -h, --help          Show help
 
 Stable download URL after success:
   https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
@@ -51,7 +51,9 @@ die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
-    printf '[dry-run] %s\n' "$*" >&2
+    printf '[dry-run]' >&2
+    printf ' %q' "$@" >&2
+    printf '\n' >&2
   else
     "$@"
   fi
@@ -60,6 +62,7 @@ run() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --bump) DO_BUMP=1; shift ;;
+    --promote-only) PROMOTE_ONLY="${2:?}"; shift 2 ;;
     --branch) TARGET_BRANCH="${2:?}"; shift 2 ;;
     --skip-wait) SKIP_WAIT=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
@@ -78,6 +81,7 @@ done
 command -v gh >/dev/null || die "gh CLI is required (https://cli.github.com/)"
 command -v git >/dev/null || die "git is required"
 command -v python3 >/dev/null || die "python3 is required"
+command -v curl >/dev/null || die "curl is required"
 if [[ "$DRY_RUN" -eq 0 ]]; then
   gh auth status >/dev/null 2>&1 || die "Run: gh auth login"
 fi
@@ -92,10 +96,8 @@ read_pom_version() {
   python3 - <<'PY'
 import re, pathlib
 text = pathlib.Path("pom.xml").read_text()
-# first non-parent <version> under project
 m = re.search(r"<artifactId>geoweaver</artifactId>\s*<version>([^<]+)</version>", text)
 if not m:
-    # fallback: project version after parent block
     parts = re.findall(r"<version>([^<]+)</version>", text)
     if len(parts) < 2:
         raise SystemExit("Could not parse version from pom.xml")
@@ -110,7 +112,7 @@ normalize_version() {
   v="${v#v}"
   v="${v%-SNAPSHOT}"
   v="${v%-snapshot}"
-  [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9]+)?$ ]] || die "Invalid version: $1"
+  [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9]+)*$ ]] || die "Invalid version: $1"
   printf '%s' "$v"
 }
 
@@ -121,7 +123,6 @@ import pathlib, re, sys
 ver = sys.argv[1]
 pom = pathlib.Path("pom.xml")
 text = pom.read_text()
-# Replace geoweaver module version (the one after artifactId geoweaver)
 new, n = re.subn(
     r"(<artifactId>geoweaver</artifactId>\s*<version>)[^<]+(</version>)",
     rf"\g<1>{ver}\2",
@@ -129,7 +130,6 @@ new, n = re.subn(
     count=1,
 )
 if n != 1:
-    # fallback: second <version> in file (after parent)
     versions = list(re.finditer(r"<version>[^<]+</version>", text))
     if len(versions) < 2:
         raise SystemExit("Failed to update pom.xml version")
@@ -141,12 +141,7 @@ pom.write_text(text)
 
 js = pathlib.Path("src/main/resources/static/js/gw.js")
 js_text = js.read_text()
-js_new, jn = re.subn(
-    r'(version:\s*")[^"]+(")',
-    rf"\g<1>{ver}\2",
-    js_text,
-    count=1,
-)
+js_new, jn = re.subn(r'(version:\s*")[^"]+(")', rf"\g<1>{ver}\2", js_text, count=1)
 if jn != 1:
     raise SystemExit("Failed to update gw.js version")
 js.write_text(js_new)
@@ -169,13 +164,13 @@ archive_current_latest() {
     fi
     return 0
   fi
-  local old_id old_name old_tag archive_tag
+
+  local old_id old_name old_tag archive_tag base
   old_id="$(gh release view latest --json databaseId -q .databaseId)"
   old_name="$(gh release view latest --json name -q .name)"
   old_tag="$(gh release view latest --json tagName -q .tagName)"
   log "Current latest release: id=$old_id name='$old_name' tag='$old_tag'"
 
-  local base
   base="$(normalize_version "${old_name:-$old_tag}")"
   archive_tag="v${base}-pre"
   if gh release view "$archive_tag" >/dev/null 2>&1 || git ls-remote --tags origin "refs/tags/${archive_tag}" | grep -q .; then
@@ -183,8 +178,6 @@ archive_current_latest() {
   fi
 
   log "Archiving previous latest as tag '$archive_tag'"
-  # Point the existing release at an archival tag BEFORE deleting 'latest',
-  # so assets remain downloadable under a versioned URL.
   run gh api -X PATCH "repos/${REPO}/releases/${old_id}" \
     -f tag_name="$archive_tag" \
     -f name="$base" \
@@ -192,7 +185,6 @@ archive_current_latest() {
     -F make_latest=false \
     >/dev/null
 
-  # Remove leftover 'latest' git tag if it still exists
   if git ls-remote --tags origin "refs/tags/latest" | grep -q .; then
     run git push --delete origin latest
   fi
@@ -220,46 +212,51 @@ EOF
 )" \
     --latest=false
 
-  # dry-run still needs a tag string for later steps
   printf '%s\n' "$temp_tag"
 }
 
 wait_for_workflow() {
   local temp_tag="$1"
-  log "Waiting for workflow '$WORKFLOW_FILE' after publishing $temp_tag …"
-  # Give GitHub a moment to enqueue the workflow
+  log "Waiting for workflow '$WORKFLOW_FILE' for tag $temp_tag …"
   if [[ "$DRY_RUN" -eq 1 ]]; then
     log "[dry-run] would wait for Actions run"
     return 0
   fi
-  sleep 8
+  sleep 5
 
-  local run_id=""
-  local i
-  for i in $(seq 1 30); do
+  local run_id="" status="" i
+  for i in $(seq 1 60); do
+    # Prefer exact headBranch == tag (release events use the tag name as headBranch)
     run_id="$(
-      gh run list --workflow "$WORKFLOW_FILE" --limit 10 \
-        --json databaseId,displayTitle,headBranch,status,event,createdAt \
-        --jq "map(select(.displayTitle | test(\"${temp_tag}|${VERSION}\"; \"i\") or .headBranch == \"${temp_tag}\")) | .[0].databaseId // empty"
+      gh run list --workflow "$WORKFLOW_FILE" --limit 20 \
+        --json databaseId,headBranch,status,event \
+        --jq "map(select(.headBranch == \"${temp_tag}\")) | .[0].databaseId // empty"
     )"
-    if [[ -n "$run_id" ]]; then
-      break
+    if [[ -z "$run_id" ]]; then
+      run_id="$(
+        gh run list --workflow "$WORKFLOW_FILE" --limit 5 \
+          --json databaseId,event,displayTitle,headBranch \
+          --jq "map(select(.event == \"release\" and ((.displayTitle | tostring | contains(\"${temp_tag}\")) or (.headBranch == \"${temp_tag}\")))) | .[0].databaseId // empty"
+      )"
     fi
-    # Fallback: most recent workflow_run from a release event
-    run_id="$(
-      gh run list --workflow "$WORKFLOW_FILE" --limit 1 \
-        --json databaseId,event,status \
-        --jq '.[0] | select(.event=="release") | .databaseId // empty'
-    )"
-    [[ -n "$run_id" ]] && break
+    if [[ -n "$run_id" ]]; then
+      status="$(gh run view "$run_id" --json status,conclusion -q .status)"
+      log "Found run $run_id (status=$status)"
+      if [[ "$status" == "completed" ]]; then
+        local conclusion
+        conclusion="$(gh run view "$run_id" --json conclusion -q .conclusion)"
+        [[ "$conclusion" == "success" ]] || die "Workflow $run_id concluded: $conclusion"
+        log "Workflow already completed successfully"
+        return 0
+      fi
+      gh run watch "$run_id" --exit-status
+      log "Workflow finished successfully"
+      return 0
+    fi
     sleep 5
   done
 
-  [[ -n "$run_id" ]] || die "Could not find Actions run for $WORKFLOW_FILE — check https://github.com/${REPO}/actions"
-
-  log "Watching run $run_id …"
-  gh run watch "$run_id" --exit-status
-  log "Workflow finished successfully"
+  die "Could not find Actions run for $temp_tag — check https://github.com/${REPO}/actions"
 }
 
 wait_for_jar_asset() {
@@ -269,8 +266,8 @@ wait_for_jar_asset() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
     return 0
   fi
-  for i in $(seq 1 60); do
-    if gh release view "$temp_tag" --json assets --jq '.assets[].name' | grep -qx 'geoweaver.jar'; then
+  for i in $(seq 1 90); do
+    if gh release view "$temp_tag" --json assets --jq '.assets[].name' 2>/dev/null | grep -qx 'geoweaver.jar'; then
       log "Found geoweaver.jar on $temp_tag"
       return 0
     fi
@@ -285,7 +282,6 @@ promote_to_latest() {
   local release_id
   release_id="$(gh release view "$temp_tag" --json databaseId -q .databaseId)"
 
-  # Ensure no conflicting latest tag/release
   if git ls-remote --tags origin "refs/tags/latest" | grep -q .; then
     warn "Deleting existing origin/latest tag before promotion"
     run git push --delete origin latest
@@ -312,6 +308,25 @@ verify_stable_url() {
   log "OK — geoweaver.jar is reachable at the stable URL"
 }
 
+finish_release() {
+  local temp_tag="$1"
+  local ver="$2"
+  wait_for_workflow "$temp_tag"
+  wait_for_jar_asset "$temp_tag"
+  promote_to_latest "$temp_tag" "$ver"
+  verify_stable_url
+  cat <<EOF
+
+Release ${ver} published.
+
+Stable jar URL (unchanged for clients / pygeoweaver):
+  ${STABLE_JAR_URL}
+
+Release page:
+  https://github.com/${REPO}/releases/tag/latest
+EOF
+}
+
 # ----- main -----
 
 POM_VERSION="$(read_pom_version)"
@@ -324,6 +339,17 @@ fi
 log "Repository: $REPO"
 log "Release version: $VERSION (pom currently: $POM_VERSION)"
 log "Target branch: $TARGET_BRANCH"
+
+if [[ -n "$PROMOTE_ONLY" ]]; then
+  log "Promote-only mode for existing tag: $PROMOTE_ONLY"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "[dry-run] would wait/promote $PROMOTE_ONLY → latest"
+    exit 0
+  fi
+  gh release view "$PROMOTE_ONLY" >/dev/null || die "Release tag not found: $PROMOTE_ONLY"
+  finish_release "$PROMOTE_ONLY" "$VERSION"
+  exit 0
+fi
 
 if [[ "$DO_BUMP" -eq 1 ]]; then
   log "Bumping version files to $VERSION"
@@ -340,10 +366,15 @@ if [[ "$DO_BUMP" -eq 1 ]]; then
     log "[dry-run] would bump pom.xml / gw.js and push to $TARGET_BRANCH"
   fi
 elif [[ "$POM_VERSION" == *SNAPSHOT* ]]; then
-  warn "pom.xml is still '$POM_VERSION'."
-  warn "Pass an explicit version and --bump, e.g.: ./scripts/publish-latest-release.sh 2.2.0 --bump"
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    warn "pom.xml is still '$POM_VERSION' (dry-run continues; real runs need --bump)"
+  else
+    die "pom.xml is still '$POM_VERSION'. Re-run with --bump, e.g.:
+  ./scripts/publish-latest-release.sh ${VERSION} --bump
+Or promote an already-built tag:
+  ./scripts/publish-latest-release.sh ${VERSION} --promote-only <tag>"
+  fi
 fi
-
 git fetch origin "$TARGET_BRANCH" --tags >/dev/null 2>&1 || true
 
 archive_current_latest
@@ -363,23 +394,9 @@ EOF
 fi
 
 if [[ "$SKIP_WAIT" -eq 1 ]]; then
-  warn "--skip-wait set. After Actions finishes and geoweaver.jar is attached, run:"
-  warn "  gh api -X PATCH repos/${REPO}/releases/\$(gh release view ${TEMP_TAG} --json databaseId -q .databaseId) -f tag_name=latest -f name=${VERSION} -F make_latest=true"
+  warn "--skip-wait set. When the jar is attached, run:"
+  warn "  ./scripts/publish-latest-release.sh ${VERSION} --promote-only ${TEMP_TAG}"
   exit 0
 fi
 
-wait_for_workflow "$TEMP_TAG"
-wait_for_jar_asset "$TEMP_TAG"
-promote_to_latest "$TEMP_TAG" "$VERSION"
-verify_stable_url
-
-cat <<EOF
-
-Release ${VERSION} published.
-
-Stable jar URL (unchanged for clients / pygeoweaver):
-  ${STABLE_JAR_URL}
-
-Release page:
-  https://github.com/${REPO}/releases/tag/latest
-EOF
+finish_release "$TEMP_TAG" "$VERSION"

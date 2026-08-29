@@ -17,13 +17,20 @@ From a clean checkout with [`gh`](https://cli.github.com/) authenticated:
 ./scripts/publish-latest-release.sh 2.2.0 --bump
 ```
 
+If a build release already exists (workflow running or finished) and you only need to attach the stable URL:
+
+```bash
+./scripts/publish-latest-release.sh 2.2.0 --promote-only v2.2.0-pre-YYYYMMDDHHMMSS
+```
+
 Or if `pom.xml` / `gw.js` are already set to the release version on `main`:
 
 ```bash
 git checkout main && git pull
-./scripts/publish-latest-release.sh
+./scripts/publish-latest-release.sh 2.2.0
 ```
 
+**Do not run without `--bump` while `pom.xml` still ends in `-SNAPSHOT`** — the script will refuse, because that would publish a mislabeled jar.
 What the script does:
 
 1. Archives the previous `latest` release under a versioned tag (e.g. `v2.1.7-pre`) so old jars remain downloadable.
