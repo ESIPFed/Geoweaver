@@ -3,7 +3,7 @@ package com.gw.jpa;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -182,15 +182,16 @@ public class JPAAnnotationsTest {
         assertTrue(idField.isAnnotationPresent(GeneratedValue.class));
         
         GeneratedValue generatedValue = idField.getAnnotation(GeneratedValue.class);
-        assertEquals("uuid2", generatedValue.generator());
-        
-        // 测试Checkpoint的Type注解
-        assertTrue(idField.isAnnotationPresent(org.hibernate.annotations.Type.class));
-        
+        assertNotNull(generatedValue);
+
+        // Hibernate 6 / Boot 3: UUID mapped with @JdbcTypeCode(CHAR)
+        assertTrue(idField.isAnnotationPresent(org.hibernate.annotations.JdbcTypeCode.class));
+        assertTrue(idField.isAnnotationPresent(org.hibernate.annotations.UuidGenerator.class));
+
         // 测试Checkpoint的Column注解
         assertTrue(idField.isAnnotationPresent(Column.class));
         Column column = idField.getAnnotation(Column.class);
-        assertEquals("VARCHAR(36)", column.columnDefinition());
+        assertEquals(36, column.length());
         assertEquals("id", column.name());
         
         // 测试Checkpoint的Table注解

@@ -25,11 +25,11 @@ show_error_message: Displays an error message dialog using AppleScript.
 
 move_existing_data: Moves existing Geoweaver data to a backup directory if necessary.
 
-install_jdk_based_on_architecture: Installs the appropriate JDK version based on system architecture.
+install_jdk_based_on_architecture: Installs the appropriate JDK version based on system architecture (Geoweaver 2.2+ expects **JDK 17+**).
 
-install_jdk: Downloads and installs a specified JDK version.
+install_jdk: Downloads and installs a specified JDK version (prefer Temurin / OpenJDK **17** or newer).
 
-check_jdk: Checks if a compatible JDK is installed and installs it if necessary.
+check_jdk: Checks if a compatible JDK (**17+** for current Geoweaver) is installed and installs it if necessary.
 
 ### Main Script Logic
 
@@ -37,7 +37,7 @@ Display Loading Screen: Shows a loading screen to indicate the startup process.
 
 Load Configuration: Loads configuration settings from a file, or creates a new configuration file if it doesn't exist.
 
-Check and Install JDK: Ensures a compatible JDK is installed, installing it if necessary.
+Check and Install JDK: Ensures a compatible JDK (**17+** for Geoweaver 2.2+) is installed, installing it if necessary.
 
 Stop Existing Instances: Stops any existing Geoweaver instances to prevent conflicts.
 

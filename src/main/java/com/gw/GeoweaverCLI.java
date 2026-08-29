@@ -55,6 +55,7 @@ public class GeoweaverCLI implements CommandLineRunner {
   }
 
   public static void main(String[] args) throws Exception {
+    com.gw.utils.JavaRuntimeRequirements.requireSupportedJavaOrExit();
 
     System.exit(
         SpringApplication.exit(

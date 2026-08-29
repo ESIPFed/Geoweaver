@@ -8,9 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.websocket.EndpointConfig;
-import javax.websocket.RemoteEndpoint;
-import javax.websocket.Session;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.RemoteEndpoint;
+import jakarta.websocket.Session;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

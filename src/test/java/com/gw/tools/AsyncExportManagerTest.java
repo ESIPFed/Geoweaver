@@ -144,31 +144,49 @@ public class AsyncExportManagerTest {
     @Test
     @Timeout(10)
     void testExportTaskStatusTransitions() throws Exception {
-        // Given
+        // Given — block download until we have observed PENDING
         String workflowId = "workflow123";
         String userId = "user123";
         String option = "workflowwithprocesscodehistory";
+        java.util.concurrent.CountDownLatch proceed =
+            new java.util.concurrent.CountDownLatch(1);
+
+        when(workflowTool.download(workflowId, option)).thenAnswer(invocation -> {
+            proceed.await(5, java.util.concurrent.TimeUnit.SECONDS);
+            return "download/temp/workflow123.zip";
+        });
 
         // When
         String taskId = asyncExportManager.startAsyncExport(workflowId, userId, option);
 
-        // Then
-        AsyncExportManager.ExportTask task = asyncExportManager.getExportTask(taskId);
-        assertNotNull(task);
-        assertEquals(AsyncExportManager.ExportStatus.PENDING, task.getStatus());
-
-        // Wait for task to start processing
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        // Then — wait until worker has set PROCESSING (or still PENDING briefly)
+        AsyncExportManager.ExportTask task = null;
+        for (int i = 0; i < 50; i++) {
+            task = asyncExportManager.getExportTask(taskId);
+            assertNotNull(task);
+            if (task.getStatus() == AsyncExportManager.ExportStatus.PENDING
+                || task.getStatus() == AsyncExportManager.ExportStatus.PROCESSING) {
+                break;
+            }
+            Thread.sleep(10);
         }
+        assertNotNull(task);
+        assertTrue(
+            task.getStatus() == AsyncExportManager.ExportStatus.PENDING
+                || task.getStatus() == AsyncExportManager.ExportStatus.PROCESSING,
+            "Expected PENDING or PROCESSING before download finishes, was: " + task.getStatus());
 
-        // The task should be in PROCESSING or COMPLETED status
-        task = asyncExportManager.getExportTask(taskId);
-        assertTrue(task.getStatus() == AsyncExportManager.ExportStatus.PROCESSING || 
-                   task.getStatus() == AsyncExportManager.ExportStatus.COMPLETED ||
-                   task.getStatus() == AsyncExportManager.ExportStatus.FAILED);
+        // Allow download to complete and wait for COMPLETED
+        proceed.countDown();
+        for (int i = 0; i < 50; i++) {
+            task = asyncExportManager.getExportTask(taskId);
+            if (task.getStatus() == AsyncExportManager.ExportStatus.COMPLETED
+                || task.getStatus() == AsyncExportManager.ExportStatus.FAILED) {
+                break;
+            }
+            Thread.sleep(20);
+        }
+        assertEquals(AsyncExportManager.ExportStatus.COMPLETED, task.getStatus());
     }
 
     @Test

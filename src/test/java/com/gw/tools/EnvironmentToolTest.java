@@ -25,10 +25,10 @@ import static org.mockito.Mockito.*;
 public class EnvironmentToolTest {
 
     @Mock
-    private EnvironmentRepository environmentRepository;
-    
-    @Mock
     private EnvironmentRepository envrep;
+
+    @Mock
+    private EnvironmentRepository environmentrepository;
 
     @Mock
     private BaseTool baseTool;
@@ -121,7 +121,7 @@ public class EnvironmentToolTest {
         environmentTool.addNewEnvironment(pypath, oldEnvList, hostId, name);
 
         // Then
-        verify(environmentRepository).save(any(Environment.class));
+        verify(environmentrepository).save(any(Environment.class));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class EnvironmentToolTest {
         environmentTool.addNewEnvironment(pypath, oldEnvList, hostId, name);
 
         // Then
-        verify(environmentRepository).save(any(Environment.class));
+        verify(environmentrepository).save(any(Environment.class));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class EnvironmentToolTest {
         environment.setName("Test Environment");
         environments.add(environment);
 
-        when(environmentRepository.findEnvByHost(hostId)).thenReturn(environments);
+        when(environmentrepository.findEnvByHost(hostId)).thenReturn(environments);
 
         // When
         List<Environment> result = environmentTool.getEnvironmentsByHostId(hostId);
@@ -173,7 +173,7 @@ public class EnvironmentToolTest {
         // Given
         String hostId = "host123";
 
-        when(environmentRepository.findEnvByHost(hostId)).thenThrow(new RuntimeException("Database error"));
+        when(environmentrepository.findEnvByHost(hostId)).thenThrow(new RuntimeException("Database error"));
 
         // When
         List<Environment> result = environmentTool.getEnvironmentsByHostId(hostId);
@@ -195,7 +195,7 @@ public class EnvironmentToolTest {
         environmentTool.saveEnvironment(environment);
 
         // Then
-        verify(environmentRepository).save(environment);
+        verify(environmentrepository).save(environment);
     }
 
     @Test
@@ -226,7 +226,7 @@ public class EnvironmentToolTest {
         // Given
         String hostId = "host123";
 
-        when(environmentRepository.findEnvByHost(hostId)).thenThrow(new RuntimeException("Database error"));
+        when(environmentrepository.findEnvByHost(hostId)).thenThrow(new RuntimeException("Database error"));
 
         // When
         String result = environmentTool.getEnvironments(hostId);
@@ -285,20 +285,20 @@ public class EnvironmentToolTest {
         environment.setName("Test Environment");
         environments.add(environment);
 
-        when(environmentRepository.findAll()).thenReturn(environments);
+        when(environmentrepository.findAll()).thenReturn(environments);
 
         // When
         environmentTool.showAllEnvironment();
 
         // Then
-        verify(environmentRepository).findAll();
+        verify(environmentrepository).findAll();
     }
 
     @Test
     @Timeout(10)
     void testShowAllEnvironmentWithException() {
         // Given
-        when(environmentRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+        when(environmentrepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
         // When
         environmentTool.showAllEnvironment();
@@ -322,7 +322,7 @@ public class EnvironmentToolTest {
         environment.setName("Test Environment");
         environments.add(environment);
 
-        when(environmentRepository.findEnvByID_BIN_ENV_BaseDir(hostId, bin, env, basedir)).thenReturn(environments);
+        when(environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostId, bin, env, basedir)).thenReturn(environments);
 
         // When
         String result = environmentTool.getEnvironmentByBEB(hostId, bin, env, basedir);
@@ -342,7 +342,7 @@ public class EnvironmentToolTest {
         String env = "pip";
         String basedir = "/tmp";
 
-        when(environmentRepository.findEnvByID_BIN_ENV_BaseDir(hostId, bin, env, basedir))
+        when(environmentrepository.findEnvByID_BIN_ENV_BaseDir(hostId, bin, env, basedir))
                 .thenThrow(new RuntimeException("Database error"));
 
         // When
@@ -563,13 +563,13 @@ public class EnvironmentToolTest {
 
         // Mock static method calls
         when(hostRepository.findById(hostId)).thenReturn(Optional.of(host));
-        when(environmentRepository.findEnvByID_BIN(hostId, bin)).thenReturn(new ArrayList<>());
+        when(environmentrepository.findEnvByID_BIN(hostId, bin)).thenReturn(new ArrayList<>());
 
         // When
         String result = environmentTool.addEnv(historyId, hostId, type, bin, env, basedir, settings);
 
         // Then
-        verify(environmentRepository).save(any(Environment.class));
+        verify(environmentrepository).save(any(Environment.class));
     }
 
     @Test
@@ -593,7 +593,7 @@ public class EnvironmentToolTest {
         existingEnv.setBin(bin);
 
         // Mock static method calls
-        when(environmentRepository.findEnvByID_BIN(hostId, bin)).thenReturn(Arrays.asList(existingEnv));
+        when(environmentrepository.findEnvByID_BIN(hostId, bin)).thenReturn(Arrays.asList(existingEnv));
 
         // When
         String result = environmentTool.addEnv(historyId, hostId, type, bin, env, basedir, settings);
@@ -601,7 +601,7 @@ public class EnvironmentToolTest {
         // Then
         // Should return null when environment already exists (as per implementation)
         assertNull(result);
-        verify(environmentRepository, never()).save(any(Environment.class));
+        verify(environmentrepository, never()).save(any(Environment.class));
     }
 
     @Test
@@ -622,7 +622,7 @@ public class EnvironmentToolTest {
         // Then
         // Should return null when bin is null
         assertNull(result);
-        verify(environmentRepository, never()).save(any(Environment.class));
+        verify(environmentrepository, never()).save(any(Environment.class));
     }
 
     @Test

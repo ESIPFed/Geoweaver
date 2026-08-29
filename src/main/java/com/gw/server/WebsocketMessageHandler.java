@@ -1,6 +1,6 @@
 package com.gw.server;
 
-import javax.websocket.MessageHandler;
+import jakarta.websocket.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WebsocketMessageHandler implements MessageHandler.Whole<String> {
 
-  javax.websocket.Session jssession = null;
+  jakarta.websocket.Session jssession = null;
 
   String pairid;
 

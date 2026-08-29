@@ -171,11 +171,7 @@ describe('Navigation', () => {
   it('should navigate to different pages', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver'); 
     // Skip intro if it appears
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     
     cy.contains('Log' , { timeout: 10000 }).click();
     cy.contains('Logging').should('be.visible');
@@ -206,11 +202,7 @@ describe('Navigation', () => {
 describe('Host Testing', () => {
   it('should submit a create new host form successfully', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver'); 
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#newhost').click();
 
     cy.get('#hostip').type('1.1.1.1');
@@ -224,11 +216,7 @@ describe('Host Testing', () => {
   it('Search result should be successful after creating the host', () => {
     /* ==== Generated with Cypress Studio ==== */
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('[data-intro="All the other tools"]').click();
     cy.get('#toolbar-search').click();
     cy.get('#keywords').clear('New Host');
@@ -251,11 +239,7 @@ describe('Host Testing', () => {
 describe('Process Testing', () => {
   it('Create Shell Process', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#newprocess').click().then(() => {
       // Ensure the window or form is fully loaded and active
       cy.get('form', { timeout: 10000 }).should('be.visible'); // Wait until the form is visible
@@ -279,11 +263,7 @@ describe('Process Testing', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
     
     // Skip intro and go to process creation
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#newprocess').click();
   
     // Ensure that the new process code area is visible before proceeding
@@ -313,11 +293,7 @@ describe('Process Testing', () => {
 describe('Add Process to Weaver', () => {
   it('Add to weaver', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.skipIntroIfPresent().then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
@@ -335,11 +311,7 @@ describe('Add Process to Weaver', () => {
 describe('Edit Process Name', () => {
   it('Add to weaver', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.skipIntroIfPresent().then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
@@ -349,44 +321,34 @@ describe('Edit Process Name', () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
     );
-    cy.get('ul#process_folder_shell_target').contains('shell_test').click().then(
-      () => {
-        cy.get('#processname', { timeout: 10000 }).should('be.visible');
-      }
-    );
+    cy.get('ul#process_folder_shell_target').contains('shell_test').click();
+    cy.expandProcessDetails();
     cy.get('#processname').should('be.visible').and('not.be.disabled');
     cy.get('#processname').clear();
-    cy.get('#processname', { timeout: 10000 }).should('be.visible'); // Waits for up to 10 seconds
-    cy.get('#processname').type('updated_shell_test', { force: true }) // Type the text
-      .should('have.value', 'updated_shell_test'); // Check the value
+    cy.get('#processname', { timeout: 10000 }).should('be.visible');
+    cy.get('#processname').type('updated_shell_test', { force: true })
+      .should('have.value', 'updated_shell_test');
     cy.get('.process-edit-right-icon').click();
     cy.get('ul#process_folder_shell_target').should('contain', 'updated_shell_test');
 
   })
   it('process category and id should be disabled', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    }).then(
+    cy.skipIntroIfPresent().then(
       () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
     );
     cy.get('#process_folder_shell').click();
     cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
+    cy.expandProcessDetails();
     cy.get('#processcategory').should('be.disabled');
     cy.get('#processid').should('be.disabled')
   })
 
   it('Create and Edit Python Process', function() {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#process_folder_python').click();
     cy.get('#newprocess').click();
     cy.get('form select.form-control.form-control-sm').select('python');
@@ -496,11 +458,7 @@ describe('Edit Process Name', () => {
 describe('Delete Process', () => {
     it('Delete Shell Process', () => {
       cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('body').then(($body) => {
-        if ($body.find('.introjs-skipbutton').length > 0) {
-          cy.get('.introjs-skipbutton').click();
-        }
-      }).then(
+      cy.skipIntroIfPresent().then(
         () => {
           cy.get('#processes', { timeout: 5000 }).should('be.visible');
         }
@@ -520,11 +478,7 @@ describe('Delete Process', () => {
 
     it('Delete Python Process', () => {
       cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-      cy.get('body').then(($body) => {
-        if ($body.find('.introjs-skipbutton').length > 0) {
-          cy.get('.introjs-skipbutton').click();
-        }
-      }).then(
+      cy.skipIntroIfPresent().then(
         () => {
           cy.get('#process_folder_python',  { timeout: 10000 }).should("be.visible")
         }
@@ -567,90 +521,71 @@ describe('Write Password into .secret', () => {
 describe('Create Python process and run it', () => {
   it('creates python process and runs', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#newprocess').click();
 
-    cy.get('form select.form-control.form-control-sm').select('Python');
-    cy.get('form > :nth-child(1) > :nth-child(4)').type('hello_world.py');
+    cy.get('.new-process-code-area', { timeout: 10000 }).should('be.visible');
+    cy.get('form select.form-control.form-control-sm').select('python');
+    cy.get('[id^="processname-"]').clear().type('hello_world.py');
 
+    cy.intercept('POST', '**/add/process').as('addProcess');
     cy.get('.modal-footer').contains('Add').click();
+    cy.wait('@addProcess').its('response.statusCode').should('eq', 200);
 
-    cy.get('ul#process_folder_python_target').contains('hello_world.py').click();
+    // Add opens process details automatically; ensure python folder is expanded for list check
+    cy.get('#main-process-info', { timeout: 10000 }).should('be.visible');
+    cy.window().then((win) => {
+      win.$('#process_folder_python_target').collapse('show');
+    });
+    cy.get('ul#process_folder_python_target', { timeout: 10000 })
+      .should('be.visible')
+      .and('contain', 'hello_world.py');
 
     cy.window().then((win) => {
-      return new Cypress.Promise((resolve) => {
+      return new Cypress.Promise((resolve, reject) => {
+        const started = Date.now();
         const checkMonaco = () => {
-          const editors = win.monaco?.editor?.getEditors(); // Get all Monaco editors
-          cy.log(`Total Monaco Editors found: ${editors?.length || 0}`); // Log editor count
-    
+          const editors = win.monaco?.editor?.getEditors();
           if (editors && editors.length > 0) {
-            const visibleEditor = editors.find((editor) => {
-              const isVisible = Cypress.$(editor.getDomNode()).is(':visible'); // Check if visible
-              cy.log(`Editor visible: ${isVisible}`);
-              return isVisible;
-            });
-    
+            const visibleEditor = editors.find((editor) =>
+              Cypress.$(editor.getDomNode()).is(':visible')
+            );
             if (visibleEditor) {
-              cy.log("Using visible Monaco editor");
               resolve(visibleEditor);
-            } else {
-              cy.log("No visible Monaco editor found, retrying...");
-              setTimeout(checkMonaco, 500); // Retry if no visible editor is found
+              return;
             }
-          } else {
-            setTimeout(checkMonaco, 500); // Retry if no editors are found
           }
+          if (Date.now() - started > 15000) {
+            reject(new Error('Timed out waiting for Monaco editor'));
+            return;
+          }
+          setTimeout(checkMonaco, 500);
         };
         checkMonaco();
       });
     }).then((editor) => {
-      if (editor) {
-        cy.log("Found visible Monaco Editor:", editor);
-        const model = editor.getModel();
-        if (model) {
-          cy.wrap(null).should(() => {
-            editor.focus(); // Ensure the editor is focused
-            model.setValue("print('hello world!')"); // Set value
-            editor.trigger("keyboard", "type", { text: "" }); // Simulate keystroke to force UI update
-          });
-    
-          // **Wait until Monaco editor actually reflects the new value**
-          cy.wrap(null).should(() => {
-            expect(model.getValue().trim()).to.equal("print('hello world!')");
-          });
-        }
-      }
-    });    
-
-    cy.get('#main-process-info', { timeout: 10000 }).should("be.visible")
-    
-    cy.log("now should change the content")
-
-    cy.get('#processid').then(($input) => {
-      const processId = $input.val(); // Get the value of the input field
-      console.log('process id ',processId)
-      const selector = `[onclick="GW.process.runProcess('${processId}', 'hello_world.py', 'python')"]`;
-      cy.get(selector).click(); // Perform actions using the dynamically constructed selector
+      const model = editor.getModel();
+      expect(model).to.exist;
+      editor.focus();
+      model.setValue("print('hello world!')");
+      editor.trigger('keyboard', 'type', { text: '' });
+      cy.wrap(null).should(() => {
+        expect(model.getValue().trim()).to.equal("print('hello world!')");
+      });
     });
-    cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess'); // Intercept the POST request
+
+    cy.get('button[title="Run Process"]', { timeout: 10000 }).should('be.visible').click();
+    cy.intercept('POST', '**/executeProcess').as('executeProcess');
     cy.get('#host-execute-btn').click();
 
     cy.get('#process-confirm-btn').click();
-    cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('123456');
+    cy.get('#inputpswd').clear().type('123456');
     cy.get('#pswd-confirm-btn').click();
 
-    cy.wait(5000);
-
-    cy.get('#single-console-content').should('contain', 'hello world!');
-    cy.get('#single-console-content').should('contain', 'Exit Code: 0');
-    cy.get('#process-log-window').click();
-    cy.get('#process-log-window').should('be.visible');
     cy.wait('@executeProcess').its('response.statusCode').should('eq', 200);
+    cy.get('#single-console-content', { timeout: 30000 }).should('contain', 'hello world!');
+    cy.get('#single-console-content').should('contain', 'Exit Code: 0');
+    cy.get('#process-log-window').should('be.visible');
   });
 });
 
@@ -659,11 +594,7 @@ describe('Create Python process and run it', () => {
 describe('Hosts Testing', () => {
   it('Create New Host', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#newhost').click();
     cy.get('#hostip').clear('1');
     cy.get('#hostip').type('1.1.1.1');
@@ -677,11 +608,7 @@ describe('Hosts Testing', () => {
 
   it('Delete New Host', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#host_folder_ssh > a').click();
     cy.get('ul#host_folder_ssh_target').contains('New Host').click();
     // Delete button now uses fa-trash icon instead of fa-minus, and has "Delete" text
@@ -691,11 +618,7 @@ describe('Hosts Testing', () => {
 
   it('LocalHost testing', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
     cy.get('#_host_name').should('have.value', 'Localhost');
@@ -709,11 +632,7 @@ describe('Hosts Testing', () => {
 
   it('LocalHost Read Python Env', () => {
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
-    cy.get('body').then(($body) => {
-      if ($body.find('.introjs-skipbutton').length > 0) {
-        cy.get('.introjs-skipbutton').click();
-      }
-    });
+    cy.skipIntroIfPresent();
     cy.get('#host_folder_ssh > a').click();
     cy.get('#host-100001').click();
     // Click on Python Env tab instead of .fab

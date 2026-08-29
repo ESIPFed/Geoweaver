@@ -31,7 +31,11 @@ Only two fundamental objectives:
 * [Jupyter Recording](https://andrewmagill.github.io/#/)
 
 # Installation
-[Click here](install.md) for the steps 
+[Click here](install.md) for the steps.
+
+**Java 17 required for Geoweaver 2.2+.**  
+New and existing users: see [Java 17 / Spring Boot 3 guidance](java17-migration.md).  
+Upgrading from 2.1.x: [Upgrading Geoweaver](upgrade.md).
 
 # Demo
 [A live demo site](https://geobrain.csiss.gmu.edu/Geoweaver) is available.

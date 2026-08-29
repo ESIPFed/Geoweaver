@@ -42,8 +42,10 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          spec: cypress/e2e/spec.cy.js
+          spec: e2e/spec.cy.js
           working-directory: ./cypress
+        env:
+          localhost_password: '123456'
       - name: Archive screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4

@@ -3,13 +3,13 @@ package com.gw.server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.websocket.WsSession;
 import com.gw.utils.BaseTool;
@@ -145,8 +145,8 @@ public class WorkflowServlet {
    * @param token The token used to identify the WebSocket session.
    * @return The WebSocket session, or null if not found.
    */
-  public static javax.websocket.Session findSessionByToken(String token) {
-    javax.websocket.Session se = null;
+  public static jakarta.websocket.Session findSessionByToken(String token) {
+    jakarta.websocket.Session se = null;
     if (token != null && peers.containsKey(token)) {
       se = peers.get(token);
     }

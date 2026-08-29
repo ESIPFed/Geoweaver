@@ -16,11 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 public class HostGeneralTest extends AbstractHelperMethodsTest {
@@ -153,7 +154,9 @@ public class HostGeneralTest extends AbstractHelperMethodsTest {
 	@Test
 	void testSSHLoginPageRedirect(){
 
-		ResponseEntity<String> result = this.testrestTemplate.getForEntity("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh?token=venustoken",
+		RestTemplate redirectTemplate = noRedirectRestTemplate();
+
+		ResponseEntity<String> result = redirectTemplate.getForEntity("http://localhost:" + this.port + "/Geoweaver/web/geoweaver-ssh?token=venustoken",
 				String.class);
 
 		assertThat(result.getStatusCode().value()).isEqualTo(302);

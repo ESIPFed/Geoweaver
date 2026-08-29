@@ -1,4 +1,3 @@
-
 site_name: Geoweaver
 
 docs_dir: "docs"
@@ -8,3 +7,18 @@ theme:
   font:
     text: Roboto
   logo: 'img/header.png'
+
+nav:
+  - Home: index.md
+  - Installation: install.md
+  - Java 17 migration: java17-migration.md
+  - Upgrading: upgrade.md
+  - Hosts: host.md
+  - Processes: process.md
+  - Workflows: workflow.md
+  - Environment selection: environment-selection.md
+  - Database: database-configuration.md
+  - HTTP proxy: http-proxy.md
+  - Logging: logging.md
+  - Release process: release_upgrade.md
+  - Authors: authors.md

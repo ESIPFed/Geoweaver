@@ -16,7 +16,7 @@ https://img.shields.io/github/issues/ESIPFed/Geoweaver?style=for-the-badge&color
 https://img.shields.io/codecov/c/github/ESIPFed/Geoweaver?style=for-the-badge
 )](https://codecov.io/)
 ![PyPi](https://img.shields.io/pypi/v/pygeoweaver?style=for-the-badge) 
-![Minimum Java Version](https://img.shields.io/badge/Java-11%2B-%23ed8b02?style=for-the-badge&logo=openjdk
+![Minimum Java Version](https://img.shields.io/badge/Java-17%2B-%23ed8b02?style=for-the-badge&logo=openjdk
 )
 ![Geoweaver Docs](https://img.shields.io/badge/Docs-Geoweaver-%23c4ff7d?style=for-the-badge&logo=readthedocs&link=https%3A%2F%2Fgeoweaver.dev%2F
 )
@@ -94,8 +94,17 @@ For detailed information, visit [Geoweaver Documentation](https://geoweaver.dev)
 
 ### Prerequisites
 
-- ☕ Java 11 or higher (OpenJDK 11 or higher)
-- 🐳 Docker (optional, for Docker installation)
+- ☕ Java **17 or higher** (OpenJDK / Temurin 17+). Geoweaver **2.2+** (Spring Boot 3) **does not support JDK &lt; 17**.
+- If you cannot upgrade Java, stay on **Geoweaver 2.1.x** (Java 11): [Releases](https://github.com/ESIPFed/Geoweaver/releases) (example: [v2.1.7 jar](https://github.com/ESIPFed/Geoweaver/releases/download/v2.1.7/geoweaver.jar)).
+- 🐳 Docker (optional)
+
+### What should I do?
+
+| Situation | Recommendation |
+|-----------|----------------|
+| **New install** | Install Java 17+, then use Quick Start below ([details](docs/install.md)). |
+| **Already on 2.1.x, can use Java 17** | Back up `~/h2`, upgrade JDK, then upgrade jar / pygeoweaver ([migration guide](docs/java17-migration.md), [upgrade](docs/upgrade.md)). |
+| **Must stay on Java 11** | Keep Geoweaver **2.1.x**; do not run the latest 2.2+ jar. |
 
 ### Quick Start
 
@@ -105,14 +114,15 @@ For detailed information, visit [Geoweaver Documentation](https://geoweaver.dev)
 # Install PyGeoweaver
 pip install pygeoweaver --upgrade
 
-# Start Geoweaver
+# Start Geoweaver (needs Java 17+ for current releases)
 gw start
 ```
 
 #### ☕ Java Method
 
-1. Download [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
-2. Run: `java -jar geoweaver.jar`
+1. Install Java 17+
+2. Download [geoweaver.jar](https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar)
+3. Run: `java -jar geoweaver.jar`
 
 #### 🐳 Docker Method
 
@@ -126,7 +136,7 @@ docker run -t -i -p 8070:8070 geoweaver/geoweaver
 
 > 📝 Access Geoweaver at http://localhost:8070/Geoweaver
 
-[Detailed Installation Guide](docs/install.md)
+[Detailed Installation Guide](docs/install.md) · [Java 17 migration](docs/java17-migration.md) · [Upgrading](docs/upgrade.md)
 
 # Demo
 

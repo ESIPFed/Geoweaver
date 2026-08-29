@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class WorkerManager {
 
   private List<Worker> workerlist;
 
-  @Autowired TaskManager tm;
+  @Autowired @Lazy TaskManager tm;
 
   @Value("${geoweaver.workernumber}")
   String worknumber2;

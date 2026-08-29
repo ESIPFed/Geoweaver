@@ -24,11 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = GeoweaverApplication.class)
 class GeneralTests extends AbstractHelperMethodsTest {
@@ -465,11 +466,13 @@ class GeneralTests extends AbstractHelperMethodsTest {
 	@Test
 	void testPortalController() {
 
-		ResponseEntity<String> getresult = this.testrestTemplate.getForEntity(
+		RestTemplate redirectTemplate = noRedirectRestTemplate();
+
+		ResponseEntity<String> getresult = redirectTemplate.getForEntity(
 				"http://localhost:" + this.port + "/Geoweaver/geoweaver", String.class);
 		assertThat(getresult.getStatusCode().value()).isEqualTo(302);
 
-		getresult = this.testrestTemplate.getForEntity(
+		getresult = redirectTemplate.getForEntity(
 				"http://localhost:" + this.port + "/Geoweaver/web", String.class);
 		assertThat(getresult.getStatusCode().value()).isEqualTo(302);
 

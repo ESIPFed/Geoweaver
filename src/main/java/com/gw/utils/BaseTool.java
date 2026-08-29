@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;

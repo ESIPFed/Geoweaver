@@ -1,6 +1,6 @@
 package com.gw.jpa;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
