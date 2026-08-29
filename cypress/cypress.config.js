@@ -11,6 +11,8 @@ module.exports = defineConfig({
   },
   e2e: {
     experimentalStudio: true,
+    supportFile: 'support/e2e.js',
+    specPattern: 'e2e/**/*.cy.{js,jsx,ts,tsx}',
     setupNodeEvents(on, config) {
       on('task', {
         log(message) {
@@ -23,11 +25,9 @@ module.exports = defineConfig({
       on('after:screenshot', (details) => {
         console.log('Screenshot taken:', details);
         return null;
-      });}
-      
+      });
     },
+  },
   screenshotsFolder: 'screenshots',
   videosFolder: 'videos',
-
-
 })
