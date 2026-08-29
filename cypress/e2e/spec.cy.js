@@ -524,79 +524,68 @@ describe('Create Python process and run it', () => {
     cy.skipIntroIfPresent();
     cy.get('#newprocess').click();
 
-    cy.get('form select.form-control.form-control-sm').select('Python');
-    cy.get('form > :nth-child(1) > :nth-child(4)').type('hello_world.py');
+    cy.get('.new-process-code-area', { timeout: 10000 }).should('be.visible');
+    cy.get('form select.form-control.form-control-sm').select('python');
+    cy.get('[id^="processname-"]').clear().type('hello_world.py');
 
+    cy.intercept('POST', '**/add/process').as('addProcess');
     cy.get('.modal-footer').contains('Add').click();
+    cy.wait('@addProcess').its('response.statusCode').should('eq', 200);
 
-    cy.get('ul#process_folder_python_target').contains('hello_world.py').click();
+    // Add opens process details automatically; ensure python folder is expanded for list check
+    cy.get('#main-process-info', { timeout: 10000 }).should('be.visible');
+    cy.window().then((win) => {
+      win.$('#process_folder_python_target').collapse('show');
+    });
+    cy.get('ul#process_folder_python_target', { timeout: 10000 })
+      .should('be.visible')
+      .and('contain', 'hello_world.py');
 
     cy.window().then((win) => {
-      return new Cypress.Promise((resolve) => {
+      return new Cypress.Promise((resolve, reject) => {
+        const started = Date.now();
         const checkMonaco = () => {
-          const editors = win.monaco?.editor?.getEditors(); // Get all Monaco editors
-          cy.log(`Total Monaco Editors found: ${editors?.length || 0}`); // Log editor count
-    
+          const editors = win.monaco?.editor?.getEditors();
           if (editors && editors.length > 0) {
-            const visibleEditor = editors.find((editor) => {
-              const isVisible = Cypress.$(editor.getDomNode()).is(':visible'); // Check if visible
-              cy.log(`Editor visible: ${isVisible}`);
-              return isVisible;
-            });
-    
+            const visibleEditor = editors.find((editor) =>
+              Cypress.$(editor.getDomNode()).is(':visible')
+            );
             if (visibleEditor) {
-              cy.log("Using visible Monaco editor");
               resolve(visibleEditor);
-            } else {
-              cy.log("No visible Monaco editor found, retrying...");
-              setTimeout(checkMonaco, 500); // Retry if no visible editor is found
+              return;
             }
-          } else {
-            setTimeout(checkMonaco, 500); // Retry if no editors are found
           }
+          if (Date.now() - started > 15000) {
+            reject(new Error('Timed out waiting for Monaco editor'));
+            return;
+          }
+          setTimeout(checkMonaco, 500);
         };
         checkMonaco();
       });
     }).then((editor) => {
-      if (editor) {
-        cy.log("Found visible Monaco Editor:", editor);
-        const model = editor.getModel();
-        if (model) {
-          cy.wrap(null).should(() => {
-            editor.focus(); // Ensure the editor is focused
-            model.setValue("print('hello world!')"); // Set value
-            editor.trigger("keyboard", "type", { text: "" }); // Simulate keystroke to force UI update
-          });
-    
-          // **Wait until Monaco editor actually reflects the new value**
-          cy.wrap(null).should(() => {
-            expect(model.getValue().trim()).to.equal("print('hello world!')");
-          });
-        }
-      }
-    });    
+      const model = editor.getModel();
+      expect(model).to.exist;
+      editor.focus();
+      model.setValue("print('hello world!')");
+      editor.trigger('keyboard', 'type', { text: '' });
+      cy.wrap(null).should(() => {
+        expect(model.getValue().trim()).to.equal("print('hello world!')");
+      });
+    });
 
-    cy.get('#main-process-info', { timeout: 10000 }).should("be.visible")
-    
-    cy.log("now should change the content")
-
-    // Run button onclick includes a trailing semicolon; prefer stable title selector
     cy.get('button[title="Run Process"]', { timeout: 10000 }).should('be.visible').click();
-    cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess'); // Intercept the POST request
+    cy.intercept('POST', '**/executeProcess').as('executeProcess');
     cy.get('#host-execute-btn').click();
 
     cy.get('#process-confirm-btn').click();
-    cy.get('#inputpswd').clear('1');
-    cy.get('#inputpswd').type('123456');
+    cy.get('#inputpswd').clear().type('123456');
     cy.get('#pswd-confirm-btn').click();
 
-    cy.wait(5000);
-
-    cy.get('#single-console-content').should('contain', 'hello world!');
-    cy.get('#single-console-content').should('contain', 'Exit Code: 0');
-    cy.get('#process-log-window').click();
-    cy.get('#process-log-window').should('be.visible');
     cy.wait('@executeProcess').its('response.statusCode').should('eq', 200);
+    cy.get('#single-console-content', { timeout: 30000 }).should('contain', 'hello world!');
+    cy.get('#single-console-content').should('contain', 'Exit Code: 0');
+    cy.get('#process-log-window').should('be.visible');
   });
 });
 
