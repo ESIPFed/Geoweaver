@@ -1,43 +1,68 @@
 # How to Create a New Release in Geoweaver
 
-To upgrade Geoweaver to a new version, follow these steps to update the necessary files and manage the release on GitHub.
+Geoweaver keeps a **stable jar URL** for installers and PyGeoweaver:
 
-1. **Update Version in Files**
-    - Update the version number in both `gw.js` and `pom.xml` to the latest version (e.g., from `1.5.1` to `1.5.2`).
+```text
+https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
+```
 
-2. **Remove Latest Tag**
-    - Navigate to the relevant directory to check out the latest master branch.
-        ```bash
-        mkdir -p ../rmlatest
-        cd ../rmlatest
-        git clone https://github.com/ESIPFed/Geoweaver.git
-        cd Geoweaver
-        ```
-    - Remove the `latest` tag from the remote repository.
-        ```bash
-        git push --delete origin latest
-        ```
-    This step ensures that the `latest` tag is freed up for the new release.
+That URL works because the published release is tagged **`latest`** (a git tag name), not merely marked with GitHub’s “Latest” badge.
 
-3. **Update Draft Release Tag**
-    - Go to the [Geoweaver releases page](https://github.com/ESIPFed/Geoweaver/releases).
-    - You will see that the old version (e.g., `v1.5.1`) is tagged as a draft because its tag was deleted.
-    - Click on "Edit" and change the tag back to its original format, for example, `v1.5.1-pre`.
-    - Publish these changes. This allows for proper version tracking while preparing the new release.
+## Recommended: one-command publish (after merge to `main`)
 
-4. **Push File Changes**
-    - Commit and push the changes made to `gw.js` and `pom.xml`.
-    - Note: This action might trigger a workflow, which you can cancel if it’s not needed at this point.
+From a clean checkout with [`gh`](https://cli.github.com/) authenticated:
 
-5. **Draft a New Release**
-    - On GitHub release page, draft a new release.
-    - Choose a new tag version (e.g., `v1.5.2-pre`) and select the previous tag version as the target (e.g., `v1.5.1`).
-    - Click button to automatically generate the release notes, and then publish the release.
-    - Wait for the `release_workflow` in the GitHub Action to complete.
+```bash
+# After merging your release PR into main — bump version, push, build, promote to latest
+./scripts/publish-latest-release.sh 2.2.0 --bump
+```
 
-6. **Update Release Tag to Latest**
-    - Once the release workflow is finished, you should see the installers and JAR files are attached on the new release page as artifacts. Update the release tag (e.g., `v1.5.2-pre`) back to `latest`. This ensures that PyGeoweaver and other installers will download the latest jar.
-    - Click "Update release" to save the changes.
-    - Note: Click `+ create new tag:latest on publish` in the new version (e.g., v1.5.2) if tag latest was not identified during selection. The badge `latest` besides version name is not a tag name.
+Or if `pom.xml` / `gw.js` are already set to the release version on `main`:
 
-Once all these steps are completed, the new version of Geoweaver should be published, and available to be pulled by either the URL or the [`pygeoweaver`](https://github.com/ESIPFed/pygeoweaver) library.
+```bash
+git checkout main && git pull
+./scripts/publish-latest-release.sh
+```
+
+What the script does:
+
+1. Archives the previous `latest` release under a versioned tag (e.g. `v2.1.7-pre`) so old jars remain downloadable.
+2. Creates a temporary build tag (e.g. `v2.2.0-pre`) on `main` → triggers `release_workflow.yml`.
+3. Waits until Actions attaches `geoweaver.jar` (and other installers).
+4. Retags that release to **`latest`** so the stable URL above always points at the new jar.
+5. Verifies HTTP access to the stable URL.
+
+Dry run:
+
+```bash
+./scripts/publish-latest-release.sh 2.2.0 --dry-run
+```
+
+## Manual process (same outcome)
+
+1. **Update version** in `pom.xml` and `src/main/resources/static/js/gw.js` (e.g. `2.2.0`). Commit and push to `main`.
+
+2. **Archive the current `latest` release**  
+   Edit the release currently tagged `latest` and change its tag to a historical name such as `v2.1.7-pre`.  
+   Or delete the remote tag only after re-pointing the release:
+   ```bash
+   git push --delete origin latest   # only after the old release has another tag
+   ```
+
+3. **Publish a temporary release** tagged e.g. `v2.2.0-pre` targeting `main`.  
+   Wait for **Build and Publish Geoweaver App** to finish and attach `geoweaver.jar`.
+
+4. **Promote to stable URL**  
+   Edit that release and set the tag to **`latest`** (create tag `latest` if prompted).  
+   Title can remain `2.2.0`.
+
+5. Confirm:
+   ```bash
+   curl -sI -L https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar | head
+   ```
+
+## Notes
+
+- Geoweaver **2.2+** requires **Java 17+**. Keep **2.1.x** jars under versioned tags for Java 11 users.
+- The GitHub UI badge “Latest” is not the same as the git tag named `latest`; the download URL requires the **tag** `latest`.
+- Docker tags `geoweaver/geoweaver:latest` and `geoweaver/geoweaver:<version>` are pushed by the same release workflow.
