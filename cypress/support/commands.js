@@ -97,3 +97,13 @@ Cypress.Commands.add('skipIntroIfPresent', () => {
     }
   });
 });
+
+/**
+ * Expand the collapsible process details bar so #processname / #processid are visible.
+ */
+Cypress.Commands.add('expandProcessDetails', () => {
+  cy.get('#main-process-info', { timeout: 10000 }).should('be.visible');
+  cy.get('#toggle-details-btn', { timeout: 10000 }).should('be.visible').click();
+  cy.get('#process-info-bar', { timeout: 10000 }).should('be.visible');
+  cy.get('#processname', { timeout: 10000 }).should('be.visible');
+});

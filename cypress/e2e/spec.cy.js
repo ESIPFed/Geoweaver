@@ -321,16 +321,13 @@ describe('Edit Process Name', () => {
         cy.get('#process_folder_shell', { timeout: 10000 }).should('be.visible');
       }
     );
-    cy.get('ul#process_folder_shell_target').contains('shell_test').click().then(
-      () => {
-        cy.get('#processname', { timeout: 10000 }).should('be.visible');
-      }
-    );
+    cy.get('ul#process_folder_shell_target').contains('shell_test').click();
+    cy.expandProcessDetails();
     cy.get('#processname').should('be.visible').and('not.be.disabled');
     cy.get('#processname').clear();
-    cy.get('#processname', { timeout: 10000 }).should('be.visible'); // Waits for up to 10 seconds
-    cy.get('#processname').type('updated_shell_test', { force: true }) // Type the text
-      .should('have.value', 'updated_shell_test'); // Check the value
+    cy.get('#processname', { timeout: 10000 }).should('be.visible');
+    cy.get('#processname').type('updated_shell_test', { force: true })
+      .should('have.value', 'updated_shell_test');
     cy.get('.process-edit-right-icon').click();
     cy.get('ul#process_folder_shell_target').should('contain', 'updated_shell_test');
 
@@ -344,6 +341,7 @@ describe('Edit Process Name', () => {
     );
     cy.get('#process_folder_shell').click();
     cy.get('ul#process_folder_shell_target').contains('updated_shell_test').click();
+    cy.expandProcessDetails();
     cy.get('#processcategory').should('be.disabled');
     cy.get('#processid').should('be.disabled')
   })
@@ -582,12 +580,8 @@ describe('Create Python process and run it', () => {
     
     cy.log("now should change the content")
 
-    cy.get('#processid').then(($input) => {
-      const processId = $input.val(); // Get the value of the input field
-      console.log('process id ',processId)
-      const selector = `[onclick="GW.process.runProcess('${processId}', 'hello_world.py', 'python')"]`;
-      cy.get(selector).click(); // Perform actions using the dynamically constructed selector
-    });
+    // Run button onclick includes a trailing semicolon; prefer stable title selector
+    cy.get('button[title="Run Process"]', { timeout: 10000 }).should('be.visible').click();
     cy.intercept('POST', '/Geoweaver/web/executeProcess').as('executeProcess'); // Intercept the POST request
     cy.get('#host-execute-btn').click();
 
