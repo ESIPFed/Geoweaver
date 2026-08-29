@@ -246,18 +246,23 @@ GW.ssh = {
     }
     $("#log-window").append(newline);
 
-    // Add to process-specific log window if it exists and matches current process
+    // Add to process-specific log window only when this line is tagged for the
+    // bound process history. Untagged lines (workflow status JSON, monitor
+    // updates, "connected", sibling-process output without a matching hid)
+    // stay in the top-level #log-window only.
     if ($("#" + GW.ssh.process_output_id).length) {
-      // Manage process log length
-      if (this.current_process_log_length > 5000) {
-        $("#" + GW.ssh.process_output_id).find("p:first").remove();
-        this.current_process_log_length -= 1;
-      }
+      var boundToRun =
+        GW.process.history_id != null &&
+        log_history_id != null &&
+        String(GW.process.history_id) === String(log_history_id);
 
-      // Only display logs for the current process
-      if (log_history_id == null || GW.process.history_id == log_history_id) {
+      if (boundToRun) {
+        if (this.current_process_log_length > 5000) {
+          $("#" + GW.ssh.process_output_id).find("p:first").remove();
+          this.current_process_log_length -= 1;
+        }
+
         $("#" + GW.ssh.process_output_id).append(newline);
-        // Scroll to bottom of log window
         var logWindow = document.getElementById(GW.ssh.process_output_id);
         if (logWindow) {
           logWindow.scrollTop = logWindow.scrollHeight;
@@ -269,6 +274,85 @@ GW.ssh = {
 
   clearProcessLog: function () {
     $("#" + GW.ssh.process_output_id).html("");
+  },
+
+  /**
+   * Bind live log streaming to a process/side-panel log window for a running
+   * (or just-opened) history. Top-level #log-window always receives logs; the
+   * process window only receives lines whose history_id prefix matches the
+   * bound run (workflow status JSON and untagged lines are excluded).
+   *
+   * Also subscribes this browser tab's CLIENT_TOKEN to the history so the
+   * server fans out live lines to tabs other than the one that started the run.
+   */
+  activateProcessLogStream: function (history_id, element_id) {
+    if (!history_id) {
+      console.warn("activateProcessLogStream called without history_id");
+      return;
+    }
+
+    GW.process.history_id = history_id;
+
+    if (element_id) {
+      GW.ssh.process_output_id = element_id;
+    }
+
+    // Ensure the target element exists before writing
+    if (!$("#" + GW.ssh.process_output_id).length) {
+      console.warn(
+        "Process log element not found: " + GW.ssh.process_output_id
+      );
+      return;
+    }
+
+    // Keep communication channel alive so new lines keep arriving
+    if (GW.ssh.all_ws != null) {
+      if (GW.communication && GW.communication.checkConnection) {
+        GW.communication.checkConnection();
+      }
+    } else if (GW.general && GW.general.CLIENT_TOKEN) {
+      GW.ssh.startLogSocket(GW.general.CLIENT_TOKEN);
+    } else if (GW.main && GW.main.getJSessionId) {
+      GW.ssh.startLogSocket(GW.main.getJSessionId());
+    }
+
+    // Subscribe this tab to live logs for this history (multi-tab fan-out)
+    var subscribe = function () {
+      if (GW.ssh.send) {
+        GW.ssh.send("execution:" + history_id);
+      } else if (GW.communication && GW.communication.send) {
+        GW.communication.send("execution:" + history_id);
+      }
+    };
+    // Allow poll channel to register before subscribe
+    setTimeout(subscribe, 200);
+
+    // Make sure the process/side-panel log area is visible
+    var mainLogSwitch = document.getElementById("log_switch");
+    if (mainLogSwitch && !mainLogSwitch.checked) {
+      mainLogSwitch.checked = true;
+      $(mainLogSwitch).trigger("change");
+    }
+    var sideLogSwitch = document.getElementById("prompt_panel_log_switch");
+    if (sideLogSwitch && !sideLogSwitch.checked) {
+      sideLogSwitch.checked = true;
+      $(sideLogSwitch).trigger("change");
+    }
+
+    var marker =
+      history_id +
+      "*_*" +
+      '<span style="color:#0056b3;font-weight:bold;">----- Live log streaming active for ' +
+      history_id +
+      " -----</span>";
+    GW.ssh.addlog(marker);
+
+    console.log(
+      "Activated process log stream: history_id=" +
+        history_id +
+        " element=" +
+        GW.ssh.process_output_id
+    );
   },
 
   clearMain: function () {
@@ -371,9 +455,13 @@ GW.ssh = {
       GW.ssh.startLogSocket(msg.token);
     }
 
-    if (msg.history_id.length == 12)
-      this.addlog("=======\nStart to execute Process " + msg.history_id);
-    else this.addlog("=======\nStart to execute Workflow " + msg.history_id);
+    // Prefix with history id so process panel filtering can match when applicable.
+    // Workflow-length ids still go to the main log; process panel ignores non-matches.
+    var startMsg =
+      msg.history_id.length == 12
+        ? "=======\nStart to execute Process " + msg.history_id
+        : "=======\nStart to execute Workflow " + msg.history_id;
+    this.addlog(msg.history_id + "*_*" + startMsg);
   },
 
   openTerminal: function (token, terminal_div_id) {

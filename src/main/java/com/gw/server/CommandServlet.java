@@ -2,6 +2,8 @@ package com.gw.server;
 
 import com.gw.ssh.SSHSession;
 import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
+import com.gw.utils.ExecutionLogBroker;
 import com.gw.web.GeoweaverController;
 import java.io.IOException;
 import java.util.Arrays;
@@ -142,15 +144,24 @@ public class CommandServlet {
           logger.debug(" - Token: " + tokenfromclient);
           // Register the WebSocket session with the token
           this.registerSession(session, tokenfromclient);
+          session.getUserProperties().put("clientToken", tokenfromclient);
         }
-        // Check if the message starts with "execution:"
-        else if (message.startsWith("execution:")) {
-          // Extract the history ID from the message (substring from the 10th character)
+        // Check if the message starts with "execution:" or "subscribe:"
+        else if (message.startsWith("execution:") || message.startsWith("subscribe:")) {
+          // Both prefixes are 10 characters
           String historyId = message.substring(10);
           // Log the execution history ID for debugging
           logger.debug(" - Execution History ID: " + historyId);
           // Register the WebSocket session with the history ID
           this.registerSession(session, historyId);
+          // Also subscribe this tab's client token so log fan-out reaches it
+          String clientToken = (String) session.getUserProperties().get("clientToken");
+          if (!BaseTool.isNull(clientToken)) {
+            ExecutionLogBroker broker = BeanTool.getBean(ExecutionLogBroker.class);
+            if (broker != null) {
+              broker.subscribe(historyId, clientToken);
+            }
+          }
           // Send confirmation message back to client
           if (session.isOpen()) {
             session.getBasicRemote().sendText(historyId + BaseTool.log_separator + "WebSocket session connected to execution: " + historyId);
@@ -300,28 +311,69 @@ public class CommandServlet {
     }
 
     String channelUsed = "none";
+    Session resultSession = null;
 
     try {
-      // Use long polling as the primary communication method
+      // Primary delivery to the owner token (tab that started the process)
       boolean longPollingSuccess = sendViaLongPolling(token, message);
       if (longPollingSuccess) {
         logger.debug("Message sent via long polling");
         channelUsed = "longpolling";
       } else {
-        // For backward compatibility, try WebSocket as fallback
         Session wsout = findSessionById(token);
         if (wsout != null && wsout.isOpen()) {
           wsout.getBasicRemote().sendText(message);
           channelUsed = "websocket";
-          return wsout;
+          resultSession = wsout;
         }
       }
+
+      // Fan-out to other browser tabs subscribed to this history id
+      fanOutToHistorySubscribers(token, message);
     } catch (Exception e) {
       logger.error("Failed to send message: " + e.getMessage());
     }
 
     logger.debug("Message sent via: " + channelUsed);
-    return null;
+    return resultSession;
+  }
+
+  /**
+   * Deliver a copy of the log line to every client token subscribed to the history id
+   * embedded in the message (prefix before {@link BaseTool#log_separator}).
+   */
+  private static void fanOutToHistorySubscribers(String ownerToken, String message) {
+    try {
+      String historyId = ExecutionLogBroker.extractHistoryId(message);
+      if (BaseTool.isNull(historyId)) {
+        return;
+      }
+      ExecutionLogBroker broker = BeanTool.getBean(ExecutionLogBroker.class);
+      if (broker == null) {
+        return;
+      }
+      for (String subToken : broker.getSubscribers(historyId)) {
+        if (subToken == null || subToken.equals(ownerToken)) {
+          continue;
+        }
+        boolean sent = sendViaLongPolling(subToken, message);
+        if (!sent) {
+          Session wsout = findSessionById(subToken);
+          if (wsout != null && wsout.isOpen()) {
+            try {
+              wsout.getBasicRemote().sendText(message);
+            } catch (IOException ioe) {
+              logger.debug(
+                  "Failed fan-out WebSocket send to subscriber {}: {}",
+                  subToken,
+                  ioe.getMessage());
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.debug("History log fan-out skipped: " + e.getMessage());
+    }
   }
   
   /**

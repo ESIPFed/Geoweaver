@@ -1,5 +1,6 @@
 package com.gw.server;
 
+import com.gw.utils.ExecutionLogBroker;
 import com.gw.utils.MessageQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,6 +61,29 @@ class LongPollingControllerTest {
         // Then
         assertNotNull(result);
         assertFalse(result.hasResult()); // Should be pending
+    }
+
+    @Test
+    void testSendTokenCommandDoesNotQueue() {
+        ResponseEntity<?> response = longPollingController.sendMessage("test-token", "token:test-token");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(messageQueue, never()).addMessage(anyString(), anyString());
+    }
+
+    @Test
+    void testSendExecutionSubscribesAndConfirms() {
+        ExecutionLogBroker broker = mock(ExecutionLogBroker.class);
+        org.springframework.test.util.ReflectionTestUtils.setField(
+            longPollingController, "executionLogBroker", broker);
+        when(messageQueue.addMessage(eq("test-token"), anyString())).thenReturn(true);
+
+        ResponseEntity<?> response =
+            longPollingController.sendMessage("test-token", "execution:hist-99");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(broker).subscribe("hist-99", "test-token");
+        verify(messageQueue).addMessage(eq("test-token"), contains("Subscribed to live execution logs"));
     }
 
     @Test
