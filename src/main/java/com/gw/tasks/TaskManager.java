@@ -168,20 +168,23 @@ public class TaskManager {
     logger.debug("notify waiting list to pay attention to the released worker");
     if (waitinglist.size() > 0 && wm.getCurrentWorkerNumber() < worknumber) {
       orderWaitingList();
+
+      // Process tasks iteratively
       for (int i = 0; i < waitinglist.size(); i++) {
         GeoweaverProcessTask newtask = (GeoweaverProcessTask) waitinglist.get(i);
         if (newtask.getIsReady()) {
-          waitinglist.remove(newtask);
-          if (newtask.checkShouldPassOrNot()){
-            newtask.endPrematurely();
-            notifyWaitinglist();
-          }else{
-            executeATask(newtask);
+          waitinglist.remove(newtask); // Remove task from waiting list
+          if (newtask.checkShouldPassOrNot()) {
+            newtask.endPrematurely(); // End the task immediately if it should not proceed
+          } else {
+            executeATask(newtask); // Otherwise, execute the task
           }
+          i--; // Adjusting index due to the removal
         }
       }
     }
   }
+
 
   /**
    * A task is done, being triggered to start doing another task.
@@ -206,46 +209,40 @@ public class TaskManager {
    * @param history_id
    */
   public void stopTask(String history_id) {
-
     try {
-
+      // Stop tasks in waiting list
       synchronized (waitinglist) {
         Iterator<Task> iterator = waitinglist.iterator();
+        List<Task> tasksToRemove = new ArrayList<>();
 
         while (iterator.hasNext()) {
-
           GeoweaverProcessTask thet = (GeoweaverProcessTask) iterator.next();
-
           if (thet.getHistory_id().equals(history_id)) {
-
-            thet.endPrematurely();
-
-            waitinglist.remove(thet); // remove from waiting list
+                thet.endPrematurely(); // Immediately end the task
+                tasksToRemove.add(thet); // Mark for removal
+              }
+            }
+            waitinglist.removeAll(tasksToRemove); // Remove all tasks at once after iteration
           }
-        }
-      }
 
-      synchronized (runninglist) {
-        Iterator<Task> iterator = runninglist.iterator();
+            // Stop tasks in running list
+            synchronized (runninglist) {
+              Iterator<Task> iterator = runninglist.iterator();
+            List<Task> tasksToRemove = new ArrayList<>();
 
-        while (iterator.hasNext()) {
-
-          GeoweaverProcessTask thet = (GeoweaverProcessTask) iterator.next();
-
-          if (thet.getHistory_id().equals(history_id)) {
-
-            // for task ongoing, it will be ended using pt.stop at above level.
-
-            thet.endPrematurely();
-
-            runninglist.remove(thet); // remove from waiting list
+            while (iterator.hasNext()) {
+            GeoweaverProcessTask thet = (GeoweaverProcessTask) iterator.next();
+            if (thet.getHistory_id().equals(history_id)) {
+                thet.endPrematurely(); // Immediately end the task
+                tasksToRemove.add(thet); // Mark for removal
+              }
+            }
+            runninglist.removeAll(tasksToRemove); // Remove all tasks at once after iteration
           }
-        }
-      }
 
-    } catch (Exception e) {
-
+          } catch (Exception e) {
       e.printStackTrace();
     }
   }
+
 }
