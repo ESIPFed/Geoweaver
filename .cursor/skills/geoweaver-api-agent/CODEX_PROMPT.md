@@ -14,8 +14,9 @@ You are controlling **classic Geoweaver** over HTTP like a human using the UI, w
   - local: `http://127.0.0.1:8070/Geoweaver`
 - Bearer token for `/api/v1` — inject from a secret store (prefer not to keep it in shell env).
 - If the token is missing or expired (401): mint with
-  `gw agent-token --create --base-url "$GEOWEAVER_BASE_URL" --ttl-days 30` (opens a local
-  Geoweaver browser page to copy the token into a password manager, then close the window).
+  `gw agent-token --create --base-url "$GEOWEAVER_BASE_URL" --ttl-days 30` (prompts for the
+  GUI localhost password; stores the hash on that server; prints the secret once because the
+  copy web page is loopback-only).
   Or `POST $GEOWEAVER_BASE_URL/api/v1/tokens` JSON `{"hostPassword":"...","ttlDays":30}` (no Bearer;
   `ttlDays` max 180 / six months). Ask the user for the password once; never echo it back.
   Do not recommend saving the token in environment variables or a file. Note `expiresAt` and remint before then.

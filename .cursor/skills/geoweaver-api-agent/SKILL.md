@@ -6,7 +6,7 @@ description: >-
   Geoweaver server host, poll/stop history. Use when GEOWEAVER_BASE_URL /
   GEOWEAVER_API_TOKEN are set, or the user wants Codex/Cursor/Claude Code to use
   a deployed Geoweaver endpoint like a human UI.
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Geoweaver Agent API skill
@@ -31,9 +31,9 @@ Operator must have enabled `geoweaver.agent.api-enabled=true`. You need the **GU
 ```bash
 # Preferred CLI (prompts for password)
 gw agent-token --create --base-url "$GEOWEAVER_BASE_URL" --ttl-days 30
-# Opens copy page on already-running local Geoweaver (start it first; never temp server).
+# Prompts for GUI localhost password. Hash is stored on that server (not this CLI’s database).
+# Prints the secret once (the copy web page is loopback-only on the server).
 # Do NOT put the token in environment variables. Never paste into chat.
-# Headless: gw agent-token --create --base-url "$GEOWEAVER_BASE_URL" --no-browser
 
 # Equivalent HTTP (no Bearer). ttlDays optional (1..180 / six months); default 30.
 curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" \
@@ -60,7 +60,7 @@ H="Authorization: Bearer $GEOWEAVER_API_TOKEN"
 | Bearer token | Required except `GET /api/v1/health` |
 | `geoweaver.agent.api-enabled` | Must be `true` or API returns 503 |
 | Server-local password | If `allow-localhost-runs=false`, runs need JSON `hostPassword` (GUI localhost password **on the server**) |
-| Public bind | Operators set reverse-proxy→loopback **or** `allow-non-loopback=true` |
+| Public bind | Reverse proxy to 127.0.0.1 **or** `allow-non-loopback=true` if the JVM listens beyond loopback |
 | Host scope | Only `hostId=100001`. Remote SSH → 400 |
 
 Never print the full token or host password in chat.

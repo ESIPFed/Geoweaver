@@ -119,6 +119,12 @@ public class AgentApiController {
         List.of("Done", "Failed", "Running", "Unknown", "Stopped", "Ready", "Skipped"));
     body.put("auth", "Authorization: Bearer <token>");
     body.put(
+        "remoteClients",
+        "Bearer works from another computer if this HTTP port is reachable. "
+            + "hostId 100001 is still this Geoweaver server, not the caller. "
+            + "The one-time token copy web page stays on 127.0.0.1 only.");
+    body.put("tokenRevealLoopbackOnly", true);
+    body.put(
         "tokenCreate",
         "POST /api/v1/tokens with JSON hostPassword (GUI localhost password) and optional "
             + "ttlDays (1..180 / six months); no Bearer; rate-limited per IP; requires api-enabled=true");

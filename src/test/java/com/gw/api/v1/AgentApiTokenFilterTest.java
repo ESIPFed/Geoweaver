@@ -91,4 +91,27 @@ class AgentApiTokenFilterTest {
     filter.doFilter(req, res, chain);
     assertThat(res.getStatus()).isEqualTo(401);
   }
+
+  @Test
+  void optionsPreflightDoesNotRequireBearer() throws Exception {
+    MockHttpServletRequest req = new MockHttpServletRequest("OPTIONS", "/Geoweaver/api/v1/processes");
+    req.setContextPath("/Geoweaver");
+    MockHttpServletResponse res = new MockHttpServletResponse();
+    filter.doFilter(req, res, chain);
+    assertThat(res.getStatus()).isEqualTo(200);
+  }
+
+  @Test
+  void validBearerFromNonLoopbackAddressIsAllowed() throws Exception {
+    String token = "gwt_remote_client_token_value_xxxx";
+    when(tokenService.matches(token)).thenReturn(true);
+    when(tokenService.fingerprint(token)).thenReturn("deadbeef0123");
+    MockHttpServletRequest req = new MockHttpServletRequest("GET", "/Geoweaver/api/v1/capabilities");
+    req.setContextPath("/Geoweaver");
+    req.setRemoteAddr("203.0.113.10");
+    req.addHeader("Authorization", "Bearer " + token);
+    MockHttpServletResponse res = new MockHttpServletResponse();
+    filter.doFilter(req, res, chain);
+    assertThat(res.getStatus()).isEqualTo(200);
+  }
 }

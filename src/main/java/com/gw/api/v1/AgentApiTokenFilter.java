@@ -53,6 +53,12 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
         return;
       }
 
+      // Browser on another origin sends OPTIONS before GET/POST. No secrets in preflight.
+      if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        filterChain.doFilter(request, response);
+        return;
+      }
+
       // Password-gated bootstrap: mint/rotate Bearer token without an existing token.
       // Controller still requires api-enabled + GUI localhost password + IP rate limit.
       if (isTokenCreatePath(request, path)) {

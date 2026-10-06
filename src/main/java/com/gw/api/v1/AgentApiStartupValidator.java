@@ -40,7 +40,7 @@ public class AgentApiStartupValidator implements ApplicationRunner {
     if (properties.isBoundBeyondLoopback() && properties.isAllowNonLoopback()) {
       logger.warn(
           "SECURITY: Agent API enabled on non-loopback bind with allow-non-loopback=true. "
-              + "Protect the token file and prefer HTTPS reverse proxy.");
+              + "Prefer HTTPS (reverse proxy to 127.0.0.1). A leaked Bearer token is full Agent API access.");
     }
     if (!tokenService.hasActiveToken()) {
       logger.warn(

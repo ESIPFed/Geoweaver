@@ -226,6 +226,8 @@ class AgentApiFullCapacityTest {
     assertThat(c.get("executionHost").asText()).isEqualTo("100001");
     assertThat(c.get("executionHostMeaning").asText()).contains("Geoweaver is running");
     assertThat(c.get("note").asText()).contains("GEOWEAVER_BASE_URL");
+    assertThat(c.get("remoteClients").asText()).contains("another computer");
+    assertThat(c.get("tokenRevealLoopbackOnly").asBoolean()).isTrue();
     assertThat(c.get("processLanguages").toString()).contains("python", "shell");
   }
 }

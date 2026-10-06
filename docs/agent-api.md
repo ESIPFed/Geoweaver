@@ -39,12 +39,15 @@ gw agent-token --create
 export GEOWEAVER_BASE_URL='http://127.0.0.1:8070/Geoweaver'   # URL only is fine in env
 ```
 
-## Operator: public / deployed endpoint (Codex-ready)
+## Operator: two machines (caller ≠ Geoweaver host)
 
-Recommended pattern (reverse proxy + loopback JVM):
+The Agent API is ordinary HTTP. A valid Bearer token is accepted from **any reachable client**. `hostId=100001` still means “run on the Geoweaver server,” not on the caller.
+
+**Do not** set `server.address=127.0.0.1` if other computers must open a TCP connection to the JVM with no reverse proxy — loopback is only this computer.
+
+### A) Preferred: HTTPS reverse proxy, JVM on loopback
 
 ```properties
-# JVM stays on loopback; nginx/Caddy exposes HTTPS publicly
 server.address=127.0.0.1
 server.port=8070
 geoweaver.agent.api-enabled=true
@@ -52,17 +55,25 @@ geoweaver.agent.allow-localhost-runs=true
 geoweaver.agent.allow-non-loopback=false
 ```
 
-Proxy forwards `https://gw.example.org/Geoweaver/` → `http://127.0.0.1:8070/Geoweaver/`.
+Proxy forwards `https://gw.example.org/Geoweaver/` → `http://127.0.0.1:8070/Geoweaver/`. Clients use `GEOWEAVER_BASE_URL=https://gw.example.org/Geoweaver`.
 
-If the JVM itself binds all interfaces:
+### B) JVM listens on the network
+
+Required when there is no proxy and the caller is another machine:
 
 ```properties
-# Only with network controls + HTTPS terminator + strong token hygiene
+# Do not set server.address=127.0.0.1
 server.address=0.0.0.0
 geoweaver.agent.api-enabled=true
 geoweaver.agent.allow-non-loopback=true
 geoweaver.agent.allow-localhost-runs=true
 ```
+
+Without `allow-non-loopback=true`, Geoweaver **refuses to start** if the API is on and the bind is not loopback.
+
+Open firewall TCP 8070 only to trusted networks. Prefer HTTPS in front of this bind.
+
+The one-time **token copy web page** stays on `127.0.0.1` (it contains the raw secret). Remote mint uses `POST /api/v1/tokens` or `gw agent-token --create --base-url …` (prints the secret once on the caller).
 
 ### Create the Bearer token
 
@@ -76,7 +87,7 @@ gw agent-token --create --ttl-days 30
 # or jar:   java -jar ~/geoweaver.jar agent-token --create --ttl-days 30
 ```
 
-By default the **raw token is not printed** to the terminal. Instead, `gw agent-token --create` opens the copy page on the **already running** Geoweaver (`http://127.0.0.1:8070/Geoweaver/agent-token-reveal/…`). **Start Geoweaver first** when you want the HTTP mint (`--base-url`) so the token is stored in **that server’s database**. Offline `java -jar … agent-token --create` writes into this process’s database (same working directory / H2 file). Copy the token into a password manager, then click “I copied the token…” and close the window. **Do not** store the token in a file or in `GEOWEAVER_API_TOKEN` / shell environment variables.
+On the **server machine**, default mint does **not** print the raw token. `gw agent-token --create` (no `--base-url`) opens the copy page on the **already running** local Geoweaver (`http://127.0.0.1:8070/Geoweaver/agent-token-reveal/…`). **Start Geoweaver first**. Offline `java -jar … agent-token --create` writes into this process’s database. Copy the token into a password manager, then click “I copied the token…” and close the window. **Do not** store the token in a file or in `GEOWEAVER_API_TOKEN` / shell environment variables.
 
 Every token **must expire**. Default lifetime is 30 days. Maximum lifetime is **180 days (six months)**. You can have several active tokens. `gw agent-token --list` shows fingerprints only. `gw agent-token --revoke <fingerprint>` or `DELETE /api/v1/tokens/{fingerprint}` disables one. `gw agent-token --rotate` issues a new token and revokes the others. Leftover CHG-0001 plaintext files are imported as a hash once, then deleted; auth never reads a token file.
 
@@ -88,6 +99,8 @@ Requires `geoweaver.agent.api-enabled=true` on the server. Uses the **GUI localh
 export GEOWEAVER_BASE_URL='https://gw.example.org/Geoweaver'
 # Interactive (recommended): prompts for password without echoing
 gw agent-token --create --base-url "$GEOWEAVER_BASE_URL" --ttl-days 30
+# Prompts for the GUI localhost password. Stores the hash on that server (not in this CLI’s H2 file).
+# Prints the secret once (copy page cannot run on a different computer).
 
 # Or one-shot HTTP:
 curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" \
@@ -95,7 +108,7 @@ curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" \
   -d '{"hostPassword":"<gui-localhost-password>","ttlDays":30}'
 ```
 
-Response `201` includes `token`, `expiresAt`, and `ttlDays` once. Other tokens stay valid unless you send `"revokeOthers": true`. Prefer `gw agent-token --create --base-url …` so the browser copy page opens. Store the secret in a password manager / CI secret store — never commit, never in a file, never in shell env by default. After `expiresAt` or revoke, auth returns 401 until you mint again.
+Response `201` includes `token`, `expiresAt`, and `ttlDays` once. Other tokens stay valid unless you send `"revokeOthers": true`. Store the secret in a password manager / CI secret store — never commit, never in a file, never in shell env by default. After `expiresAt` or revoke, auth returns 401 until you mint again.
 
 `allow-localhost-runs` does **not** apply to token create: the GUI localhost password is always required for `POST /api/v1/tokens`.
 
