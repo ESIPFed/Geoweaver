@@ -61,6 +61,16 @@ public class LoginInterceptor implements HandlerInterceptor {
         || requestPath.endsWith("/authenticateLocalhost")
         || requestPath.endsWith("/key");
     
+    // Agent API uses Bearer token + JSON errors (AgentApiTokenFilter). Never HTML-redirect.
+    if (requestPath.startsWith("/api/v1/")) {
+      return true;
+    }
+
+    // One-time Agent API token copy page (loopback CLI reveal on port 8070).
+    if (requestPath.startsWith("/agent-token-reveal/")) {
+      return true;
+    }
+
     if (isLoginEndpoint
         || requestPath.startsWith("/static/")
         || requestPath.startsWith("/js/")

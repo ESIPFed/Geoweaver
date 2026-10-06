@@ -22,3 +22,10 @@ sync.ffs_db
 cypress/node_modules/
 node_modules/
 
+# Local software-quality-loop workspace (personal only — do not commit)
+projects/
+
+# Agent API Bearer token (never commit secrets)
+**/.agent_api_token
+*.agent_api_token
+
