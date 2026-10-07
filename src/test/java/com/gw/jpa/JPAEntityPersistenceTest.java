@@ -35,6 +35,7 @@ public class JPAEntityPersistenceTest {
         assertNotNull(new History());
         assertNotNull(new LogActivity());
         assertNotNull(new Checkpoint());
+        assertNotNull(new AgentApiToken());
         assertNotNull(new HistoryDTO("id", testDate, testDate2, "notes", "process", "host", "indicator"));
     }
 

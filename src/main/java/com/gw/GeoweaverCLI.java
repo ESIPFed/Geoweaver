@@ -33,6 +33,9 @@ import picocli.CommandLine;
       "com.gw.utils",
       "com.gw.workers",
       "com.gw.ssh",
+      // Agent API token mint (agent-token CLI). Web-only beans are
+      // @ConditionalOnWebApplication so they stay out of CLI mode.
+      "com.gw.api.v1",
     },
     lazyInit = true)
 public class GeoweaverCLI implements CommandLineRunner {

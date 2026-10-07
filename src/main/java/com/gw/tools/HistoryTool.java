@@ -131,14 +131,18 @@ public class HistoryTool {
     if (ho.isPresent()) {
 
       h = ho.get();
-      
-      // Always prioritize cached status over database status during workflow execution
-      // This ensures we're using the most up-to-date status that might not be flushed to DB yet
+
+      // Cache can be ahead of the database while a job is still running.
+      // A finished database row (Done/Failed/Stopped/Skipped) must win over a stale Running cache,
+      // otherwise stop writes an end time but the API still reports Running.
       if (cachedStatus != null) {
-        logger.debug("Using cached status for history ID: " + hid + ": " + cachedStatus);
-        h.setIndicator(cachedStatus);
+        if (isTerminalIndicator(h.getIndicator()) && !isTerminalIndicator(cachedStatus)) {
+          processStatusCache.updateStatus(hid, h.getIndicator());
+        } else {
+          logger.debug("Using cached status for history ID: " + hid + ": " + cachedStatus);
+          h.setIndicator(cachedStatus);
+        }
       } else {
-        // Only if cache doesn't have the status, update cache with database value
         processStatusCache.updateStatus(hid, h.getIndicator());
       }
 
@@ -472,9 +476,10 @@ public class HistoryTool {
 
         oldh.setHistory_end_time(BaseTool.getCurrentSQLDate());
 
-        oldh.setIndicator("Stopped");
+        oldh.setIndicator(ExecutionStatus.STOPPED);
 
         historyrepository.save(oldh);
+        processStatusCache.updateStatus(history_id, ExecutionStatus.STOPPED);
         log.info("History status updated to 'Stopped' for history ID: " + history_id);
       } else {
         log.warn("History record not found for history ID: " + history_id);
@@ -535,5 +540,12 @@ public class HistoryTool {
 
       e.printStackTrace();
     }
+  }
+
+  static boolean isTerminalIndicator(String status) {
+    return ExecutionStatus.DONE.equals(status)
+        || ExecutionStatus.FAILED.equals(status)
+        || ExecutionStatus.STOPPED.equals(status)
+        || ExecutionStatus.SKIPPED.equals(status);
   }
 }

@@ -184,6 +184,23 @@ public class HistoryToolTest {
 
     @Test
     @Timeout(10)
+    void testGetHistoryByIdPrefersTerminalDatabaseOverStaleRunningCache() {
+        String historyId = "history-stopped";
+        History history = new History();
+        history.setHistory_id(historyId);
+        history.setIndicator(ExecutionStatus.STOPPED);
+
+        when(historyRepository.findById(historyId)).thenReturn(Optional.of(history));
+        when(processStatusCache.getStatus(historyId)).thenReturn(ExecutionStatus.RUNNING);
+
+        History result = historyTool.getHistoryById(historyId);
+
+        assertEquals(ExecutionStatus.STOPPED, result.getIndicator());
+        verify(processStatusCache).updateStatus(historyId, ExecutionStatus.STOPPED);
+    }
+
+    @Test
+    @Timeout(10)
     void testGetHistoryByIdNotFound() {
         // Given
         String historyId = "nonexistent";

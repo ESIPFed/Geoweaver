@@ -148,7 +148,15 @@ Learn more about Geoweaver in its official documentation at https://esipfed.gith
 
 # Creating a New Release
 
-For detailed steps on how to create a new release in Geoweaver, please refer to the [release instructions](docs/release_upgrade.md).
+After merging to `main`, publish so clients can always download:
+
+`https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar`
+
+```bash
+./scripts/publish-latest-release.sh 2.2.0 --bump
+```
+
+Details: [release instructions](docs/release_upgrade.md).
 
 
 # [PyGeoWeaver](https://github.com/ESIPFed/pygeoweaver)

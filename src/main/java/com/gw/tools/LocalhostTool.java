@@ -93,6 +93,11 @@ public class LocalhostTool {
 
   public void authenticate(String password) throws Exception {
 
+    // Agent API: valid Bearer token + geoweaver.agent.allow-localhost-runs=true
+    if (com.gw.api.v1.AgentApiAuthContext.isSkipLocalhostPassword()) {
+      return;
+    }
+
     if (!bt.checkLocalhostPassword(password)) {
 
       throw new RuntimeException("Authentication Failed. Wrong Password.");
