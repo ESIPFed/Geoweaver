@@ -375,7 +375,10 @@ public class GeoweaverProcessTask extends Task {
       et.executeProcess(history_id, pid, host, pswd, token, isjoin, bin, pyenv, basedir);
 
       this.curstatus = ExecutionStatus.DONE;
-      
+      // Must update cache before finally→sendWorkflowTaskStatus. LocalSessionOutput may still
+      // be finishing; without this, workflow aggregation keeps seeing Running forever.
+      processStatusCache.updateStatus(history_id, this.curstatus);
+
     } catch (Exception e) {
 
       e.printStackTrace();
@@ -390,7 +393,6 @@ public class GeoweaverProcessTask extends Task {
     } finally {
 
       this.updateEverything();
-
       tm.done(this);
 
       if (!isjoin) this.stopMonitor(); // if run solo, close. if workflow, don't.
@@ -434,16 +436,33 @@ public class GeoweaverProcessTask extends Task {
         for (int i = 0; i < member_history_id_list.length; i++) {
 
           String c_history_id = member_history_id_list[i];
+          if (BaseTool.isNull(c_history_id)) {
+            continue;
+          }
 
           JSONObject obj = new JSONObject();
 
-          obj.put("id", member_process_id_list[i]);
+          if (i < member_process_id_list.length && !BaseTool.isNull(member_process_id_list[i])) {
+            obj.put("id", member_process_id_list[i]);
+          }
 
           obj.put("history_id", c_history_id);
 
-          // Always use cache for status - never query database for status during workflow execution
+          // Prefer cache; for this task use curstatus; otherwise fall back to DB once.
           String c_history_status = processStatusCache.getStatus(c_history_id);
-          
+          if (BaseTool.isNull(c_history_status) && c_history_id.equals(this.history_id)) {
+            c_history_status = this.curstatus;
+          }
+          if (BaseTool.isNull(c_history_status)) {
+            Optional<History> ho = hr.findById(c_history_id);
+            if (ho.isPresent()) {
+              c_history_status = ho.get().getIndicator();
+              if (!BaseTool.isNull(c_history_status)) {
+                processStatusCache.updateStatus(c_history_id, c_history_status);
+              }
+            }
+          }
+
           obj.put("status", c_history_status);
 
           if (BaseTool.isNull(c_history_status)

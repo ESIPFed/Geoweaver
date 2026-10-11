@@ -55,11 +55,37 @@ public class ProcessStatusCache {
         if (historyId == null || status == null) {
             return;
         }
+
+        // Do not let late "Running" / "Ready" writes from the output thread overwrite a
+        // finished status. That race left workflow parents stuck on Running in Agent API tests.
+        String existing = statusCache.get(historyId);
+        if (isTerminal(existing) && !isTerminal(status)) {
+            logger.debug(
+                "Ignoring non-terminal cache update for history ID: "
+                    + historyId
+                    + " (keep "
+                    + existing
+                    + ", ignore "
+                    + status
+                    + ")");
+            timestampCache.put(historyId, System.currentTimeMillis());
+            return;
+        }
         
         statusCache.put(historyId, status);
         timestampCache.put(historyId, System.currentTimeMillis());
         
         logger.debug("Updated cache for history ID: " + historyId + " with status: " + status);
+    }
+
+    private static boolean isTerminal(String status) {
+        if (status == null) {
+            return false;
+        }
+        return ExecutionStatus.DONE.equals(status)
+            || ExecutionStatus.FAILED.equals(status)
+            || ExecutionStatus.STOPPED.equals(status)
+            || ExecutionStatus.SKIPPED.equals(status);
     }
     
     /**

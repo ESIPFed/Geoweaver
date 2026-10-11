@@ -203,6 +203,32 @@ class AgentApiFullCapacityTest {
     assertThat(done.get("status").asText()).isIn("Done", "Failed");
     // workflow history output is process-history id list; Done is the success signal
     assertThat(done.get("terminal").asBoolean()).isTrue();
+
+    // Step stdout lives on the process run (workflow log is the child history id list).
+    JsonNode stepDone = pollUntilTerminalProcess(processId, 30);
+    assertThat(stepDone.get("status").asText()).isEqualTo("Done");
+    assertThat(stepDone.get("log").asText()).contains("workflow-agent-ok");
+  }
+
+  /** Poll latest process run until terminal (workflow parent history can lag). */
+  private JsonNode pollUntilTerminalProcess(String processId, int maxSeconds) throws Exception {
+    long deadline = System.currentTimeMillis() + maxSeconds * 1000L;
+    JsonNode last = null;
+    while (System.currentTimeMillis() < deadline) {
+      ResponseEntity<String> listed =
+          exchange(HttpMethod.GET, "/processes/" + processId + "/runs?logLimit=50000", null);
+      assertThat(listed.getStatusCode()).isEqualTo(HttpStatus.OK);
+      JsonNode arr = mapper.readTree(listed.getBody());
+      if (arr.isArray() && arr.size() > 0) {
+        last = arr.get(0);
+        if (last.path("terminal").asBoolean(false)) {
+          return last;
+        }
+      }
+      Thread.sleep(400);
+    }
+    fail("Process " + processId + " did not reach a terminal status. Last=" + last);
+    return last;
   }
 
   @Test
