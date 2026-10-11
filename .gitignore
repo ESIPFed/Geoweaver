@@ -25,7 +25,21 @@ node_modules/
 # Local software-quality-loop workspace (personal only — do not commit)
 projects/
 
+# Secrets and local credentials (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.jks
+**/credentials.json
+**/secrets.json
+**/cc_secret.properties
+local.properties
+application-local.properties
+
 # Agent API Bearer token (never commit secrets)
 **/.agent_api_token
 *.agent_api_token
+**/gw-workspace/.agent_api_token
 

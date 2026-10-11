@@ -374,6 +374,9 @@ public class WorkflowTool {
     wf.setNodes(nodes);
 
     wf.setOwner(ownerid);
+    // Dashboard POST /list only shows confidential=FALSE (public) or owner+TRUE.
+    // Null confidential is invisible in the UI workflow list.
+    wf.setConfidential("FALSE");
 
     workflowrepository.save(wf);
 
