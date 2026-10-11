@@ -6,9 +6,9 @@
 #   https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar
 #
 # Typical use after merging to main:
-#   ./scripts/publish-latest-release.sh 2.2.0 --bump
-#   ./scripts/publish-latest-release.sh 2.2.0 --promote-only v2.2.0-pre-XXXXXXXX
-#   ./scripts/publish-latest-release.sh 2.2.0 --dry-run
+#   ./scripts/publish-latest-release.sh 2.2.1 --bump
+#   ./scripts/publish-latest-release.sh 2.2.1 --promote-only v2.2.1-pre-XXXXXXXX
+#   ./scripts/publish-latest-release.sh 2.2.1 --dry-run
 #
 # Requirements: git, gh (authenticated), python3, curl
 #
@@ -30,7 +30,7 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/publish-latest-release.sh [VERSION] [options]
 
-  VERSION           e.g. 2.2.0 (default: pom.xml version with -SNAPSHOT stripped)
+  VERSION           e.g. 2.2.1 (default: pom.xml version with -SNAPSHOT stripped)
 
 Options:
   --bump              Update pom.xml + gw.js to VERSION, commit, and push to --branch

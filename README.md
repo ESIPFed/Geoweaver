@@ -153,7 +153,7 @@ After merging to `main`, publish so clients can always download:
 `https://github.com/ESIPFed/Geoweaver/releases/download/latest/geoweaver.jar`
 
 ```bash
-./scripts/publish-latest-release.sh 2.2.0 --bump
+./scripts/publish-latest-release.sh 2.2.1 --bump
 ```
 
 Details: [release instructions](docs/release_upgrade.md).
