@@ -826,9 +826,34 @@ GW.process = {
 
         msg.code = msg.input;
 
+        // Preserve history id for live log routing before display rebuilds the DOM
+        if (msg.hid) {
+          GW.process.history_id = msg.hid;
+        }
+
         GW.process.display(msg);
 
         GW.process.displayOutput(msg);
+
+        var status = (msg.status || msg.indicator || "").toString().toLowerCase();
+        var stillRunning =
+          status === "running" ||
+          msg.end_time === "null" ||
+          msg.end_time === "undefined";
+
+        // Bind process log window to this history so live lines keep streaming
+        GW.ssh.process_output_id = "process-log-window";
+        if (msg.hid) {
+          GW.process.history_id = msg.hid;
+        }
+        if (stillRunning) {
+          GW.ssh.activateProcessLogStream(msg.hid || history_id, "process-log-window");
+          var logSwitch = document.getElementById("log_switch");
+          if (logSwitch && !logSwitch.checked) {
+            logSwitch.checked = true;
+            $(logSwitch).trigger("change");
+          }
+        }
 
         GW.process.switchTab(
           document.getElementById("main-process-info-code-tab"),
@@ -843,8 +868,10 @@ GW.process = {
   },
 
   displayOutput: function (msg) {
-    // make sure the current history id is updated
-    GW.process.history_id = msg.hid;
+    // make sure the current history id is updated for live log filtering
+    if (msg.hid) {
+      GW.process.history_id = msg.hid;
+    }
 
     var output = GW.general.escapeCodeforHTML(msg.output);
 
@@ -863,13 +890,21 @@ GW.process = {
       // GW.process.util.refreshCodeEditor();
     }
 
+    var status = (msg.status || msg.indicator || "").toString().toLowerCase();
+    var stillRunning =
+      status === "running" ||
+      msg.end_time === "null" ||
+      msg.end_time === "undefined";
+
+    var endLine = stillRunning
+      ? "<p> Execution still running — live log streaming is active.</p>"
+      : "<p> Execution ended at " + msg.end_time + "</p>";
+
     output =
       "<p> Execution started at " +
       msg.begin_time +
       "</p>" +
-      "<p> Execution ended at " +
-      msg.end_time +
-      "</p>" +
+      endLine +
       "<p> The old code used has been refreshed in the code editor.</p>" +
       "<div>" +
       output +
@@ -1225,9 +1260,15 @@ GW.process = {
 
     GW.ssh.process_output_id = "process-log-window";
 
-    GW.process.history_id = null;
-
     msg = GW.general.parseResponse(msg);
+
+    // Keep history_id when viewing a specific run so live logs keep routing
+    // into the process log window. Only clear when opening the process definition.
+    if (msg && msg.hid) {
+      GW.process.history_id = msg.hid;
+    } else {
+      GW.process.history_id = null;
+    }
 
     code_type = msg.lang == null ? msg.description : msg.lang;
 
