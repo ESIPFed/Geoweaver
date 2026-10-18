@@ -7,14 +7,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgentApiProperties {
 
-  @Value("${geoweaver.agent.api-enabled:false}")
+  @Value("${geoweaver.agent.api-enabled:true}")
   private boolean apiEnabled;
 
-  @Value("${geoweaver.agent.allow-localhost-runs:false}")
+  @Value("${geoweaver.agent.allow-localhost-runs:true}")
   private boolean allowLocalhostRuns;
 
-  @Value("${geoweaver.agent.allow-non-loopback:false}")
+  @Value("${geoweaver.agent.allow-non-loopback:true}")
   private boolean allowNonLoopback;
+
+  /**
+   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to false so
+   * a clean install that listens on all interfaces cannot start the API without an explicit
+   * operator acknowledgment of network risk.
+   */
+  @Value("${geoweaver.agent.acknowledge-network-risk:false}")
+  private boolean acknowledgeNetworkRisk;
+
+  /** Fan-out workspace change events to open GUI browsers (independent of api-enabled). */
+  @Value("${geoweaver.agent.workspace-events-enabled:true}")
+  private boolean workspaceEventsEnabled;
 
   @Value("${geoweaver.agent.api-token-file:${user.home}/gw-workspace/.agent_api_token}")
   private String apiTokenFile;
@@ -50,6 +62,14 @@ public class AgentApiProperties {
 
   public boolean isAllowNonLoopback() {
     return allowNonLoopback;
+  }
+
+  public boolean isAcknowledgeNetworkRisk() {
+    return acknowledgeNetworkRisk;
+  }
+
+  public boolean isWorkspaceEventsEnabled() {
+    return workspaceEventsEnabled;
   }
 
   public String getApiTokenFile() {

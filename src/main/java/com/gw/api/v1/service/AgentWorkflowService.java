@@ -2,6 +2,7 @@ package com.gw.api.v1.service;
 
 import com.gw.api.v1.AgentApiAuthContext;
 import com.gw.api.v1.AgentExecutionStatuses;
+import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
 import com.gw.api.v1.dto.RunStartResponse;
 import com.gw.api.v1.dto.WorkflowCreateRequest;
 import com.gw.api.v1.dto.WorkflowResponse;
@@ -34,18 +35,21 @@ public class AgentWorkflowService {
   private final AgentRunSupport runSupport;
   private final AgentRunIdempotencyStore idempotencyStore;
   private final AgentRunRateLimiter rateLimiter;
+  private final WorkspaceEventBroadcaster workspaceEvents;
 
   public AgentWorkflowService(
       WorkflowRepository workflowRepository,
       WorkflowTool workflowTool,
       AgentRunSupport runSupport,
       AgentRunIdempotencyStore idempotencyStore,
-      AgentRunRateLimiter rateLimiter) {
+      AgentRunRateLimiter rateLimiter,
+      WorkspaceEventBroadcaster workspaceEvents) {
     this.workflowRepository = workflowRepository;
     this.workflowTool = workflowTool;
     this.runSupport = runSupport;
     this.idempotencyStore = idempotencyStore;
     this.rateLimiter = rateLimiter;
+    this.workspaceEvents = workspaceEvents;
   }
 
   public List<WorkflowSummary> listWorkflows() {
@@ -71,11 +75,15 @@ public class AgentWorkflowService {
       w.setDescription(req.description());
       workflowRepository.save(w);
     }
+    String fp = AgentApiAuthContext.getTokenFingerprint();
     logger.info(
         "Agent API created workflow id={} fingerprint={}",
         id,
-        AgentApiAuthContext.getTokenFingerprint());
-    return toResponse(requireWorkflow(id));
+        fp);
+    Workflow created = requireWorkflow(id);
+    workspaceEvents.publishAgent(
+        "workflow.created", "workflow", id, created.getName(), id, fp);
+    return toResponse(created);
   }
 
   public WorkflowResponse updateWorkflow(String id, WorkflowUpdateRequest req) {
@@ -97,10 +105,12 @@ public class AgentWorkflowService {
     } else {
       workflowRepository.save(w);
     }
+    String fp = AgentApiAuthContext.getTokenFingerprint();
     logger.info(
         "Agent API updated workflow id={} fingerprint={}",
         id,
-        AgentApiAuthContext.getTokenFingerprint());
+        fp);
+    workspaceEvents.publishAgent("workflow.updated", "workflow", id, w.getName(), id, fp);
     return toResponse(w);
   }
 

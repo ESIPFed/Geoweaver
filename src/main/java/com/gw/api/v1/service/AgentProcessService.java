@@ -2,6 +2,7 @@ package com.gw.api.v1.service;
 
 import com.gw.api.v1.AgentApiAuthContext;
 import com.gw.api.v1.AgentExecutionStatuses;
+import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
 import com.gw.api.v1.dto.ProcessCreateRequest;
 import com.gw.api.v1.dto.ProcessResponse;
 import com.gw.api.v1.dto.ProcessSummary;
@@ -49,6 +50,7 @@ public class AgentProcessService {
   private final AgentRunSupport runSupport;
   private final AgentRunIdempotencyStore idempotencyStore;
   private final AgentRunRateLimiter rateLimiter;
+  private final WorkspaceEventBroadcaster workspaceEvents;
 
   public AgentProcessService(
       ProcessRepository processRepository,
@@ -57,7 +59,8 @@ public class AgentProcessService {
       ExecutionTool executionTool,
       AgentRunSupport runSupport,
       AgentRunIdempotencyStore idempotencyStore,
-      AgentRunRateLimiter rateLimiter) {
+      AgentRunRateLimiter rateLimiter,
+      WorkspaceEventBroadcaster workspaceEvents) {
     this.processRepository = processRepository;
     this.historyRepository = historyRepository;
     this.processTool = processTool;
@@ -65,6 +68,7 @@ public class AgentProcessService {
     this.runSupport = runSupport;
     this.idempotencyStore = idempotencyStore;
     this.rateLimiter = rateLimiter;
+    this.workspaceEvents = workspaceEvents;
   }
 
   public List<ProcessSummary> listProcesses() {
@@ -98,11 +102,13 @@ public class AgentProcessService {
     p.setOwner("111111");
     p.setConfidential("FALSE");
     processTool.save(p);
+    String fp = AgentApiAuthContext.getTokenFingerprint();
     logger.info(
         "Agent API created process id={} lang={} fingerprint={}",
         id,
         lang,
-        AgentApiAuthContext.getTokenFingerprint());
+        fp);
+    workspaceEvents.publishAgent("process.created", "process", id, p.getName(), null, fp);
     return toResponse(p);
   }
 
@@ -126,10 +132,12 @@ public class AgentProcessService {
       p.setDescription(req.description());
     }
     processTool.update(p);
+    String fp = AgentApiAuthContext.getTokenFingerprint();
     logger.info(
         "Agent API updated process id={} fingerprint={}",
         id,
-        AgentApiAuthContext.getTokenFingerprint());
+        fp);
+    workspaceEvents.publishAgent("process.updated", "process", id, p.getName(), null, fp);
     return toResponse(requirePythonOrShellProcess(id));
   }
 

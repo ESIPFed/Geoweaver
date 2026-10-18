@@ -46,6 +46,7 @@ class AgentApiLocalhostGateTest {
     registry.add("geoweaver.agent.api-enabled", () -> "true");
     registry.add("geoweaver.agent.allow-localhost-runs", () -> "false");
     registry.add("geoweaver.agent.allow-non-loopback", () -> "true");
+    registry.add("geoweaver.agent.acknowledge-network-risk", () -> "true");
     registry.add("geoweaver.agent.api-token-file", () -> tokenFile.toString());
     registry.add("server.address", () -> "127.0.0.1");
   }

@@ -21,6 +21,7 @@ import com.gw.tools.ProcessTool;
 import com.gw.tools.SessionManager;
 import com.gw.tools.UserTool;
 import com.gw.tools.WorkflowTool;
+import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
 import com.gw.tools.AsyncExportManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
@@ -116,6 +117,8 @@ public class GeoweaverController {
   String upload_file_path;
 
   @Autowired CheckpointTool checkpointTool;
+
+  @Autowired(required = false) WorkspaceEventBroadcaster workspaceEvents;
 
   @Autowired UserTool ut;
 
@@ -1215,6 +1218,7 @@ public class GeoweaverController {
     try {
       checkID(up.getId());
       pt.save(up);
+      publishHumanWorkspace("process.updated", "process", up.getId(), up.getName(), null);
       resp = "{\"id\" : \"" + up.getId() + "\"}";
     } catch (Exception e) {
       e.printStackTrace();
@@ -1259,6 +1263,7 @@ public class GeoweaverController {
     try {
       checkID(w.getId());
       wt.save(w);
+      publishHumanWorkspace("workflow.updated", "workflow", w.getId(), w.getName(), w.getId());
       resp = "{\"id\" : \"" + w.getId() + "\"}";
     } catch (Exception e) {
       e.printStackTrace();
@@ -1517,6 +1522,7 @@ public class GeoweaverController {
       np.setId(newid);
       np.setCode(np.getCode());
       pt.save(np);
+      publishHumanWorkspace("process.created", "process", newid, np.getName(), null);
       resp =
           "{\"id\" : \""
               + newid
@@ -1584,6 +1590,7 @@ public class GeoweaverController {
       String newwid = new RandomString(20).nextString();
       w.setId(newwid);
       wt.save(w);
+      publishHumanWorkspace("workflow.created", "workflow", newwid, w.getName(), newwid);
       resp = "{\"id\" : \"" + newwid + "\", \"name\":\"" + w.getName() + "\"}";
     } catch (Exception e) {
       e.printStackTrace();
@@ -1996,4 +2003,16 @@ public class GeoweaverController {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
+
+  /** Soft co-edit awareness for other open browsers (never fails the save). */
+  private void publishHumanWorkspace(
+      String event, String objectKind, String objectId, String objectName, String workflowId) {
+    try {
+      if (workspaceEvents != null) {
+        workspaceEvents.publishHuman(event, objectKind, objectId, objectName, workflowId);
+      }
+    } catch (Exception e) {
+      logger.debug("Workspace human event skipped: {}", e.toString());
+    }
+  }
 }

@@ -133,9 +133,16 @@ GW.settings = {
       "            </select> " +
       "        </span> " +
       "    </div> " +
+      '    <div class="list-group-item clearfix" style="white-space:normal;"> ' +
+      '        <div style="font-weight:600;margin-bottom:4px;">Agent API status (not dismissible)</div> ' +
+      '        <div id="gw-agent-api-settings-status" style="font-size:12px;color:#664d03;">Loading…</div> ' +
+      "    </div> " +
       "</div>";
 
-    var frame = GW.process.createJSFrameDialog(360, 320, content, "Settings");
+    var frame = GW.process.createJSFrameDialog(420, 400, content, "Settings");
+    if (GW.workspaceevents) {
+      GW.workspaceevents.showRiskBanner();
+    }
 
     console.log("GW.settings.selected_monaco_theme = " + GW.settings.selected_monaco_theme)
 
