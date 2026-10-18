@@ -186,9 +186,8 @@ const GW = {
                           
                           <!-- progress right bottom, above the status indicator -->
                           
-                          <div id="workspace_progress_indicator" class="visible" style="position: absolute; max-height: 350px; top: 80px; right: 10px; width:100px; z-index:1; overflow-y: scroll;">
-                              
-                              
+                          <div id="workspace_progress_indicator" class="workspace-progress-container invisible" aria-hidden="true">
+                              <div id="progress-tasks-container"></div>
                           </div>
                           
                              <div id="toolbox" style="position: absolute; margin:0; top: 60px; left: 10px;width: 80px;">

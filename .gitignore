@@ -21,6 +21,7 @@ sync.ffs_db
 
 cypress/node_modules/
 node_modules/
+coverage/
 
 # Local software-quality-loop workspace (personal only — do not commit)
 projects/
