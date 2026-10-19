@@ -90,7 +90,9 @@ if [ -d "$HOME/jdk" ]; then
 fi
 
 # 4) Install JDK 17 under ~/jdk again and start
-pip install --user pygeoweaver --upgrade   # or your usual env
+# Need pygeoweaver 1.4.1+ (stale ~/jdk.tar.gz fix). Until PyPI updates:
+#   pip install -U "git+https://github.com/ESIPFed/pygeoweaver.git@fix/jdk17-stale-archive-extract"
+pip install --user -U "pygeoweaver>=1.4.1"   # or your usual env / git URL above
 gw installjdk
 # or simply:
 gw start
