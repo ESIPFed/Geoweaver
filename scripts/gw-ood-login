@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 # One command: open OOD Geoweaver, save session cookies for Cursor (no chat paste).
+# Uses a private venv under ~/.config/geoweaver-agent/ (avoids PEP 668 / Homebrew Python).
 # Usage:
 #   ./scripts/gw-ood-login 'https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver'
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 URL="${1:-}"
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent"
+VENV="$CFG/venv"
+PY="$VENV/bin/python"
 
 if [[ -z "$URL" ]]; then
   echo "Usage: $0 '<Open-OnDemand-Geoweaver-Connect-URL>'" >&2
@@ -18,22 +22,26 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-# First-run: install Playwright + Chromium quietly if missing
-if ! python3 -c "import playwright" 2>/dev/null; then
-  echo "Installing Playwright (one-time)…"
-  python3 -m pip install -q playwright
-fi
-if ! python3 -c "from playwright.sync_api import sync_playwright" 2>/dev/null; then
-  echo "Playwright import failed after pip install" >&2
-  exit 1
-fi
-# Ensure browser binary exists (cheap if already installed)
-python3 -m playwright install chromium >/dev/null 2>&1 || \
-  python3 -m playwright install chromium
+mkdir -p "$CFG"
+chmod 700 "$CFG" 2>/dev/null || true
 
-python3 "$ROOT/scripts/capture-ood-session.py" --engine playwright "$URL"
+if [[ ! -x "$PY" ]]; then
+  echo "Creating private venv at $VENV (one-time)…"
+  python3 -m venv "$VENV"
+fi
 
-ENV_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent/ood-env.sh"
+if ! "$PY" -c "import playwright" 2>/dev/null; then
+  echo "Installing Playwright into private venv (one-time)…"
+  "$PY" -m pip install -q --upgrade pip
+  "$PY" -m pip install -q playwright
+fi
+
+# Chromium binary for Playwright (no-op if already present)
+"$PY" -m playwright install chromium
+
+"$PY" "$ROOT/scripts/capture-ood-session.py" --engine playwright "$URL"
+
+ENV_FILE="$CFG/ood-env.sh"
 echo ""
 echo "Done. In this shell (or tell Cursor these paths exist — do not paste cookie contents):"
 echo "  source $ENV_FILE"
