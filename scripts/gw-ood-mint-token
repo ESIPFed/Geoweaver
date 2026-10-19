@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Mint Geoweaver Agent API Bearer on the OOD session (cookie jar + GUI password).
+# Password is typed hidden; token saved to ~/.config/geoweaver-agent/api-token (0600).
+# Never prints the token.
+#
+#   ./scripts/gw-ood-login '<Connect-URL>'   # once per OOD job
+#   ./scripts/gw-ood-mint-token               # once (or when Bearer expires)
+set -euo pipefail
+
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent"
+ENV_FILE="$CFG/ood-env.sh"
+TTL="${1:-30}"
+
+if [[ ! -f "$ENV_FILE" ]]; then
+  echo "Missing $ENV_FILE — run ./scripts/gw-ood-login first." >&2
+  exit 1
+fi
+# shellcheck disable=SC1090
+source "$ENV_FILE"
+
+if [[ -z "${GEOWEAVER_BASE_URL:-}" || ! -f "${GEOWEAVER_OOD_COOKIE_JAR:-}" ]]; then
+  echo "ood-env.sh incomplete." >&2
+  exit 1
+fi
+
+echo "Minting Bearer for: $GEOWEAVER_BASE_URL"
+echo -n "Geoweaver GUI localhost password (hidden): "
+read -r -s HOST_PASSWORD
+echo ""
+[[ -n "$HOST_PASSWORD" ]] || { echo "Empty password." >&2; exit 1; }
+
+export GEOWEAVER_BASE_URL GEOWEAVER_OOD_COOKIE_JAR HOST_PASSWORD TTL
+python3 - <<'PY'
+import json, os, subprocess, stat
+from pathlib import Path
+
+base = os.environ["GEOWEAVER_BASE_URL"].rstrip("/")
+jar = os.environ["GEOWEAVER_OOD_COOKIE_JAR"]
+pw = os.environ["HOST_PASSWORD"]
+ttl = int(os.environ["TTL"])
+cfg = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "geoweaver-agent"
+cfg.mkdir(parents=True, exist_ok=True)
+
+body = json.dumps({"hostPassword": pw, "ttlDays": ttl})
+p = subprocess.run(
+    [
+        "curl", "-sS", "-m", "60",
+        "-b", jar,
+        "-H", "Content-Type: application/json",
+        "-X", "POST",
+        f"{base}/api/v1/tokens",
+        "-d", body,
+        "-w", "\n%{http_code}",
+    ],
+    capture_output=True,
+    text=True,
+)
+raw = p.stdout or ""
+if "\n" not in raw:
+    print("Unexpected curl output", file=__import__("sys").stderr)
+    raise SystemExit(1)
+*body_lines, code = raw.rsplit("\n", 1)
+text = "\n".join(body_lines)
+code = code.strip()
+if code not in ("200", "201"):
+    # Do not print password; short error body only
+    msg = text[:300].replace(pw, "***")
+    print(f"Token mint failed HTTP {code}: {msg}", file=__import__("sys").stderr)
+    raise SystemExit(1)
+data = json.loads(text)
+token = data.get("token")
+if not token:
+    print("No token in response", file=__import__("sys").stderr)
+    raise SystemExit(1)
+
+token_path = cfg / "api-token"
+token_path.write_text(token + "\n", encoding="utf-8")
+os.chmod(token_path, stat.S_IRUSR | stat.S_IWUSR)
+
+env_path = cfg / "ood-env.sh"
+# Append/refresh token export without echoing secret to stdout
+lines = []
+if env_path.is_file():
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("export GEOWEAVER_API_TOKEN="):
+            continue
+        lines.append(line)
+lines.append(f'export GEOWEAVER_API_TOKEN="$(cat {token_path})"')
+env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+os.chmod(env_path, stat.S_IRUSR | stat.S_IWUSR)
+
+print(f"OK HTTP {code}. Token saved (0600). Run: source {env_path}")
+print("Do not paste the token into chat.")
+PY
