@@ -17,11 +17,11 @@ public class AgentApiProperties {
   private boolean allowNonLoopback;
 
   /**
-   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to false so
-   * a clean install that listens on all interfaces cannot start the API without an explicit
-   * operator acknowledgment of network risk.
+   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to true
+   * with the other agent defaults so Open OnDemand / all-interface binds can start; operators still
+   * see SECURITY WARN logs. Set false only when intentionally fail-closing non-loopback API binds.
    */
-  @Value("${geoweaver.agent.acknowledge-network-risk:false}")
+  @Value("${geoweaver.agent.acknowledge-network-risk:true}")
   private boolean acknowledgeNetworkRisk;
 
   /** Fan-out workspace change events to open GUI browsers (independent of api-enabled). */

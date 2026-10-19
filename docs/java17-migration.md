@@ -147,6 +147,68 @@ Running install/start with sudo can create root-owned files under `~/jdk` and ma
 
 ---
 
+## Open OnDemand: Connect button never appears
+
+Open OnDemand (OOD) shows **Connect** only after the batch-connect job writes `connection.yml` **and** something is listening on the **same** `host`/`port` listed there. If Geoweaver starts on the default port **8070** while OOD allocated a random `$port`, the session stays on “Waiting for GeoWeaver to start…” forever.
+
+### Root cause
+
+Typical broken `script.sh`:
+
+```bash
+pip install pygeoweaver
+gw start          # listens on 8070
+tail -f /dev/null
+```
+
+Meanwhile the OOD wrapper wrote `connection.yml` with `port: <random>` and waits for that port.
+
+### Fix (operator must update the OOD app template)
+
+In the Geoweaver batch-connect **`script.sh`**, export the OOD port **before** `gw start`:
+
+```bash
+#!/bin/bash
+module purge
+module load gnu10
+module load python
+module load openjdk   # or your site’s Java 17 module
+
+set -x
+
+VENV_DIR="$HOME/geo_env"
+if [ ! -d "$VENV_DIR" ]; then
+  python -m venv "$VENV_DIR"
+fi
+source "$VENV_DIR/bin/activate"
+
+# Need pygeoweaver 1.4.2+ (GEOWEAVER_PORT + HTTP 200/301/302/303 readiness)
+pip install -U "pygeoweaver>=1.4.2"
+
+# Critical: bind Geoweaver to the port OOD put in connection.yml
+export GEOWEAVER_PORT="$port"
+echo "GEOWEAVER_PORT=$GEOWEAVER_PORT"
+
+gw start
+
+set +x
+tail -f /dev/null
+```
+
+Requirements:
+
+| Piece | Why |
+| --- | --- |
+| `export GEOWEAVER_PORT="$port"` | Geoweaver reads `server.port=${GEOWEAVER_PORT:8070}`; pygeoweaver also passes `-Dserver.port` and polls that URL |
+| pygeoweaver **≥ 1.4.2** | Treats HTTP **200/301/302/303** as “up” (Boot 3 often returns 200, not only 302) |
+| Geoweaver **3.0+** Agent defaults | `acknowledge-network-risk=true` so all-interface binds used by OOD proxy do not refuse startup |
+
+Do **not** hard-code `8070` in `connection.yml`. Do not paste session passwords into tickets or git.
+
+After updating the template, start a **new** interactive session (old jobs keep the old script).
+
+---
+
 ## Developers / contributors
 
 - Build and CI use **JDK 17**.
