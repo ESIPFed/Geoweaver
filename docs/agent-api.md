@@ -14,11 +14,14 @@ Example: `https://gw.example.org/Geoweaver/api/v1`
 
 ## Security model
 
-1. **Bearer token** required (except public `GET /health`).
-2. **Localhost GUI password** still applies on the server unless `geoweaver.agent.allow-localhost-runs=true`.
+**Risk callout:** By default the Agent API is **enabled**. A leaked Bearer token is full Agent API access (create/edit python|shell processes and workflows; start server-local runs). Prefer HTTPS. Harden with `geoweaver.agent.api-enabled=false` and revoke tokens. On a network-reachable JVM bind you must also set `geoweaver.agent.acknowledge-network-risk=true` or Geoweaver refuses to start.
+
+1. **Bearer token** required (except public `GET /health` and password-gated `POST /tokens`).
+2. **Localhost GUI password** still applies on the server unless `geoweaver.agent.allow-localhost-runs=true` (default true).
 3. Wrong password → HTTP **403**.
 4. Process/workflow runs on this API are **server-local only** (`100001`). Remote SSH hosts are not exposed.
-5. Public bind: either terminate TLS on a reverse proxy in front of loopback, **or** set `geoweaver.agent.allow-non-loopback=true` when the JVM listens beyond loopback.
+5. Public bind: either terminate TLS on a reverse proxy in front of loopback, **or** set `geoweaver.agent.allow-non-loopback=true` **and** `geoweaver.agent.acknowledge-network-risk=true` when the JVM listens beyond loopback.
+6. Open GUI browsers sync process/workflow lists live (Google-Doc-style awareness) when `geoweaver.agent.workspace-events-enabled=true` (default true). Transport is **HTTP long poll** on `/api/workspace/poll/{clientToken}` plus a revision clock on `/api/workspace/revision` (WebSocket `/workspace-socket` is optional). Uses the browser client token, not the Agent Bearer token. Agent API and human GUI saves both emit events.
 
 Never commit tokens. Prefer HTTPS on public endpoints. The Geoweaver **database** stores only a SHA-256 hash of each token (never the raw secret, never a token file). The GUI localhost password is unchanged (still the workspace password file).
 
@@ -66,10 +69,11 @@ Required when there is no proxy and the caller is another machine:
 server.address=0.0.0.0
 geoweaver.agent.api-enabled=true
 geoweaver.agent.allow-non-loopback=true
+geoweaver.agent.acknowledge-network-risk=true
 geoweaver.agent.allow-localhost-runs=true
 ```
 
-Without `allow-non-loopback=true`, Geoweaver **refuses to start** if the API is on and the bind is not loopback.
+Without `allow-non-loopback=true` **and** `acknowledge-network-risk=true`, Geoweaver **refuses to start** if the API is on and the bind is not loopback.
 
 Open firewall TCP 8070 only to trusted networks. Prefer HTTPS in front of this bind.
 
@@ -124,9 +128,11 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
 
 | Property | Default | Meaning |
 | --- | --- | --- |
-| `geoweaver.agent.api-enabled` | `false` | Master switch |
-| `geoweaver.agent.allow-localhost-runs` | `false` | Token may skip GUI localhost password for server-local runs |
-| `geoweaver.agent.allow-non-loopback` | `false` | Allow Agent API when JVM bind is not loopback |
+| `geoweaver.agent.api-enabled` | `true` | Master switch |
+| `geoweaver.agent.allow-localhost-runs` | `true` | Token may skip GUI localhost password for server-local runs |
+| `geoweaver.agent.allow-non-loopback` | `true` | Allow Agent API when JVM bind is not loopback (still needs risk ack) |
+| `geoweaver.agent.acknowledge-network-risk` | `false` | Required with non-loopback bind or process refuses to start |
+| `geoweaver.agent.workspace-events-enabled` | `true` | Fan-out create/edit events to open GUI browsers |
 | `geoweaver.agent.api-token-file` | `~/gw-workspace/.agent_api_token` | Leftover file path only: import hash into DB then delete. Not the live store |
 | `geoweaver.agent.token-ttl-days` | `30` | Default Bearer token lifetime in days |
 | `geoweaver.agent.token-max-ttl-days` | `180` | Max lifetime (hard-capped at 180 / six months) |

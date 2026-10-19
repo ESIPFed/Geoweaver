@@ -14,27 +14,27 @@ From a clean checkout with [`gh`](https://cli.github.com/) authenticated:
 
 ```bash
 # After merging your release PR into main — bump version, push, build, promote to latest
-./scripts/publish-latest-release.sh 2.2.1 --bump
+./scripts/publish-latest-release.sh 3.0.0 --bump
 ```
 
 If a build release already exists (workflow running or finished) and you only need to attach the stable URL:
 
 ```bash
-./scripts/publish-latest-release.sh 2.2.1 --promote-only v2.2.1-pre-YYYYMMDDHHMMSS
+./scripts/publish-latest-release.sh 3.0.0 --promote-only v3.0.0-pre-YYYYMMDDHHMMSS
 ```
 
 Or if `pom.xml` / `gw.js` are already set to the release version on `main`:
 
 ```bash
 git checkout main && git pull
-./scripts/publish-latest-release.sh 2.2.1
+./scripts/publish-latest-release.sh 3.0.0
 ```
 
 **Do not run without `--bump` while `pom.xml` still ends in `-SNAPSHOT`** — the script will refuse, because that would publish a mislabeled jar.
 What the script does:
 
-1. Archives the previous `latest` release under a versioned tag (e.g. `v2.2.0-pre`) so old jars remain downloadable.
-2. Creates a temporary build tag (e.g. `v2.2.1-pre`) on `main` → triggers `release_workflow.yml`.
+1. Archives the previous `latest` release under a versioned tag (e.g. `v2.2.2-pre`) so old jars remain downloadable.
+2. Creates a temporary build tag (e.g. `v3.0.0-pre`) on `main` → triggers `release_workflow.yml`.
 3. Waits until Actions attaches `geoweaver.jar` (and other installers).
 4. Retags that release to **`latest`** so the stable URL above always points at the new jar.
 5. Verifies HTTP access to the stable URL.
@@ -42,26 +42,26 @@ What the script does:
 Dry run:
 
 ```bash
-./scripts/publish-latest-release.sh 2.2.1 --dry-run
+./scripts/publish-latest-release.sh 3.0.0 --dry-run
 ```
 
 ## Manual process (same outcome)
 
-1. **Update version** in `pom.xml` and `src/main/resources/static/js/gw.js` (e.g. `2.2.1`). Commit and push to `main`.
+1. **Update version** in `pom.xml` and `src/main/resources/static/js/gw.js` (e.g. `3.0.0`). Commit and push to `main`.
 
 2. **Archive the current `latest` release**  
-   Edit the release currently tagged `latest` and change its tag to a historical name such as `v2.2.0-pre`.  
+   Edit the release currently tagged `latest` and change its tag to a historical name such as `v2.2.2-pre`.  
    Or delete the remote tag only after re-pointing the release:
    ```bash
    git push --delete origin latest   # only after the old release has another tag
    ```
 
-3. **Publish a temporary release** tagged e.g. `v2.2.1-pre` targeting `main`.  
+3. **Publish a temporary release** tagged e.g. `v3.0.0-pre` targeting `main`.  
    Wait for **Build and Publish Geoweaver App** to finish and attach `geoweaver.jar`.
 
 4. **Promote to stable URL**  
    Edit that release and set the tag to **`latest`** (create tag `latest` if prompted).  
-   Title can remain `2.2.1`.
+   Title can remain `3.0.0`.
 
 5. Confirm:
    ```bash

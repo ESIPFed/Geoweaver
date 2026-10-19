@@ -11,9 +11,10 @@ GW.settings = {
 
     this.selected_monaco_theme = localStorage.getItem('editorTheme') || GW.settings.default_monaco_theme
     
-    // Initialize progress indicator auto-close setting if not set
-    if (localStorage.getItem('gw_progress_auto_close') === null) {
-      localStorage.setItem('gw_progress_auto_close', 'false'); // Default to manual close
+    if (GW.progressIndicator && GW.progressIndicator.ensureDefaultPreference) {
+      GW.progressIndicator.ensureDefaultPreference();
+    } else if (localStorage.getItem('gw_progress_auto_close') === null) {
+      localStorage.setItem('gw_progress_auto_close', 'true');
     }
   },
 
@@ -125,25 +126,32 @@ GW.settings = {
       "        </span> " +
       "    </div> " +
       '    <div class="list-group-item clearfix"> ' +
-      "        Auto-close Progress Indicator " +
+      "        Hide progress panel when workflow finishes " +
       '        <span class="pull-right"> ' +
       '            <select id="progress-autoclose-selector" class="form-control" style="width: auto;">' +
       '                <option value="true">Yes</option>' +
-      '                <option value="false">No</option>' +
+      '                <option value="false">No (keep summary)</option>' +
       "            </select> " +
       "        </span> " +
       "    </div> " +
+      '    <div class="list-group-item clearfix" style="white-space:normal;"> ' +
+      '        <div style="font-weight:600;margin-bottom:4px;">Agent API status (not dismissible)</div> ' +
+      '        <div id="gw-agent-api-settings-status" style="font-size:12px;color:#664d03;">Loading…</div> ' +
+      "    </div> " +
       "</div>";
 
-    var frame = GW.process.createJSFrameDialog(360, 320, content, "Settings");
+    var frame = GW.process.createJSFrameDialog(420, 400, content, "Settings");
+    if (GW.workspaceevents) {
+      GW.workspaceevents.showRiskBanner();
+    }
 
     console.log("GW.settings.selected_monaco_theme = " + GW.settings.selected_monaco_theme)
 
     // Set the current theme as selected in the dropdown
     $('#editor-theme-selector').val(GW.settings.selected_monaco_theme);
 
-    // Set the current progress auto-close setting
-    var autoCloseProgress = localStorage.getItem('gw_progress_auto_close') || 'false';
+    // Set the current progress auto-close setting (default: hide when finished)
+    var autoCloseProgress = localStorage.getItem('gw_progress_auto_close') || 'true';
     $('#progress-autoclose-selector').val(autoCloseProgress);
 
     // Add event listener to save the selected theme

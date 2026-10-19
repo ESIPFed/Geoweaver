@@ -32,6 +32,7 @@ class AgentApiTokenServiceTest {
     tokenFile = tempDir.resolve(".agent_api_token");
     registry.add("geoweaver.agent.api-enabled", () -> "true");
     registry.add("geoweaver.agent.allow-non-loopback", () -> "true");
+    registry.add("geoweaver.agent.acknowledge-network-risk", () -> "true");
     registry.add("geoweaver.agent.api-token-file", () -> tokenFile.toString());
     registry.add("geoweaver.agent.token-ttl-days", () -> "30");
     registry.add("geoweaver.agent.token-max-ttl-days", () -> "180");

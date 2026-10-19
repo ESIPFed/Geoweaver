@@ -7,7 +7,7 @@ description: >-
   GEOWEAVER_API_TOKEN are set, or the user wants Codex/Cursor/Claude Code to use
   a deployed Geoweaver endpoint like a human UI. Never start or stop the
   Geoweaver JVM — the operator runs the server; the agent only calls HTTP.
-version: 1.6.0
+version: 1.8.0
 ---
 
 # Geoweaver Agent API skill
@@ -29,15 +29,63 @@ The agent **only** talks to Geoweaver through `{GEOWEAVER_BASE_URL}/api/v1` (cur
 - Use `gw` / `geoweaver` CLI except when the **operator** asks you to mint a token on their machine (prefer HTTP `POST /api/v1/tokens`)
 - Use HTML `/web/*` login, WebSocket UI, or scrape the GUI
 - Write Bearer tokens into repo files or print them in chat
+- Cram a multi-stage job into **one** process when the work has clear stages (discover → transform → analyze → report)
+
+## Break complicated work into small linked processes (always)
+
+Before coding a “big” goal (screening, forecasting pipelines, multi-source research):
+
+1. **Split** into small processes first (one job each). Example for equities research:
+   - discover candidates (live lists / screeners — **not** a hardcoded ticker list)
+   - enrich / analyze those candidates (news, price, volume, filters)
+   - report evidence and ranking
+2. **Link** them in a workflow with `nodes` + `edges`:
+   - **Sequential:** A → B → C when B needs A’s outputs.
+   - **Parallel:** A → B and A → C (or B and C with no edge between them after a shared prep step) when stages are independent.
+3. **Pass data on the Geoweaver host** (`hostId=100001`) via a shared directory (for example `~/gw-pipeline/<run-name>/`). Geoweaver does **not** auto-pipe stdout from one process into the next. Write JSON/files in an upstream step; read them downstream. Print a clear `HANDOFF_PATH=...` line in logs.
+4. **Do not** fix the analysis universe in the analyze step when a prior discover step can choose it dynamically.
+5. Node `id` format remains `{processId}-{suffix}` (example: `abc123-n0001`).
+6. Edge JSON shape (stringified array), copy this pattern:
+
+```json
+[{"source":{"title":"step-a","id":"PROC_A-n0001","x":80,"y":120},"target":{"title":"step-b","id":"PROC_B-n0002","x":320,"y":120}}]
+```
+
+One-step demos may still use `"edges":"[]"`. Real multi-stage work must use real edges.
+
+## Local checkpoint backup (always)
+
+After **creating**, **editing**, or a **successful run** of any workflow (and after each meaningful process `PUT`), **download a local checkpoint** before ending the turn.
+
+Default root (outside the git repo):
+
+`~/Documents/Geoweaver-checkpoints/{workflow-name-or-id}/{YYYYMMDDTHHMMSS}/`
+
+Pull via `/api/v1` only and write at least:
+
+| File | Source |
+| --- | --- |
+| `workflow.json` | `GET /workflows/{id}` |
+| `process-{id}.json` (+ `.py` / `.sh` code extract) | `GET /processes/{id}` for every node process |
+| `process-runs.json` | `GET /processes/{id}/runs?logLimit=200000` (latest after a run) |
+| `workflow-run.json` | `GET /runs/{workflowHistoryId}` when a workflow run exists |
+| `manifest.json` | ids, names, base URL, timestamp — **no API token** |
+
+Do **not** commit checkpoints into the Geoweaver git repo. Do **not** store tokens in the checkpoint folder.
 
 **If health fails:** tell the user Geoweaver is not reachable and wait for them to start it with Agent API enabled. Do not start it yourself.
 
-Operator enable (their job, not the agent’s):
+Operator notes (defaults are on in current Geoweaver builds):
 
 ```properties
 geoweaver.agent.api-enabled=true
-geoweaver.agent.allow-localhost-runs=true   # optional: Bearer may run localhost without GUI password
+geoweaver.agent.allow-localhost-runs=true
+geoweaver.agent.allow-non-loopback=true
+# Required when the JVM bind is not loopback, or startup fails:
+geoweaver.agent.acknowledge-network-risk=true
 ```
+
+If health returns 503 `api_disabled`, ask the operator to enable the Agent API and restart **their** server. Do not start the server yourself.
 
 ## Environment
 
@@ -143,23 +191,24 @@ curl -sS -X POST "$BASE/runs/HISTORY_ID/stop" -H "$H" -H "Content-Type: applicat
 
 Node `id`: `{processId}-{suffix}` (example: `abc123-n0001`).
 
-For a **one-step** workflow, use `edges` as the JSON string `"[]"` (empty array). Avoid inventing edge object shapes unless you copy them from a workflow that already runs in the UI.
+For a **trivial one-step** demo only, `edges` may be `"[]"`. For any non-trivial goal, create **multiple processes** and wire **sequential or parallel** edges (see “Break complicated work” above).
 
 ```bash
+# Example: two-step sequential workflow (discover → analyze)
 curl -sS -X POST "$BASE/workflows" -H "$H" -H "Content-Type: application/json" \
-  -d '{"name":"demo-wf","nodes":"[{\"title\":\"demo\",\"id\":\"PROCESS_ID-n0001\",\"x\":100,\"y\":100}]","edges":"[]"}'
+  -d '{"name":"demo-two-step","nodes":"[{\"title\":\"discover\",\"id\":\"PROC_A-n0001\",\"x\":80,\"y\":120},{\"title\":\"analyze\",\"id\":\"PROC_B-n0002\",\"x\":320,\"y\":120}]","edges":"[{\"source\":{\"title\":\"discover\",\"id\":\"PROC_A-n0001\",\"x\":80,\"y\":120},\"target\":{\"title\":\"analyze\",\"id\":\"PROC_B-n0002\",\"x\":320,\"y\":120}}]"}'
 
 curl -sS -X POST "$BASE/workflows/WORKFLOW_ID/runs" -H "$H" -H "Content-Type: application/json" \
   -d '{"mode":"one","clientRunKey":"wf-1"}'
 ```
 
-**Reading workflow output:** Workflow history can stay `Running` / non-terminal even after the step finished. Always also poll:
+**Reading workflow output:** Workflow history can stay `Running` / non-terminal even after the step finished. Always also poll **each** process:
 
 ```bash
 curl -sS "$BASE/processes/PROCESS_ID/runs?logLimit=200000" -H "$H"
 ```
 
-Use the latest process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. That log is the trustworthy step stdout.
+Use each process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. That log is the trustworthy step stdout. For multi-step graphs, wait until **every** step you care about is terminal (or until the workflow history is terminal **and** step logs show Done).
 
 ## Failure map
 
@@ -178,6 +227,8 @@ Use the latest process run’s `log` when `status` is `Done` / `Failed` / `Stopp
 ## Act like a human
 
 1. Use only `/api/v1`. Never start the server yourself.
-2. Wait for terminal status on the **process** run before claiming success for that step.
-3. On `Failed`, read `log`, fix code via `PUT`, re-run with a new `clientRunKey`.
-4. Do not invent remote SSH or Jupyter endpoints on `/api/v1`.
+2. Split complicated goals into small processes; link them with sequential or parallel edges; hand off via host files.
+3. Wait for terminal status on each **process** run before claiming success for that step.
+4. On `Failed`, read `log`, fix code via `PUT`, re-run with a new `clientRunKey`.
+5. Do not invent remote SSH or Jupyter endpoints on `/api/v1`.
+6. Always write a **local checkpoint** under `~/Documents/Geoweaver-checkpoints/` after create / edit / successful run (include **all** process ids in the workflow).

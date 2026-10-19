@@ -29,4 +29,9 @@ public class WebSocketConfig {
     return new WorkflowServlet();
   }
 
+  @Bean
+  public WorkspaceServlet callWorkspaceWebSocketController() {
+    return new WorkspaceServlet();
+  }
+
 }

@@ -1,151 +1,177 @@
 /* 
- * Progress Indicator Styles
- * Modern, professional styling for workflow progress indicators
+ * Workflow progress panel — calm, compact overlay while a run is active.
+ * Hidden when idle (see .invisible below).
  */
 
 .workspace-progress-container {
   position: absolute;
-  max-height: 350px;
-  top: 80px;
-  right: 10px;
-  width: 280px;
+  max-height: 220px;
+  top: auto;
+  bottom: 48px;
+  right: 12px;
+  width: 220px;
   z-index: 10;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 12px;
-  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  padding: 8px 10px;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-size: 12px;
+}
+
+/* Idle: fully remove from layout (Bootstrap .invisible is visibility-only) */
+.workspace-progress-container.invisible {
+  display: none !important;
+}
+
+.workspace-progress-container.visible {
+  display: block;
 }
 
 .progress-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .progress-title {
-  font-weight: 600;
-  font-size: 14px;
-  color: #495057;
+  font-weight: 500;
+  font-size: 12px;
+  color: #6c757d;
   margin: 0;
+  letter-spacing: 0.01em;
 }
 
 .progress-task {
-  margin-bottom: 12px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  border-left: 4px solid #007bff;
-  transition: all 0.2s ease;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background-color: rgba(248, 249, 250, 0.7);
+  border-radius: 4px;
+  border-left: 3px solid #adb5bd;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.progress-task:hover {
-  background-color: #f1f3f5;
+.progress-task:last-child {
+  margin-bottom: 0;
+}
+
+.progress-task.task-running {
+  border-left-color: #6ea8fe;
+}
+
+.progress-task.task-done {
+  border-left-color: #75b798;
+}
+
+.progress-task.task-failed {
+  border-left-color: #ea868f;
 }
 
 .progress-task-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  gap: 8px;
 }
 
 .task-id {
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 500;
+  font-size: 12px;
   color: #495057;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .task-status {
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .status-running {
-  background-color: #cce5ff;
-  color: #0056b3;
+  background-color: rgba(13, 110, 253, 0.12);
+  color: #0a58ca;
 }
 
 .status-done {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(25, 135, 84, 0.12);
+  color: #146c43;
 }
 
 .status-failed {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: rgba(220, 53, 69, 0.12);
+  color: #b02a37;
 }
 
 .progress {
-  height: 8px;
-  margin-bottom: 4px;
-  background-color: #e9ecef;
-  border-radius: 4px;
+  height: 3px;
+  margin-bottom: 0;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-bar-custom {
   height: 100%;
-  transition: width 0.6s ease;
+  transition: width 0.4s ease;
+  border-radius: 2px;
 }
 
 .progress-bar-running {
-  background: linear-gradient(45deg, #007bff 25%, #0069d9 25%, #0069d9 50%, #007bff 50%, #007bff 75%, #0069d9 75%);
-  background-size: 20px 20px;
-  animation: progress-bar-stripes 1s linear infinite;
+  background-color: #6ea8fe;
+  animation: progress-bar-soft-pulse 1.6s ease-in-out infinite;
 }
 
 .progress-bar-done {
-  background-color: #28a745;
+  background-color: #75b798;
 }
 
 .progress-bar-failed {
-  background-color: #dc3545;
+  background-color: #ea868f;
 }
 
 .progress-percentage {
-  text-align: right;
-  font-size: 11px;
-  color: #6c757d;
+  display: none;
 }
 
 .progress-empty-message {
-  text-align: center;
-  color: #6c757d;
-  font-size: 13px;
-  padding: 20px 0;
+  display: none;
 }
 
 .progress-close, .task-close {
   cursor: pointer;
-  color: #6c757d;
+  color: #adb5bd;
   transition: color 0.2s ease;
+  font-size: 11px;
+  line-height: 1;
 }
 
 .progress-close:hover, .task-close:hover {
-  color: #343a40;
+  color: #6c757d;
 }
 
-.task-close {
-  margin-left: 8px;
-  font-size: 12px;
+@keyframes progress-bar-soft-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
 
-@keyframes progress-bar-stripes {
-  from { background-position: 0 0; }
-  to { background-position: 20px 0; }
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .workspace-progress-container {
-    width: 240px;
+    width: 180px;
+    bottom: 40px;
+    right: 8px;
   }
 }

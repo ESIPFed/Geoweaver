@@ -109,6 +109,10 @@ GW.main = {
 
     GW.monitor.startSocket(GW.general.CLIENT_TOKEN); //this token will be saved as GW.monitor.token and can be used everywhere
 
+    if (GW.workspaceevents) {
+      GW.workspaceevents.init();
+    }
+
     GW.board.init();
 
     // Initialize chatbot

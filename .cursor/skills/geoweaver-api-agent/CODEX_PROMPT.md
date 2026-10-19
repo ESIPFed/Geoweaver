@@ -32,6 +32,13 @@ Playbook: `.cursor/skills/geoweaver-api-agent/SKILL.md`
 7. After starting a run, poll until terminal. For **workflows**, also poll `GET /processes/{id}/runs` — workflow history may stay `Running` after the step is `Done`; trust the process run log for stdout.
 8. Unique `clientRunKey` per logical job; new key after code edits.
 9. First call `GET .../health` then `GET .../capabilities`.
+10. After create / edit / successful run: always download a local checkpoint under
+    `~/Documents/Geoweaver-checkpoints/{workflow-name-or-id}/{timestamp}/`
+    (`workflow.json`, process JSON+code, run logs, `manifest.json`). No API tokens in that folder; do not commit it to git.
+11. Complicated goals: split into small processes first; wire sequential or parallel `edges`;
+    pass data via files on host `100001` (e.g. `~/gw-pipeline/...`). Do not hardcode the
+    analysis universe when a prior discover step should choose candidates dynamically.
+    One-process monoliths for multi-stage work are not allowed.
 
 ## API map
 
@@ -46,7 +53,8 @@ Playbook: `.cursor/skills/geoweaver-api-agent/SKILL.md`
 | Poll / stop | `GET /api/v1/runs/{historyId}` · `POST /api/v1/runs/{historyId}/stop` |
 | Process history list | `GET /api/v1/processes/{id}/runs` (best place for step stdout) |
 
-Workflow node `id`: `{processId}-{suffix}`. One-node graphs: `"edges":"[]"`.
+Workflow node `id`: `{processId}-{suffix}`. Trivial one-node demos may use `"edges":"[]"`.
+Multi-stage work must use real edges and file handoffs between steps.
 
 ## Your task
 
