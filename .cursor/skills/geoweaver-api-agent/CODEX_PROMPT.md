@@ -17,10 +17,14 @@ You are controlling **classic Geoweaver** over HTTP like a human using the UI, w
     `http://127.0.0.1:18070/Geoweaver`
 - Bearer token for `/api/v1` — inject from a secret store (prefer not to keep it in shell env).
   Mint against **this** base (hopper DB ≠ laptop DB). Campus/GMU login cookies are **not**
-  a Geoweaver Bearer; if you use the public OOD HTTPS URL you may need **both** OOD session
-  cookies and the Bearer.
-- If health is **302/HTML to campus login**: fix tunnel or cookies; do not substitute an
-  unrelated local Geoweaver for the user’s OOD session.
+  a Geoweaver Bearer; if you use the public OOD HTTPS URL you need **both** a local cookie
+  jar and the Bearer.
+- OOD cookies: operator runs `scripts/capture-ood-session.py` →
+  `~/.config/geoweaver-agent/ood-cookies.txt` + `ood-env.sh`. Use
+  `curl -b "$GEOWEAVER_OOD_COOKIE_JAR"`. **Never** ask the user to paste cookies into chat;
+  **never** print jar contents.
+- If health is **302/HTML to campus login**: ask for re-capture or SSH tunnel; do not
+  substitute an unrelated local Geoweaver for the user’s OOD session.
 - If the token is missing or expired (401): `POST $GEOWEAVER_BASE_URL/api/v1/tokens` JSON
   `{"hostPassword":"...","ttlDays":30}` (no Bearer; `ttlDays` max 180 / six months). Ask the user
   for the **Geoweaver GUI localhost password** once; never echo it back. Do not save the token

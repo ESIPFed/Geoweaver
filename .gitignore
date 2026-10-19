@@ -44,3 +44,9 @@ application-local.properties
 *.agent_api_token
 **/gw-workspace/.agent_api_token
 
+# OOD / campus session capture (local only — see scripts/capture-ood-session.py)
+**/ood-cookies.txt
+**/ood-cookies*
+**/*.cookie-jar
+**/.config/geoweaver-agent/
+

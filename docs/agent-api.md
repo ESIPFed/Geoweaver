@@ -224,15 +224,27 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
   -H "Authorization: Bearer <token-from-secret-store>"
 ```
 
-#### Path B — Keep the public OOD HTTPS URL
+#### Path B — Keep the public OOD HTTPS URL (local cookie file for Cursor)
 
-1. Log into OOD in a browser so campus session cookies exist.
-2. Set `GEOWEAVER_BASE_URL` to the same-prefix URL (table above).
-3. Supply **OOD session cookies** to the agent HTTP client out of band (secret store / local cookie jar). Never commit cookies; never paste them into chat or the repo.
-4. Mint and use a Geoweaver Bearer against that **same** OOD base (step 4 in Path A).
-5. Every Agent API request must send **both** the OOD cookies (so Apache forwards) **and** `Authorization: Bearer …` (so Geoweaver authorizes).
+Do **not** paste cookies into chat. Capture them to a local file, then point Cursor at the paths.
 
-If `GET …/api/v1/health` returns **302** HTML to the campus login page, the reverse proxy blocked the client **before** Geoweaver. Fix Path A or B (or Path C)—do **not** switch to a different laptop-only Geoweaver and pretend it is the hopper session.
+```bash
+# one-time: pip install playwright && playwright install chromium
+python3 scripts/capture-ood-session.py \
+  'https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver'
+# → ~/.config/geoweaver-agent/ood-cookies.txt (0600)
+# → ~/.config/geoweaver-agent/ood-env.sh
+
+source ~/.config/geoweaver-agent/ood-env.sh
+curl -sS -b "$GEOWEAVER_OOD_COOKIE_JAR" "$GEOWEAVER_BASE_URL/api/v1/health"
+# expect: {"status":"up"}
+```
+
+Then mint a Geoweaver Bearer against **the same** `GEOWEAVER_BASE_URL` (GUI localhost password) into your secret store as `GEOWEAVER_API_TOKEN`.
+
+Every Agent API request must send **both** `-b "$GEOWEAVER_OOD_COOKIE_JAR"` (so Apache forwards) **and** `Authorization: Bearer …` (so Geoweaver authorizes). Re-run the capture script when the OOD job’s `PORT` changes or the campus session expires. Details: `scripts/README-ood-session.md`.
+
+If `GET …/api/v1/health` returns **302** HTML to the campus login page, the reverse proxy blocked the client **before** Geoweaver. Re-capture cookies or use Path A—do **not** switch to a different laptop-only Geoweaver and pretend it is the hopper session.
 
 #### Path C — Site-approved OOD proxy policy (optional)
 

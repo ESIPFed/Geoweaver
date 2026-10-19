@@ -113,7 +113,13 @@ Do **not** fall back to a laptop-only Geoweaver when the user named an OOD sessi
 
 **Preferred for Cursor on a laptop:** SSH local forward to the compute node’s `GEOWEAVER_PORT`, set `GEOWEAVER_BASE_URL` to `http://127.0.0.1:<local>/Geoweaver`, mint Bearer there. See `docs/agent-api.md` (Open OnDemand section).
 
-**If health returns HTML/302 to Shibboleth/IdP:** proxy blocked you before Geoweaver—fix tunnel or OOD cookies + Bearer; do not invent a second localhost server as a substitute for hopper.
+**OOD HTTPS Path B (cookies on disk, never in chat):** Operator runs `python3 scripts/capture-ood-session.py '<Connect-UI-URL>'`, then `source ~/.config/geoweaver-agent/ood-env.sh`. That sets `GEOWEAVER_BASE_URL` and `GEOWEAVER_OOD_COOKIE_JAR`. Agents must:
+
+1. Read paths from env or `~/.config/geoweaver-agent/ood-env.sh` (or ask the operator to confirm the file exists—**never** ask them to paste cookie values).
+2. Call API with cookie jar + Bearer, e.g. `curl -b "$GEOWEAVER_OOD_COOKIE_JAR" -H "Authorization: Bearer $GEOWEAVER_API_TOKEN" …`.
+3. **Never** `cat` the cookie jar into chat, logs, or checkpoints. **Never** commit `ood-cookies*`.
+
+**If health returns HTML/302 to Shibboleth/IdP:** proxy blocked you before Geoweaver—ask operator to re-run `capture-ood-session.py` or use SSH tunnel; do not invent a second localhost server as a substitute for hopper.
 
 ### Mint / rotate token (HTTP preferred for agents)
 
