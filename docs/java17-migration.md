@@ -207,6 +207,12 @@ Do **not** hard-code `8070` in `connection.yml`. Do not paste session passwords 
 
 After updating the template, start a **new** interactive session (old jobs keep the old script).
 
+### Agent API on the same OOD URL (Cursor / Codex)
+
+The Agent API is **not** on a different host. Strip `/web/geoweaver` from the Connect URL and use that as `GEOWEAVER_BASE_URL`, then call `/api/v1/...`.
+
+Campus login cookies and the Geoweaver Bearer token are **two different credentials**. For Cursor on a laptop, the reliable setup is usually an **SSH tunnel** to the compute-node port plus a Bearer minted on that Geoweaver. Full steps: [Agent API — Open OnDemand](agent-api.md#open-ondemand-same-url-prefix-as-the-ui).
+
 ---
 
 ## Developers / contributors

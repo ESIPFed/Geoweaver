@@ -167,6 +167,77 @@ Workflow node ids: `{processId}-{suffix}` (same as the UI).
 - Skill: `.cursor/skills/geoweaver-api-agent/SKILL.md`
 - Paste prompt: `.cursor/skills/geoweaver-api-agent/CODEX_PROMPT.md`
 
+## Open OnDemand (same URL prefix as the UI)
+
+Open OnDemand (OOD) is the campus web portal that starts Geoweaver on a compute node and reverse-proxies it. The Agent API uses the **same host and path prefix** as the UI—only the suffix changes.
+
+| What you open in the browser | Set `GEOWEAVER_BASE_URL` to |
+| --- | --- |
+| `https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver` | `https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver` |
+
+Then call `{GEOWEAVER_BASE_URL}/api/v1/health`, `/api/v1/processes`, and so on. Refresh this base **every new OOD job**—the `PORT` segment changes.
+
+### Two different credentials (do not confuse them)
+
+| Credential | Who issues it | What it is for |
+| --- | --- | --- |
+| Campus login session (browser cookies after GMU/Shibboleth or your site’s IdP) | Campus identity via OOD | Lets the OOD reverse proxy forward your HTTP to the compute-node Geoweaver |
+| Geoweaver Agent API Bearer token | `POST /api/v1/tokens` with the **Geoweaver GUI localhost password** | Lets `/api/v1` authorize the agent **after** traffic reaches Geoweaver |
+
+There is **no** “GMU Agent API token.” Campus login is not a substitute for the Geoweaver Bearer. A Bearer minted against laptop Geoweaver is **invalid** on the hopper database—mint against the **same** base URL you will call.
+
+### Make Cursor → campus login → Agent API work
+
+#### Path A — Recommended for Cursor on your laptop: SSH tunnel + Bearer
+
+Skips the OOD/IdP HTML redirect for the API hop. Still uses the **hopper** Geoweaver (not a second local install).
+
+1. Start Geoweaver in OOD until **Connect** works. Note compute host and the port from `connection.yml` (same as `GEOWEAVER_PORT` / OOD `$port`).
+2. On your laptop, forward that port (example—adjust user, host, ports):
+
+```bash
+ssh -N -L 18070:127.0.0.1:<GEOWEAVER_PORT> <you>@<compute-host>
+# or via login node jump if required by the site
+```
+
+3. Point the agent at the tunnel (this TCP target **is** the hopper JVM):
+
+```bash
+export GEOWEAVER_BASE_URL='http://127.0.0.1:18070/Geoweaver'
+```
+
+4. Mint a Bearer **against that base** (ask once for the Geoweaver GUI localhost password; do not paste it into chat or git):
+
+```bash
+curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" \
+  -H "Content-Type: application/json" \
+  -d '{"hostPassword":"<gui-localhost-password>","ttlDays":30}'
+# store token in a secret store → GEOWEAVER_API_TOKEN for Cursor
+```
+
+5. Smoke:
+
+```bash
+curl -sS "$GEOWEAVER_BASE_URL/api/v1/health"
+# expect: {"status":"up"}
+curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
+  -H "Authorization: Bearer <token-from-secret-store>"
+```
+
+#### Path B — Keep the public OOD HTTPS URL
+
+1. Log into OOD in a browser so campus session cookies exist.
+2. Set `GEOWEAVER_BASE_URL` to the same-prefix URL (table above).
+3. Supply **OOD session cookies** to the agent HTTP client out of band (secret store / local cookie jar). Never commit cookies; never paste them into chat or the repo.
+4. Mint and use a Geoweaver Bearer against that **same** OOD base (step 4 in Path A).
+5. Every Agent API request must send **both** the OOD cookies (so Apache forwards) **and** `Authorization: Bearer …` (so Geoweaver authorizes).
+
+If `GET …/api/v1/health` returns **302** HTML to the campus login page, the reverse proxy blocked the client **before** Geoweaver. Fix Path A or B (or Path C)—do **not** switch to a different laptop-only Geoweaver and pretend it is the hopper session.
+
+#### Path C — Site-approved OOD proxy policy (optional)
+
+Campus IT may, after security review, configure OOD/Apache so `/Geoweaver/api/v1/**` can be reached in a way compatible with automation (for example forwarding when an existing valid session or site-approved header is present). This is a **site** change. Do **not** “turn off campus login for everyone” as a Geoweaver workaround.
+
 ## Rollback
 
 `geoweaver.agent.api-enabled=false` or `DELETE /api/v1/tokens/{fingerprint}` for each live token. Already-started jobs keep running until they finish or you stop them. Raw tokens cannot be recovered from the database (hashes only).

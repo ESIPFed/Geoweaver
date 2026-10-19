@@ -91,8 +91,29 @@ If health returns 503 `api_disabled`, ask the operator to enable the Agent API a
 
 | Variable | Meaning |
 | --- | --- |
-| `GEOWEAVER_BASE_URL` | Full base including context path, e.g. `https://gw.example.org/Geoweaver` or `http://127.0.0.1:8070/Geoweaver` |
-| `GEOWEAVER_API_TOKEN` | Bearer token (mint with GUI localhost password). Stored as a hash in the Geoweaver **database**, never in a Geoweaver token file. |
+| `GEOWEAVER_BASE_URL` | Full base including context path, e.g. `https://gw.example.org/Geoweaver`, Open OnDemand same-prefix `https://ondemand…/rnode/HOST/PORT/Geoweaver`, or SSH-tunnel `http://127.0.0.1:18070/Geoweaver` aimed at the **hopper** JVM |
+| `GEOWEAVER_API_TOKEN` | Bearer token (mint with GUI localhost password **against that same base**). Stored as a hash in the Geoweaver **database**, never in a Geoweaver token file. |
+
+### Open OnDemand: same domain and path as the UI
+
+If the human opened:
+
+`https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver`
+
+set:
+
+`GEOWEAVER_BASE_URL=https://ondemand…/rnode/HOST/PORT/Geoweaver`
+
+Do **not** fall back to a laptop-only Geoweaver when the user named an OOD session. The `PORT` changes every job—refresh the base URL.
+
+**Two credentials:**
+
+1. **Campus / OOD browser session** (cookies after GMU login) — only needed if you call the public OOD HTTPS URL; lets Apache forward to the node.
+2. **Geoweaver Bearer** — always required for `/api/v1` (except health / `POST /tokens`). Mint with Geoweaver GUI password on **this** instance. Campus login is **not** a Geoweaver API token.
+
+**Preferred for Cursor on a laptop:** SSH local forward to the compute node’s `GEOWEAVER_PORT`, set `GEOWEAVER_BASE_URL` to `http://127.0.0.1:<local>/Geoweaver`, mint Bearer there. See `docs/agent-api.md` (Open OnDemand section).
+
+**If health returns HTML/302 to Shibboleth/IdP:** proxy blocked you before Geoweaver—fix tunnel or OOD cookies + Bearer; do not invent a second localhost server as a substitute for hopper.
 
 ### Mint / rotate token (HTTP preferred for agents)
 
@@ -140,7 +161,8 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" -H "$H"
 | Result | Action |
 | --- | --- |
 | Connection refused / timeout | Ask user to start Geoweaver; **do not** start it yourself |
-| 401 | Fix / remint token via `POST /tokens` |
+| HTTP **302** / HTML campus login (Shibboleth) | OOD reverse proxy blocked the client; ask for SSH tunnel to hopper port **or** out-of-band OOD session cookies + Bearer on the **same** OOD base—do not switch to unrelated laptop Geoweaver |
+| 401 | Fix / remint token via `POST /tokens` against the **same** `GEOWEAVER_BASE_URL` (laptop token ≠ hopper token) |
 | 503 `api_disabled` | Ask operator to set `geoweaver.agent.api-enabled=true` and restart **their** server |
 
 ## Agent playbook (UI parity)
@@ -215,7 +237,8 @@ Use each process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. T
 | Symptom | Action |
 | --- | --- |
 | Connection / timeout | Ask user to start Geoweaver; check `GEOWEAVER_BASE_URL` includes `/Geoweaver` |
-| 401 | Remint via `POST /tokens` + localhost password |
+| 302 / IdP HTML on `/api/v1` | Same-prefix URL is correct but OOD SSO blocked; tunnel or cookies—see Open OnDemand section |
+| 401 | Remint via `POST /tokens` + localhost password on **this** base |
 | 503 api_disabled | Operator enables Agent API and restarts **their** process |
 | 403 on `/tokens` | Wrong GUI localhost password |
 | 429 on `/tokens` | Wait and retry |
