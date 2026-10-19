@@ -19,10 +19,9 @@ You are controlling **classic Geoweaver** over HTTP like a human using the UI, w
   Mint against **this** base (hopper DB ≠ laptop DB). Campus/GMU login cookies are **not**
   a Geoweaver Bearer; if you use the public OOD HTTPS URL you need **both** a local cookie
   jar and the Bearer.
-- OOD cookies: operator runs `scripts/capture-ood-session.py` →
-  `~/.config/geoweaver-agent/ood-cookies.txt` + `ood-env.sh`. Use
-  `curl -b "$GEOWEAVER_OOD_COOKIE_JAR"`. **Never** ask the user to paste cookies into chat;
-  **never** print jar contents.
+- OOD cookies: operator runs `./scripts/gw-ood-login '<Connect-UI-URL>'` →
+  `~/.config/geoweaver-agent/`. Use `curl -b "$GEOWEAVER_OOD_COOKIE_JAR"`.
+  **Never** ask for cookie paste; **never** print jar contents.
 - If health is **302/HTML to campus login**: ask for re-capture or SSH tunnel; do not
   substitute an unrelated local Geoweaver for the user’s OOD session.
 - If the token is missing or expired (401): `POST $GEOWEAVER_BASE_URL/api/v1/tokens` JSON

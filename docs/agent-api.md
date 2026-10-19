@@ -224,27 +224,19 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
   -H "Authorization: Bearer <token-from-secret-store>"
 ```
 
-#### Path B — Keep the public OOD HTTPS URL (local cookie file for Cursor)
+#### Path B — Keep the public OOD HTTPS URL (one command)
 
-Do **not** paste cookies into chat. Capture them to a local file, then point Cursor at the paths.
+Do **not** paste cookies into chat.
 
 ```bash
-# one-time: pip install playwright && playwright install chromium
-python3 scripts/capture-ood-session.py \
-  'https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver'
-# → ~/.config/geoweaver-agent/ood-cookies.txt (0600)
-# → ~/.config/geoweaver-agent/ood-env.sh
-
+./scripts/gw-ood-login 'https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver'
 source ~/.config/geoweaver-agent/ood-env.sh
 curl -sS -b "$GEOWEAVER_OOD_COOKIE_JAR" "$GEOWEAVER_BASE_URL/api/v1/health"
-# expect: {"status":"up"}
 ```
 
-Then mint a Geoweaver Bearer against **the same** `GEOWEAVER_BASE_URL` (GUI localhost password) into your secret store as `GEOWEAVER_API_TOKEN`.
+Mint a Geoweaver Bearer against the same `GEOWEAVER_BASE_URL` into your secret store. Agent calls need **both** the cookie jar and Bearer. Re-run `gw-ood-login` when the OOD `PORT` changes. Details: `scripts/README-ood-session.md`.
 
-Every Agent API request must send **both** `-b "$GEOWEAVER_OOD_COOKIE_JAR"` (so Apache forwards) **and** `Authorization: Bearer …` (so Geoweaver authorizes). Re-run the capture script when the OOD job’s `PORT` changes or the campus session expires. Details: `scripts/README-ood-session.md`.
-
-If `GET …/api/v1/health` returns **302** HTML to the campus login page, the reverse proxy blocked the client **before** Geoweaver. Re-capture cookies or use Path A—do **not** switch to a different laptop-only Geoweaver and pretend it is the hopper session.
+If health returns **302** IdP HTML, re-run login or use Path A—do not use a laptop-only Geoweaver as a stand-in for hopper.
 
 #### Path C — Site-approved OOD proxy policy (optional)
 
