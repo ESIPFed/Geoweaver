@@ -13,6 +13,8 @@
 
 If you **cannot** use Java 17, **do not upgrade** to 2.2+. Keep **Geoweaver 2.1.x** from [Releases](https://github.com/ESIPFed/Geoweaver/releases).
 
+On a cluster **without sudo**, if PyGeoWeaver fails while upgrading `~/jdk` with `Permission denied` on a `jdk-11*` path (and you see `jdk.tar.gz already exists`), follow **[Cluster / no-sudo JDK recovery](java17-migration.md#cluster--no-sudo-pygeoweaver-jdk-upgrade-fails-with-permission-denied)** — usually move aside the stale `~/jdk.tar.gz` and `~/jdk`, then `gw installjdk`.
+
 ### Simple Upgrade
 
 #### Python Way
