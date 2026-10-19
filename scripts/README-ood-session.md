@@ -4,12 +4,13 @@
 ./scripts/gw-ood-login 'https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver'
 ```
 
-First run creates `~/.config/geoweaver-agent/venv` and installs Playwright there (does not touch Homebrew/system Python). Log in in the Chromium window, then **press Enter in the terminal** to save cookies (do not wait for hang/timeout). Cookies go under `~/.config/geoweaver-agent/` (not into chat).
+1. Log in in the Chromium window → **press Enter** in the terminal (saves cookies).
+2. When prompted, enter the **Hopper Geoweaver GUI password** (not your laptop Geoweaver password) → saves Bearer under `~/.config/geoweaver-agent/api-token`.
 
 ```bash
 source ~/.config/geoweaver-agent/ood-env.sh
 ```
 
-Tell Cursor the env file is ready. Still need a Geoweaver Bearer on the same `GEOWEAVER_BASE_URL` (GUI password → `POST /api/v1/tokens`) in your secret store.
+Tell Cursor that file is sourced — **do not paste cookies or token into chat**.
 
-Prefer no cookies? Use an SSH tunnel instead — see [Agent API docs](../docs/agent-api.md#open-ondemand-same-url-prefix-as-the-ui).
+Re-mint only: `./scripts/gw-ood-mint-token`

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# One command: open OOD Geoweaver, save session cookies for Cursor (no chat paste).
-# Uses a private venv under ~/.config/geoweaver-agent/ (avoids PEP 668 / Homebrew Python).
+# One command for Cursor ↔ Hopper Geoweaver via Open OnDemand:
+#   1) open Connect URL, save campus session cookies
+#   2) mint Agent API Bearer with THIS Geoweaver's GUI password (Hopper ≠ laptop)
+#
 # Usage:
 #   ./scripts/gw-ood-login 'https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver'
 set -euo pipefail
@@ -36,13 +38,19 @@ if ! "$PY" -c "import playwright" 2>/dev/null; then
   "$PY" -m pip install -q playwright
 fi
 
-# Chromium binary for Playwright (no-op if already present)
 "$PY" -m playwright install chromium
 
+echo ""
+echo "=== Step 1/2: campus login cookies ==="
 "$PY" "$ROOT/scripts/capture-ood-session.py" --engine playwright "$URL"
+
+echo ""
+echo "=== Step 2/2: Agent API Bearer for THIS Geoweaver (Hopper) ==="
+echo "Use the GUI localhost password of the Hopper session — not your laptop Geoweaver password."
+"$ROOT/scripts/gw-ood-mint-token"
 
 ENV_FILE="$CFG/ood-env.sh"
 echo ""
-echo "Done. In this shell (or tell Cursor these paths exist — do not paste cookie contents):"
+echo "All set. Tell Cursor (do not paste cookies or token into chat):"
 echo "  source $ENV_FILE"
-echo "Then mint a Geoweaver Bearer against \$GEOWEAVER_BASE_URL if you do not have one yet."
+echo "Then the agent can call \$GEOWEAVER_BASE_URL/api/v1 with the cookie jar + Bearer."

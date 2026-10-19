@@ -113,7 +113,7 @@ Do **not** fall back to a laptop-only Geoweaver when the user named an OOD sessi
 
 **Preferred for Cursor on a laptop:** SSH local forward to the compute node’s `GEOWEAVER_PORT`, set `GEOWEAVER_BASE_URL` to `http://127.0.0.1:<local>/Geoweaver`, mint Bearer there. See `docs/agent-api.md` (Open OnDemand section).
 
-**OOD HTTPS Path B (one command, cookies on disk):** Operator runs `./scripts/gw-ood-login '<Connect-UI-URL>'` then `source ~/.config/geoweaver-agent/ood-env.sh`. Agents must use `-b "$GEOWEAVER_OOD_COOKIE_JAR"` plus Bearer; **never** ask for cookie paste; **never** `cat` the jar into chat.
+**OOD HTTPS Path B (one command):** Operator runs `./scripts/gw-ood-login '<Connect-UI-URL>'` (cookies + mint Bearer with **Hopper** GUI password, not laptop) then `source ~/.config/geoweaver-agent/ood-env.sh`. Agents must use `-b "$GEOWEAVER_OOD_COOKIE_JAR"` plus `$GEOWEAVER_API_TOKEN`; **never** ask for cookie/token paste; **never** `cat` secret files into chat. Laptop Bearer is invalid on Hopper.
 
 **If health returns HTML/302 to Shibboleth/IdP:** ask operator to re-run `gw-ood-login` or use SSH tunnel; do not invent a second localhost Geoweaver as hopper.
 

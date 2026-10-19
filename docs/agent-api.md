@@ -226,15 +226,19 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
 
 #### Path B — Keep the public OOD HTTPS URL (one command)
 
-Do **not** paste cookies into chat.
+Do **not** paste cookies or tokens into chat. The Hopper Geoweaver GUI password is **not** the same as a laptop Geoweaver password — `gw-ood-login` asks for the Hopper password after cookies are saved and mints a Bearer against that instance.
 
 ```bash
 ./scripts/gw-ood-login 'https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver'
+# step 1: campus login + Enter → cookies
+# step 2: Hopper GUI password → ~/.config/geoweaver-agent/api-token
 source ~/.config/geoweaver-agent/ood-env.sh
 curl -sS -b "$GEOWEAVER_OOD_COOKIE_JAR" "$GEOWEAVER_BASE_URL/api/v1/health"
+curl -sS -b "$GEOWEAVER_OOD_COOKIE_JAR" -H "Authorization: Bearer $GEOWEAVER_API_TOKEN" \
+  "$GEOWEAVER_BASE_URL/api/v1/capabilities"
 ```
 
-Mint a Geoweaver Bearer against the same `GEOWEAVER_BASE_URL` into your secret store. Agent calls need **both** the cookie jar and Bearer. Re-run `gw-ood-login` when the OOD `PORT` changes. Details: `scripts/README-ood-session.md`.
+Agent calls need **both** the cookie jar and Bearer. Re-run `gw-ood-login` when the OOD `PORT` changes. Details: `scripts/README-ood-session.md`.
 
 If health returns **302** IdP HTML, re-run login or use Path A—do not use a laptop-only Geoweaver as a stand-in for hopper.
 

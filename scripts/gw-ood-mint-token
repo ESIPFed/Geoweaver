@@ -3,8 +3,9 @@
 # Password is typed hidden; token saved to ~/.config/geoweaver-agent/api-token (0600).
 # Never prints the token.
 #
-#   ./scripts/gw-ood-login '<Connect-URL>'   # once per OOD job
-#   ./scripts/gw-ood-mint-token               # once (or when Bearer expires)
+# Normally run automatically as step 2 of ./scripts/gw-ood-login
+# Standalone (re-mint when Bearer expires):
+#   ./scripts/gw-ood-mint-token
 set -euo pipefail
 
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent"
@@ -24,7 +25,8 @@ if [[ -z "${GEOWEAVER_BASE_URL:-}" || ! -f "${GEOWEAVER_OOD_COOKIE_JAR:-}" ]]; t
 fi
 
 echo "Minting Bearer for: $GEOWEAVER_BASE_URL"
-echo -n "Geoweaver GUI localhost password (hidden): "
+echo "(This is the password of the Geoweaver you just opened — Hopper/OOD — not laptop Geoweaver.)"
+echo -n "That instance GUI localhost password (hidden): "
 read -r -s HOST_PASSWORD
 echo ""
 [[ -n "$HOST_PASSWORD" ]] || { echo "Empty password." >&2; exit 1; }
