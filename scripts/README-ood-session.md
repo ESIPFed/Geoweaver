@@ -4,7 +4,7 @@
 ./scripts/gw-ood-login 'https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver'
 ```
 
-First run creates `~/.config/geoweaver-agent/venv` and installs Playwright there (does not touch Homebrew/system Python). Log in when the browser opens. Cookies go under `~/.config/geoweaver-agent/` (not into chat).
+First run creates `~/.config/geoweaver-agent/venv` and installs Playwright there (does not touch Homebrew/system Python). Log in in the Chromium window, then **press Enter in the terminal** to save cookies (do not wait for hang/timeout). Cookies go under `~/.config/geoweaver-agent/` (not into chat).
 
 ```bash
 source ~/.config/geoweaver-agent/ood-env.sh

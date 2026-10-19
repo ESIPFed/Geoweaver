@@ -27,6 +27,7 @@ import os
 import shlex
 import stat
 import sys
+import threading
 import time
 import webbrowser
 from datetime import datetime, timezone
@@ -87,10 +88,31 @@ def normalize_base_url(raw: str) -> str:
 
 
 def looks_logged_in(url: str, base: str) -> bool:
+    """True when the browser has left campus IdP and is on the OOD/Geoweaver host."""
     u = (url or "").lower()
+    if not u or u.startswith("about:") or u.startswith("chrome"):
+        return False
     if any(h in u for h in IDP_HOST_HINTS):
         return False
-    return "/geoweaver" in u and urlparse(base).netloc.lower() in u
+    host = urlparse(base).netloc.lower()
+    if host not in u:
+        return False
+    # Geoweaver UI, or OOD reverse-proxy path still on the same portal host
+    return (
+        "/geoweaver" in u
+        or "/rnode/" in u
+        or "/node/" in u
+        or "/pun/" in u
+    )
+
+
+def _wait_for_enter(done: threading.Event) -> None:
+    """Background: any Enter in this terminal finishes capture immediately."""
+    try:
+        input()
+    except EOFError:
+        pass
+    done.set()
 
 
 def write_netscape_jar(path: Path, cookies: Iterable[dict]) -> int:
@@ -202,9 +224,16 @@ def capture_playwright(start_url: str, base: str, timeout_s: int) -> List[dict]:
             "Playwright not installed. Run: pip install playwright && playwright install chromium"
         ) from e
 
-    print("Opening headed Chromium. Complete campus login in the window…", flush=True)
+    print("Opening headed Chromium. Complete campus login in THAT window.", flush=True)
     print(f"Start URL: {start_url}", flush=True)
-    print("When Geoweaver UI loads (past login), return here and wait — auto-detect runs.", flush=True)
+    print("", flush=True)
+    print(">>> When login is done (Geoweaver UI visible), press Enter HERE to save cookies.", flush=True)
+    print("    (Auto-detect also runs; Enter always works and does not wait for timeout.)", flush=True)
+    print("", flush=True)
+
+    enter_done = threading.Event()
+    enter_thread = threading.Thread(target=_wait_for_enter, args=(enter_done,), daemon=True)
+    enter_thread.start()
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
@@ -212,27 +241,39 @@ def capture_playwright(start_url: str, base: str, timeout_s: int) -> List[dict]:
         page = context.new_page()
         page.goto(start_url, wait_until="domcontentloaded")
         deadline = time.time() + timeout_s
+        last_status = 0.0
+        reason = "timeout"
         while time.time() < deadline:
+            if enter_done.is_set():
+                reason = "enter"
+                print("Enter pressed — saving cookies now…", flush=True)
+                break
             try:
                 current = page.url
             except Exception:
                 current = ""
             if looks_logged_in(current, base):
-                print(f"Detected Geoweaver session at: {current}", flush=True)
-                break
-            time.sleep(1.0)
+                # Prefer a clear Geoweaver path; otherwise wait for Enter unless /geoweaver seen
+                if "/geoweaver" in current.lower():
+                    reason = "auto-detect"
+                    print(f"Detected Geoweaver session — saving cookies…", flush=True)
+                    break
+            now = time.time()
+            if now - last_status >= 15:
+                print(f"…still waiting (press Enter when done). page={current[:120]}", flush=True)
+                last_status = now
+            time.sleep(0.5)
         else:
-            print(
-                "Auto-detect timed out. Press Enter in this terminal after you are logged in…",
-                flush=True,
-            )
-            try:
-                input()
-            except EOFError:
-                pass
+            if not enter_done.is_set():
+                print("Timed out waiting — saving whatever cookies exist now…", flush=True)
+                reason = "timeout"
 
+        # Small settle so post-login Set-Cookie can land
+        time.sleep(1.0)
         cookies = context.cookies()
         browser.close()
+
+    print(f"Capture trigger: {reason}", flush=True)
 
     # Playwright cookie shape → our dict
     out = []
