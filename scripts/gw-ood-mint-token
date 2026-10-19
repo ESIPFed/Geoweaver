@@ -91,6 +91,35 @@ lines.append(f'export GEOWEAVER_API_TOKEN="$(cat {token_path})"')
 env_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 os.chmod(env_path, stat.S_IRUSR | stat.S_IWUSR)
 
-print(f"OK HTTP {code}. Token saved (0600). Run: source {env_path}")
+# Immediate smoke: capabilities must succeed (catches OOD Authorization stripping /
+# wrong password mint). Prefer X-Geoweaver-Agent-Token + cookie fallbacks.
+smoke = subprocess.run(
+    [
+        "curl", "-sS", "-m", "30",
+        "-b", jar,
+        "-b", f"GW_AGENT_BEARER={token}",
+        "-H", f"Authorization: Bearer {token}",
+        "-H", f"X-Geoweaver-Agent-Token: {token}",
+        "-w", "\n%{http_code}",
+        f"{base}/api/v1/capabilities",
+    ],
+    capture_output=True,
+    text=True,
+)
+sraw = smoke.stdout or ""
+scode = "000"
+if "\n" in sraw:
+    *_, scode = sraw.rsplit("\n", 1)
+    scode = scode.strip()
+if scode != "200":
+    print(
+        f"WARNING: token saved but capabilities returned HTTP {scode}. "
+        "If this is Open OnDemand, the running Geoweaver jar may not yet accept "
+        "X-Geoweaver-Agent-Token / GW_AGENT_BEARER (upgrade jar), or the token "
+        "is not in this instance DB. Re-check Hopper GUI password and jar version.",
+        file=__import__("sys").stderr,
+    )
+else:
+    print(f"OK HTTP {code}; capabilities smoke HTTP 200. Run: source {env_path}")
 print("Do not paste the token into chat.")
 PY
