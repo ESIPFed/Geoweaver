@@ -23,6 +23,7 @@
 		<start-class>com.gw.GeoweaverApplication</start-class>
 		<picocli-version>4.7.6</picocli-version>
 		<springdoc.version>2.6.0</springdoc.version>
+		<gw.test.home.arg>-Duser.home=${project.build.directory}/test-home</gw.test.home.arg>
 	</properties>
 
 	<dependencies>
@@ -250,7 +251,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>@{argLine} -Duser.home=${project.build.directory}/test-home</argLine>
+					<argLine>@{argLine} ${gw.test.home.arg}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
