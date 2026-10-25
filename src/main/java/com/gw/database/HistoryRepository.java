@@ -196,4 +196,17 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   @Modifying
   @Query(value = "DELETE FROM history WHERE history_process = ?1 AND history_input = 'No code saved'", nativeQuery = true)
   void deleteSkippedHistoryByProcess(String processId);
+
+  /** Newest runs first (process and workflow runs, including workflow steps). */
+  @Query(value = "SELECT * FROM history ORDER BY history_begin_time DESC LIMIT ?1", nativeQuery = true)
+  List<History> findLatest(int limit);
+
+  @Query(
+      value = "SELECT * FROM history WHERE indicator = ?1 ORDER BY history_begin_time DESC LIMIT ?2",
+      nativeQuery = true)
+  List<History> findLatestByIndicator(String indicator, int limit);
+
+  @Modifying
+  @Query(value = "DELETE FROM history WHERE indicator = ?1", nativeQuery = true)
+  void deleteByIndicator(String indicator);
 }

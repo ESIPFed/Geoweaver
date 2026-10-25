@@ -1,5 +1,5 @@
 /**
- * Dirty-buffer policy for agent workspace events (CRITICAL-002).
+ * Dirty-buffer policy for agent workspace events.
  */
 import { describe, it, expect, beforeAll } from "vitest";
 

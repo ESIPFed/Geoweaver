@@ -1,22 +1,23 @@
 ---
 name: geoweaver-api-agent
 description: >-
-  Drive classic Geoweaver without the GUI via /Geoweaver/api/v1 on a local or
-  public URL: create/edit Python and Shell processes, build/run workflows on the
-  Geoweaver server host, poll/stop history. Use when GEOWEAVER_BASE_URL /
+  Drive Geoweaver without the GUI via /Geoweaver/api/v1 on a local or public
+  URL: create/edit Python, Shell and builtin processes, build/run workflows on
+  the Geoweaver server or registered SSH hosts, manage hosts and Python
+  environments, history, checkpoints, export/import and result files. Use when GEOWEAVER_BASE_URL /
   GEOWEAVER_API_TOKEN are set, or the user wants Codex/Cursor/Claude Code to use
   a deployed Geoweaver endpoint like a human UI. Never start or stop the
   Geoweaver JVM — the operator runs the server; the agent only calls HTTP.
-version: 1.8.0
+version: 2.0.0
 ---
 
 # Geoweaver Agent API skill
 
-**Goal:** Do what a human does in the Geoweaver UI for **Python/Shell processes and workflows**, over JSON HTTP only, against **any reachable Geoweaver base URL**.
+**Goal:** Do what a human does in the Geoweaver UI (processes, workflows, hosts, environments, history, checkpoints, results), over JSON HTTP only, against **any reachable Geoweaver base URL**.
 
 **Docs:** `docs/agent-api.md`
 
-**Not this skill:** AuroWeaver managed API, MCP-first control, Jupyter/builtin types on `/api/v1`, remote SSH hosts on `/api/v1`.
+**Not this skill:** AuroWeaver managed API, MCP-first control, Jupyter notebook processes (Geoweaver cannot run them).
 
 ## Hard boundary (non-negotiable)
 
@@ -45,11 +46,14 @@ Before coding a “big” goal (screening, forecasting pipelines, multi-source r
 3. **Pass data on the Geoweaver host** (`hostId=100001`) via a shared directory (for example `~/gw-pipeline/<run-name>/`). Geoweaver does **not** auto-pipe stdout from one process into the next. Write JSON/files in an upstream step; read them downstream. Print a clear `HANDOFF_PATH=...` line in logs.
 4. **Do not** fix the analysis universe in the analyze step when a prior discover step can choose it dynamically.
 5. Node `id` format remains `{processId}-{suffix}` (example: `abc123-n0001`).
-6. Edge JSON shape (stringified array), copy this pattern:
+6. Send `nodes` and `edges` as plain JSON arrays. `title`/`x`/`y` are optional (filled from the process name and a left-to-right layout). Edge shorthand is fine:
 
 ```json
-[{"source":{"title":"step-a","id":"PROC_A-n0001","x":80,"y":120},"target":{"title":"step-b","id":"PROC_B-n0002","x":320,"y":120}}]
+{"name":"two-step","nodes":[{"id":"PROC_A-n0001"},{"id":"PROC_B-n0002"}],
+ "edges":[{"source":"PROC_A-n0001","target":"PROC_B-n0002"}]}
 ```
+
+The older stringified GUI form (`"nodes":"[...]"`, edges with full `source`/`target` objects) is still accepted. Unknown process ids, bad node ids, and edges to missing nodes fail at create time with a 400 naming the bad entry.
 
 One-step demos may still use `"edges":"[]"`. Real multi-stage work must use real edges.
 
@@ -65,6 +69,7 @@ Pull via `/api/v1` only and write at least:
 
 | File | Source |
 | --- | --- |
+| `bundle.json` | `GET /workflows/{id}/export` (workflow + every process's code; re-importable with `POST /workflows/import`) |
 | `workflow.json` | `GET /workflows/{id}` |
 | `process-{id}.json` (+ `.py` / `.sh` code extract) | `GET /processes/{id}` for every node process |
 | `process-runs.json` | `GET /processes/{id}/runs?logLimit=200000` (latest after a run) |
@@ -91,8 +96,31 @@ If health returns 503 `api_disabled`, ask the operator to enable the Agent API a
 
 | Variable | Meaning |
 | --- | --- |
-| `GEOWEAVER_BASE_URL` | Full base including context path, e.g. `https://gw.example.org/Geoweaver` or `http://127.0.0.1:8070/Geoweaver` |
-| `GEOWEAVER_API_TOKEN` | Bearer token (mint with GUI localhost password). Stored as a hash in the Geoweaver **database**, never in a Geoweaver token file. |
+| `GEOWEAVER_BASE_URL` | Full base including context path, e.g. `https://gw.example.org/Geoweaver`, Open OnDemand same-prefix `https://ondemand…/rnode/HOST/PORT/Geoweaver`, or SSH-tunnel `http://127.0.0.1:18070/Geoweaver` aimed at the **hopper** JVM |
+| `GEOWEAVER_API_TOKEN` | Bearer token (mint with GUI localhost password **against that same base**). Stored as a hash in the Geoweaver **database**, never in a Geoweaver token file. |
+
+### Open OnDemand: same domain and path as the UI
+
+If the human opened:
+
+`https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver`
+
+set:
+
+`GEOWEAVER_BASE_URL=https://ondemand…/rnode/HOST/PORT/Geoweaver`
+
+Do **not** fall back to a laptop-only Geoweaver when the user named an OOD session. The `PORT` changes every job—refresh the base URL.
+
+**Two credentials:**
+
+1. **Campus / OOD browser session** (cookies after GMU login) — only needed if you call the public OOD HTTPS URL; lets Apache forward to the node.
+2. **Geoweaver Bearer** — always required for `/api/v1` (except health / `POST /tokens`). Mint with Geoweaver GUI password on **this** instance. Campus login is **not** a Geoweaver API token.
+
+**Preferred for Cursor on a laptop:** SSH local forward to the compute node’s `GEOWEAVER_PORT`, set `GEOWEAVER_BASE_URL` to `http://127.0.0.1:<local>/Geoweaver`, mint Bearer there. See `docs/agent-api.md` (Open OnDemand section).
+
+**OOD HTTPS Path B (one command):** Operator runs `./scripts/gw-ood-login '<Connect-UI-URL>'` (cookies + mint Bearer with **Hopper** GUI password, not laptop) then `source ~/.config/geoweaver-agent/ood-env.sh`. Agents must use `-b "$GEOWEAVER_OOD_COOKIE_JAR"` plus `$GEOWEAVER_API_TOKEN`; **never** ask for cookie/token paste; **never** `cat` secret files into chat. Laptop Bearer is invalid on Hopper.
+
+**If health returns HTML/302 to Shibboleth/IdP:** ask operator to re-run `gw-ood-login` or use SSH tunnel; do not invent a second localhost Geoweaver as hopper.
 
 ### Mint / rotate token (HTTP preferred for agents)
 
@@ -123,9 +151,11 @@ H="Authorization: Bearer $GEOWEAVER_API_TOKEN"
 | Bearer token | Required except `GET /api/v1/health` and `POST /api/v1/tokens` |
 | `geoweaver.agent.api-enabled` | Must be `true` or API returns 503 |
 | Server-local password | If `allow-localhost-runs=false`, runs need JSON `hostPassword` |
-| Host scope | Only `hostId=100001`. Remote SSH → 400 |
+| SSH hosts | `hostPassword` = that host's SSH password, sent per call, never stored. Ask the user once; keep it in their secret store, never in files or chat |
+| `allow-remote-hosts=false` | Host add/edit/delete and SSH runs → 403; use `100001` |
+| Process names | Letters, digits, `.` `_` `-` only (they become script file names) |
 
-Never print the full token or host password in chat.
+Never print the full token, GUI password or SSH password in chat.
 
 ## First contact
 
@@ -134,13 +164,14 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/health"
 # expect: {"status":"up"}
 
 curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" -H "$H"
-# expect: 200 JSON with processLanguages python/shell
+# expect: 200 JSON with processLanguages python/shell/builtin and the operations list
 ```
 
 | Result | Action |
 | --- | --- |
 | Connection refused / timeout | Ask user to start Geoweaver; **do not** start it yourself |
-| 401 | Fix / remint token via `POST /tokens` |
+| HTTP **302** / HTML campus login (Shibboleth) | OOD reverse proxy blocked the client; ask for SSH tunnel to hopper port **or** out-of-band OOD session cookies + Bearer on the **same** OOD base—do not switch to unrelated laptop Geoweaver |
+| 401 | Fix / remint token via `POST /tokens` against the **same** `GEOWEAVER_BASE_URL` (laptop token ≠ hopper token) |
 | 503 `api_disabled` | Ask operator to set `geoweaver.agent.api-enabled=true` and restart **their** server |
 
 ## Agent playbook (UI parity)
@@ -148,8 +179,10 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" -H "$H"
 ### 1) Inventory
 
 ```bash
-curl -sS "$BASE/processes" -H "$H"
+curl -sS "$BASE/processes?q=landsat" -H "$H"    # q is optional search
 curl -sS "$BASE/workflows" -H "$H"
+curl -sS "$BASE/hosts" -H "$H"                  # 100001 = the Geoweaver server
+curl -sS "$BASE/runs?status=Running" -H "$H"    # what is running now
 ```
 
 ### 2) Create / edit process
@@ -162,7 +195,7 @@ curl -sS -X PUT "$BASE/processes/PROCESS_ID" -H "$H" -H "Content-Type: applicati
   -d '{"code":"print(2+2)"}'
 ```
 
-Languages: **python** or **shell** only.
+Languages: **python**, **shell**, or **builtin** (`code` is JSON like `{"operation":"AWS S3","params":[]}`).
 
 ### 3) Run on the Geoweaver host
 
@@ -173,13 +206,13 @@ curl -sS -X POST "$BASE/processes/PROCESS_ID/runs" -H "$H" -H "Content-Type: app
 
 New `clientRunKey` after code edits. Same key → `reusedExisting: true`.
 
-### 4) Poll
+### 4) Wait for the result (one call)
 
 ```bash
-curl -sS "$BASE/runs/HISTORY_ID?logLimit=200000" -H "$H"
+curl -sS "$BASE/runs/HISTORY_ID?waitSeconds=60&logLimit=200000" -H "$H"
 ```
 
-Backoff 1s → 2s → 5s until `terminal` is true. HTTP **404** → stop. `truncated: true` → partial log.
+`waitSeconds` (0..60) blocks until `terminal` is true or the wait ends; repeat the same call if still not terminal. HTTP **404** → stop. `truncated: true` → partial log.
 
 ### 5) Stop
 
@@ -202,33 +235,92 @@ curl -sS -X POST "$BASE/workflows/WORKFLOW_ID/runs" -H "$H" -H "Content-Type: ap
   -d '{"mode":"one","clientRunKey":"wf-1"}'
 ```
 
-**Reading workflow output:** Workflow history can stay `Running` / non-terminal even after the step finished. Always also poll **each** process:
+**Reading workflow output:** one call gives every step's status and log tail:
 
 ```bash
-curl -sS "$BASE/processes/PROCESS_ID/runs?logLimit=200000" -H "$H"
+curl -sS "$BASE/runs/WORKFLOW_HISTORY_ID?waitSeconds=60&includeStepLogs=true" -H "$H"
 ```
 
-Use each process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. That log is the trustworthy step stdout. For multi-step graphs, wait until **every** step you care about is terminal (or until the workflow history is terminal **and** step logs show Done).
+The response has `workflowRun: true` and `steps: [{nodeId, processId, historyId, status, terminal, log}]`. A step starts after its upstream steps finish **even if one Failed**, so check every step's `status`, not just the workflow's. Use `GET /runs/{step.historyId}?logLimit=200000` for a full step log. History: `GET /workflows/{id}/runs`.
+
+### 7) Hosts, environments, remote runs
+
+```bash
+# add an SSH server (no password field; Geoweaver never stores it)
+curl -sS -X POST "$BASE/hosts" -H "$H" -H "Content-Type: application/json" \
+  -d '{"name":"hpc","ip":"login.hpc.example.edu","port":"22","username":"alice"}'
+# discover Python/conda environments there, then list them
+curl -sS -X POST "$BASE/hosts/HOST_ID/environments/scan" -H "$H" -H "Content-Type: application/json" \
+  -d '{"hostPassword":"<ssh password>"}'
+curl -sS "$BASE/hosts/HOST_ID/environments" -H "$H"
+# run a process there
+curl -sS -X POST "$BASE/processes/PROCESS_ID/runs" -H "$H" -H "Content-Type: application/json" \
+  -d '{"hostId":"HOST_ID","hostPassword":"<ssh password>","envId":"ENV_ID","clientRunKey":"hpc-1"}'
+# workflow with steps on different hosts
+curl -sS -X POST "$BASE/workflows/WORKFLOW_ID/runs" -H "$H" -H "Content-Type: application/json" \
+  -d '{"nodeHosts":{"PROC_A-n0001":{"hostId":"100001"},"PROC_B-n0002":{"hostId":"HOST_ID","envId":"ENV_ID"}},"hostPasswords":{"HOST_ID":"<ssh password>"}}'
+```
+
+502 `host_unreachable` = the SSH server is down or the name is wrong; 403 = wrong SSH password.
+
+### 8) Skip steps, roll back, export
+
+```bash
+curl -sS -X PUT "$BASE/workflows/WORKFLOW_ID/steps/PROC_B-n0002" -H "$H" -H "Content-Type: application/json" -d '{"skip":true}'
+curl -sS "$BASE/workflows/WORKFLOW_ID/checkpoints" -H "$H"          # one per run
+curl -sS -X POST "$BASE/workflows/WORKFLOW_ID/restore" -H "$H" -H "Content-Type: application/json" -d '{"runId":"RUN_ID"}'
+curl -sS "$BASE/workflows/WORKFLOW_ID/export" -H "$H" > bundle.json
+curl -sS -X POST "$BASE/workflows/import" -H "$H" -H "Content-Type: application/json" --data @bundle.json   # 409 → add ?replace=true only if the user agrees
+curl -sS -X PUT "$BASE/runs/RUN_ID/notes" -H "$H" -H "Content-Type: application/json" -d '{"notes":"baseline run"}'
+```
+
+### 9) Result files
+
+```bash
+curl -sS "$BASE/results" -H "$H"                       # top of the results folder
+curl -sS "$BASE/results?path=SUBFOLDER" -H "$H"
+curl -sS "$BASE/results/file?path=SUBFOLDER/out.png" -H "$H" -o out.png
+```
+
+### 10) Clean up what you created for experiments
+
+```bash
+curl -sS -X DELETE "$BASE/workflows/WORKFLOW_ID" -H "$H"
+curl -sS -X DELETE "$BASE/processes/PROCESS_ID" -H "$H"   # 409 while a workflow uses it
+curl -sS -X DELETE "$BASE/runs/RUN_ID" -H "$H"             # finished runs only
+curl -sS -X DELETE "$BASE/hosts/HOST_ID" -H "$H"
+```
+
+Only delete objects you created in this task. Never delete a human's processes or workflows.
+
+### Errors
+
+Every error is JSON `{"error": code, "message": text}` with a real status code (400 `bad_request`, 401, 403, 404 `not_found`, 409 `conflict`, 415, 429, 500 `internal_error`, 502 `host_unreachable`, 503). Read `message`: it says what to fix. Schema: `GET $GEOWEAVER_BASE_URL/v3/api-docs/agent-api` (no token needed).
 
 ## Failure map
 
 | Symptom | Action |
 | --- | --- |
 | Connection / timeout | Ask user to start Geoweaver; check `GEOWEAVER_BASE_URL` includes `/Geoweaver` |
-| 401 | Remint via `POST /tokens` + localhost password |
+| 302 / IdP HTML on `/api/v1` | Same-prefix URL is correct but OOD SSO blocked; tunnel or cookies—see Open OnDemand section |
+| 401 | Remint via `POST /tokens` + localhost password on **this** base |
 | 503 api_disabled | Operator enables Agent API and restarts **their** process |
 | 403 on `/tokens` | Wrong GUI localhost password |
 | 429 on `/tokens` | Wait and retry |
 | 403 on runs | Need `allow-localhost-runs=true` on server **or** correct `hostPassword` |
-| 400 remote host / bad lang | Use `100001` + python/shell only |
-| 404 | Bad id; do not poll forever |
-| Workflow history stuck Running | Read `GET /processes/{id}/runs` for step Done + log |
+| 400 `hostPassword … is required` | Ask the user for that host's SSH password (once), send it with the run |
+| 502 host_unreachable | SSH host down or wrong `ip`; check `GET /hosts/{id}` with the user |
+| 400 bad lang / name | python/shell/builtin; name of letters, digits, `.` `_` `-` |
+| 404 | Bad id or path; `message` names it; do not poll forever |
+| 400 on workflow create/update | `message` names the bad node/edge; fix ids from `GET /processes` |
+| 409 on process delete | `message` lists workflows that use it; remove from those first |
+| Workflow Failed | Find the step with `status: Failed` in `steps`; read its `log` |
 
 ## Act like a human
 
 1. Use only `/api/v1`. Never start the server yourself.
 2. Split complicated goals into small processes; link them with sequential or parallel edges; hand off via host files.
-3. Wait for terminal status on each **process** run before claiming success for that step.
+3. Wait (`waitSeconds=60`) for terminal status; for workflows check every entry in `steps` before claiming success.
 4. On `Failed`, read `log`, fix code via `PUT`, re-run with a new `clientRunKey`.
-5. Do not invent remote SSH or Jupyter endpoints on `/api/v1`.
+5. Use only endpoints listed in `GET /capabilities`; never invent paths. Ask before deleting anything you did not create or importing with `replace=true`.
 6. Always write a **local checkpoint** under `~/Documents/Geoweaver-checkpoints/` after create / edit / successful run (include **all** process ids in the workflow).

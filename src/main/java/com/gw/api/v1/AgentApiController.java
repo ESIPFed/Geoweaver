@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,12 +87,16 @@ public class AgentApiController {
     body.put("apiVersion", "v1");
     body.put("apiEnabled", properties.isApiEnabled());
     body.put("allowLocalhostRuns", properties.isAllowLocalhostRuns());
+    body.put("allowDelete", properties.isAllowDelete());
+    body.put("allowRemoteHosts", properties.isAllowRemoteHosts());
     body.put("executionHost", AgentRunSupport.LOCALHOST_ID);
     body.put(
         "executionHostMeaning",
         "hostId 100001 is the machine where Geoweaver is running (server local disk/CPU), "
-            + "not the coding agent's laptop. Works the same for public HTTPS base URLs.");
-    body.put("processLanguages", List.of("python", "shell"));
+            + "not the coding agent's laptop. Other hostIds are SSH servers from GET /api/v1/hosts; "
+            + "send their SSH password as hostPassword with each run (never stored).");
+    body.put("processLanguages", List.of("python", "shell", "builtin"));
+    body.put("hostTypes", List.of("ssh", "jupyter", "jupyterhub", "jupyterlab", "gee"));
     body.put(
         "operations",
         List.of(
@@ -101,15 +104,36 @@ public class AgentApiController {
             "createProcess",
             "getProcess",
             "updateProcess",
+            "deleteProcess",
             "startProcessRun",
+            "listProcessRuns",
             "listWorkflows",
             "createWorkflow",
             "getWorkflow",
             "updateWorkflow",
+            "deleteWorkflow",
             "startWorkflowRun",
+            "listWorkflowRuns",
+            "skipWorkflowStep",
+            "listCheckpoints",
+            "restoreCheckpoint",
+            "exportWorkflow",
+            "importWorkflow",
+            "listHosts",
+            "createHost",
+            "getHost",
+            "updateHost",
+            "deleteHost",
+            "listEnvironments",
+            "scanEnvironments",
+            "listRuns",
             "getRun",
-            "listProcessRuns",
             "stopRun",
+            "deleteRun",
+            "deleteRuns",
+            "setRunNotes",
+            "listResults",
+            "downloadResult",
             "createTokenWithLocalhostPassword",
             "listTokens",
             "revokeToken"));
@@ -118,6 +142,26 @@ public class AgentApiController {
         "statuses",
         List.of("Done", "Failed", "Running", "Unknown", "Stopped", "Ready", "Skipped"));
     body.put("auth", "Authorization: Bearer <token>");
+    body.put("openApi", "/v3/api-docs/agent-api");
+    body.put(
+        "workflowGraph",
+        Map.of(
+            "nodes",
+            "JSON array (or JSON string) of {\"id\":\"{processId}-{suffix}\"}; title/x/y optional",
+            "edges",
+            "JSON array of {\"source\":\"nodeId\",\"target\":\"nodeId\"} (GUI object form also"
+                + " accepted)",
+            "semantics",
+            "A step starts after all upstream steps finish, even if one Failed. Check run.steps.",
+            "hosts",
+            "POST /workflows/{id}/runs {hostId, hostPassword} runs every step there; nodeHosts"
+                + " {nodeId:{hostId,envId}} + hostPasswords {hostId:password} spread steps over hosts"));
+    body.put(
+        "waitForRun",
+        "GET /api/v1/runs/{historyId}?waitSeconds=1.."
+            + AgentRunSupport.MAX_WAIT_SECONDS
+            + " blocks until terminal; add includeStepLogs=true for per-step logs of workflow runs");
+    body.put("errors", "Every error is JSON {\"error\":code,\"message\":text}; never an HTML redirect");
     body.put(
         "remoteClients",
         "Bearer works from another computer if this HTTP port is reachable. "
@@ -137,8 +181,8 @@ public class AgentApiController {
     body.put("tokenStoredInDatabase", tokenService.hasActiveToken());
     body.put(
         "note",
-        "Python/Shell and workflows on the Geoweaver host only. Set GEOWEAVER_BASE_URL to this "
-            + "server's public or private URL (including /Geoweaver). Remote SSH hosts are not exposed.");
+        "Set GEOWEAVER_BASE_URL to this server's URL including /Geoweaver; use HTTPS when it"
+            + " crosses a network. A token can run code on this server: treat it like an SSH key.");
     return body;
   }
 
@@ -210,12 +254,7 @@ public class AgentApiController {
   }
 
   static void requireLoopback(HttpServletRequest request) {
-    String addr = request.getRemoteAddr();
-    if (addr == null
-        || !(addr.equals("127.0.0.1")
-            || addr.equals("::1")
-            || addr.equals("https://example.net/id/garnet")
-            || addr.equals("localhost"))) {
+    if (!AgentApiProperties.isLoopbackAddress(request.getRemoteAddr())) {
       throw new ResponseStatusException(
           HttpStatus.FORBIDDEN, "Token reveal sessions are loopback-only");
     }
@@ -227,8 +266,9 @@ public class AgentApiController {
   }
 
   @GetMapping("/processes")
-  public List<ProcessSummary> processes() {
-    return processService.listProcesses();
+  @Operation(summary = "List python/shell/builtin processes; q filters by id, name or description")
+  public List<ProcessSummary> processes(@RequestParam(value = "q", required = false) String q) {
+    return processService.listProcesses(q);
   }
 
   @PostMapping("/processes")
@@ -254,6 +294,13 @@ public class AgentApiController {
         id, body == null ? new RunStartRequest(null, null, null, null) : body);
   }
 
+  @DeleteMapping("/processes/{id}")
+  @Operation(summary = "Delete a process (409 while a workflow uses it)")
+  public Map<String, Object> deleteProcess(@PathVariable("id") String id) {
+    requireDeleteAllowed(properties);
+    return processService.deleteProcess(id);
+  }
+
   @GetMapping("/processes/{id}/runs")
   public List<RunResponse> listProcessRuns(
       @PathVariable("id") String id,
@@ -262,8 +309,9 @@ public class AgentApiController {
   }
 
   @GetMapping("/workflows")
-  public List<WorkflowSummary> workflows() {
-    return workflowService.listWorkflows();
+  @Operation(summary = "List workflows; q filters by id, name or description")
+  public List<WorkflowSummary> workflows(@RequestParam(value = "q", required = false) String q) {
+    return workflowService.listWorkflows(q);
   }
 
   @PostMapping("/workflows")
@@ -282,18 +330,46 @@ public class AgentApiController {
     return workflowService.updateWorkflow(id, body);
   }
 
+  @DeleteMapping("/workflows/{id}")
+  @Operation(summary = "Delete a workflow (processes and run history are kept)")
+  public Map<String, Object> deleteWorkflow(@PathVariable("id") String id) {
+    requireDeleteAllowed(properties);
+    return workflowService.deleteWorkflow(id);
+  }
+
+  static void requireDeleteAllowed(AgentApiProperties properties) {
+    if (!properties.isAllowDelete()) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "Agent deletes are disabled (geoweaver.agent.allow-delete=false)");
+    }
+  }
+
+  @GetMapping("/workflows/{id}/runs")
+  @Operation(summary = "Workflow run history, newest first (max 50), with per-step status")
+  public List<RunResponse> listWorkflowRuns(
+      @PathVariable("id") String id,
+      @RequestParam(value = "logLimit", required = false) Integer logLimit) {
+    return workflowService.listRuns(id, logLimit);
+  }
+
   @PostMapping("/workflows/{id}/runs")
   public RunStartResponse startWorkflowRun(
       @PathVariable("id") String id, @RequestBody(required = false) WorkflowRunRequest body) {
     return workflowService.startRun(
-        id, body == null ? new WorkflowRunRequest(null, null, null) : body);
+        id, body == null ? WorkflowRunRequest.empty() : body);
   }
 
   @GetMapping("/runs/{historyId}")
+  @Operation(
+      summary =
+          "Run detail + log. waitSeconds (0..60) blocks until terminal; workflow runs include steps")
   public RunResponse getRun(
       @PathVariable("historyId") String historyId,
-      @RequestParam(value = "logLimit", required = false) Integer logLimit) {
-    return processService.getRun(historyId, logLimit);
+      @RequestParam(value = "logLimit", required = false) Integer logLimit,
+      @RequestParam(value = "waitSeconds", required = false, defaultValue = "0") int waitSeconds,
+      @RequestParam(value = "includeStepLogs", required = false, defaultValue = "false")
+          boolean includeStepLogs) {
+    return processService.getRun(historyId, logLimit, waitSeconds, includeStepLogs);
   }
 
   @PostMapping("/runs/{historyId}/stop")
@@ -308,20 +384,17 @@ public class AgentApiController {
     return addr == null ? "unknown" : addr;
   }
 
-  @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<AgentErrorResponse> handleStatus(ResponseStatusException ex) {
-    HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
-    String msg = ex.getReason() == null ? status.getReasonPhrase() : ex.getReason();
-    String code =
-        status == HttpStatus.UNAUTHORIZED
-            ? "unauthorized"
-            : status == HttpStatus.FORBIDDEN
-                ? "forbidden"
-                : status == HttpStatus.NOT_FOUND
-                    ? "not_found"
-                    : status == HttpStatus.TOO_MANY_REQUESTS
-                        ? "rate_limited"
-                        : status == HttpStatus.BAD_REQUEST ? "bad_request" : "error";
-    return ResponseEntity.status(status).body(new AgentErrorResponse(code, msg));
+  /** Unknown path or method under /api/v1: JSON 404 instead of the GUI error page. */
+  @RequestMapping("/**")
+  public ResponseEntity<AgentErrorResponse> unknownEndpoint(HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(
+            new AgentErrorResponse(
+                "not_found",
+                "No Agent API endpoint for "
+                    + request.getMethod()
+                    + " "
+                    + AgentApiTokenFilter.normalizedPath(request)
+                    + ". See GET /api/v1/capabilities or /v3/api-docs/agent-api"));
   }
 }

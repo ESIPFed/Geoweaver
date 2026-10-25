@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# curl helper for OOD Geoweaver Agent API: session cookies + Bearer via
+# Authorization, X-Geoweaver-Agent-Token, and GW_AGENT_BEARER cookie
+# (OOD/Apache often strips Authorization alone).
+#
+#   source ~/.config/geoweaver-agent/ood-env.sh
+#   ./scripts/gw-ood-curl /api/v1/health
+#   ./scripts/gw-ood-curl /api/v1/capabilities
+#   ./scripts/gw-ood-curl -X POST /api/v1/processes -H 'Content-Type: application/json' -d '...'
+set -euo pipefail
+
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent"
+# shellcheck disable=SC1090
+[[ -f "$CFG/ood-env.sh" ]] && source "$CFG/ood-env.sh"
+[[ -f "$CFG/api-token" ]] && export GEOWEAVER_API_TOKEN="$(tr -d ' \n\r' < "$CFG/api-token")"
+
+if [[ -z "${GEOWEAVER_BASE_URL:-}" ]]; then
+  echo "GEOWEAVER_BASE_URL unset — run ./scripts/gw-ood-login first" >&2
+  exit 1
+fi
+
+ARGS=()
+if [[ -n "${GEOWEAVER_OOD_COOKIE_JAR:-}" && -f "${GEOWEAVER_OOD_COOKIE_JAR}" ]]; then
+  ARGS+=(-b "$GEOWEAVER_OOD_COOKIE_JAR")
+fi
+if [[ -n "${GEOWEAVER_API_TOKEN:-}" ]]; then
+  ARGS+=(-H "Authorization: Bearer ${GEOWEAVER_API_TOKEN}")
+  ARGS+=(-H "X-Geoweaver-Agent-Token: ${GEOWEAVER_API_TOKEN}")
+  ARGS+=(-b "GW_AGENT_BEARER=${GEOWEAVER_API_TOKEN}")
+fi
+
+PATH_OR_FLAG="${1:-}"
+if [[ -z "$PATH_OR_FLAG" ]]; then
+  echo "Usage: $0 /api/v1/health | $0 -X POST /api/v1/processes ..." >&2
+  exit 1
+fi
+
+# If first arg looks like a path, prepend base URL
+if [[ "$PATH_OR_FLAG" == /* ]]; then
+  shift
+  exec curl -sS "${ARGS[@]}" "$GEOWEAVER_BASE_URL$PATH_OR_FLAG" "$@"
+fi
+
+# Otherwise treat all args as curl args; require caller to pass full URL or use path form
+exec curl -sS "${ARGS[@]}" "$@"

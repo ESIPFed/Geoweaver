@@ -5,6 +5,7 @@ import com.gw.api.v1.dto.AgentErrorResponse;
 import com.gw.api.v1.service.AgentApiTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,11 +20,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Enforces Bearer token auth for {@code /api/v1/**} except public health. Returns JSON errors only.
+ *
+ * <p>Open OnDemand / some reverse proxies strip the {@code Authorization} header. Agents may also
+ * send the raw token in {@code X-Geoweaver-Agent-Token} or cookie {@code GW_AGENT_BEARER} (same
+ * secret as Bearer). Prefer HTTPS.
  */
 @Component
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
 public class AgentApiTokenFilter extends OncePerRequestFilter {
+
+  /** Alternate header when proxies drop {@code Authorization}. */
+  public static final String AGENT_TOKEN_HEADER = "X-Geoweaver-Agent-Token";
+
+  /** Alternate cookie name when proxies drop {@code Authorization}. */
+  public static final String AGENT_TOKEN_COOKIE = "GW_AGENT_BEARER";
 
   private static final Logger logger = LoggerFactory.getLogger(AgentApiTokenFilter.class);
 
@@ -47,6 +58,11 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String path = normalizedPath(request);
+    // Tokens and run logs must not be cached by browsers or proxies, nor sniffed/framed as HTML.
+    response.setHeader("Cache-Control", "no-store");
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    response.setHeader("X-Frame-Options", "DENY");
     try {
       if (path.equals("/api/v1/health") || path.startsWith("/api/v1/health?")) {
         filterChain.doFilter(request, response);
@@ -78,6 +94,15 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
       }
 
       String token = extractBearer(request);
+      if (token == null && cookieToken(request) != null) {
+        writeJson(
+            response,
+            401,
+            "unauthorized",
+            "The " + AGENT_TOKEN_COOKIE + " cookie is not accepted on cross-site browser requests;"
+                + " send Authorization: Bearer <token>");
+        return;
+      }
       if (token == null || !tokenService.matches(token)) {
         writeJson(response, 401, "unauthorized", "Missing or invalid Authorization Bearer token");
         return;
@@ -105,14 +130,63 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
 
   static String extractBearer(HttpServletRequest request) {
     String header = request.getHeader("Authorization");
-    if (header == null) {
-      return null;
-    }
-    if (header.regionMatches(true, 0, "Bearer ", 0, 7)) {
+    if (header != null && header.regionMatches(true, 0, "Bearer ", 0, 7)) {
       String t = header.substring(7).trim();
-      return t.isEmpty() ? null : t;
+      if (!t.isEmpty()) {
+        return t;
+      }
+    }
+    // Proxies (e.g. some Open OnDemand Apache setups) may strip Authorization.
+    String alt = request.getHeader(AGENT_TOKEN_HEADER);
+    if (alt != null) {
+      String t = alt.trim();
+      if (t.regionMatches(true, 0, "Bearer ", 0, 7)) {
+        t = t.substring(7).trim();
+      }
+      if (!t.isEmpty()) {
+        return t;
+      }
+    }
+    // Browsers attach cookies automatically, so a cookie token from another site would be CSRF.
+    return isCrossSiteBrowserRequest(request) ? null : cookieToken(request);
+  }
+
+  static String cookieToken(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie c : cookies) {
+        if (c != null && AGENT_TOKEN_COOKIE.equals(c.getName()) && c.getValue() != null) {
+          String t = c.getValue().trim();
+          if (!t.isEmpty()) {
+            return t;
+          }
+        }
+      }
     }
     return null;
+  }
+
+  /**
+   * True for a browser request initiated by another site: Fetch Metadata says so, or the Origin
+   * header names a different host than the one the request was sent to. curl/SDK clients send
+   * neither header.
+   */
+  static boolean isCrossSiteBrowserRequest(HttpServletRequest request) {
+    String site = request.getHeader("Sec-Fetch-Site");
+    if (site != null && !site.equalsIgnoreCase("same-origin") && !site.equalsIgnoreCase("none")) {
+      return true;
+    }
+    String origin = request.getHeader("Origin");
+    if (origin == null || origin.isBlank()) {
+      return false;
+    }
+    String host = request.getHeader("Host");
+    try {
+      String originHost = java.net.URI.create(origin.trim()).getRawAuthority();
+      return host == null || originHost == null || !originHost.equalsIgnoreCase(host.trim());
+    } catch (IllegalArgumentException e) {
+      return true;
+    }
   }
 
   static String normalizedPath(HttpServletRequest request) {

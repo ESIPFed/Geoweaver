@@ -114,4 +114,30 @@ class AgentApiTokenFilterTest {
     filter.doFilter(req, res, chain);
     assertThat(res.getStatus()).isEqualTo(200);
   }
+
+  @Test
+  void acceptsXGeoweaverAgentTokenWhenAuthorizationMissing() throws Exception {
+    String token = "gwt_ood_proxy_fallback_token_xxxx";
+    when(tokenService.matches(token)).thenReturn(true);
+    when(tokenService.fingerprint(token)).thenReturn("cafebabe0123");
+    MockHttpServletRequest req = new MockHttpServletRequest("GET", "/Geoweaver/api/v1/capabilities");
+    req.setContextPath("/Geoweaver");
+    req.addHeader(AgentApiTokenFilter.AGENT_TOKEN_HEADER, token);
+    MockHttpServletResponse res = new MockHttpServletResponse();
+    filter.doFilter(req, res, chain);
+    assertThat(res.getStatus()).isEqualTo(200);
+  }
+
+  @Test
+  void acceptsGwAgentBearerCookieWhenAuthorizationMissing() throws Exception {
+    String token = "gwt_ood_cookie_fallback_token_xxxx";
+    when(tokenService.matches(token)).thenReturn(true);
+    when(tokenService.fingerprint(token)).thenReturn("deadbeef9999");
+    MockHttpServletRequest req = new MockHttpServletRequest("GET", "/Geoweaver/api/v1/capabilities");
+    req.setContextPath("/Geoweaver");
+    req.setCookies(new jakarta.servlet.http.Cookie(AgentApiTokenFilter.AGENT_TOKEN_COOKIE, token));
+    MockHttpServletResponse res = new MockHttpServletResponse();
+    filter.doFilter(req, res, chain);
+    assertThat(res.getStatus()).isEqualTo(200);
+  }
 }
