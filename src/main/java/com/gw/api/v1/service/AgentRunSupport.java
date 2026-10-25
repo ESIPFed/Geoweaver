@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,6 +37,7 @@ public class AgentRunSupport {
   public static final int MAX_WAIT_SECONDS = 60;
   private static final long WAIT_POLL_MILLIS = 750;
   private static final long STEP_SETTLE_MILLIS = 5_000;
+  static final long ROW_FINISH_GRACE_MILLIS = 10_000;
 
   private final AgentApiProperties properties;
   private final HistoryRepository historyRepository;
@@ -43,6 +46,8 @@ public class AgentRunSupport {
   private final ProcessStatusCache processStatusCache;
   private final WorkflowRepository workflowRepository;
   private final EntityManager entityManager;
+  // historyId -> when the cache first reported a terminal status the row did not have yet.
+  private final Map<String, Long> cacheAheadSince = new ConcurrentHashMap<>();
 
   public AgentRunSupport(
       AgentApiProperties properties,
@@ -103,7 +108,9 @@ public class AgentRunSupport {
     }
     Optional<History> row = historyRepository.findById(historyId);
     if (row.isPresent()) {
-      return historyTool.getHistoryById(historyId);
+      // Read before getHistoryById: it overlays the cached status onto this same entity.
+      String rowStatus = row.get().getIndicator();
+      return holdUntilRowFinishes(historyTool.getHistoryById(historyId), rowStatus);
     }
     String cached = processStatusCache.getStatus(historyId);
     if (cached != null) {
@@ -113,6 +120,35 @@ public class AgentRunSupport {
       return h;
     }
     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Run not found");
+  }
+
+  /**
+   * GeoweaverProcessTask marks a process Done in the cache when the command returns, while
+   * LocalSessionOutput may still be saving the log. Until the row is final, report the row's
+   * status so an agent never sees Done with an empty log. After {@link #ROW_FINISH_GRACE_MILLIS}
+   * trust the cache, so a runner that died before saving cannot leave the run Running forever.
+   */
+  History holdUntilRowFinishes(History h, String rowStatus) {
+    String id = h.getHistory_id();
+    boolean cacheTerminal =
+        AgentExecutionStatuses.isTerminal(AgentExecutionStatuses.normalize(h.getIndicator()));
+    boolean rowTerminal =
+        AgentExecutionStatuses.isTerminal(AgentExecutionStatuses.normalize(rowStatus));
+    if (!cacheTerminal || rowTerminal || isWorkflowRun(h)) {
+      cacheAheadSince.remove(id);
+      return h;
+    }
+    long now = System.currentTimeMillis();
+    long since = cacheAheadSince.computeIfAbsent(id, k -> now);
+    if (now - since < ROW_FINISH_GRACE_MILLIS) {
+      h.setIndicator(BaseTool.isNull(rowStatus) ? ExecutionStatus.RUNNING : rowStatus);
+    }
+    return h;
+  }
+
+  private boolean isWorkflowRun(History h) {
+    return !BaseTool.isNull(h.getHistory_process())
+        && workflowRepository.existsById(h.getHistory_process());
   }
 
   public RunResponse toRunResponse(History h, Integer logLimit) {
@@ -129,9 +165,7 @@ public class AgentRunSupport {
     String log = h.getHistory_output() == null ? "" : h.getHistory_output();
     int max = logLimit == null ? DEFAULT_LOG_LIMIT : Math.max(0, logLimit);
     String[] tail = tail(log, max);
-    boolean workflowRun =
-        !BaseTool.isNull(h.getHistory_process())
-            && workflowRepository.existsById(h.getHistory_process());
+    boolean workflowRun = isWorkflowRun(h);
     List<RunStep> steps = workflowRun ? steps(h, includeStepLogs) : null;
     String hostId = h.getHost_id();
     if (hostId != null && hostId.endsWith(";")) {
