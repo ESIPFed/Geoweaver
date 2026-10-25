@@ -90,4 +90,21 @@ class AgentRunSupportRowFinishTest {
 
     assertThat(support.getRun("h1", null).terminal()).isTrue();
   }
+
+  @Test
+  @DisplayName("workflow marked Done while a step's row says Failed -> report Failed")
+  void workflowWithFailedStepIsFailed() {
+    when(workflowRepository.existsById("p1")).thenReturn(true);
+    row.setHistory_input("bad-f1;");
+    row.setHistory_output("c1;");
+    row.setIndicator(ExecutionStatus.DONE);
+    cacheSays(ExecutionStatus.DONE);
+    History step = new History();
+    step.setHistory_id("c1");
+    step.setIndicator(ExecutionStatus.FAILED);
+    when(historyRepository.findById("c1")).thenReturn(Optional.of(step));
+
+    assertThat(support.getRun("h1", null).status()).isEqualTo("Failed");
+    assertThat(support.getRun("h1", null).terminal()).isTrue();
+  }
 }

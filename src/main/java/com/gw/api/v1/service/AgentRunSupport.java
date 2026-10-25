@@ -276,6 +276,13 @@ public class AgentRunSupport {
     String[] tail = tail(log, max);
     boolean workflowRun = isWorkflowRun(h);
     List<RunStep> steps = workflowRun ? steps(h, includeStepLogs) : null;
+    // The engine can mark a workflow Done from a step's early Done before that step's exit code
+    // is saved as Failed; a failed step always means a failed run.
+    if (steps != null
+        && ExecutionStatus.DONE.equals(status)
+        && steps.stream().anyMatch(s -> ExecutionStatus.FAILED.equals(s.status()))) {
+      status = ExecutionStatus.FAILED;
+    }
     String hostId = h.getHost_id();
     if (hostId != null && hostId.endsWith(";")) {
       hostId = hostId.substring(0, hostId.length() - 1);
