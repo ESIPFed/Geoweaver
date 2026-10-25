@@ -11,7 +11,11 @@ import com.gw.api.v1.dto.RunResponse;
 import com.gw.api.v1.dto.RunStartRequest;
 import com.gw.api.v1.dto.RunStartResponse;
 import com.gw.database.HistoryRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.ProcessRepository;
+import com.gw.database.WorkflowRepository;
+import com.gw.jpa.Workflow;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
@@ -24,7 +28,9 @@ import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -51,6 +57,8 @@ public class AgentProcessService {
   private final AgentRunIdempotencyStore idempotencyStore;
   private final AgentRunRateLimiter rateLimiter;
   private final WorkspaceEventBroadcaster workspaceEvents;
+  private final WorkflowRepository workflowRepository;
+  private final ObjectMapper mapper = new ObjectMapper();
 
   public AgentProcessService(
       ProcessRepository processRepository,
@@ -60,7 +68,9 @@ public class AgentProcessService {
       AgentRunSupport runSupport,
       AgentRunIdempotencyStore idempotencyStore,
       AgentRunRateLimiter rateLimiter,
-      WorkspaceEventBroadcaster workspaceEvents) {
+      WorkspaceEventBroadcaster workspaceEvents,
+      WorkflowRepository workflowRepository) {
+    this.workflowRepository = workflowRepository;
     this.processRepository = processRepository;
     this.historyRepository = historyRepository;
     this.processTool = processTool;
@@ -217,8 +227,62 @@ public class AgentProcessService {
     return new RunStartResponse(historyId, status, false);
   }
 
+  /**
+   * Deletes a process. Refuses (409) while any workflow node references it so GUI workflows never
+   * silently break; history rows are kept.
+   */
+  public Map<String, Object> deleteProcess(String id) {
+    GWProcess p = requirePythonOrShellProcess(id);
+    List<String> usedBy = workflowsReferencing(id);
+    if (!usedBy.isEmpty()) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          "Process "
+              + id
+              + " is used by workflow(s) "
+              + String.join(", ", usedBy)
+              + ". Remove it from those workflows (PUT /api/v1/workflows/{id}) or delete them first.");
+    }
+    processTool.del(id);
+    String fp = AgentApiAuthContext.getTokenFingerprint();
+    logger.info("Agent API deleted process id={} fingerprint={}", id, fp);
+    workspaceEvents.publishAgent("process.deleted", "process", id, p.getName(), null, fp);
+    Map<String, Object> out = new LinkedHashMap<>();
+    out.put("id", id);
+    out.put("deleted", true);
+    return out;
+  }
+
+  private List<String> workflowsReferencing(String processId) {
+    List<String> out = new ArrayList<>();
+    for (Workflow w : workflowRepository.findAll()) {
+      if (BaseTool.isNull(w.getNodes())) {
+        continue;
+      }
+      try {
+        for (JsonNode n : mapper.readTree(w.getNodes())) {
+          if (n.path("id").asText("").split("-")[0].equals(processId)) {
+            out.add(w.getId());
+            break;
+          }
+        }
+      } catch (Exception e) {
+        // Unparseable legacy graph: fall back to a substring check so we never under-report.
+        if (w.getNodes().contains("\"" + processId + "-")) {
+          out.add(w.getId());
+        }
+      }
+    }
+    return out;
+  }
+
   public RunResponse getRun(String historyId, Integer logLimit) {
     return runSupport.getRun(historyId, logLimit);
+  }
+
+  public RunResponse getRun(
+      String historyId, Integer logLimit, int waitSeconds, boolean includeStepLogs) {
+    return runSupport.getRun(historyId, logLimit, waitSeconds, includeStepLogs);
   }
 
   public List<RunResponse> listRunsForProcess(String processId, Integer logLimit) {

@@ -28,9 +28,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +58,8 @@ import org.springframework.web.server.ResponseStatusException;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Tag(name = "Agent API", description = "JSON API for coding agents (Cursor/Codex/Claude Code)")
 public class AgentApiController {
+
+  private static final Logger logger = LoggerFactory.getLogger(AgentApiController.class);
 
   private final AgentApiProperties properties;
   private final AgentApiTokenService tokenService;
@@ -88,6 +96,7 @@ public class AgentApiController {
     body.put("apiVersion", "v1");
     body.put("apiEnabled", properties.isApiEnabled());
     body.put("allowLocalhostRuns", properties.isAllowLocalhostRuns());
+    body.put("allowDelete", properties.isAllowDelete());
     body.put("executionHost", AgentRunSupport.LOCALHOST_ID);
     body.put(
         "executionHostMeaning",
@@ -101,12 +110,15 @@ public class AgentApiController {
             "createProcess",
             "getProcess",
             "updateProcess",
+            "deleteProcess",
             "startProcessRun",
             "listWorkflows",
             "createWorkflow",
             "getWorkflow",
             "updateWorkflow",
+            "deleteWorkflow",
             "startWorkflowRun",
+            "listWorkflowRuns",
             "getRun",
             "listProcessRuns",
             "stopRun",
@@ -118,6 +130,23 @@ public class AgentApiController {
         "statuses",
         List.of("Done", "Failed", "Running", "Unknown", "Stopped", "Ready", "Skipped"));
     body.put("auth", "Authorization: Bearer <token>");
+    body.put("openApi", "/v3/api-docs/agent-api");
+    body.put(
+        "workflowGraph",
+        Map.of(
+            "nodes",
+            "JSON array (or JSON string) of {\"id\":\"{processId}-{suffix}\"}; title/x/y optional",
+            "edges",
+            "JSON array of {\"source\":\"nodeId\",\"target\":\"nodeId\"} (GUI object form also"
+                + " accepted)",
+            "semantics",
+            "A step starts after all upstream steps finish, even if one Failed. Check run.steps."));
+    body.put(
+        "waitForRun",
+        "GET /api/v1/runs/{historyId}?waitSeconds=1.."
+            + AgentRunSupport.MAX_WAIT_SECONDS
+            + " blocks until terminal; add includeStepLogs=true for per-step logs of workflow runs");
+    body.put("errors", "Every error is JSON {\"error\":code,\"message\":text}; never an HTML redirect");
     body.put(
         "remoteClients",
         "Bearer works from another computer if this HTTP port is reachable. "
@@ -254,6 +283,13 @@ public class AgentApiController {
         id, body == null ? new RunStartRequest(null, null, null, null) : body);
   }
 
+  @DeleteMapping("/processes/{id}")
+  @Operation(summary = "Delete a process (409 while a workflow uses it)")
+  public Map<String, Object> deleteProcess(@PathVariable("id") String id) {
+    requireDeleteAllowed();
+    return processService.deleteProcess(id);
+  }
+
   @GetMapping("/processes/{id}/runs")
   public List<RunResponse> listProcessRuns(
       @PathVariable("id") String id,
@@ -282,6 +318,28 @@ public class AgentApiController {
     return workflowService.updateWorkflow(id, body);
   }
 
+  @DeleteMapping("/workflows/{id}")
+  @Operation(summary = "Delete a workflow (processes and run history are kept)")
+  public Map<String, Object> deleteWorkflow(@PathVariable("id") String id) {
+    requireDeleteAllowed();
+    return workflowService.deleteWorkflow(id);
+  }
+
+  private void requireDeleteAllowed() {
+    if (!properties.isAllowDelete()) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN, "Agent deletes are disabled (geoweaver.agent.allow-delete=false)");
+    }
+  }
+
+  @GetMapping("/workflows/{id}/runs")
+  @Operation(summary = "Workflow run history, newest first (max 50), with per-step status")
+  public List<RunResponse> listWorkflowRuns(
+      @PathVariable("id") String id,
+      @RequestParam(value = "logLimit", required = false) Integer logLimit) {
+    return workflowService.listRuns(id, logLimit);
+  }
+
   @PostMapping("/workflows/{id}/runs")
   public RunStartResponse startWorkflowRun(
       @PathVariable("id") String id, @RequestBody(required = false) WorkflowRunRequest body) {
@@ -290,10 +348,16 @@ public class AgentApiController {
   }
 
   @GetMapping("/runs/{historyId}")
+  @Operation(
+      summary =
+          "Run detail + log. waitSeconds (0..60) blocks until terminal; workflow runs include steps")
   public RunResponse getRun(
       @PathVariable("historyId") String historyId,
-      @RequestParam(value = "logLimit", required = false) Integer logLimit) {
-    return processService.getRun(historyId, logLimit);
+      @RequestParam(value = "logLimit", required = false) Integer logLimit,
+      @RequestParam(value = "waitSeconds", required = false, defaultValue = "0") int waitSeconds,
+      @RequestParam(value = "includeStepLogs", required = false, defaultValue = "false")
+          boolean includeStepLogs) {
+    return processService.getRun(historyId, logLimit, waitSeconds, includeStepLogs);
   }
 
   @PostMapping("/runs/{historyId}/stop")
@@ -306,6 +370,54 @@ public class AgentApiController {
     // reverse proxy is known to strip client-supplied values (operators may tighten later).
     String addr = request.getRemoteAddr();
     return addr == null ? "unknown" : addr;
+  }
+
+  /** Unknown path or method under /api/v1: JSON 404 instead of the GUI error page. */
+  @RequestMapping("/**")
+  public ResponseEntity<AgentErrorResponse> unknownEndpoint(HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(
+            new AgentErrorResponse(
+                "not_found",
+                "No Agent API endpoint for "
+                    + request.getMethod()
+                    + " "
+                    + AgentApiTokenFilter.normalizedPath(request)
+                    + ". See GET /api/v1/capabilities or /v3/api-docs/agent-api"));
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<AgentErrorResponse> handleUnreadable(HttpMessageNotReadableException ex) {
+    Throwable cause = ex.getMostSpecificCause();
+    String detail = cause == null || cause.getMessage() == null ? "" : cause.getMessage();
+    int nl = detail.indexOf('\n');
+    if (nl > 0) {
+      detail = detail.substring(0, nl);
+    }
+    return ResponseEntity.badRequest()
+        .body(new AgentErrorResponse("bad_request", "Request body is not valid JSON for this endpoint: " + detail));
+  }
+
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+  public ResponseEntity<AgentErrorResponse> handleMediaType(HttpMediaTypeNotSupportedException ex) {
+    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+        .body(new AgentErrorResponse("unsupported_media_type", "Send Content-Type: application/json"));
+  }
+
+  @ExceptionHandler({
+    MethodArgumentTypeMismatchException.class,
+    MissingServletRequestParameterException.class
+  })
+  public ResponseEntity<AgentErrorResponse> handleBadParam(Exception ex) {
+    return ResponseEntity.badRequest().body(new AgentErrorResponse("bad_request", ex.getMessage()));
+  }
+
+  /** Last resort: log server-side, never leak stack traces or paths to the caller. */
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<AgentErrorResponse> handleUnexpected(Exception ex) {
+    logger.error("Agent API unexpected error", ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new AgentErrorResponse("internal_error", "Unexpected server error; see Geoweaver log"));
   }
 
   @ExceptionHandler(ResponseStatusException.class)
@@ -321,7 +433,9 @@ public class AgentApiController {
                     ? "not_found"
                     : status == HttpStatus.TOO_MANY_REQUESTS
                         ? "rate_limited"
-                        : status == HttpStatus.BAD_REQUEST ? "bad_request" : "error";
+                        : status == HttpStatus.BAD_REQUEST
+                            ? "bad_request"
+                            : status == HttpStatus.CONFLICT ? "conflict" : "error";
     return ResponseEntity.status(status).body(new AgentErrorResponse(code, msg));
   }
 }

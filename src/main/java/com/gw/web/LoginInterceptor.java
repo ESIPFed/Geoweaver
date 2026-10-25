@@ -66,6 +66,11 @@ public class LoginInterceptor implements HandlerInterceptor {
       return true;
     }
 
+    // Agent API OpenAPI schema only (exact path; the full /v3/api-docs stays behind login).
+    if (requestPath.equals("/v3/api-docs/agent-api")) {
+      return true;
+    }
+
     // One-time Agent API token copy page (loopback CLI reveal on port 8070).
     if (requestPath.startsWith("/agent-token-reveal/")) {
       return true;

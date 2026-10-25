@@ -7,7 +7,7 @@ description: >-
   GEOWEAVER_API_TOKEN are set, or the user wants Codex/Cursor/Claude Code to use
   a deployed Geoweaver endpoint like a human UI. Never start or stop the
   Geoweaver JVM — the operator runs the server; the agent only calls HTTP.
-version: 1.8.0
+version: 1.9.0
 ---
 
 # Geoweaver Agent API skill
@@ -45,11 +45,14 @@ Before coding a “big” goal (screening, forecasting pipelines, multi-source r
 3. **Pass data on the Geoweaver host** (`hostId=100001`) via a shared directory (for example `~/gw-pipeline/<run-name>/`). Geoweaver does **not** auto-pipe stdout from one process into the next. Write JSON/files in an upstream step; read them downstream. Print a clear `HANDOFF_PATH=...` line in logs.
 4. **Do not** fix the analysis universe in the analyze step when a prior discover step can choose it dynamically.
 5. Node `id` format remains `{processId}-{suffix}` (example: `abc123-n0001`).
-6. Edge JSON shape (stringified array), copy this pattern:
+6. Send `nodes` and `edges` as plain JSON arrays. `title`/`x`/`y` are optional (filled from the process name and a left-to-right layout). Edge shorthand is fine:
 
 ```json
-[{"source":{"title":"step-a","id":"PROC_A-n0001","x":80,"y":120},"target":{"title":"step-b","id":"PROC_B-n0002","x":320,"y":120}}]
+{"name":"two-step","nodes":[{"id":"PROC_A-n0001"},{"id":"PROC_B-n0002"}],
+ "edges":[{"source":"PROC_A-n0001","target":"PROC_B-n0002"}]}
 ```
+
+The older stringified GUI form (`"nodes":"[...]"`, edges with full `source`/`target` objects) is still accepted. Unknown process ids, bad node ids, and edges to missing nodes fail at create time with a 400 naming the bad entry.
 
 One-step demos may still use `"edges":"[]"`. Real multi-stage work must use real edges.
 
@@ -197,13 +200,13 @@ curl -sS -X POST "$BASE/processes/PROCESS_ID/runs" -H "$H" -H "Content-Type: app
 
 New `clientRunKey` after code edits. Same key → `reusedExisting: true`.
 
-### 4) Poll
+### 4) Wait for the result (one call)
 
 ```bash
-curl -sS "$BASE/runs/HISTORY_ID?logLimit=200000" -H "$H"
+curl -sS "$BASE/runs/HISTORY_ID?waitSeconds=60&logLimit=200000" -H "$H"
 ```
 
-Backoff 1s → 2s → 5s until `terminal` is true. HTTP **404** → stop. `truncated: true` → partial log.
+`waitSeconds` (0..60) blocks until `terminal` is true or the wait ends; repeat the same call if still not terminal. HTTP **404** → stop. `truncated: true` → partial log.
 
 ### 5) Stop
 
@@ -226,13 +229,26 @@ curl -sS -X POST "$BASE/workflows/WORKFLOW_ID/runs" -H "$H" -H "Content-Type: ap
   -d '{"mode":"one","clientRunKey":"wf-1"}'
 ```
 
-**Reading workflow output:** Workflow history can stay `Running` / non-terminal even after the step finished. Always also poll **each** process:
+**Reading workflow output:** one call gives every step's status and log tail:
 
 ```bash
-curl -sS "$BASE/processes/PROCESS_ID/runs?logLimit=200000" -H "$H"
+curl -sS "$BASE/runs/WORKFLOW_HISTORY_ID?waitSeconds=60&includeStepLogs=true" -H "$H"
 ```
 
-Use each process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. That log is the trustworthy step stdout. For multi-step graphs, wait until **every** step you care about is terminal (or until the workflow history is terminal **and** step logs show Done).
+The response has `workflowRun: true` and `steps: [{nodeId, processId, historyId, status, terminal, log}]`. A step starts after its upstream steps finish **even if one Failed**, so check every step's `status`, not just the workflow's. Use `GET /runs/{step.historyId}?logLimit=200000` for a full step log. History: `GET /workflows/{id}/runs`.
+
+### 7) Clean up what you created for experiments
+
+```bash
+curl -sS -X DELETE "$BASE/workflows/WORKFLOW_ID" -H "$H"
+curl -sS -X DELETE "$BASE/processes/PROCESS_ID" -H "$H"   # 409 while a workflow uses it
+```
+
+Only delete objects you created in this task. Never delete a human's processes or workflows.
+
+### Errors
+
+Every error is JSON `{"error": code, "message": text}` with a real status code (400 `bad_request`, 401, 403, 404 `not_found`, 409 `conflict`, 415, 429, 500 `internal_error`, 503). Read `message`: it says what to fix. Schema: `GET $GEOWEAVER_BASE_URL/v3/api-docs/agent-api` (no token needed).
 
 ## Failure map
 
@@ -246,14 +262,16 @@ Use each process run’s `log` when `status` is `Done` / `Failed` / `Stopped`. T
 | 429 on `/tokens` | Wait and retry |
 | 403 on runs | Need `allow-localhost-runs=true` on server **or** correct `hostPassword` |
 | 400 remote host / bad lang | Use `100001` + python/shell only |
-| 404 | Bad id; do not poll forever |
-| Workflow history stuck Running | Read `GET /processes/{id}/runs` for step Done + log |
+| 404 | Bad id or path; `message` names it; do not poll forever |
+| 400 on workflow create/update | `message` names the bad node/edge; fix ids from `GET /processes` |
+| 409 on process delete | `message` lists workflows that use it; remove from those first |
+| Workflow Failed | Find the step with `status: Failed` in `steps`; read its `log` |
 
 ## Act like a human
 
 1. Use only `/api/v1`. Never start the server yourself.
 2. Split complicated goals into small processes; link them with sequential or parallel edges; hand off via host files.
-3. Wait for terminal status on each **process** run before claiming success for that step.
+3. Wait (`waitSeconds=60`) for terminal status; for workflows check every entry in `steps` before claiming success.
 4. On `Failed`, read `log`, fix code via `PUT`, re-run with a new `clientRunKey`.
 5. Do not invent remote SSH or Jupyter endpoints on `/api/v1`.
 6. Always write a **local checkpoint** under `~/Documents/Geoweaver-checkpoints/` after create / edit / successful run (include **all** process ids in the workflow).

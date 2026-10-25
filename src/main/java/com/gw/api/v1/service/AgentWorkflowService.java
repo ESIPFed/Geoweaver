@@ -3,12 +3,15 @@ package com.gw.api.v1.service;
 import com.gw.api.v1.AgentApiAuthContext;
 import com.gw.api.v1.AgentExecutionStatuses;
 import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.gw.api.v1.dto.RunResponse;
 import com.gw.api.v1.dto.RunStartResponse;
 import com.gw.api.v1.dto.WorkflowCreateRequest;
 import com.gw.api.v1.dto.WorkflowResponse;
 import com.gw.api.v1.dto.WorkflowRunRequest;
 import com.gw.api.v1.dto.WorkflowSummary;
 import com.gw.api.v1.dto.WorkflowUpdateRequest;
+import com.gw.database.HistoryRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
@@ -18,6 +21,7 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,8 @@ public class AgentWorkflowService {
   private final AgentRunIdempotencyStore idempotencyStore;
   private final AgentRunRateLimiter rateLimiter;
   private final WorkspaceEventBroadcaster workspaceEvents;
+  private final WorkflowGraphValidator graphValidator;
+  private final HistoryRepository historyRepository;
 
   public AgentWorkflowService(
       WorkflowRepository workflowRepository,
@@ -43,7 +49,11 @@ public class AgentWorkflowService {
       AgentRunSupport runSupport,
       AgentRunIdempotencyStore idempotencyStore,
       AgentRunRateLimiter rateLimiter,
-      WorkspaceEventBroadcaster workspaceEvents) {
+      WorkspaceEventBroadcaster workspaceEvents,
+      WorkflowGraphValidator graphValidator,
+      HistoryRepository historyRepository) {
+    this.graphValidator = graphValidator;
+    this.historyRepository = historyRepository;
     this.workflowRepository = workflowRepository;
     this.workflowTool = workflowTool;
     this.runSupport = runSupport;
@@ -65,11 +75,11 @@ public class AgentWorkflowService {
   }
 
   public WorkflowResponse createWorkflow(WorkflowCreateRequest req) {
-    if (req == null || BaseTool.isNull(req.name()) || BaseTool.isNull(req.nodes())) {
+    if (req == null || BaseTool.isNull(req.name()) || req.nodes() == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name and nodes are required");
     }
-    String edges = req.edges() == null ? "[]" : req.edges();
-    String id = workflowTool.add(req.name(), req.nodes(), edges, "111111");
+    WorkflowGraphValidator.Graph graph = graphValidator.normalize(req.nodes(), req.edges());
+    String id = workflowTool.add(req.name(), graph.nodes(), graph.edges(), "111111");
     Workflow w = requireWorkflow(id);
     if (!BaseTool.isNull(req.description())) {
       w.setDescription(req.description());
@@ -97,10 +107,12 @@ public class AgentWorkflowService {
     if (!BaseTool.isNull(req.description())) {
       w.setDescription(req.description());
     }
-    if (!BaseTool.isNull(req.nodes()) || !BaseTool.isNull(req.edges())) {
-      String nodes = BaseTool.isNull(req.nodes()) ? w.getNodes() : req.nodes();
-      String edges = BaseTool.isNull(req.edges()) ? w.getEdges() : req.edges();
-      workflowTool.update(id, nodes, edges);
+    if (req.nodes() != null || req.edges() != null) {
+      WorkflowGraphValidator.Graph graph =
+          graphValidator.normalize(
+              req.nodes() != null ? req.nodes() : TextNode.valueOf(w.getNodes()),
+              req.edges() != null ? req.edges() : TextNode.valueOf(w.getEdges()));
+      workflowTool.update(id, graph.nodes(), graph.edges());
       w = requireWorkflow(id);
     } else {
       workflowRepository.save(w);
@@ -184,6 +196,32 @@ public class AgentWorkflowService {
         workflowId,
         fp);
     return new RunStartResponse(historyId, status, false);
+  }
+
+  public Map<String, Object> deleteWorkflow(String id) {
+    Workflow w = requireWorkflow(id);
+    workflowTool.del(id);
+    String fp = AgentApiAuthContext.getTokenFingerprint();
+    logger.info("Agent API deleted workflow id={} fingerprint={}", id, fp);
+    workspaceEvents.publishAgent("workflow.deleted", "workflow", id, w.getName(), id, fp);
+    return Map.of("id", id, "deleted", true);
+  }
+
+  public List<RunResponse> listRuns(String workflowId, Integer logLimit) {
+    requireWorkflow(workflowId);
+    List<RunResponse> out = new ArrayList<>();
+    List<History> histories = historyRepository.findByWorkflowId(workflowId);
+    if (histories == null) {
+      return out;
+    }
+    int limit = logLimit == null ? 0 : Math.min(logLimit, 4000);
+    for (History h : histories) {
+      out.add(runSupport.toRunResponse(h, limit, false));
+      if (out.size() >= 50) {
+        break;
+      }
+    }
+    return out;
   }
 
   private Workflow requireWorkflow(String id) {

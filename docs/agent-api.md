@@ -12,6 +12,28 @@ Example: `https://gw.example.org/Geoweaver/api/v1`
 
 **Important:** `hostId=100001` means “run on the **Geoweaver server**” (that machine’s local CPU/files). It does **not** mean “run on the Codex laptop.” Remote Codex → public Geoweaver URL → jobs execute on the server.
 
+## Remote deployment quickstart (operator → AI agent in 5 steps)
+
+1. **Run Geoweaver on the server** (JDK 17+), either the jar or Docker:
+
+```bash
+# jar: binds all interfaces on 8070 (Agent API defaults are on; risk ack is on in the shipped properties)
+java -jar geoweaver.jar resetpassword -p '<gui-password>'   # or read the random one from the first-start log
+GEOWEAVER_PORT=8070 java -jar geoweaver.jar
+
+# Docker (build from repo root after `mvn -DskipTests package`)
+docker build -t geoweaver .
+docker run -d -p 8070:8070 -e GEOWEAVER_PASSWORD='<gui-password>' \
+  -v geoweaver-home:/home/marsvegan --name geoweaver geoweaver
+```
+
+Put HTTPS in front (reverse proxy to `http://127.0.0.1:8070/Geoweaver/`) for anything beyond a trusted network.
+
+2. **Check reachability from the agent machine:** `curl -sS "$GEOWEAVER_BASE_URL/api/v1/health"` → `{"status":"up"}`.
+3. **Mint a token once** (GUI password, never in chat or git): `curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" -H 'Content-Type: application/json' -d '{"hostPassword":"…","ttlDays":30}'` → store `token` in the agent's secret store as `GEOWEAVER_API_TOKEN`.
+4. **Point the agent at the docs:** give it `GEOWEAVER_BASE_URL` + the token, and the skill `.cursor/skills/geoweaver-api-agent/SKILL.md` (or let it read `GET /api/v1/capabilities` and the schema at `GET /v3/api-docs/agent-api`, which needs no token).
+5. **The agent loop:** create processes → create a workflow with array `nodes`/`edges` → `POST …/runs` → `GET /runs/{id}?waitSeconds=60&includeStepLogs=true` → fix the failing step with `PUT` → re-run → clean up with `DELETE`.
+
 ## Security model
 
 **Risk callout:** By default the Agent API is **enabled**. A leaked Bearer token is full Agent API access (create/edit python|shell processes and workflows; start server-local runs). Prefer HTTPS. Harden with `geoweaver.agent.api-enabled=false` and revoke tokens. On a network-reachable JVM bind you must also set `geoweaver.agent.acknowledge-network-risk=true` or Geoweaver refuses to start.
@@ -133,6 +155,7 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
 | `geoweaver.agent.allow-non-loopback` | `true` | Allow Agent API when JVM bind is not loopback (still needs risk ack) |
 | `geoweaver.agent.acknowledge-network-risk` | `false` | Required with non-loopback bind or process refuses to start |
 | `geoweaver.agent.workspace-events-enabled` | `true` | Fan-out create/edit events to open GUI browsers |
+| `geoweaver.agent.allow-delete` | `true` | Agents may `DELETE` processes/workflows; `false` → 403 (edit/run unaffected) |
 | `geoweaver.agent.api-token-file` | `~/gw-workspace/.agent_api_token` | Leftover file path only: import hash into DB then delete. Not the live store |
 | `geoweaver.agent.token-ttl-days` | `30` | Default Bearer token lifetime in days |
 | `geoweaver.agent.token-max-ttl-days` | `180` | Max lifetime (hard-capped at 180 / six months) |
@@ -149,18 +172,53 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
 | DELETE | `/tokens/{fingerprint}` | Revoke one token (Bearer) |
 | GET | `/capabilities` | What agents may call |
 | GET/POST | `/processes` | Process list / create (python\|shell) |
-| GET/PUT | `/processes/{id}` | Open / save process |
+| GET/PUT/DELETE | `/processes/{id}` | Open / save / delete process (DELETE → 409 while a workflow uses it) |
 | POST | `/processes/{id}/runs` | Run on server local host |
 | GET | `/processes/{id}/runs` | Process history list |
 | GET/POST | `/workflows` | Workflow list / create |
-| GET/PUT | `/workflows/{id}` | Open / save workflow graph |
+| GET/PUT/DELETE | `/workflows/{id}` | Open / save / delete workflow graph (processes and history kept) |
 | POST | `/workflows/{id}/runs` | Run workflow on server local host |
-| GET | `/runs/{historyId}` | History detail + log |
+| GET | `/workflows/{id}/runs` | Workflow history (newest first, max 50) with per-step status |
+| GET | `/runs/{historyId}` | History detail + log. `waitSeconds=0..60` blocks until terminal; `includeStepLogs=true` adds step log tails |
 | POST | `/runs/{historyId}/stop` | Stop |
 
 Unknown history → **404**. Terminal statuses: Done, Failed, Stopped, Skipped.
 
-Workflow node ids: `{processId}-{suffix}` (same as the UI).
+Machine-readable schema (no token): `GET {GEOWEAVER_BASE_URL}/v3/api-docs/agent-api`.
+
+### Errors
+
+Every `/api/v1` error is JSON `{"error":"<code>","message":"<what to fix>"}` with a real status: 400 `bad_request` (including malformed JSON), 401 `unauthorized`, 403 `forbidden`, 404 `not_found` (also unknown paths/methods), 409 `conflict`, 415 `unsupported_media_type`, 429 `rate_limited`, 500 `internal_error` (details only in the server log), 503 `api_disabled`. The API never answers with an HTML login redirect.
+
+### Workflow graph
+
+`nodes` and `edges` may be JSON arrays (preferred) or JSON-encoded strings (the GUI storage form).
+
+```json
+{
+  "name": "discover-then-analyze",
+  "nodes": [{"id": "ab12cd-s1"}, {"id": "ef34gh-s2"}],
+  "edges": [{"source": "ab12cd-s1", "target": "ef34gh-s2"}]
+}
+```
+
+- Node `id` is `{processId}-{suffix}` (same as the UI); the process must exist. Suffixes make ids unique, so one process can appear twice.
+- `title`, `x`, `y` are optional; Geoweaver fills them so the GUI canvas renders the graph.
+- Edges accept `"source":"nodeId"` or the GUI form `"source":{"id":"nodeId",…}`; both are stored in GUI form.
+- Bad JSON, unknown processes, malformed ids, duplicate ids, self-loops, and edges to missing nodes → 400 naming the entry.
+- **Semantics:** a step starts once all its upstream steps finish, **even if one failed**. Geoweaver does not pipe stdout between steps; pass data through files on the server.
+
+### Workflow run status
+
+`GET /runs/{workflowHistoryId}` returns `workflowRun: true` and `steps`:
+
+```json
+{"status":"Failed","terminal":true,"workflowRun":true,
+ "steps":[{"nodeId":"ab12cd-s1","processId":"ab12cd","historyId":"x1…","status":"Failed","terminal":true,"log":"Traceback …"},
+          {"nodeId":"ef34gh-s2","processId":"ef34gh","historyId":"y2…","status":"Done","terminal":true,"log":"…"}]}
+```
+
+`log` per step is included only with `includeStepLogs=true` (last 20,000 characters). With `waitSeconds`, the call returns once the workflow and every step row are final.
 
 ## Codex / Cursor
 

@@ -28,6 +28,9 @@ public class AgentApiProperties {
   @Value("${geoweaver.agent.workspace-events-enabled:true}")
   private boolean workspaceEventsEnabled;
 
+  @Value("${geoweaver.agent.allow-delete:true}")
+  private boolean allowDelete;
+
   @Value("${geoweaver.agent.api-token-file:${user.home}/gw-workspace/.agent_api_token}")
   private String apiTokenFile;
 
@@ -70,6 +73,11 @@ public class AgentApiProperties {
 
   public boolean isWorkspaceEventsEnabled() {
     return workspaceEventsEnabled;
+  }
+
+  /** When false, DELETE on processes/workflows returns 403 (create/edit/run still allowed). */
+  public boolean isAllowDelete() {
+    return allowDelete;
   }
 
   public String getApiTokenFile() {

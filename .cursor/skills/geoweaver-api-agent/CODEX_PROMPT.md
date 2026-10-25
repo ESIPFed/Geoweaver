@@ -41,7 +41,7 @@ Playbook: `.cursor/skills/geoweaver-api-agent/SKILL.md`
 4. Process languages: **python** or **shell** only.
 5. Runs use `hostId=100001` = **the Geoweaver server host** (not your laptop).
 6. Never print the full token or host password.
-7. After starting a run, poll until terminal. For **workflows**, also poll `GET /processes/{id}/runs` — workflow history may stay `Running` after the step is `Done`; trust the process run log for stdout.
+7. After starting a run, call `GET /api/v1/runs/{historyId}?waitSeconds=60` until `terminal` is true. For **workflows** add `includeStepLogs=true` and check every entry in `steps` (a step still runs after an upstream failure).
 8. Unique `clientRunKey` per logical job; new key after code edits.
 9. First call `GET .../health` then `GET .../capabilities`.
 10. After create / edit / successful run: always download a local checkpoint under
@@ -62,7 +62,8 @@ Playbook: `.cursor/skills/geoweaver-api-agent/SKILL.md`
 | Run process | `POST /api/v1/processes/{id}/runs` `{"hostId":"100001","clientRunKey":"..."}` |
 | Workflows | `GET\|POST /api/v1/workflows` · `GET\|PUT /api/v1/workflows/{id}` |
 | Run workflow | `POST /api/v1/workflows/{id}/runs` `{"mode":"one","clientRunKey":"..."}` |
-| Poll / stop | `GET /api/v1/runs/{historyId}` · `POST /api/v1/runs/{historyId}/stop` |
+| Wait / stop | `GET /api/v1/runs/{historyId}?waitSeconds=60[&includeStepLogs=true]` · `POST /api/v1/runs/{historyId}/stop` |
+| Clean up | `DELETE /api/v1/workflows/{id}` · `DELETE /api/v1/processes/{id}` (409 while used) · `GET /api/v1/workflows/{id}/runs` |
 | Process history list | `GET /api/v1/processes/{id}/runs` (best place for step stdout) |
 
 Workflow node `id`: `{processId}-{suffix}`. Trivial one-node demos may use `"edges":"[]"`.
