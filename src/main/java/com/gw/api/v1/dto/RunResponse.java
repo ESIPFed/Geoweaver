@@ -19,4 +19,5 @@ public record RunResponse(
     String log,
     boolean truncated,
     boolean workflowRun,
-    @JsonInclude(JsonInclude.Include.NON_NULL) List<RunStep> steps) {}
+    @JsonInclude(JsonInclude.Include.NON_NULL) List<RunStep> steps,
+    @JsonInclude(JsonInclude.Include.NON_NULL) String notes) {}

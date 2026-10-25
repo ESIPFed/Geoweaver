@@ -28,17 +28,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,8 +51,6 @@ import org.springframework.web.server.ResponseStatusException;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Tag(name = "Agent API", description = "JSON API for coding agents (Cursor/Codex/Claude Code)")
 public class AgentApiController {
-
-  private static final Logger logger = LoggerFactory.getLogger(AgentApiController.class);
 
   private final AgentApiProperties properties;
   private final AgentApiTokenService tokenService;
@@ -97,12 +88,15 @@ public class AgentApiController {
     body.put("apiEnabled", properties.isApiEnabled());
     body.put("allowLocalhostRuns", properties.isAllowLocalhostRuns());
     body.put("allowDelete", properties.isAllowDelete());
+    body.put("allowRemoteHosts", properties.isAllowRemoteHosts());
     body.put("executionHost", AgentRunSupport.LOCALHOST_ID);
     body.put(
         "executionHostMeaning",
         "hostId 100001 is the machine where Geoweaver is running (server local disk/CPU), "
-            + "not the coding agent's laptop. Works the same for public HTTPS base URLs.");
-    body.put("processLanguages", List.of("python", "shell"));
+            + "not the coding agent's laptop. Other hostIds are SSH servers from GET /api/v1/hosts; "
+            + "send their SSH password as hostPassword with each run (never stored).");
+    body.put("processLanguages", List.of("python", "shell", "builtin"));
+    body.put("hostTypes", List.of("ssh", "jupyter", "jupyterhub", "jupyterlab", "gee"));
     body.put(
         "operations",
         List.of(
@@ -112,6 +106,7 @@ public class AgentApiController {
             "updateProcess",
             "deleteProcess",
             "startProcessRun",
+            "listProcessRuns",
             "listWorkflows",
             "createWorkflow",
             "getWorkflow",
@@ -119,9 +114,26 @@ public class AgentApiController {
             "deleteWorkflow",
             "startWorkflowRun",
             "listWorkflowRuns",
+            "skipWorkflowStep",
+            "listCheckpoints",
+            "restoreCheckpoint",
+            "exportWorkflow",
+            "importWorkflow",
+            "listHosts",
+            "createHost",
+            "getHost",
+            "updateHost",
+            "deleteHost",
+            "listEnvironments",
+            "scanEnvironments",
+            "listRuns",
             "getRun",
-            "listProcessRuns",
             "stopRun",
+            "deleteRun",
+            "deleteRuns",
+            "setRunNotes",
+            "listResults",
+            "downloadResult",
             "createTokenWithLocalhostPassword",
             "listTokens",
             "revokeToken"));
@@ -140,7 +152,10 @@ public class AgentApiController {
             "JSON array of {\"source\":\"nodeId\",\"target\":\"nodeId\"} (GUI object form also"
                 + " accepted)",
             "semantics",
-            "A step starts after all upstream steps finish, even if one Failed. Check run.steps."));
+            "A step starts after all upstream steps finish, even if one Failed. Check run.steps.",
+            "hosts",
+            "POST /workflows/{id}/runs {hostId, hostPassword} runs every step there; nodeHosts"
+                + " {nodeId:{hostId,envId}} + hostPasswords {hostId:password} spread steps over hosts"));
     body.put(
         "waitForRun",
         "GET /api/v1/runs/{historyId}?waitSeconds=1.."
@@ -166,8 +181,8 @@ public class AgentApiController {
     body.put("tokenStoredInDatabase", tokenService.hasActiveToken());
     body.put(
         "note",
-        "Python/Shell and workflows on the Geoweaver host only. Set GEOWEAVER_BASE_URL to this "
-            + "server's public or private URL (including /Geoweaver). Remote SSH hosts are not exposed.");
+        "Set GEOWEAVER_BASE_URL to this server's URL including /Geoweaver; use HTTPS when it"
+            + " crosses a network. A token can run code on this server: treat it like an SSH key.");
     return body;
   }
 
@@ -239,12 +254,7 @@ public class AgentApiController {
   }
 
   static void requireLoopback(HttpServletRequest request) {
-    String addr = request.getRemoteAddr();
-    if (addr == null
-        || !(addr.equals("127.0.0.1")
-            || addr.equals("::1")
-            || addr.equals("https://example.net/id/garnet")
-            || addr.equals("localhost"))) {
+    if (!AgentApiProperties.isLoopbackAddress(request.getRemoteAddr())) {
       throw new ResponseStatusException(
           HttpStatus.FORBIDDEN, "Token reveal sessions are loopback-only");
     }
@@ -256,8 +266,9 @@ public class AgentApiController {
   }
 
   @GetMapping("/processes")
-  public List<ProcessSummary> processes() {
-    return processService.listProcesses();
+  @Operation(summary = "List python/shell/builtin processes; q filters by id, name or description")
+  public List<ProcessSummary> processes(@RequestParam(value = "q", required = false) String q) {
+    return processService.listProcesses(q);
   }
 
   @PostMapping("/processes")
@@ -286,7 +297,7 @@ public class AgentApiController {
   @DeleteMapping("/processes/{id}")
   @Operation(summary = "Delete a process (409 while a workflow uses it)")
   public Map<String, Object> deleteProcess(@PathVariable("id") String id) {
-    requireDeleteAllowed();
+    requireDeleteAllowed(properties);
     return processService.deleteProcess(id);
   }
 
@@ -298,8 +309,9 @@ public class AgentApiController {
   }
 
   @GetMapping("/workflows")
-  public List<WorkflowSummary> workflows() {
-    return workflowService.listWorkflows();
+  @Operation(summary = "List workflows; q filters by id, name or description")
+  public List<WorkflowSummary> workflows(@RequestParam(value = "q", required = false) String q) {
+    return workflowService.listWorkflows(q);
   }
 
   @PostMapping("/workflows")
@@ -321,11 +333,11 @@ public class AgentApiController {
   @DeleteMapping("/workflows/{id}")
   @Operation(summary = "Delete a workflow (processes and run history are kept)")
   public Map<String, Object> deleteWorkflow(@PathVariable("id") String id) {
-    requireDeleteAllowed();
+    requireDeleteAllowed(properties);
     return workflowService.deleteWorkflow(id);
   }
 
-  private void requireDeleteAllowed() {
+  static void requireDeleteAllowed(AgentApiProperties properties) {
     if (!properties.isAllowDelete()) {
       throw new ResponseStatusException(
           HttpStatus.FORBIDDEN, "Agent deletes are disabled (geoweaver.agent.allow-delete=false)");
@@ -344,7 +356,7 @@ public class AgentApiController {
   public RunStartResponse startWorkflowRun(
       @PathVariable("id") String id, @RequestBody(required = false) WorkflowRunRequest body) {
     return workflowService.startRun(
-        id, body == null ? new WorkflowRunRequest(null, null, null) : body);
+        id, body == null ? WorkflowRunRequest.empty() : body);
   }
 
   @GetMapping("/runs/{historyId}")
@@ -384,58 +396,5 @@ public class AgentApiController {
                     + " "
                     + AgentApiTokenFilter.normalizedPath(request)
                     + ". See GET /api/v1/capabilities or /v3/api-docs/agent-api"));
-  }
-
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<AgentErrorResponse> handleUnreadable(HttpMessageNotReadableException ex) {
-    Throwable cause = ex.getMostSpecificCause();
-    String detail = cause == null || cause.getMessage() == null ? "" : cause.getMessage();
-    int nl = detail.indexOf('\n');
-    if (nl > 0) {
-      detail = detail.substring(0, nl);
-    }
-    return ResponseEntity.badRequest()
-        .body(new AgentErrorResponse("bad_request", "Request body is not valid JSON for this endpoint: " + detail));
-  }
-
-  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-  public ResponseEntity<AgentErrorResponse> handleMediaType(HttpMediaTypeNotSupportedException ex) {
-    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-        .body(new AgentErrorResponse("unsupported_media_type", "Send Content-Type: application/json"));
-  }
-
-  @ExceptionHandler({
-    MethodArgumentTypeMismatchException.class,
-    MissingServletRequestParameterException.class
-  })
-  public ResponseEntity<AgentErrorResponse> handleBadParam(Exception ex) {
-    return ResponseEntity.badRequest().body(new AgentErrorResponse("bad_request", ex.getMessage()));
-  }
-
-  /** Last resort: log server-side, never leak stack traces or paths to the caller. */
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<AgentErrorResponse> handleUnexpected(Exception ex) {
-    logger.error("Agent API unexpected error", ex);
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(new AgentErrorResponse("internal_error", "Unexpected server error; see Geoweaver log"));
-  }
-
-  @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<AgentErrorResponse> handleStatus(ResponseStatusException ex) {
-    HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
-    String msg = ex.getReason() == null ? status.getReasonPhrase() : ex.getReason();
-    String code =
-        status == HttpStatus.UNAUTHORIZED
-            ? "unauthorized"
-            : status == HttpStatus.FORBIDDEN
-                ? "forbidden"
-                : status == HttpStatus.NOT_FOUND
-                    ? "not_found"
-                    : status == HttpStatus.TOO_MANY_REQUESTS
-                        ? "rate_limited"
-                        : status == HttpStatus.BAD_REQUEST
-                            ? "bad_request"
-                            : status == HttpStatus.CONFLICT ? "conflict" : "error";
-    return ResponseEntity.status(status).body(new AgentErrorResponse(code, msg));
   }
 }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgentTokenCreateRateLimiter {
 
+  private static final long WINDOW_MS = 60_000L;
+
   private final AgentApiProperties properties;
   private final ConcurrentHashMap<String, Deque<Long>> windows = new ConcurrentHashMap<>();
 
@@ -20,15 +22,28 @@ public class AgentTokenCreateRateLimiter {
     this.properties = properties;
   }
 
-  /** @return true if allowed, false if over limit */
+  private static final String GLOBAL_KEY = "\u0000global";
+  private static final int MAX_TRACKED_CLIENTS = 10_000;
+
+  /**
+   * @return true if allowed, false if over the per-IP or the all-clients limit. The global cap
+   *     stops a guess spread across many source addresses.
+   */
   public boolean tryAcquire(String clientKey) {
-    int limit = Math.max(1, properties.getTokenCreateRateLimitPerMinute());
-    long now = System.currentTimeMillis();
-    long windowMs = 60_000L;
     String key = clientKey == null || clientKey.isBlank() ? "unknown" : clientKey;
+    if (windows.size() > MAX_TRACKED_CLIENTS) {
+      long now = System.currentTimeMillis();
+      windows.entrySet().removeIf(e -> isIdle(e.getValue(), now));
+    }
+    return acquire(key, Math.max(1, properties.getTokenCreateRateLimitPerMinute()))
+        && acquire(GLOBAL_KEY, Math.max(1, properties.getTokenCreateGlobalRateLimitPerMinute()));
+  }
+
+  private boolean acquire(String key, int limit) {
+    long now = System.currentTimeMillis();
     Deque<Long> q = windows.computeIfAbsent(key, k -> new ArrayDeque<>());
     synchronized (q) {
-      while (!q.isEmpty() && now - q.peekFirst() > windowMs) {
+      while (!q.isEmpty() && now - q.peekFirst() > WINDOW_MS) {
         q.pollFirst();
       }
       if (q.size() >= limit) {
@@ -36,6 +51,12 @@ public class AgentTokenCreateRateLimiter {
       }
       q.addLast(now);
       return true;
+    }
+  }
+
+  private static boolean isIdle(Deque<Long> q, long now) {
+    synchronized (q) {
+      return q.isEmpty() || now - q.peekLast() > WINDOW_MS;
     }
   }
 }

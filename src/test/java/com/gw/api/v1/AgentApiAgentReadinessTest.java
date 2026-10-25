@@ -27,7 +27,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
 /**
- * CHG-0013: what a remote coding agent needs beyond the happy path — JSON errors (never an HTML
+ * What a remote coding agent needs beyond the happy path — JSON errors (never an HTML
  * redirect), natural workflow JSON, graph validation, per-step workflow status, cleanup, waiting,
  * and a machine-readable schema. Runs with {@code geoweaver.login_required=true} like a deployed
  * server.

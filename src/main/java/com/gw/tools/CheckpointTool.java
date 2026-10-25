@@ -87,21 +87,21 @@ public class CheckpointTool {
     List<String> historyIdList = new ArrayList<>(Arrays.asList(historyOutput.split(";")));
     System.out.println("History IDs:" + historyIdList);
 
-    // fetch code from history and set it to process in GWProcess
-    for (int i = 0; i < historyProcessIdsList.size(); i++) {
-      List<History> processHistory =
-          historyRepository.findByProcessIdFull(historyProcessIdsList.get(i));
-      String code = processHistory.get(i).getHistory_input();
-
+    // Each step's own run row holds the code it ran with (history_input). Skipped steps saved no
+    // code, so their process keeps its current code.
+    for (int i = 0; i < historyProcessIdsList.size() && i < historyIdList.size(); i++) {
+      Optional<History> stepRun = historyRepository.findById(historyIdList.get(i).trim());
       Optional<GWProcess> p = processRepository.findById(historyProcessIdsList.get(i));
-
-      if (p.isPresent()) {
-        GWProcess process = p.get();
-        process.setCode(code);
-        processRepository.save(process);
-      } else {
-        System.out.println("Failed to restore" + p);
+      if (stepRun.isEmpty() || p.isEmpty()) {
+        continue;
       }
+      String code = stepRun.get().getHistory_input();
+      if (code == null || "No code saved".equals(code)) {
+        continue;
+      }
+      GWProcess process = p.get();
+      process.setCode(code);
+      processRepository.save(process);
     }
 
     return checkpoint;

@@ -31,6 +31,13 @@ public class AgentApiProperties {
   @Value("${geoweaver.agent.allow-delete:true}")
   private boolean allowDelete;
 
+  /**
+   * When false, the Agent API cannot add/edit/delete hosts or run on remote SSH hosts (localhost
+   * only). Listing hosts stays available.
+   */
+  @Value("${geoweaver.agent.allow-remote-hosts:true}")
+  private boolean allowRemoteHosts;
+
   @Value("${geoweaver.agent.api-token-file:${user.home}/gw-workspace/.agent_api_token}")
   private String apiTokenFile;
 
@@ -40,6 +47,10 @@ public class AgentApiProperties {
   /** Password-gated remote token create attempts per client IP per minute. */
   @Value("${geoweaver.agent.token-create-rate-limit-per-minute:5}")
   private int tokenCreateRateLimitPerMinute;
+
+  /** Password-gated token create attempts per minute from all clients together. */
+  @Value("${geoweaver.agent.token-create-global-rate-limit-per-minute:30}")
+  private int tokenCreateGlobalRateLimitPerMinute;
 
   /** Default Bearer token lifetime in days (capped by token-max-ttl-days and 180). */
   @Value("${geoweaver.agent.token-ttl-days:30}")
@@ -80,6 +91,10 @@ public class AgentApiProperties {
     return allowDelete;
   }
 
+  public boolean isAllowRemoteHosts() {
+    return allowRemoteHosts;
+  }
+
   public String getApiTokenFile() {
     return apiTokenFile;
   }
@@ -90,6 +105,10 @@ public class AgentApiProperties {
 
   public int getTokenCreateRateLimitPerMinute() {
     return tokenCreateRateLimitPerMinute;
+  }
+
+  public int getTokenCreateGlobalRateLimitPerMinute() {
+    return tokenCreateGlobalRateLimitPerMinute;
   }
 
   public int getTokenTtlDays() {
@@ -113,10 +132,18 @@ public class AgentApiProperties {
     if (serverAddress == null || serverAddress.isBlank()) {
       return true;
     }
-    String a = serverAddress.trim().toLowerCase();
-    return !(a.equals("127.0.0.1")
+    return !isLoopbackAddress(serverAddress);
+  }
+
+  /** IPv4/IPv6 loopback literals as Tomcat reports them, plus {@code localhost}. */
+  public static boolean isLoopbackAddress(String address) {
+    if (address == null) {
+      return false;
+    }
+    String a = address.trim().toLowerCase();
+    return a.equals("127.0.0.1")
         || a.equals("::1")
-        || a.equals("localhost")
-        || a.equals("0:0:0:0:0:0:0:1"));
+        || a.equals("0:0:0:0:0:0:0:1")
+        || a.equals("localhost");
   }
 }

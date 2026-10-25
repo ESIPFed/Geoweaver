@@ -50,3 +50,6 @@ application-local.properties
 **/*.cookie-jar
 **/.config/geoweaver-agent/
 
+
+# Python bytecode from scripts/
+__pycache__/

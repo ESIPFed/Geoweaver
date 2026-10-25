@@ -5,7 +5,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.gw.api.v1.service.AgentRunSupport;
+import com.gw.database.EnvironmentRepository;
 import com.gw.database.HistoryRepository;
+import com.gw.database.HostRepository;
 import com.gw.database.WorkflowRepository;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
@@ -40,7 +42,9 @@ class AgentRunSupportRowFinishTest {
             mock(ProcessTool.class),
             mock(ProcessStatusCache.class),
             workflowRepository,
-            mock(EntityManager.class));
+            mock(EntityManager.class),
+            mock(HostRepository.class),
+            mock(EnvironmentRepository.class));
     row = new History();
     row.setHistory_id("h1");
     row.setHistory_process("p1");

@@ -69,6 +69,7 @@ public class WorkflowGraphValidator {
             "nodes[" + i + "] references process \"" + processId + "\" which does not exist");
       }
       node.put("id", id);
+      AgentSearch.requireNoMarkup(node.path("title").asText(null), "nodes[" + i + "].title");
       if (node.path("title").asText("").isBlank()) {
         node.put("title", process.get().getName());
       }

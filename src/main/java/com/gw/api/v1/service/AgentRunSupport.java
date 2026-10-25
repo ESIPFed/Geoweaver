@@ -6,13 +6,18 @@ import com.gw.api.v1.AgentApiProperties;
 import com.gw.api.v1.AgentExecutionStatuses;
 import com.gw.api.v1.dto.RunResponse;
 import com.gw.api.v1.dto.RunStep;
+import com.gw.database.EnvironmentRepository;
 import com.gw.database.HistoryRepository;
+import com.gw.database.HostRepository;
 import com.gw.database.WorkflowRepository;
+import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.History;
+import com.gw.jpa.Host;
 import com.gw.tools.HistoryTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.InternalRunCredential;
 import com.gw.utils.ProcessStatusCache;
 import jakarta.persistence.EntityManager;
 import java.text.SimpleDateFormat;
@@ -20,16 +25,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Shared localhost gate + history mapping for Agent API process/workflow runs. */
+/** Shared host resolution, error mapping and history mapping for Agent API runs. */
 @Component
 public class AgentRunSupport {
+
+  private static final Logger logger = LoggerFactory.getLogger(AgentRunSupport.class);
 
   public static final String LOCALHOST_ID = "100001";
   private static final int DEFAULT_LOG_LIMIT = 200_000;
@@ -46,6 +56,8 @@ public class AgentRunSupport {
   private final ProcessStatusCache processStatusCache;
   private final WorkflowRepository workflowRepository;
   private final EntityManager entityManager;
+  private final HostRepository hostRepository;
+  private final EnvironmentRepository environmentRepository;
   // historyId -> when the cache first reported a terminal status the row did not have yet.
   private final Map<String, Long> cacheAheadSince = new ConcurrentHashMap<>();
 
@@ -56,7 +68,11 @@ public class AgentRunSupport {
       ProcessTool processTool,
       ProcessStatusCache processStatusCache,
       WorkflowRepository workflowRepository,
-      EntityManager entityManager) {
+      EntityManager entityManager,
+      HostRepository hostRepository,
+      EnvironmentRepository environmentRepository) {
+    this.hostRepository = hostRepository;
+    this.environmentRepository = environmentRepository;
     this.workflowRepository = workflowRepository;
     this.entityManager = entityManager;
     this.properties = properties;
@@ -66,36 +82,129 @@ public class AgentRunSupport {
     this.processStatusCache = processStatusCache;
   }
 
-  /** MVP: only localhost. Rejects any other host id. */
-  public String requireLocalhostHostId(String hostId) {
-    if (BaseTool.isNull(hostId)
-        || LOCALHOST_ID.equals(hostId.trim())
-        || "localhost".equalsIgnoreCase(hostId.trim())) {
-      return LOCALHOST_ID;
+  /** Where a run executes and the password Geoweaver's runners should receive. */
+  public record RunTarget(String hostId, String password, boolean local, String address) {}
+
+  /**
+   * Resolves the target host. Localhost (blank, {@code 100001} or {@code localhost}) runs with the
+   * in-process credential when {@code allow-localhost-runs=true}, otherwise with the GUI localhost
+   * password. A registered SSH host needs its SSH password; it is used for this run only.
+   */
+  public RunTarget resolveRunTarget(String hostId, String hostPassword) {
+    String id = BaseTool.isNull(hostId) ? LOCALHOST_ID : hostId.trim();
+    if (LOCALHOST_ID.equals(id) || "localhost".equalsIgnoreCase(id)) {
+      GeoweaverApplication.addLocalhost();
+      if (!BaseTool.isNull(hostPassword)) {
+        return new RunTarget(LOCALHOST_ID, hostPassword, true, "127.0.0.1");
+      }
+      if (!properties.isAllowLocalhostRuns()) {
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "localhost run requires hostPassword, or set geoweaver.agent.allow-localhost-runs=true");
+      }
+      return new RunTarget(LOCALHOST_ID, InternalRunCredential.get(), true, "127.0.0.1");
     }
-    throw new ResponseStatusException(
-        HttpStatus.BAD_REQUEST,
-        "Agent API runs localhost only (hostId=100001). Remote SSH hosts are not exposed on /api/v1.");
+    if (!properties.isAllowRemoteHosts()) {
+      throw new ResponseStatusException(
+          HttpStatus.FORBIDDEN,
+          "Remote hosts are disabled for the Agent API (geoweaver.agent.allow-remote-hosts=false)");
+    }
+    Host host =
+        hostRepository
+            .findById(id)
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Host " + id + " not found. See GET /api/v1/hosts"));
+    if ("127.0.0.1".equals(host.getIp()) || "localhost".equalsIgnoreCase(host.getIp())) {
+      // Geoweaver runs hosts with a loopback ip through the local runner (GUI password rules).
+      if (BaseTool.isNull(hostPassword) && !properties.isAllowLocalhostRuns()) {
+        throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "localhost run requires hostPassword, or set geoweaver.agent.allow-localhost-runs=true");
+      }
+      return new RunTarget(
+          id,
+          BaseTool.isNull(hostPassword) ? InternalRunCredential.get() : hostPassword,
+          true,
+          host.getIp());
+    }
+    if (!BaseTool.isNull(host.getType()) && !"ssh".equalsIgnoreCase(host.getType())) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Host " + id + " is type " + host.getType() + "; processes run on ssh hosts only");
+    }
+    if (BaseTool.isNull(hostPassword)) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "hostPassword (SSH password for "
+              + host.getUsername()
+              + "@"
+              + host.getIp()
+              + ") is required for host "
+              + id
+              + "; it is used for this run only and never stored");
+    }
+    return new RunTarget(id, hostPassword, false, host.getIp());
+  }
+
+  /** Validates that {@code envId} (optional) is a Python environment of {@code hostId}. */
+  public Environment resolveEnvironment(String envId, String hostId) {
+    if (BaseTool.isNull(envId)) {
+      return null;
+    }
+    Environment env =
+        environmentRepository
+            .findById(envId)
+            .orElseThrow(
+                () ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Environment " + envId + " not found. See GET /api/v1/hosts/{id}/environments"));
+    String envHost = env.getHostobj() == null ? null : env.getHostobj().getId();
+    if (envHost != null && !envHost.equals(hostId)) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Environment " + envId + " belongs to host " + envHost);
+    }
+    return env;
   }
 
   /**
-   * Ensures localhost host row exists and applies password policy. Caller must clear skip flag in
-   * finally.
+   * Maps a runner exception to a JSON error. The password is scrubbed from the message, and SSH
+   * failures are reported by category so callers can tell bad credentials from an unreachable host.
    */
-  public String prepareLocalhostPassword(String hostPassword) {
-    GeoweaverApplication.addLocalhost();
-    boolean bypass = properties.isAllowLocalhostRuns();
-    if (!bypass && BaseTool.isNull(hostPassword)) {
-      throw new ResponseStatusException(
-          HttpStatus.FORBIDDEN,
-          "localhost run requires hostPassword, or set geoweaver.agent.allow-localhost-runs=true");
+  public ResponseStatusException mapRunFailure(Exception e, String target, RunTarget run) {
+    String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+    if (run != null && !BaseTool.isNull(run.password())) {
+      msg = msg.replace(run.password(), "***");
     }
-    AgentApiAuthContext.setSkipLocalhostPassword(bypass);
-    return hostPassword == null ? "" : hostPassword;
-  }
-
-  public void clearLocalhostBypass() {
-    AgentApiAuthContext.setSkipLocalhostPassword(false);
+    logger.warn(
+        "Agent API run failed {} host={} fingerprint={} msg={}",
+        target,
+        run == null ? null : run.hostId(),
+        AgentApiAuthContext.getTokenFingerprint(),
+        msg);
+    String lower = msg.toLowerCase(Locale.ROOT);
+    boolean local = run == null || run.local();
+    if (lower.contains("authentication") || lower.contains("wrong password") || lower.contains("auth fail")) {
+      return new ResponseStatusException(
+          HttpStatus.FORBIDDEN,
+          local ? "Localhost password authentication failed" : "SSH authentication failed for host " + run.hostId());
+    }
+    if (!local
+        && (lower.contains("connect")
+            || lower.contains("refused")
+            || lower.contains("timed out")
+            || lower.contains("unknownhost")
+            || lower.contains("unknown host")
+            || lower.contains("no route")
+            // UnknownHostException's message is just the host name
+            || (run.address() != null && lower.trim().equals(run.address().toLowerCase(Locale.ROOT))))) {
+      return new ResponseStatusException(
+          HttpStatus.BAD_GATEWAY, "Could not reach SSH host " + run.hostId() + ": " + msg);
+    }
+    return new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR, "Failed to start run: " + msg);
   }
 
   /**
@@ -183,7 +292,8 @@ public class AgentRunSupport {
         tail[0],
         tail[1] != null,
         workflowRun,
-        steps);
+        steps,
+        BaseTool.isNull(h.getHistory_notes()) ? null : h.getHistory_notes());
   }
 
   private List<RunStep> steps(History parent, boolean includeLogs) {
@@ -196,7 +306,7 @@ public class AgentRunSupport {
       String processId = nodeId.split("-")[0];
       History child = childId == null ? null : historyRepository.findById(childId).orElse(null);
       // A terminal row is final. Otherwise prefer the status cache: it is written before the row
-      // is flushed (see CHG-0004), so it is fresher while a step finishes.
+      // is flushed, so it is fresher while a step finishes.
       String childStatus = child == null ? null : child.getIndicator();
       if (childId != null
           && !AgentExecutionStatuses.isTerminal(AgentExecutionStatuses.normalize(childStatus))) {

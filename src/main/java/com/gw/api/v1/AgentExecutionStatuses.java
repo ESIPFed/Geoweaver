@@ -48,4 +48,14 @@ public final class AgentExecutionStatuses {
   public static boolean isTerminal(String status) {
     return TERMINAL.contains(normalize(status));
   }
+
+  /** True when {@code status} names one of the statuses above (case-insensitive). */
+  public static boolean isKnown(String status) {
+    if (status == null || status.isBlank()) {
+      return false;
+    }
+    return !ExecutionStatus.UNKOWN.equals(normalize(status))
+        || "unknown".equalsIgnoreCase(status.trim())
+        || ExecutionStatus.UNKOWN.equalsIgnoreCase(status.trim());
+  }
 }

@@ -58,6 +58,11 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String path = normalizedPath(request);
+    // Tokens and run logs must not be cached by browsers or proxies, nor sniffed/framed as HTML.
+    response.setHeader("Cache-Control", "no-store");
+    response.setHeader("Pragma", "no-cache");
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    response.setHeader("X-Frame-Options", "DENY");
     try {
       if (path.equals("/api/v1/health") || path.startsWith("/api/v1/health?")) {
         filterChain.doFilter(request, response);
@@ -89,6 +94,15 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
       }
 
       String token = extractBearer(request);
+      if (token == null && cookieToken(request) != null) {
+        writeJson(
+            response,
+            401,
+            "unauthorized",
+            "The " + AGENT_TOKEN_COOKIE + " cookie is not accepted on cross-site browser requests;"
+                + " send Authorization: Bearer <token>");
+        return;
+      }
       if (token == null || !tokenService.matches(token)) {
         writeJson(response, 401, "unauthorized", "Missing or invalid Authorization Bearer token");
         return;
@@ -133,6 +147,11 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
         return t;
       }
     }
+    // Browsers attach cookies automatically, so a cookie token from another site would be CSRF.
+    return isCrossSiteBrowserRequest(request) ? null : cookieToken(request);
+  }
+
+  static String cookieToken(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
     if (cookies != null) {
       for (Cookie c : cookies) {
@@ -145,6 +164,29 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
       }
     }
     return null;
+  }
+
+  /**
+   * True for a browser request initiated by another site: Fetch Metadata says so, or the Origin
+   * header names a different host than the one the request was sent to. curl/SDK clients send
+   * neither header.
+   */
+  static boolean isCrossSiteBrowserRequest(HttpServletRequest request) {
+    String site = request.getHeader("Sec-Fetch-Site");
+    if (site != null && !site.equalsIgnoreCase("same-origin") && !site.equalsIgnoreCase("none")) {
+      return true;
+    }
+    String origin = request.getHeader("Origin");
+    if (origin == null || origin.isBlank()) {
+      return false;
+    }
+    String host = request.getHeader("Host");
+    try {
+      String originHost = java.net.URI.create(origin.trim()).getRawAuthority();
+      return host == null || originHost == null || !originHost.equalsIgnoreCase(host.trim());
+    } catch (IllegalArgumentException e) {
+      return true;
+    }
   }
 
   static String normalizedPath(HttpServletRequest request) {

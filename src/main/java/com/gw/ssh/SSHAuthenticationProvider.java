@@ -59,7 +59,7 @@ public class SSHAuthenticationProvider implements AuthenticationProvider {
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     String username = authentication.getPrincipal().toString();
     String password = authentication.getCredentials().toString();
-    log.info("SSH Authentication Provider is called: {}:{}", username, password);
+    log.info("SSH Authentication Provider is called for user {}", username);
     boolean success = sshSession.login("", "", username, password, "", false);
     log.info("SSH login: {}={}", username, success);
     Authentication result =

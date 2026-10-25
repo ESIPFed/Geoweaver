@@ -3,8 +3,10 @@
 
 Runs the loop a coding agent performs against GEOWEAVER_BASE_URL (local or remote):
 health -> auth -> create python/shell processes -> run -> wait -> create a two-step
-workflow (one failing step) -> per-step status/logs -> fix -> re-run -> JSON errors ->
-schema -> clean up. Every object it creates is deleted at the end.
+workflow (one failing step) -> per-step status/logs -> fix -> re-run -> skip a step ->
+checkpoint restore -> export/import -> hosts + environments -> run history + notes ->
+results -> JSON errors -> security headers -> schema -> clean up. Every object it
+creates is deleted at the end. Never touches remote SSH hosts.
 
 Usage:
   export GEOWEAVER_BASE_URL='https://gw.example.org/Geoweaver'
@@ -29,6 +31,9 @@ TOKEN = os.environ.get("GEOWEAVER_API_TOKEN", "")
 RESULTS = []
 
 
+LAST_HEADERS = {}
+
+
 def call(method, path, body=None, token=True, raw=None, url=None):
     data = raw if raw is not None else (None if body is None else json.dumps(body).encode())
     req = urllib.request.Request(url or API + path, data=data, method=method)
@@ -38,6 +43,8 @@ def call(method, path, body=None, token=True, raw=None, url=None):
     opener = urllib.request.build_opener(NoRedirect)
     try:
         with opener.open(req, timeout=90) as res:
+            LAST_HEADERS.clear()
+            LAST_HEADERS.update({k.lower(): v for k, v in res.headers.items()})
             text = res.read().decode()
             return res.status, (json.loads(text) if text else None)
     except urllib.error.HTTPError as e:
@@ -67,8 +74,8 @@ def is_json_error(status, body, want_status):
 
 def main():
     global TOKEN
-    tag = "smoke-" + uuid.uuid4().hex[:6]
-    created_processes, created_workflows = [], []
+    tag = "smoke_" + uuid.uuid4().hex[:6]
+    created_processes, created_workflows, created_hosts = [], [], []
 
     status, body = call("GET", "/health", token=False)
     if not check("health reachable", status == 200 and body == {"status": "up"}, (status, body)):
@@ -97,15 +104,15 @@ def main():
     check("capabilities", status == 200 and "deleteWorkflow" in caps.get("operations", []), (status, caps))
 
     try:
-        run_loop(tag, created_processes, created_workflows)
-    except (KeyError, TypeError, AttributeError) as e:
+        run_loop(tag, created_processes, created_workflows, created_hosts)
+    except (KeyError, TypeError, AttributeError, IndexError) as e:
         check("agent loop completed", False, "unexpected response shape: %r" % (e,))
     finally:
-        cleanup(created_processes, created_workflows, minted_fp)
+        cleanup(created_processes, created_workflows, created_hosts, minted_fp)
     return finish()
 
 
-def run_loop(tag, created_processes, created_workflows):
+def run_loop(tag, created_processes, created_workflows, created_hosts):
     # Processes
     status, py = call("POST", "/processes", {"name": tag + "-py", "lang": "python",
                                              "code": "import os\nos.makedirs('/tmp/" + tag + "', exist_ok=True)\nopen('/tmp/" + tag + "/x.txt','w').write('42')\nprint('wrote 42')\n"})
@@ -144,6 +151,52 @@ def run_loop(tag, created_processes, created_workflows):
     status, hist = call("GET", "/workflows/" + wf["id"] + "/runs")
     check("workflow run history", status == 200 and len(hist) >= 2, (status, hist))
 
+    # Skip step 2, run, and roll the code back to the first (failing) run's version
+    status, _ = call("PUT", "/workflows/" + wf["id"] + "/steps/" + b, {"skip": True})
+    status, wrun3 = call("POST", "/workflows/" + wf["id"] + "/runs", {"clientRunKey": tag + "-w3"})
+    status, wdone3 = call("GET", "/runs/" + wrun3["historyId"] + "?waitSeconds=60")
+    check("skipped step reported as Skipped",
+          [s.get("status") for s in wdone3.get("steps") or []] == ["Done", "Skipped"], wdone3)
+    call("PUT", "/workflows/" + wf["id"] + "/steps/" + b, {"skip": False})
+    status, cps = call("GET", "/workflows/" + wf["id"] + "/checkpoints")
+    check("checkpoint saved per run",
+          status == 200 and wrun["historyId"] in [c.get("runId") for c in cps], (status, cps))
+    status, _ = call("POST", "/workflows/" + wf["id"] + "/restore", {"runId": wrun["historyId"]})
+    status, sh_now = call("GET", "/processes/" + sh["id"])
+    check("restore puts step code back", status == 200 and "exit 3" in sh_now.get("code", ""), sh_now)
+
+    # Export, then import the same bundle (no change) and a modified one (409 without replace)
+    status, bundle = call("GET", "/workflows/" + wf["id"] + "/export")
+    check("export bundle", status == 200 and len(bundle.get("processes", [])) == 2, status)
+    status, imp = call("POST", "/workflows/import?replace=true", bundle)
+    check("re-import identical bundle", status == 200
+          and len(imp["processes"]["unchanged"]) == 2, (status, imp))
+    bundle["processes"][0]["code"] += "\n# edited"
+    status, body = call("POST", "/workflows/import", bundle)
+    check("import conflict -> JSON 409", is_json_error(status, body, 409), (status, body))
+
+    # Hosts: localhost is listed; an ssh host can be added/edited (never contacted here)
+    status, hosts = call("GET", "/hosts")
+    check("hosts list includes localhost",
+          status == 200 and any(h.get("id") == "100001" and h.get("local") for h in hosts), status)
+    status, host = call("POST", "/hosts", {"name": tag + "-host", "ip": "smoke.invalid", "username": "nobody"})
+    check("add ssh host (no password stored)", status == 200 and "password" not in host, (status, host))
+    created_hosts.append(host["id"])
+    status, host = call("PUT", "/hosts/" + host["id"], {"port": "2222"})
+    check("edit host", status == 200 and host.get("port") == "2222", (status, host))
+    status, body = call("POST", "/processes/" + py["id"] + "/runs", {"hostId": host["id"]})
+    check("remote run without SSH password -> JSON 400", is_json_error(status, body, 400), (status, body))
+    status, envs = call("GET", "/hosts/100001/environments")
+    check("localhost environments", status == 200 and isinstance(envs, list), status)
+
+    # History across everything
+    status, runs = call("GET", "/runs?limit=50")
+    check("recent runs list", status == 200 and run["historyId"] in [r["historyId"] for r in runs], status)
+    status, noted = call("PUT", "/runs/" + run["historyId"] + "/notes", {"notes": tag})
+    check("run notes", status == 200 and noted.get("notes") == tag, (status, noted))
+    status, res = call("GET", "/results")
+    check("results folder listing", status == 200 and "entries" in res, (status, res))
+
     # Errors an agent will hit
     status, body = call("POST", "/workflows", {"name": "x", "nodes": [{"id": "nosuch-1"}]})
     check("unknown process in graph -> JSON 400", is_json_error(status, body, 400) and "nosuch" in body["message"], (status, body))
@@ -154,11 +207,21 @@ def run_loop(tag, created_processes, created_workflows):
     status, body = call("DELETE", "/processes/" + py["id"])
     check("delete in-use process -> JSON 409", is_json_error(status, body, 409), (status, body))
 
+    status, body = call("GET", "/results/file?path=../../etc/passwd")
+    check("results path traversal -> JSON 400", is_json_error(status, body, 400), (status, body))
+    call("GET", "/capabilities")
+    check("API responses are no-store + nosniff",
+          LAST_HEADERS.get("cache-control") == "no-store"
+          and LAST_HEADERS.get("x-content-type-options") == "nosniff", LAST_HEADERS)
+
     status, schema = call("GET", "", token=False, url=BASE + "/v3/api-docs/agent-api")
     check("public agent OpenAPI schema", status == 200 and "/api/v1/runs/{historyId}" in (schema or {}).get("paths", {}), status)
 
 
-def cleanup(created_processes, created_workflows, minted_fp):
+def cleanup(created_processes, created_workflows, created_hosts, minted_fp):
+    for hid in created_hosts:
+        status, _ = call("DELETE", "/hosts/" + hid)
+        check("cleanup host " + hid, status == 200, status)
     for wid in created_workflows:
         status, _ = call("DELETE", "/workflows/" + wid)
         check("cleanup workflow " + wid, status == 200, status)

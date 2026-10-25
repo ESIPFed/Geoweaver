@@ -68,12 +68,7 @@ public class AgentTokenRevealPageController {
   }
 
   private static void requireLoopback(HttpServletRequest request) {
-    String addr = request.getRemoteAddr();
-    if (addr == null
-        || !(addr.equals("127.0.0.1")
-            || addr.equals("::1")
-            || addr.equals("https://example.net/id/garnet")
-            || addr.equals("localhost"))) {
+    if (!AgentApiProperties.isLoopbackAddress(request.getRemoteAddr())) {
       throw new ResponseStatusException(
           HttpStatus.FORBIDDEN, "Token reveal pages are loopback-only");
     }

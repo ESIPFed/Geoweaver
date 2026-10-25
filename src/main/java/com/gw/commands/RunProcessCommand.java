@@ -7,6 +7,7 @@ import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.CommandLineUtil;
+import com.gw.utils.InternalRunCredential;
 import com.gw.utils.RandomString;
 import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Component;
@@ -51,6 +52,11 @@ public class RunProcessCommand implements Runnable {
     ExecutionTool et = BeanTool.getBean(ExecutionTool.class);
 
     System.out.println(String.format("Staring process %s", processid));
+
+    // The CLI user already has a shell on this machine, so localhost needs no GUI password here.
+    if (BaseTool.isNull(pass) && bt.islocal(hostid)) {
+      pass = InternalRunCredential.get();
+    }
 
     String response =
         et.executeProcess(historyid, processid, hostid, pass, "runfromcmd", true, envid);

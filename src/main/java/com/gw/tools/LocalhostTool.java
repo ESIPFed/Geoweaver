@@ -8,6 +8,7 @@ import com.gw.local.LocalSessionNixImpl;
 import com.gw.local.LocalSessionWinImpl;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
+import com.gw.utils.InternalRunCredential;
 import com.gw.utils.BeanTool;
 import com.gw.utils.OSValidator;
 import com.gw.web.GeoweaverController;
@@ -43,13 +44,6 @@ public class LocalhostTool {
 
   @Value("${geoweaver.workspace}")
   String workspace_folder_path;
-
-  /**
-   * When true, localhost job starts may omit the GUI localhost password (Agent API Bearer runs).
-   * Checked here (not only ThreadLocal) because process/workflow workers run on other threads.
-   */
-  @Value("${geoweaver.agent.allow-localhost-runs:false}")
-  boolean allowAgentLocalhostRuns;
 
   @Autowired BaseTool bt;
 
@@ -100,12 +94,9 @@ public class LocalhostTool {
 
   public void authenticate(String password) throws Exception {
 
-    // Agent API: valid Bearer + allow-localhost-runs. ThreadLocal covers the HTTP thread;
-    // empty password + property covers async workers (filter clears ThreadLocal after response).
-    if (com.gw.api.v1.AgentApiAuthContext.isSkipLocalhostPassword()) {
-      return;
-    }
-    if (allowAgentLocalhostRuns && (password == null || password.isEmpty())) {
+    // Agent API (Bearer + allow-localhost-runs) and the CLI authorize the caller themselves and
+    // pass the in-process credential; it travels with the password to async workflow workers.
+    if (InternalRunCredential.matches(password)) {
       return;
     }
 
