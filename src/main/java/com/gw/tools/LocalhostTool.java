@@ -369,6 +369,8 @@ public class LocalhostTool {
         logger.debug(filepath);
 
         bt.writeString2File(code, filepath);
+
+        com.gw.utils.RunWorkspaceFiles.recordWritten(hid, new java.io.File(filepath));
       }
 
     } catch (Exception e) {

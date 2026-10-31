@@ -15,6 +15,10 @@
 
 - **Long process logs are kept in files, not in the database.** A log that grows past 64 KB is written to `~/geoweaver/run-logs/` (compressed when the run ends), and the database keeps only its last 64 KB. The run page and the Agent API read the full log from the file. Point `GEOWEAVER_RUN_LOG_DIR` at any disk with room. Back up this folder together with `~/h2/`. See [Database](database-configuration.md#keeping-the-built-in-h2-database-small).
 - **The H2 database file is compacted at start-up when it has grown** (first start after upgrading can take a few minutes on a large file), and `geoweaver db-compact` compacts on demand.
+- **A running server keeps its disk use bounded.** It compacts the database when the file has doubled (pausing database requests for a few seconds; H2 console sessions are disconnected), writes data compressed, caps the run-log folder at 2 GB, and removes temporary files after 7 days. See [Running in a home folder with a disk quota](database-configuration.md#running-in-a-home-folder-with-a-disk-quota).
+- **Process output is no longer copied into the server log.** It is kept with each run (see above). Repeated warnings such as "no browser is receiving output" are written at most once a minute, and the server log folder is limited to 300 MB (files are split at 50 MB, so the names now end in `.0.log`, `.1.log`, ...).
+- **Agent API calls that wait for a run (`waitSeconds`) no longer hold a database connection while they wait**, so many waiting agents cannot block other requests.
+- **Run folders in `~/gw-workspace` no longer keep a copy of every Python process.** Geoweaver removes the files it placed there when a run ends; files your code writes are kept. Set `GEOWEAVER_KEEP_RUN_FILES=true` for the old behavior.
 - **Running logs are saved to the database every 5 seconds** instead of on every output line; live output in the browser is unchanged.
 - History lookups use new indexes, created automatically on the first start.
 

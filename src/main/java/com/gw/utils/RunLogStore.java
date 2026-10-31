@@ -37,11 +37,20 @@ import java.util.zip.GZIPOutputStream;
  *       (default {@code ~/geoweaver/run-logs}); any mounted disk works.
  *   <li>{@code GEOWEAVER_RUN_LOG_DB_LIMIT_KB} / {@code geoweaver.run.log.db.limit.kb} – largest
  *       log kept entirely in the database (default 64).
+ *   <li>{@code GEOWEAVER_RUN_LOG_MAX_MB} / {@code geoweaver.run.log.max.mb} – most disk space all
+ *       log files may use together (default 2048; 0 = no limit). The oldest files are removed
+ *       first; the database still has the end of each of those logs.
+ *   <li>{@code GEOWEAVER_MIN_FREE_MB} / {@code geoweaver.min.free.mb} – when less disk space than
+ *       this is free (default 512), no new log file is started and only the end of the log is kept.
  * </ul>
  */
 public final class RunLogStore {
 
   public static final int DEFAULT_DB_LIMIT_KB = 64;
+
+  public static final long DEFAULT_MAX_MB = 2048;
+
+  public static final long DEFAULT_MIN_FREE_MB = 512;
 
   /** Most log text sent to the browser for one run (the end of the log). */
   public static final int UI_LOG_LIMIT_CHARS = 5 * 1024 * 1024;
@@ -71,6 +80,87 @@ public final class RunLogStore {
       }
     }
     return kb * 1024;
+  }
+
+  /** Most bytes all log files may use together, or 0 for no limit. */
+  public static long maxTotalBytes() {
+    return megabytes("geoweaver.run.log.max.mb", "GEOWEAVER_RUN_LOG_MAX_MB", DEFAULT_MAX_MB);
+  }
+
+  /** Free disk space below which no new log file is started. */
+  public static long minFreeBytes() {
+    return megabytes("geoweaver.min.free.mb", "GEOWEAVER_MIN_FREE_MB", DEFAULT_MIN_FREE_MB);
+  }
+
+  static long megabytes(String property, String env, long defaultMb) {
+    String v = setting(property, env);
+    long mb = defaultMb;
+    if (v != null) {
+      try {
+        mb = Math.max(0, Long.parseLong(v.trim()));
+      } catch (NumberFormatException ignored) {
+        // keep default
+      }
+    }
+    return mb * 1024 * 1024;
+  }
+
+  /** Free space on the disk holding the log folder (or its nearest existing parent). */
+  static long freeSpace() {
+    File d = directory().getAbsoluteFile();
+    while (d != null && !d.exists()) d = d.getParentFile();
+    return d == null ? Long.MAX_VALUE : d.getUsableSpace();
+  }
+
+  private static final java.util.concurrent.atomic.AtomicLong lastLimitCheck = new java.util.concurrent.atomic.AtomicLong();
+
+  /** Applies the size limit after a log file is finished, at most once a minute. */
+  static void enforceLimitSoon() {
+    long now = System.currentTimeMillis();
+    long last = lastLimitCheck.get();
+    if (now - last < 60_000 || !lastLimitCheck.compareAndSet(last, now)) return;
+    try {
+      enforceLimit(maxTotalBytes());
+    } catch (RuntimeException ignored) {
+      // the periodic check tries again
+    }
+  }
+
+  /** What {@link #enforceLimit} removed. */
+  public record Pruned(int files, long bytes, long remainingBytes) {}
+
+  /**
+   * Removes the oldest finished log files until all log files together use at most
+   * {@code maxBytes}. Logs of running processes are never removed. Never throws.
+   */
+  public static Pruned enforceLimit(long maxBytes) {
+    if (maxBytes <= 0) return new Pruned(0, 0, -1);
+    java.util.List<File> finished = new java.util.ArrayList<>();
+    long total = 0;
+    File[] subdirs = directory().listFiles(File::isDirectory);
+    if (subdirs == null) return new Pruned(0, 0, 0);
+    for (File sub : subdirs) {
+      File[] files = sub.listFiles(File::isFile);
+      if (files == null) continue;
+      for (File f : files) {
+        total += f.length();
+        if (f.getName().endsWith(".log.gz")) finished.add(f);
+      }
+    }
+    if (total <= maxBytes) return new Pruned(0, 0, total);
+    finished.sort(java.util.Comparator.comparingLong(File::lastModified));
+    int removed = 0;
+    long removedBytes = 0;
+    for (File f : finished) {
+      if (total <= maxBytes) break;
+      long len = f.length();
+      if (f.delete()) {
+        total -= len;
+        removed++;
+        removedBytes += len;
+      }
+    }
+    return new Pruned(removed, removedBytes, total);
   }
 
   private static String setting(String property, String env) {
@@ -196,6 +286,7 @@ public final class RunLogStore {
     private BufferedWriter writer;
     private boolean spilled;
     private boolean failedToSpill;
+    private String notSavedReason;
 
     RunLog(String historyId, int limit) {
       this.historyId = historyId;
@@ -212,6 +303,9 @@ public final class RunLogStore {
         if (buffer.length() > 2 * limit) buffer.delete(0, buffer.length() - limit);
       } else if (buffer.length() > limit && !failedToSpill) {
         spill();
+      } else if (failedToSpill && buffer.length() > 2 * limit) {
+        // no file: keep only the end so neither memory nor the database grows with the output
+        buffer.delete(0, buffer.length() - limit);
       }
       return this;
     }
@@ -227,12 +321,14 @@ public final class RunLogStore {
     /** Text to store in the database: the whole log while small, otherwise a header and the tail. */
     public String databaseText() {
       flush();
-      if (!spilled) return buffer.toString();
+      if (!spilled && totalChars <= limit) return buffer.toString();
       String tail = buffer.length() <= limit ? buffer.toString() : buffer.substring(buffer.length() - limit);
       int nl = tail.indexOf('\n');
       if (nl >= 0 && nl < tail.length() - 1 && buffer.length() > limit) tail = tail.substring(nl + 1);
-      return HEADER_PREFIX + human(tail.length()) + " of a " + human(totalChars)
-          + " log; the full log is saved to " + finishedFile(historyId).getPath() + "]\n" + tail;
+      String where = spilled
+          ? "the full log is saved to " + finishedFile(historyId).getPath()
+          : "the full log was not saved (" + notSavedReason + ")";
+      return HEADER_PREFIX + human(tail.length()) + " of a " + human(totalChars) + " log; " + where + "]\n" + tail;
     }
 
     /** Ends the run: closes and compresses the log file. Safe to call more than once. */
@@ -260,11 +356,19 @@ public final class RunLogStore {
       } catch (IOException e) {
         deleteQuietly(tmp);
       }
+      enforceLimitSoon();
     }
 
     private void spill() {
       if (!isSafeId(historyId)) {
         failedToSpill = true;
+        notSavedReason = "unusual run id";
+        return;
+      }
+      long free = freeSpace();
+      if (free < minFreeBytes()) {
+        failedToSpill = true;
+        notSavedReason = "low disk space: " + human(free) + " free";
         return;
       }
       File active = activeFile(historyId);
@@ -275,8 +379,9 @@ public final class RunLogStore {
         spilled = true;
         if (buffer.length() > 2 * limit) buffer.delete(0, buffer.length() - limit);
       } catch (IOException e) {
-        // disk problem: keep everything in the database as before
+        // disk problem: keep the end of the log in the database
         failedToSpill = true;
+        notSavedReason = "could not write the log file: " + e.getMessage();
         writer = null;
       }
     }

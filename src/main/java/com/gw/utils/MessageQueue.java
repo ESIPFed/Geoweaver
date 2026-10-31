@@ -40,7 +40,8 @@ public class MessageQueue {
         
         // Check if queue has reached maximum size
         if (queue.size() >= MAX_QUEUE_SIZE) {
-            logger.warn("Message queue for token {} is full", token);
+            String more = LogRateLimit.allow("queue-full:" + token);
+            if (more != null) logger.warn("Message queue for token {} is full; newer messages are dropped{}", token, more);
             return false;
         }
         

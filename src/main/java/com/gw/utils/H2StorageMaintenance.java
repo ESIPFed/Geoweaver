@@ -29,8 +29,8 @@ import java.util.Locale;
  */
 public final class H2StorageMaintenance {
 
-  /** Free disk space always left over, on top of 10% of the current file size. */
-  static final long DISK_MARGIN_BYTES = 1024L * 1024 * 1024;
+  /** Free disk space always left over, on top of the expected size of the compacted copy. */
+  static final long DISK_MARGIN_BYTES = 64L * 1024 * 1024;
 
   /** Compact again when the file has grown to this many times its size after the last compaction. */
   static final int GROWTH_FACTOR = 2;
@@ -61,20 +61,28 @@ public final class H2StorageMaintenance {
     }
   }
 
-  /** When to compact. */
-  public record Options(boolean force, long minFileBytes, boolean dryRun) {
+  /**
+   * When to compact. {@code inProcess} means the database is already open in this JVM (the running
+   * server); the original URL is then used so the connection joins that database.
+   */
+  public record Options(boolean force, long minFileBytes, boolean dryRun, boolean inProcess) {
 
     /**
      * Compact when the file is at least {@code minFileBytes} and has doubled since the last
      * compaction (or was never compacted by Geoweaver).
      */
     public static Options automatic(long minFileBytes) {
-      return new Options(false, minFileBytes, false);
+      return new Options(false, minFileBytes, false, false);
     }
 
     /** Compact regardless of size and growth. */
     public static Options always(boolean dryRun) {
-      return new Options(true, 0, dryRun);
+      return new Options(true, 0, dryRun, false);
+    }
+
+    /** Same as this, for a database this JVM has open. */
+    public Options inRunningServer() {
+      return new Options(force, minFileBytes, dryRun, true);
     }
   }
 
@@ -103,6 +111,16 @@ public final class H2StorageMaintenance {
       path = System.getProperty("user.home") + path.substring(1);
     }
     return new File(path + ".mv.db");
+  }
+
+  /**
+   * Room the compacted copy needs while it is written next to the original: twice the last
+   * compacted size (the live data can at most have doubled before the next compaction), or half
+   * the file when it was never compacted. Never more than the file itself.
+   */
+  static long expectedCompactedSize(long fileSize, long lastCompacted) {
+    long estimate = lastCompacted > 0 ? lastCompacted * GROWTH_FACTOR : fileSize / 2;
+    return Math.min(fileSize, estimate);
   }
 
   /** Where the size after the last compaction is remembered. */
@@ -176,7 +194,7 @@ public final class H2StorageMaintenance {
       why = last > 0 ? "grown from " + human(last) + " since the last compaction" : "never compacted";
     }
 
-    long needed = sizeBefore / 10 + DISK_MARGIN_BYTES;
+    long needed = expectedCompactedSize(sizeBefore, last) + DISK_MARGIN_BYTES;
     long free = file.getAbsoluteFile().getParentFile().getUsableSpace();
     if (free < needed) {
       return skipped(
@@ -194,7 +212,8 @@ public final class H2StorageMaintenance {
     }
 
     File temp = new File(file.getPath() + ".tempFile");
-    try (Connection conn = DriverManager.getConnection(maintenanceUrl(jdbcUrl), user, password);
+    String url = options.inProcess() ? jdbcUrl : maintenanceUrl(jdbcUrl);
+    try (Connection conn = DriverManager.getConnection(url, user, password);
         Statement st = conn.createStatement()) {
       st.execute("SHUTDOWN COMPACT");
     } catch (SQLException e) {

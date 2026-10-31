@@ -313,7 +313,7 @@ public class LocalSessionOutput implements Runnable {
       // Read output lines until they are null (command execution is finished)
       while ((line = in.readLine()) != null) {
         try {
-          log.info(line);
+          log.debug(line); // process output is kept in the run's log, not the server log
           // refreshLogMonitor(); // Check and refresh the WebSocket session
 
           // readLine will block if nothing to send
@@ -475,6 +475,9 @@ public class LocalSessionOutput implements Runnable {
       }
     } finally {
       logs.close(); // no-op when already closed or never spilled to a file
+      if (theprocess == null || !theprocess.isAlive()) {
+        com.gw.utils.RunWorkspaceFiles.cleanup(history_id);
+      }
       try {
         this.sendMessage2WebSocket(
             this.history_id

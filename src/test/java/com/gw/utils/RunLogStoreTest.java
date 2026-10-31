@@ -23,6 +23,47 @@ class RunLogStoreTest {
   void reset() {
     System.clearProperty("geoweaver.run.log.dir");
     System.clearProperty("geoweaver.run.log.db.limit.kb");
+    System.clearProperty("geoweaver.min.free.mb");
+  }
+
+  @Test
+  void lowDiskKeepsOnlyTheEndOfTheLogInTheDatabaseAndNoFile() {
+    System.setProperty("geoweaver.min.free.mb", Long.toString(Long.MAX_VALUE / (2L << 20)));
+    RunLogStore.RunLog log = RunLogStore.open("lowDisk001");
+    for (int i = 0; i < 20000; i++) log.appendLine("line " + i + " of output");
+    log.close();
+    String db = log.databaseText();
+    assertThat(log.isSpilled()).isFalse();
+    assertThat(RunLogStore.activeFile("lowDisk001")).doesNotExist();
+    assertThat(RunLogStore.finishedFile("lowDisk001")).doesNotExist();
+    assertThat(db).contains("the full log was not saved (low disk space");
+    assertThat(db.length()).isLessThan(1024 + 300);
+    assertThat(db).endsWith("line 19999 of output\n");
+    assertThat(RunLogStore.readTail("lowDisk001", db, 100)).endsWith("line 19999 of output\n");
+  }
+
+  @Test
+  void limitRemovesTheOldestFinishedLogsButNeverRunningOnes() throws Exception {
+    File sub = new File(dir.toFile(), "ab");
+    sub.mkdirs();
+    long now = System.currentTimeMillis();
+    for (int i = 0; i < 5; i++) {
+      File f = new File(sub, "abRun" + i + ".log.gz");
+      java.nio.file.Files.write(f.toPath(), new byte[1000]);
+      f.setLastModified(now - (10 - i) * 60_000L); // abRun0 oldest
+    }
+    File running = new File(sub, "abRunning.log");
+    java.nio.file.Files.write(running.toPath(), new byte[3000]);
+    running.setLastModified(now - 3_600_000L); // oldest of all, but still running
+
+    RunLogStore.Pruned p = RunLogStore.enforceLimit(5000);
+    assertThat(p.files()).isEqualTo(3);
+    assertThat(p.remainingBytes()).isEqualTo(5000);
+    assertThat(running).isFile();
+    assertThat(new File(sub, "abRun0.log.gz")).doesNotExist();
+    assertThat(new File(sub, "abRun2.log.gz")).doesNotExist();
+    assertThat(new File(sub, "abRun3.log.gz")).isFile();
+    assertThat(RunLogStore.enforceLimit(0).files()).isZero();
   }
 
   @Test

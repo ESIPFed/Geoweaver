@@ -395,7 +395,8 @@ public class CommandServlet {
         logger.debug("Message sent via long polling to token: " + token);
         return true;
       } else {
-        logger.error("Failed to send message via long polling to token: " + token);
+        String more = com.gw.utils.LogRateLimit.allow("long-poll:" + token);
+        if (more != null) logger.warn("No browser is receiving output for token " + token + "; messages are dropped" + more);
         return false;
       }
     } catch (Exception e) {

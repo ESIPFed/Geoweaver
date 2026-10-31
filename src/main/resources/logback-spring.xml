@@ -20,15 +20,15 @@
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
-        <!-- Create parent directories if they don't exist -->
-        <prudent>true</prudent>
         <immediateFlush>true</immediateFlush>
         <append>true</append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
-            <fileNamePattern>${user.home}/geoweaver/logs/geoweaver.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
+        <!-- daily files, split at 50 MB, 30 days and at most 300 MB in total, so the log folder
+             stays small on home folders with a quota even on a very busy day -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${user.home}/geoweaver/logs/geoweaver.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>300MB</totalSizeCap>
         </rollingPolicy>
     </appender>
 

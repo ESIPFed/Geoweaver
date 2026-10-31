@@ -175,4 +175,23 @@ class H2StorageMaintenanceTest {
     new H2StartupCompaction().run(on);
     assertThat(file.length()).isLessThan(before / 5);
   }
+
+  @Test
+  void compactionNeedsRoomForTheCompactedCopyOnly() {
+    long mb = 1024L * 1024;
+    assertThat(H2StorageMaintenance.expectedCompactedSize(1000 * mb, -1)).isEqualTo(500 * mb);
+    assertThat(H2StorageMaintenance.expectedCompactedSize(1000 * mb, 100 * mb)).isEqualTo(200 * mb);
+    assertThat(H2StorageMaintenance.expectedCompactedSize(150 * mb, 100 * mb)).isEqualTo(150 * mb);
+  }
+
+  @Test
+  void compressionIsAddedToEmbeddedFileUrlsOnly() {
+    assertThat(H2StartupCompaction.withCompression("jdbc:h2:file:~/h2/gw;AUTO_SERVER=true"))
+        .isEqualTo("jdbc:h2:file:~/h2/gw;AUTO_SERVER=true;COMPRESS=TRUE");
+    assertThat(H2StartupCompaction.withCompression("jdbc:h2:file:~/h2/gw;compress=false"))
+        .isEqualTo("jdbc:h2:file:~/h2/gw;compress=false");
+    assertThat(H2StartupCompaction.withCompression("jdbc:h2:mem:testdb")).isEqualTo("jdbc:h2:mem:testdb");
+    assertThat(H2StartupCompaction.withCompression("jdbc:postgresql://x/db")).isEqualTo("jdbc:postgresql://x/db");
+    assertThat(H2StartupCompaction.withCompression(null)).isNull();
+  }
 }

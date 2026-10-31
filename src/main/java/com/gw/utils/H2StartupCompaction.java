@@ -1,8 +1,11 @@
 package com.gw.utils;
 
+import java.util.Locale;
+import java.util.Map;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 
 /**
  * Compacts the embedded H2 database before the server opens it, when the file has grown well
@@ -14,6 +17,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * <ul>
  *   <li>{@code GEOWEAVER_DB_AUTO_COMPACT} – {@code false} turns this off (default {@code true}).
  *   <li>{@code GEOWEAVER_DB_COMPACT_MIN_MB} – smallest file worth checking (default 64).
+ *   <li>{@code GEOWEAVER_DB_COMPRESS} – {@code false} keeps H2's default of writing uncompressed
+ *       pages (default {@code true}: {@code COMPRESS=TRUE} is added to the database URL, so the
+ *       file stays close to its compacted size while the server runs).
  * </ul>
  */
 public class H2StartupCompaction implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
@@ -30,6 +36,7 @@ public class H2StartupCompaction implements ApplicationListener<ApplicationEnvir
   }
 
   void run(ConfigurableEnvironment env) {
+    enableCompression(env);
     if (!env.getProperty("GEOWEAVER_DB_AUTO_COMPACT", Boolean.class, true)) return;
     String url = env.getProperty("spring.datasource.url");
     if (H2StorageMaintenance.databaseFile(url) == null) return;
@@ -48,5 +55,24 @@ public class H2StartupCompaction implements ApplicationListener<ApplicationEnvir
             env.getProperty("spring.datasource.password", ""),
             H2StorageMaintenance.Options.automatic(minMb * 1024 * 1024));
     System.out.println(result.describe());
+  }
+
+  /** Adds COMPRESS=TRUE to an embedded H2 file URL that does not set COMPRESS itself. */
+  static void enableCompression(ConfigurableEnvironment env) {
+    if (!env.getProperty("GEOWEAVER_DB_COMPRESS", Boolean.class, true)) return;
+    String url = env.getProperty("spring.datasource.url");
+    String updated = withCompression(url);
+    if (updated != null && !updated.equals(url)) {
+      env.getPropertySources()
+          .addFirst(new MapPropertySource("geoweaverH2Compression", Map.of("spring.datasource.url", updated)));
+    }
+  }
+
+  static String withCompression(String url) {
+    if (H2StorageMaintenance.databaseFile(url) == null) return url;
+    for (String part : url.split(";")) {
+      if (part.trim().toUpperCase(Locale.ROOT).startsWith("COMPRESS=")) return url;
+    }
+    return url.trim() + ";COMPRESS=TRUE";
   }
 }
