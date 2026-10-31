@@ -189,6 +189,7 @@ public class LocalSessionWinImpl implements LocalSession {
       // script += "\n echo \"==== Geoweaver Bash Output Finished ====\"";
 
       bt.writeString2File(script, tempfile);
+      com.gw.utils.RunWorkspaceFiles.recordWritten(history_id, new File(tempfile));
 
       ProcessBuilder builder = new ProcessBuilder();
 

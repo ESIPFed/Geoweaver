@@ -631,6 +631,8 @@ describe('Hosts Testing', () => {
   })
 
   it('LocalHost Read Python Env', () => {
+    // Register before the confirm click: the request can go out before a later intercept is active.
+    cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
     cy.visitGeoweaver('http://localhost:8070/Geoweaver/web/geoweaver');
     cy.skipIntroIfPresent();
     cy.get('#host_folder_ssh > a').click();
@@ -640,8 +642,7 @@ describe('Hosts Testing', () => {
     cy.get('#inputpswd').clear('1');
     cy.get('#inputpswd').type('123456');
     cy.get('#pswd-confirm-btn').click();
-    cy.intercept('POST', '/Geoweaver/web/readEnvironment').as('readEnvironment');
-    
+
     cy.wait('@readEnvironment').then((interception) => {
       cy.log(interception.response)
       expect(interception.response.statusCode).to.equal(200);

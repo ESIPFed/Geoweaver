@@ -5,7 +5,9 @@ import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.LogFlushThrottle;
 import com.gw.utils.ProcessStatusCache;
+import com.gw.utils.RunLogStore;
 import java.io.BufferedReader;
 import jakarta.websocket.Session;
 import org.slf4j.Logger;
@@ -186,9 +188,12 @@ public void updateStatus(String logs, String status) {
     StringBuffer prelog =
         new StringBuffer(); // the part that is generated before the WebSocket session is started
 
-    StringBuffer logs = new StringBuffer();
+    // Small logs stay in memory; large ones are streamed to a file (see RunLogStore).
+    RunLogStore.RunLog logs = RunLogStore.open(this.history_id);
 
     int linenumber = 0;
+
+    LogFlushThrottle flushThrottle = new LogFlushThrottle();
 
     int startrecorder = -1;
 
@@ -241,10 +246,10 @@ public void updateStatus(String logs, String status) {
 
         log.debug("command thread output >> " + line);
 
-        logs.append(line).append("\n");
+        logs.appendLine(line);
 
-        if (linenumber % 1 == 0) {
-          this.updateStatus(logs.toString(), "Running");
+        if (flushThrottle.shouldFlush()) {
+          this.updateStatus(logs.databaseText(), "Running");
         }
 
         // Always attempt to send the log line regardless of WebSocket status
@@ -267,15 +272,17 @@ public void updateStatus(String logs, String status) {
 
       exit_code = get_exit_code_from_log_line(last_non_null_line);
 
+      logs.close(); // the output has ended: compress a spilled log file before the final save
+
       // Only update status if we successfully extracted exit code from log
       // If exit_code is -1 (unknown), it means endWithCode() should have been called
       // or will be called, so we should not override the status here
       if (exit_code == 0) {
         log.info("Process completed successfully (exit code: 0)");
-        this.updateStatus(logs.toString(), "Done");
+        this.updateStatus(logs.databaseText(), "Done");
       } else if (exit_code > 0) {
         log.warn("Process failed with exit code: " + exit_code);
-        this.updateStatus(logs.toString(), "Failed");
+        this.updateStatus(logs.databaseText(), "Failed");
       } else {
         // exit_code is -1 (unknown), check if status was already set by endWithCode()
         History h = ht.getHistoryById(history_id);
@@ -284,16 +291,16 @@ public void updateStatus(String logs, String status) {
           if (BaseTool.isNull(currentStatus) || ExecutionStatus.RUNNING.equals(currentStatus)) {
             // Status not set yet, assume failure if we can't determine exit code
             log.warn("Cannot determine exit code from logs, but status not set. Assuming failure to be safe.");
-            this.updateStatus(logs.toString(), "Failed");
+            this.updateStatus(logs.databaseText(), "Failed");
           } else {
             log.info("Status already set to: " + currentStatus + ", not overriding");
             // Just update the logs, don't change the status
-            this.updateStatus(logs.toString(), currentStatus);
+            this.updateStatus(logs.databaseText(), currentStatus);
           }
         } else {
           log.error("History record not found for history_id: " + history_id);
           // If history doesn't exist, mark as failed to be safe
-          this.updateStatus(logs.toString(), "Failed");
+          this.updateStatus(logs.databaseText(), "Failed");
         }
       }
       
@@ -306,9 +313,13 @@ public void updateStatus(String logs, String status) {
 
       e.printStackTrace();
 
-      updateStatus(logs.toString(), "Failed");
+      logs.close();
+
+      updateStatus(logs.databaseText(), "Failed");
 
     } finally {
+
+      logs.close();
 
       CommandServlet.sendMessageToSocket(
           token,

@@ -182,6 +182,7 @@ public class LocalSessionNixImpl implements LocalSession {
 
       // Write the Bash script content to the temporary file.
       bt.writeString2File(script, tempfile);
+      com.gw.utils.RunWorkspaceFiles.recordWritten(history_id, new File(tempfile));
 
       // Change the permissions of the temporary script file to make it executable.
       Runtime.getRuntime().exec(new String[] {"chmod", "+x", tempfile}).waitFor();

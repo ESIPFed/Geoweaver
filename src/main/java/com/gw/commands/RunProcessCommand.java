@@ -1,5 +1,6 @@
 package com.gw.commands;
 
+import com.gw.utils.RunLogStore;
 import com.gw.jpa.History;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.HistoryTool;
@@ -100,7 +101,7 @@ public class RunProcessCommand implements Runnable {
           bt.formatDate(hist.getHistory_begin_time()),
           bt.formatDate(hist.getHistory_end_time()),
           hist.getHistory_input(),
-          hist.getHistory_output(),
+          RunLogStore.readFull(hist.getHistory_id(), hist.getHistory_output()),
           hist.getHistory_notes()
         });
 

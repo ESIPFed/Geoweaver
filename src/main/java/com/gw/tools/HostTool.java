@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import com.gw.utils.RunLogStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.EnvironmentRepository;
 import com.gw.database.HistoryRepository;
@@ -62,7 +63,7 @@ public class HostTool {
 
       resp.append("\"input\":\"").append(his.getHistory_input()).append("\", ");
 
-      resp.append("\"output\":\"").append(bt.escape(his.getHistory_output())).append("\", ");
+      resp.append("\"output\":\"").append(bt.escape(RunLogStore.readTail(his.getHistory_id(), his.getHistory_output(), RunLogStore.UI_LOG_LIMIT_CHARS))).append("\", ");
 
       resp.append("\"host\":\"").append(his.getHost_id()).append("\", ");
 

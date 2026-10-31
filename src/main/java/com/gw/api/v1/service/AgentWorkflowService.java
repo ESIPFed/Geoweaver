@@ -214,7 +214,8 @@ public class AgentWorkflowService {
   public List<RunResponse> listRuns(String workflowId, Integer logLimit) {
     requireWorkflow(workflowId);
     List<RunResponse> out = new ArrayList<>();
-    List<History> histories = historyRepository.findByWorkflowId(workflowId);
+    // Fetch only the newest 50 rows instead of every run of the workflow.
+    List<History> histories = historyRepository.findLatestByProcess(workflowId, 50);
     if (histories == null) {
       return out;
     }

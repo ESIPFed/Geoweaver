@@ -6,6 +6,7 @@ import com.gw.tools.HostTool;
 import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
+import com.gw.utils.H2StartupCompaction;
 import com.gw.utils.JavaRuntimeRequirements;
 import com.gw.utils.RandomString;
 import java.awt.Desktop;
@@ -61,6 +62,8 @@ public class GeoweaverApplication {
       ApplicationContext applicationContext =
           new SpringApplicationBuilder(GeoweaverApplication.class)
               .bannerMode(Banner.Mode.OFF)
+              // Shrink an oversized embedded H2 file before the connection pool opens it.
+              .listeners(new H2StartupCompaction())
               .run(args);
 
       addDefaultPublicUser();
