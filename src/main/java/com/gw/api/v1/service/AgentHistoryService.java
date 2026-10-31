@@ -1,5 +1,6 @@
 package com.gw.api.v1.service;
 
+import com.gw.utils.RunLogStore;
 import com.gw.api.v1.AgentApiAuthContext;
 import com.gw.api.v1.AgentExecutionStatuses;
 import com.gw.api.v1.dto.RunResponse;
@@ -109,11 +110,15 @@ public class AgentHistoryService {
   public Map<String, Object> deleteRuns(String status, String processId) {
     String wanted = BaseTool.isNull(status) ? "" : AgentExecutionStatuses.normalize(status.trim());
     if (ExecutionStatus.FAILED.equals(wanted)) {
+      List<String> ids;
       if (BaseTool.isNull(processId)) {
+        ids = historyRepository.findIdsByIndicator(ExecutionStatus.FAILED);
         historyRepository.deleteByIndicator(ExecutionStatus.FAILED);
       } else {
+        ids = historyRepository.findIdsByProcessAndIndicator(processId, ExecutionStatus.FAILED);
         historyRepository.deleteByProcessAndIndicator(processId, ExecutionStatus.FAILED);
       }
+      ids.forEach(RunLogStore::delete);
     } else if (ExecutionStatus.SKIPPED.equals(wanted)) {
       if (BaseTool.isNull(processId)) {
         historyRepository.deleteSkippedHistory();

@@ -8,6 +8,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.LogFlushThrottle;
 import com.gw.utils.ProcessStatusCache;
+import com.gw.utils.RunLogStore;
 import java.io.BufferedReader;
 import jakarta.websocket.Session;
 import org.slf4j.Logger;
@@ -278,7 +279,8 @@ public class LocalSessionOutput implements Runnable {
   public void run() {
     // Initialize StringBuffer for storing pre-log content and the logs generated during execution
     StringBuffer prelog = new StringBuffer(); // The part that is generated before the WebSocket session is started
-    StringBuffer logs = new StringBuffer();
+    // Small logs stay in memory; large ones are streamed to a file (see RunLogStore).
+    RunLogStore.RunLog logs = RunLogStore.open(this.history_id);
 
     try {
       log.info("Local session output thread started"); // Log that the local session output thread has started
@@ -323,7 +325,7 @@ public class LocalSessionOutput implements Runnable {
           linenumber++; // Increment the line number
 
           if (flushThrottle.shouldFlush()) {
-            this.updateStatus(logs.toString(), "Running");
+            this.updateStatus(logs.databaseText(), "Running");
           }
 
           // When null output lines are detected, track them to determine if the command is finished
@@ -350,7 +352,7 @@ public class LocalSessionOutput implements Runnable {
           } else {
             //						log.info("Local output " + theprocess.pid() + " >> " + line + " - token: " +
             // token); // Log each line of output
-            logs.append(line).append("\n"); // Append the line to the logs
+            logs.appendLine(line); // Append the line to the logs
 
             // Always try to send via WebSocket with automatic reconnection
             // First check if we have any buffered content in prelog
@@ -376,7 +378,7 @@ public class LocalSessionOutput implements Runnable {
         } catch (Exception e) {
           e.printStackTrace();
           // Depending on the language, update the status to "Failed"
-          this.updateStatus(logs.toString(), "Failed");
+          this.updateStatus(logs.databaseText(), "Failed");
           
           // Update the cache with the failed status
           if (processStatusCache != null) {
@@ -384,7 +386,7 @@ public class LocalSessionOutput implements Runnable {
           }
           break;
         } finally {
-          // session.saveHistory(logs.toString()); //write the failed record
+          // session.saveHistory(logs.databaseText()); //write the failed record
         }
       }
 
@@ -424,7 +426,8 @@ public class LocalSessionOutput implements Runnable {
       }
       
       // Update status based on exit code
-      this.updateStatus(logs.toString(), finalStatus);
+      logs.close();
+      this.updateStatus(logs.databaseText(), finalStatus);
       
       // Update the cache with the final status
       if (processStatusCache != null) {
@@ -462,13 +465,16 @@ public class LocalSessionOutput implements Runnable {
     } catch (Exception e) {
       e.printStackTrace();
       // Depending on the language, update the status to "Failed"
-      this.updateStatus(logs.toString() + "\n" + e.getLocalizedMessage(), "Failed");
+      logs.appendLine(e.getLocalizedMessage());
+      logs.close();
+      this.updateStatus(logs.databaseText(), "Failed");
       
       // Update the cache with the failed status
       if (processStatusCache != null) {
         processStatusCache.updateStatus(history_id, ExecutionStatus.FAILED);
       }
     } finally {
+      logs.close(); // no-op when already closed or never spilled to a file
       try {
         this.sendMessage2WebSocket(
             this.history_id

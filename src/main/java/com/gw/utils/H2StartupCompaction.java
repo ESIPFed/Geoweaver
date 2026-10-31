@@ -13,12 +13,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * <ul>
  *   <li>{@code GEOWEAVER_DB_AUTO_COMPACT} – {@code false} turns this off (default {@code true}).
- *   <li>{@code GEOWEAVER_DB_COMPACT_MIN_MB} – smallest file worth checking (default 512).
+ *   <li>{@code GEOWEAVER_DB_COMPACT_MIN_MB} – smallest file worth checking (default 64).
  * </ul>
  */
 public class H2StartupCompaction implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
-  static final long DEFAULT_MIN_MB = 512;
+  static final long DEFAULT_MIN_MB = 64;
 
   @Override
   public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {

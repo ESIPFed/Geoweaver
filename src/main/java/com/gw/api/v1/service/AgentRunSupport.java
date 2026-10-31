@@ -1,5 +1,6 @@
 package com.gw.api.v1.service;
 
+import com.gw.utils.RunLogStore;
 import com.gw.GeoweaverApplication;
 import com.gw.api.v1.AgentApiAuthContext;
 import com.gw.api.v1.AgentApiProperties;
@@ -271,8 +272,10 @@ public class AgentRunSupport {
   public RunResponse toRunResponse(History h, Integer logLimit, boolean includeStepLogs) {
     String raw = h.getIndicator();
     String status = AgentExecutionStatuses.normalize(raw);
-    String log = h.getHistory_output() == null ? "" : h.getHistory_output();
     int max = logLimit == null ? DEFAULT_LOG_LIMIT : Math.max(0, logLimit);
+    // Large logs live in files; read one character more than needed so tail() can flag truncation.
+    String log = RunLogStore.readTail(h.getHistory_id(), h.getHistory_output(), max == Integer.MAX_VALUE ? max : max + 1);
+    if (log == null) log = "";
     String[] tail = tail(log, max);
     boolean workflowRun = isWorkflowRun(h);
     List<RunStep> steps = workflowRun ? steps(h, includeStepLogs) : null;
@@ -326,7 +329,8 @@ public class AgentRunSupport {
               : AgentExecutionStatuses.normalize(childStatus);
       String stepLog = null;
       if (includeLogs && child != null && child.getHistory_output() != null) {
-        stepLog = tail(child.getHistory_output(), STEP_LOG_LIMIT)[0];
+        stepLog =
+            tail(RunLogStore.readTail(child.getHistory_id(), child.getHistory_output(), STEP_LOG_LIMIT + 1), STEP_LOG_LIMIT)[0];
       }
       out.add(
           new RunStep(

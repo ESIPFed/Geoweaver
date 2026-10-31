@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import com.gw.jpa.ExecutionStatus;
 import com.gw.database.EnvironmentRepository;
 import com.gw.database.HistoryRepository;
 import com.gw.database.HostRepository;
@@ -26,28 +27,19 @@ public class DashboardTool {
 
   @Autowired BaseTool bt;
 
+  /** Most finished process runs whose durations are sent to the dashboard chart. */
+  static final int TIME_COST_SAMPLE = 10000;
+
   public int[] getAllProcessTimeCosts() {
 
-    List failed_processes = historyrepository.findFailedProcess();
+    // Only the timestamps of the newest runs: loading whole rows pulled every log into memory.
+    List<Object[]> spans = historyrepository.findFinishedProcessTimeSpans(TIME_COST_SAMPLE);
 
-    List success_processes = historyrepository.findSuccessProcess();
+    int[] costs = new int[spans.size()];
 
-    int[] costs = new int[failed_processes.size() + success_processes.size()];
+    for (int i = 0; i < spans.size(); i++) {
 
-    int num = 0;
-
-    for (int i = 0; i < failed_processes.size(); i++) {
-
-      Object[] cols = (Object[]) failed_processes.get(i);
-
-      costs[num++] = calculateTimeCostMillis(cols);
-    }
-
-    for (int i = 0; i < success_processes.size(); i++) {
-
-      Object[] cols = (Object[]) success_processes.get(i);
-
-      costs[num++] = calculateTimeCostMillis(cols);
+      costs[i] = calculateTimeCostMillis(spans.get(i));
     }
 
     return costs;
@@ -122,17 +114,17 @@ public class DashboardTool {
 
     int host_gee_num = hostrepository.findGEEHosts().size();
 
-    int running_process_num = historyrepository.findRunningProcess().size();
+    int running_process_num = (int) historyrepository.countProcessRuns(ExecutionStatus.RUNNING);
 
-    int failed_process_num = historyrepository.findFailedProcess().size();
+    int failed_process_num = (int) historyrepository.countProcessRuns(ExecutionStatus.FAILED);
 
-    int success_process_num = historyrepository.findSuccessProcess().size();
+    int success_process_num = (int) historyrepository.countProcessRuns(ExecutionStatus.DONE);
 
-    int running_workflow_num = historyrepository.findRunningWorkflow().size();
+    int running_workflow_num = (int) historyrepository.countWorkflowRuns(ExecutionStatus.RUNNING);
 
-    int failed_workflow_num = historyrepository.findFailedWorkflow().size();
+    int failed_workflow_num = (int) historyrepository.countWorkflowRuns(ExecutionStatus.FAILED);
 
-    int success_workflow_num = historyrepository.findSuccessWorkflow().size();
+    int success_workflow_num = (int) historyrepository.countWorkflowRuns(ExecutionStatus.DONE);
 
     StringBuffer jsonbuf = new StringBuffer("{ \"process_num\":").append(process_num).append(",");
 

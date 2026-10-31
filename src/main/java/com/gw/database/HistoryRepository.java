@@ -177,6 +177,14 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   List<Object[]> findOneHistoryofProcess(String history_id);
 
 
+  /** Ids that {@link #deleteByProcessAndIndicator} would remove (to delete their log files too). */
+  @Query(value = "SELECT history_id FROM history WHERE history_process = ?1 AND indicator = ?2", nativeQuery = true)
+  List<String> findIdsByProcessAndIndicator(String historyProcess, String indicator);
+
+  /** Ids that {@link #deleteByIndicator} would remove. */
+  @Query(value = "SELECT history_id FROM history WHERE indicator = ?1", nativeQuery = true)
+  List<String> findIdsByIndicator(String indicator);
+
   @Modifying
   @Query(value = "DELETE FROM history WHERE history_process = ?1 AND indicator = ?2", nativeQuery = true)
   void deleteByProcessAndIndicator(String historyProcess, String indicator);
@@ -209,4 +217,31 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   @Modifying
   @Query(value = "DELETE FROM history WHERE indicator = ?1", nativeQuery = true)
   void deleteByIndicator(String indicator);
+
+  /** Number of process runs (not workflow runs) with the given status. */
+  @Query(
+      value = "SELECT COUNT(*) FROM history h JOIN gwprocess p ON h.history_process = p.id WHERE h.indicator = ?1",
+      nativeQuery = true)
+  long countProcessRuns(String indicator);
+
+  /** Number of workflow runs with the given status. */
+  @Query(
+      value = "SELECT COUNT(*) FROM history h JOIN workflow w ON h.history_process = w.id WHERE h.indicator = ?1",
+      nativeQuery = true)
+  long countWorkflowRuns(String indicator);
+
+  /** Id, begin and end time of the newest finished process runs (no log or code columns). */
+  @Query(
+      value =
+          "SELECT h.history_id, h.history_begin_time, h.history_end_time FROM history h"
+              + " JOIN gwprocess p ON h.history_process = p.id"
+              + " WHERE h.indicator IN ('Done', 'Failed') ORDER BY h.history_begin_time DESC LIMIT ?1",
+      nativeQuery = true)
+  List<Object[]> findFinishedProcessTimeSpans(int limit);
+
+  /** Newest runs of one process, at most {@code limit}. */
+  @Query(
+      value = "SELECT * FROM history WHERE history_process = ?1 ORDER BY history_begin_time DESC LIMIT ?2",
+      nativeQuery = true)
+  List<History> findLatestByProcess(String pid, int limit);
 }

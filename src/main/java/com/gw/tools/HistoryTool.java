@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import com.gw.utils.RunLogStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.HistoryRepository;
 import com.gw.jpa.ExecutionStatus;
@@ -497,7 +498,9 @@ public class HistoryTool {
 
 
   public void deleteFailedHistory(String processId) {
+    List<String> ids = historyrepository.findIdsByProcessAndIndicator(processId, ExecutionStatus.FAILED);
     historyrepository.deleteByProcessAndIndicator(processId, ExecutionStatus.FAILED);
+    ids.forEach(RunLogStore::delete);
   }
 
   public void deleteSkippedHistory() {

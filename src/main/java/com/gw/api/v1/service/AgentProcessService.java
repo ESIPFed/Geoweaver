@@ -284,17 +284,14 @@ public class AgentProcessService {
 
   public List<RunResponse> listRunsForProcess(String processId, Integer logLimit) {
     requireRunnableProcess(processId);
-    List<History> histories = historyRepository.findByProcessIdFull(processId);
+    // Fetch only the newest 50 rows instead of every run of the process.
+    List<History> histories = historyRepository.findLatestByProcess(processId, 50);
     List<RunResponse> out = new ArrayList<>();
     if (histories == null) {
       return out;
     }
-    int n = 0;
     for (History h : histories) {
       out.add(runSupport.toRunResponse(h, logLimit == null ? 0 : Math.min(logLimit, 4000)));
-      if (++n >= 50) {
-        break;
-      }
     }
     return out;
   }

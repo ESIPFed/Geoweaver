@@ -17,8 +17,14 @@ Geoweaver now handles this in two ways:
   database copy of a running process's log is updated at most every 5 seconds, and always when the
   process finishes. Set `GEOWEAVER_LOG_FLUSH_MS` to change the interval (`0` saves every line, as
   before).
+- **Long logs are stored in files.** A log stays in the database while it is under 64 KB, which
+  covers most runs. Past that, the full log goes to `~/geoweaver/run-logs/<xx>/<run id>.log` and
+  is compressed to `.log.gz` when the run ends. The database keeps only the last 64 KB. The run
+  page (last 5 MB), the Agent API and `geoweaver history` read from the file. Deleting a run
+  deletes its file. The database size then depends on how many runs you have, not on how much
+  they print.
 - **The file is compacted at start-up when it has grown.** Before the server opens the database it
-  checks the file. If the file is at least 512 MB and has never been compacted, or has doubled in size
+  checks the file. If the file is at least 64 MB and has never been compacted, or has doubled in size
   since the last compaction, Geoweaver runs H2's `SHUTDOWN COMPACT`. This copies the live data,
   compressed, into a new file and replaces the old one. A large file can take a few minutes, and
   the progress is printed to the console. The size after compaction is remembered in
@@ -36,8 +42,10 @@ Settings (environment variables):
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `GEOWEAVER_DB_AUTO_COMPACT` | `true` | `false` turns start-up compaction off |
-| `GEOWEAVER_DB_COMPACT_MIN_MB` | `512` | smallest file worth compacting |
+| `GEOWEAVER_DB_COMPACT_MIN_MB` | `64` | smallest file worth compacting |
 | `GEOWEAVER_LOG_FLUSH_MS` | `5000` | how often a running log is saved to the database |
+| `GEOWEAVER_RUN_LOG_DIR` | `~/geoweaver/run-logs` | where long logs are stored; any mounted disk |
+| `GEOWEAVER_RUN_LOG_DB_LIMIT_KB` | `64` | largest log kept entirely in the database |
 
 To compact on demand, stop the Geoweaver server and run:
 
@@ -47,7 +55,7 @@ java -jar geoweaver.jar db-compact
 ```
 
 As with any maintenance on important data, keep a copy of `~/h2/gw.mv.db` before the first
-compaction if you have the disk space.
+compaction if you have the disk space. Back up the run-log folder together with the database.
 
 ## Switching to PostgreSQL
 

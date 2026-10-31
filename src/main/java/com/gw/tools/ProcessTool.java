@@ -1,5 +1,6 @@
 package com.gw.tools;
 
+import com.gw.utils.RunLogStore;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -645,7 +646,7 @@ public class ProcessTool {
 
 					resp.append("\"input\":\"").append(input_code).append("\", ");
 					
-					String output_code = bt.escape(String.valueOf(hist.getHistory_output()));
+					String output_code = bt.escape(String.valueOf(RunLogStore.readTail(hist.getHistory_id(), hist.getHistory_output(), RunLogStore.UI_LOG_LIMIT_CHARS)));
 					
 					resp.append("\"output\":\"").append(output_code).append("\", ");
 					
