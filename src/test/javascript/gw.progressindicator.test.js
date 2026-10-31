@@ -1,5 +1,5 @@
 /**
- * CHG-0007 — unit tests for the workflow progress panel module.
+ * Unit tests for the workflow progress panel module.
  * Coverage gate: vitest.config.js thresholds (≥80%) on gw.progressindicator.js.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -222,7 +222,7 @@ describe("GW.progressIndicator", () => {
   });
 });
 
-describe("CHG-0007 static assets", () => {
+describe("progress panel static assets", () => {
   it("CSS hides idle panel and uses soft pulse (not stripes)", async () => {
     const fs = await import("node:fs");
     const path = await import("node:path");

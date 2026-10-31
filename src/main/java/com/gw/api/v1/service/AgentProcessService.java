@@ -11,20 +11,24 @@ import com.gw.api.v1.dto.RunResponse;
 import com.gw.api.v1.dto.RunStartRequest;
 import com.gw.api.v1.dto.RunStartResponse;
 import com.gw.database.HistoryRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.database.ProcessRepository;
+import com.gw.database.WorkflowRepository;
+import com.gw.jpa.Workflow;
 import com.gw.jpa.Environment;
 import com.gw.jpa.ExecutionStatus;
 import com.gw.jpa.GWProcess;
 import com.gw.jpa.History;
-import com.gw.tools.EnvironmentTool;
 import com.gw.tools.ExecutionTool;
 import com.gw.tools.ProcessTool;
 import com.gw.utils.BaseTool;
-import com.gw.utils.BeanTool;
 import com.gw.utils.RandomString;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -34,14 +38,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Agent API process surface: create/edit/run Python and Shell processes on localhost only.
- * Jupyter/builtin/remote SSH are intentionally not exposed here.
+ * Agent API process surface: create/edit/run Python, Shell and builtin processes on localhost or a
+ * registered SSH host. Jupyter notebook processes are not runnable by Geoweaver's runners.
  */
 @Service
 public class AgentProcessService {
 
   private static final Logger logger = LoggerFactory.getLogger(AgentProcessService.class);
-  private static final Set<String> ALLOWED_LANGS = Set.of("python", "shell");
+  private static final Set<String> ALLOWED_LANGS = Set.of("python", "shell", "builtin");
 
   private final ProcessRepository processRepository;
   private final HistoryRepository historyRepository;
@@ -51,6 +55,8 @@ public class AgentProcessService {
   private final AgentRunIdempotencyStore idempotencyStore;
   private final AgentRunRateLimiter rateLimiter;
   private final WorkspaceEventBroadcaster workspaceEvents;
+  private final WorkflowRepository workflowRepository;
+  private final ObjectMapper mapper = new ObjectMapper();
 
   public AgentProcessService(
       ProcessRepository processRepository,
@@ -60,7 +66,9 @@ public class AgentProcessService {
       AgentRunSupport runSupport,
       AgentRunIdempotencyStore idempotencyStore,
       AgentRunRateLimiter rateLimiter,
-      WorkspaceEventBroadcaster workspaceEvents) {
+      WorkspaceEventBroadcaster workspaceEvents,
+      WorkflowRepository workflowRepository) {
+    this.workflowRepository = workflowRepository;
     this.processRepository = processRepository;
     this.historyRepository = historyRepository;
     this.processTool = processTool;
@@ -71,12 +79,16 @@ public class AgentProcessService {
     this.workspaceEvents = workspaceEvents;
   }
 
-  public List<ProcessSummary> listProcesses() {
+  /** @param query optional case-insensitive filter on id, name and description */
+  public List<ProcessSummary> listProcesses(String query) {
     List<ProcessSummary> out = new ArrayList<>();
     for (GWProcess p : processRepository.findAll()) {
       String lang = langOf(p);
       if (!ALLOWED_LANGS.contains(normalizeLang(lang))) {
-        continue; // hide non-python/shell from agent inventory
+        continue; // notebooks cannot run through Geoweaver's runners
+      }
+      if (!AgentSearch.matches(query, p.getId(), p.getName(), p.getDescription())) {
+        continue;
       }
       out.add(new ProcessSummary(p.getId(), p.getName(), lang, p.getOwner()));
     }
@@ -84,14 +96,17 @@ public class AgentProcessService {
   }
 
   public ProcessResponse getProcess(String id) {
-    return toResponse(requirePythonOrShellProcess(id));
+    return toResponse(requireRunnableProcess(id));
   }
 
   public ProcessResponse createProcess(ProcessCreateRequest req) {
     if (req == null || BaseTool.isNull(req.name()) || BaseTool.isNull(req.code())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name and code are required");
     }
+    requireSafeName(req.name());
+    AgentSearch.requireNoMarkup(req.description(), "description");
     String lang = requireAllowedLang(BaseTool.isNull(req.lang()) ? "python" : req.lang());
+    requireValidCode(lang, req.code());
     GWProcess p = new GWProcess();
     String id = new RandomString(6).nextString();
     p.setId(id);
@@ -113,22 +128,27 @@ public class AgentProcessService {
   }
 
   public ProcessResponse updateProcess(String id, ProcessUpdateRequest req) {
-    GWProcess p = requirePythonOrShellProcess(id);
+    GWProcess p = requireRunnableProcess(id);
     if (req == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "body required");
     }
     if (!BaseTool.isNull(req.name())) {
+      requireSafeName(req.name());
       p.setName(req.name());
-    }
-    if (!BaseTool.isNull(req.code())) {
-      p.setCode(req.code());
     }
     if (!BaseTool.isNull(req.lang())) {
       String lang = requireAllowedLang(req.lang());
       p.setLang(lang);
       p.setDescription(lang);
     }
+    if (!BaseTool.isNull(req.code())) {
+      p.setCode(req.code());
+    }
+    if (!BaseTool.isNull(req.code()) || !BaseTool.isNull(req.lang())) {
+      requireValidCode(normalizeLang(langOf(p)), p.getCode());
+    }
     if (!BaseTool.isNull(req.description())) {
+      AgentSearch.requireNoMarkup(req.description(), "description");
       p.setDescription(req.description());
     }
     processTool.update(p);
@@ -138,11 +158,11 @@ public class AgentProcessService {
         id,
         fp);
     workspaceEvents.publishAgent("process.updated", "process", id, p.getName(), null, fp);
-    return toResponse(requirePythonOrShellProcess(id));
+    return toResponse(requireRunnableProcess(id));
   }
 
   public RunStartResponse startRun(String processId, RunStartRequest req) {
-    requirePythonOrShellProcess(processId);
+    requireRunnableProcess(processId);
     String fp = AgentApiAuthContext.getTokenFingerprint();
     if (!rateLimiter.tryAcquire(fp)) {
       throw new ResponseStatusException(
@@ -161,41 +181,27 @@ public class AgentProcessService {
       }
     }
 
-    String hostId =
-        runSupport.requireLocalhostHostId(req == null ? null : req.hostId());
-    String password = runSupport.prepareLocalhostPassword(req == null ? null : req.hostPassword());
-    String envId = req == null ? null : req.envId();
+    AgentRunSupport.RunTarget target =
+        runSupport.resolveRunTarget(
+            req == null ? null : req.hostId(), req == null ? null : req.hostPassword());
+    Environment env = runSupport.resolveEnvironment(req == null ? null : req.envId(), target.hostId());
 
     String historyId = new RandomString(12).nextString();
     try {
-      String bin = null;
-      String pyenv = null;
-      String basedir = null;
-      if (!BaseTool.isNull(envId)) {
-        EnvironmentTool envt = BeanTool.getBean(EnvironmentTool.class);
-        Environment envobj = envt.getEnvironmentById(envId);
-        if (envobj != null) {
-          bin = envobj.getBin();
-          pyenv = envobj.getPyenv();
-          basedir = envobj.getBasedir();
-        }
-      }
       executionTool.executeProcess(
           historyId,
           processId,
-          hostId,
-          password,
+          target.hostId(),
+          target.password(),
           "agent-api",
           false,
-          bin,
-          pyenv,
-          basedir);
+          env == null ? null : env.getBin(),
+          env == null ? null : env.getPyenv(),
+          env == null ? null : env.getBasedir());
     } catch (ResponseStatusException e) {
       throw e;
     } catch (Exception e) {
-      throw mapRunFailure(e, "processId=" + processId, fp);
-    } finally {
-      runSupport.clearLocalhostBypass();
+      throw runSupport.mapRunFailure(e, "processId=" + processId, target);
     }
 
     idempotencyStore.put(fp, clientRunKey, historyId);
@@ -210,19 +216,74 @@ public class AgentProcessService {
       // async start may not have flushed history yet
     }
     logger.info(
-        "Agent API started run historyId={} processId={} fingerprint={}",
+        "Agent API started run historyId={} processId={} host={} fingerprint={}",
         historyId,
         processId,
+        target.hostId(),
         fp);
     return new RunStartResponse(historyId, status, false);
+  }
+
+  /**
+   * Deletes a process. Refuses (409) while any workflow node references it so GUI workflows never
+   * silently break; history rows are kept.
+   */
+  public Map<String, Object> deleteProcess(String id) {
+    GWProcess p = requireRunnableProcess(id);
+    List<String> usedBy = workflowsReferencing(id);
+    if (!usedBy.isEmpty()) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          "Process "
+              + id
+              + " is used by workflow(s) "
+              + String.join(", ", usedBy)
+              + ". Remove it from those workflows (PUT /api/v1/workflows/{id}) or delete them first.");
+    }
+    processTool.del(id);
+    String fp = AgentApiAuthContext.getTokenFingerprint();
+    logger.info("Agent API deleted process id={} fingerprint={}", id, fp);
+    workspaceEvents.publishAgent("process.deleted", "process", id, p.getName(), null, fp);
+    Map<String, Object> out = new LinkedHashMap<>();
+    out.put("id", id);
+    out.put("deleted", true);
+    return out;
+  }
+
+  private List<String> workflowsReferencing(String processId) {
+    List<String> out = new ArrayList<>();
+    for (Workflow w : workflowRepository.findAll()) {
+      if (BaseTool.isNull(w.getNodes())) {
+        continue;
+      }
+      try {
+        for (JsonNode n : mapper.readTree(w.getNodes())) {
+          if (n.path("id").asText("").split("-")[0].equals(processId)) {
+            out.add(w.getId());
+            break;
+          }
+        }
+      } catch (Exception e) {
+        // Unparseable legacy graph: fall back to a substring check so we never under-report.
+        if (w.getNodes().contains("\"" + processId + "-")) {
+          out.add(w.getId());
+        }
+      }
+    }
+    return out;
   }
 
   public RunResponse getRun(String historyId, Integer logLimit) {
     return runSupport.getRun(historyId, logLimit);
   }
 
+  public RunResponse getRun(
+      String historyId, Integer logLimit, int waitSeconds, boolean includeStepLogs) {
+    return runSupport.getRun(historyId, logLimit, waitSeconds, includeStepLogs);
+  }
+
   public List<RunResponse> listRunsForProcess(String processId, Integer logLimit) {
-    requirePythonOrShellProcess(processId);
+    requireRunnableProcess(processId);
     List<History> histories = historyRepository.findByProcessIdFull(processId);
     List<RunResponse> out = new ArrayList<>();
     if (histories == null) {
@@ -242,7 +303,7 @@ public class AgentProcessService {
     return runSupport.stopRun(historyId);
   }
 
-  private GWProcess requirePythonOrShellProcess(String id) {
+  GWProcess requireRunnableProcess(String id) {
     Optional<GWProcess> opt = processRepository.findById(id);
     if (opt.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Process not found");
@@ -250,7 +311,8 @@ public class AgentProcessService {
     GWProcess p = opt.get();
     if (!ALLOWED_LANGS.contains(normalizeLang(langOf(p)))) {
       throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "Agent API supports only python and shell processes");
+          HttpStatus.BAD_REQUEST,
+          "Agent API supports python, shell and builtin processes (this one is " + langOf(p) + ")");
     }
     return p;
   }
@@ -259,12 +321,46 @@ public class AgentProcessService {
     String n = normalizeLang(lang);
     if (!ALLOWED_LANGS.contains(n)) {
       throw new ResponseStatusException(
-          HttpStatus.BAD_REQUEST, "lang must be python or shell");
+          HttpStatus.BAD_REQUEST, "lang must be python, shell or builtin");
     }
     return n;
   }
 
-  private static String normalizeLang(String lang) {
+  private static final java.util.regex.Pattern SAFE_NAME =
+      java.util.regex.Pattern.compile("^[A-Za-z0-9_][A-Za-z0-9._-]{0,99}$");
+
+  /**
+   * Runners use the process name as the script file name (and in the remote shell command line),
+   * so only file-name-safe characters are accepted.
+   */
+  static void requireSafeName(String name) {
+    if (name == null || !SAFE_NAME.matcher(name).matches() || name.contains("..")) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "name must be 1-100 characters of letters, digits, . _ - (it becomes the script file"
+              + " name on the host), e.g. download_landsat or clean-data.py");
+    }
+  }
+
+  /** Builtin processes store a JSON object naming the operation, e.g. {"operation":"AWS S3"}. */
+  void requireValidCode(String lang, String code) {
+    if (!"builtin".equals(lang)) {
+      return;
+    }
+    try {
+      JsonNode n = mapper.readTree(code);
+      if (n == null || !n.isObject() || !n.path("operation").isTextual()) {
+        throw new IllegalArgumentException();
+      }
+    } catch (Exception e) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "builtin code must be a JSON object with an \"operation\" string and optional"
+              + " \"params\" array");
+    }
+  }
+
+  static String normalizeLang(String lang) {
     return lang == null ? "" : lang.trim().toLowerCase(Locale.ROOT);
   }
 
@@ -280,15 +376,4 @@ public class AgentProcessService {
         p.getId(), p.getName(), langOf(p), p.getDescription(), p.getCode(), p.getOwner());
   }
 
-  private ResponseStatusException mapRunFailure(Exception e, String target, String fp) {
-    String msg = e.getMessage() == null ? "" : e.getMessage();
-    logger.warn("Agent API run failed {} fingerprint={} msg={}", target, fp, msg);
-    String lower = msg.toLowerCase(Locale.ROOT);
-    if (lower.contains("authentication") || lower.contains("wrong password")) {
-      return new ResponseStatusException(
-          HttpStatus.FORBIDDEN, "Localhost password authentication failed");
-    }
-    return new ResponseStatusException(
-        HttpStatus.INTERNAL_SERVER_ERROR, "Failed to start run: " + msg);
-  }
 }

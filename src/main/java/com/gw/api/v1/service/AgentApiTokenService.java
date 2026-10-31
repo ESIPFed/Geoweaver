@@ -48,7 +48,7 @@ public class AgentApiTokenService {
     this.repository = repository;
   }
 
-  /** Leftover CHG-0001 plaintext file path (import-then-delete only; never used for auth). */
+  /** Leftover plaintext token file from older releases (import-then-delete only; never used for auth). */
   public Path legacyTokenFilePath() {
     String configured = properties.getApiTokenFile();
     if (configured == null || configured.isBlank()) {

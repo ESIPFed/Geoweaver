@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# One command for Cursor ↔ Hopper Geoweaver via Open OnDemand:
+#   1) open Connect URL, save campus session cookies
+#   2) mint Agent API Bearer with THIS Geoweaver's GUI password (Hopper ≠ laptop)
+#
+# Usage:
+#   ./scripts/gw-ood-login 'https://ondemand…/rnode/HOST/PORT/Geoweaver/web/geoweaver'
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+URL="${1:-}"
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/geoweaver-agent"
+VENV="$CFG/venv"
+PY="$VENV/bin/python"
+
+if [[ -z "$URL" ]]; then
+  echo "Usage: $0 '<Open-OnDemand-Geoweaver-Connect-URL>'" >&2
+  echo "Example: $0 'https://ondemand.example.edu/rnode/HOST/PORT/Geoweaver/web/geoweaver'" >&2
+  exit 1
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 is required" >&2
+  exit 1
+fi
+
+mkdir -p "$CFG"
+chmod 700 "$CFG" 2>/dev/null || true
+
+if [[ ! -x "$PY" ]]; then
+  echo "Creating private venv at $VENV (one-time)…"
+  python3 -m venv "$VENV"
+fi
+
+if ! "$PY" -c "import playwright" 2>/dev/null; then
+  echo "Installing Playwright into private venv (one-time)…"
+  "$PY" -m pip install -q --upgrade pip
+  "$PY" -m pip install -q playwright
+fi
+
+"$PY" -m playwright install chromium
+
+echo ""
+echo "=== Step 1/2: campus login cookies ==="
+"$PY" "$ROOT/scripts/capture-ood-session.py" --engine playwright "$URL"
+
+echo ""
+echo "=== Step 2/2: Agent API Bearer for THIS Geoweaver (Hopper) ==="
+echo "Use the GUI localhost password of the Hopper session — not your laptop Geoweaver password."
+"$ROOT/scripts/gw-ood-mint-token"
+
+ENV_FILE="$CFG/ood-env.sh"
+echo ""
+echo "All set. Tell Cursor (do not paste cookies or token into chat):"
+echo "  source $ENV_FILE"
+echo "Then the agent can call \$GEOWEAVER_BASE_URL/api/v1 with the cookie jar + Bearer."

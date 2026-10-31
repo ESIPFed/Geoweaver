@@ -59,6 +59,162 @@ Details: [Installation](install.md)
 
 ---
 
+## Cluster / no-sudo: PyGeoWeaver `~/jdk` upgrade fails with Permission denied
+
+This happens when PyGeoWeaver detects an old **managed** JDK under `~/jdk` (often Java 11), tries to install Temurin 17 into the same folder, and extraction fails, for example:
+
+```text
+/home/YOU/jdk.tar.gz already exists.
+Extracting /home/YOU/jdk.tar.gz...
+Error upgrading managed JDK: [Errno 13] Permission denied: '.../jdk-11.../thaidict.md'
+```
+
+**What usually went wrong:** a leftover `~/jdk.tar.gz` from the **old Java 11** install is still on disk. PyGeoWeaver skips re-download when that file exists, then extracts it again on top of `~/jdk/jdk-11*`. Some files in that tree are not writable by your account, so extract stops. You do **not** need sudo if you can rename files under your home directory.
+
+### Fix (all under your account)
+
+Run these on the cluster login/compute node where you start Geoweaver:
+
+```bash
+# 1) See what you have
+ls -la ~/jdk.tar.gz ~/jdk 2>/dev/null
+java -version 2>&1 | head -3
+which java || true
+
+# 2) Move the stale archive aside (forces a fresh Temurin 17 download)
+mv -f ~/jdk.tar.gz ~/jdk.tar.gz.jdk11.bak 2>/dev/null || true
+
+# 3) Move the old managed JDK tree aside (prefer rename over rm)
+if [ -d "$HOME/jdk" ]; then
+  mv "$HOME/jdk" "$HOME/jdk.jdk11.bak.$(date +%Y%m%d%H%M%S)"
+fi
+
+# 4) Install JDK 17 under ~/jdk again and start
+# Need pygeoweaver 1.4.1+ (stale ~/jdk.tar.gz fix). Until PyPI updates:
+#   pip install -U "git+https://github.com/ESIPFed/pygeoweaver.git@fix/jdk17-stale-archive-extract"
+pip install --user -U "pygeoweaver>=1.4.1"   # or your usual env / git URL above
+gw installjdk
+# or simply:
+gw start
+```
+
+Confirm:
+
+```bash
+"$HOME"/jdk/jdk-17*/bin/java -version
+# Expect: openjdk version "17...."
+```
+
+Put this in `~/.bashrc` (or the shell rc your job uses) so later sessions keep JDK 17 first:
+
+```bash
+# PyGeoWeaver-managed Temurin 17 (adjust the folder name after ls ~/jdk)
+export JAVA_HOME="$HOME/jdk/$(ls -1 "$HOME/jdk" | grep '^jdk-17' | head -1)"
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+Then `source ~/.bashrc` and run `gw start` again.
+
+### If you cannot rename or delete `~/jdk`
+
+Some sites leave files owned by another user inside your tree. Install Temurin 17 into a **new** directory you own, and put it first on `PATH` so Geoweaver does not need the broken tree:
+
+```bash
+mkdir -p "$HOME/.local/jdk"
+cd /tmp
+# Linux x64 Temurin 17 (Adoptium API resolves the current GA build)
+curl -fsSL -o openjdk17.tar.gz \
+  "https://api.adoptium.net/v3/binary/latest/17/ga/linux/x64/jdk/hotspot/normal/eclipse"
+tar -xzf openjdk17.tar.gz -C "$HOME/.local/jdk"
+NEW_HOME=$(echo "$HOME"/.local/jdk/jdk-17*)
+export JAVA_HOME="$NEW_HOME"
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version
+
+# Keep PyGeoWeaver from using the broken managed tree:
+# rename ~/jdk if you can; otherwise ensure PATH's java is 17+ *and*
+# that you are not forcing JAVA_HOME to ~/jdk/jdk-11*
+unset JAVA_HOME  # then set to NEW_HOME as above
+export JAVA_HOME="$NEW_HOME"
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+If PyGeoWeaver still insists on bumping `~/jdk`, rename that directory when possible (`mv ~/jdk ~/jdk.broken`). A **system** Java 11 that is *not* under `~/jdk` will make recent PyGeoWeaver fall back to Geoweaver **2.1.x** instead of installing 17—so for Geoweaver **3.0.0 / 2.2+** you want a working Java **17+** on `PATH` (managed under a clean `~/jdk`, or under `~/.local/jdk` as above).
+
+### Do not use sudo for `gw start`
+
+Running install/start with sudo can create root-owned files under `~/jdk` and make the next user-level upgrade fail the same way.
+
+---
+
+## Open OnDemand: Connect button never appears
+
+Open OnDemand (OOD) shows **Connect** only after the batch-connect job writes `connection.yml` **and** something is listening on the **same** `host`/`port` listed there. If Geoweaver starts on the default port **8070** while OOD allocated a random `$port`, the session stays on “Waiting for GeoWeaver to start…” forever.
+
+### Root cause
+
+Typical broken `script.sh`:
+
+```bash
+pip install pygeoweaver
+gw start          # listens on 8070
+tail -f /dev/null
+```
+
+Meanwhile the OOD wrapper wrote `connection.yml` with `port: <random>` and waits for that port.
+
+### Fix (operator must update the OOD app template)
+
+In the Geoweaver batch-connect **`script.sh`**, export the OOD port **before** `gw start`:
+
+```bash
+#!/bin/bash
+module purge
+module load gnu10
+module load python
+module load openjdk   # or your site’s Java 17 module
+
+set -x
+
+VENV_DIR="$HOME/geo_env"
+if [ ! -d "$VENV_DIR" ]; then
+  python -m venv "$VENV_DIR"
+fi
+source "$VENV_DIR/bin/activate"
+
+# Need pygeoweaver 1.4.2+ (GEOWEAVER_PORT + HTTP 200/301/302/303 readiness)
+pip install -U "pygeoweaver>=1.4.2"
+
+# Critical: bind Geoweaver to the port OOD put in connection.yml
+export GEOWEAVER_PORT="$port"
+echo "GEOWEAVER_PORT=$GEOWEAVER_PORT"
+
+gw start
+
+set +x
+tail -f /dev/null
+```
+
+Requirements:
+
+| Piece | Why |
+| --- | --- |
+| `export GEOWEAVER_PORT="$port"` | Geoweaver reads `server.port=${GEOWEAVER_PORT:8070}`; pygeoweaver also passes `-Dserver.port` and polls that URL |
+| pygeoweaver **≥ 1.4.2** | Treats HTTP **200/301/302/303** as “up” (Boot 3 often returns 200, not only 302) |
+| Geoweaver **3.0+** Agent defaults | `acknowledge-network-risk=true` so all-interface binds used by OOD proxy do not refuse startup |
+
+Do **not** hard-code `8070` in `connection.yml`. Do not paste session passwords into tickets or git.
+
+After updating the template, start a **new** interactive session (old jobs keep the old script).
+
+### Agent API on the same OOD URL (Cursor / Codex)
+
+The Agent API is **not** on a different host. Strip `/web/geoweaver` from the Connect URL and use that as `GEOWEAVER_BASE_URL`, then call `/api/v1/...`.
+
+Campus login cookies and the Geoweaver Bearer token are **two different credentials**. For Cursor on a laptop, the reliable setup is usually an **SSH tunnel** to the compute-node port plus a Bearer minted on that Geoweaver. Full steps: [Agent API — Open OnDemand](agent-api.md#open-ondemand-same-url-prefix-as-the-ui).
+
+---
+
 ## Developers / contributors
 
 - Build and CI use **JDK 17**.

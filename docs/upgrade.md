@@ -11,7 +11,17 @@
 3. Upgrade via Python or JAR (below).
 4. If the database fails to open after the jump, use [Complex Upgrade (Database Migration)](#complex-upgrade-database-migration).
 
+### Behavior changes in 3.1.0
+
+- **Localhost runs need the real localhost password again.** An empty password no longer runs code on the Geoweaver server. The GUI and `gw run … -p <password>` are unaffected; `gw run` on localhost without `-p` still works because the CLI user is already on that machine. AI agents use a Bearer token ([Agent API](agent-api.md)).
+- **Cross-origin browser pages can no longer call the GUI endpoints with your session cookie.** If another web site (for example a portal) embeds or calls Geoweaver, list it in `geoweaver.cors.allowed-origins=https://portal.example.org`. Same-origin use of the GUI is unchanged.
+- **SSH passwords are no longer written to the log** when you log in to a host.
+- **Restoring a workflow checkpoint** now restores each step's code from that run (it used to pick the wrong run, or fail).
+- The Agent API now covers hosts, remote SSH runs, Python environments, run history, step skipping, checkpoints, workflow export/import and result files. See [Agent API](agent-api.md).
+
 If you **cannot** use Java 17, **do not upgrade** to 2.2+. Keep **Geoweaver 2.1.x** from [Releases](https://github.com/ESIPFed/Geoweaver/releases).
+
+On a cluster **without sudo**, if PyGeoWeaver fails while upgrading `~/jdk` with `Permission denied` on a `jdk-11*` path (and you see `jdk.tar.gz already exists`), follow **[Cluster / no-sudo JDK recovery](java17-migration.md#cluster--no-sudo-pygeoweaver-jdk-upgrade-fails-with-permission-denied)** — usually move aside the stale `~/jdk.tar.gz` and `~/jdk`, then `gw installjdk`.
 
 ### Simple Upgrade
 

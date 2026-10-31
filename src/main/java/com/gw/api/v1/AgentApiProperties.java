@@ -17,16 +17,26 @@ public class AgentApiProperties {
   private boolean allowNonLoopback;
 
   /**
-   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to false so
-   * a clean install that listens on all interfaces cannot start the API without an explicit
-   * operator acknowledgment of network risk.
+   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to true
+   * with the other agent defaults so Open OnDemand / all-interface binds can start; operators still
+   * see SECURITY WARN logs. Set false only when intentionally fail-closing non-loopback API binds.
    */
-  @Value("${geoweaver.agent.acknowledge-network-risk:false}")
+  @Value("${geoweaver.agent.acknowledge-network-risk:true}")
   private boolean acknowledgeNetworkRisk;
 
   /** Fan-out workspace change events to open GUI browsers (independent of api-enabled). */
   @Value("${geoweaver.agent.workspace-events-enabled:true}")
   private boolean workspaceEventsEnabled;
+
+  @Value("${geoweaver.agent.allow-delete:true}")
+  private boolean allowDelete;
+
+  /**
+   * When false, the Agent API cannot add/edit/delete hosts or run on remote SSH hosts (localhost
+   * only). Listing hosts stays available.
+   */
+  @Value("${geoweaver.agent.allow-remote-hosts:true}")
+  private boolean allowRemoteHosts;
 
   @Value("${geoweaver.agent.api-token-file:${user.home}/gw-workspace/.agent_api_token}")
   private String apiTokenFile;
@@ -37,6 +47,10 @@ public class AgentApiProperties {
   /** Password-gated remote token create attempts per client IP per minute. */
   @Value("${geoweaver.agent.token-create-rate-limit-per-minute:5}")
   private int tokenCreateRateLimitPerMinute;
+
+  /** Password-gated token create attempts per minute from all clients together. */
+  @Value("${geoweaver.agent.token-create-global-rate-limit-per-minute:30}")
+  private int tokenCreateGlobalRateLimitPerMinute;
 
   /** Default Bearer token lifetime in days (capped by token-max-ttl-days and 180). */
   @Value("${geoweaver.agent.token-ttl-days:30}")
@@ -72,6 +86,15 @@ public class AgentApiProperties {
     return workspaceEventsEnabled;
   }
 
+  /** When false, DELETE on processes/workflows returns 403 (create/edit/run still allowed). */
+  public boolean isAllowDelete() {
+    return allowDelete;
+  }
+
+  public boolean isAllowRemoteHosts() {
+    return allowRemoteHosts;
+  }
+
   public String getApiTokenFile() {
     return apiTokenFile;
   }
@@ -82,6 +105,10 @@ public class AgentApiProperties {
 
   public int getTokenCreateRateLimitPerMinute() {
     return tokenCreateRateLimitPerMinute;
+  }
+
+  public int getTokenCreateGlobalRateLimitPerMinute() {
+    return tokenCreateGlobalRateLimitPerMinute;
   }
 
   public int getTokenTtlDays() {
@@ -105,10 +132,18 @@ public class AgentApiProperties {
     if (serverAddress == null || serverAddress.isBlank()) {
       return true;
     }
-    String a = serverAddress.trim().toLowerCase();
-    return !(a.equals("127.0.0.1")
+    return !isLoopbackAddress(serverAddress);
+  }
+
+  /** IPv4/IPv6 loopback literals as Tomcat reports them, plus {@code localhost}. */
+  public static boolean isLoopbackAddress(String address) {
+    if (address == null) {
+      return false;
+    }
+    String a = address.trim().toLowerCase();
+    return a.equals("127.0.0.1")
         || a.equals("::1")
-        || a.equals("localhost")
-        || a.equals("0:0:0:0:0:0:0:1"));
+        || a.equals("0:0:0:0:0:0:0:1")
+        || a.equals("localhost");
   }
 }

@@ -74,6 +74,8 @@ java -jar target/geoweaver.jar
 
 The package is produced under `Geoweaver/target/` (e.g. `geoweaver.jar` / versioned artifact).
 
+The tests never touch your own Geoweaver: they use `target/test-home` as the home folder for passwords, the database, logs and the workspace. This holds for `mvn` and for tests started from an IDE.
+
 ## Install using Docker
 
 **Step 1**: Install Docker Desktop if you haven't (see [Get Docker](https://docs.docker.com/get-docker/)).

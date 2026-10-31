@@ -6,6 +6,7 @@ import com.gw.tools.HistoryTool;
 import com.gw.tools.WorkflowTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
+import com.gw.utils.InternalRunCredential;
 import com.gw.utils.RandomString;
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -114,8 +115,16 @@ public class RunWorkflowCommand implements Runnable {
 
     // execute the workflow from DB
 
+    // The CLI user already has a shell on this machine, so localhost needs no GUI password here.
+    String[] runPasswords = new String[hostStrings.length];
+    for (int i = 0; i < hostStrings.length; i++) {
+      String given = passes != null && i < passes.length ? passes[i] : null;
+      runPasswords[i] =
+          BaseTool.isNull(given) && bt.islocal(hostStrings[i]) ? InternalRunCredential.get() : given;
+    }
+
     String response =
-        wt.execute(historyId, workflowId, "one", hostStrings, passes, envs, "xxxxxxxxxx");
+        wt.execute(historyId, workflowId, "one", hostStrings, runPasswords, envs, "xxxxxxxxxx");
     System.out.println(response);
 
     System.out.printf("The workflow has been kicked off.\nHistory Id: %s%n", historyId);

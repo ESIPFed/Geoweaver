@@ -149,8 +149,8 @@ class AgentApiIntegrationTest {
   }
 
   @Test
-  @DisplayName("HIGH-008: remote hostId rejected")
-  void rejectRemoteHost() throws Exception {
+  @DisplayName("unknown hostId returns JSON 404")
+  void rejectUnknownHost() throws Exception {
     ResponseEntity<String> created =
         rest.exchange(
             base + "/processes",
@@ -167,12 +167,13 @@ class AgentApiIntegrationTest {
             new HttpEntity<>(
                 Map.of("hostId", "ssh-remote-99", "hostPassword", "secret"), authHeaders()),
             String.class);
-    assertThat(run.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    assertThat(mapper.readTree(run.getBody()).get("error").asText()).isEqualTo("bad_request");
+    assertThat(run.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(mapper.readTree(run.getBody()).get("error").asText()).isEqualTo("not_found");
+    assertThat(run.getBody()).doesNotContain("secret");
   }
 
   @Test
-  @DisplayName("HIGH-009: missing history returns 404")
+  @DisplayName("missing history returns 404")
   void missingHistoryNotFound() throws Exception {
     ResponseEntity<String> getRun =
         rest.exchange(
