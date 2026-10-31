@@ -5,6 +5,7 @@ import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.LogFlushThrottle;
 import com.gw.utils.ProcessStatusCache;
 import java.io.BufferedReader;
 import jakarta.websocket.Session;
@@ -190,6 +191,8 @@ public void updateStatus(String logs, String status) {
 
     int linenumber = 0;
 
+    LogFlushThrottle flushThrottle = new LogFlushThrottle();
+
     int startrecorder = -1;
 
     int nullnumber = 0;
@@ -243,7 +246,7 @@ public void updateStatus(String logs, String status) {
 
         logs.append(line).append("\n");
 
-        if (linenumber % 1 == 0) {
+        if (flushThrottle.shouldFlush()) {
           this.updateStatus(logs.toString(), "Running");
         }
 

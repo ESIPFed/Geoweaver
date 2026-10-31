@@ -3,6 +3,52 @@
 ## Introduction
 In this guide, we will walk you through the steps to switch the database used by Geoweaver to either PostgreSQL or MySQL. Follow the instructions for your preferred database below.
 
+## Keeping the built-in H2 database small
+
+By default Geoweaver stores everything in an embedded H2 database at `~/h2/gw.mv.db`. H2 does not
+overwrite data in place: when a row changes, the new version is appended and the old one becomes
+free space that H2 only partly reuses while it is running. Process logs used to be saved again on
+every output line, so a busy installation could end up with a database file many times larger
+than its data (for example 60 GB for 2 GB of records).
+
+Geoweaver now handles this in two ways:
+
+- **Running logs are saved in batches.** Output still streams to the browser line by line, but the
+  database copy of a running process's log is updated at most every 5 seconds, and always when the
+  process finishes. Set `GEOWEAVER_LOG_FLUSH_MS` to change the interval (`0` saves every line, as
+  before).
+- **The file is compacted at start-up when it has grown.** Before the server opens the database it
+  checks the file. If the file is at least 512 MB and has never been compacted, or has doubled in size
+  since the last compaction, Geoweaver runs H2's `SHUTDOWN COMPACT`. This copies the live data,
+  compressed, into a new file and replaces the old one. A large file can take a few minutes, and
+  the progress is printed to the console. The size after compaction is remembered in
+  `~/h2/gw.mv.db.compacted`.
+
+Compaction is safe to interrupt. H2 writes the new copy to `gw.mv.db.tempFile` and replaces the
+original only once the copy is complete. If the process stops part way, the original file is
+unchanged and the leftover temp file is removed the next time the database is opened. Geoweaver
+skips compaction when less than 1 GB plus 10% of the file size is free on the disk. If a compaction
+still runs out of space, the original file is kept, and automatic compaction waits until the file
+has doubled again. Free some space and run `db-compact` by hand.
+
+Settings (environment variables):
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `GEOWEAVER_DB_AUTO_COMPACT` | `true` | `false` turns start-up compaction off |
+| `GEOWEAVER_DB_COMPACT_MIN_MB` | `512` | smallest file worth compacting |
+| `GEOWEAVER_LOG_FLUSH_MS` | `5000` | how often a running log is saved to the database |
+
+To compact on demand, stop the Geoweaver server and run:
+
+```shell
+java -jar geoweaver.jar db-compact --dry-run   # show what would happen
+java -jar geoweaver.jar db-compact
+```
+
+As with any maintenance on important data, keep a copy of `~/h2/gw.mv.db` before the first
+compaction if you have the disk space.
+
 ## Switching to PostgreSQL
 
 ### Step 1: Install PostgreSQL

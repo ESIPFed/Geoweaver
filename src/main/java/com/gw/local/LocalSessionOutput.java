@@ -6,6 +6,7 @@ import com.gw.jpa.History;
 import com.gw.server.CommandServlet;
 import com.gw.tools.HistoryTool;
 import com.gw.utils.BaseTool;
+import com.gw.utils.LogFlushThrottle;
 import com.gw.utils.ProcessStatusCache;
 import java.io.BufferedReader;
 import jakarta.websocket.Session;
@@ -284,6 +285,7 @@ public class LocalSessionOutput implements Runnable {
 
       // Initialize counters and statuses for monitoring and logging
       int linenumber = 0; // Line number of the current output
+      LogFlushThrottle flushThrottle = new LogFlushThrottle(); // batches database writes of the running log
       int startrecorder = -1; // Records the starting line number when the output is null
       int nullnumber = 0; // Counts consecutive null output lines
 
@@ -320,7 +322,7 @@ public class LocalSessionOutput implements Runnable {
 
           linenumber++; // Increment the line number
 
-          if (linenumber % 1 == 0) {
+          if (flushThrottle.shouldFlush()) {
             this.updateStatus(logs.toString(), "Running");
           }
 
