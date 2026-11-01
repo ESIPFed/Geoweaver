@@ -17,6 +17,7 @@
 - `geoweaver run process` and `geoweaver run workflow` run on localhost when no host is given (they used to look for a host that does not exist).
 - **Stop now ends runs that wait for their process** (command-line runs and workflow steps), and a run stopped on purpose is recorded as Stopped instead of Failed.
 - **The running server compacts the database only while no other Geoweaver process is connected to it.**
+- **Every open Geoweaver page is kept up to date with the other Geoweaver servers and commands on the same database**, within about a second: new and edited processes, workflows and hosts, runs as they start and end (a "Running now" line and a short notice), step status on the open workflow, and the history tables. Before, a page only heard about changes made through its own server. This adds a small table, `gw_workspace_feed`, created automatically; its rows are removed after an hour. `GEOWEAVER_WORKSPACE_SYNC=false` turns it off.
 
 ### Behavior changes in 3.2.0
 

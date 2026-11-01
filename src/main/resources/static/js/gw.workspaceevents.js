@@ -13,6 +13,8 @@ GW.workspaceevents = {
   pollXhr: null,
   isPolling: false,
   lastRevision: 0,
+  seenRevisions: {},
+  seenOrder: [],
   bannerDismissedThisSession: false,
   presenceByKey: {},
 
@@ -21,6 +23,7 @@ GW.workspaceevents = {
       console.warn("Workspace events: CLIENT_TOKEN missing");
       return;
     }
+    GW.workspaceevents._hookWorkflowOpen();
     GW.workspaceevents.showRiskBanner();
     GW.workspaceevents.subscribeAndPoll();
     GW.workspaceevents.startRevisionWatch();
@@ -268,8 +271,20 @@ GW.workspaceevents = {
     if (!evt || !evt.event) {
       return;
     }
+    if (typeof evt.revision === "number" && evt.revision > 0) {
+      // the WebSocket and the long poll can both deliver an event: handle it once
+      var seen = GW.workspaceevents.seenRevisions;
+      if (seen[evt.revision]) return;
+      seen[evt.revision] = true;
+      GW.workspaceevents.seenOrder.push(evt.revision);
+      if (GW.workspaceevents.seenOrder.length > 500) delete seen[GW.workspaceevents.seenOrder.shift()];
+    }
     if (typeof evt.revision === "number" && evt.revision > GW.workspaceevents.lastRevision) {
       GW.workspaceevents.lastRevision = evt.revision;
+    }
+    if (evt.objectKind === "run") {
+      GW.workspaceevents._onRunEvent(evt);
+      return;
     }
     GW.workspaceevents._notePresence(evt);
     GW.workspaceevents._scheduleListRefresh();
@@ -347,7 +362,7 @@ GW.workspaceevents = {
       return;
     }
     var parts = live.slice(0, 4).map(function (x) {
-      var who = x.p.actor === "agent" ? "AI agent" : "Person";
+      var who = x.p.actor === "agent" ? "AI agent" : "A person";
       var fp = x.p.tokenFingerprint ? " " + x.p.tokenFingerprint : "";
       return who + fp + " on " + x.key;
     });
@@ -466,7 +481,207 @@ GW.workspaceevents = {
       toastr.info(text);
       return;
     }
-    console.log(text);
+    var box = document.getElementById("gw-workspace-toasts");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "gw-workspace-toasts";
+      box.style.cssText =
+        "position:fixed;left:16px;bottom:16px;z-index:10070;display:flex;flex-direction:column;gap:6px;max-width:360px;";
+      document.body.appendChild(box);
+    }
+    var t = document.createElement("div");
+    t.setAttribute("role", "status");
+    t.className = "gw-workspace-toast";
+    t.textContent = text;
+    t.style.cssText =
+      "padding:8px 12px;background:#323232;color:#fff;border-radius:4px;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.3);";
+    box.appendChild(t);
+    while (box.children.length > 4) box.removeChild(box.firstChild);
+    setTimeout(function () {
+      if (t.parentNode) t.parentNode.removeChild(t);
+    }, 6000);
+  },
+
+  // ---- Runs started anywhere on this database (this browser, another browser, another
+  // Geoweaver server, or the command line over SSH) ----
+
+  liveRuns: {},
+  runWatchTimer: null,
+  runWatchLastId: null,
+  historyRefreshTimer: null,
+
+  _onRunEvent: function (evt) {
+    var self = GW.workspaceevents;
+    var target = evt.target || evt.objectName; // process or workflow id
+    var name = evt.objectName || target;
+    var isWorkflowRun = !!evt.workflowId && target === evt.workflowId;
+    if (evt.event === "run.finished") {
+      delete self.liveRuns[evt.objectId];
+    } else {
+      self.liveRuns[evt.objectId] = {
+        target: target,
+        name: name,
+        workflowId: evt.workflowId,
+        status: evt.status,
+        workflowRun: isWorkflowRun,
+      };
+    }
+    if (isWorkflowRun || !evt.workflowId) {
+      if (evt.event === "run.started") {
+        self._toast(
+          (isWorkflowRun ? "Workflow " : "Process ") + name + " started running.",
+        );
+      } else if (evt.event === "run.finished") {
+        self._toast(
+          (isWorkflowRun ? "Workflow " : "Process ") + name + " finished: " + evt.status + ".",
+        );
+      }
+    }
+    self._renderRunStrip();
+    if (evt.event === "run.started") {
+      // a run of something imported elsewhere (for example on the command line) lists it here
+      self._scheduleListRefresh();
+    }
+    if (evt.event !== "run.updated") {
+      self._scheduleHistoryRefresh(target, evt.workflowId);
+    }
+    var openWf = GW.workflow && GW.workflow.loaded_workflow;
+    if (openWf && evt.workflowId === openWf) {
+      self._watchWorkflowRuns();
+    }
+  },
+
+  /** One line naming what is running now, wherever it was started. */
+  _renderRunStrip: function () {
+    var self = GW.workspaceevents;
+    var strip = document.getElementById("gw-live-runs-strip");
+    var names = [];
+    Object.keys(self.liveRuns).forEach(function (id) {
+      var r = self.liveRuns[id];
+      if (r.workflowRun) names.push("workflow " + (r.name || r.target));
+      else if (!r.workflowId) names.push("process " + (r.name || r.target));
+    });
+    if (!names.length) {
+      if (strip) strip.style.display = "none";
+      return;
+    }
+    if (!strip) {
+      strip = document.createElement("div");
+      strip.id = "gw-live-runs-strip";
+      strip.setAttribute("role", "status");
+      strip.style.cssText =
+        "padding:6px 12px;background:#e8f5e9;color:#1b5e20;border-bottom:1px solid #c8e6c9;font-size:13px;";
+      var host =
+        document.getElementById("main-content-area") ||
+        document.querySelector(".main-panel") ||
+        document.body;
+      host.insertBefore(strip, host.firstChild);
+    }
+    strip.style.display = "block";
+    strip.textContent = "Running now: " + names.slice(0, 5).join(", ") + (names.length > 5 ? ", ..." : "");
+  },
+
+  /** Refreshes the history tables on screen for this process or workflow (at most once a second). */
+  _scheduleHistoryRefresh: function (target, workflowId) {
+    var self = GW.workspaceevents;
+    self._pendingHistory = self._pendingHistory || {};
+    if (target) self._pendingHistory[target] = true;
+    if (workflowId) self._pendingHistory[workflowId] = true;
+    if (self.historyRefreshTimer) return;
+    self.historyRefreshTimer = setTimeout(function () {
+      var pending = self._pendingHistory;
+      self._pendingHistory = {};
+      self.historyRefreshTimer = null;
+      try {
+        var wfTable = $("#workflow-history-table");
+        if (wfTable.length && wfTable.is(":visible") && pending[wfTable.data("workflow-id")]) {
+          GW.history.refreshWorkflowHistoryTable();
+        }
+        $('[onclick*="refreshHistoryTable("]').each(function () {
+          var m = /refreshHistoryTable\('([^']*)',\s*'([^']*)'\)/.exec($(this).attr("onclick") || "");
+          if (!m) return;
+          var table = $("#" + m[1]);
+          if (table.length && table.is(":visible") && pending[table.data("process-id")]) {
+            GW.history.refreshHistoryTable(m[1], m[2]);
+          }
+        });
+      } catch (e) {
+        console.warn("History refresh failed", e);
+      }
+    }, 1000);
+  },
+
+  /**
+   * While the open workflow has a run that has not ended (started here or anywhere else), shows
+   * each step's status on the canvas every two seconds; one last update when it ends.
+   */
+  _watchWorkflowRuns: function () {
+    var self = GW.workspaceevents;
+    if (self.runWatchTimer) return;
+    var tick = function () {
+      var wf = GW.workflow && GW.workflow.loaded_workflow;
+      if (!wf) {
+        self.runWatchTimer = null;
+        return;
+      }
+      $.ajax({
+        url: GW.path.getBasePath() + "api/workspace/runs?target=" + encodeURIComponent(wf),
+        type: "GET",
+        dataType: "json",
+      })
+        .done(function (runs) {
+          var id = runs && runs.length ? runs[runs.length - 1].historyId : null;
+          var last = self.runWatchLastId;
+          if (id) self.runWatchLastId = id;
+          var show = id || last;
+          if (show) self._showRunOnCanvas(wf, show);
+          if (id) {
+            self.runWatchTimer = setTimeout(tick, 2000);
+          } else {
+            self.runWatchTimer = null;
+            self.runWatchLastId = null;
+          }
+        })
+        .fail(function () {
+          self.runWatchTimer = null;
+        });
+    };
+    self.runWatchTimer = setTimeout(tick, 50);
+  },
+
+  _showRunOnCanvas: function (wf, historyId) {
+    $.ajax({
+      url: GW.path.getBasePath() + "api/workspace/runs/" + encodeURIComponent(historyId),
+      type: "GET",
+      dataType: "json",
+    }).done(function (run) {
+      if (!run || !run.steps || (GW.workflow && GW.workflow.loaded_workflow !== wf)) return;
+      if (!GW.workspace || !GW.workspace.theGraph || typeof GW.workspace.updateStatus !== "function") return;
+      var list = run.steps.map(function (s) {
+        return { id: s.nodeId, history_id: s.historyId, status: s.status };
+      });
+      try {
+        GW.workspace.updateStatus(list);
+      } catch (e) {
+        console.warn("Could not show run status on the canvas", e);
+      }
+    });
+  },
+
+  /** Opening a workflow also shows a run of it that is going on right now. */
+  _hookWorkflowOpen: function () {
+    if (!GW.workflow || typeof GW.workflow.showWorkflow !== "function" || GW.workflow._liveRunHooked) {
+      return;
+    }
+    var original = GW.workflow.showWorkflow;
+    GW.workflow.showWorkflow = function () {
+      var result = original.apply(this, arguments);
+      setTimeout(function () {
+        GW.workspaceevents._watchWorkflowRuns();
+      }, 800);
+      return result;
+    };
+    GW.workflow._liveRunHooked = true;
   },
 
   shouldAutoReloadWorkflow: function (unsaved) {

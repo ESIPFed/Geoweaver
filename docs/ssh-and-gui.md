@@ -15,11 +15,23 @@ Do not copy the database file to run a second Geoweaver on the copy. Do not remo
 | | Works |
 | --- | --- |
 | Run `geoweaver run workflow <id>` or `geoweaver run process <id>` in SSH while the browser page is open | yes |
-| See its progress in the browser: status, each step, and the log, refreshed every few seconds | yes |
+| See it in the browser as it happens: a "Running now" line, a notice when it starts and ends, each step's status on the open workflow, and the log | yes, within about a second |
+| See processes and workflows that an agent creates or edits through another Geoweaver server | yes: the lists update, and an open workflow reloads |
 | Press **Stop** in the browser (or `POST /api/v1/runs/{id}/stop`) for a run started from the command line | yes: the command stops the run within about a second, and steps not yet started do not run |
 | Run commands while the server is down | yes |
 | Start the server while a command runs, or stop it | yes |
 | Use the Agent API of the server while commands run | yes |
+
+## Watching an agent from another Geoweaver
+
+Each Geoweaver server keeps its open pages in step with everything else on the database. Once a second it looks for runs that started, changed status or ended, whichever process started them, and for changes that other servers recorded in a small shared table. So an agent can work through a Geoweaver on the login node (its Agent API, or `geoweaver` commands) while you watch from a second Geoweaver in Open OnDemand:
+
+- the green **Running now** line names each running workflow or process, and a notice appears when one starts or ends;
+- a workflow open on the canvas shows each step as running, done or failed;
+- the process and workflow lists, and the history tables, refresh by themselves;
+- if the agent changes the workflow you have open, the canvas reloads (or asks first when you have unsaved changes).
+
+`GEOWEAVER_WORKSPACE_SYNC=false` turns this off for a server.
 
 ## Running workflows from SSH
 
