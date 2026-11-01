@@ -21,6 +21,8 @@
 - **Run folders in `~/gw-workspace` no longer keep a copy of every Python process.** Geoweaver removes the files it placed there when a run ends; files your code writes are kept. Set `GEOWEAVER_KEEP_RUN_FILES=true` for the old behavior.
 - **Running logs are saved to the database every 5 seconds** instead of on every output line; live output in the browser is unchanged.
 - History lookups use new indexes, created automatically on the first start.
+- **The command line and the browser can work on the same database at the same time**, also from different machines that share the home folder, for example an SSH login node and an Open OnDemand session. The browser shows runs started with `geoweaver run ...` as they progress, and **Stop** in the browser now stops them. `~/h2` and `~/geoweaver` are made readable only by you (`GEOWEAVER_PRIVATE_FILES=false` to keep permissions as they are). See [SSH and browser together](ssh-and-gui.md).
+- `geoweaver run process` and `geoweaver run workflow` run on localhost when no host is given (they used to look for a host that does not exist).
 
 ### Behavior changes in 3.1.0
 

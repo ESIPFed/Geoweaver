@@ -61,13 +61,16 @@ public class RunWorkflowCommand implements Runnable {
 
     WorkflowTool wt = BeanTool.getBean(WorkflowTool.class);
 
+    // Stop pressed in a browser connected to the same database reaches this run.
+    com.gw.web.GeoweaverController.watchStopRequests();
+
     BaseTool bt = BeanTool.getBean(BaseTool.class);
 
     String historyId = new RandomString(18).nextString();
 
     if (BaseTool.isNull(envs)) envs = new String[] {"default_option"};
 
-    if (BaseTool.isNull(hostStrings)) hostStrings = new String[] {"10001"};
+    if (BaseTool.isNull(hostStrings)) hostStrings = new String[] {"100001"};
 
     if (workflowFolderPath != null && workflowZipPath != null) {
 
@@ -173,7 +176,7 @@ public class RunWorkflowCommand implements Runnable {
     }
 
     System.out.printf(
-        "Total time cost: %o seconds%n",
+        "Total time cost: %d seconds%n",
         BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time()));
 
     System.out.printf("Execution is over. Final status: %s.%n", hist.getIndicator());
