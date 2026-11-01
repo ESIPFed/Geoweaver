@@ -26,7 +26,7 @@ public class RunProcessCommand implements Runnable {
   @Option(
       names = {"-h", "--host"},
       description = "host to run on",
-      defaultValue = "10001")
+      defaultValue = "100001")
   String hostid;
 
   @Option(
@@ -43,6 +43,9 @@ public class RunProcessCommand implements Runnable {
   public void run() {
 
     ProcessTool pt = BeanTool.getBean(ProcessTool.class);
+
+    // Stop pressed in a browser connected to the same database reaches this run.
+    com.gw.web.GeoweaverController.watchStopRequests();
 
     BaseTool bt = BeanTool.getBean(BaseTool.class);
 
@@ -84,7 +87,7 @@ public class RunProcessCommand implements Runnable {
 
     System.out.println(
         String.format(
-            "Total time cost: %o seconds",
+            "Total time cost: %d seconds",
             BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time())));
 
     CommandLineUtil.CommandLineTable table = new CommandLineUtil.CommandLineTable();

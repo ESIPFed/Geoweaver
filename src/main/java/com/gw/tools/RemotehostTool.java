@@ -108,11 +108,12 @@ public class RemotehostTool {
 
       session.login(hid, pswd, token, false);
 
-      session.runBash(history_id, code, id, isjoin, token);
-
-      // Store session with both token and history_id as keys for easy lookup
+      // Store session with both token and history_id as keys for easy lookup, before running:
+      // with isjoin the call below returns only when the command ends, and Stop must find it.
       GeoweaverController.sessionManager.sshSessionByToken.put(token, session);
       GeoweaverController.sessionManager.sshSessionByToken.put(history_id, session);
+
+      session.runBash(history_id, code, id, isjoin, token);
 
       resp =
           "{\"history_id\": \""
