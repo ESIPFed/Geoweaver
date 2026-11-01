@@ -11,6 +11,13 @@
 3. Upgrade via Python or JAR (below).
 4. If the database fails to open after the jump, use [Complex Upgrade (Database Migration)](#complex-upgrade-database-migration).
 
+### Behavior changes in 3.3.1
+
+- **The command line and the browser can work on the same database at the same time**, also from different machines that share the home folder, for example an SSH login node and an Open OnDemand session. The browser shows runs started with `geoweaver run ...` as they progress, and **Stop** in the browser now stops them. `~/h2` and `~/geoweaver` are made readable only by you (`GEOWEAVER_PRIVATE_FILES=false` to keep permissions as they are). See [SSH and browser together](ssh-and-gui.md).
+- `geoweaver run process` and `geoweaver run workflow` run on localhost when no host is given (they used to look for a host that does not exist).
+- **Stop now ends runs that wait for their process** (command-line runs and workflow steps), and a run stopped on purpose is recorded as Stopped instead of Failed.
+- **The running server compacts the database only while no other Geoweaver process is connected to it.**
+
 ### Behavior changes in 3.2.0
 
 - **Long process logs are kept in files, not in the database.** A log that grows past 64 KB is written to `~/geoweaver/run-logs/` (compressed when the run ends), and the database keeps only its last 64 KB. The run page and the Agent API read the full log from the file. Point `GEOWEAVER_RUN_LOG_DIR` at any disk with room. Back up this folder together with `~/h2/`. See [Database](database-configuration.md#keeping-the-built-in-h2-database-small).
@@ -21,9 +28,6 @@
 - **Run folders in `~/gw-workspace` no longer keep a copy of every Python process.** Geoweaver removes the files it placed there when a run ends; files your code writes are kept. Set `GEOWEAVER_KEEP_RUN_FILES=true` for the old behavior.
 - **Running logs are saved to the database every 5 seconds** instead of on every output line; live output in the browser is unchanged.
 - History lookups use new indexes, created automatically on the first start.
-- **The command line and the browser can work on the same database at the same time**, also from different machines that share the home folder, for example an SSH login node and an Open OnDemand session. The browser shows runs started with `geoweaver run ...` as they progress, and **Stop** in the browser now stops them. `~/h2` and `~/geoweaver` are made readable only by you (`GEOWEAVER_PRIVATE_FILES=false` to keep permissions as they are). See [SSH and browser together](ssh-and-gui.md).
-- `geoweaver run process` and `geoweaver run workflow` run on localhost when no host is given (they used to look for a host that does not exist).
-
 ### Behavior changes in 3.1.0
 
 - **Localhost runs need the real localhost password again.** An empty password no longer runs code on the Geoweaver server. The GUI and `gw run … -p <password>` are unaffected; `gw run` on localhost without `-p` still works because the CLI user is already on that machine. AI agents use a Bearer token ([Agent API](agent-api.md)).
