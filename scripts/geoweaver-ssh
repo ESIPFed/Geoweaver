@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Run geoweaver commands on a cluster from your own computer over one shared SSH connection.
+#
+# With an SSH key that the cluster accepts on its own, nothing else is needed: the connection is
+# opened, and reopened after it drops, automatically. If the cluster also asks for a password or a
+# second factor, log in once with "connect"; every later command, yours or a coding agent's,
+# reuses that connection. When it is gone and cannot be reopened with the key, commands stop at
+# once with a message that says how to reconnect, instead of waiting at a prompt nobody answers.
+#
+#   geoweaver-ssh connect              log in (asks for password / 2FA) and keep the connection open
+#   geoweaver-ssh status               is the connection open?
+#   geoweaver-ssh forward [PORT]       open the cluster's Geoweaver page at http://localhost:PORT/Geoweaver
+#   geoweaver-ssh disconnect           close the connection
+#   geoweaver-ssh <geoweaver args...>  run geoweaver on the cluster, for example:
+#   geoweaver-ssh workflow list --json
+#
+# Settings (environment):
+#   GEOWEAVER_SSH_HOST     the cluster, as you would pass it to ssh (required), e.g. you@login.cluster.edu
+#   GEOWEAVER_SSH_PORT     local and remote port for "forward" (default 8070)
+#   GEOWEAVER_REMOTE_CMD   the geoweaver command on the cluster (default: geoweaver)
+#   GEOWEAVER_SSH_KEEP     how long an idle connection stays open (default 12h)
+#
+# Exit codes: those of geoweaver, or 75 when there is no connection (log in again with "connect").
+
+set -u
+
+HOST="${GEOWEAVER_SSH_HOST:-}"
+SSH="${GEOWEAVER_SSH_BIN:-ssh}"
+REMOTE_CMD="${GEOWEAVER_REMOTE_CMD:-geoweaver}"
+FWD_PORT="${GEOWEAVER_SSH_PORT:-8070}"
+KEEP="${GEOWEAVER_SSH_KEEP:-12h}"
+SOCKET_DIR="${GEOWEAVER_SSH_SOCKET_DIR:-$HOME/.ssh/geoweaver-sockets}"
+EX_NOCONN=75
+SELF="$(basename "$0")"
+
+if [ -z "$HOST" ]; then
+  echo "$SELF: set GEOWEAVER_SSH_HOST to your cluster, for example: export GEOWEAVER_SSH_HOST=you@login.cluster.edu" >&2
+  exit 2
+fi
+
+mkdir -p "$SOCKET_DIR" && chmod 700 "$SOCKET_DIR"
+CONTROL=(-o "ControlPath=$SOCKET_DIR/%r@%h:%p")
+
+# What to tell whoever ran the command (often a coding agent, which passes it on to you).
+no_connection() {
+  cat >&2 <<EOF
+GEOWEAVER-SSH: NOT CONNECTED to $HOST.
+The shared SSH connection is closed (logged out, network change, laptop sleep, or it was idle
+longer than $KEEP), and it could not be reopened with an SSH key alone: the cluster wants a
+password or a second factor, which needs you. Nothing was run.
+Reconnect in your own terminal, then repeat the command:
+
+    $SELF connect
+
+(Same as: ssh -fN -o ControlMaster=yes -o ControlPersist=$KEEP -o ServerAliveInterval=30 -o ControlPath='$SOCKET_DIR/%r@%h:%p' $HOST)
+EOF
+  exit $EX_NOCONN
+}
+
+is_open() {
+  "$SSH" "${CONTROL[@]}" -O check "$HOST" >/dev/null 2>&1
+}
+
+MASTER_OPTS=(-o ControlMaster=yes -o "ControlPersist=$KEEP" -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o TCPKeepAlive=yes)
+
+# Opens the shared connection with an SSH key (or agent) alone, never prompting. Fails quietly
+# when the cluster wants a password or a second factor.
+open_with_key() {
+  "$SSH" "${CONTROL[@]}" -fN -o BatchMode=yes -o ConnectTimeout=15 "${MASTER_OPTS[@]}" "$HOST" >/dev/null 2>&1 && is_open
+}
+
+ensure_open() {
+  is_open || open_with_key || no_connection
+}
+
+case "${1:-}" in
+  connect)
+    if is_open; then
+      echo "Already connected to $HOST."
+      exit 0
+    fi
+    # Interactive: you answer the password / two-factor prompts here (none with a key alone).
+    "$SSH" "${CONTROL[@]}" -fN "${MASTER_OPTS[@]}" "$HOST" || exit $?
+    is_open && echo "Connected to $HOST. Commands reuse this connection for up to $KEEP of idle time." && exit 0
+    echo "Could not open a shared connection to $HOST." >&2
+    exit 1
+    ;;
+  status)
+    ensure_open
+    echo "Connected to $HOST."
+    exit 0
+    ;;
+  forward)
+    port="${2:-$FWD_PORT}"
+    ensure_open
+    "$SSH" "${CONTROL[@]}" -O forward -L "$port:localhost:$port" "$HOST" >/dev/null 2>&1 \
+      || { echo "Could not forward port $port (is it already forwarded or in use here?)" >&2; exit 1; }
+    echo "Geoweaver on $HOST: http://localhost:$port/Geoweaver"
+    exit 0
+    ;;
+  disconnect)
+    "$SSH" "${CONTROL[@]}" -O exit "$HOST" >/dev/null 2>&1
+    echo "Disconnected from $HOST."
+    exit 0
+    ;;
+  ""|-h|--help|help)
+    sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+    exit 0
+    ;;
+esac
+
+ensure_open
+
+# Quote each argument for the remote shell, and start a login shell there so that PATH, modules
+# and conda set up in your profile apply, as in an interactive session.
+remote="bash -lc 'exec $REMOTE_CMD \"\$@\"' geoweaver"
+for a in "$@"; do
+  remote+=" $(printf '%q' "$a")"
+done
+
+stdin_opt=()
+[ -t 0 ] && stdin_opt=(-n) # no input to send unless something is piped in (--code-file -)
+
+"$SSH" "${CONTROL[@]}" -o BatchMode=yes -o ControlMaster=no ${stdin_opt[@]+"${stdin_opt[@]}"} "$HOST" "$remote"
+rc=$?
+if [ $rc -eq 255 ] && ! is_open; then
+  echo "GEOWEAVER-SSH: the connection to $HOST dropped during the command; it may or may not have finished." >&2
+  echo "Check with: $SELF run list --json   (reconnecting first if needed)" >&2
+  open_with_key || no_connection
+  exit $EX_NOCONN
+fi
+exit $rc

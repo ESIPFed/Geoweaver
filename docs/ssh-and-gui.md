@@ -21,6 +21,7 @@ Do not copy the database file to run a second Geoweaver on the copy. Do not remo
 | Run commands while the server is down | yes |
 | Start the server while a command runs, or stop it | yes |
 | Use the Agent API of the server while commands run | yes |
+| Create and change processes and workflows from the command line while a page is open | yes: the page updates within about a second |
 
 ## Watching an agent from another Geoweaver
 
@@ -61,9 +62,63 @@ If the command is killed outright (`kill -9`, node reboot), its run stays "Runni
   # then open http://localhost:8070/Geoweaver on your laptop
   ```
 
-## Coding agents in an SSH session
+## Coding agents: Geoweaver through commands only
 
-An agent working in your SSH session can use the commands above. It can also use the [Agent API](agent-api.md) of a running server with a token (`geoweaver agent-token --create --no-browser --show-token`). Either way, everything it runs shows up in your browser.
+An agent (for example Claude Code) can do everything through `geoweaver` commands, with no Geoweaver server on its side and no token. Add `--json` and standard output carries exactly one JSON document, in the same shapes as the [Agent API](agent-api.md); messages go to standard error. Errors print `{"error": "...", "status": 404}` and exit with 1.
+
+| Task | Command |
+| --- | --- |
+| List, show | `geoweaver process list --json`, `geoweaver process show <id> --json` (same for `workflow`) |
+| Create a process | `geoweaver process create --name clean_data --lang python --code-file clean.py --json` (`--code-file -` reads standard input) |
+| Change it | `geoweaver process update <id> --code-file clean.py --json` |
+| Create a workflow | `geoweaver workflow create --name daily --steps <p1>,<p2>,<p3> --json` (a chain), or `--file graph.json` with `nodes` and `edges` as in the Agent API |
+| Change a workflow | `geoweaver workflow update <id> --steps ... --json` |
+| Start a run and return | `geoweaver run workflow <id> --detach --json` prints `{"runId": ...}`; the run continues in its own process after the command returns, the SSH session closes or the agent's shell is stopped. Its output is in `~/geoweaver/cli-runs/<runId>.log` |
+| Wait for it | `geoweaver run status <runId> --wait 600 --json` (exit 1 when it ended Failed or Stopped) |
+| Read its log | `geoweaver run log <runId>`; `-f` follows it to the end, step by step for a workflow |
+| Stop it | `geoweaver run stop <runId> --json`, also for runs started in a browser |
+| Recent runs | `geoweaver run list --status Running --json` |
+| Delete | `geoweaver process delete <id>`, `geoweaver workflow delete <id>` |
+
+Everything these commands do shows up in every Geoweaver page open on the same database within about a second, on any machine: new and changed processes and workflows, a "Running now" line, a notice when runs start and end, and each step's status on the open workflow. The page says "The command line" changed it.
+
+Runs on `localhost` (the default) need no password: they run on the machine where the command runs, as you. Each command takes about 3 seconds to start Java.
+
+## Calling the cluster from your own computer
+
+When the agent runs on your laptop and Geoweaver lives on the cluster, `scripts/geoweaver-ssh` runs `geoweaver` there over one shared SSH connection:
+
+```bash
+export GEOWEAVER_SSH_HOST=you@login.cluster.edu
+scripts/geoweaver-ssh connect                 # once; answers password / two-factor prompts if any
+scripts/geoweaver-ssh workflow list --json    # reuses the connection, no prompt
+scripts/geoweaver-ssh forward 8070            # the cluster's Geoweaver page at http://localhost:8070/Geoweaver
+```
+
+- **With an SSH key the cluster accepts on its own,** `connect` is not even needed: the script opens the connection with the key, and opens it again after it drops, without asking anything.
+- **When the cluster also wants a second factor,** you log in once with `connect`, and the connection stays open while it is used (and up to 12 hours idle, `GEOWEAVER_SSH_KEEP`). Keep-alive messages hold it through quiet periods.
+- **When the connection is gone and the key alone cannot reopen it** (network change, laptop sleep, the cluster ended the session), the script never waits at a prompt. It prints `GEOWEAVER-SSH: NOT CONNECTED` with the command to run, and exits with 75. An agent passes this on to you; run `scripts/geoweaver-ssh connect` in your own terminal and let it continue.
+- Commands start a login shell on the cluster, so `module load` and `PATH` lines in your profile apply. Set `GEOWEAVER_REMOTE_CMD` if `geoweaver` is called something else there, for example `GEOWEAVER_REMOTE_CMD="java -jar ~/geoweaver/geoweaver.jar"`.
+
+It works with any server you can reach with `ssh`; nothing in it is specific to one cluster:
+
+- `GEOWEAVER_SSH_HOST` can be a `Host` entry from `~/.ssh/config`, so user name, key (`IdentityFile`), port and a jump host (`ProxyJump bastion.example.edu`) live there.
+- Many sites skip the second factor on their VPN or campus network and accept a key alone; there the connection reopens by itself. Off the VPN you log in once per session with `connect`.
+- Login names that rotate between several login nodes are fine: all commands go through the one connection, so they reach the same node, and runs, logs and Stop work across nodes because they live in the shared home folder.
+- Use the login node for starting and watching runs. Put heavy work on compute nodes from inside the process, for example with `sbatch --wait` or `srun` in a shell process.
+
+For Claude Code, a few lines in the project's `CLAUDE.md` are enough:
+
+```markdown
+Geoweaver runs on the cluster. Use `scripts/geoweaver-ssh <geoweaver command> --json` for every
+Geoweaver action (process/workflow create, update, show; run ... --detach; run status --wait; run log; run stop).
+Do not start a Geoweaver server. If a command prints GEOWEAVER-SSH: NOT CONNECTED, stop and ask me
+to run `scripts/geoweaver-ssh connect`.
+```
+
+## Several Geoweaver servers at once
+
+Any number of Geoweaver servers and commands can use one database at the same time, on one machine or on several that share the home folder (for example a server on the login node and one in an Open OnDemand session). Each server shows in its pages what all the others do. Forwarding a server's page to your laptop with SSH (`-L 8070:localhost:8070`, or `geoweaver-ssh forward`) does not change this; the page talks to its server, and the servers share the database directly.
 
 ## Requirements and limits
 
@@ -74,6 +129,7 @@ An agent working in your SSH session can use the commands above. It can also use
   spring.datasource.url=jdbc:h2:file:~/h2/gw;AUTO_SERVER=TRUE;AUTO_SERVER_PORT=9092;INIT=create domain if not exists jsonb as text;CACHE_SIZE=65536
   ```
 
+- **Servers on several machines:** leave `GEOWEAVER_DB_BIND_ADDRESS` unset (or set it to an address the other machines can reach); `127.0.0.1` would shut them out.
 - **One machine only, for example a laptop:** `export GEOWEAVER_DB_BIND_ADDRESS=127.0.0.1` keeps the database on this machine. It also keeps sharing working after the laptop joins another network. Without it, H2 announces the network address it had at start-up.
 - **Private files.** Geoweaver makes `~/h2` and `~/geoweaver` readable only by you, because they hold the database and the key other processes use to connect. `GEOWEAVER_PRIVATE_FILES=false` turns this off, for example when you share a database folder on purpose.
 - **Storage maintenance.** A running server compacts the database only while it holds the file itself and no other process is connected. Otherwise it tries again at its next check (see [Database](database-configuration.md)).

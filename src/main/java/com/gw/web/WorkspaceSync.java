@@ -3,6 +3,7 @@ package com.gw.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gw.api.v1.workspace.WorkspaceEvent;
 import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
+import com.gw.api.v1.workspace.WorkspaceFeedWriter;
 import com.gw.database.HistoryRepository;
 import com.gw.database.ProcessRepository;
 import com.gw.database.WorkflowRepository;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +51,7 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
 
   private static final Logger log = Logger.getLogger(WorkspaceSync.class);
 
-  /** Identifies this process's rows in the shared feed. */
-  static final String ORIGIN = UUID.randomUUID().toString();
+  static final String ORIGIN = WorkspaceFeedWriter.ORIGIN;
 
   static final long FEED_KEEP_MS = 3600_000L;
   private static final long CLEANUP_EVERY_MS = 600_000L;
@@ -64,6 +63,7 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
   private final WorkspaceEventBroadcaster broadcaster;
   private final ObjectMapper mapper;
   private final Environment env;
+  private final WorkspaceFeedWriter writer;
 
   private ScheduledExecutorService executor;
   private long lastFeedId = -1;
@@ -94,7 +94,8 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
       ProcessRepository processes,
       WorkspaceEventBroadcaster broadcaster,
       ObjectMapper mapper,
-      Environment env) {
+      Environment env,
+      WorkspaceFeedWriter writer) {
     this.feed = feed;
     this.history = history;
     this.workflows = workflows;
@@ -102,6 +103,7 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
     this.broadcaster = broadcaster;
     this.mapper = mapper;
     this.env = env;
+    this.writer = writer;
   }
 
   @Override
@@ -125,17 +127,7 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
 
   /** Writes one of this server's change notices to the shared feed. */
   void share(WorkspaceEvent e) {
-    try {
-      WorkspaceFeedEvent row = new WorkspaceFeedEvent();
-      row.setCreatedAt(new Date());
-      row.setOrigin(ORIGIN);
-      String json = mapper.writeValueAsString(e.withRevision(0));
-      if (json.length() > 4000) return; // notices are small; never truncate JSON
-      row.setPayload(json);
-      feed.save(row);
-    } catch (Exception ex) {
-      log.debug("Could not share a workspace change: " + ex);
-    }
+    writer.share(e);
   }
 
   /** One pass. Never throws. */

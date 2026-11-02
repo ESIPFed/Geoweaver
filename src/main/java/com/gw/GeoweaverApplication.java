@@ -32,7 +32,18 @@ public class GeoweaverApplication {
 
   static Logger logger = Logger.getLogger(GeoweaverApplication.class);
 
+  /** The command-line arguments of this process, for commands that start a copy of themselves. */
+  public static String[] cliArgs = new String[0];
+
   public static void main(String[] args) {
+    cliArgs = args.clone();
+    if (args.length > 0) {
+      com.gw.commands.CliOutput.begin(args);
+      // Commands show warnings and errors only; the log file keeps everything.
+      if (System.getProperty("GEOWEAVER_CONSOLE_LOG_LEVEL") == null) {
+        System.setProperty("GEOWEAVER_CONSOLE_LOG_LEVEL", "WARN");
+      }
+    }
     // Create log directory before anything else to avoid NoSuchFileException
     createLogDirectory();
     // Latest Geoweaver requires Java 17+ (Spring Boot 3); refuse older JDKs early.
@@ -65,7 +76,8 @@ public class GeoweaverApplication {
         System.exit(1);
         return;
       }
-      System.exit(SpringApplication.exit(cli));
+      int code = SpringApplication.exit(cli);
+      System.exit(code != 0 ? code : com.gw.commands.CliOutput.exitCode());
 
     } else {
 

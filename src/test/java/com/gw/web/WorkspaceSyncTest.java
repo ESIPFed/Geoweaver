@@ -50,7 +50,7 @@ class WorkspaceSyncTest {
     when(history.findActiveRunHeads()).thenAnswer(i -> new ArrayList<>(activeRuns));
     when(feed.maxId()).thenReturn(10L);
     when(feed.findTop200ByIdGreaterThanOrderByIdAsc(anyLong())).thenReturn(List.of());
-    sync = new WorkspaceSync(feed, history, workflows, processes, broadcaster, mapper, new MockEnvironment());
+    sync = new WorkspaceSync(feed, history, workflows, processes, broadcaster, mapper, new MockEnvironment(), new com.gw.api.v1.workspace.WorkspaceFeedWriter(feed));
   }
 
   private WorkspaceFeedEvent row(long id, String origin, WorkspaceEvent e) throws Exception {

@@ -362,8 +362,11 @@ GW.workspaceevents = {
       return;
     }
     var parts = live.slice(0, 4).map(function (x) {
-      var who = x.p.actor === "agent" ? "AI agent" : "A person";
-      var fp = x.p.tokenFingerprint ? " " + x.p.tokenFingerprint : "";
+      var who = GW.workspaceevents._who(x.p.actor, x.p.tokenFingerprint);
+      var fp =
+        x.p.actor === "agent" && x.p.tokenFingerprint && x.p.tokenFingerprint !== "cli"
+          ? " " + x.p.tokenFingerprint
+          : "";
       return who + fp + " on " + x.key;
     });
     strip.style.display = "block";
@@ -397,6 +400,13 @@ GW.workspaceevents = {
     }
   },
 
+  /** Who made a change, in words: a person, the command line, or an AI agent. */
+  _who: function (actor, fingerprint) {
+    if (actor === "human") return "A person";
+    if (fingerprint === "cli") return "The command line";
+    return "An AI agent";
+  },
+
   _handleOpenObject: function (evt) {
     var openWf = GW.workflow && GW.workflow.loaded_workflow;
     var touchesOpenWf =
@@ -416,7 +426,7 @@ GW.workspaceevents = {
       } else if (openWf && typeof GW.workflow.showWorkflow === "function") {
         GW.workflow.showWorkflow(openWf);
         GW.workspaceevents._toast(
-          "Workflow refreshed (" + (evt.actor || "collaborator") + ").",
+          GW.workspaceevents._who(evt.actor, evt.tokenFingerprint) + " changed this workflow; it was reloaded.",
         );
       }
     }
@@ -426,7 +436,7 @@ GW.workspaceevents = {
       ($("#processid").length ? $("#processid").val() : null);
     if (evt.objectKind === "process" && openPid && openPid === evt.objectId) {
       GW.workspaceevents._showReloadNotice(
-        (evt.actor === "human" ? "A person" : "An AI agent") +
+        GW.workspaceevents._who(evt.actor, evt.tokenFingerprint) +
           " updated process " +
           (evt.objectName || evt.objectId) +
           ". Reload to see the saved code (your editor buffer is kept until you reload).",
