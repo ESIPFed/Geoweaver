@@ -97,7 +97,7 @@ Settings (environment variables):
 | `GEOWEAVER_DB_BIND_ADDRESS` | (network address) | where the database is served to other Geoweaver processes; `127.0.0.1` for one machine only |
 
 Several Geoweaver processes (the server, commands in an SSH session, a server in an Open
-OnDemand session) can use the database at once; see [SSH and browser together](ssh-and-gui.md).
+OnDemand session) can use the database at once; see [Several instances on one database](shared-database.md).
 The running server compacts the file only while no other process is connected.
 
 ## Switching to PostgreSQL

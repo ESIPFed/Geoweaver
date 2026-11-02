@@ -45,12 +45,38 @@ class SharedDatabaseCheckTest {
 
   @Test
   void explainsWhichMachineHoldsTheDatabaseWhenItCannotBeReached() throws Exception {
+    // 192.0.2.1 is reserved for documentation: nothing answers there
+    String msg = SharedDatabaseCheck.describeHolder(lock("192.0.2.1:9092", "ood-node7"), Set.of("login1"));
+    assertThat(msg).contains("ood-node7 (192.0.2.1:9092)").contains("run this command on ood-node7");
+  }
+
+  @Test
+  void aLoopbackAddressOnAnotherMachineIsNotThisMachine() throws Exception {
     int port;
     try (ServerSocket s = new ServerSocket(0)) {
       port = s.getLocalPort();
-    } // closed: nothing listens there now
-    String msg = SharedDatabaseCheck.describeHolder(lock("127.0.0.1:" + port, "ood-node7"), Set.of("login1"));
-    assertThat(msg).contains("ood-node7 (127.0.0.1:" + port + ")").contains("run this command on ood-node7");
+    }
+    // H2 writes "localhost" for 127.0.0.1; it used to count as "held here"
+    String msg = SharedDatabaseCheck.describeHolder(lock("localhost:" + port, "ood-vm"), Set.of("login1", "localhost"));
+    assertThat(msg).contains("ood-vm").contains("GEOWEAVER_DB_BIND_ADDRESS");
+    assertThat(SharedDatabaseCheck.describeHolder(lock("127.0.1.1:" + port, "ood-vm"), Set.of("login1"))).contains("loopback");
+    // the same machine: no message
+    assertThat(SharedDatabaseCheck.describeHolder(lock("127.0.1.1:" + port, "login1"), Set.of("login1"))).isNull();
+    assertThat(SharedDatabaseCheck.describeHolder(lock("localhost:" + port, ""), Set.of())).isNull();
+  }
+
+  @Test
+  void picksARegularNetworkAddressForSharing() {
+    assertThat(SharedDatabaseCheck.pickAddress(java.util.List.of())).isNull();
+    assertThat(
+            SharedDatabaseCheck.pickAddress(
+                java.util.List.of(
+                    new String[] {"docker0", "172.17.0.1", "false"},
+                    new String[] {"tun0", "10.8.0.5", "true"},
+                    new String[] {"eth0", "10.1.2.3", "false"})))
+        .isEqualTo("10.1.2.3");
+    assertThat(SharedDatabaseCheck.pickAddress(java.util.List.<String[]>of(new String[] {"tun0", "10.8.0.5", "true"})))
+        .isEqualTo("10.8.0.5");
   }
 
   @Test

@@ -15,7 +15,7 @@ class GeoweaverApplicationDatabaseInUseTest {
     RuntimeException unreachable =
         new RuntimeException(
             "x", new RuntimeException("Connection is broken: \"java.net.SocketTimeoutException: Connect timed out: 192.0.2.1:9092\""));
-    assertThat(GeoweaverApplication.databaseInUse(unreachable)).contains("docs/ssh-and-gui.md");
+    assertThat(GeoweaverApplication.databaseInUse(unreachable)).contains("docs/shared-database.md");
 
     assertThat(GeoweaverApplication.databaseInUse(new RuntimeException("Table not found"))).isNull();
   }

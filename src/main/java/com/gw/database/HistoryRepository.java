@@ -23,6 +23,15 @@ public interface HistoryRepository extends JpaRepository<History, String> {
   @Query("select h.history_id, h.history_process, h.indicator from History h where h.indicator in ('Running', 'Ready')")
   List<Object[]> findActiveRunHeads();
 
+  /**
+   * Id, process or workflow id, and status of runs that began at or after {@code since} and have
+   * ended, oldest first (no log text).
+   */
+  @Query(
+      "select h.history_id, h.history_process, h.indicator from History h where h.history_begin_time >= :since"
+          + " and h.indicator not in ('Running', 'Ready') order by h.history_begin_time")
+  List<Object[]> findEndedRunHeadsBegunSince(@Param("since") java.util.Date since);
+
   /** Id and status of the given runs (no log text). */
   @Query("select h.history_id, h.indicator from History h where h.history_id in :ids")
   List<Object[]> findStatusByIds(@Param("ids") java.util.Collection<String> ids);

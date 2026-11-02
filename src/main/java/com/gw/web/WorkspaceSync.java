@@ -54,6 +54,12 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
   static final String ORIGIN = WorkspaceFeedWriter.ORIGIN;
 
   static final long FEED_KEEP_MS = 3600_000L;
+
+  /**
+   * How far back to look for runs that began and ended between two looks. Generous, because the
+   * start time comes from the clock of the machine that ran it.
+   */
+  static final long QUICK_RUN_MARGIN_MS = 120_000L;
   private static final long CLEANUP_EVERY_MS = 600_000L;
 
   private final WorkspaceFeedRepository feed;
@@ -83,6 +89,19 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
           return size() > 2000;
         }
       };
+
+  /** When the runs were last looked at (this machine's clock). */
+  private long lastRunLook;
+
+  /** Runs already reported as finished, so a quick run is reported once. */
+  private final Set<String> reportedFinished =
+      java.util.Collections.newSetFromMap(
+          new java.util.LinkedHashMap<String, Boolean>(16, 0.75f, false) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, Boolean> e) {
+              return size() > 5000;
+            }
+          });
 
   /** Workflow run id -> its step run ids (workflow runs already read). */
   private final Map<String, List<String>> stepsOfRun = new HashMap<>();
@@ -176,6 +195,8 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
     }
     Map<String, String[]> before = active;
     active = now;
+    long since = lastRunLook - QUICK_RUN_MARGIN_MS;
+    lastRunLook = System.currentTimeMillis();
     if (before == null) return; // first look: only changes from now on
 
     List<String> started = new ArrayList<>();
@@ -199,11 +220,37 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
       for (Object[] r : history.findStatusByIds(ended)) finalStatus.put((String) r[0], (String) r[1]);
       for (String id : ended) {
         emit("run.finished", id, before.get(id)[0], finalStatus.getOrDefault(id, "Deleted"));
+        reportedFinished.add(id);
       }
-      for (String id : ended) {
-        List<String> steps = stepsOfRun.remove(id);
-        if (steps != null) workflowOfStep.keySet().removeAll(steps);
-      }
+      forgetSteps(ended);
+    }
+    reportQuickRuns(since, before, now);
+  }
+
+  /**
+   * Runs that began and ended between two looks were never seen running; reports them as
+   * finished, so other pages still hear about them (a short command-line run, a quick step).
+   */
+  private void reportQuickRuns(long since, Map<String, String[]> before, Map<String, String[]> now) {
+    Map<String, String[]> quick = new java.util.LinkedHashMap<>();
+    for (Object[] r : history.findEndedRunHeadsBegunSince(new Date(since))) {
+      String id = (String) r[0];
+      if (before.containsKey(id) || now.containsKey(id) || reportedFinished.contains(id)) continue;
+      quick.put(id, new String[] {(String) r[1], (String) r[2]});
+    }
+    if (quick.isEmpty()) return;
+    learnWorkflowSteps(quick); // so quick steps are shown on their workflow
+    for (Map.Entry<String, String[]> e : quick.entrySet()) {
+      emit("run.finished", e.getKey(), e.getValue()[0], e.getValue()[1]);
+      reportedFinished.add(e.getKey());
+    }
+    forgetSteps(quick.keySet());
+  }
+
+  private void forgetSteps(java.util.Collection<String> endedRuns) {
+    for (String id : endedRuns) {
+      List<String> steps = stepsOfRun.remove(id);
+      if (steps != null) workflowOfStep.keySet().removeAll(steps);
     }
   }
 

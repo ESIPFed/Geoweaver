@@ -140,6 +140,39 @@ class WorkspaceSyncTest {
   }
 
   @Test
+  void runsThatBeganAndEndedBetweenTwoLooksAreReportedOnce() {
+    sync.tick(); // first look
+    List<Object[]> quick = new ArrayList<>();
+    quick.add(new Object[] {"r1", "p1", "Done"});
+    when(history.findEndedRunHeadsBegunSince(any())).thenAnswer(i -> new ArrayList<>(quick));
+    when(processes.findById("p1")).thenReturn(Optional.empty());
+
+    sync.tick();
+    sync.tick(); // still within the look-back window: not reported again
+
+    assertThat(relayed).hasSize(1);
+    assertThat(relayed.get(0).event()).isEqualTo("run.finished");
+    assertThat(relayed.get(0).objectId()).isEqualTo("r1");
+    assertThat(relayed.get(0).status()).isEqualTo("Done");
+  }
+
+  @Test
+  void aRunSeenRunningIsNotReportedAgainAsQuick() {
+    sync.tick();
+    activeRuns.add(new Object[] {"r2", "p1", "Running"});
+    sync.tick(); // started
+    activeRuns.clear();
+    when(history.findStatusByIds(anyCollection())).thenReturn(List.<Object[]>of(new Object[] {"r2", "Done"}));
+    List<Object[]> ended = new ArrayList<>();
+    ended.add(new Object[] {"r2", "p1", "Done"});
+    when(history.findEndedRunHeadsBegunSince(any())).thenAnswer(i -> new ArrayList<>(ended));
+    sync.tick(); // finished
+    sync.tick();
+
+    assertThat(relayed).extracting(WorkspaceEvent::event).containsExactly("run.started", "run.finished");
+  }
+
+  @Test
   void runsAlreadyGoingWhenTheServerStartsAreNotReportedAsNew() {
     activeRuns.add(new Object[] {"old", "procX", "Running"});
     sync.tick();

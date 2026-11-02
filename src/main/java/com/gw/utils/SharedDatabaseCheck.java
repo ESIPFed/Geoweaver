@@ -9,7 +9,9 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -79,15 +81,31 @@ public class SharedDatabaseCheck implements ApplicationListener<ApplicationEnvir
     String server = p.getProperty("server");
     if (server == null || server.isBlank()) return null;
     String hostName = p.getProperty("hostName", "");
-    if (localNames.contains(hostName) || localNames.contains(hostOf(server))) return null; // here
+    boolean loopback = isLoopback(hostOf(server));
+    // The machine name decides: a loopback address on another machine is not this machine.
+    boolean here =
+        hostName.isBlank()
+            ? localNames.contains(hostOf(server)) || loopback
+            : localNames.contains(hostName) || (!loopback && localNames.contains(hostOf(server)));
+    if (here) return null;
     if (reachable(server)) return null;
     String where = hostName.isBlank() ? server : hostName + " (" + server + ")";
+    if (loopback) {
+      String m = hostName.isBlank() ? "that machine" : hostName;
+      return String.join(
+          System.lineSeparator(),
+          "The Geoweaver database " + lock.getParent() + " is held by a Geoweaver process on " + where + ".",
+          "That Geoweaver offers the database only on its own machine (a loopback address), so",
+          "Geoweaver on other machines cannot join it. On " + m + ", stop that Geoweaver, set",
+          "GEOWEAVER_DB_BIND_ADDRESS to an address of " + m + " that this machine can reach (or use",
+          "this Geoweaver release there, which picks one by itself), and start it again.");
+    }
     return String.join(
         System.lineSeparator(),
         "The Geoweaver database " + lock.getParent() + " is held by a Geoweaver process on " + where + ",",
         "which cannot be reached from this machine. Geoweaver processes share one database through",
         "the first one that opens it. If that Geoweaver is still running, either",
-        "  - use it instead: its browser page or its Agent API (see docs/ssh-and-gui.md), or",
+        "  - use it instead: its browser page or its Agent API (see docs/shared-database.md), or",
         "  - run this command on " + (hostName.isBlank() ? "that machine" : hostName)
             + ", or stop that Geoweaver first.",
         "If it is no longer running, H2 takes the database over in a few seconds.");
@@ -97,6 +115,58 @@ public class SharedDatabaseCheck implements ApplicationListener<ApplicationEnvir
     int colon = server.lastIndexOf(':');
     String h = colon > 0 ? server.substring(0, colon) : server;
     return h.startsWith("[") && h.endsWith("]") ? h.substring(1, h.length() - 1) : h;
+  }
+
+  static boolean isLoopback(String host) {
+    return host.equals("localhost") || host.startsWith("127.") || host.equals("::1");
+  }
+
+  /**
+   * The address to offer the shared database on, when H2's own choice would shut out other
+   * machines; otherwise null (H2's choice is kept).
+   *
+   * <p>H2 offers the database on the address this machine's name resolves to. Many Linux systems,
+   * virtual machines among them, map their own name to a loopback address (127.0.1.1), so a
+   * Geoweaver on another machine with the same home folder, for example a cluster login node next
+   * to an Open OnDemand VM, could not join. Then this picks the machine's first network address.
+   */
+  public static String networkAddressForSharing() {
+    try {
+      if (!java.net.InetAddress.getLocalHost().isLoopbackAddress()) return null;
+    } catch (IOException e) {
+      // the name does not resolve at all: H2 would fail the same way
+    }
+    List<String[]> candidates = new ArrayList<>();
+    try {
+      for (java.net.NetworkInterface ni :
+          java.util.Collections.list(java.net.NetworkInterface.getNetworkInterfaces())) {
+        if (!ni.isUp() || ni.isLoopback() || ni.isVirtual()) continue;
+        for (java.net.InetAddress a : java.util.Collections.list(ni.getInetAddresses())) {
+          if (a instanceof java.net.Inet4Address && !a.isLoopbackAddress() && !a.isLinkLocalAddress()) {
+            candidates.add(new String[] {ni.getName(), a.getHostAddress(), String.valueOf(ni.isPointToPoint())});
+          }
+        }
+      }
+    } catch (IOException | RuntimeException e) {
+      return null;
+    }
+    return pickAddress(candidates);
+  }
+
+  /**
+   * From {interface, IPv4 address, point-to-point} rows, the first address on a regular network
+   * interface: not a VPN tunnel (point-to-point) and not a container or VM bridge on this machine.
+   * Falls back to the first address of any kind; null when there is none.
+   */
+  static String pickAddress(List<String[]> candidates) {
+    for (String[] c : candidates) {
+      String n = c[0];
+      boolean bridge =
+          n.startsWith("docker") || n.startsWith("br-") || n.startsWith("veth")
+              || n.startsWith("virbr") || n.startsWith("cni") || n.startsWith("podman");
+      if (!bridge && !Boolean.parseBoolean(c[2])) return c[1];
+    }
+    return candidates.isEmpty() ? null : candidates.get(0)[1];
   }
 
   static boolean reachable(String server) {

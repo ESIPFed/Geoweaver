@@ -27,7 +27,7 @@ import picocli.CommandLine.HelpCommand; // Default help subcommand, displays hel
     footer = {
       "",
       "Add --json to any command to get only JSON on standard output (log lines go to standard error).",
-      "See docs/ssh-and-gui.md for using these commands from an SSH session or a coding agent."
+      "See docs/shared-database.md for using these commands from an SSH session or a coding agent."
     })
 public class TopEntryCommand implements Runnable {
 

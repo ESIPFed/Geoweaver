@@ -116,16 +116,18 @@ public class GeoweaverApplication {
   }
 
   /**
-   * The address the shared database is served on to other Geoweaver processes (H2 {@code
-   * AUTO_SERVER}). By default H2 uses this machine's network address, which lets a Geoweaver on
-   * another machine with the same home folder join; {@code GEOWEAVER_DB_BIND_ADDRESS=127.0.0.1}
-   * keeps it on this machine, which also survives network changes (a laptop on a new Wi-Fi).
+   * The address the shared database is offered on to other Geoweaver processes (H2 {@code
+   * AUTO_SERVER}). By default H2 uses the address this machine's name resolves to, which lets a
+   * Geoweaver on another machine with the same home folder join. When that is a loopback address
+   * (common on Linux VMs), the machine's network address is used instead, so the other machines
+   * are not shut out. {@code GEOWEAVER_DB_BIND_ADDRESS} sets it: {@code 127.0.0.1} keeps the
+   * database on this machine, which also survives network changes (a laptop on a new Wi-Fi).
    */
   static void applyDatabaseBindAddress() {
+    if (System.getProperty("h2.bindAddress") != null) return;
     String bind = System.getenv("GEOWEAVER_DB_BIND_ADDRESS");
-    if (bind != null && !bind.isBlank() && System.getProperty("h2.bindAddress") == null) {
-      System.setProperty("h2.bindAddress", bind.trim());
-    }
+    if (bind == null || bind.isBlank()) bind = SharedDatabaseCheck.networkAddressForSharing();
+    if (bind != null && !bind.isBlank()) System.setProperty("h2.bindAddress", bind.trim());
   }
 
   /**
@@ -146,7 +148,7 @@ public class GeoweaverApplication {
         return "Could not open the Geoweaver database: another Geoweaver process holds it and this"
             + " one cannot connect to it.\n" + m.lines().findFirst().orElse(m)
             + "\nUse that Geoweaver (browser page or Agent API), run this command on the machine where"
-            + " it runs, or stop it and try again. See docs/ssh-and-gui.md.";
+            + " it runs, or stop it and try again. See docs/shared-database.md.";
       }
     }
     return null;
