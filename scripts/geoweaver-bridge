@@ -182,10 +182,12 @@ bring_up() {
 }
 
 watch_loop() {
-  trap 'note stopped; exit 0' TERM INT
-  local warned=0
+  local warned=0 nap=""
+  trap '[ -n "$nap" ] && kill "$nap" 2>/dev/null; exit 0' TERM INT
   while true; do
-    sleep "$CHECK"
+    sleep "$CHECK" &
+    nap=$!
+    wait "$nap" # a wait, unlike a plain sleep, ends at once when stop sends TERM
     load_state
     if ! is_open && ! open_with_key; then
       note "DOWN: not connected; run: $SELF start"
