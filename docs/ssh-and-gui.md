@@ -123,7 +123,7 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/
 curl -s -H "Authorization: Bearer $TOKEN" "$URL/api/v1/runs/<runId>?waitSeconds=60&includeStepLogs=true"
 ```
 
-The server started by the bridge always has the Agent API on, even if your settings turn it off for other Geoweaver servers. The token is kept in `~/.geoweaver-bridge/` (readable only by you) and replaced by itself when it expires.
+The server started by the bridge always has the Agent API on, even if your settings turn it off for other Geoweaver servers. The token is kept in `~/.geoweaver-bridge/` (readable only by you) and replaced by itself when it expires. If it was ever shown somewhere it should not be, `scripts/geoweaver-bridge rotate-token` replaces it and revokes the old one; other tokens on the database keep working.
 
 For the agent, waiting is cheapest on the server side: `geoweaver-bridge api GET '/api/v1/runs/<id>?waitSeconds=60'` returns as soon as the run ends.
 

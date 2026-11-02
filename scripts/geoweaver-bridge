@@ -13,6 +13,9 @@
 #   geoweaver-bridge env        print URL and TOKEN for curl or other tools:
 #                               eval "$(geoweaver-bridge env)"
 #                               curl -H "Authorization: Bearer $TOKEN" "$URL/api/v1/workflows"
+#   geoweaver-bridge rotate-token
+#                               replace the bridge's Agent API token and revoke the old one
+#                               (other tokens on the database are left alone)
 #   geoweaver-bridge password   set the Geoweaver login password on the cluster (for the page)
 #   geoweaver-bridge stop       close the bridge; your server keeps running (live), so the next
 #                               start is quick and runs carry on
@@ -38,6 +41,9 @@
 #   GEOWEAVER_BRIDGE_CHECK   seconds between health checks (default 30)
 #   GEOWEAVER_SSH_KEEP       how long an unused SSH connection stays open (default 12h)
 
+# Everything below is one block, so bash reads all of it before running any of it: replacing
+# or editing this file while a copy of it runs (for example the health check) cannot mix versions.
+{
 set -u
 
 HOST="${GEOWEAVER_SSH_HOST:-}"
@@ -49,7 +55,7 @@ STATE_DIR="${GEOWEAVER_BRIDGE_DIR:-$HOME/.geoweaver-bridge}"
 EX_NOCONN=75
 SELF="$(basename "$0")"
 
-usage() { sed -n '2,44p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() { sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'; }
 
 case "${1:-}" in ""|-h|--help|help) usage; exit 0;; esac
 
@@ -365,6 +371,30 @@ cmd_env() {
   printf 'export URL=%q\nexport TOKEN=%q\n' "http://localhost:$LOCAL_PORT/Geoweaver" "$TOKEN"
 }
 
+token_fingerprint() { # first 12 hex characters of SHA-256, as Geoweaver shows it
+  if command -v sha256sum >/dev/null 2>&1; then printf '%s' "$1" | sha256sum | cut -c1-12
+  else printf '%s' "$1" | shasum -a 256 | cut -c1-12; fi
+}
+
+cmd_rotate_token() {
+  load_state
+  [ -n "${LOCAL_PORT:-}" ] || { echo "No bridge to $HOST yet. Run: $SELF start" >&2; exit $EX_NOCONN; }
+  { is_open || open_with_key; } || bridge_down
+  local old="${TOKEN:-}" fp
+  TOKEN="$(remote_token)"
+  [ -n "$TOKEN" ] || { echo "Could not create a new token on $HOST." >&2; exit 1; }
+  forward
+  token_ok || { echo "The new token does not work; the old one was kept." >&2; exit 1; }
+  save_state
+  if [ -n "$old" ]; then
+    fp="$(token_fingerprint "$old")"
+    printf '%q agent-token --revoke %q\n' "$REMOTE_CMD" "$fp" | remote >/dev/null 2>&1
+    echo "New token saved in $STATE; the old token (fingerprint $fp) is revoked."
+  else
+    echo "New token saved in $STATE."
+  fi
+}
+
 cmd_password() {
   is_open || open_with_key || open_interactive || exit 1
   "$SSH" "${CONTROL[@]}" -t -o ControlMaster=no "$HOST" "bash -lc '$(printf '%q' "$REMOTE_CMD") resetpassword'"
@@ -376,7 +406,10 @@ case "$1" in
   api) cmd_api "$@" ;;
   stop) cmd_stop "$@" ;;
   env) cmd_env ;;
+  rotate-token) cmd_rotate_token ;;
   password) cmd_password ;;
   __watch) watch_loop ;;
   *) echo "$SELF: unknown command $1" >&2; usage; exit 2 ;;
 esac
+exit
+}
