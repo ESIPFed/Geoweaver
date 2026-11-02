@@ -140,9 +140,8 @@ public class LocalhostTool {
 
       LocalSession session = getLocalSession();
 
-      session.runBash(history_id, code, id, isjoin, token);
-
-      // Add null checks to prevent NullPointerException
+      // Register before running: with isjoin the call below returns only when the process ends,
+      // and Stop must be able to find the session while it runs.
       if (token != null && session != null) {
         GeoweaverController.sessionManager.localSessionByToken.put(token, session);
       }
@@ -150,6 +149,8 @@ public class LocalhostTool {
       if (history_id != null && session != null) {
         GeoweaverController.sessionManager.localSessionByToken.put(history_id, session);
       }
+
+      session.runBash(history_id, code, id, isjoin, token);
 
       resp =
           "{\"history_id\": \""

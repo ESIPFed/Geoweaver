@@ -194,4 +194,42 @@ class H2StorageMaintenanceTest {
     assertThat(H2StartupCompaction.withCompression("jdbc:postgresql://x/db")).isEqualTo("jdbc:postgresql://x/db");
     assertThat(H2StartupCompaction.withCompression(null)).isNull();
   }
+
+  /** The key and address another process uses to join this database (from the lock file). */
+  private String autoServerUrl(String name) throws Exception {
+    java.util.Properties p = new java.util.Properties();
+    try (java.io.InputStream in = new java.io.FileInputStream(dir.resolve(name + ".lock.db").toFile())) {
+      p.load(in);
+    }
+    return "jdbc:h2:tcp://" + p.getProperty("server") + "/" + p.getProperty("id");
+  }
+
+  @Test
+  void runningServerDoesNotCompactWhileAnotherProcessIsConnected() throws Exception {
+    String url = url("shared");
+    writeBloatedDatabase(url, 1500);
+    try (Connection owner = DriverManager.getConnection(url, USER, PASS)) {
+      File file = H2StorageMaintenance.databaseFile(url);
+      long before = file.length();
+      H2StorageMaintenance.Options opts = H2StorageMaintenance.Options.always(false).inRunningServer();
+      try (Connection other = DriverManager.getConnection(autoServerUrl("shared"), USER, PASS);
+          Statement st = other.createStatement()) {
+        // the other process sees that it is not the one holding the file
+        assertThat(H2StorageMaintenance.sharedUse(st)).contains("held by another Geoweaver process");
+
+        H2StorageMaintenance.Result r = H2StorageMaintenance.compact(url, USER, PASS, opts);
+        assertThat(r.outcome()).isEqualTo(H2StorageMaintenance.Outcome.SKIPPED);
+        assertThat(r.reason()).contains("1 connection(s) from other processes");
+        assertThat(file.length()).isEqualTo(before);
+        assertThat(H2StorageMaintenance.lastCompactedSize(file)).isLessThanOrEqualTo(0);
+        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM history")) {
+          rs.next();
+          assertThat(rs.getLong(1)).isEqualTo(1); // still connected
+        }
+      }
+      H2StorageMaintenance.Result r = H2StorageMaintenance.compact(url, USER, PASS, opts);
+      assertThat(r.outcome()).isEqualTo(H2StorageMaintenance.Outcome.COMPACTED);
+      assertThat(file.length()).isLessThan(before);
+    }
+  }
 }

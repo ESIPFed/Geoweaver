@@ -24,6 +24,9 @@ public class WorkspaceEventBroadcaster {
   private final ObjectMapper objectMapper;
   private final AtomicLong revision = new AtomicLong(0);
 
+  /** Shares this server's changes with other Geoweaver processes on the same database. */
+  private volatile java.util.function.Consumer<WorkspaceEvent> sharer;
+
   public WorkspaceEventBroadcaster(
       AgentApiProperties properties,
       AgentPresenceTracker presenceTracker,
@@ -33,6 +36,31 @@ public class WorkspaceEventBroadcaster {
     this.presenceTracker = presenceTracker;
     this.longPollHub = longPollHub;
     this.objectMapper = objectMapper;
+  }
+
+  public void setSharer(java.util.function.Consumer<WorkspaceEvent> sharer) {
+    this.sharer = sharer;
+  }
+
+  /**
+   * Passes an event from another Geoweaver process (or a run seen in the database) on to this
+   * server's browsers, with this server's next revision. Not shared again.
+   */
+  public void relay(WorkspaceEvent event) {
+    if (event == null || !properties.isWorkspaceEventsEnabled()) {
+      return;
+    }
+    publish(event.withRevision(revision.incrementAndGet()));
+  }
+
+  private void share(WorkspaceEvent event) {
+    java.util.function.Consumer<WorkspaceEvent> s = sharer;
+    if (s == null) return;
+    try {
+      s.accept(event);
+    } catch (RuntimeException e) {
+      logger.debug("Sharing workspace event failed: {}", e.toString());
+    }
   }
 
   public long currentRevision() {
@@ -50,9 +78,10 @@ public class WorkspaceEventBroadcaster {
       return;
     }
     long rev = revision.incrementAndGet();
-    publish(
-        WorkspaceEvent.agent(
-            event, objectKind, objectId, objectName, workflowId, tokenFingerprint, rev));
+    WorkspaceEvent e =
+        WorkspaceEvent.agent(event, objectKind, objectId, objectName, workflowId, tokenFingerprint, rev);
+    publish(e);
+    share(e);
   }
 
   public void publishHuman(
@@ -61,7 +90,9 @@ public class WorkspaceEventBroadcaster {
       return;
     }
     long rev = revision.incrementAndGet();
-    publish(WorkspaceEvent.human(event, objectKind, objectId, objectName, workflowId, rev));
+    WorkspaceEvent e = WorkspaceEvent.human(event, objectKind, objectId, objectName, workflowId, rev);
+    publish(e);
+    share(e);
   }
 
   public void publish(WorkspaceEvent event) {
@@ -69,9 +100,11 @@ public class WorkspaceEventBroadcaster {
       return;
     }
     try {
-      presenceTracker.touch(event.objectKind(), event.objectId(), event.tokenFingerprint());
-      if (event.workflowId() != null && !"workflow".equals(event.objectKind())) {
-        presenceTracker.touch("workflow", event.workflowId(), event.tokenFingerprint());
+      if (!"run".equals(event.objectKind())) { // runs are activity, not someone editing
+        presenceTracker.touch(event.objectKind(), event.objectId(), event.tokenFingerprint(), event.actor());
+        if (event.workflowId() != null && !"workflow".equals(event.objectKind())) {
+          presenceTracker.touch("workflow", event.workflowId(), event.tokenFingerprint(), event.actor());
+        }
       }
       String json = objectMapper.writeValueAsString(event);
       WorkspaceServlet.broadcast(json);

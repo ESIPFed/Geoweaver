@@ -9,6 +9,7 @@ import com.gw.utils.BaseTool;
 import com.gw.utils.LogFlushThrottle;
 import com.gw.utils.ProcessStatusCache;
 import com.gw.utils.RunLogStore;
+import com.gw.utils.RunStopRequests;
 import java.io.BufferedReader;
 import jakarta.websocket.Session;
 import org.slf4j.Logger;
@@ -193,12 +194,12 @@ public class LocalSessionOutput implements Runnable {
       return;
     }
 
-    String status;
+    String status = RunStopRequests.endStatus(this.history_id, exitvalue);
     if (exitvalue == 0) {
-      status = ExecutionStatus.DONE;
       log.info("Process completed successfully (exit code: 0) for history ID: " + this.history_id);
+    } else if (ExecutionStatus.STOPPED.equals(status)) {
+      log.info("Process stopped on request (exit code: " + exitvalue + ") for history ID: " + this.history_id);
     } else {
-      status = ExecutionStatus.FAILED;
       log.warn("Process failed (exit code: " + exitvalue + ") for history ID: " + this.history_id);
     }
 
@@ -407,12 +408,11 @@ public class LocalSessionOutput implements Runnable {
           log.info("Process exit code: " + exitCode);
           
           // Set status based on exit code
+          finalStatus = RunStopRequests.endStatus(history_id, exitCode);
           if (exitCode == 0) {
-            finalStatus = ExecutionStatus.DONE;
             log.info("Process completed successfully (exit code: 0)");
           } else {
-            finalStatus = ExecutionStatus.FAILED;
-            log.warn("Process failed with exit code: " + exitCode);
+            log.warn("Process ended with exit code: " + exitCode + " (" + finalStatus + ")");
           }
         } catch (Exception e) {
           e.printStackTrace();

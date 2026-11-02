@@ -1,6 +1,7 @@
 package com.gw.tools;
 
 import com.gw.utils.RunLogStore;
+import com.gw.utils.RunStopRequests;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -496,9 +497,19 @@ public class ProcessTool {
 
 			if(!BaseTool.isNull(localsession)) {
 				logger.info("Stopping local session for history ID: {}", hisid);
+				RunStopRequests.markStopping(hisid);
 				localsession.stop();
 			}
 			
+			if (BaseTool.isNull(remotesession) && BaseTool.isNull(localsession)) {
+				// Not run by this Geoweaver: another one on the same database (for example the
+				// command line in an SSH session) runs it and will stop it on this request.
+				Optional<History> row = historyrepository.findById(hisid);
+				if (row.isPresent() && !RunStopRequests.finished(row.get().getIndicator())) {
+					RunStopRequests.request(hisid);
+				}
+			}
+
 			logger.info("Calling history_tool.stop() for history ID: {}", hisid);
 			history_tool.stop(hisid);
 			

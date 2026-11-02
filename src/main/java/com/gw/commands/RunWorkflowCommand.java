@@ -53,21 +53,42 @@ public class RunWorkflowCommand implements Runnable {
       description = "passwords to the target hosts")
   String[] passes;
 
+  @Option(
+      names = "--detach",
+      description = "start the run in the background, print its run id and return; it keeps running after you log out")
+  boolean detach;
+
+  @Option(names = "--run-id", hidden = true)
+  String runId;
+
   public void run() {
 
-    System.out.printf("Running workflow %s%n", workflowId);
+    if (detach) {
+      CliDetach.launch(passes);
+      return;
+    }
+    if (passes == null) passes = CliDetach.inheritedPasswords();
+    com.gw.api.v1.AgentApiAuthContext.setTokenFingerprint(CliAgent.ACTOR);
+
+    CliOutput.line(String.format("Running workflow %s", workflowId));
 
     if (workflowZipPath != null) System.out.printf("workflow zip file: %s", workflowZipPath);
 
     WorkflowTool wt = BeanTool.getBean(WorkflowTool.class);
 
+    // Stop pressed in a browser connected to the same database reaches this run.
+    com.gw.web.GeoweaverController.watchStopRequests();
+
     BaseTool bt = BeanTool.getBean(BaseTool.class);
 
-    String historyId = new RandomString(18).nextString();
+    String historyId =
+        runId != null && CliDetach.RUN_ID.matcher(runId).matches()
+            ? runId
+            : new RandomString(18).nextString();
 
     if (BaseTool.isNull(envs)) envs = new String[] {"default_option"};
 
-    if (BaseTool.isNull(hostStrings)) hostStrings = new String[] {"10001"};
+    if (BaseTool.isNull(hostStrings)) hostStrings = new String[] {"100001"};
 
     if (workflowFolderPath != null && workflowZipPath != null) {
 
@@ -125,11 +146,12 @@ public class RunWorkflowCommand implements Runnable {
 
     String response =
         wt.execute(historyId, workflowId, "one", hostStrings, runPasswords, envs, "xxxxxxxxxx");
-    System.out.println(response);
+    CliOutput.line(response);
 
-    System.out.printf("The workflow has been kicked off.\nHistory Id: %s%n", historyId);
+    CliOutput.line(String.format("The workflow has been kicked off.%nHistory Id: %s", historyId));
+    if (CliOutput.json()) System.err.println("Run id: " + historyId);
 
-    System.out.println("Waiting for it to finish");
+    CliOutput.line("Waiting for it to finish");
 
     HistoryTool ht = BeanTool.getBean(HistoryTool.class);
 
@@ -172,8 +194,16 @@ public class RunWorkflowCommand implements Runnable {
       }
     }
 
+    if (CliOutput.json()) {
+      CliOutput.print(
+          BeanTool.getBean(com.gw.api.v1.service.AgentRunSupport.class)
+              .getRun(historyId, 2000, 10, false));
+      if (!"Done".equals(String.valueOf(hist.getIndicator()))) CliOutput.setExitCode(1);
+      return;
+    }
+
     System.out.printf(
-        "Total time cost: %o seconds%n",
+        "Total time cost: %d seconds%n",
         BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time()));
 
     System.out.printf("Execution is over. Final status: %s.%n", hist.getIndicator());

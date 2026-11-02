@@ -58,7 +58,7 @@ public class H2StartupCompaction implements ApplicationListener<ApplicationEnvir
   }
 
   /** Adds COMPRESS=TRUE to an embedded H2 file URL that does not set COMPRESS itself. */
-  static void enableCompression(ConfigurableEnvironment env) {
+  public static void enableCompression(ConfigurableEnvironment env) {
     if (!env.getProperty("GEOWEAVER_DB_COMPRESS", Boolean.class, true)) return;
     String url = env.getProperty("spring.datasource.url");
     String updated = withCompression(url);

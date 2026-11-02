@@ -45,6 +45,11 @@ public class BeanTool implements ApplicationContextAware {
    * @param beanClass The class of the bean to retrieve.
    * @return An instance of the specified bean class, or null if in CLI mode and the bean is not available.
    */
+  /** True when the application has a bean of this type (false in command-line mode for web beans). */
+  public static boolean hasBean(Class<?> beanClass) {
+    return context != null && context.getBeanNamesForType(beanClass).length > 0;
+  }
+
   public static <T extends Object> T getBean(Class<T> beanClass) {
     if (context == null) {
       Logger.getLogger(BeanTool.class).warn("Application context is null, likely running in CLI mode. Cannot get bean: " + beanClass.getName());

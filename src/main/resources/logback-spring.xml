@@ -9,6 +9,10 @@
 
     <!-- Console appender configuration -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- commands set WARN so their output is not buried in start-up messages -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${GEOWEAVER_CONSOLE_LOG_LEVEL:-INFO}</level>
+        </filter>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
