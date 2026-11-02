@@ -86,7 +86,34 @@ Runs on `localhost` (the default) need no password: they run on the machine wher
 
 ## Calling the cluster from your own computer
 
-When the agent runs on your laptop and Geoweaver lives on the cluster, `scripts/geoweaver-ssh` runs `geoweaver` there over one shared SSH connection:
+There are two ways, and both can be used at the same time as any other Geoweaver on the same database:
+
+| | `scripts/geoweaver-ssh` | `scripts/geoweaver-bridge` |
+| --- | --- | --- |
+| What runs on the cluster | only `geoweaver` commands, no server | your own Geoweaver server, reachable only through the bridge |
+| How the agent calls it | `geoweaver-ssh <command> --json` | `geoweaver-bridge api GET /api/v1/...` (the [Agent API](agent-api.md)) |
+| Logins | once per session (none with a key alone) | once per session (none with a key alone) |
+| The Geoweaver page on your computer | `geoweaver-ssh forward` to a server that is already running | always, at `http://localhost:8070/Geoweaver` |
+| Best for | a few commands, nothing left running | people who just want "connect and use it", long sessions |
+
+### The bridge
+
+```bash
+export GEOWEAVER_SSH_HOST=you@login.cluster.edu
+scripts/geoweaver-bridge start       # one login; prints the page address
+scripts/geoweaver-bridge api GET /api/v1/workflows
+scripts/geoweaver-bridge stop        # when you are done
+```
+
+`start` logs in once, starts a Geoweaver server on the cluster (or reuses the one you started before on that login node), forwards it to `http://localhost:8070/Geoweaver` (the next free port if 8070 is taken), and creates an Agent API token for the `api` command. Run `scripts/geoweaver-bridge password` once to set the password for the page.
+
+Until you run `stop`, a health check every 30 seconds keeps the connection in use, puts the port forward back when it disappears, restarts the server if it stopped, and reconnects with your key when the cluster allows that. When logging in again needs you, it shows a desktop notification, `status` says so, and `api` prints `GEOWEAVER-BRIDGE: NOT CONNECTED` with the command to run (exit 75) instead of waiting.
+
+The server listens only on the cluster machine itself (`127.0.0.1`), on a port picked per user, so it never takes a port another user's Geoweaver uses. `stop` stops it too, unless runs are still going on (then `stop --server` does).
+
+### Commands over SSH
+
+`scripts/geoweaver-ssh` runs `geoweaver` on the cluster over one shared SSH connection:
 
 ```bash
 export GEOWEAVER_SSH_HOST=you@login.cluster.edu
@@ -131,9 +158,26 @@ Do not start a Geoweaver server. If a command prints GEOWEAVER-SSH: NOT CONNECTE
 to run `scripts/geoweaver-ssh connect`.
 ```
 
+With the bridge instead:
+
+```markdown
+Geoweaver runs on the cluster behind `scripts/geoweaver-bridge`. Call its Agent API with
+`scripts/geoweaver-bridge api METHOD /api/v1/... [JSON]` (see docs/agent-api.md). If it prints
+GEOWEAVER-BRIDGE: NOT CONNECTED, stop and ask me to run `scripts/geoweaver-bridge start`.
+```
+
 ## Several Geoweaver servers at once
 
 Any number of Geoweaver servers and commands can use one database at the same time, on one machine or on several that share the home folder (for example a server on the login node and one in an Open OnDemand session). Each server shows in its pages what all the others do. Forwarding a server's page to your laptop with SSH (`-L 8070:localhost:8070`, or `geoweaver-ssh forward`) does not change this; the page talks to its server, and the servers share the database directly.
+
+## Left-over Geoweaver processes and the database lock
+
+No Geoweaver blocks another one, including one that was left running or crashed:
+
+- The first Geoweaver to open the database holds it and serves it to all others over TCP; they all work at the same time. A server left running is simply that holder.
+- When the holder exits or is killed (even with `kill -9`, or when its machine goes away), another Geoweaver takes the file over within a few seconds and the rest carry on. A lock file left by a crashed process is taken over the same way at the next start.
+- Servers started by `geoweaver-bridge` accept browser and API connections only on their own machine, but share the database on the network address, so a Geoweaver in Open OnDemand can always reach them.
+- The one case that blocks others is a holder that is still running on a machine the others cannot reach (a firewall, or `GEOWEAVER_DB_BIND_ADDRESS=127.0.0.1` with Geoweaver on several machines). Then the others print which machine holds the database; stop that Geoweaver, or open the port (see below).
 
 ## Requirements and limits
 

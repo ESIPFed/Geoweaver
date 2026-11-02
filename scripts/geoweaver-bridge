@@ -1,0 +1,303 @@
+#!/usr/bin/env bash
+# Use a Geoweaver server on a cluster from your own computer, through one SSH login.
+#
+#   geoweaver-bridge start      log in once (password / two-factor if the cluster asks), start or
+#                               reuse your Geoweaver server there, bring its page to
+#                               http://localhost:PORT/Geoweaver, and keep the bridge working
+#                               until you stop it
+#   geoweaver-bridge status     is it working? (URL, ports, last health check)
+#   geoweaver-bridge api METHOD PATH [JSON | @file]
+#                               call the server's Agent API through the bridge, for example
+#                               geoweaver-bridge api GET /api/v1/workflows
+#                               geoweaver-bridge api POST /api/v1/workflows/ID/runs '{"hostId":"100001"}'
+#   geoweaver-bridge password   set the Geoweaver login password on the cluster (for the page)
+#   geoweaver-bridge stop       close the bridge; the server stops too unless runs are going on
+#
+# While the bridge is up, a health check every 30 s (GEOWEAVER_BRIDGE_CHECK) keeps the SSH
+# connection busy, puts the port forward back if it went away, restarts the server if it stopped,
+# and reconnects with your SSH key when the cluster allows that. If logging in again needs you, it
+# says so (and "api" calls print what to run) instead of waiting at a prompt.
+#
+# The server is one more Geoweaver on your database: browsers, other servers (for example in Open
+# OnDemand) and geoweaver commands keep working alongside it, and all see each other's changes.
+#
+# Settings (environment):
+#   GEOWEAVER_SSH_HOST       the cluster, as you would pass it to ssh (required)
+#   GEOWEAVER_REMOTE_CMD     the geoweaver command on the cluster (default: geoweaver)
+#   GEOWEAVER_BRIDGE_PORT    local port for the page and API (default 8070, or the next free one)
+#   GEOWEAVER_BRIDGE_CHECK   seconds between health checks (default 30)
+
+set -u
+
+HOST="${GEOWEAVER_SSH_HOST:-}"
+SSH="${GEOWEAVER_SSH_BIN:-ssh}"
+REMOTE_CMD="${GEOWEAVER_REMOTE_CMD:-geoweaver}"
+CHECK="${GEOWEAVER_BRIDGE_CHECK:-30}"
+SOCKET_DIR="${GEOWEAVER_SSH_SOCKET_DIR:-$HOME/.ssh/geoweaver-sockets}"
+STATE_DIR="${GEOWEAVER_BRIDGE_DIR:-$HOME/.geoweaver-bridge}"
+EX_NOCONN=75
+SELF="$(basename "$0")"
+
+usage() { sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//'; }
+
+case "${1:-}" in ""|-h|--help|help) usage; exit 0;; esac
+
+if [ -z "$HOST" ]; then
+  echo "$SELF: set GEOWEAVER_SSH_HOST to your cluster, for example: export GEOWEAVER_SSH_HOST=you@login.cluster.edu" >&2
+  exit 2
+fi
+
+mkdir -p "$SOCKET_DIR" "$STATE_DIR" && chmod 700 "$SOCKET_DIR" "$STATE_DIR"
+CONTROL=(-o "ControlPath=$SOCKET_DIR/%r@%h:%p")
+KEY="$(printf '%s' "$HOST" | tr -c 'A-Za-z0-9._-' '_')"
+STATE="$STATE_DIR/$KEY.env"       # URL, ports, token: readable only by you
+HEALTH="$STATE_DIR/$KEY.health"   # last health check
+PIDFILE="$STATE_DIR/$KEY.pid"     # the health check loop
+LOG="$STATE_DIR/$KEY.log"
+
+load_state() { [ -f "$STATE" ] && . "$STATE"; }
+save_state() {
+  umask 077
+  cat > "$STATE" <<EOF
+LOCAL_PORT=${LOCAL_PORT:-}
+REMOTE_PORT=${REMOTE_PORT:-}
+NODE=${NODE:-}
+TOKEN=${TOKEN:-}
+URL=http://localhost:${LOCAL_PORT:-}/Geoweaver
+EOF
+}
+
+is_open() { "$SSH" "${CONTROL[@]}" -O check "$HOST" >/dev/null 2>&1; }
+MASTER_OPTS=(-o ControlMaster=yes -o ControlPersist=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=6 -o TCPKeepAlive=yes)
+open_with_key() {
+  "$SSH" "${CONTROL[@]}" -fN -o BatchMode=yes -o ConnectTimeout=15 "${MASTER_OPTS[@]}" "$HOST" >/dev/null 2>&1 && is_open
+}
+open_interactive() { "$SSH" "${CONTROL[@]}" -fN "${MASTER_OPTS[@]}" "$HOST" && is_open; }
+
+bridge_down() {
+  cat >&2 <<EOF
+GEOWEAVER-BRIDGE: NOT CONNECTED to $HOST.
+The SSH connection behind the bridge is closed (network change, laptop sleep, or the cluster
+ended the session) and could not be reopened with an SSH key alone. Logging in needs you
+(password / two-factor). Run this in your own terminal, then repeat the request:
+
+    $SELF start
+
+EOF
+  exit $EX_NOCONN
+}
+
+# Runs a small script on the cluster in a login shell (so PATH and modules from your profile apply).
+remote() {
+  "$SSH" "${CONTROL[@]}" -o BatchMode=yes -o ControlMaster=no "$HOST" "bash -l -s"
+}
+
+# On the cluster: reuse this node's bridge server if it is alive, otherwise start one on a free
+# port that only this machine can reach. Prints NODE=, REMOTE_PORT=, STARTED=.
+remote_ensure() {
+  remote <<EOF
+set -u
+CMD=$(printf '%q' "$REMOTE_CMD")
+dir="\$HOME/geoweaver/bridge"; mkdir -p "\$dir"; chmod 700 "\$dir"
+node="\$(hostname -s 2>/dev/null || hostname)"
+st="\$dir/\$node.env"
+busy() { (exec 3<>"/dev/tcp/127.0.0.1/\$1") 2>/dev/null; }
+up() { curl -fsS -m 5 "http://127.0.0.1:\$1/Geoweaver/api/v1/health" >/dev/null 2>&1; }
+if [ -f "\$st" ]; then . "\$st"; fi
+if [ -n "\${PORT:-}" ] && [ -n "\${PID:-}" ] && kill -0 "\$PID" 2>/dev/null && up "\$PORT"; then
+  echo "NODE=\$node"; echo "REMOTE_PORT=\$PORT"; echo "STARTED=0"; exit 0
+fi
+port=\$(( 20000 + \$(id -u) % 20000 ))
+while busy "\$port"; do port=\$((port + 1)); done
+log="\$dir/server-\$node.log"
+launcher=nohup; command -v setsid >/dev/null 2>&1 && launcher="setsid nohup"
+SERVER_ADDRESS=127.0.0.1 GEOWEAVER_PORT="\$port" \$launcher \$CMD > "\$log" 2>&1 < /dev/null &
+pid=\$!
+printf 'PORT=%s\nPID=%s\n' "\$port" "\$pid" > "\$st"
+for i in \$(seq 1 300); do
+  if up "\$port"; then echo "NODE=\$node"; echo "REMOTE_PORT=\$port"; echo "STARTED=1"; exit 0; fi
+  if ! kill -0 "\$pid" 2>/dev/null; then echo "ERROR=the Geoweaver server stopped while starting; last lines of \$log:"; tail -20 "\$log"; exit 1; fi
+  sleep 1
+done
+echo "ERROR=the Geoweaver server did not start within 5 minutes; see \$log"; exit 1
+EOF
+}
+
+remote_server_alive() {
+  remote <<EOF >/dev/null 2>&1
+st="\$HOME/geoweaver/bridge/$NODE.env"; [ -f "\$st" ] && . "\$st" && kill -0 "\$PID" 2>/dev/null
+EOF
+}
+
+remote_stop_server() {
+  remote <<EOF
+st="\$HOME/geoweaver/bridge/$NODE.env"
+if [ -f "\$st" ]; then . "\$st"; kill "\$PID" 2>/dev/null && echo "Stopped the Geoweaver server on $NODE."; rm -f "\$st"; fi
+EOF
+}
+
+remote_token() {
+  remote <<EOF
+$(printf '%q' "$REMOTE_CMD") agent-token --create --no-browser --show-token --ttl-days 30 2>&1 | grep -oE 'gwt_[A-Za-z0-9_-]{20,}' | head -1
+EOF
+}
+
+local_port_free() { ! (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
+
+forward() {
+  "$SSH" "${CONTROL[@]}" -O forward -L "$LOCAL_PORT:127.0.0.1:$REMOTE_PORT" "$HOST" >/dev/null 2>&1
+}
+
+healthy() { curl -fsS -m 10 "http://127.0.0.1:$LOCAL_PORT/Geoweaver/api/v1/health" >/dev/null 2>&1; }
+
+token_ok() {
+  [ -n "${TOKEN:-}" ] && curl -fsS -m 10 -H "Authorization: Bearer $TOKEN" \
+    "http://127.0.0.1:$LOCAL_PORT/Geoweaver/api/v1/capabilities" >/dev/null 2>&1
+}
+
+note() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" > "$HEALTH"; echo "$(date '+%H:%M:%S') $*" >> "$LOG"; }
+
+notify() {
+  if command -v osascript >/dev/null 2>&1; then
+    osascript -e "display notification \"$1\" with title \"Geoweaver bridge\"" >/dev/null 2>&1
+  elif command -v notify-send >/dev/null 2>&1; then
+    notify-send "Geoweaver bridge" "$1" >/dev/null 2>&1
+  fi
+}
+
+# Brings the server and the forward up over an open connection; updates the state file.
+bring_up() {
+  local out
+  out="$(remote_ensure)" || { echo "$out" | sed 's/^ERROR=//' >&2; return 1; }
+  NODE="$(echo "$out" | sed -n 's/^NODE=//p')"
+  REMOTE_PORT="$(echo "$out" | sed -n 's/^REMOTE_PORT=//p')"
+  [ -n "$REMOTE_PORT" ] || { echo "$out" >&2; return 1; }
+  forward
+  healthy || return 1
+  if ! token_ok; then
+    TOKEN="$(remote_token)"
+    token_ok || { echo "Could not create an Agent API token on $HOST." >&2; return 1; }
+  fi
+  save_state
+}
+
+watch_loop() {
+  trap 'note stopped; exit 0' TERM INT
+  local warned=0
+  while true; do
+    sleep "$CHECK"
+    load_state
+    if ! is_open && ! open_with_key; then
+      note "DOWN: not connected; run: $SELF start"
+      [ $warned -eq 0 ] && notify "Disconnected from $HOST. Run: $SELF start" && warned=1
+      continue
+    fi
+    if healthy; then note "ok"; warned=0; continue; fi
+    forward
+    if healthy; then note "ok (port forward restored)"; continue; fi
+    if bring_up >>"$LOG" 2>&1; then note "ok (server restarted on $NODE)"; warned=0; continue; fi
+    note "DOWN: the server on $HOST does not answer; see $LOG"
+    [ $warned -eq 0 ] && notify "The Geoweaver server on $HOST does not answer." && warned=1
+  done
+}
+
+watcher_running() { [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; }
+
+cmd_start() {
+  load_state
+  if ! is_open && ! open_with_key; then
+    echo "Logging in to $HOST (answer the password / two-factor prompts if asked)..."
+    open_interactive || { echo "Login to $HOST failed." >&2; exit 1; }
+  fi
+  if [ -z "${LOCAL_PORT:-}" ] || { ! healthy && ! local_port_free "$LOCAL_PORT"; }; then
+    LOCAL_PORT="${GEOWEAVER_BRIDGE_PORT:-8070}"
+    while ! local_port_free "$LOCAL_PORT"; do LOCAL_PORT=$((LOCAL_PORT + 1)); done
+  fi
+  echo "Starting or reusing your Geoweaver server on $HOST (the first start can take a minute)..."
+  bring_up || { echo "The bridge could not be set up; see the messages above." >&2; exit 1; }
+  if ! watcher_running; then
+    nohup "$0" __watch >/dev/null 2>&1 < /dev/null &
+    echo $! > "$PIDFILE"
+  fi
+  note "ok"
+  cat <<EOF
+Bridge to $HOST is up (server on $NODE, kept alive until you run: $SELF stop).
+  Geoweaver page:  http://localhost:$LOCAL_PORT/Geoweaver
+  Agent API:       $SELF api GET /api/v1/workflows
+  For other tools: source $STATE   (sets URL and TOKEN)
+EOF
+}
+
+cmd_status() {
+  load_state
+  if [ -z "${LOCAL_PORT:-}" ]; then echo "No bridge to $HOST yet. Run: $SELF start"; exit $EX_NOCONN; fi
+  local conn="closed" page="not answering" watch="not running"
+  is_open && conn="open"; healthy && page="answering"; watcher_running && watch="running"
+  echo "Bridge to $HOST: connection $conn, server on ${NODE:-?} $page, health check $watch"
+  echo "  page: http://localhost:$LOCAL_PORT/Geoweaver"
+  [ -f "$HEALTH" ] && echo "  last check: $(cat "$HEALTH")"
+  { [ "$conn" = open ] && [ "$page" = answering ]; } || exit $EX_NOCONN
+}
+
+cmd_api() {
+  shift
+  [ $# -ge 2 ] || { echo "usage: $SELF api METHOD PATH [JSON | @file]" >&2; exit 2; }
+  load_state
+  [ -n "${LOCAL_PORT:-}" ] || bridge_down
+  local method="$1" path="$2" body="${3:-}" args=()
+  case "$path" in /Geoweaver/*) ;; /*) path="/Geoweaver$path";; *) path="/Geoweaver/$path";; esac
+  if ! healthy; then
+    { is_open || open_with_key; } || bridge_down
+    forward
+    healthy || bring_up >>"$LOG" 2>&1 || bridge_down
+    load_state
+  fi
+  if [ -n "$body" ]; then
+    args=(--data-binary "$body") # curl reads @file itself
+    args+=(-H "Content-Type: application/json")
+  fi
+  local out code
+  out="$(curl -sS -m 120 -X "$method" -H "Authorization: Bearer $TOKEN" ${args[@]+"${args[@]}"} \
+    -w '\n%{http_code}' "http://127.0.0.1:$LOCAL_PORT$path")" || bridge_down
+  code="${out##*$'\n'}"
+  printf '%s\n' "${out%$'\n'*}"
+  [ "$code" -lt 400 ] 2>/dev/null || exit 1
+}
+
+cmd_stop() {
+  load_state
+  if watcher_running; then kill "$(cat "$PIDFILE")" 2>/dev/null; fi
+  rm -f "$PIDFILE"
+  if is_open && [ -n "${NODE:-}" ]; then
+    local running=""
+    if healthy && [ -n "${TOKEN:-}" ]; then
+      running="$(curl -fsS -m 10 -H "Authorization: Bearer $TOKEN" \
+        "http://127.0.0.1:$LOCAL_PORT/Geoweaver/api/v1/runs?status=Running&limit=5" 2>/dev/null \
+        | grep -o '"historyId"' | head -1)"
+    fi
+    if [ -n "$running" ] && [ "${2:-}" != "--server" ]; then
+      echo "Runs are still going on; the Geoweaver server on $NODE keeps running (stop it with: $SELF stop --server)."
+    else
+      remote_stop_server
+    fi
+    "$SSH" "${CONTROL[@]}" -O cancel -L "$LOCAL_PORT:127.0.0.1:$REMOTE_PORT" "$HOST" >/dev/null 2>&1
+    "$SSH" "${CONTROL[@]}" -O exit "$HOST" >/dev/null 2>&1
+  fi
+  note "stopped by you"
+  echo "Bridge to $HOST closed."
+}
+
+cmd_password() {
+  is_open || open_with_key || open_interactive || exit 1
+  "$SSH" "${CONTROL[@]}" -t -o ControlMaster=no "$HOST" "bash -lc '$(printf '%q' "$REMOTE_CMD") resetpassword'"
+}
+
+case "$1" in
+  start) cmd_start ;;
+  status) cmd_status ;;
+  api) cmd_api "$@" ;;
+  stop) cmd_stop "$@" ;;
+  password) cmd_password ;;
+  __watch) watch_loop ;;
+  *) echo "$SELF: unknown command $1" >&2; usage; exit 2 ;;
+esac
