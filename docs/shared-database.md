@@ -49,34 +49,20 @@ Other notes:
 
 ## Coding agents on the login node
 
+An agent on your own computer reaches the login node with your SSH key (`ssh -o BatchMode=yes you@login.example.edu true` must work without a password). Whatever it changes there shows up in the Open OnDemand page within about a second.
+
 ### Through the Agent API (fastest)
 
-`scripts/geoweaver-bridge` runs on your own computer. It logs in to the remote machine with your SSH key, starts your Geoweaver server there (or reuses the running one) with the [Agent API](agent-api.md) on, forwards it to `http://localhost:8070/Geoweaver`, and keeps the forward working until you stop it. Each call takes a fraction of a second.
+Keep a Geoweaver server running on the login node and forward its port:
 
 ```bash
-export GEOWEAVER_SSH_HOST=you@login.example.edu   # or a Host entry from ~/.ssh/config
-scripts/geoweaver-bridge start
-scripts/geoweaver-bridge api GET /api/v1/workflows
-scripts/geoweaver-bridge api POST /api/v1/workflows/<id>/runs '{"hostId":"100001"}'
-scripts/geoweaver-bridge api GET '/api/v1/runs/<runId>?waitSeconds=60&includeStepLogs=true'
-scripts/geoweaver-bridge stop                      # the server keeps running; --server stops it too
+ssh you@login.example.edu 'GEOWEAVER_PORT=8071 SERVER_ADDRESS=127.0.0.1 nohup geoweaver > ~/geoweaver/server.log 2>&1 &'
+TOKEN=$(ssh you@login.example.edu geoweaver agent-token --create --no-browser --show-token | grep -o "gwt_[A-Za-z0-9_-]*")
+ssh -f -N -L 8071:127.0.0.1:8071 you@login.example.edu
+curl -s -H "Authorization: Bearer $TOKEN" http://localhost:8071/Geoweaver/api/v1/workflows
 ```
 
-- `ssh -o BatchMode=yes you@login.example.edu true` must work without a password (key or ssh-agent; VPN if your site needs it). The bridge never waits at a prompt: when it cannot log in it prints `GEOWEAVER-BRIDGE: NOT CONNECTED` and exits with 75.
-- A health check every 30 seconds reconnects, restores the forward and restarts the server if it stopped.
-- The server listens for browsers and API calls only on the remote machine itself (`127.0.0.1`, a port picked per user), and shares the database on its network address, so a Geoweaver in Open OnDemand joins it as described above. If a later login lands on another login node, a second server starts there; all share the database.
-- The server always has the Agent API on, even if your settings turn it off elsewhere. Its token is kept in `~/.geoweaver-bridge/` (readable only by you) and renewed when it expires; `rotate-token` replaces it and revokes only the old one.
-- Each server is one Java process (about 0.5 to 1 GB of memory); check your site's rules for long-running programs on login nodes.
-
-Any HTTP client works: `eval "$(scripts/geoweaver-bridge env)"` sets `URL` and `TOKEN`, then `curl -s -H "Authorization: Bearer $TOKEN" "$URL/api/v1/workflows"`.
-
-For Claude Code, a few lines in the project's `CLAUDE.md` are enough:
-
-```markdown
-Geoweaver runs on the cluster behind `scripts/geoweaver-bridge`. Call its Agent API with
-`scripts/geoweaver-bridge api METHOD /api/v1/... [JSON]` (see docs/agent-api.md); wait for runs with
-`GET /api/v1/runs/<id>?waitSeconds=60`. If it prints GEOWEAVER-BRIDGE: NOT CONNECTED, tell me.
-```
+`SERVER_ADDRESS=127.0.0.1` keeps the page and the API on the login node itself; the database is still shared on the machine's network address, so the Open OnDemand Geoweaver joins it as described above. Pick a port no one else on the login node uses. See [Agent API](agent-api.md) for the calls. A Java server takes about 0.5 to 1 GB of memory; check your site's rules for long-running programs on login nodes.
 
 ### Through commands
 
