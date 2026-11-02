@@ -92,6 +92,13 @@ Settings (environment variables):
 | `GEOWEAVER_MIN_FREE_MB` | `512` | free space below which no new log files are started |
 | `GEOWEAVER_TEMP_RETENTION_DAYS` | `7` | age after which temporary files are removed (`0` = keep) |
 | `GEOWEAVER_KEEP_RUN_FILES` | `false` | `true` keeps the script and process copies in run folders |
+| `GEOWEAVER_PRIVATE_FILES` | `true` | `false` leaves the permissions of `~/h2` and `~/geoweaver` alone |
+| `GEOWEAVER_WORKSPACE_SYNC` | `true` | `false` stops this server from showing what other Geoweaver processes on the database do; `GEOWEAVER_WORKSPACE_SYNC_MS` (1000) sets how often it looks |
+| `GEOWEAVER_DB_BIND_ADDRESS` | (network address) | where the database is served to other Geoweaver processes; `127.0.0.1` for one machine only |
+
+Several Geoweaver processes (the server, commands in an SSH session, a server in an Open
+OnDemand session) can use the database at once; see [SSH and browser together](ssh-and-gui.md).
+The running server compacts the file only while no other process is connected.
 
 ## Switching to PostgreSQL
 

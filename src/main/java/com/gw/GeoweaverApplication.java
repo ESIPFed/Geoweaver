@@ -7,6 +7,7 @@ import com.gw.tools.UserTool;
 import com.gw.utils.BaseTool;
 import com.gw.utils.BeanTool;
 import com.gw.utils.H2StartupCompaction;
+import com.gw.utils.SharedDatabaseCheck;
 import com.gw.utils.JavaRuntimeRequirements;
 import com.gw.utils.RandomString;
 import java.awt.Desktop;
@@ -20,8 +21,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 @ServletComponentScan
@@ -29,11 +32,23 @@ public class GeoweaverApplication {
 
   static Logger logger = Logger.getLogger(GeoweaverApplication.class);
 
+  /** The command-line arguments of this process, for commands that start a copy of themselves. */
+  public static String[] cliArgs = new String[0];
+
   public static void main(String[] args) {
+    cliArgs = args.clone();
+    if (args.length > 0) {
+      com.gw.commands.CliOutput.begin(args);
+      // Commands show warnings and errors only; the log file keeps everything.
+      if (System.getProperty("GEOWEAVER_CONSOLE_LOG_LEVEL") == null) {
+        System.setProperty("GEOWEAVER_CONSOLE_LOG_LEVEL", "WARN");
+      }
+    }
     // Create log directory before anything else to avoid NoSuchFileException
     createLogDirectory();
     // Latest Geoweaver requires Java 17+ (Spring Boot 3); refuse older JDKs early.
     JavaRuntimeRequirements.requireSupportedJavaOrExit();
+    applyDatabaseBindAddress();
 
     // if we have a command line argument, we assume it is a command
     if (args.length > 0) {
@@ -41,13 +56,28 @@ public class GeoweaverApplication {
       // Do not open homepage if we are running a command
       // Run the spring boot application and command it to exit, so that only the command is run
       // Create a spring boot application without tomcat
-      System.exit(
-          SpringApplication.exit(
-              new SpringApplicationBuilder(GeoweaverCLI.class)
-                  .lazyInitialization(true)
-                  .web(WebApplicationType.NONE)
-                  .bannerMode(Banner.Mode.OFF)
-                  .run(args)));
+      ConfigurableApplicationContext cli;
+      try {
+        cli =
+            new SpringApplicationBuilder(GeoweaverCLI.class)
+                .lazyInitialization(true)
+                .web(WebApplicationType.NONE)
+                .bannerMode(Banner.Mode.OFF)
+                // Same database settings as the server, so either one can hold the shared file.
+                .listeners(
+                    new SharedDatabaseCheck(),
+                    (ApplicationListener<ApplicationEnvironmentPreparedEvent>)
+                        e -> H2StartupCompaction.enableCompression(e.getEnvironment()))
+                .run(args);
+      } catch (RuntimeException e) {
+        String inUse = databaseInUse(e);
+        if (inUse == null) throw e;
+        System.err.println(inUse);
+        System.exit(1);
+        return;
+      }
+      int code = SpringApplication.exit(cli);
+      System.exit(code != 0 ? code : com.gw.commands.CliOutput.exitCode());
 
     } else {
 
@@ -59,14 +89,23 @@ public class GeoweaverApplication {
 
       show_ascii_art();
 
-      ApplicationContext applicationContext =
-          new SpringApplicationBuilder(GeoweaverApplication.class)
-              .bannerMode(Banner.Mode.OFF)
-              // Shrink an oversized embedded H2 file before the connection pool opens it.
-              .listeners(new H2StartupCompaction())
-              .run(args);
+      try {
+        new SpringApplicationBuilder(GeoweaverApplication.class)
+            .bannerMode(Banner.Mode.OFF)
+            // Shrink an oversized embedded H2 file before the connection pool opens it.
+            .listeners(new SharedDatabaseCheck(), new H2StartupCompaction())
+            .run(args);
+      } catch (RuntimeException e) {
+        String inUse = databaseInUse(e);
+        if (inUse == null) throw e;
+        System.err.println(inUse);
+        System.exit(1);
+        return;
+      }
 
       addDefaultPublicUser();
+
+      com.gw.web.GeoweaverController.watchStopRequests();
 
       addLocalhost();
 
@@ -74,6 +113,43 @@ public class GeoweaverApplication {
       System.out.println("GeoWeaver is started and ready for use..");
       System.out.println("URL: http://localhost:"+BaseTool.get_current_port()+"/Geoweaver");
     }
+  }
+
+  /**
+   * The address the shared database is served on to other Geoweaver processes (H2 {@code
+   * AUTO_SERVER}). By default H2 uses this machine's network address, which lets a Geoweaver on
+   * another machine with the same home folder join; {@code GEOWEAVER_DB_BIND_ADDRESS=127.0.0.1}
+   * keeps it on this machine, which also survives network changes (a laptop on a new Wi-Fi).
+   */
+  static void applyDatabaseBindAddress() {
+    String bind = System.getenv("GEOWEAVER_DB_BIND_ADDRESS");
+    if (bind != null && !bind.isBlank() && System.getProperty("h2.bindAddress") == null) {
+      System.setProperty("h2.bindAddress", bind.trim());
+    }
+  }
+
+  /**
+   * A readable message when the command could not open the database because another Geoweaver
+   * process holds it and cannot be reached, or null for any other failure.
+   */
+  static String databaseInUse(Throwable e) {
+    for (Throwable t = e; t != null; t = t.getCause()) {
+      String m = t.getMessage();
+      if (m != null
+          && (m.contains("Database may be already in use")
+              || m.contains("The file is locked")
+              || (m.contains("Connection is broken")
+                  && (m.contains("timed out")
+                      || m.contains("refused")
+                      || m.contains("No route")
+                      || m.contains("unreachable"))))) {
+        return "Could not open the Geoweaver database: another Geoweaver process holds it and this"
+            + " one cannot connect to it.\n" + m.lines().findFirst().orElse(m)
+            + "\nUse that Geoweaver (browser page or Agent API), run this command on the machine where"
+            + " it runs, or stop it and try again. See docs/ssh-and-gui.md.";
+      }
+    }
+    return null;
   }
 
   /**

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +18,15 @@ import jakarta.transaction.Transactional;
  */
 @Transactional
 public interface HistoryRepository extends JpaRepository<History, String> {
+
+  /** Id, process or workflow id, and status of every run that has not ended (no log text). */
+  @Query("select h.history_id, h.history_process, h.indicator from History h where h.indicator in ('Running', 'Ready')")
+  List<Object[]> findActiveRunHeads();
+
+  /** Id and status of the given runs (no log text). */
+  @Query("select h.history_id, h.indicator from History h where h.history_id in :ids")
+  List<Object[]> findStatusByIds(@Param("ids") java.util.Collection<String> ids);
+
 
   /**
    * Find recent history records for a specific host, limited by the specified count.

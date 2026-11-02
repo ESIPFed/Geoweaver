@@ -24,6 +24,8 @@ import com.gw.tools.WorkflowTool;
 import com.gw.api.v1.workspace.WorkspaceEventBroadcaster;
 import com.gw.tools.AsyncExportManager;
 import com.gw.utils.BaseTool;
+import com.gw.utils.BeanTool;
+import com.gw.utils.RunStopRequests;
 import com.gw.utils.RandomString;
 import java.io.File;
 import java.io.FileInputStream;
@@ -134,6 +136,29 @@ public class GeoweaverController {
   // Static block to initialize the session manager.
   static {
     sessionManager = new SessionManager();
+    // Stop requests left by another Geoweaver on the same database (for example Stop pressed in
+    // the browser for a run started from the command line) are carried out here.
+    RunStopRequests.startWatching(
+        id ->
+            sessionManager.localSessionByToken.containsKey(id)
+                || sessionManager.sshSessionByToken.containsKey(id)
+                || RunStopRequests.ownsWorkflow(id),
+        id -> {
+          if (RunStopRequests.ownsWorkflow(id)) {
+            BeanTool.getBean(WorkflowTool.class).stop(id);
+          } else {
+            BeanTool.getBean(ProcessTool.class).stop(id);
+          }
+          return true;
+        });
+  }
+
+  /**
+   * Makes sure this process carries out stop requests from other Geoweaver processes (the check
+   * starts with this class); called when the server starts and when a command starts a run.
+   */
+  public static void watchStopRequests() {
+    // nothing else to do: loading the class started the check
   }
 
   // Destructor method to close all SSH sessions when the application is destroyed.

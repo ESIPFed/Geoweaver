@@ -65,4 +65,43 @@ class WorkspaceEventBroadcasterTest {
     String json = ((String[]) entity.getBody())[0];
     assertThat(json).contains("\"actor\":\"human\"").contains("workflow.updated");
   }
+
+  @Test
+  void localChangesAreSharedAndRelayedChangesAreNotSharedAgain() {
+    WorkspaceLongPollHub hub = new WorkspaceLongPollHub();
+    WorkspaceEventBroadcaster b = broadcaster(true, hub);
+    java.util.List<WorkspaceEvent> shared = new java.util.ArrayList<>();
+    b.setSharer(shared::add);
+    b.publishAgent("process.created", "process", "abc", "n", null, "fp12");
+    b.publishHuman("workflow.updated", "workflow", "w1", "w", "w1");
+    b.relay(WorkspaceEvent.agent("process.updated", "process", "x", "n", null, "fp", 0));
+    assertThat(shared).extracting(WorkspaceEvent::event).containsExactly("process.created", "workflow.updated");
+    assertThat(b.currentRevision()).isEqualTo(3);
+  }
+
+  @Test
+  void runsAreNotShownAsSomeoneEditing() {
+    AgentApiProperties props = mock(AgentApiProperties.class);
+    when(props.isWorkspaceEventsEnabled()).thenReturn(true);
+    AgentPresenceTracker presence = new AgentPresenceTracker();
+    WorkspaceEventBroadcaster b =
+        new WorkspaceEventBroadcaster(props, presence, new WorkspaceLongPollHub(), new ObjectMapper());
+    b.relay(WorkspaceEvent.run("run.started", "h1", "w1", "flow", "w1", "Running"));
+    assertThat(presence.snapshotLive()).isEmpty();
+    assertThat(b.currentRevision()).isEqualTo(1);
+  }
+
+  @Test
+  void aPersonsEditIsShownAsAPerson() {
+    AgentApiProperties props = mock(AgentApiProperties.class);
+    when(props.isWorkspaceEventsEnabled()).thenReturn(true);
+    AgentPresenceTracker presence = new AgentPresenceTracker();
+    WorkspaceEventBroadcaster b =
+        new WorkspaceEventBroadcaster(props, presence, new WorkspaceLongPollHub(), new ObjectMapper());
+    b.publishHuman("workflow.updated", "workflow", "w1", "flow", "w1");
+    assertThat(presence.getIfLive("workflow", "w1").actor()).isEqualTo("human");
+    b.publishAgent("process.updated", "process", "p1", "n", null, "fp12");
+    assertThat(presence.getIfLive("process", "p1").actor()).isEqualTo("agent");
+    assertThat(presence.getIfLive("process", "p1").tokenFingerprint()).isEqualTo("fp12");
+  }
 }

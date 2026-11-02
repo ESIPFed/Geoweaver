@@ -17,7 +17,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Component
-@Command(name = "process", description = "Import workflow and process into Geoweaver database")
+@Command(name = "process", description = "Run a process and wait for it to end (or --detach)")
 public class RunProcessCommand implements Runnable {
 
   @Parameters(index = "0", description = "process id to run")
@@ -26,7 +26,7 @@ public class RunProcessCommand implements Runnable {
   @Option(
       names = {"-h", "--host"},
       description = "host to run on",
-      defaultValue = "10001")
+      defaultValue = "100001")
   String hostid;
 
   @Option(
@@ -40,19 +40,44 @@ public class RunProcessCommand implements Runnable {
       description = "password to the target host")
   String pass;
 
+  @Option(
+      names = "--detach",
+      description = "start the run in the background, print its run id and return; it keeps running after you log out")
+  boolean detach;
+
+  @Option(names = "--run-id", hidden = true)
+  String runId;
+
   public void run() {
 
+    if (detach) {
+      CliDetach.launch(BaseTool.isNull(pass) ? null : new String[] {pass});
+      return;
+    }
+    if (BaseTool.isNull(pass)) {
+      String[] inherited = CliDetach.inheritedPasswords();
+      if (inherited != null && inherited.length > 0) pass = inherited[0];
+    }
+
     ProcessTool pt = BeanTool.getBean(ProcessTool.class);
+
+    // Stop pressed in a browser connected to the same database reaches this run.
+    com.gw.web.GeoweaverController.watchStopRequests();
 
     BaseTool bt = BeanTool.getBean(BaseTool.class);
 
     HistoryTool histool = BeanTool.getBean(HistoryTool.class);
 
-    String historyid = new RandomString(18).nextString();
+    String historyid =
+        runId != null && CliDetach.RUN_ID.matcher(runId).matches()
+            ? runId
+            : new RandomString(18).nextString();
+    com.gw.api.v1.AgentApiAuthContext.setTokenFingerprint(CliAgent.ACTOR);
 
     ExecutionTool et = BeanTool.getBean(ExecutionTool.class);
 
-    System.out.println(String.format("Staring process %s", processid));
+    CliOutput.line(String.format("Starting process %s", processid));
+    System.err.println("Run id: " + historyid);
 
     // The CLI user already has a shell on this machine, so localhost needs no GUI password here.
     if (BaseTool.isNull(pass) && bt.islocal(hostid)) {
@@ -80,11 +105,17 @@ public class RunProcessCommand implements Runnable {
       e.printStackTrace();
     }
 
+    if (CliOutput.json()) {
+      CliOutput.print(BeanTool.getBean(com.gw.api.v1.service.AgentRunSupport.class).getRun(historyid, 4000));
+      if (!"Done".equals(String.valueOf(hist.getIndicator()))) CliOutput.setExitCode(1);
+      return;
+    }
+
     System.out.println("Execution finished");
 
     System.out.println(
         String.format(
-            "Total time cost: %o seconds",
+            "Total time cost: %d seconds",
             BaseTool.calculateDuration(hist.getHistory_begin_time(), hist.getHistory_end_time())));
 
     CommandLineUtil.CommandLineTable table = new CommandLineUtil.CommandLineTable();

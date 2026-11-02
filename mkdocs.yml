@@ -18,6 +18,7 @@ nav:
   - Workflows: workflow.md
   - Environment selection: environment-selection.md
   - Database: database-configuration.md
+  - SSH and browser together: ssh-and-gui.md
   - HTTP proxy: http-proxy.md
   - Logging: logging.md
   - Release process: release_upgrade.md

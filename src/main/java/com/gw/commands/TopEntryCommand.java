@@ -20,7 +20,14 @@ import picocli.CommandLine.HelpCommand; // Default help subcommand, displays hel
       ExportCommand.class,
       H2CompatibilityChecker.class,
       AgentTokenCommand.class,
-      DbCompactCommand.class
+      DbCompactCommand.class,
+      ProcessCommand.class,
+      WorkflowCommand.class
+    },
+    footer = {
+      "",
+      "Add --json to any command to get only JSON on standard output (log lines go to standard error).",
+      "See docs/ssh-and-gui.md for using these commands from an SSH session or a coding agent."
     })
 public class TopEntryCommand implements Runnable {
 
