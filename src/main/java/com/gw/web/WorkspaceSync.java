@@ -197,7 +197,14 @@ public class WorkspaceSync implements ApplicationListener<ApplicationReadyEvent>
     active = now;
     long since = lastRunLook - QUICK_RUN_MARGIN_MS;
     lastRunLook = System.currentTimeMillis();
-    if (before == null) return; // first look: only changes from now on
+    if (before == null) {
+      // first look: only changes from now on, so runs that ended before this server started are
+      // not reported as just finished
+      for (Object[] r : history.findEndedRunHeadsBegunSince(new Date(lastRunLook - QUICK_RUN_MARGIN_MS))) {
+        reportedFinished.add((String) r[0]);
+      }
+      return;
+    }
 
     List<String> started = new ArrayList<>();
     for (Map.Entry<String, String[]> e : now.entrySet()) {

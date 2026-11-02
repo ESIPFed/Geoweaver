@@ -157,6 +157,16 @@ class WorkspaceSyncTest {
   }
 
   @Test
+  void runsThatEndedBeforeTheServerStartedAreNotReported() {
+    List<Object[]> old = new ArrayList<>();
+    old.add(new Object[] {"r0", "p1", "Done"});
+    when(history.findEndedRunHeadsBegunSince(any())).thenAnswer(i -> new ArrayList<>(old));
+    sync.tick(); // first look
+    sync.tick();
+    assertThat(relayed).isEmpty();
+  }
+
+  @Test
   void aRunSeenRunningIsNotReportedAgainAsQuick() {
     sync.tick();
     activeRuns.add(new Object[] {"r2", "p1", "Running"});
