@@ -86,15 +86,15 @@ Runs on `localhost` (the default) need no password: they run on the machine wher
 
 ## Calling the cluster from your own computer
 
-There are two ways, and both can be used at the same time as any other Geoweaver on the same database:
+Use the bridge (the default): your Geoweaver server stays running on the cluster and the agent talks to its [Agent API](agent-api.md) through one SSH connection, which takes a fraction of a second per call. `geoweaver-ssh` is the alternative when nothing may be left running on the cluster; it starts a new `geoweaver` command for every call, which takes several seconds each. Both can be used at the same time as any other Geoweaver on the same database.
 
-| | `scripts/geoweaver-ssh` | `scripts/geoweaver-bridge` |
+| | `scripts/geoweaver-bridge` (default) | `scripts/geoweaver-ssh` |
 | --- | --- | --- |
-| What runs on the cluster | only `geoweaver` commands, no server | your own Geoweaver server, reachable only through the bridge |
-| How the agent calls it | `geoweaver-ssh <command> --json` | `geoweaver-bridge api GET /api/v1/...` (the [Agent API](agent-api.md)) |
+| What runs on the cluster | your Geoweaver server, kept running, reachable only through the bridge | only `geoweaver` commands, no server |
+| How the agent calls it | `geoweaver-bridge api GET /api/v1/...` | `geoweaver-ssh <command> --json` |
+| Time per call | well under a second | several seconds (Java starts each time) |
 | Logins | once per session (none with a key alone) | once per session (none with a key alone) |
-| The Geoweaver page on your computer | `geoweaver-ssh forward` to a server that is already running | always, at `http://localhost:8070/Geoweaver` |
-| Best for | a few commands, nothing left running | people who just want "connect and use it", long sessions |
+| The Geoweaver page on your computer | always, at `http://localhost:8070/Geoweaver` | `geoweaver-ssh forward` to a server that is already running |
 
 ### The bridge
 
@@ -105,11 +105,27 @@ scripts/geoweaver-bridge api GET /api/v1/workflows
 scripts/geoweaver-bridge stop        # when you are done
 ```
 
-`start` logs in once, starts a Geoweaver server on the cluster (or reuses the one you started before on that login node), forwards it to `http://localhost:8070/Geoweaver` (the next free port if 8070 is taken), and creates an Agent API token for the `api` command. Run `scripts/geoweaver-bridge password` once to set the password for the page.
+`start` logs in once, starts a Geoweaver server on the cluster (or reuses the one already running on that login node), forwards it to `http://localhost:8070/Geoweaver` (the next free port if 8070 is taken), and creates an Agent API token for the `api` command. Run `scripts/geoweaver-bridge password` once to set the password for the page.
 
 Until you run `stop`, a health check every 30 seconds keeps the connection in use, puts the port forward back when it disappears, restarts the server if it stopped, and reconnects with your key when the cluster allows that. When logging in again needs you, it shows a desktop notification, `status` says so, and `api` prints `GEOWEAVER-BRIDGE: NOT CONNECTED` with the command to run (exit 75) instead of waiting.
 
-The server listens only on the cluster machine itself (`127.0.0.1`), on a port picked per user, so it never takes a port another user's Geoweaver uses. `stop` stops it too, unless runs are still going on (then `stop --server` does).
+The server is live: `stop` closes only the bridge, and the server keeps running, together with its runs, so the next `start` reconnects within a second or two (and `start` on a bridge that is already up returns at once). `stop` leaves the SSH connection open for `ssh`, `scp` and `geoweaver-ssh` that may share it (it closes by itself after 12 hours without use); `stop --disconnect` closes it. `stop --server` also stops your servers, on every login node it can reach; it refuses while runs are going on unless you add `--force`. `status` lists your servers.
+
+The server listens only on the cluster machine itself (`127.0.0.1`), on a port picked per user, so it never takes a port another user's Geoweaver uses. If a later login lands on another login node, a second server starts there; both share the database with each other and with any Geoweaver in Open OnDemand, and none locks the others out. Each server is one Java process (about 0.5 to 1 GB of memory); check your site's rules for long-running programs on login nodes.
+
+Any HTTP client can use the bridge. `geoweaver-bridge env` prints the address and the token:
+
+```bash
+eval "$(scripts/geoweaver-bridge env)"
+curl -s -H "Authorization: Bearer $TOKEN" "$URL/api/v1/workflows"
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  "$URL/api/v1/workflows/<id>/runs" -d '{"hostId":"100001"}'
+curl -s -H "Authorization: Bearer $TOKEN" "$URL/api/v1/runs/<runId>?waitSeconds=60&includeStepLogs=true"
+```
+
+The server started by the bridge always has the Agent API on, even if your settings turn it off for other Geoweaver servers. The token is kept in `~/.geoweaver-bridge/` (readable only by you) and replaced by itself when it expires.
+
+For the agent, waiting is cheapest on the server side: `geoweaver-bridge api GET '/api/v1/runs/<id>?waitSeconds=60'` returns as soon as the run ends.
 
 ### Commands over SSH
 
@@ -152,18 +168,17 @@ It works with any server you can reach with `ssh`; nothing in it is specific to 
 For Claude Code, a few lines in the project's `CLAUDE.md` are enough:
 
 ```markdown
-Geoweaver runs on the cluster. Use `scripts/geoweaver-ssh <geoweaver command> --json` for every
-Geoweaver action (process/workflow create, update, show; run ... --detach; run status --wait; run log; run stop).
-Do not start a Geoweaver server. If a command prints GEOWEAVER-SSH: NOT CONNECTED, stop and ask me
-to run `scripts/geoweaver-ssh connect`.
+Geoweaver runs on the cluster behind `scripts/geoweaver-bridge`. Call its Agent API with
+`scripts/geoweaver-bridge api METHOD /api/v1/... [JSON]` (see docs/agent-api.md); wait for runs with
+`GET /api/v1/runs/<id>?waitSeconds=60`. If it prints GEOWEAVER-BRIDGE: NOT CONNECTED, stop and ask
+me to run `scripts/geoweaver-bridge start`.
 ```
 
-With the bridge instead:
+Without a server, through commands:
 
 ```markdown
-Geoweaver runs on the cluster behind `scripts/geoweaver-bridge`. Call its Agent API with
-`scripts/geoweaver-bridge api METHOD /api/v1/... [JSON]` (see docs/agent-api.md). If it prints
-GEOWEAVER-BRIDGE: NOT CONNECTED, stop and ask me to run `scripts/geoweaver-bridge start`.
+Use `scripts/geoweaver-ssh <geoweaver command> --json` for every Geoweaver action. If a command
+prints GEOWEAVER-SSH: NOT CONNECTED, stop and ask me to run `scripts/geoweaver-ssh connect`.
 ```
 
 ## Several Geoweaver servers at once
