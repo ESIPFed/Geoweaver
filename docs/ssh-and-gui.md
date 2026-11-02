@@ -98,6 +98,21 @@ scripts/geoweaver-ssh forward 8070            # the cluster's Geoweaver page at 
 - **With an SSH key the cluster accepts on its own,** `connect` is not even needed: the script opens the connection with the key, and opens it again after it drops, without asking anything.
 - **When the cluster also wants a second factor,** you log in once with `connect`, and the connection stays open while it is used (and up to 12 hours idle, `GEOWEAVER_SSH_KEEP`). Keep-alive messages hold it through quiet periods.
 - **When the connection is gone and the key alone cannot reopen it** (network change, laptop sleep, the cluster ended the session), the script never waits at a prompt. It prints `GEOWEAVER-SSH: NOT CONNECTED` with the command to run, and exits with 75. An agent passes this on to you; run `scripts/geoweaver-ssh connect` in your own terminal and let it continue.
+- **Copying files:** `scripts/geoweaver-ssh put LOCAL REMOTE` and `get REMOTE LOCAL` go through the same connection. A plain `scp` or `rsync` opens a new connection and asks for the second factor again, unless `~/.ssh/config` tells it to share the same one:
+
+  ```
+  Host mycluster
+    HostName login.cluster.edu
+    User you
+    IdentityFile ~/.ssh/id_ed25519
+    ControlMaster auto
+    ControlPath ~/.ssh/geoweaver-sockets/%r@%h:%p
+    ControlPersist 12h
+    ServerAliveInterval 30
+    ServerAliveCountMax 6
+  ```
+
+  Then `mkdir -p ~/.ssh/geoweaver-sockets && chmod 700 ~/.ssh/geoweaver-sockets`, and set `GEOWEAVER_SSH_HOST=mycluster`. The first login, by `ssh mycluster` or `scripts/geoweaver-ssh connect`, asks for the second factor; `ssh`, `scp`, `rsync` and the script all reuse it afterwards. Code does not need to be copied at all for `--code-file -`: `scripts/geoweaver-ssh process update <id> --code-file - --json < clean.py`.
 - Commands start a login shell on the cluster, so `module load` and `PATH` lines in your profile apply. Set `GEOWEAVER_REMOTE_CMD` if `geoweaver` is called something else there, for example `GEOWEAVER_REMOTE_CMD="java -jar ~/geoweaver/geoweaver.jar"`.
 
 It works with any server you can reach with `ssh`; nothing in it is specific to one cluster:

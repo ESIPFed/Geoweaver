@@ -11,6 +11,8 @@
 #   geoweaver-ssh status               is the connection open?
 #   geoweaver-ssh forward [PORT]       open the cluster's Geoweaver page at http://localhost:PORT/Geoweaver
 #   geoweaver-ssh disconnect           close the connection
+#   geoweaver-ssh put LOCAL REMOTE     copy a file to the cluster over the same connection
+#   geoweaver-ssh get REMOTE LOCAL     copy a file from the cluster
 #   geoweaver-ssh <geoweaver args...>  run geoweaver on the cluster, for example:
 #   geoweaver-ssh workflow list --json
 #
@@ -26,6 +28,7 @@ set -u
 
 HOST="${GEOWEAVER_SSH_HOST:-}"
 SSH="${GEOWEAVER_SSH_BIN:-ssh}"
+SCP="${GEOWEAVER_SCP_BIN:-scp}"
 REMOTE_CMD="${GEOWEAVER_REMOTE_CMD:-geoweaver}"
 FWD_PORT="${GEOWEAVER_SSH_PORT:-8070}"
 KEEP="${GEOWEAVER_SSH_KEEP:-12h}"
@@ -98,13 +101,23 @@ case "${1:-}" in
     echo "Geoweaver on $HOST: http://localhost:$port/Geoweaver"
     exit 0
     ;;
+  put|get)
+    [ $# -eq 3 ] || { echo "usage: $SELF $1 SOURCE DESTINATION" >&2; exit 2; }
+    ensure_open
+    # scp would otherwise open a new connection and ask for the second factor again
+    if [ "$1" = put ]; then src="$2"; dst="$HOST:$3"; else src="$HOST:$2"; dst="$3"; fi
+    "$SCP" "${CONTROL[@]}" -o BatchMode=yes -o ControlMaster=no -q "$src" "$dst" && exit 0
+    rc=$?
+    is_open || no_connection
+    exit $rc
+    ;;
   disconnect)
     "$SSH" "${CONTROL[@]}" -O exit "$HOST" >/dev/null 2>&1
     echo "Disconnected from $HOST."
     exit 0
     ;;
   ""|-h|--help|help)
-    sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
     ;;
 esac
