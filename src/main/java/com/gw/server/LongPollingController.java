@@ -1,6 +1,7 @@
 package com.gw.server;
 
 import com.gw.utils.BaseTool;
+import com.gw.utils.ExecutionLogBroker;
 import com.gw.utils.MessageQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Controller for HTTP long polling as a fallback when WebSocket connections fail.
@@ -27,6 +27,9 @@ public class LongPollingController {
     
     @Autowired
     private MessageQueue messageQueue;
+
+    @Autowired
+    private ExecutionLogBroker executionLogBroker;
     
     // Map to store pending requests
     private final Map<String, DeferredResult<ResponseEntity<?>>> pendingRequests = new ConcurrentHashMap<>();
@@ -74,8 +77,9 @@ public class LongPollingController {
     }
     
     /**
-     * Endpoint for sending messages to clients.
-     * This is used internally by the system to send messages to clients via long polling.
+     * Endpoint for clients to send control messages (token registration, execution subscribe)
+     * or for internal use. Client commands such as {@code token:}, {@code execution:}, and
+     * {@code subscribe:} are handled server-side and are not echoed into the caller's queue.
      * 
      * @param token The client token
      * @param message The message to send
@@ -87,6 +91,10 @@ public class LongPollingController {
             @RequestBody String message) {
         
         logger.debug("Sending message to token: {}", token);
+
+        if (handleClientCommand(token, message)) {
+            return ResponseEntity.ok().build();
+        }
         
         // Check if there's a pending request for this token
         DeferredResult<ResponseEntity<?>> pendingRequest = pendingRequests.remove(token);
@@ -105,6 +113,45 @@ public class LongPollingController {
                         .body("Failed to queue message: queue full or other error");
             }
         }
+    }
+
+    /**
+     * Handle client control commands posted to the long-poll send endpoint.
+     *
+     * @return true if the message was a handled control command (do not queue/echo)
+     */
+    private boolean handleClientCommand(String token, String message) {
+        if (BaseTool.isNull(message)) {
+            return false;
+        }
+        String trimmed = message.trim();
+        if (trimmed.startsWith("token:")) {
+            // Registration is implicit via the path token; acknowledge without echoing
+            logger.debug("Long-poll client registered token: {}", token);
+            return true;
+        }
+        if (trimmed.startsWith("execution:") || trimmed.startsWith("subscribe:")) {
+            String historyId = trimmed.substring(10);
+            if (!BaseTool.isNull(historyId) && executionLogBroker != null) {
+                executionLogBroker.subscribe(historyId, token);
+                // Confirm subscription on this tab's feed
+                sendMessageToClient(
+                    token,
+                    historyId
+                        + BaseTool.log_separator
+                        + "Subscribed to live execution logs: "
+                        + historyId);
+            }
+            return true;
+        }
+        if (trimmed.startsWith("unsubscribe:")) {
+            String historyId = trimmed.substring(12);
+            if (!BaseTool.isNull(historyId) && executionLogBroker != null) {
+                executionLogBroker.unsubscribe(historyId, token);
+            }
+            return true;
+        }
+        return false;
     }
     
     /**

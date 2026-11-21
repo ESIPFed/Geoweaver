@@ -164,11 +164,28 @@ GW.process.sidepanel = {
 
         msg.code = msg.input;
 
-        GW.process.history_id = msg.hid;
+        GW.process.history_id = msg.hid || history_id;
 
         GW.process.sidepanel.display(msg);
 
         GW.process.sidepanel.displayOutput(msg);
+
+        var status = (msg.status || msg.indicator || "").toString().toLowerCase();
+        var stillRunning =
+          status === "running" ||
+          msg.end_time === "null" ||
+          msg.end_time === "undefined";
+
+        GW.ssh.process_output_id = "prompt-panel-process-log-window";
+        GW.process.history_id = msg.hid || history_id;
+
+        if (stillRunning) {
+          GW.ssh.activateProcessLogStream(
+            msg.hid || history_id,
+            "prompt-panel-process-log-window"
+          );
+          $("#prompt_panel_log_switch").prop("checked", true).trigger("change");
+        }
 
         if (GW.editor.isfullscreen) {
           GW.process.sidepanel.dockmode = "left";
@@ -187,7 +204,9 @@ GW.process.sidepanel = {
   displayOutput: function (msg) {
     var output = GW.general.escapeCodeforHTML(msg.output);
 
-    GW.process.history_id = msg.hid;
+    if (msg.hid) {
+      GW.process.history_id = msg.hid;
+    }
 
     if (msg.output == "logfile") {
       output =
@@ -204,13 +223,21 @@ GW.process.sidepanel = {
       // GW.process.util.refreshCodeEditor();
     }
 
+    var status = (msg.status || msg.indicator || "").toString().toLowerCase();
+    var stillRunning =
+      status === "running" ||
+      msg.end_time === "null" ||
+      msg.end_time === "undefined";
+
+    var endLine = stillRunning
+      ? "<p> Execution still running — live log streaming is active.</p>"
+      : "<p> Execution ended at " + msg.end_time + "</p>";
+
     output =
       "<p> Execution started at " +
       msg.begin_time +
       "</p>" +
-      "<p> Execution ended at " +
-      msg.end_time +
-      "</p>" +
+      endLine +
       "<p> The old code used has been refreshed in the code editor.</p>" +
       "<div>" +
       output +
@@ -316,7 +343,13 @@ GW.process.sidepanel = {
     // do not stop ability to add process when we open side panel
     // GW.workspace.currentmode = 2;
 
-    GW.process.history_id = null;
+    // Preserve history_id when opening a specific run (msg.hid); only clear when
+    // loading the latest process definition so live logs are not filtered away.
+    if (msg && msg.hid) {
+      GW.process.history_id = msg.hid;
+    } else {
+      GW.process.history_id = null;
+    }
 
     GW.ssh.process_output_id = "prompt-panel-process-log-window";
 
