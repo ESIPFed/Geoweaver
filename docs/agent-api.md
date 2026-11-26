@@ -16,6 +16,8 @@ Everything the GUI does with processes, workflows, hosts, environments, history,
 
 ## Remote deployment quickstart (operator → AI agent in 5 steps)
 
+**Recommended for AI agents:** install PyGeoweaver on the Geoweaver machine and let the agent run `ssh <host> gw agent ...` over an SSH key login. `gw agent` covers every endpoint below, stores the token on the server and prints JSON; see the [PyGeoweaver agent guide](https://github.com/ESIPFed/pygeoweaver/blob/main/docs/agent-ssh.md). The steps here are for writing your own HTTP client.
+
 By default the Agent API answers only programs on the Geoweaver server itself (see [Security model](#security-model)). An agent on another machine reaches it through SSH; nothing on the server has to be opened to the network.
 
 1. **Run Geoweaver on the server** (Java 17.0.21+), either the jar or Docker:

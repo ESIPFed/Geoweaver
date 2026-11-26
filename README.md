@@ -98,20 +98,23 @@ Runs started from the command line show up live in any open browser page, and **
 
 ## For AI coding agents
 
-Geoweaver gives an AI coding agent a safe, reproducible place to run science code: the agent writes the steps and runs the workflow, and you can inspect every run in the browser afterwards.
+Geoweaver gives an AI coding agent (Claude Code, Codex, Cursor) a safe, reproducible place to run science code: the agent writes the steps and runs the workflow, and you can inspect every run in the browser afterwards.
+
+The recommended setup is **agent → SSH → `gw agent` → Geoweaver**. Install [PyGeoweaver](https://github.com/ESIPFed/pygeoweaver) on the Geoweaver machine, give your laptop an SSH key login to it (for example a `Host gw` entry in `~/.ssh/config`), and the agent runs every command through SSH:
 
 ```bash
-java -jar geoweaver.jar agent-token --create   # mint a token; store it as GEOWEAVER_API_TOKEN
-curl -H "Authorization: Bearer $GEOWEAVER_API_TOKEN" \
-  http://127.0.0.1:8070/Geoweaver/api/v1/workflows
+ssh gw 'pip install -U pygeoweaver && gw agent ensure'   # once: start Geoweaver if needed
+ssh -t gw 'gw agent login'                               # once: you type the Geoweaver password
+ssh gw gw agent workflow list                            # what the agent runs from then on
+ssh gw gw agent workflow run <workflow-id> --wait
+ssh gw gw agent guide                                    # playbook to hand to the agent
 ```
 
-- **Same computer only by default.** The Agent API answers programs on the Geoweaver server itself. Agents on another machine use SSH or an SSH tunnel; network access has to be switched on explicitly ([security model](docs/agent-api.md#security-model)).
-- **Tokens, not passwords.** Tokens expire, can be revoked, and only their SHA-256 hash is stored.
-- **Full coverage:** processes, workflows, hosts, environments, runs and their logs, history, checkpoints, results, export and import. An OpenAPI schema is served at `/v3/api-docs/agent-api`.
-- **Ready-made agent instructions** in [`.cursor/skills/geoweaver-api-agent/SKILL.md`](.cursor/skills/geoweaver-api-agent/SKILL.md).
+- **Nothing opened to the network.** The Agent API answers only programs on the Geoweaver machine; the agent reaches it through the SSH login you already have, and never sees the Geoweaver password.
+- **Tokens, not passwords.** `gw agent login` stores a token on the Geoweaver machine that expires and can be revoked; Geoweaver keeps only its SHA-256 hash.
+- **Everything is covered:** processes, workflows, hosts and Python environments, runs and their logs, step skipping, checkpoints, export and import, and result files. Output is JSON with stable exit codes.
 
-Agents can also use the [command line](#command-line) directly. Read the [Agent API guide](docs/agent-api.md) to get started.
+Setup details and every command: [PyGeoweaver agent guide](https://github.com/ESIPFed/pygeoweaver/blob/main/docs/agent-ssh.md). Building your own client? The HTTP API is described in the [Agent API guide](docs/agent-api.md), with an OpenAPI schema at `/v3/api-docs/agent-api`.
 
 ## What's new in 3.x
 
