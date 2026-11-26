@@ -60,7 +60,9 @@ class LoginSecurityTest {
     String[] p = good.split("\\.");
     long later = Long.parseLong(p[1]) + 1000;
     assertThat(AuthCookie.isValid("v1." + later + "." + p[2])).isFalse();
-    assertThat(AuthCookie.isValid(good.substring(0, good.length() - 1) + "A")).isFalse();
+    char last = good.charAt(good.length() - 1);
+    String tampered = good.substring(0, good.length() - 1) + (last == 'A' ? 'E' : 'A');
+    assertThat(AuthCookie.isValid(tampered)).isFalse();
     assertThat(AuthCookie.isValid("v1." + (Instant.now().getEpochSecond() - 10) + "." + p[2])).isFalse();
     assertThat(AuthCookie.isValid("")).isFalse();
     assertThat(AuthCookie.isValid(null)).isFalse();
