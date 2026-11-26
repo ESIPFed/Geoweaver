@@ -11,6 +11,20 @@
 3. Upgrade via Python or JAR (below).
 4. If the database fails to open after the jump, use [Complex Upgrade (Database Migration)](#complex-upgrade-database-migration).
 
+### Behavior changes in 3.3.2
+
+This is a security release. **Upgrade every Geoweaver 3.3.1 and earlier**, especially servers that other computers can reach.
+
+- **The browser login can no longer be faked.** Before, anyone who could reach the server could set a cookie by hand and use the web GUI without the localhost password. The login cookie is now signed by the server, expires after 30 days and stops working when the localhost password is reset. **Everyone has to log in once after upgrading.**
+- **Every page that is not a plain static file needs login**, including result files and downloads whose names end in `.png`, `.js` and so on.
+- **The Agent API answers only programs on the same computer by default.** Requests from other computers, through a reverse proxy (also one on the same computer), or from web pages get HTTP 403 `local_only`. Agents on another machine use SSH: run `curl http://127.0.0.1:8070/Geoweaver/api/v1/...` on the server, or open a tunnel with `ssh -N -L 8070:127.0.0.1:8070 server`. The web GUI is not affected.
+- **To let other computers, a reverse proxy or Open OnDemand use the Agent API**, set both `geoweaver.agent.allow-non-loopback=true` and `geoweaver.agent.acknowledge-network-risk=true` in `~/geoweaver/application.properties`, and use HTTPS. With only the first, Geoweaver refuses to start. The yellow warning banner appears only in this mode. See [Agent API](agent-api.md#security-model).
+- An Agent API path written with percent-encoding (for example `/api/%761/...`) can no longer skip the token check.
+- Geoweaver no longer takes the client address from `X-Forwarded-For` (Spring Boot did so automatically on Kubernetes).
+- **Quieter live collaboration:** the note about an AI agent working on the open workflow or process appears only when an agent or `geoweaver` command actually changed it, hides itself after two minutes, and has a close button. Saving a workflow no longer reloads your own canvas.
+- The workflow step log panel shows the full saved log (up to 5 MB) again, and each row in the progress panel has its close button again.
+- Installers, launchers and the Docker image require Java 17.0.21 or newer.
+
 ### Behavior changes in 3.3.1
 
 - **The command line and the browser can work on the same database at the same time**, also from different machines that share the home folder, for example an SSH login node and an Open OnDemand session. The browser shows runs started with `geoweaver run ...` as they progress, and **Stop** in the browser now stops them. `~/h2` and `~/geoweaver` are made readable only by you (`GEOWEAVER_PRIVATE_FILES=false` to keep permissions as they are). See [Several instances on one database](shared-database.md).
