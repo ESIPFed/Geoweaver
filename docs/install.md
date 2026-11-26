@@ -4,6 +4,8 @@
 ## Dependencies
 
 - **Java 17+** (OpenJDK / Temurin 17 or higher) for Geoweaver **2.2+** (Spring Boot 3).
+
+The bundled platform installers pin Eclipse Temurin **17.0.21+9** and verify its SHA-256 checksum before extraction. Keep Java patched as later security releases become available.
 - **Docker** [18.09.1+](https://docs.docker.com/install/) only if you install via Docker.
 
 > **JDK &lt; 17 is not supported** by the latest Geoweaver.  

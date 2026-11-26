@@ -10,15 +10,24 @@ mkdir install
 
 cd install
 
-if [ -f openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz ];then
-	echo "++++++++++++++++found openjdk-12.0.2_linux-x64_bin.tar.gz "
+JDK_VERSION="17.0.21"
+JDK_BUILD="9"
+JDK_ARCHIVE="OpenJDK17U-jdk_x64_linux_hotspot_${JDK_VERSION}_${JDK_BUILD}.tar.gz"
+JDK_HOME="jdk-${JDK_VERSION}+${JDK_BUILD}"
+JDK_URL="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK_VERSION}%2B${JDK_BUILD}/${JDK_ARCHIVE}"
+JDK_SHA256="${JDK_ARCHIVE}.sha256.txt"
+
+if [ -f "$JDK_ARCHIVE" ];then
+	echo "++++++++++++++++found $JDK_ARCHIVE"
 else
-	echo -e "Download OpenJDK"
+	echo -e "Download Temurin JDK $JDK_VERSION"
 
-	wget https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
-
-	tar -zxvf openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
+	wget "$JDK_URL" -O "$JDK_ARCHIVE"
 fi
+
+wget "${JDK_URL}.sha256.txt" -O "$JDK_SHA256"
+sha256sum -c "$JDK_SHA256" || exit 1
+tar -zxvf "$JDK_ARCHIVE"
 
 if [ -f apache-tomcat-9.0.22.tar.gz ];then
 	echo "++++++++++++++++found apache-tomcat-9.0.22.tar.gzz "
@@ -34,7 +43,7 @@ fi
 
 echo "change the default jdk to the downloaded jdk"
 
-sed '109 a JAVA_HOME='$PWD'/java-se-8u40-ri/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
+sed '109 a JAVA_HOME='$PWD'/'"$JDK_HOME"'/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
 
 mv apache-tomcat-9.0.22/bin/catalina2.sh apache-tomcat-9.0.22/bin/catalina.sh
 

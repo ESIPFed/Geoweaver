@@ -15,27 +15,35 @@ cd install
 
 echo current directory is %CD%
 
-if exist "openjdk-12.0.2_windows-x64_bin.zip" (
+set JDK_VERSION=17.0.21
+set JDK_BUILD=9
+set JDK_DIR=jdk-%JDK_VERSION%+%JDK_BUILD%
+set JDK_ARCHIVE=OpenJDK17U-jdk_x64_windows_hotspot_%JDK_VERSION%_%JDK_BUILD%.zip
+set JDK_URL=https://github.com/adoptium/temurin17-binaries/releases/download/jdk-%JDK_VERSION%%%2B%JDK_BUILD%/OpenJDK17U-jdk_x64_windows_hotspot_%JDK_VERSION%_%JDK_BUILD%.zip
 
-	echo ++++++++++++++++ found openjdk-12.0.2_windows-x64_bin.zip
+if exist "%JDK_ARCHIVE%" (
+
+	echo ++++++++++++++++ found %JDK_ARCHIVE%
 	
 ) else (
 	
-	echo -e "Download OpenJDK"
+	echo Download Temurin JDK %JDK_VERSION%
 	
-	curl -L "https://download.java.net/java/GA/jdk12.0.2/e482c34c86bd4bf8b56c0b35558996b9/10/GPL/openjdk-12.0.2_windows-x64_bin.zip" -o "openjdk-12.0.2_windows-x64_bin.zip"
-
-rem	tar -zxvf openjdk-12.0.2_linux-x64_bin.tar.gz 
-
-	
+	curl -fL "%JDK_URL%" -o "%JDK_ARCHIVE%"
 
 )
 
-if not exist "jdk-12.0.2" (
+powershell -NoProfile -Command "$expected = (Invoke-WebRequest -UseBasicParsing '%JDK_URL%.sha256.txt').Content.Split()[0]; $actual = (Get-FileHash -Algorithm SHA256 '%CD%\%JDK_ARCHIVE%').Hash; if ($actual.ToLower() -ne $expected.ToLower()) { exit 1 }"
+if errorlevel 1 (
+	echo JDK archive checksum verification failed.
+	exit /b 1
+)
 
-	echo "Expand-Archive" %CD%\openjdk-12.0.2_windows-x64_bin.zip %CD%\
+if not exist "%JDK_DIR%" (
+
+	echo "Expand-Archive" %CD%\%JDK_ARCHIVE% %CD%\
 	
-	powershell -Command "Expand-Archive -Path '%CD%\openjdk-12.0.2_windows-x64_bin.zip' -DestinationPath '%CD%\' "
+	powershell -Command "Expand-Archive -Path '%CD%\%JDK_ARCHIVE%' -DestinationPath '%CD%\' "
 	
 )
 
@@ -72,9 +80,9 @@ if not exist "apache-tomcat-9.0.22" (
 			
 			echo set CATALINA_HOME=%CD%\apache-tomcat-9.0.22>> "temp.txt"
 			
-			echo set JAVA_HOME=%CD%\jdk-12.0.2>> "temp.txt"
+			echo set JAVA_HOME=%CD%\%JDK_DIR%>> "temp.txt"
 			
-			echo set JRE_HOME=%CD%\jdk-12.0.2>> "temp.txt"
+			echo set JRE_HOME=%CD%\%JDK_DIR%>> "temp.txt"
 		
 		)
 		
@@ -91,8 +99,6 @@ rem echo y|del "apache-tomcat-9.0.2F2\bin\catalina.bat"
 rem rename "temp.txt" "apache-tomcat-9.0.22\bin\catalina.bat"
 
 copy "temp.txt" "apache-tomcat-9.0.22\bin\startup.bat"
-
-rem echo JAVA_HOME='$PWD'/jdk-12.0.2/ 109 >> apache-tomcat-9.0.22/bin/catalina.sh
 
 echo download Geoweaver into Apache Tomcat Webapp Folder
 

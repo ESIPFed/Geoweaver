@@ -1,4 +1,5 @@
-FROM eclipse-temurin:17-jre
+# Pin the Java 17 CPU release rather than relying on the moving `17-jre` tag.
+FROM eclipse-temurin:17.0.21_9-jre
 
 COPY ./target/geoweaver.jar /opt/
 
