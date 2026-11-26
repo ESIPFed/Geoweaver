@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
@@ -215,6 +216,10 @@ public final class H2StorageMaintenance {
     String url = options.inProcess() ? jdbcUrl : maintenanceUrl(jdbcUrl);
     try (Connection conn = DriverManager.getConnection(url, user, password);
         Statement st = conn.createStatement()) {
+      if (options.inProcess()) {
+        String busy = sharedUse(st);
+        if (busy != null) return skipped(busy, sizeBefore, start);
+      }
       st.execute("SHUTDOWN COMPACT");
     } catch (SQLException e) {
       if (e.getErrorCode() != DATABASE_CALLED_AT_SHUTDOWN) {
@@ -233,6 +238,33 @@ public final class H2StorageMaintenance {
     long sizeAfter = file.length();
     recordCompactedSize(file, sizeAfter);
     return new Result(Outcome.COMPACTED, why, sizeBefore, sizeAfter, elapsed(start));
+  }
+
+  /**
+   * With {@code AUTO_SERVER}, several Geoweaver processes (the server, the command line, a second
+   * server on another machine sharing the home folder) use one database: the first to open the
+   * file serves it to the others. Compacting closes the database for all of them, so a running
+   * server compacts only when it holds the file itself and nobody else is connected. Returns why
+   * not, or null when compacting is safe.
+   */
+  static String sharedUse(Statement st) throws SQLException {
+    try (ResultSet rs =
+        st.executeQuery(
+            "SELECT SERVER FROM INFORMATION_SCHEMA.SESSIONS WHERE SESSION_ID = SESSION_ID()")) {
+      if (rs.next() && rs.getString(1) != null) {
+        return "the database file is held by another Geoweaver process (" + rs.getString(1)
+            + "); it is compacted when this one holds the file";
+      }
+    }
+    try (ResultSet rs =
+        st.executeQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SESSIONS WHERE SERVER IS NOT NULL")) {
+      long others = rs.next() ? rs.getLong(1) : 0;
+      if (others > 0) {
+        return others + " connection(s) from other processes (another Geoweaver or a database"
+            + " client) are open; compaction postponed";
+      }
+    }
+    return null;
   }
 
   private static Result skipped(String reason, long size, long start) {

@@ -381,6 +381,9 @@ public class CommandServlet {
     }
     
     try {
+      // Command-line runs have no browser to send to; their output goes to the run log only.
+      if (!com.gw.utils.BeanTool.hasBean(LongPollingController.class)) return false;
+
       // Get the LongPollingController bean from Spring context
       LongPollingController longPollingController = 
           com.gw.utils.BeanTool.getBean(LongPollingController.class);

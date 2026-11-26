@@ -54,7 +54,19 @@ public class GeoweaverCLI implements CommandLineRunner {
 
     TopEntryCommand topEntryCommand = BeanTool.getBean(TopEntryCommand.class);
 
-    new CommandLine(topEntryCommand).execute(args);
+    // A database used only from the command line (no server ever started) still needs the
+    // default user and the localhost host that runs default to.
+    try {
+      GeoweaverApplication.addDefaultPublicUser();
+      GeoweaverApplication.addLocalhost();
+    } catch (RuntimeException e) {
+      // read-only or older database: commands report their own errors
+    }
+
+    // --json is handled before start-up (CliOutput) and may appear anywhere
+    String[] rest = java.util.Arrays.stream(args).filter(a -> !"--json".equals(a)).toArray(String[]::new);
+    int rc = new CommandLine(topEntryCommand).execute(rest);
+    com.gw.commands.CliOutput.setExitCode(rc);
   }
 
   public static void main(String[] args) throws Exception {

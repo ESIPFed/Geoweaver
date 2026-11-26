@@ -25,11 +25,16 @@ public class AgentPresenceTracker {
   }
 
   public void touch(String objectKind, String objectId, String fingerprint) {
+    touch(objectKind, objectId, fingerprint, "agent");
+  }
+
+  /** Records that {@code actor} ("agent" or "human") is working on the object. */
+  public void touch(String objectKind, String objectId, String fingerprint, String actor) {
     if (objectKind == null || objectId == null) {
       return;
     }
     String key = objectKind + ":" + objectId;
-    byKey.put(key, new Presence("agent", fingerprint, Instant.now()));
+    byKey.put(key, new Presence(actor == null ? "agent" : actor, fingerprint, Instant.now()));
   }
 
   public Presence getIfLive(String objectKind, String objectId) {

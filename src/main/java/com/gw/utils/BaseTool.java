@@ -501,38 +501,55 @@ public class BaseTool {
     return json.toString();
   }
 
+  /** How long a local helper command (finding Python, conda) may take before it is stopped. */
+  static final long LOCAL_COMMAND_TIMEOUT_SECONDS = 20;
+
+  /**
+   * Runs a short local command and returns its output lines (standard output and error). The
+   * output is read while the command runs, so a long output cannot block it; it gets no input; and
+   * it is stopped after {@link #LOCAL_COMMAND_TIMEOUT_SECONDS}, returning what it printed so far,
+   * so a command that hangs (for example one waiting on the network) cannot hold up a request.
+   */
   public List<String> executeLocal(List<String> cmds) {
+    return executeLocal(cmds, LOCAL_COMMAND_TIMEOUT_SECONDS);
+  }
 
-    List envlist = new ArrayList();
-
+  List<String> executeLocal(List<String> cmds, long timeoutSeconds) {
+    List<String> lines = java.util.Collections.synchronizedList(new ArrayList<>());
     try {
-
-      ProcessBuilder builder = new ProcessBuilder();
-
-      builder.command(cmds); // bash.exe of cygwin must be in the $PATH
-
+      ProcessBuilder builder = new ProcessBuilder(cmds); // bash.exe of cygwin must be in the $PATH
       builder.redirectErrorStream(true);
-
       Process process = builder.start();
-
-      process.waitFor();
-
-      BufferedReader in =
-          new BufferedReader(new InputStreamReader(process.getInputStream()), BaseTool.BUFFER_SIZE);
-      String s = null;
-
-      while ((s = in.readLine()) != null) {
-        System.out.println(s);
-
-        envlist.add(s);
+      process.getOutputStream().close(); // no input: a command that asks for some ends at once
+      Thread reader =
+          new Thread(
+              () -> {
+                try (BufferedReader in =
+                    new BufferedReader(
+                        new InputStreamReader(process.getInputStream()), BaseTool.BUFFER_SIZE)) {
+                  String s;
+                  while ((s = in.readLine()) != null) lines.add(s);
+                } catch (IOException e) {
+                  // the command was stopped
+                }
+              },
+              "geoweaver-local-command");
+      reader.setDaemon(true);
+      reader.start();
+      if (!process.waitFor(timeoutSeconds, TimeUnit.SECONDS)) {
+        logger.warn(
+            "Stopped the local command " + String.join(" ", cmds) + " after " + timeoutSeconds + " s");
+        process.destroyForcibly();
       }
-
+      reader.join(2000); // a child of the command may keep the output open; do not wait for it
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     } catch (Exception e) {
-
       e.printStackTrace();
     }
-
-    return envlist;
+    synchronized (lines) {
+      return new ArrayList<>(lines);
+    }
   }
 
   public String toJSON(Object h) {

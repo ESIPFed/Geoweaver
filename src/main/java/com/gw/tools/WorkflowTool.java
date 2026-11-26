@@ -12,6 +12,7 @@ import com.gw.tasks.GeoweaverWorkflowTask;
 import com.gw.tasks.TaskManager;
 import com.gw.utils.BaseTool;
 import com.gw.utils.RandomString;
+import com.gw.utils.RunStopRequests;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
@@ -74,6 +75,13 @@ public class WorkflowTool {
   public String stop(String history_id) {
 
     History whis = historyrepository.findById(history_id).get();
+
+    if (!RunStopRequests.ownsWorkflow(history_id) && !RunStopRequests.finished(whis.getIndicator())) {
+      // Started by another Geoweaver on the same database: it holds the steps still waiting to
+      // run and stops them on this request.
+      RunStopRequests.request(history_id);
+    }
+    RunStopRequests.releaseWorkflow(history_id);
 
     String childprocesses = whis.getHistory_output();
 
@@ -319,6 +327,8 @@ public class WorkflowTool {
     String resp = null;
 
     try {
+
+      RunStopRequests.ownWorkflow(history_id);
 
       task.initialize(history_id, wid, mode, hosts, pswds, envs, token);
 

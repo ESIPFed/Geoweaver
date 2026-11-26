@@ -249,7 +249,9 @@ public class WorkflowServlet {
     
     try {
       // Check if we're running in CLI mode by checking if ApplicationContext is available
-      if (BeanTool.getApplicationContext() == null) {
+      if (BeanTool.getApplicationContext() == null || !BeanTool.hasBean(LongPollingController.class)) {
+        // Command-line run: no browser to send to; workflow status is in the database.
+        if (BeanTool.getApplicationContext() != null) return true;
         Logger.getLogger(WorkflowServlet.class).info("Running in CLI mode, skipping long polling message send");
         // In CLI mode, just log the message and return success
         Logger.getLogger(WorkflowServlet.class).info("CLI Message: " + message);
