@@ -38,7 +38,15 @@ Put HTTPS in front (reverse proxy to `http://127.0.0.1:8070/Geoweaver/`) for any
 
 ## Security model
 
-**Risk callout:** By default the Agent API is **enabled**. A Bearer token can run code on the Geoweaver server, so treat it like an SSH private key: keep it in a secret store, give it a short lifetime, and revoke it when done. Prefer HTTPS. Harden with `geoweaver.agent.api-enabled=false`, `allow-remote-hosts=false`, `allow-delete=false`, and revoke tokens. On a network-reachable JVM bind you must also set `geoweaver.agent.acknowledge-network-risk=true` or Geoweaver refuses to start.
+**Risk callout:** By default the Agent API is **enabled for programs on this computer only**. A Bearer token can run code on the Geoweaver server, so treat it like an SSH private key: keep it in a secret store, give it a short lifetime, and revoke it when done. Harden further with `geoweaver.agent.api-enabled=false`, `allow-remote-hosts=false`, `allow-delete=false`, and revoke tokens.
+
+**This computer only (default).** A request is accepted only when all of these hold; otherwise every `/api/v1` path answers **403 `local_only`**, before any token or password is checked:
+
+- the connection comes from `127.0.0.1` or `::1`;
+- it carries no proxy header (`X-Forwarded-For`, `X-Forwarded-Host`, `X-Real-IP`, `Forwarded`): a reverse proxy on the same computer forwards other people's requests;
+- its `Host` header is `localhost`, `127.0.0.1` or `[::1]` (any port), so a web page open in your browser cannot reach the API by pointing its own domain name at `127.0.0.1` (DNS rebinding).
+
+Agents on another machine run their requests over SSH (`ssh server curl http://127.0.0.1:8070/Geoweaver/api/v1/...`) or through an SSH tunnel (`ssh -L 8070:127.0.0.1:8070 server`, then `http://localhost:8070`). The web GUI is not affected by this setting.
 
 1. **Bearer token** required for everything except `GET /health`, the password-gated `POST /tokens`, and the schema at `/v3/api-docs/agent-api`. Send it as `Authorization: Bearer …` (or `X-Geoweaver-Agent-Token` when a proxy strips `Authorization`). The `GW_AGENT_BEARER` cookie is accepted only from non-browser clients: a request a browser marks as cross-site is refused, so another web site cannot use it.
 2. **Localhost GUI password** still applies on the server unless `geoweaver.agent.allow-localhost-runs=true` (default true). Only the Agent API (after checking the token) and the local CLI can skip it; an empty password is always refused.
@@ -47,17 +55,19 @@ Put HTTPS in front (reverse proxy to `http://127.0.0.1:8070/Geoweaver/`) for any
 5. **CORS:** any web origin may call `/api/v1` with a Bearer header, but never with cookies. The GUI's cookie-based endpoints answer only same-origin pages unless you list origins in `geoweaver.cors.allowed-origins`.
 6. API responses carry `Cache-Control: no-store`, `X-Content-Type-Options: nosniff` and `X-Frame-Options: DENY`. Token minting is rate-limited per IP (5/min) and across all clients (30/min).
 7. Process names become script file names on the host, so only letters, digits, `.`, `_`, `-` are accepted. Result downloads stay inside the results folder.
-8. Public bind: either terminate TLS on a reverse proxy in front of loopback, **or** set `geoweaver.agent.allow-non-loopback=true` **and** `geoweaver.agent.acknowledge-network-risk=true` when the JVM listens beyond loopback.
+8. Network access (other computers, any reverse proxy, Open OnDemand) needs both `geoweaver.agent.allow-non-loopback=true` **and** `geoweaver.agent.acknowledge-network-risk=true`; the first without the second makes Geoweaver refuse to start. While it is on, the GUI shows a warning banner. Use HTTPS so the token and password are not sent in clear text.
 9. Open GUI browsers sync process/workflow lists live (Google-Doc-style awareness) when `geoweaver.agent.workspace-events-enabled=true` (default true). Transport is **HTTP long poll** on `/api/workspace/poll/{clientToken}` plus a revision clock on `/api/workspace/revision` (WebSocket `/workspace-socket` is optional). Uses the browser client token, not the Agent Bearer token. Agent API and human GUI saves both emit events.
 
 Never commit tokens. Prefer HTTPS on public endpoints. The Geoweaver **database** stores only a SHA-256 hash of each token (never the raw secret, never a token file). The GUI localhost password is unchanged (still the workspace password file).
 
 ## Operator: local enable
 
+Nothing to set: the defaults allow programs on this computer only.
+
 ```properties
-server.address=127.0.0.1
 geoweaver.agent.api-enabled=true
 geoweaver.agent.allow-localhost-runs=true
+geoweaver.agent.allow-non-loopback=false
 ```
 
 ```bash
@@ -71,38 +81,21 @@ export GEOWEAVER_BASE_URL='http://127.0.0.1:8070/Geoweaver'   # URL only is fine
 
 ## Operator: two machines (caller ≠ Geoweaver host)
 
-The Agent API is ordinary HTTP. A valid Bearer token is accepted from **any reachable client**. `hostId=100001` still means “run on the Geoweaver server,” not on the caller.
+`hostId=100001` always means “run on the Geoweaver server,” not on the caller.
 
-**Do not** set `server.address=127.0.0.1` if other computers must open a TCP connection to the JVM with no reverse proxy — loopback is only this computer.
+### A) Preferred: over SSH, nothing exposed
 
-### A) Preferred: HTTPS reverse proxy, JVM on loopback
+Keep the defaults. The agent sends each request through SSH (`ssh server curl -s http://127.0.0.1:8070/Geoweaver/api/v1/...`) or opens a tunnel once (`ssh -N -L 8070:127.0.0.1:8070 server`) and uses `GEOWEAVER_BASE_URL=http://localhost:8070/Geoweaver`. SSH does the authentication and encryption.
 
-```properties
-server.address=127.0.0.1
-server.port=8070
-geoweaver.agent.api-enabled=true
-geoweaver.agent.allow-localhost-runs=true
-geoweaver.agent.allow-non-loopback=false
-```
-
-Proxy forwards `https://gw.example.org/Geoweaver/` → `http://127.0.0.1:8070/Geoweaver/`. Clients use `GEOWEAVER_BASE_URL=https://gw.example.org/Geoweaver`.
-
-### B) JVM listens on the network
-
-Required when there is no proxy and the caller is another machine:
+### B) Network access: reverse proxy, Open OnDemand, or a direct port
 
 ```properties
-# Do not set server.address=127.0.0.1
-server.address=0.0.0.0
 geoweaver.agent.api-enabled=true
 geoweaver.agent.allow-non-loopback=true
 geoweaver.agent.acknowledge-network-risk=true
-geoweaver.agent.allow-localhost-runs=true
 ```
 
-Without `allow-non-loopback=true` **and** `acknowledge-network-risk=true`, Geoweaver **refuses to start** if the API is on and the bind is not loopback.
-
-Open firewall TCP 8070 only to trusted networks. Prefer HTTPS in front of this bind.
+A reverse proxy counts as network access even when it runs on the same computer. Put HTTPS in front (for example `https://gw.example.org/Geoweaver/` → `http://127.0.0.1:8070/Geoweaver/`) and open TCP 8070 in the firewall only to trusted networks. `allow-non-loopback=true` without `acknowledge-network-risk=true` makes Geoweaver refuse to start.
 
 The one-time **token copy web page** stays on `127.0.0.1` (it contains the raw secret). Remote mint uses `POST /api/v1/tokens` or `gw agent-token --create --base-url …` (prints the secret once on the caller).
 
@@ -157,8 +150,8 @@ curl -sS "$GEOWEAVER_BASE_URL/api/v1/capabilities" \
 | --- | --- | --- |
 | `geoweaver.agent.api-enabled` | `true` | Master switch |
 | `geoweaver.agent.allow-localhost-runs` | `true` | Token may skip GUI localhost password for server-local runs |
-| `geoweaver.agent.allow-non-loopback` | `true` | Allow Agent API when JVM bind is not loopback (still needs risk ack) |
-| `geoweaver.agent.acknowledge-network-risk` | `true` | Required with non-loopback bind or process refuses to start |
+| `geoweaver.agent.allow-non-loopback` | `false` | `false`: only programs on this computer (direct, no proxy, loopback `Host`). `true`: other computers and proxies too |
+| `geoweaver.agent.acknowledge-network-risk` | `false` | Must be `true` with `allow-non-loopback=true`, or the process refuses to start |
 | `geoweaver.agent.workspace-events-enabled` | `true` | Fan-out create/edit events to open GUI browsers |
 | `geoweaver.agent.allow-delete` | `true` | Agents may `DELETE` processes/workflows/hosts/runs; `false` → 403 (edit/run unaffected) |
 | `geoweaver.agent.allow-remote-hosts` | `true` | Agents may add/edit/delete hosts and run on SSH hosts; `false` → localhost only |

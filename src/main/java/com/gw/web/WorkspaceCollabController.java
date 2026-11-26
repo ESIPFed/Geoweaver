@@ -106,7 +106,19 @@ public class WorkspaceCollabController {
     Map<String, Object> out = new HashMap<>();
     out.put("revision", broadcaster.currentRevision());
     out.put("workspaceEventsEnabled", properties.isWorkspaceEventsEnabled());
-    out.put("presence", presenceTracker.snapshotLive());
+    long now = System.currentTimeMillis();
+    Map<String, Object> presence = new HashMap<>();
+    presenceTracker
+        .snapshotLive()
+        .forEach(
+            (key, p) -> {
+              Map<String, Object> entry = new HashMap<>();
+              entry.put("actor", p.actor());
+              entry.put("tokenFingerprint", p.tokenFingerprint());
+              entry.put("ageMs", Math.max(0, now - p.lastSeen().toEpochMilli()));
+              presence.put(key, entry);
+            });
+    out.put("presence", presence);
     return out;
   }
 

@@ -34,7 +34,21 @@ public class AgentPresenceTracker {
       return;
     }
     String key = objectKind + ":" + objectId;
-    byKey.put(key, new Presence(actor == null ? "agent" : actor, fingerprint, Instant.now()));
+    String who = actor == null ? "agent" : actor;
+    Presence fresh = new Presence(who, fingerprint, Instant.now());
+    byKey.compute(
+        key,
+        (k, old) -> {
+          // a browser's heartbeat must not hide an agent that is still working on the object
+          if ("human".equals(who) && old != null && !"human".equals(old.actor()) && isLive(old)) {
+            return old;
+          }
+          return fresh;
+        });
+  }
+
+  private boolean isLive(Presence p) {
+    return Instant.now().toEpochMilli() - p.lastSeen().toEpochMilli() <= ttlMs;
   }
 
   public Presence getIfLive(String objectKind, String objectId) {

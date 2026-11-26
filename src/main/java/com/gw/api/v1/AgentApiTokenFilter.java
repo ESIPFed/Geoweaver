@@ -49,8 +49,8 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    String path = normalizedPath(request);
-    return !path.startsWith("/api/v1/");
+    String path = normalizedPath(request).toLowerCase(java.util.Locale.ROOT);
+    return !(path.startsWith("/api/v1/") || path.equals("/api/v1"));
   }
 
   @Override
@@ -64,6 +64,19 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
     response.setHeader("X-Content-Type-Options", "nosniff");
     response.setHeader("X-Frame-Options", "DENY");
     try {
+      // Unless the operator opted in, only programs on this computer may use the API at all.
+      if (!properties.isAllowNonLoopback() && !AgentApiProperties.isLocalRequest(request)) {
+        writeJson(
+            response,
+            403,
+            "local_only",
+            "The Agent API accepts requests only from this computer (for example over SSH to"
+                + " http://127.0.0.1:<port>). To allow other computers or a reverse proxy, set"
+                + " geoweaver.agent.allow-non-loopback=true and"
+                + " geoweaver.agent.acknowledge-network-risk=true, and use HTTPS.");
+        return;
+      }
+
       if (path.equals("/api/v1/health") || path.startsWith("/api/v1/health?")) {
         filterChain.doFilter(request, response);
         return;
@@ -189,11 +202,17 @@ public class AgentApiTokenFilter extends OncePerRequestFilter {
     }
   }
 
+  private static final org.springframework.web.util.UrlPathHelper PATHS =
+      new org.springframework.web.util.UrlPathHelper();
+
+  /**
+   * The decoded path inside the app, as Spring uses it to choose a controller: {@code
+   * /Geoweaver/api/%761/x} is {@code /api/v1/x} here, so encoded spellings cannot skip this filter.
+   */
   static String normalizedPath(HttpServletRequest request) {
-    String requestPath = request.getRequestURI();
-    String contextPath = request.getContextPath();
-    if (contextPath != null && !contextPath.isEmpty() && requestPath.startsWith(contextPath)) {
-      requestPath = requestPath.substring(contextPath.length());
+    String requestPath = PATHS.getPathWithinApplication(request);
+    if (requestPath == null) {
+      requestPath = "";
     }
     if (!requestPath.startsWith("/")) {
       requestPath = "/" + requestPath;

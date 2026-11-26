@@ -10,21 +10,26 @@ mkdir install
 
 cd install
 
-#if [ -f openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz ];then
-#	echo "++++++++++++++++found openjdk-12.0.2_linux-x64_bin.tar.gz "
-#else
-#	echo -e "Download OpenJDK"
+JDK_VERSION="17.0.21"
+JDK_BUILD="9"
+JDK_ARCHIVE_VERSION="${JDK_VERSION}_${JDK_BUILD}"
+JDK_ARCHITECTURE="$(uname -m)"
 
-#	curl https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz --output openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
+case "$JDK_ARCHITECTURE" in
+  x86_64) JDK_ARCH="x64" ;;
+  arm64) JDK_ARCH="aarch64" ;;
+  *) echo "Unsupported macOS architecture: $JDK_ARCHITECTURE"; exit 1 ;;
+esac
 
-#	tar -zxvf openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
-#fi
+JDK_ARCHIVE="OpenJDK17U-jdk_${JDK_ARCH}_mac_hotspot_${JDK_ARCHIVE_VERSION}.tar.gz"
+JDK_URL="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${JDK_VERSION}%2B${JDK_BUILD}/${JDK_ARCHIVE}"
 
-echo "install java via brew. Make sure HomeBrew is installed."
-
-brew tap AdoptOpenJDK/openjdk
-
-brew cask install adoptopenjdk8
+echo "Download and install Temurin JDK ${JDK_VERSION}."
+curl -fL --retry 3 "$JDK_URL" --output "$JDK_ARCHIVE" || exit 1
+curl -fsSL "${JDK_URL}.sha256.txt" | shasum -a 256 -c - || exit 1
+tar -xzf "$JDK_ARCHIVE" || exit 1
+export JAVA_HOME="$PWD/jdk-${JDK_VERSION}+${JDK_BUILD}/Contents/Home"
+export PATH="$JAVA_HOME/bin:$PATH"
 
 echo "download and unzip tomcat"
 
@@ -37,12 +42,6 @@ else
 
 	tar -zxvf apache-tomcat-9.0.22.tar.gz
 fi
-
-#echo "change the default jdk to the downloaded jdk"
-
-#sed '108 a\'$'\n''JAVA_HOME='$PWD'/java-se-8u40-ri/' apache-tomcat-9.0.22/bin/catalina.sh > apache-tomcat-9.0.22/bin/catalina2.sh
-
-#mv apache-tomcat-9.0.22/bin/catalina2.sh apache-tomcat-9.0.22/bin/catalina.sh
 
 echo "change the default port to 3030"
 

@@ -12,17 +12,31 @@ import org.springframework.boot.DefaultApplicationArguments;
 class AgentApiStartupValidatorTest {
 
   @Test
-  void failsClosedOnNonLoopbackWithoutAllow() {
+  void startsOnAllInterfacesWhenTheApiIsLocalOnly() {
+    // the GUI listens on the network; the request filter keeps the Agent API to this computer
     AgentApiProperties props = mock(AgentApiProperties.class);
     when(props.isApiEnabled()).thenReturn(true);
     when(props.isBoundBeyondLoopback()).thenReturn(true);
     when(props.isAllowNonLoopback()).thenReturn(false);
     when(props.getServerAddress()).thenReturn("0.0.0.0");
     AgentApiTokenService tokens = mock(AgentApiTokenService.class);
+    when(tokens.hasActiveToken()).thenReturn(true);
     AgentApiStartupValidator v = new AgentApiStartupValidator(props, tokens);
+    assertThatCode(() -> v.run(new DefaultApplicationArguments(new String[0])))
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  void refusesNetworkAccessWithoutAcknowledgmentEvenOnALoopbackBind() {
+    AgentApiProperties props = mock(AgentApiProperties.class);
+    when(props.isApiEnabled()).thenReturn(true);
+    when(props.isAllowNonLoopback()).thenReturn(true);
+    when(props.isAcknowledgeNetworkRisk()).thenReturn(false);
+    when(props.getServerAddress()).thenReturn("127.0.0.1");
+    AgentApiStartupValidator v = new AgentApiStartupValidator(props, mock(AgentApiTokenService.class));
     assertThatThrownBy(() -> v.run(new DefaultApplicationArguments(new String[0])))
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("loopback");
+        .hasMessageContaining("acknowledge-network-risk");
   }
 
   @Test

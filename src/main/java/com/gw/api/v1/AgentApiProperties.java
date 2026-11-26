@@ -13,15 +13,18 @@ public class AgentApiProperties {
   @Value("${geoweaver.agent.allow-localhost-runs:true}")
   private boolean allowLocalhostRuns;
 
-  @Value("${geoweaver.agent.allow-non-loopback:true}")
+  /**
+   * False (default): the Agent API answers only programs on this computer (see {@link
+   * #isLocalRequest}). True: other computers, reverse proxies and Open OnDemand may call it too.
+   */
+  @Value("${geoweaver.agent.allow-non-loopback:false}")
   private boolean allowNonLoopback;
 
   /**
-   * Required when the Agent API is enabled and the JVM bind is beyond loopback. Defaults to true
-   * with the other agent defaults so Open OnDemand / all-interface binds can start; operators still
-   * see SECURITY WARN logs. Set false only when intentionally fail-closing non-loopback API binds.
+   * Must also be true when {@code allow-non-loopback=true}, or Geoweaver refuses to start: a second
+   * explicit statement that the operator accepts network access to an API that can run code.
    */
-  @Value("${geoweaver.agent.acknowledge-network-risk:true}")
+  @Value("${geoweaver.agent.acknowledge-network-risk:false}")
   private boolean acknowledgeNetworkRisk;
 
   /** Fan-out workspace change events to open GUI browsers (independent of api-enabled). */
@@ -144,6 +147,53 @@ public class AgentApiProperties {
     return a.equals("127.0.0.1")
         || a.equals("::1")
         || a.equals("0:0:0:0:0:0:0:1")
+        || a.equals("::ffff:127.0.0.1")
         || a.equals("localhost");
+  }
+
+  /**
+   * True only for a request made by a program on this computer, straight to Geoweaver:
+   *
+   * <ul>
+   *   <li>the connection comes from a loopback address;
+   *   <li>no proxy header is present (a reverse proxy on this computer forwards other people's
+   *       requests, so its connection being local proves nothing);
+   *   <li>the Host header names a loopback address, so a web page in the user's browser cannot reach
+   *       the API by pointing its own domain name at 127.0.0.1 (DNS rebinding).
+   * </ul>
+   */
+  public static boolean isLocalRequest(jakarta.servlet.http.HttpServletRequest request) {
+    if (request == null || !isLoopbackAddress(request.getRemoteAddr())) {
+      return false;
+    }
+    for (String h : new String[] {"X-Forwarded-For", "X-Forwarded-Host", "X-Real-IP", "Forwarded"}) {
+      if (request.getHeader(h) != null) {
+        return false;
+      }
+    }
+    return isLoopbackHost(request.getHeader("Host"));
+  }
+
+  /** {@code localhost}, {@code 127.0.0.1} or {@code [::1]}, with or without a port. */
+  static boolean isLoopbackHost(String host) {
+    if (host == null) {
+      return true; // HTTP/1.0 clients such as old curl builds; browsers always send Host
+    }
+    String h = host.trim().toLowerCase();
+    if (h.startsWith("[")) {
+      int end = h.indexOf(']');
+      if (end < 0) return false;
+      String rest = h.substring(end + 1);
+      if (!rest.isEmpty() && !rest.matches(":[0-9]{1,5}")) return false;
+      h = h.substring(1, end);
+    } else {
+      int colon = h.indexOf(':');
+      if (colon >= 0) {
+        if (!h.substring(colon).matches(":[0-9]{1,5}")) return false;
+        h = h.substring(0, colon);
+      }
+    }
+    if (h.endsWith(".")) h = h.substring(0, h.length() - 1);
+    return h.equals("localhost") || h.equals("127.0.0.1") || h.equals("::1");
   }
 }

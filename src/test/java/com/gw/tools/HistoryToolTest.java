@@ -740,4 +740,45 @@ public class HistoryToolTest {
         // Should not throw exception
         assertTrue(true);
     }
+
+    @Test
+    void workflowStepLogShowsTheSavedLogNotOnlyTheDatabaseCopy(@org.junit.jupiter.api.io.TempDir java.nio.file.Path dir)
+            throws Exception {
+        System.setProperty("geoweaver.run.log.dir", dir.toString());
+        System.setProperty("geoweaver.run.log.db.limit.kb", "1");
+        try {
+            com.gw.utils.RunLogStore.RunLog log = com.gw.utils.RunLogStore.open("stepRun001");
+            for (int i = 0; i < 2000; i++) log.appendLine("line " + i);
+            log.close();
+            History step = new History();
+            step.setHistory_id("stepRun001");
+            step.setHistory_output(log.databaseText());
+            History wf = new History();
+            wf.setHistory_id("wfRun00001");
+            wf.setHistory_input("p1;p2");
+            wf.setHistory_output("other0001;stepRun001");
+            when(historyRepository.findById("wfRun00001")).thenReturn(Optional.of(wf));
+            when(historyRepository.findById("stepRun001")).thenReturn(Optional.of(step));
+
+            String json = historyTool.getWorkflowProcessHistory("wfRun00001", "p2");
+
+            String out = new ObjectMapper().readTree(json).get("history_output").asText();
+            assertTrue(out.startsWith("line 0\n"), "starts with the first line");
+            assertTrue(out.endsWith("line 1999\n"), "ends with the last line");
+            assertEquals("stepRun001", new ObjectMapper().readTree(json).get("history_id").asText());
+        } finally {
+            System.clearProperty("geoweaver.run.log.dir");
+            System.clearProperty("geoweaver.run.log.db.limit.kb");
+        }
+    }
+
+    @Test
+    void workflowStepLogForAnUnknownStepIsEmpty() {
+        History wf = new History();
+        wf.setHistory_id("wfRun00002");
+        wf.setHistory_input("p1");
+        wf.setHistory_output("h1");
+        when(historyRepository.findById("wfRun00002")).thenReturn(Optional.of(wf));
+        assertEquals("null", historyTool.getWorkflowProcessHistory("wfRun00002", "nope").trim());
+    }
 }

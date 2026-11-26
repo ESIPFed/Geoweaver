@@ -100,9 +100,9 @@ move_existing_data() {
 install_jdk_based_on_architecture() {
   ARCHITECTURE=\$(uname -m)
   if [ "\$ARCHITECTURE" == "x86_64" ]; then
-    install_jdk "11.0.18-10" "jdk_x64_mac_hotspot"
+    install_jdk "x64"
   elif [ "\$ARCHITECTURE" == "arm64" ]; then
-    install_jdk "11.0.18-10" "jdk_aarch64_mac_hotspot"
+    install_jdk "aarch64"
   else
     echo "Unsupported architecture: \$ARCHITECTURE"
     exit 1
@@ -111,30 +111,42 @@ install_jdk_based_on_architecture() {
 
 # Function to install JDK
 install_jdk() {
-  local jdk_version=\$1
-  local jdk_arch=\$2
-  local jdk_url="https://github.com/adoptium/temurin11-binaries/releases/download/jdk-\${jdk_version//-/%2B}/OpenJDK11U-\${jdk_arch}_\${jdk_version//-/_}.tar.gz"
+  local jdk_arch=\$1
+  local jdk_version="17.0.21"
+  local jdk_build="9"
+  local jdk_release="jdk-\${jdk_version}%2B\${jdk_build}"
+  local jdk_archive_version="\${jdk_version}_\${jdk_build}"
+  local jdk_directory="jdk-\${jdk_version}+\${jdk_build}"
+  local jdk_url="https://github.com/adoptium/temurin17-binaries/releases/download/\${jdk_release}/OpenJDK17U-jdk_\${jdk_arch}_mac_hotspot_\${jdk_archive_version}.tar.gz"
   local jdk_install_dir="\$HOME/jdk"
   local jdk_tar="\$HOME/jdk.tar.gz"
+  local jdk_home="\${jdk_install_dir}/\${jdk_directory}/Contents/Home"
 
   echo "Downloading JDK from \$jdk_url..."
-  curl -L "\$jdk_url" -o "\$jdk_tar"
+  rm -f "\$jdk_tar"
+  curl -fL --retry 3 "\$jdk_url" -o "\$jdk_tar"
 
   if [ \$? -ne 0 ]; then
     echo "Error downloading JDK from \$jdk_url."
     exit 1
   fi
 
-  if file "\$jdk_tar" | grep -q "gzip compressed data"; then
-    echo "JDK archive downloaded successfully."
-  else
+  if ! file "\$jdk_tar" | grep -q "gzip compressed data"; then
     echo "Downloaded file is not a valid tar.gz archive."
     rm "\$jdk_tar"
     exit 1
   fi
 
+  local expected_sha
+  expected_sha=\$(curl -fsSL "\${jdk_url}.sha256.txt" | awk '{print \$1}')
+  if [ -z "\$expected_sha" ] || ! echo "\${expected_sha}  \${jdk_tar}" | shasum -a 256 -c -; then
+    echo "JDK archive checksum verification failed."
+    rm -f "\$jdk_tar"
+    exit 1
+  fi
+
   mkdir -p "\$jdk_install_dir"
-  tar -xzf "\$jdk_tar" -C "\$jdk_install_dir" --strip-components=1
+  tar -xzf "\$jdk_tar" -C "\$jdk_install_dir"
 
   if [ \$? -ne 0 ]; then
     echo "Error extracting JDK archive."
@@ -142,42 +154,51 @@ install_jdk() {
     exit 1
   fi
 
-  JAVA_GEOWEAVER_HOME="\$jdk_install_dir/Contents/Home"
+  JAVA_GEOWEAVER_HOME="\$jdk_home"
   export JAVA_GEOWEAVER_HOME
   export PATH="\$JAVA_GEOWEAVER_HOME/bin:\$PATH"
-  echo "JDK 11 installed and JAVA_HOME set temporarily for this session."
+  echo "Temurin JDK 17.0.21 installed and JAVA_HOME set temporarily for this session."
   rm "\$jdk_tar"
   java -version
   echo "JAVA_GEOWEAVER_HOME=\"\$JAVA_GEOWEAVER_HOME\"" >> "\$CONFIG_FILE"
 }
 
+# Accept the patched Java 17 release required by Geoweaver, or a newer LTS release.
+jdk_is_supported() {
+  local java_bin=\$1
+  local java_version
+  local java_major
+  local java_minor
+  local java_patch
+
+  [ -x "\$java_bin" ] || return 1
+  java_version=\$("\$java_bin" -version 2>&1 | awk -F '"' '/version/ {print \$2; exit}')
+  IFS=. read -r java_major java_minor java_patch _ <<< "\$java_version"
+
+  [ "\$java_major" -ge 21 ] 2>/dev/null || { [ "\$java_major" -eq 17 ] 2>/dev/null && [ "\${java_minor:-0}" -eq 0 ] 2>/dev/null && [ "\${java_patch:-0}" -ge 21 ] 2>/dev/null; }
+}
+
 # Function to check if JDK is installed and its version
 check_jdk() {
   if [ -n "\$JAVA_GEOWEAVER_HOME" ]; then
-    if [ -d "\$JAVA_GEOWEAVER_HOME" ]; then
-      echo "Using JAVA_GEOWEAVER_HOME from config: \$JAVA_GEOWEAVER_HOME"
+    if jdk_is_supported "\$JAVA_GEOWEAVER_HOME/bin/java"; then
+      echo "Using supported JAVA_GEOWEAVER_HOME from config: \$JAVA_GEOWEAVER_HOME"
       export PATH="\$JAVA_GEOWEAVER_HOME/bin:\$PATH"
     else
-      echo "Configured JAVA_GEOWEAVER_HOME not found: \$JAVA_GEOWEAVER_HOME"
+      echo "Configured JAVA_GEOWEAVER_HOME is missing or older than JDK 17.0.21: \$JAVA_GEOWEAVER_HOME"
       JAVA_GEOWEAVER_HOME=""
     fi
   fi
 
   if [ -z "\$JAVA_GEOWEAVER_HOME" ]; then
-    if type -p java; then
-      JAVA_VERSION=\$(java -version 2>&1 | awk -F '"' '/version/ {print \$2}')
-      JAVA_MAJOR_VERSION=\$(echo "\$JAVA_VERSION" | awk -F. '{print \$1}')
-      if [[ "\$JAVA_MAJOR_VERSION" -ge 11 && "\$JAVA_MAJOR_VERSION" -le 18 ]]; then
-        echo "Java version \$JAVA_VERSION found and is between 11 and 18."
-        JAVA_GEOWEAVER_HOME=\$(dirname \$(dirname \$(readlink \$(which java) || which java)))
+    if type -p java && jdk_is_supported "\$(command -v java)"; then
+        JAVA_VERSION=\$(java -version 2>&1 | awk -F '"' '/version/ {print \$2; exit}')
+        echo "Supported Java version \$JAVA_VERSION found."
+        JAVA_GEOWEAVER_HOME=\$(java -XshowSettings:properties -version 2>&1 | awk -F ' = ' '/java.home =/ {print \$2; exit}')
         export JAVA_GEOWEAVER_HOME
         echo "JAVA_GEOWEAVER_HOME=\"\$JAVA_GEOWEAVER_HOME\"" >> "\$CONFIG_FILE"
-      else
-        echo "Java version \$JAVA_VERSION is not between 11 and 18. Installing JDK 11..."
-        install_jdk_based_on_architecture
-      fi
     else
-      echo "Java not found in PATH. Installing JDK 11..."
+      echo "Java 17.0.21+ (or Java 21+) not found. Installing Temurin JDK 17.0.21..."
       install_jdk_based_on_architecture
     fi
   fi

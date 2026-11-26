@@ -1925,7 +1925,7 @@ public class GeoweaverController {
 			Cookie[] cookies = request.getCookies();
 			if (cookies != null) {
 				for (Cookie cookie : cookies) {
-					if ("gw_localhost_auth".equals(cookie.getName()) && "true".equals(cookie.getValue())) {
+					if ("gw_localhost_auth".equals(cookie.getName()) && AuthCookie.isValid(cookie.getValue())) {
 						authenticated = true;
 						// Restore session from cookie
 						if (session == null) {
