@@ -133,11 +133,14 @@
             '">' +
             taskName +
             "</span>" +
-            '  <span class="task-status ' +
+            '  <div class="d-flex align-items-center">' +
+            '    <span class="task-status ' +
             visuals.statusClass +
             '">' +
             flag +
             "</span>" +
+            '    <span class="task-close ml-2" title="Remove" onclick="this.closest(\'.progress-task\').remove();"><i class="fa fa-times"></i></span>' +
+            "  </div>" +
             "</div>" +
             '<div class="progress">' +
             '  <div class="progress-bar-custom ' +

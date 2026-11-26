@@ -117,7 +117,20 @@ public class HistoryTool {
       }
     }
 
-    return this.toJSON(h);
+    if (h == null) {
+      return this.toJSON(null);
+    }
+    // the database keeps only the end of a long log; show what the process history view shows
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      com.fasterxml.jackson.databind.node.ObjectNode node = mapper.valueToTree(h);
+      node.put(
+          "history_output",
+          RunLogStore.readTail(h.getHistory_id(), h.getHistory_output(), RunLogStore.UI_LOG_LIMIT_CHARS));
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+    } catch (Exception e) {
+      return this.toJSON(h);
+    }
   }
 
   public History getHistoryById(String hid) {

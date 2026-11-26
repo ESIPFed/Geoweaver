@@ -265,3 +265,14 @@ describe("progress panel static assets", () => {
     expect(mon).toBeGreaterThan(pi);
   });
 });
+
+describe("GW.progressIndicator row close button", () => {
+  it("each task row can be removed with its close button", () => {
+    document.body.innerHTML = '<div id="progress-tasks-container"></div>';
+    GW.progressIndicator.update("task1", "Running", { nodes: [] });
+    const close = document.querySelector("#progress-task1 .task-close");
+    expect(close).not.toBeNull();
+    close.click();
+    expect(document.getElementById("progress-task1")).toBeNull();
+  });
+});

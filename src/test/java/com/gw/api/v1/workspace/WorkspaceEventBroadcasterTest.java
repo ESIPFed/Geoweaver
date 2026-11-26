@@ -104,4 +104,21 @@ class WorkspaceEventBroadcasterTest {
     assertThat(presence.getIfLive("process", "p1").actor()).isEqualTo("agent");
     assertThat(presence.getIfLive("process", "p1").tokenFingerprint()).isEqualTo("fp12");
   }
+
+  @Test
+  void aBrowserHeartbeatDoesNotHideAWorkingAgent() {
+    AgentPresenceTracker presence = new AgentPresenceTracker();
+    presence.touch("workflow", "w1", "fp12", "agent");
+    presence.touch("workflow", "w1", null, "human");
+    assertThat(presence.getIfLive("workflow", "w1").actor()).isEqualTo("agent");
+  }
+
+  @Test
+  void aBrowserHeartbeatReplacesAnAgentThatHasGoneQuiet() throws Exception {
+    AgentPresenceTracker presence = new AgentPresenceTracker(50);
+    presence.touch("workflow", "w1", "fp12", "agent");
+    Thread.sleep(80);
+    presence.touch("workflow", "w1", null, "human");
+    assertThat(presence.snapshotLive().get("workflow:w1").actor()).isEqualTo("human");
+  }
 }

@@ -17,6 +17,8 @@ GW.workspaceevents = {
   seenOrder: [],
   bannerDismissedThisSession: false,
   presenceByKey: {},
+  presenceDismissed: {},
+  presenceExpiryTimer: null,
 
   init: function () {
     if (!GW.general || !GW.general.CLIENT_TOKEN) {
@@ -24,10 +26,13 @@ GW.workspaceevents = {
       return;
     }
     GW.workspaceevents._hookWorkflowOpen();
+    GW.workspaceevents._watchOwnSaves();
     GW.workspaceevents.showRiskBanner();
     GW.workspaceevents.subscribeAndPoll();
     GW.workspaceevents.startRevisionWatch();
     GW.workspaceevents.startPresenceHeartbeat();
+    // re-check every few seconds so the note goes away on its own
+    GW.workspaceevents.presenceExpiryTimer = setInterval(GW.workspaceevents._renderPresenceStrip, 10000);
     GW.workspaceevents.connectWebSocketOptional();
   },
 
@@ -69,24 +74,38 @@ GW.workspaceevents = {
     GW.workspaceevents.pollXhr = xhr;
     xhr.open("GET", GW.path.getBasePath() + "api/workspace/poll/" + encodeURIComponent(token), true);
     xhr.timeout = 30000;
+    var self = GW.workspaceevents;
+    var backOff = function () {
+      // logged out, a proxy that blocks the endpoint, or a server error: slow down, never spin
+      self.pollFailures = Math.min((self.pollFailures || 0) + 1, 6);
+      setTimeout(self._pollOnce, 1000 * Math.pow(2, self.pollFailures - 1));
+    };
     xhr.onload = function () {
-      if (xhr.status === 200) {
-        try {
-          var messages = JSON.parse(xhr.responseText);
-          if (messages && messages.length) {
-            for (var i = 0; i < messages.length; i++) {
-              GW.workspaceevents.onMessage(messages[i]);
-            }
-          }
-        } catch (e) {
-          console.warn("Workspace poll parse error", e);
+      if (xhr.status === 204) {
+        self.pollFailures = 0;
+        setTimeout(self._pollOnce, 50);
+        return;
+      }
+      if (xhr.status !== 200) {
+        backOff();
+        return;
+      }
+      var messages;
+      try {
+        messages = JSON.parse(xhr.responseText);
+      } catch (e) {
+        backOff();
+        return;
+      }
+      self.pollFailures = 0;
+      if (messages && messages.length) {
+        for (var i = 0; i < messages.length; i++) {
+          self.onMessage(messages[i]);
         }
       }
-      setTimeout(GW.workspaceevents._pollOnce, 50);
+      setTimeout(self._pollOnce, 50);
     };
-    xhr.onerror = function () {
-      setTimeout(GW.workspaceevents._pollOnce, 2000);
-    };
+    xhr.onerror = backOff;
     xhr.ontimeout = function () {
       setTimeout(GW.workspaceevents._pollOnce, 50);
     };
@@ -291,22 +310,34 @@ GW.workspaceevents = {
     GW.workspaceevents._handleOpenObject(evt);
   },
 
+  /** How long after an agent's last change the strip keeps mentioning it. */
+  PRESENCE_SHOW_MS: 2 * 60 * 1000,
+
   _mergePresenceSnapshot: function (snap) {
     var now = Date.now();
     Object.keys(snap || {}).forEach(function (k) {
       var p = snap[k];
-      if (!p) return;
+      if (!p || p.actor === "human") return;
+      // the server says how long ago it last saw the agent; never treat a re-read as new activity
+      var at = typeof p.ageMs === "number" ? now - p.ageMs : null;
+      var known = GW.workspaceevents.presenceByKey[k];
+      if (at === null) {
+        if (known) return;
+        at = now;
+      }
+      if (known && known.at >= at) return;
       GW.workspaceevents.presenceByKey[k] = {
-        actor: p.actor || "unknown",
+        actor: p.actor || "agent",
         tokenFingerprint: p.tokenFingerprint || "",
-        at: now,
-        objectName: k,
+        at: at,
       };
     });
     GW.workspaceevents._renderPresenceStrip();
   },
 
   _notePresence: function (evt) {
+    // people (including this browser) are not announced; the reload notice covers their edits
+    if (!evt || evt.actor === "human") return;
     var keys = [];
     if (evt.objectKind && evt.objectId) {
       keys.push(evt.objectKind + ":" + evt.objectId);
@@ -320,20 +351,74 @@ GW.workspaceevents = {
         actor: evt.actor || "agent",
         tokenFingerprint: evt.tokenFingerprint || "",
         at: now,
-        objectName: evt.objectName || evt.objectId,
       };
     });
     GW.workspaceevents._renderPresenceStrip();
   },
 
+  _openObjectKeys: function () {
+    var keys = [];
+    var openWf = GW.workflow && GW.workflow.loaded_workflow;
+    if (openWf) keys.push({ key: "workflow:" + openWf, label: "this workflow" });
+    var openPid =
+      (GW.process && GW.process.current_pid) ||
+      ($("#processid").length ? $("#processid").val() : null);
+    if (openPid) keys.push({ key: "process:" + openPid, label: "this process" });
+    return keys;
+  },
+
+  _ago: function (ms) {
+    var s = Math.round(ms / 1000);
+    if (s < 60) return "just now";
+    return Math.round(s / 60) + " min ago";
+  },
+
+  /**
+   * A small note, shown only while an AI agent or the command line has recently changed the
+   * workflow or process that is open here. It hides itself and can be closed.
+   */
   _renderPresenceStrip: function () {
+    var self = GW.workspaceevents;
+    var now = Date.now();
+    Object.keys(self.presenceByKey).forEach(function (k) {
+      if (now - self.presenceByKey[k].at > self.PRESENCE_SHOW_MS) delete self.presenceByKey[k];
+    });
+    var hit = null;
+    self._openObjectKeys().forEach(function (o) {
+      var p = self.presenceByKey[o.key];
+      if (!p || (self.presenceDismissed[o.key] || 0) >= p.at) return;
+      if (!hit || p.at > hit.p.at) hit = { key: o.key, label: o.label, p: p };
+    });
     var strip = document.getElementById("gw-agent-presence-strip");
+    if (!hit) {
+      if (strip) strip.style.display = "none";
+      return;
+    }
     if (!strip) {
       strip = document.createElement("div");
       strip.id = "gw-agent-presence-strip";
       strip.setAttribute("role", "status");
       strip.style.cssText =
-        "display:none;padding:6px 12px;background:#e7f1ff;color:#084298;border-bottom:1px solid #b6d4fe;font-size:13px;";
+        "display:none;align-items:center;gap:8px;padding:3px 10px;background:#f1f6ff;color:#3d5a80;" +
+        "border-bottom:1px solid #dbe7fb;font-size:12px;";
+      var text = document.createElement("span");
+      text.className = "gw-presence-text";
+      text.style.flex = "1";
+      var close = document.createElement("button");
+      close.type = "button";
+      close.setAttribute("aria-label", "Close");
+      close.title = "Close";
+      close.textContent = "\u00d7";
+      close.style.cssText =
+        "border:0;background:none;color:inherit;font-size:16px;line-height:1;padding:0 4px;cursor:pointer;";
+      close.onclick = function () {
+        var k = strip.getAttribute("data-key");
+        var p = k && self.presenceByKey[k];
+        if (p) self.presenceDismissed[k] = p.at;
+        strip.style.display = "none";
+      };
+      strip.appendChild(text);
+      strip.appendChild(close);
       var host =
         document.getElementById("main-content-area") ||
         document.querySelector(".main-panel") ||
@@ -345,35 +430,11 @@ GW.workspaceevents = {
         host.insertBefore(strip, host.firstChild);
       }
     }
-    var live = [];
-    var now = Date.now();
-    var ttl = 5 * 60 * 1000;
-    Object.keys(GW.workspaceevents.presenceByKey).forEach(function (k) {
-      var p = GW.workspaceevents.presenceByKey[k];
-      if (now - p.at <= ttl) {
-        live.push({ key: k, p: p });
-      } else {
-        delete GW.workspaceevents.presenceByKey[k];
-      }
-    });
-    if (!live.length) {
-      strip.style.display = "none";
-      strip.textContent = "";
-      return;
-    }
-    var parts = live.slice(0, 4).map(function (x) {
-      var who = GW.workspaceevents._who(x.p.actor, x.p.tokenFingerprint);
-      var fp =
-        x.p.actor === "agent" && x.p.tokenFingerprint && x.p.tokenFingerprint !== "cli"
-          ? " " + x.p.tokenFingerprint
-          : "";
-      return who + fp + " on " + x.key;
-    });
-    strip.style.display = "block";
-    strip.textContent =
-      "Live collaboration: " +
-      parts.join("; ") +
-      ". You may both edit — this is awareness, not a lock. Unsaved local edits are kept until you reload.";
+    var who = self._who(hit.p.actor, hit.p.tokenFingerprint);
+    strip.setAttribute("data-key", hit.key);
+    strip.querySelector(".gw-presence-text").textContent =
+      who + " changed " + hit.label + " " + self._ago(now - hit.p.at) + ". You can keep editing.";
+    strip.style.display = "flex";
   },
 
   _scheduleListRefresh: function () {
@@ -407,13 +468,32 @@ GW.workspaceevents = {
     return "An AI agent";
   },
 
+  /** When this page saved a workflow or process, keyed by kind. */
+  ownSaveAt: {},
+
+  _watchOwnSaves: function () {
+    if (typeof $ !== "function" || !$(document).ajaxSend) return;
+    $(document).ajaxSend(function (e, xhr, opts) {
+      var url = (opts && opts.url) || "";
+      var m = /(?:^|\/)(?:edit|add)\/(workflow|process)(?:$|[?#])/.exec(url);
+      if (m) GW.workspaceevents.ownSaveAt[m[1]] = Date.now();
+    });
+  },
+
+  /** True when a person's event is most likely the echo of a save made on this page. */
+  _isOwnEcho: function (evt, kind) {
+    if (!evt || evt.actor !== "human") return false;
+    var at = GW.workspaceevents.ownSaveAt[kind];
+    return !!at && Date.now() - at < 15000;
+  },
+
   _handleOpenObject: function (evt) {
     var openWf = GW.workflow && GW.workflow.loaded_workflow;
     var touchesOpenWf =
       (evt.objectKind === "workflow" && evt.objectId === openWf) ||
       (evt.workflowId && evt.workflowId === openWf);
 
-    if (touchesOpenWf) {
+    if (touchesOpenWf && !GW.workspaceevents._isOwnEcho(evt, "workflow")) {
       if (GW.workspace && GW.workspace.workflow_unsaved) {
         GW.workspaceevents._showReloadNotice(
           "Someone else (or an AI agent) updated this workflow. You have unsaved canvas changes — reload only when ready.",
@@ -434,7 +514,12 @@ GW.workspaceevents = {
     var openPid =
       (GW.process && GW.process.current_pid) ||
       ($("#processid").length ? $("#processid").val() : null);
-    if (evt.objectKind === "process" && openPid && openPid === evt.objectId) {
+    if (
+      evt.objectKind === "process" &&
+      openPid &&
+      openPid === evt.objectId &&
+      !GW.workspaceevents._isOwnEcho(evt, "process")
+    ) {
       GW.workspaceevents._showReloadNotice(
         GW.workspaceevents._who(evt.actor, evt.tokenFingerprint) +
           " updated process " +
