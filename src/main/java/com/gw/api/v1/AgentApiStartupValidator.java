@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 /**
- * Fail-closed when agent API is enabled on a non-loopback bind without explicit allow + risk
+ * Refuses to start when network access to the Agent API is switched on without the explicit risk
  * acknowledgment. Always logs a SECURITY summary when the API is enabled.
  */
 @Component
@@ -37,23 +37,12 @@ public class AgentApiStartupValidator implements ApplicationRunner {
             ? "all interfaces"
             : properties.getServerAddress();
 
-    if (properties.isBoundBeyondLoopback() && !properties.isAllowNonLoopback()) {
+    if (properties.isAllowNonLoopback() && !properties.isAcknowledgeNetworkRisk()) {
       throw new IllegalStateException(
-          "geoweaver.agent.api-enabled=true but server.address is not loopback ("
-              + bindLabel
-              + "). Set server.address=127.0.0.1 or geoweaver.agent.allow-non-loopback=true "
-              + "and geoweaver.agent.acknowledge-network-risk=true (insecure if the token leaks).");
-    }
-
-    if (properties.isBoundBeyondLoopback()
-        && properties.isAllowNonLoopback()
-        && !properties.isAcknowledgeNetworkRisk()) {
-      throw new IllegalStateException(
-          "geoweaver.agent.api-enabled=true on non-loopback bind ("
-              + bindLabel
-              + ") requires geoweaver.agent.acknowledge-network-risk=true. "
-              + "A leaked Bearer token is full Agent API access (create/edit/run on this host). "
-              + "Prefer HTTPS reverse proxy to 127.0.0.1, or set server.address=127.0.0.1.");
+          "geoweaver.agent.allow-non-loopback=true lets other computers use the Agent API, which can"
+              + " run code on this server. Also set geoweaver.agent.acknowledge-network-risk=true to"
+              + " confirm, or remove allow-non-loopback to keep the API on this computer only"
+              + " (agents can still reach it over SSH at http://127.0.0.1:<port>).");
     }
 
     logger.warn(
@@ -62,17 +51,16 @@ public class AgentApiStartupValidator implements ApplicationRunner {
             + " server-local runs (hostId=100001).\n"
             + "  - allow-localhost-runs={}: token may start localhost jobs without the GUI localhost"
             + " password.\n"
-            + "  - allow-non-loopback={} acknowledge-network-risk={} bind={}.\n"
+            + "  - allow-non-loopback={} (false = only programs on this computer) bind={}.\n"
             + "  - Harden: set geoweaver.agent.api-enabled=false, and/or bind 127.0.0.1, and/or revoke"
             + " tokens (DELETE /api/v1/tokens/{{fingerprint}}). Prefer HTTPS. Never commit tokens.",
         properties.isAllowLocalhostRuns(),
         properties.isAllowNonLoopback(),
-        properties.isAcknowledgeNetworkRisk(),
         bindLabel);
 
-    if (properties.isBoundBeyondLoopback() && properties.isAllowNonLoopback()) {
+    if (properties.isAllowNonLoopback()) {
       logger.warn(
-          "SECURITY: Agent API enabled on non-loopback bind with allow-non-loopback=true. "
+          "SECURITY: Agent API accepts requests from other computers (allow-non-loopback=true). "
               + "Prefer HTTPS (reverse proxy to 127.0.0.1). A leaked Bearer token is full Agent API access.");
     }
     if (!tokenService.hasActiveToken()) {

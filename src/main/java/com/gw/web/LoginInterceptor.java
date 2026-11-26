@@ -10,7 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * Interceptor to check if login is required and if user is authenticated.
@@ -25,6 +29,7 @@ public class LoginInterceptor implements HandlerInterceptor {
   private static final String SESSION_ATTR_LOCALHOST_AUTHENTICATED = "localhost_authenticated";
   private static final String COOKIE_NAME_LOCALHOST_AUTHENTICATED = "gw_localhost_auth";
   private static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
+  private static final UrlPathHelper PATHS = new UrlPathHelper();
 
   @Autowired private BaseTool bt;
 
@@ -35,34 +40,21 @@ public class LoginInterceptor implements HandlerInterceptor {
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-    // Skip login check for login-related endpoints and static resources
-    String requestPath = request.getRequestURI();
+    // Decoded path inside the app, the same path Spring uses to pick the handler
+    // (so %-encoded spellings cannot dodge the checks below).
+    String requestPath = PATHS.getPathWithinApplication(request);
     String contextPath = request.getContextPath();
-
-    // Remove context path from request path
-    if (contextPath != null && !contextPath.isEmpty() && requestPath.startsWith(contextPath)) {
-      requestPath = requestPath.substring(contextPath.length());
+    if (requestPath == null || !requestPath.startsWith("/")) {
+      requestPath = "/" + (requestPath == null ? "" : requestPath);
     }
 
-    // Normalize path (ensure it starts with /)
-    if (!requestPath.startsWith("/")) {
-      requestPath = "/" + requestPath;
-    }
-
-    // Allow access to login page, login API, static resources, and key endpoint
-    // Check exact matches and path starts with for login endpoints
+    // Login page, login call and the public key the login page encrypts the password with
     boolean isLoginEndpoint = requestPath.equals("/web/localhost-login")
         || requestPath.equals("/web/authenticateLocalhost")
-        || requestPath.equals("/web/key")
-        || requestPath.startsWith("/web/localhost-login?")
-        || requestPath.startsWith("/web/authenticateLocalhost?")
-        || requestPath.startsWith("/web/key?")
-        || requestPath.endsWith("/localhost-login")
-        || requestPath.endsWith("/authenticateLocalhost")
-        || requestPath.endsWith("/key");
-    
+        || requestPath.equals("/web/key");
+
     // Agent API uses Bearer token + JSON errors (AgentApiTokenFilter). Never HTML-redirect.
-    if (requestPath.startsWith("/api/v1/")) {
+    if (requestPath.startsWith("/api/v1/") || requestPath.equals("/api/v1")) {
       return true;
     }
 
@@ -76,29 +68,8 @@ public class LoginInterceptor implements HandlerInterceptor {
       return true;
     }
 
-    if (isLoginEndpoint
-        || requestPath.startsWith("/static/")
-        || requestPath.startsWith("/js/")
-        || requestPath.startsWith("/css/")
-        || requestPath.startsWith("/images/")
-        || requestPath.startsWith("/img/")
-        || requestPath.startsWith("/gif/")
-        || requestPath.startsWith("/fonts/")
-        || requestPath.startsWith("/webfonts/")
-        || requestPath.startsWith("/ssh/")
-        || requestPath.endsWith(".js")
-        || requestPath.endsWith(".css")
-        || requestPath.endsWith(".png")
-        || requestPath.endsWith(".jpg")
-        || requestPath.endsWith(".jpeg")
-        || requestPath.endsWith(".gif")
-        || requestPath.endsWith(".ico")
-        || requestPath.endsWith(".woff")
-        || requestPath.endsWith(".woff2")
-        || requestPath.endsWith(".ttf")
-        || requestPath.endsWith(".eot")
-        || requestPath.endsWith(".svg")
-        || requestPath.endsWith(".otf")) {
+    // Only real static files are public; a controller route never is, whatever its name ends with.
+    if (isLoginEndpoint || handler instanceof ResourceHttpRequestHandler) {
       return true;
     }
 
@@ -124,7 +95,7 @@ public class LoginInterceptor implements HandlerInterceptor {
       if (cookies != null) {
         for (Cookie cookie : cookies) {
           if (COOKIE_NAME_LOCALHOST_AUTHENTICATED.equals(cookie.getName())) {
-            if ("true".equals(cookie.getValue())) {
+            if (AuthCookie.isValid(cookie.getValue())) {
               authenticated = true;
               // Restore session authentication from cookie
               if (session == null) {
@@ -178,13 +149,27 @@ public class LoginInterceptor implements HandlerInterceptor {
    * Set authentication cookie
    */
   private static void setAuthCookie(HttpServletResponse response, boolean authenticated) {
-    Cookie cookie = new Cookie(COOKIE_NAME_LOCALHOST_AUTHENTICATED, authenticated ? "true" : "false");
-    cookie.setMaxAge(authenticated ? COOKIE_MAX_AGE : 0); // 30 days or delete
-    cookie.setPath("/");
-    cookie.setHttpOnly(true); // Prevent XSS attacks
-    // Note: Secure flag should be set in production with HTTPS
-    // cookie.setSecure(true);
-    response.addCookie(cookie);
+    // Signed value (see AuthCookie): a hand-written cookie is not a login.
+    ResponseCookie cookie =
+        ResponseCookie.from(COOKIE_NAME_LOCALHOST_AUTHENTICATED, authenticated ? AuthCookie.issue() : "")
+            .maxAge(authenticated ? COOKIE_MAX_AGE : 0)
+            .path("/")
+            .httpOnly(true)
+            .sameSite("Lax")
+            .build();
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+  }
+
+  /** True when the request carries a login cookie this server signed. */
+  public static boolean hasValidAuthCookie(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies == null) return false;
+    for (Cookie c : cookies) {
+      if (COOKIE_NAME_LOCALHOST_AUTHENTICATED.equals(c.getName()) && AuthCookie.isValid(c.getValue())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

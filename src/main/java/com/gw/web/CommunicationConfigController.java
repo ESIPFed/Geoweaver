@@ -50,9 +50,7 @@ public class CommunicationConfigController {
         response.put("workspaceEventsEnabled", agentApiProperties.isWorkspaceEventsEnabled());
         response.put(
             "networkRiskActive",
-            agentApiProperties.isApiEnabled()
-                && agentApiProperties.isBoundBeyondLoopback()
-                && agentApiProperties.isAllowNonLoopback());
+            agentApiProperties.isApiEnabled() && agentApiProperties.isAllowNonLoopback());
         return ResponseEntity.ok(response);
     }
 }

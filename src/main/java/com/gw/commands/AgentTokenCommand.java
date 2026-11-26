@@ -243,13 +243,13 @@ public class AgentTokenCommand implements Runnable {
     System.out.println("  geoweaver.agent.token-ttl-days=30           # default lifetime");
     System.out.println("  geoweaver.agent.token-max-ttl-days=180      # hard max (six months)");
     System.out.println();
-    System.out.println("This computer only (other machines cannot connect to the JVM):");
-    System.out.println("  server.address=127.0.0.1");
-    System.out.println();
-    System.out.println("Caller on another computer — pick one:");
-    System.out.println("  A) HTTPS reverse proxy → 127.0.0.1:8070  (preferred)");
-    System.out.println("  B) JVM listens on all interfaces AND geoweaver.agent.allow-non-loopback=true");
-    System.out.println("     (do not set server.address=127.0.0.1)");
+    System.out.println("By default only programs on this computer can use the API.");
+    System.out.println("Caller on another computer, pick one:");
+    System.out.println("  A) Run the agent's requests over SSH: curl http://127.0.0.1:8070/Geoweaver/api/v1/...");
+    System.out.println("     or open an SSH tunnel (ssh -L 8070:127.0.0.1:8070 server)  (preferred)");
+    System.out.println("  B) Allow network access, ideally behind an HTTPS reverse proxy:");
+    System.out.println("     geoweaver.agent.allow-non-loopback=true");
+    System.out.println("     geoweaver.agent.acknowledge-network-risk=true");
   }
 
   private static void printList(AgentApiTokenService svc) {

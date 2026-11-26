@@ -201,7 +201,7 @@ Requirements:
 | --- | --- |
 | `export GEOWEAVER_PORT="$port"` | Geoweaver reads `server.port=${GEOWEAVER_PORT:8070}`; pygeoweaver also passes `-Dserver.port` and polls that URL |
 | pygeoweaver **≥ 1.4.2** | Treats HTTP **200/301/302/303** as “up” (Boot 3 often returns 200, not only 302) |
-| Geoweaver **3.0+** Agent defaults | `acknowledge-network-risk=true` so all-interface binds used by OOD proxy do not refuse startup |
+| Agent API through the OOD proxy | Set `geoweaver.agent.allow-non-loopback=true` and `geoweaver.agent.acknowledge-network-risk=true`; by default the Agent API answers only programs on the compute node itself (the GUI is not affected) |
 
 Do **not** hard-code `8070` in `connection.yml`. Do not paste session passwords into tickets or git.
 

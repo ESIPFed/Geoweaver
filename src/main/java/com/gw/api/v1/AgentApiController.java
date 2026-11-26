@@ -254,7 +254,7 @@ public class AgentApiController {
   }
 
   static void requireLoopback(HttpServletRequest request) {
-    if (!AgentApiProperties.isLoopbackAddress(request.getRemoteAddr())) {
+    if (!AgentApiProperties.isLocalRequest(request)) {
       throw new ResponseStatusException(
           HttpStatus.FORBIDDEN, "Token reveal sessions are loopback-only");
     }

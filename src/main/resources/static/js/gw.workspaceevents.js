@@ -209,8 +209,9 @@ GW.workspaceevents = {
         if (!cfg || !cfg.apiEnabled) {
           return;
         }
+        // Local-only access (the default) needs no warning; warn only when other computers can call it.
         var networkRisk = !!cfg.networkRiskActive;
-        if (GW.workspaceevents.bannerDismissedThisSession && !networkRisk) {
+        if (!networkRisk || GW.workspaceevents.bannerDismissedThisSession) {
           return;
         }
         GW.workspaceevents._renderTopBanner(cfg, networkRisk);
@@ -228,13 +229,11 @@ GW.workspaceevents = {
       return;
     }
     el.textContent =
-      "Agent API: on (localhost runs=" +
+      "Agent API: on, " +
+      (cfg.allowNonLoopback ? "other computers allowed" : "this computer only") +
+      " (localhost runs=" +
       cfg.allowLocalhostRuns +
-      ", non-loopback=" +
-      cfg.allowNonLoopback +
-      ", workspace events=" +
-      cfg.workspaceEventsEnabled +
-      "). Live collab uses /api/workspace long poll. A leaked Bearer token is full API access.";
+      "). A leaked token can run code here; revoke it with geoweaver agent-token.";
   },
 
   _renderTopBanner: function (cfg, networkRisk) {
@@ -251,12 +250,9 @@ GW.workspaceevents = {
     var msg = document.createElement("div");
     msg.style.flex = "1";
     msg.textContent =
-      "Agent API is enabled. Open browsers sync process/workflow lists live (Google-Doc-style awareness). " +
-      "A valid Bearer token can create and run python/shell jobs on this host." +
-      (networkRisk
-        ? " This server is reachable beyond this computer (non-loopback bind)."
-        : "") +
-      " Prefer HTTPS. Harden with geoweaver.agent.api-enabled=false or revoke tokens.";
+      "Other computers can use the Agent API on this server (geoweaver.agent.allow-non-loopback=true). " +
+      "Anyone with a valid token can run code here: use HTTPS and short-lived tokens, " +
+      "or remove that setting to allow only this computer.";
     var dismiss = document.createElement("button");
     dismiss.type = "button";
     dismiss.className = "btn btn-sm btn-outline-secondary";
