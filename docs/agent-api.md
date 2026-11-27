@@ -16,25 +16,30 @@ Everything the GUI does with processes, workflows, hosts, environments, history,
 
 ## Remote deployment quickstart (operator → AI agent in 5 steps)
 
-1. **Run Geoweaver on the server** (JDK 17+), either the jar or Docker:
+**Recommended for AI agents:** install PyGeoweaver on the Geoweaver machine and let the agent run `ssh <host> gw agent ...` over an SSH key login. `gw agent` covers every endpoint below, stores the token on the server and prints JSON; see the [PyGeoweaver agent guide](https://github.com/ESIPFed/pygeoweaver/blob/main/docs/agent-ssh.md). The steps here are for writing your own HTTP client.
+
+By default the Agent API answers only programs on the Geoweaver server itself (see [Security model](#security-model)). An agent on another machine reaches it through SSH; nothing on the server has to be opened to the network.
+
+1. **Run Geoweaver on the server** (Java 17.0.21+), either the jar or Docker:
 
 ```bash
-# jar: binds all interfaces on 8070 (Agent API defaults are on; risk ack is on in the shipped properties)
+# jar
 java -jar geoweaver.jar resetpassword -p '<gui-password>'   # or read the random one from the first-start log
 GEOWEAVER_PORT=8070 java -jar geoweaver.jar
 
-# Docker (build from repo root after `mvn -DskipTests package`)
-docker build -t geoweaver .
-docker run -d -p 8070:8070 -e GEOWEAVER_PASSWORD='<gui-password>' \
-  -v geoweaver-home:/home/marsvegan --name geoweaver geoweaver
+# Docker
+docker run -d -p 127.0.0.1:8070:8070 -e GEOWEAVER_PASSWORD='<gui-password>' \
+  -v geoweaver-home:/home/marsvegan --name geoweaver geoweaver/geoweaver
 ```
 
-Put HTTPS in front (reverse proxy to `http://127.0.0.1:8070/Geoweaver/`) for anything beyond a trusted network.
+Inside Docker, Geoweaver sees requests from the Docker network rather than from `127.0.0.1`, so the Agent API answers `local_only`. Publish the port on `127.0.0.1` only, as above, and turn on network mode (item 8 of the [Security model](#security-model)) by mounting an `application.properties` into `/home/marsvegan/geoweaver/`.
 
-2. **Check reachability from the agent machine:** `curl -sS "$GEOWEAVER_BASE_URL/api/v1/health"` → `{"status":"up"}`.
-3. **Mint a token once** (GUI password, never in chat or git): `curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" -H 'Content-Type: application/json' -d '{"hostPassword":"…","ttlDays":30}'` → store `token` in the agent's secret store as `GEOWEAVER_API_TOKEN`.
+2. **Connect from the agent machine** with an SSH tunnel, then check it: `ssh -f -N -L 8070:127.0.0.1:8070 you@server` and `curl -sS http://localhost:8070/Geoweaver/api/v1/health` → `{"status":"up"}`. Set `GEOWEAVER_BASE_URL=http://localhost:8070/Geoweaver`.
+3. **Mint a token once** (GUI password, never in chat or git): `curl -sS -X POST "$GEOWEAVER_BASE_URL/api/v1/tokens" -H 'Content-Type: application/json' -d '{"hostPassword":"…","ttlDays":30}'`, or run `java -jar geoweaver.jar agent-token --create` on the server. Store `token` in the agent's secret store as `GEOWEAVER_API_TOKEN`.
 4. **Point the agent at the docs:** give it `GEOWEAVER_BASE_URL` + the token, and the skill `.cursor/skills/geoweaver-api-agent/SKILL.md` (or let it read `GET /api/v1/capabilities` and the schema at `GET /v3/api-docs/agent-api`, which needs no token).
 5. **The agent loop:** create processes → create a workflow with array `nodes`/`edges` → `POST …/runs` → `GET /runs/{id}?waitSeconds=60&includeStepLogs=true` → fix the failing step with `PUT` → re-run → clean up with `DELETE`.
+
+If the agent cannot use SSH (for example behind Open OnDemand or a reverse proxy), enable network mode as described in item 8 of the [Security model](#security-model) and put HTTPS in front.
 
 ## Security model
 

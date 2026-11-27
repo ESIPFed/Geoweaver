@@ -815,6 +815,19 @@ GW.workspace.renderExportTasks = function(tasks) {
   container.html(html);
 };
 
+// A perfectly horizontal or vertical edge has a zero-width or zero-height bounding box, and SVG
+// draws nothing for a gradient or filter sized to such a box. Give those edges a plain stroke.
+GW.workspace.isStraightEdge = function (d) {
+  return !!d && !!d.source && !!d.target &&
+    (d.source.x === d.target.x || d.source.y === d.target.y);
+};
+GW.workspace.edgeStroke = function (d) {
+  return GW.workspace.isStraightEdge(d) ? "#7d8288" : "url(#edge-gradient)";
+};
+GW.workspace.edgeFilter = function (d) {
+  return GW.workspace.isStraightEdge(d) ? "none" : "url(#edge-shadow)";
+};
+
 // Get status style class
 GW.workspace.getStatusClass = function(status) {
   switch (status) {
@@ -1282,9 +1295,9 @@ GW.workspace.getStatusText = function(status) {
           return cd === thisGraph.state.selectedEdge;
         })
         .classed(thisGraph.consts.selectedClass, false)
-        .style("stroke", "url(#edge-gradient)")
+        .style("stroke", GW.workspace.edgeStroke)
         .style("stroke-width", "2.5px")
-        .style("filter", "url(#edge-shadow)");
+        .style("filter", GW.workspace.edgeFilter);
       thisGraph.state.selectedEdge = null;
       GW.workspace.showNonSaved();
     };
@@ -1609,9 +1622,9 @@ GW.workspace.getStatusText = function(status) {
         .style("marker-end", "url(#end-arrow)")
         .classed(consts.selectedClass, d => d === state.selectedEdge)
         .attr("d", d => `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`)
-        .style("stroke", "url(#edge-gradient)")
+        .style("stroke", GW.workspace.edgeStroke)
         .style("stroke-width", "2.5px")
-        .style("filter", "url(#edge-shadow)");
+        .style("filter", GW.workspace.edgeFilter);
     
       paths
         .enter()
@@ -1619,9 +1632,9 @@ GW.workspace.getStatusText = function(status) {
         .style("marker-end", "url(#end-arrow)")
         .classed("link", true)
         .attr("d", d => `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`)
-        .style("stroke", "url(#edge-gradient)")
+        .style("stroke", GW.workspace.edgeStroke)
         .style("stroke-width", "2.5px")
-        .style("filter", "url(#edge-shadow)")
+        .style("filter", GW.workspace.edgeFilter)
         .on("mousedown", function (d) {
           thisGraph.pathMouseDown.call(thisGraph, d3.select(this), d);
         })
